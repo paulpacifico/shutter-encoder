@@ -4,12 +4,14 @@ Download required [libraries](../master/Library/sources.txt) into "Library" fold
 
 Use [MANIFEST.MF](../master/MANIFEST.MF) with [jar](../master/Shutter%20Encoder.jar)
 
-[Official website](https://www.shutterencoder.com)
+## Official website
 
-## Builds
+https://www.shutterencoder.com
+
+### Builds
 
 https://www.shutterencoder.com/en/#downloads
 
-### Changelog
+#### Changelog
 
 https://www.shutterencoder.com/changelog.txt
