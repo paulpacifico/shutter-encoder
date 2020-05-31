@@ -8,6 +8,6 @@ Use [MANIFEST.MF](../master/MANIFEST.MF) with [jar](../master/Shutter%20Encoder.
 
 Download : https://www.shutterencoder.com/en/#downloads
 
-## Changelog
+### Changelog
 
 Changelog : https://www.shutterencoder.com/changelog.txt
