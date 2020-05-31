@@ -6,8 +6,8 @@ Use [MANIFEST.MF](../master/MANIFEST.MF) with [jar](../master/Shutter%20Encoder.
 
 ## Builds
 
-Download : https://www.shutterencoder.com/en/#downloads
+https://www.shutterencoder.com/en/#downloads
 
 ### Changelog
 
-Changelog : https://www.shutterencoder.com/changelog.txt
+https://www.shutterencoder.com/changelog.txt
