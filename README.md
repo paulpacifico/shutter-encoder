@@ -17,11 +17,11 @@ tsMuxeR : www.videohelp.com/software/tsMuxeR
 
 mkvmerge : www.mkvtoolnix.download
 
-mediainfo : mediaarea.net/fr/MediaInfo
+mediainfo : www.mediaarea.net/fr/MediaInfo
 
 dvdauthor : www.dvdauthor.sourceforge.net
 
-youtube-dl : rg3.github.io/youtube-dl
+youtube-dl : www.rg3.github.io/youtube-dl
 
 WeTransfer : www.developers.wetransfer.com
 
