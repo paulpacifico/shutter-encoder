@@ -4,6 +4,7 @@ A professional video compression tool accessible to all.
 Required binaries into "Library" folder :
 
 7za : www.7-zip.org
+
 VLC : www.videolan.org/vlc
 
 dcraw : www.dechifro.org/dcraw
