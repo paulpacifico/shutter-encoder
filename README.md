@@ -1,4 +1,4 @@
-# Shutter Encoder v13.8
+# Shutter Encoder
 
 Required [libraries](../master/Library/sources.txt) into "Library" folder
 
