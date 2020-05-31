@@ -1,0 +1,1 @@
+A black image is detected if its duration is less than or equal to 10 images, you will have the displayed timecode.

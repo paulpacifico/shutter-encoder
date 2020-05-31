@@ -1,0 +1,1 @@
+Attenzione che l'uso di questo codec può comportare tempi di elaborazione molto lunghi.

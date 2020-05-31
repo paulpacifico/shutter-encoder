@@ -1,0 +1,1 @@
+Warning the use of this codec can be very long.

@@ -1,0 +1,1 @@
+Verrà rilevata un'immagine nera se la sua durata è inferiore o uguale a 10 immagini, e verrà visualizzato il timecode.

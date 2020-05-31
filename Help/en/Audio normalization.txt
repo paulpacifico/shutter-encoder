@@ -1,0 +1,3 @@
+It is recommended to scan the file again after this step.
+This function does not create audio compression and only reduces or increases the audio level.
+If the source uses 4 channels, only the first two will be used for the analysis.

@@ -1,0 +1,3 @@
+Add the master file and your video inserts to the file list and then start the function to automatically create your video inserts.
+The algorithm is based on the timecode of your plans, so they must all refer to the same timeline.
+The sound of the master file is used, use the "Replace audio" function to modify your audio master.

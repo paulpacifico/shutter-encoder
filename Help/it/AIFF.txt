@@ -1,0 +1,1 @@
+Per impostazione predefinita, se la sorgente usa 4 canali, verranno usati solo i primi due, canale 1 a sinistra, canale 2 a destra.

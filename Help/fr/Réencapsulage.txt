@@ -1,0 +1,1 @@
+Cette fonction ne crée pas de compression.

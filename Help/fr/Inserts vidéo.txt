@@ -1,0 +1,3 @@
+Ajoutez le fichier master ainsi que vos inserts vidéo dans la liste de fichiers puis démarrez la fonction pour créer automatiquement vos inserts vidéo.
+L'algorithme est basé sur le timecode de vos plans, ils doivent donc tous faire référence à la même timeline.
+Le son du fichier master est conservé, utilsez la fonction "Remplacer l'audio" pour modifier votre master audio.

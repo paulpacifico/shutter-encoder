@@ -1,0 +1,2 @@
+La première valeur "I:" est votre valeur de loudness en LUFS.
+Enregistrez votre analyse et récupérez les valeurs de short-term au dessus de -16 LUFS.

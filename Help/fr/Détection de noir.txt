@@ -1,0 +1,1 @@
+Une image noire est détectée si sa durée est inférieure ou égale à 10 images, vous aurez le timecode d'affiché.

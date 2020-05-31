@@ -1,0 +1,2 @@
+Create a file ready to burn to Blu-ray format in direct reading without a menu.
+The bitrate is automatically adjusts for a 25GB Blu-ray.
