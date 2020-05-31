@@ -2,9 +2,7 @@
 
 Required binaries into "Library" folder : https://github.com/paulpacifico/shutter-encoder/blob/master/Library/sources.txt
 
-Use [MANIFEST.MF](../master/MANIFEST.MF)
-
-[MANIFEST.MF](../master/MANIFEST.MF)
+Use [MANIFEST.MF](../master/MANIFEST.MF) with [jar](../master/Shutter.jar)
 
 Builds download : https://www.shutterencoder.com/en/#downloads
 
