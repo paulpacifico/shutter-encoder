@@ -2,7 +2,7 @@
 
 Download required [libraries](../master/Library/sources.txt) into "Library" folder
 
-Use [MANIFEST.MF](../master/MANIFEST.MF) with [.jar](../master/Shutter%20Encoder.jar) file
+Use [MANIFEST.MF](../master/MANIFEST.MF) if you make your own [.jar](../master/Shutter%20Encoder.jar) file
 
 ## Official website
 
