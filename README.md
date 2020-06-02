@@ -4,6 +4,8 @@ Download required [dependencies](../master/Library/sources.txt) into "Library" f
 
 Use [MANIFEST.MF](../master/MANIFEST.MF) if you make your own [.jar](../master/Shutter%20Encoder.jar) file
 
+Include [fonts](../master/fonts) with JRE.
+
 ## Official website
 
 https://www.shutterencoder.com
