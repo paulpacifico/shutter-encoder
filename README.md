@@ -1,6 +1,6 @@
 # Shutter Encoder
 
-Download required [libraries](../master/Library/sources.txt) into "Library" folder
+Download required [dependencies](../master/Library/sources.txt) into "Library" folder
 
 Use [MANIFEST.MF](../master/MANIFEST.MF) if you make your own [.jar](../master/Shutter%20Encoder.jar) file
 
