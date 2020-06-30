@@ -287,7 +287,11 @@ public class Subtitles {
     	txtSubtitles.setParagraphAttributes(attribs,true);
     	txtSubtitles.setSelectionColor(new Color(71,163,236,127));
     	txtSubtitles.setFont(new Font("Montserrat", Font.PLAIN, 12)); 
-    	txtSubtitles.setBounds(10, 36, frame.getWidth() - 36, 36); 
+    	
+    	if (System.getProperty("os.name").contains("Windows"))
+    		txtSubtitles.setBounds(10, 36, frame.getWidth() - 36, 36); 
+    	else
+    		txtSubtitles.setBounds(10, 36, frame.getWidth() - 24, 36); 
     	
     	txtSubtitles.addKeyListener(new KeyListener()
     	{
@@ -465,8 +469,11 @@ public class Subtitles {
     	});
     	    	
     	btnEditAll.setFont(new Font("Montserrat", Font.PLAIN, 12));
-    	btnEditAll.setSize(60, 25);  
-    	btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 6);
+    	btnEditAll.setSize(60, 25);
+    	if (System.getProperty("os.name").contains("Windows"))    		
+    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 6);
+    	else
+    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 12, 6);
     	frame.getContentPane().add(btnEditAll);
     	
     	btnEditAll.addActionListener(new ActionListener(){
@@ -1195,8 +1202,12 @@ public class Subtitles {
     	frame.addComponentListener(new ComponentAdapter() 
     	{  
             public void componentResized(ComponentEvent evt) {   
-            	            	
-            	txtSubtitles.setBounds(10, 36, frame.getWidth() - 36, 36);
+            	            	            	
+            	if (System.getProperty("os.name").contains("Windows"))
+            		txtSubtitles.setBounds(10, 36, frame.getWidth() - 36, 36); 
+            	else
+            		txtSubtitles.setBounds(10, 36, frame.getWidth() - 24, 36); 
+            	
             	timelineBackround.setBounds(0, 80, frame.getWidth(), frame.getContentPane().getHeight() - 97);
             	timeline.setBounds(0, 15, (int) ((VideoPlayer.sliderIn.getMaximum()-(1000/FFPROBE.currentFPS)*2)*zoom), timelineBackround.getHeight() - 20);
             	timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
@@ -1206,7 +1217,10 @@ public class Subtitles {
             	cursor.setBounds(0, 0, 2, timeline.getHeight());            	
             	
             	//Buttons
-            	btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 6);
+            	if (System.getProperty("os.name").contains("Windows"))    		
+            		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 6);
+            	else
+            		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 12, 6);
             	btnAjouter.setBounds(btnEditAll.getLocation().x - btnAjouter.getWidth() - 4, 6, 77, 25);
             	btnSupprimer.setBounds(btnAjouter.getLocation().x - btnSupprimer.getWidth() - 4, 6, 80, 25);
             	btnFin.setBounds(btnSupprimer.getLocation().x - btnFin.getWidth() - 4, 6, 67, 25);

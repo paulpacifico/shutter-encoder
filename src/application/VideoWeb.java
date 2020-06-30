@@ -76,7 +76,7 @@ import javax.swing.JComboBox;
 public class VideoWeb {
 	public static JDialog frame;
 	public static JDialog shadow = new JDialog();
-	ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
+	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private static int complete;
 		
 	/*
@@ -240,8 +240,8 @@ public class VideoWeb {
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
@@ -306,7 +306,7 @@ public class VideoWeb {
 		
 		textURL = new JTextField();
 		textURL.setForeground(Color.LIGHT_GRAY);
-		textURL.setFont(new Font("Arial", Font.ITALIC, 13));
+		textURL.setFont(new Font("Arial Unicode MS", Font.ITALIC, 12));
 		textURL.setText(Shutter.language.getProperty("textURL"));
 		textURL.setBounds(66, 22, 270, 21);
 		textURL.setColumns(10);	
@@ -342,7 +342,7 @@ public class VideoWeb {
 						textURL.setForeground(Color.WHITE);
 					else
 						textURL.setForeground(Color.BLACK);
-					textURL.setFont(new Font("Montserrat", Font.PLAIN, 12));
+					textURL.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		       		btnOK.setEnabled(true);
 					if (caseAuto.isSelected() == false)
 						caseAuto.doClick();
@@ -546,7 +546,7 @@ public class VideoWeb {
 		
 		textVideoPass = new JTextField();
 		textVideoPass.setForeground(Color.BLACK);
-		textVideoPass.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textVideoPass.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		textVideoPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 120, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		textVideoPass.setEnabled(false);
 		textVideoPass.setColumns(10);	
@@ -576,7 +576,7 @@ public class VideoWeb {
 		textUser.setEnabled(false);
 		textUser.setText((String) null);
 		textUser.setForeground(Color.BLACK);
-		textUser.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textUser.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		textUser.setColumns(10);
 		textUser.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 76, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		grpURL.add(textUser);
@@ -605,7 +605,7 @@ public class VideoWeb {
 		textPass.setEnabled(false);
 		textPass.setText((String) null);
 		textPass.setForeground(Color.BLACK);
-		textPass.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textPass.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		textPass.setColumns(10);
 		textPass.setEchoChar('•');
 		textPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 98, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);

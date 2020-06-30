@@ -45,6 +45,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
+import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -89,7 +90,7 @@ public class ColorImage {
 	private JLabel reduce;
 	private static JPanel panelHaut;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameColorImage"));
-	ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
+	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel topImage;
 	private JLabel bottomImage;	
 	private static JButton btnOK;
@@ -113,6 +114,7 @@ public class ColorImage {
 	public static JSlider sliderGrain = new JSlider();
 	public static JSlider sliderRotate = new JSlider();
 	public static JSlider sliderVignette = new JSlider();
+	public static JSlider positionVideo;
 	
 	
 	/*
@@ -1066,6 +1068,30 @@ public class ColorImage {
 					File file = new File(Shutter.dirTemp + "preview.bmp");
 					if (file.exists()) file.delete();	
 	      			
+					if (Shutter.scanIsRunning)
+					{
+						File dir = new File(Shutter.liste.firstElement());
+			        	for (File f : dir.listFiles())
+			        	{
+				        	if (f.isHidden() == false && f.isFile())
+				        	{    	    
+				        		FFPROBE.Data(f.toString());
+				        	}
+			        	}
+					}
+					else		 
+					{
+			    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+					}
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+					
+					positionVideo.setValue(0);
+					positionVideo.setMaximum(FFPROBE.dureeTotale);
+					
      				loadImage(true);
      				
 					do {
@@ -1099,6 +1125,30 @@ public class ColorImage {
 					File file = new File(Shutter.dirTemp + "preview.bmp");
 					if (file.exists()) file.delete();	
 	      			
+					if (Shutter.scanIsRunning)
+					{
+						File dir = new File(Shutter.liste.firstElement());
+			        	for (File f : dir.listFiles())
+			        	{
+				        	if (f.isHidden() == false && f.isFile())
+				        	{    	    
+				        		FFPROBE.Data(f.toString());
+				        	}
+			        	}
+					}
+					else		 
+					{
+			    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+					}
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+					
+					positionVideo.setValue(0);
+					positionVideo.setMaximum(FFPROBE.dureeTotale);
+					
 	      			loadImage(true);
 	      			
 					do {
@@ -1161,9 +1211,59 @@ public class ColorImage {
 			
 		});
 		
+		positionVideo = new JSlider();
+		if (Shutter.scanIsRunning)
+		{
+			File dir = new File(Shutter.liste.firstElement());
+        	for (File f : dir.listFiles())
+        	{
+	        	if (f.isHidden() == false && f.isFile())
+	        	{    	    
+	        		FFPROBE.Data(f.toString());
+	        	}
+        	}
+		}
+		else		 
+		{
+    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+		}
+		do {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e1) {}
+		} while (FFPROBE.dureeTotale == 0 && FFPROBE.isRunning);
+		
+		positionVideo.setMaximum(FFPROBE.dureeTotale);
+		positionVideo.setValue(0);		
+		positionVideo.setFont(new Font("Arial", Font.PLAIN, 11));
+		positionVideo.setBounds(212, frame.getHeight() - 33, sliderExposure.getWidth(), 22);	
+		frame.getContentPane().add(positionVideo); 
+		
+		positionVideo.addMouseListener(new MouseAdapter(){
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {								
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
+					File file = new File(Shutter.dirTemp + "preview.bmp");
+					if (file.exists()) file.delete();	
+						
+					loadImage(true);
+						
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
+						
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
+			}
+			
+		});
+		
 		btnOriginal = new JButton("Original");
 		btnOriginal.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOriginal.setBounds(212, frame.getHeight() - 35, btnOriginal.getPreferredSize().width, 25);		
+		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 7, frame.getHeight() - 35, btnOriginal.getPreferredSize().width, 25);		
 		frame.getContentPane().add(btnOriginal); 
 		
 		btnOriginal.addMouseListener(new MouseAdapter(){
@@ -1251,6 +1351,17 @@ public class ColorImage {
 					File file = new File (Shutter.listeDeFichiers.getSelectedValue().toString());
 					
 					FFMPEG.fonctionInOut();
+					
+					//Slider
+					if (positionVideo.getValue() > 0 && FFPROBE.dureeTotale > 100)
+					{
+						DecimalFormat tc = new DecimalFormat("00");			
+						String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
+						String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
+						String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
+						
+						FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+					}
 					
 					String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
 					boolean isRaw = false;		    		
@@ -1368,7 +1479,7 @@ public class ColorImage {
 						FFMPEG.toFFPLAY(FFMPEG.inPoint + " -i " + '"' + file + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);
 					}
 					else
-						FFPLAY.run(" -fs -i " + '"' + file + '"' + filter + '"');
+						FFPLAY.run(FFMPEG.inPoint + " -fs -i " + '"' + file + '"' + filter + '"');
 
 					do {
 						Thread.sleep(100);
@@ -1421,7 +1532,19 @@ public class ColorImage {
 	            	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					File file = new File (Shutter.listeDeFichiers.getSelectedValue().toString());
 					String ext = file.toString().substring(file.toString().lastIndexOf("."));
+					
 					FFMPEG.fonctionInOut();	
+					
+					//Slider
+					if (positionVideo.getValue() > 0 && FFPROBE.dureeTotale > 100)
+					{
+						DecimalFormat tc = new DecimalFormat("00");			
+						String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
+						String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
+						String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
+						
+						FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+					}
 					
 					 //Dossier de sortie
 					String sortie;					
@@ -1758,7 +1881,7 @@ public class ColorImage {
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				if (file.exists()) file.delete();	
 					
-					loadImage(true);
+				loadImage(true);
 					
 				do {
 					try {
@@ -1827,7 +1950,7 @@ public class ColorImage {
 		});
 	
 		bottomImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
@@ -2076,9 +2199,20 @@ public class ColorImage {
 						Console.consoleFFMPEG.append(Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 					}
 						
-						//InOut		
+						//InOut	
 						FFMPEG.fonctionInOut();
 						
+						//Slider
+						if (positionVideo.getValue() > 0 && FFPROBE.dureeTotale > 100)
+						{
+							DecimalFormat tc = new DecimalFormat("00");			
+							String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
+							String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
+							String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
+							
+							FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+						}
+												
 						String deinterlace = "";
 						
 						if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
@@ -2585,13 +2719,14 @@ public class ColorImage {
 		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 15);
 		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 15);
 		
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		
-		btnOriginal.setBounds(212, frame.getHeight() - 35, btnOriginal.getPreferredSize().width, 25);	
+		positionVideo.setBounds(212, frame.getHeight() - 33, sliderExposure.getWidth(), 22);
+		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 7, frame.getHeight() - 35, btnOriginal.getPreferredSize().width, 25);	
 		btnPreview.setBounds(btnOriginal.getX() + btnOriginal.getWidth() + 7, frame.getHeight() - 35, btnPreview.getPreferredSize().width, 25);	
 		btnExportImage.setBounds(btnPreview.getX() + btnPreview.getWidth() + 7, frame.getHeight() - 35, btnExportImage.getPreferredSize().width, 25);	
 		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 7, frame.getHeight() - 35, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 21, 25); 		

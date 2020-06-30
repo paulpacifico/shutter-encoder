@@ -89,7 +89,7 @@ public class CropImage {
 	private JLabel fullscreen;
 	private static JPanel panelHaut;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameCropImage"));
-	ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
+	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel topImage;
 	private JLabel bottomImage;
 	private static JPanel selection;
@@ -468,7 +468,7 @@ public class CropImage {
 		});
 				
 		bottomImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
@@ -1217,8 +1217,7 @@ public class CropImage {
         		finalWidth = (int) Math.floor(((frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17) * ImageWidth) / ImageHeight);
         			        	
         		finalHeight = (int) Math.floor(((frame.getWidth() - 24) * ImageHeight) / ImageWidth);
-        	                    	        		
-				
+        	                   	        		
 	    		
 				File fileOut = new File(Shutter.dirTemp + "preview.bmp");
 				if (fileOut.exists()) fileOut.delete();
@@ -1383,7 +1382,7 @@ public class CropImage {
 		quit.setBounds(frame.getSize().width - 35,0,35, 15);	
 		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 15);
 		
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		

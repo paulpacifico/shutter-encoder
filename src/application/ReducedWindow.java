@@ -127,7 +127,7 @@ public class ReducedWindow extends JDialog {
 		lblEnCours = new JLabel(Shutter.language.getProperty("lblEnCours"));
 		lblEnCours.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEnCours.setForeground(Color.LIGHT_GRAY);
-		lblEnCours.setFont(new Font("Montserrat", Font.PLAIN, 13));
+		lblEnCours.setFont(new Font("Arial Unicode MS", Font.BOLD, 13));
 		lblEnCours.setBounds(100, 6, 178, 16);		
 		frame.getContentPane().add(lblEnCours);
 		

@@ -215,7 +215,7 @@ public class Console extends JFrame {
 		
 		menuBar.add(lblTailleDuTexte);
 		
-		spinner = new JSpinner( new SpinnerNumberModel( 13,1,100,1 ));		
+		spinner = new JSpinner( new SpinnerNumberModel( 12,1,100,1 ));		
 		spinner.setFont(new Font("Montserrat", Font.PLAIN, 12));				
 		menuBar.add(spinner);
 		
@@ -267,43 +267,43 @@ public class Console extends JFrame {
 			
 		});
 		
-		consoleFFMPEG.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleFFMPEG.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleFFMPEG.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleFFMPEG.setWrapStyleWord(true);
 		consoleFFMPEG.addKeyListener(kl);
-		consoleFFPLAY.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleFFPLAY.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleFFPLAY.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleFFPLAY.setWrapStyleWord(true);
 		consoleFFPLAY.addKeyListener(kl);
-		consoleFFPROBE.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleFFPROBE.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleFFPROBE.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleFFPROBE.setWrapStyleWord(true);
 		consoleFFPROBE.addKeyListener(kl);
-		consoleBMXTRANSWRAP.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleBMXTRANSWRAP.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleBMXTRANSWRAP.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleBMXTRANSWRAP.setWrapStyleWord(true);
 		consoleBMXTRANSWRAP.addKeyListener(kl);
-		consoleDVDAUTHOR.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleDVDAUTHOR.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleDVDAUTHOR.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleDVDAUTHOR.setWrapStyleWord(true);
 		consoleDVDAUTHOR.addKeyListener(kl);
-		consoleTSMUXER.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleTSMUXER.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleTSMUXER.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleTSMUXER.setWrapStyleWord(true);
 		consoleTSMUXER.addKeyListener(kl);
-		consoleMEDIAINFO.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleMEDIAINFO.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleMEDIAINFO.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleMEDIAINFO.setWrapStyleWord(true);
 		consoleMEDIAINFO.addKeyListener(kl);
-		consoleYOUTUBEDL.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleYOUTUBEDL.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleYOUTUBEDL.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleYOUTUBEDL.setWrapStyleWord(true);
 		consoleYOUTUBEDL.addKeyListener(kl);
-		consoleEXIFTOOL.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleEXIFTOOL.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleEXIFTOOL.setWrapStyleWord(true);
 		consoleEXIFTOOL.addKeyListener(kl);
-		consoleMKVMERGE.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		consoleMKVMERGE.setFont(new Font("Arial", Font.PLAIN, 12));	
 		consoleMKVMERGE.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleMKVMERGE.setWrapStyleWord(true);
 		consoleMKVMERGE.addKeyListener(kl);

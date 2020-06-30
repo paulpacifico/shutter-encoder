@@ -212,8 +212,8 @@ public class CropVideo {
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
@@ -382,11 +382,13 @@ public class CropVideo {
 				if (caseManuel.isSelected() == false)
 				{
 					if (Float.parseFloat(comboPreset.getSelectedItem().toString()) == 1.33f) //Pour une parfaite précision
-						ratio = 1.333333f;
-					else if (Float.parseFloat(comboPreset.getSelectedItem().toString()) == 1)
+						ratio = 4/3f;
+					else if (Float.parseFloat(comboPreset.getSelectedItem().toString()) == 1f)
 						ratio = 1f;
 					else if (Float.parseFloat(comboPreset.getSelectedItem().toString()) == 0.8f)
-						ratio = 0.8f;
+						ratio = 4/5f;
+					else if (Float.parseFloat(comboPreset.getSelectedItem().toString()) == 1.77f)
+						ratio = 16/9f;					
 					else if (Float.parseFloat(comboPreset.getSelectedItem().toString()) < 1.77f)
 						ratio = (float) (containerWidth / (image.getSize().width - (2 * (gauche.getSize().getWidth()) ) ) );
 					else
@@ -394,7 +396,7 @@ public class CropVideo {
 				}
 				else
 					ratio = (float) (containerWidth / (image.getSize().height - (2 * (haut.getSize().getHeight()) ) ) );
-
+				
 		        Shutter.ratioFinal = ratio;
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
@@ -425,41 +427,52 @@ public class CropVideo {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					
-					if (Float.parseFloat(comboPreset.getSelectedItem().toString()) < 1.77f)
-					{
-						Float ratio = (Float.parseFloat(comboPreset.getSelectedItem().toString()) * containerHeight);		        	
-			        	int largeur = (int) (image.getSize().width - ratio) / 2;
-			        	
-			        	gauche.setSize(largeur, gauche.getSize().height);	        	
-			        	droit.setSize(largeur, gauche.getSize().height);
-		
-			        	droit.setLocation(largeur + (image.getSize().width - (2 * gauche.getSize().width)), droit.getLocation().y);
-			        	
-			    		haut.setBounds(0, 0, 640, 0);
-			    		bas.setBounds(0, 360, 640, 0);		
-			    	}
-					else
-					{
-						Float ratio = (containerWidth / Float.parseFloat(comboPreset.getSelectedItem().toString()) );		        	
-			        	int hauteur = (int) (image.getSize().height - ratio) / 2;
-			        	
-			        	haut.setSize(haut.getSize().width, hauteur);	        	
-			        	bas.setSize(haut.getSize().width, hauteur);
-		
-			        	bas.setLocation(bas.getLocation().x, hauteur + (image.getSize().height - (2 * haut.getSize().height)));
-			        	
-			    		gauche.setBounds(0, 0, 0, 360);
-			    		droit.setBounds(640, 0, 0, 360);
-					}		        	
-	            
-		        	lblRatio.setText("Ratio : " + comboPreset.getSelectedItem().toString());
-	            
-		        } catch (Exception er) {
-		        	if (comboPreset.getSelectedItem().toString() != "")
-		        		JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("wrongValue"), Shutter.language.getProperty("wrongFormat"), JOptionPane.ERROR_MESSAGE);
-		        }				
+				
+				if (comboPreset.getSelectedItem().toString().isEmpty() == false)
+				{
+					try {
+						
+						String r[] = FFPROBE.imageResolution.split("x");
+						String original = String.valueOf((float) Integer.parseInt(r[0]) / Integer.parseInt(r[1]));
+	
+						if (original.length() > 4)
+							original = original.substring(0,4);					
+												
+						//On affiche les côtés
+						if (Float.parseFloat(comboPreset.getSelectedItem().toString()) < Float.parseFloat(original))
+						{
+							Float ratio = (Float.parseFloat(comboPreset.getSelectedItem().toString()) * containerHeight);		        	
+				        	int largeur = (int) (image.getSize().width - ratio) / 2;
+				        	
+				        	gauche.setSize(largeur, gauche.getSize().height);	        	
+				        	droit.setSize(largeur, gauche.getSize().height);
+			
+				        	droit.setLocation(largeur + (image.getSize().width - (2 * gauche.getSize().width)), droit.getLocation().y);
+				        	
+				    		haut.setBounds(0, 0, 640, 0);
+				    		bas.setBounds(0, 360, 640, 0);		
+				    	}
+						else
+						{
+							Float ratio = (containerWidth / Float.parseFloat(comboPreset.getSelectedItem().toString()) );		        	
+				        	int hauteur = (int) (image.getSize().height - ratio) / 2;
+				        	
+				        	haut.setSize(haut.getSize().width, hauteur);	        	
+				        	bas.setSize(haut.getSize().width, hauteur);
+			
+				        	bas.setLocation(bas.getLocation().x, hauteur + (image.getSize().height - (2 * haut.getSize().height)));
+				        	
+				    		gauche.setBounds(0, 0, 0, 360);
+				    		droit.setBounds(640, 0, 0, 360);
+						}		        	
+		            
+			        	lblRatio.setText("Ratio : " + comboPreset.getSelectedItem().toString());
+		            
+			        } catch (Exception er) {
+			        	if (comboPreset.getSelectedItem().toString() != "")
+			        		JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("wrongValue"), Shutter.language.getProperty("wrongFormat"), JOptionPane.ERROR_MESSAGE);
+			        }	
+				}
 			}
 			
 		});

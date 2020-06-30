@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -222,51 +223,8 @@ public class Update {
 	        	
 			    Document doc = Jsoup.connect("https://www.shutterencoder.com").get();
 			      for (Element file : doc.select("a")) {
-			    	  			    	  
-	            	//Version MAC
-	            	if (System.getProperty("os.name").contains("Mac"))
-	            	{
-	            		try {
-		            		if (file.attr("href").contains("Shutter Encoder (MAC Version"))
-		            		{
-		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
-		            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
-		            			
-		            			//Vérification d'une nouvelle mise à jour
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
-		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
-		    						 if (q == JOptionPane.YES_OPTION)
-		    						 {
-		    								runProcess(file.attr("href"));	   
-		    							 	new Update();
-		    						 }	  						
-		            			}
-		            		}
-	            		} catch (Exception e) {}
-	            	}
-	            	else if (System.getProperty("os.name").contains("Linux"))
-	            	{
-	            		try {
-		            		if (file.attr("href").contains("Shutter Encoder (Linux Version"))
-		            		{
-		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
-		            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
-		            			
-		            			//Vérification d'une nouvelle mise à jour
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
-		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
-		    						 if (q == JOptionPane.YES_OPTION)
-		    						 {
-		    								runProcess(file.attr("href"));	   
-		    							 	new Update();
-		    						 }	  						
-		            			}
-		            		}
-	            		} catch (Exception e) {}
-	            	}
-	            	else //Version PC
+			    	  			    	
+			    	if (System.getProperty("os.name").contains("Windows")) //Version PC
 	            	{
 	            		try {
 		            		if (file.attr("href").contains("Shutter Encoder (PC Version"))
@@ -287,7 +245,48 @@ public class Update {
 			            			}
 			            	}
 	            		} catch (Exception e) {}
-	            	}//End if
+	            	}			    	
+			    	else if (System.getProperty("os.name").contains("Mac")) //Version MAC
+	            	{
+	            		try {
+		            		if (file.attr("href").contains("Shutter Encoder (MAC Version"))
+		            		{
+		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
+		            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
+		            			
+		            			//Vérification d'une nouvelle mise à jour
+		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			{
+		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		    						 if (q == JOptionPane.YES_OPTION)
+		    						 {
+		    								runProcess(file.attr("href"));	   
+		    							 	new Update();
+		    						 }	  						
+		            			}
+		            		}
+	            		} catch (Exception e) {}
+	            	}
+	            	else //Version Linux
+	            	{
+	            		try {
+		            		if (file.attr("href").contains("Shutter Encoder (Linux Version"))
+		            		{
+		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
+		            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
+		            			
+		            			//Vérification d'une nouvelle mise à jour
+		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			{
+		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		    						 if (q == JOptionPane.YES_OPTION)
+		    						 {
+		    							 Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/en/#downloads"));
+		    						 }	  						
+		            			}
+		            		}
+	            		} catch (Exception e) {}
+	            	}
 	            }
 	        } catch (IOException ex) {
 	        }

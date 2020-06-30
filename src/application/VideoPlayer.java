@@ -93,6 +93,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.sun.jna.NativeLibrary;
+
 import library.FFMPEG;
 import library.FFPLAY;
 import library.FFPROBE;
@@ -104,6 +106,7 @@ import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 
 public class VideoPlayer {
@@ -111,7 +114,7 @@ public class VideoPlayer {
 	public static JFrame frame = new JFrame();
 	public static JDialog shadow = new JDialog();
 	JLabel title = new JLabel(Shutter.language.getProperty("frameLecteurVideo"));
-	ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
+	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private boolean isFullScreen = false;
 	
 	private JLabel quit;
@@ -199,6 +202,24 @@ public class VideoPlayer {
 	 * @wbp.parser.entryPoint
 	 */
 	public VideoPlayer() {  	
+		
+		//Récupération du dossier de VLC
+		String NATIVE_LIBRARY_SEARCH_PATH;
+		
+		if (System.getProperty("os.name").contains("Windows"))
+		{
+			NATIVE_LIBRARY_SEARCH_PATH = "Library/vlc/";			
+		}
+		else
+		{			
+			NATIVE_LIBRARY_SEARCH_PATH = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			NATIVE_LIBRARY_SEARCH_PATH = NATIVE_LIBRARY_SEARCH_PATH.substring(0,NATIVE_LIBRARY_SEARCH_PATH.length()-1);
+			NATIVE_LIBRARY_SEARCH_PATH = NATIVE_LIBRARY_SEARCH_PATH.substring(0,(int) (NATIVE_LIBRARY_SEARCH_PATH.lastIndexOf("/"))).replace("%20", " ")  + "/Library/vlc/lib";
+
+			uk.co.caprica.vlcj.binding.LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", NATIVE_LIBRARY_SEARCH_PATH.replace("lib", "plugins"), 1);
+		}
+		
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), NATIVE_LIBRARY_SEARCH_PATH);
   
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	
@@ -399,7 +420,7 @@ public class VideoPlayer {
 		        		
   		lblVideo = new JLabel();    
   		lblVideo.setVisible(false);
-		lblVideo.setFont(new Font("Montserrat", Font.PLAIN, 13));
+		lblVideo.setFont(new Font("Arial Unicode MS", Font.BOLD, 13));
 		lblVideo.setForeground(new Color(71, 163, 236));
 		lblVideo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVideo.setBounds(btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6, panelHaut.getSize().height + 12, frame.getSize().width - (btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6 + btnPreview.getSize().width + 12), 16);        		
@@ -1051,13 +1072,13 @@ public class VideoPlayer {
                    
                 
                 if (Subtitles.txtSubtitles.getText().contains("<i>") && Subtitles.txtSubtitles.getText().contains("<b>"))
-                	g2.setFont(new Font("Arial", Font.ITALIC | Font.BOLD, (int) Math.floor(height/16))); 
+                	g2.setFont(new Font("Arial Unicode MS", Font.ITALIC | Font.BOLD, (int) Math.floor(height/16))); 
                 else if (Subtitles.txtSubtitles.getText().contains("<i>"))
-                	g2.setFont(new Font("Arial", Font.ITALIC, (int) Math.floor(height/16))); 
+                	g2.setFont(new Font("Arial Unicode MS", Font.ITALIC, (int) Math.floor(height/16))); 
                 else if (Subtitles.txtSubtitles.getText().contains("<b>"))
-                	g2.setFont(new Font("Arial", Font.BOLD, (int) Math.floor(height/16))); 
+                	g2.setFont(new Font("Arial Unicode MS", Font.BOLD, (int) Math.floor(height/16))); 
                 else
-                	g2.setFont(new Font("Arial", Font.PLAIN, (int) Math.floor(height/16))); 
+                	g2.setFont(new Font("Arial Unicode MS", Font.PLAIN, (int) Math.floor(height/16))); 
                 	
                 FontMetrics metrics = g.getFontMetrics(g2.getFont());
                 
@@ -1386,7 +1407,7 @@ public class VideoPlayer {
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						
 						mediaPlayerComponentLeft.getMediaPlayer().playMedia(videoPath);				   			
-						
+												
 						do {
 							try {
 								Thread.sleep(100);
@@ -2014,7 +2035,7 @@ public class VideoPlayer {
 		});
 	
 		bottomImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
@@ -2805,7 +2826,7 @@ public class VideoPlayer {
 		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 15);
 		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 15); 		
 
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);
 		
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
@@ -3037,8 +3058,6 @@ public class VideoPlayer {
 				
 		if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 			mediaPlayerComponentLeft.getMediaPlayer().play();			
-
-		System.out.println("ok");
 	}
 	
 	private void updateVideoSurfaceRight(){

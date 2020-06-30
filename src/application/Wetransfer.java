@@ -209,8 +209,8 @@ public class Wetransfer {
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
@@ -267,7 +267,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblYourMail);		
 
 		textFrom.setBounds(101, lblYourMail.getY() - 1, 154, 21);
-		textFrom.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textFrom.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		textFrom.setColumns(10);		
 		frame.getContentPane().add(textFrom);
 		
@@ -296,7 +296,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblRecipient);		
 				
 		textTo.setBounds(textFrom.getX(), lblRecipient.getY() - 1, 154, 21);
-		textTo.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textTo.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		textTo.setColumns(10);
 		frame.getContentPane().add(textTo);		
 		
@@ -307,7 +307,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblMessage);
 		
 		textMessage.setBounds(textTo.getX(), lblMessage.getY() - 1, 154, 83);
-		textMessage.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textMessage.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		textMessage.setLineWrap(true);
 		
 		JScrollPane scrollBar = new JScrollPane();
@@ -356,7 +356,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblUser);		
 		
 		textUser.setBounds(textFrom.getX(), lblUser.getY() - 1, 154, 21);
-		textUser.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textUser.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		if (casePlus.isSelected())
 			textUser.setEnabled(true);
 		else
@@ -375,7 +375,7 @@ public class Wetransfer {
 		
 		lblMotDePasse.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		
-		textPassword.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		textPassword.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		if (casePlus.isSelected())
 			textPassword.setEnabled(true);
 		else
@@ -697,7 +697,7 @@ public class Wetransfer {
 				{					
 					Shutter.sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "****";
+					final String password = "***ENCRYPTED***";
 	
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");

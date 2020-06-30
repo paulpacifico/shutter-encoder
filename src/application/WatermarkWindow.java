@@ -410,8 +410,8 @@ public class WatermarkWindow {
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		

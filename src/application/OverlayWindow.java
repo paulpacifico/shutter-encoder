@@ -284,8 +284,8 @@ public class OverlayWindow {
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
@@ -1133,7 +1133,7 @@ public class OverlayWindow {
 		text.setLocation(caseShowText.getLocation().x + caseShowText.getWidth() + 7, caseShowText.getLocation().y + 1);
 		text.setSize(frame.getWidth() - text.getX() - 13, 21);
 		text.setHorizontalAlignment(SwingConstants.LEFT);
-		text.setFont(new Font("Arial", Font.PLAIN, 12));
+		text.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		frame.getContentPane().add(text);
 
 		text.addKeyListener(new KeyListener(){

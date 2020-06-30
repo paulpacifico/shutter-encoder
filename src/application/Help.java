@@ -160,10 +160,7 @@ public class Help {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					if (Shutter.getLanguage.equals("Français"))
-						Desktop.getDesktop().browse(new URI("http://www.shutterencoder.com/fr/#videoYT"));
-					else
-						Desktop.getDesktop().browse(new URI("http://www.shutterencoder.com/en/#videoYT"));
+					Desktop.getDesktop().browse(new URI("https://www.youtube.com/results?search_query=Shutter+Encoder"));
 				}catch(Exception e){}				
 			}
 					
@@ -175,9 +172,9 @@ public class Help {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					if (Shutter.getLanguage.equals("Français"))
-						Desktop.getDesktop().browse(new URI("http://www.shutterencoder.com/fr/faq.html"));
+						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/fr/faq.html"));
 					else
-						Desktop.getDesktop().browse(new URI("http://www.shutterencoder.com/en/faq.html"));
+						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/en/faq.html"));
 				}catch(Exception e){}				
 			}
 					

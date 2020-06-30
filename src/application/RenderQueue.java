@@ -84,7 +84,7 @@ import javax.swing.ListSelectionModel;
 	 */
 	private static JPanel panelHaut;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameFileDeRendus"));
-	ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
+	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel quit;
 	private JLabel reduce;
 	private JLabel topImage;
@@ -249,10 +249,10 @@ import javax.swing.ListSelectionModel;
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setBounds(frame.getSize().width - 35,0,35, 15);
 				
-		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
+		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 		Image scaledImage = image.getImage().getScaledInstance(panelHaut.getSize().width * 10, panelHaut.getSize().height, Image.SCALE_SMOOTH);
-		ImageIcon fondNeutre = new ImageIcon(scaledImage);
-		bottomImage = new JLabel(fondNeutre);
+		ImageIcon header = new ImageIcon(scaledImage);
+		bottomImage = new JLabel(header);
 		bottomImage.setBounds(0 ,0, frame.getSize().width * 10, 51);
 			
 		title.setHorizontalAlignment(JLabel.CENTER);
@@ -261,7 +261,7 @@ import javax.swing.ListSelectionModel;
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
@@ -486,7 +486,7 @@ import javax.swing.ListSelectionModel;
 	private void table() {
 		
 		JLabel columnFile = new JLabel(Shutter.language.getProperty("columnFile"));
-		columnFile.setFont(new Font("Arial", Font.PLAIN, 11));
+		columnFile.setFont(new Font("Arial Unicode MS", Font.PLAIN, 11));
 		
 		tableRow = new DefaultTableModel(new Object[][] {}, new String[] {Shutter.language.getProperty("columnFile"), Shutter.language.getProperty("columnCommand"), Shutter.language.getProperty("destination")});
 		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
@@ -562,7 +562,7 @@ import javax.swing.ListSelectionModel;
 		
 		zebra = new JPanel()
 		{
-            Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra.jpg")).getImage();
+            Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra2.jpg")).getImage();
 	         {
 	            setOpaque(false);
 	         }
@@ -947,7 +947,7 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 	    Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    setHorizontalAlignment(JLabel.CENTER);
-	    setFont(new Font("Montserrat", Font.PLAIN, 12));
+	    setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 	    setBackground(new Color(50,50,50));
 	    setForeground(Color.BLACK);
 	      

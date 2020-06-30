@@ -59,10 +59,11 @@ public class BlackMagicInput {
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
 		frame.setAlwaysOnTop(true);
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			frame.setSize(453, 194);
-		else
+		if (System.getProperty("os.name").contains("Windows"))
 			frame.setSize(473, 214);
+		else
+			frame.setSize(453, 194);
+
 		frame.setTitle(Shutter.language.getProperty("frameBlackMagicInput"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -175,12 +176,13 @@ public class BlackMagicInput {
 		lblDestination.setEditable(false);
 	  	lblDestination.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination.setForeground(new Color(71,163,236));
-		lblDestination.setFont(new Font("Montserrat", Font.PLAIN, 13));
+		lblDestination.setFont(new Font("Arial Unicode MS", Font.BOLD, 13));
 		lblDestination.setBackground(new Color(50,50,50));
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			lblDestination.setText(System.getProperty("user.home") + "/Desktop");
-		else
+		if (System.getProperty("os.name").contains("Windows"))
 			lblDestination.setText(System.getProperty("user.home") + "\\Desktop");
+		else
+			lblDestination.setText(System.getProperty("user.home") + "/Desktop");
+			
 		lblDestination.setBounds(198, 37, 238, 22);
 		frame.getContentPane().add(lblDestination);
 		

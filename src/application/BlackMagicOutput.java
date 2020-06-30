@@ -68,11 +68,11 @@ public class BlackMagicOutput {
 		frame.setResizable(false);
 		frame.setAlwaysOnTop(true);
 		
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			frame.setSize(488, 156);
+		if (System.getProperty("os.name").contains("Windows"))
+			frame.setSize(498, 166);
 		else
-			frame.setSize(498, 166);	
-		
+			frame.setSize(488, 156);
+
 		frame.setTitle(Shutter.language.getProperty("frameBlackMagicOutput") + " " + DECKLINK.getBlackMagic);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(new Color(50,50,50));

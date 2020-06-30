@@ -151,6 +151,7 @@ public class Renamer {
 		
 		txtRemplacer = new JTextField();
 		txtRemplacer.setColumns(10);
+		txtRemplacer.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		txtRemplacer.setBounds(84, 77, 140, 21);
 		frame.getContentPane().add(txtRemplacer);;		
 				
@@ -161,12 +162,13 @@ public class Renamer {
 		
 		txtPar = new JTextField();
 		txtPar.setColumns(10);
+		txtPar.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		txtPar.setBounds(261, 77, txtRemplacer.getWidth(), 21);
 		frame.getContentPane().add(txtPar);
 		
 		lblExemple = new JLabel(Shutter.language.getProperty("lblExemple") + " " + fichier + ext);
 		lblExemple.setForeground(new Color(71,163,236));
-		lblExemple.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblExemple.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		lblExemple.setBounds(12, 104, 481, 14);
 		frame.getContentPane().add(lblExemple);
 						
@@ -195,6 +197,7 @@ public class Renamer {
 		
 		txtAjouterAvant = new JTextField();
 		txtAjouterAvant.setEnabled(false);
+		txtAjouterAvant.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		txtAjouterAvant.setColumns(10);
 		txtAjouterAvant.setBounds(390, 10, 108, 21);
 		frame.getContentPane().add(txtAjouterAvant);
@@ -219,6 +222,7 @@ public class Renamer {
 		
 		txtAjouterApres = new JTextField();
 		txtAjouterApres.setEnabled(false);
+		txtAjouterApres.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		txtAjouterApres.setColumns(10);
 		txtAjouterApres.setBounds(390, 32, 108, 21);
 		frame.getContentPane().add(txtAjouterApres);

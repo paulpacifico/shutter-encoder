@@ -225,10 +225,10 @@ import javax.swing.JScrollPane;
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setBounds(frame.getSize().width - 35,0,35, 15);
 				
-		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
+		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 		Image scaledImage = image.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_SMOOTH);
-		ImageIcon fondNeutre = new ImageIcon(scaledImage);
-		bottomImage = new JLabel(fondNeutre);
+		ImageIcon header = new ImageIcon(scaledImage);
+		bottomImage = new JLabel(header);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 51);
 			
 		JLabel title = new JLabel(Shutter.language.getProperty("frameDetectionCoupe"));
@@ -238,7 +238,7 @@ import javax.swing.JScrollPane;
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		

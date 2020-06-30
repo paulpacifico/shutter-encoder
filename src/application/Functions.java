@@ -152,7 +152,7 @@ public class Functions {
 		lblDrop.setBounds(10, 136, 313, 45);
 		lblDrop.setVisible(false);
 		frame.getContentPane().add(lblDrop);
-						
+		
 		listeDeFonctions = new JList<String>(liste)
 		{
 			 Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra.jpg")).getImage();
@@ -210,7 +210,6 @@ public class Functions {
 			}
 			
 		});
-		
 		
 		update.addActionListener(new ActionListener(){
 
@@ -532,8 +531,8 @@ public class Functions {
 		panelHaut.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon fondNeutre = new ImageIcon(getClass().getClassLoader().getResource("contents/FondNeutre.png"));
-		ImageIcon imageIcon = new ImageIcon(fondNeutre.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
@@ -672,7 +671,7 @@ class FonctionsRenderer extends DefaultListCellRenderer {
 	      ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png"));
 	      ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(15, 15 , Image.SCALE_DEFAULT));		
 	      setIcon(icon);
-	      setFont(new Font("Arial", Font.PLAIN, 13));
+	      setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 	      setForeground(Color.BLACK);
 	      
 	      if (isSelected)
@@ -683,7 +682,7 @@ class FonctionsRenderer extends DefaultListCellRenderer {
 	      }
 	      else
 	      {
-	    	  setBorder(new LineBorder(Color.LIGHT_GRAY));
+	    	  setBorder(new LineBorder(new Color(204,204,204,0)));
 	    	  setOpaque(false);
 	      }
       return this;

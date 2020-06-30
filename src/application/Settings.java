@@ -133,10 +133,12 @@ public class Settings {
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
 		frame.setModal(true);
+		
 		if (System.getProperty("os.name").contains("Mac"))
-			frame.setSize(315, 485);
+			frame.setSize(315, 490);
 		else
-			frame.setSize(325, 505);
+			frame.setSize(325, 510);
+
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(new Color(50,50,50));				
@@ -212,6 +214,7 @@ public class Settings {
 		else
 			txtExtension.setEnabled(false);
 		txtExtension.setColumns(10);
+		txtExtension.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExtension);
 		
@@ -267,7 +270,7 @@ public class Settings {
 		else
 			lblDestination1.setForeground(new Color(71, 163, 236));
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		lblDestination1.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblDestination1.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		lblDestination1.setBackground(new Color(50, 50, 50));
 		if (lblDestination1.getText() == "")
 		{
@@ -386,7 +389,7 @@ public class Settings {
 		else
 			lblDestination2.setForeground(new Color(71, 163, 236));
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		lblDestination2.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblDestination2.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		lblDestination2.setBackground(new Color(50, 50, 50));
 		if (lblDestination2.getText() == "")
 		{
@@ -505,7 +508,7 @@ public class Settings {
 		else
 			lblDestination3.setForeground(new Color(71, 163, 236));
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		lblDestination3.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblDestination3.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 		lblDestination3.setBackground(new Color(50, 50, 50));
 		if (lblDestination3.getText() == "")
 		{
