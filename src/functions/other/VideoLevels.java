@@ -135,7 +135,8 @@ public class VideoLevels extends Shutter {
 					while(FFMPEG.runProcess.isAlive());
 					
 					//On Affiche la détection
-					showDetection(fichier);				
+					if (cancelled == false)
+						showDetection(fichier);				
 					
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 					{

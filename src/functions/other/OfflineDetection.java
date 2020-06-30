@@ -34,7 +34,7 @@ import application.Utils;
 import library.FFMPEG;
 import library.FFPROBE;
 
-public class BlackDetection extends Shutter {
+public class OfflineDetection extends Shutter {
 	
 	
 	private static int complete;
@@ -118,12 +118,19 @@ public class BlackDetection extends Shutter {
 					//InOut		
 					FFMPEG.fonctionInOut();
 					
+					//Stats_file
+					String stats_file;
+					if (System.getProperty("os.name").contains("Windows"))
+						stats_file = "stats_file";
+					else		    		
+						stats_file = Shutter.dirTemp + "stats_file";
+					
 					//Envoi de la commande
 					String cmd;
-					if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-						cmd =  " -an -vf blackdetect=d=0.0:pix_th=.1 -f null -";					
+					if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))						
+						cmd =  " -i " + '"' + Shutter.dirTemp + "offline.png" + '"' + " -lavfi " + '"' + "[0:v]scale=1920x1080[source];[1:v]scale=1920x1080[reference];[source][reference]psnr=" + stats_file + '"' + " -an -f null -";					
 					else
-						cmd =  " -an -vf blackdetect=d=0.0:pix_th=.1 -f null -" + '"';	
+						cmd =  " -i " + '"' + Shutter.dirTemp + "offline.png" + '"' + " -lavfi " + '"' + "[0:v]scale=1920x1080[source];[1:v]scale=1920x1080[reference];[source][reference]psnr=" + stats_file + '"' + " -an -f null -" + '"';	
 					
 					FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);		
 					
@@ -178,9 +185,9 @@ public class BlackDetection extends Shutter {
 	}
 	
 	protected static void showDetection(String fichier) {
-		if (FFMPEG.blackFrame.length() > 0 && Shutter.cancelled == false && FFMPEG.error == false)
+		if (FFMPEG.mediaOfflineFrame.length() > 0 && Shutter.cancelled == false && FFMPEG.error == false)
 		{
-			 JOptionPane.showMessageDialog(frame, FFMPEG.blackFrame, Shutter.language.getProperty("functionBlackDetection"), JOptionPane.ERROR_MESSAGE);
+			 JOptionPane.showMessageDialog(frame, FFMPEG.mediaOfflineFrame, Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.ERROR_MESSAGE);
 			 int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("saveResult"), Shutter.language.getProperty("analyzeEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 			 
 			 if (q == JOptionPane.YES_OPTION)
@@ -195,7 +202,7 @@ public class BlackDetection extends Shutter {
 							PrintWriter writer = new PrintWriter(dialog.getDirectory() + dialog.getFile().replace(".txt", "") + ".txt", "UTF-8");
 							writer.println(Shutter.language.getProperty("analyzeOf") + " " + fichier);
 							writer.println("");
-							writer.println(FFMPEG.blackFrame);
+							writer.println(FFMPEG.mediaOfflineFrame);
 							writer.close();
 						} catch (FileNotFoundException | UnsupportedEncodingException e) {}
 
@@ -208,7 +215,7 @@ public class BlackDetection extends Shutter {
 			 }
 		}
 		else
-			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionBlackDetection"), JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	private static boolean errorAnalyse (String fichier)
@@ -243,14 +250,13 @@ public class BlackDetection extends Shutter {
 		}
 		
 		//Envoi par e-mail
-		Utils.sendMail(fichier);
-		
+		Utils.sendMail(fichier);		
 		
 		//Scan
 		if (Shutter.scanIsRunning)
 		{
 			Utils.moveScannedFiles(fichier);
-			BlackDetection.main();
+			OfflineDetection.main();
 			return true;
 		}
 		return false;
