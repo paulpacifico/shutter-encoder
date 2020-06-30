@@ -1,5 +1,6 @@
 # Shutter Encoder v13.9
 
+![logo](https://shutterencoder.com/images/SocialBanner.png)
 
 Download required [dependencies](../master/Library/sources.txt) into "Library" folder.
 
