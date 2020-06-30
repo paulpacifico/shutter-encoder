@@ -1,7 +1,5 @@
 # Shutter Encoder v13.9
 
-![logo](https://shutterencoder.com/images/SocialBanner.png)
-
 Download required [dependencies](../master/Library/sources.txt) into "Library" folder.
 
 Use [MANIFEST.MF](../master/MANIFEST.MF) if you make your own [.jar](../master/Shutter%20Encoder.jar) file.
