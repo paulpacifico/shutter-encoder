@@ -1,5 +1,7 @@
-<img align=left src="icon.png" width="32">
-<h1>Shutter Encoder v13.9</h1>
+<p>
+  <img align=left src="icon.png" width="64">
+  <h1>Shutter Encoder v13.9</h1>
+</p>
 
 ![logo](/SocialBanner.png)
 
