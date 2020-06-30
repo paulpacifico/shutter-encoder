@@ -1,4 +1,4 @@
-# Shutter Encoder
+# Shutter Encoder Version 13.9
 
 Download required [dependencies](../master/Library/sources.txt) into "Library" folder.
 
