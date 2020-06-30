@@ -27,6 +27,7 @@ import java.awt.Taskbar;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -69,9 +70,11 @@ public static Thread runProcess = new Thread();
 public static Process process;
 public static String analyseLufs;
 public static String analyseVideo;
+public static Float mseSensibility = 800f;
 public static float newVolume;
 public static StringBuilder shortTermValues;
 public static StringBuilder blackFrame;
+public static StringBuilder mediaOfflineFrame;
 public static String inPoint = "";
 public static String outPoint = "";
 public static String postInPoint = "";	
@@ -244,8 +247,9 @@ private static StringBuilder getAll;
 																			
 						}//While							
 						process.waitFor();
-											
-						postAnalyse();						
+							
+						if (cancelled == false)
+							postAnalyse();						
 					   					     																		
 						} catch (IOException | InterruptedException e) {
 							error = true;
@@ -1152,6 +1156,74 @@ private static StringBuilder getAll;
 	    	 				blackFrame.append(tcBlackFrame + System.lineSeparator());
 	    	 			}
 	    	 		}
+	    	 	}
+	     }
+	     
+	     //Détection de media offline
+	     if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionOfflineDetection")))
+	     {
+	    	 mediaOfflineFrame = new StringBuilder();
+	    	 	
+				//Stats_file
+				File stats_file;
+				if (System.getProperty("os.name").contains("Windows"))
+					stats_file = new File("stats_file");
+				else		    		
+					stats_file = new File(Shutter.dirTemp + "stats_file");
+	    	 	
+	    	 	if (stats_file.exists())	    	 
+	    	 	{	    	 		
+	    			try {
+	    				BufferedReader reader = new BufferedReader(new FileReader(stats_file.toString()));
+	    				
+	    				boolean offline = false; 
+    					Float mseValue = 0f;
+    					
+	    				String line = reader.readLine();
+	    				while (line != null) {
+	    						    					
+	    					if (line.contains("mse_avg"))
+			    	 		{
+			    	 			String s[] = line.split(":");
+			    	 			String m[] = s[2].split(" ");
+			    	 			Float mse = Float.parseFloat(m[0]);	    	 		
+			    	 		
+			    	 			String f[] = s[1].split(" ");
+			    	 			String frame = f[0]; 
+			    	 			
+		    	 				int frameNumber = (Integer.parseInt(frame) - 2);
+		    	 				
+		    	 				if (mse <= mseSensibility && offline == false)
+		    	 				{			
+		    	 					//Pemet de vérifier sur 2 images pour ne pas confondre avec un fondu
+		    	 					if ((float) mseValue == (float) mse)
+		    	 					{
+		    	 						offline = true;
+		    	 					
+			    	 					NumberFormat formatter = new DecimalFormat("00");
+						    			String tcOfflineFrame = (formatter.format(Math.floor(frameNumber / FFPROBE.currentFPS) / 3600)) 
+						    					+ ":" + (formatter.format(Math.floor((frameNumber / FFPROBE.currentFPS) / 60) % 60))
+						    					+ ":" + (formatter.format(Math.floor(frameNumber / FFPROBE.currentFPS) % 60)
+						    					+ ":" + (formatter.format(frameNumber % FFPROBE.currentFPS))); 	
+					    			
+					    				mediaOfflineFrame.append(tcOfflineFrame + System.lineSeparator());
+		    	 					}
+		    	 					
+		    	 					mseValue = mse;
+		    	 				}
+		    	 				else if (mse > mseSensibility)
+		    	 				{
+		    	 					offline = false;
+		    	 					mseValue = 0f;
+		    	 				}
+			    	 		}
+	    				
+	    					line = reader.readLine();
+	    				}
+	    				reader.close();
+	    			} catch (IOException e) {}
+	    			
+	    			stats_file.delete();
 	    	 	}
 	     }
 	}
