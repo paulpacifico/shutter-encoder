@@ -348,6 +348,10 @@ public class FLAC extends Shutter {
 		//Quantization
 		audio += "-acodec flac -compression_level " + comboFilter.getSelectedItem().toString() + " ";							
 		
+		//Frequence d'échantillonnage
+		if (caseSampleRate.isSelected())
+			audio += "-ar " + lbl48k.getText() + " ";
+		
 		return audio;
 	}
 	

@@ -347,14 +347,16 @@ public class AIFF extends Shutter {
 			if (caseConvertAudioFramerate.isSelected())     
 				audio += audioSpeed.replace(",", " -filter_complex ") + " ";
 		}
-			
-		//Quantization
+
 		//Quantization
 		if (comboFilter.getSelectedItem().toString().contains("Float"))
 			audio += "-acodec pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "be ";	
 		else
 			audio += "-acodec pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be ";	
-						
+					
+		//Frequence d'échantillonnage
+		if (caseSampleRate.isSelected())
+			audio += "-ar " + lbl48k.getText() + " ";		
 		
 		return audio;
 	}

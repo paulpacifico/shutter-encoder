@@ -351,6 +351,10 @@ public class WAV extends Shutter {
 		else
 			audio += "-acodec pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "le ";							
 		
+		//Frequence d'échantillonnage
+		if (caseSampleRate.isSelected())
+			audio += "-ar " + lbl48k.getText() + " ";
+		
 		return audio;
 	}
 	
