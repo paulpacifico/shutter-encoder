@@ -466,12 +466,16 @@ public class XAVC extends Shutter {
 			&& comboAudio7.getSelectedIndex() == 8
 			&& comboAudio8.getSelectedIndex() == 8)
 		{
-			if (caseLogo.isSelected() || caseSubtitles.isSelected())
+			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
 			else if (filterComplex != "")
 				mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
 			else
 				mapping += " -map v" + audio;
+			
+			//On map les sous-titres que l'on intègre        
+			if (caseSubtitles.isSelected() && subtitlesBurn == false)
+				mapping += " -map 1:s -c:s mov_text";
 			
 			return mapping;
 		}
@@ -494,7 +498,7 @@ public class XAVC extends Shutter {
 				{ 
 					if (FFPROBE.channels == 1) //Si le son est stereo alors on split
 					{
-						if (caseLogo.isSelected() || caseSubtitles.isSelected())
+						if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 							mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
 						else if (filterComplex != "")
 							mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out];[0:a]channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
@@ -525,9 +529,9 @@ public class XAVC extends Shutter {
 				else //On ajoute une piste silencieuse
 				{
 					silentTrack = " -f lavfi -i anullsrc=r=48000:cl=mono";
-					if (caseLogo.isSelected() && caseSubtitles.isSelected())
+					if (caseLogo.isSelected() && (caseSubtitles.isSelected() && subtitlesBurn))
 						mapping += " -map 3";	
-					else if (caseLogo.isSelected() || caseSubtitles.isSelected())
+					else if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 						mapping += " -map 2";
 					else
 						mapping += " -map 1";	
@@ -537,13 +541,17 @@ public class XAVC extends Shutter {
 		
 		if (FFPROBE.channels != 1) //On ajoute le filterComplex lorsque il n'y a pas de split des pistes son	
 		{
-			if (caseLogo.isSelected() || caseSubtitles.isSelected())
+			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 				mapping = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + mapping + audio;
 			else if (filterComplex != "")
 				mapping = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + mapping + audio;
 			else
 				mapping = " -map v" + mapping + audio;	
-		}		
+		}	
+
+		//On map les sous-titres que l'on intègre        
+		if (caseSubtitles.isSelected() && subtitlesBurn == false)
+			mapping += " -map 1:s -c:s mov_text";		
 		
 		return mapping;
 	}
@@ -928,7 +936,7 @@ public class XAVC extends Shutter {
 	}
 	
 	protected static String setSubtitles() {
-    	if (caseSubtitles.isSelected())
+    	if (caseSubtitles.isSelected() && subtitlesBurn)
     	{    		
     		String background = "" ;
 			if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
@@ -962,12 +970,16 @@ public class XAVC extends Shutter {
 				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';		
 			 
 		}
+		else if (caseSubtitles.isSelected() && subtitlesBurn == false)
+    	{
+    		return FFMPEG.inPoint + " -i " + '"' +  subtitlesFile.toString() + '"';
+    	}
     	
     	return "";
 	}
 	
 	protected static String setOverlay(String filterComplex) {
-    	if (caseSubtitles.isSelected())
+    	if (caseSubtitles.isSelected() && subtitlesBurn)
     	{    		
         	String i[] = FFPROBE.imageResolution.split("x");
         	int ImageWidth = Integer.parseInt(i[0]);

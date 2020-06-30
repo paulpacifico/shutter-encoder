@@ -412,7 +412,7 @@ public class Xvid extends Shutter {
         if (filterComplex != "")
         {	   	   
         	//Si une des cases est sélectionnée alors il y a déjà [0:v]
-        	if (caseLogo.isSelected() || caseSubtitles.isSelected())
+        	if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
         		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
         	else
         		filterComplex = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]";
@@ -446,6 +446,10 @@ public class Xvid extends Shutter {
         	else
         		filterComplex = " -map v" + audio;
         }
+		
+		//On map les sous-titres que l'on intègre        
+        if (caseSubtitles.isSelected() && subtitlesBurn == false)
+        	filterComplex += " -map 1:s -c:s mov_text";
         
         return filterComplex;
 	}
@@ -966,7 +970,7 @@ public class Xvid extends Shutter {
 	}	
 	
 	protected static String setSubtitles() {
-    	if (caseSubtitles.isSelected())
+    	if (caseSubtitles.isSelected() && subtitlesBurn)
     	{    		
     		String background = "" ;
 			if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
@@ -1003,12 +1007,16 @@ public class Xvid extends Shutter {
 				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
 			}
 		}
+		else if (caseSubtitles.isSelected() && subtitlesBurn == false)
+    	{
+    		return FFMPEG.inPoint + " -i " + '"' +  subtitlesFile.toString() + '"';
+    	}
     	
     	return "";
 	}
 	
 	protected static String setOverlay(String filterComplex) {
-    	if (caseSubtitles.isSelected())
+    	if (caseSubtitles.isSelected() && subtitlesBurn)
     	{    		
         	String i[] = FFPROBE.imageResolution.split("x");
 			
