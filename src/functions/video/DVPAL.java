@@ -20,14 +20,9 @@
 package functions.video;
 
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-
 import application.Ftp;
 import application.VideoPlayer;
 import application.OverlayWindow;
@@ -121,15 +116,6 @@ public class DVPAL extends Shutter {
 					if (analyse(file) == false)
 						continue;		
 					
-					String concat = "";
-					//Traitement de la file en Bout à bout
-					if (Settings.btnSetBab.isSelected())
-					{
-						file = setBAB(fichier, extension);	
-						if (caseActiverSequence.isSelected() == false)
-						concat = " -safe 0 -f concat";
-					}
-					
 					//InOut
 					FFMPEG.fonctionInOut();					
 					
@@ -162,7 +148,12 @@ public class DVPAL extends Shutter {
 					String output = '"' + fileOut.toString() + '"';
 					if (caseVisualiser.isSelected())
 						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
-									
+								
+					//Mode concat
+					String concat = FFMPEG.setConcat(file, sortie);					
+					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
+								
 					//Envoi de la commande
 					String cmd = " -aspect " + comboFilter.getSelectedItem().toString().replace("/", ":") + filterComplex + " -c:a pcm_s16le -map v:0 -map a? -ar 48000 -s 720x576 -vcodec dvvideo -b:v 25000 -r 25 -y ";
 					
@@ -174,7 +165,7 @@ public class DVPAL extends Shutter {
 					while(FFMPEG.runProcess.isAlive());
 
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
-					|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected())
+					|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected() || FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 					{
 						if (actionsDeFin(fichier, fileOut, sortie))
 							break;
@@ -193,95 +184,6 @@ public class DVPAL extends Shutter {
 		thread.start();
 		
     }//main
-
-	protected static File setBAB(String fichier, String extension) {
-		
-		String sortie =  new File(liste.getElementAt(0)).getParent();
-		
-		if (caseChangeFolder1.isSelected())
-			sortie = lblDestination1.getText();
-			
-		File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 
-		
-		try {			
-			int dureeTotale = 0;
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
-			PrintWriter writer = new PrintWriter(listeBAB, "UTF-8");      
-			
-			for (int i = 0 ; i < liste.getSize() ; i++)
-			{				
-				//Scanning
-				if (Settings.btnWaitFileComplete.isSelected())
-	            {
-					File file = new File(liste.getElementAt(i));
-					
-					progressBar1.setIndeterminate(true);
-					lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-					lblEncodageEnCours.setText(file.getName());
-					tempsRestant.setVisible(false);
-					btnStart.setEnabled(false);
-					btnAnnuler.setEnabled(true);
-					comboFonctions.setEnabled(false);
-					
-					long fileSize = 0;
-					do {
-						fileSize = file.length();
-						try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
-					} while (fileSize != file.length() && cancelled == false);
-
-					// pour Windows
-					while (file.renameTo(file) == false && cancelled == false) {
-						if (file.exists() == false) // Dans le cas où on annule la copie en cours
-							break;
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {
-						}
-					}
-					
-					if (cancelled)
-					{
-						progressBar1.setIndeterminate(false);
-						lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
-						btnStart.setEnabled(true);
-						btnAnnuler.setEnabled(false);
-						comboFonctions.setEnabled(true);
-						break;
-					}
-					
-					progressBar1.setIndeterminate(false);
-					btnAnnuler.setEnabled(false);
-	            }
-				//Scanning
-				
-				FFPROBE.Data(liste.getElementAt(i));
-				do {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e1) {}
-				} while (FFPROBE.isRunning == true);
-				dureeTotale += FFPROBE.dureeTotale;
-				
-				writer.println("file '" + liste.getElementAt(i) + "'");
-			}				
-			writer.close();
-						
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			progressBar1.setMaximum((int) (dureeTotale / 1000));
-			FFPROBE.dureeTotale = progressBar1.getMaximum();
-			FFMPEG.dureeTotale = progressBar1.getMaximum();
-			
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			FFMPEG.error  = true;
-			if (listeBAB.exists())
-				listeBAB.delete();
-		}//End Try
-		
-		return listeBAB;
-	}
 
 	protected static String setTimecode(String fichier) {
 		
@@ -387,8 +289,8 @@ public class DVPAL extends Shutter {
 			} catch (Exception e) {}
 		}
 		
-		//Traitement de la file en Bout à bout
-		if (Settings.btnSetBab.isSelected())
+		//Mode concat
+		if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 		{		
 			final String extension =  fichier.substring(fichier.lastIndexOf("."));
 			File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 			

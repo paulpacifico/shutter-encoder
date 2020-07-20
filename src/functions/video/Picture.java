@@ -172,6 +172,9 @@ public class Picture extends Shutter {
 					//LUTs
 					filter = setLUT(filter);
 					
+					//Colormatrix
+					filter = setColormatrix(filter);	
+					
 					//Color
 					filter = setColor(filter);
 					
@@ -580,6 +583,20 @@ public class Picture extends Shutter {
 			else
 				filterComplex = "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 		}
+		return filterComplex;
+	}
+	
+	protected static String setColormatrix(String filterComplex) {
+		if (caseColormatrix.isSelected())
+		{
+			if (filterComplex != "") filterComplex += ",";
+			
+			if (comboInColormatrix.getSelectedItem().equals("HDR"))
+				filterComplex += "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p";	
+			else
+				filterComplex += "colormatrix=" + comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+		}
+		
 		return filterComplex;
 	}
 	

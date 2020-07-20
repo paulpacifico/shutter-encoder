@@ -30,6 +30,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
 
 import application.Ftp;
 import application.VideoPlayer;
@@ -45,10 +46,7 @@ import library.FFMPEG;
 import library.FFPROBE;
 
 public class DVD extends Shutter {
-	
-	
-	
-	
+		
 	private static int complete;
 	public static boolean multiplesPass;
 	
@@ -179,17 +177,25 @@ public class DVD extends Shutter {
 					
 					//Overlay
 					filterComplex = setOverlay(filterComplex);
-	            			            
+	            			  
+					//Fade-in Fade-out
+					filterComplex = setFade(filterComplex);
+					
 					//Audio
 					String audio = setAudio(filterComplex);	
-					
+										
 	            	//filterComplex
 					filterComplex = setFilterComplex(filterComplex, audio);	
 	            			            							
 					String output = '"' + sortieFichier + '"';										
 					/*if (caseVisualiser.isSelected())
 						output = "-f tee " + '"' + sortieFichier + "|[f=dvd]pipe:play" + '"';*/
-										
+						
+					//Mode concat
+					String concat = FFMPEG.setConcat(file, sortie);					
+					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
+						
 					//Si le fichier existe
 					File fileOut = new File(sortieFichier);
 					if(fileOut.exists())
@@ -207,7 +213,7 @@ public class DVD extends Shutter {
 									
 					//Envoi de la commande
 					String cmd = pass + " " + filterComplex + " -aspect 16:9 -target pal-dvd -b:v " + bitrate + "k -f dvd" + interlace + flags + " -y ";
-					FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);			
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);			
 				
 					//Attente de la fin de FFMPEG
 					do
@@ -215,7 +221,7 @@ public class DVD extends Shutter {
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (FFMPEG.cancelled == false && pass != "")
-						FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 					
 					//Attente de la fin de FFMPEG
 					do
@@ -477,22 +483,108 @@ public class DVD extends Shutter {
 	}
 	
 	protected static String setAudio(String filterComplex) {
-		if (debitAudio.getSelectedItem().toString().equals("0") || comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
+		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
+		{
+    		String mapping = "";
+    		if (comboAudio1.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
+			if (comboAudio2.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
+			if (comboAudio3.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
+			if (comboAudio4.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
+			if (comboAudio5.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
+			if (comboAudio6.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
+			if (comboAudio7.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
+			if (comboAudio8.getSelectedIndex() != 8)
+				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+			
+			return " -c:a copy" + mapping;
+		}
+		else if (debitAudio.getSelectedItem().toString().equals("0") || comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
 			return " -an";
 		else
 		{
 			String audio = "";
 			String audioCodec = "ac3";
-			String newAudio = "";	        
-	        if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))))     
+			
+			String newAudio = "";
+			
+			//Fade-in
+	    	if (caseAudioFadeIn.isSelected())
+	    	{ 
+	    		long audioInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioStart = 0;
+	    		
+				if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+				{
+					long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+					
+					if (totalIn >= 10000)
+						audioStart = 10000;
+					else
+						audioStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+				}
+				
+	    		String audioFade = "afade=in:st=" + audioStart + "ms:d=" + audioInValue + "ms";
+
+	    		if (newAudio != "")
+	    			newAudio += "," + audioFade;
+	    		else
+	    			newAudio += audioFade;
+	    	}
+	    	
+	    	//Fade-out
+	    	if (caseAudioFadeOut.isSelected())
+	    	{
+	    		long audioOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioStart =  (long) FFPROBE.dureeTotale - audioOutValue;
+	    		
+	    		if (caseInAndOut.isSelected())
+				{
+					long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+					long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+					 
+					if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+					{
+						if (totalIn >= 10000)
+							audioStart = 10000 + (totalOut - totalIn) - audioOutValue;
+						else
+							audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
+					}
+					else //Remove mode
+						audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+				}
+	    		
+	    		String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
+	    		
+	    		if (newAudio != "")
+	    			newAudio += "," + audioFade;
+	    		else
+	    			newAudio += audioFade;
+	    	}
+			
+	    	//Audio Speed				        
+			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))))    
 	        {
 	        	float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
 	        	float value = (float) (newFPS/ FFPROBE.currentFPS);
 	        	if (value < 0.5f || value > 2.0f)
 	        		return " -an";
 	        	else
-	        		newAudio = "atempo=" + value;	
+	        	{
+		    		if (newAudio != "")
+		    			newAudio = ",atempo=" + value;
+		    		else
+		    			newAudio = "atempo=" + value;
+	        	}	        			
 	        }
+			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
+	        	return " -an";
 			
 		    if (FFPROBE.stereo)
 		    {
@@ -574,6 +666,70 @@ public class DVD extends Shutter {
 		    
 		    return audio;		   				    
 		}
+	}
+	
+	protected static String setFade(String filterComplex) {
+		//Fade-in
+    	if (caseVideoFadeIn.isSelected())
+    	{ 
+    		if (filterComplex != "") filterComplex += ",";	
+    		
+    		long videoInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoStart = 0;
+    		
+    		if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+    		{
+        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+
+        		if (totalIn >= 10000)
+        			videoStart = 10000;
+        		else
+        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+    		}
+    		
+    		String color = "black";
+			if (lblFadeInColor.getText().equals(language.getProperty("white")))
+				color = "white";
+    		
+    		String videoFade = "fade=in:st=" + videoStart + "ms:d=" + videoInValue + "ms:color=" + color;
+    		
+        	filterComplex += videoFade;
+    	}
+    	
+    	//Fade-out
+    	if (caseVideoFadeOut.isSelected())
+    	{
+    		if (filterComplex != "") filterComplex += ",";	
+    		
+    		long videoOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
+    		
+    		if (caseInAndOut.isSelected())
+    		{
+        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+        		long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+        		 
+        		if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+        		{
+	        		if (totalIn >= 10000)
+	        			videoStart = 10000 + (totalOut - totalIn) - videoOutValue;
+	        		else
+	        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - videoOutValue;
+        		}
+        		else //Remove mode
+    	    		videoStart = FFPROBE.dureeTotale - (totalOut - totalIn) - videoOutValue;
+    		}
+    		
+    		String color = "black";
+			if (lblFadeOutColor.getText().equals(language.getProperty("white")))
+				color = "white";
+    		
+    		String videoFade = "fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color;
+    		
+    		filterComplex += videoFade;
+    	}
+		
+		return filterComplex;
 	}
 
 	protected static String setFilterComplex(String filterComplex, String audio) {
@@ -692,6 +848,14 @@ public class DVD extends Shutter {
 		    FFMPEG.errorList.append(System.lineSeparator());
 		}
 
+		//Mode concat
+		if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+		{		
+			final String extension =  fichier.substring(fichier.lastIndexOf("."));
+			File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 			
+			listeBAB.delete();
+		}
+		
 		//Annulation
 		if (cancelled || FFMPEG.error)
 		{
@@ -724,6 +888,9 @@ public class DVD extends Shutter {
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
 		
+		//Bout à bout
+		if (Settings.btnSetBab.isSelected())
+			return true;
 		
 		//Scan
 		if (Shutter.scanIsRunning)

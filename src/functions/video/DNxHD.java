@@ -19,37 +19,32 @@
 
 package functions.video;
 
-import java.awt.Cursor;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
 
-
+import javax.swing.JSpinner;
 
 import application.Ftp;
-import application.VideoPlayer;
 import application.OverlayWindow;
-import application.WatermarkWindow;
 import application.Settings;
 import application.Shutter;
 import application.SubtitlesWindow;
 import application.Utils;
+import application.VideoPlayer;
+import application.WatermarkWindow;
 import application.Wetransfer;
 import library.BMXTRANSWRAP;
 import library.FFMPEG;
 import library.FFPROBE;
 
 public class DNxHD extends Shutter {
-	
-	
-	
+		
 	private static int complete;
 	private static File OPAtomFolder;
 	private static File vidstab = null;
@@ -152,20 +147,19 @@ public class DNxHD extends Shutter {
 					//Analyse des données
 					if (analyse(file) == false)
 						continue;	
-					
-					String concat = "";
-					//Traitement de la file en Bout à bout
-					if (Settings.btnSetBab.isSelected())
-					{
-						file = setBAB(fichier, extension);	
-						if (caseActiverSequence.isSelected() == false)
-						concat = " -safe 0 -f concat";
-					}
-					
+
 					audio = setAudio(audio);
 							            					 					
 					//InOut	
 					FFMPEG.fonctionInOut();	
+										
+					//Dossier de sortie
+					String sortie = setSortie("", file);
+										
+					//Mode concat
+					String concat = FFMPEG.setConcat(file, sortie);					
+					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));	
 					
 					//Séquence d'images
 					String sequence = setSequence(file, extension);
@@ -204,7 +198,10 @@ public class DNxHD extends Shutter {
 		            
 					//LUTs
 					filterComplex = setLUT(filterComplex);
-
+					
+					//Colormatrix
+					filterComplex = setColormatrix(filterComplex);	
+					
 					//Color
 					filterComplex = setColor(filterComplex);
 					
@@ -265,6 +262,9 @@ public class DNxHD extends Shutter {
 					//Limiter
 					filterComplex = setLimiter(filterComplex);
 					
+					//Fade-in Fade-out
+					filterComplex = setFade(filterComplex);
+					
 	            	//filterComplex
 					filterComplex = setFilterComplex(filterComplex, audio);		
 					
@@ -279,10 +279,7 @@ public class DNxHD extends Shutter {
 		    		
 					//Framerate
 					String frameRate = setFramerate();					
-						           		            				
-					//Dossier de sortie
-					String sortie = setSortie("", file);	
-		            
+
 					//Fichier de sortie
 					String nomExtension;
 					if (Settings.btnExtension.isSelected())
@@ -312,7 +309,7 @@ public class DNxHD extends Shutter {
 					String output = '"' + fileOut.toString() + '"';
 					if (caseVisualiser.isSelected())						
 						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:play" + '"';
-						
+												
 					if (cancelled == false && FFMPEG.error == false)
 					{
 						//Envoi de la commande
@@ -347,7 +344,7 @@ public class DNxHD extends Shutter {
 											
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
 					|| FFMPEG.saveCode == false && caseActiverSequence.isSelected()
-					|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected())
+					|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected() || FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 					{
 						if (actionsDeFin(fichier, fileOut, sortie, vidstab))
 							break;
@@ -367,95 +364,6 @@ public class DNxHD extends Shutter {
 		thread.start();
 		
     }//main
-
-	protected static File setBAB(String fichier, String extension) {
-		
-		String sortie =  new File(liste.getElementAt(0)).getParent();
-		
-		if (caseChangeFolder1.isSelected())
-			sortie = lblDestination1.getText();
-			
-		File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 
-		
-		try {			
-			int dureeTotale = 0;
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
-			PrintWriter writer = new PrintWriter(listeBAB, "UTF-8");      
-			
-			for (int i = 0 ; i < liste.getSize() ; i++)
-			{				
-				//Scanning
-				if (Settings.btnWaitFileComplete.isSelected())
-	            {
-					File file = new File(liste.getElementAt(i));
-					
-					progressBar1.setIndeterminate(true);
-					lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-					lblEncodageEnCours.setText(file.getName());
-					tempsRestant.setVisible(false);
-					btnStart.setEnabled(false);
-					btnAnnuler.setEnabled(true);
-					comboFonctions.setEnabled(false);
-					
-					long fileSize = 0;
-					do {
-						fileSize = file.length();
-						try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
-					} while (fileSize != file.length() && cancelled == false);
-
-					// pour Windows
-					while (file.renameTo(file) == false && cancelled == false) {
-						if (file.exists() == false) // Dans le cas où on annule la copie en cours
-							break;
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {
-						}
-					}
-					
-					if (cancelled)
-					{
-						progressBar1.setIndeterminate(false);
-						lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
-						btnStart.setEnabled(true);
-						btnAnnuler.setEnabled(false);
-						comboFonctions.setEnabled(true);
-						break;
-					}
-					
-					progressBar1.setIndeterminate(false);
-					btnAnnuler.setEnabled(false);
-	            }
-				//Scanning
-				
-				FFPROBE.Data(liste.getElementAt(i));
-				do {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e1) {}
-				} while (FFPROBE.isRunning == true);
-				dureeTotale += FFPROBE.dureeTotale;
-				
-				writer.println("file '" + liste.getElementAt(i) + "'");
-			}				
-			writer.close();
-						
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			progressBar1.setMaximum((int) (dureeTotale / 1000));
-			FFPROBE.dureeTotale = progressBar1.getMaximum();
-			FFMPEG.dureeTotale = progressBar1.getMaximum();
-			
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			FFMPEG.error  = true;
-			if (listeBAB.exists())
-				listeBAB.delete();
-		}//End Try
-		
-		return listeBAB;
-	}
 
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.FrameData(file.toString());	
@@ -511,6 +419,61 @@ public class DNxHD extends Shutter {
 		else if (FFPROBE.qantization == 32)
 			audio = " -c:a pcm_s32le"; 
 		
+        //Fade-in
+		if (caseAudioFadeIn.isSelected())
+		{ 
+			long audioInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+			long audioStart = 0;
+			
+			if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+			{
+				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+				
+				if (totalIn >= 10000)
+					audioStart = 10000;
+				else
+					audioStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+			}
+
+			String audioFade = "afade=in:st=" + audioStart + "ms:d=" + audioInValue + "ms";
+			
+			if (audio.contains("-filter:a"))
+				audio += "," + audioFade;
+			else
+				audio += " -filter:a " + audioFade;
+		}
+		
+		//Fade-out
+		if (caseAudioFadeOut.isSelected())
+		{
+			long audioOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+			long audioStart = (long) FFPROBE.dureeTotale - audioOutValue;
+			
+			if (caseInAndOut.isSelected())
+			{
+				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+				long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+				 
+				if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+				{
+					if (totalIn >= 10000)
+						audioStart = 10000 + (totalOut - totalIn) - audioOutValue;
+					else
+						audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
+				}
+				else //Remove mode
+					audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+			}
+			
+			String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
+			
+			if (audio.contains("-filter:a"))
+				audio += "," + audioFade;
+			else
+				audio += " -filter:a " + audioFade;
+		}
+		
+    	//Audio Speed
         if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))))     
         {
         	float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
@@ -518,7 +481,12 @@ public class DNxHD extends Shutter {
         	if (value < 0.5f || value > 2.0f)
         		return " -an";
         	else
-        		audio += " -filter:a " + ("atempo=" + value);	
+        	{
+        		if (audio.contains("-filter:a"))
+        			audio += "," + ("atempo=" + value); 
+        		else
+        			audio += " -filter:a " + ("atempo=" + value);       			
+        	}        			
         }
 			
         if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
@@ -588,7 +556,7 @@ public class DNxHD extends Shutter {
 			if (caseBlend.isSelected())
 				return " -start_number " + file.toString().substring(file.toString().lastIndexOf(".") - n + 1).replace(extension, "");	
 			else	
-				return " -framerate " + caseSequenceFPS.getText() + " -start_number " + file.toString().substring(file.toString().lastIndexOf(".") - n + 1).replace(extension, "");		
+				return " -framerate " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -start_number " + file.toString().substring(file.toString().lastIndexOf(".") - n + 1).replace(extension, "");		
 		}
 		
 		return "";
@@ -786,7 +754,7 @@ public class DNxHD extends Shutter {
 				blend.append("tblend=all_mode=average,");
 			}	
 			
-			blend.append("setpts=" + (float) 25 / Float.parseFloat(caseSequenceFPS.getText()) + "*PTS");
+			blend.append("setpts=" + (float) 25 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) + "*PTS");
 			
 			if (filterComplex != "")
 				filterComplex += "," + blend;	
@@ -799,7 +767,7 @@ public class DNxHD extends Shutter {
 	protected static String setMotionBlur(String filterComplex) {
 		if (caseMotionBlur.isSelected())
 		{			
-			float fps = Float.parseFloat(caseSequenceFPS.getText()) * 2;
+			float fps = Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) * 2;
 			if (filterComplex != "")
 				filterComplex += ",minterpolate=fps=" + fps + ",tblend=all_mode=average,framestep=2";	
 			else
@@ -826,6 +794,20 @@ public class DNxHD extends Shutter {
 			else
 				filterComplex = "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 		}
+		return filterComplex;
+	}
+	
+	protected static String setColormatrix(String filterComplex) {
+		if (caseColormatrix.isSelected())
+		{
+			if (filterComplex != "") filterComplex += ",";
+			
+			if (comboInColormatrix.getSelectedItem().equals("HDR"))
+				filterComplex += "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p";	
+			else
+				filterComplex += "colormatrix=" + comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+		}
+		
 		return filterComplex;
 	}
 	
@@ -1273,7 +1255,7 @@ public class DNxHD extends Shutter {
 			
 			float FPS = FFPROBE.currentFPS;
 			if (caseActiverSequence.isSelected())
-				FPS = Float.valueOf(caseSequenceFPS.getText().replace(",", "."));
+				FPS = Float.valueOf(caseSequenceFPS.getSelectedItem().toString().replace(",", ".").replace(",", "."));
 			
 			if (FPS != newFPS)
 			{	            
@@ -1282,6 +1264,70 @@ public class DNxHD extends Shutter {
 				filterComplex += "minterpolate=fps=" + newFPS + ":mi_mode=blend";
 			}
 		}
+		
+		return filterComplex;
+	}
+	
+	protected static String setFade(String filterComplex) {
+		//Fade-in
+    	if (caseVideoFadeIn.isSelected())
+    	{ 
+    		if (filterComplex != "") filterComplex += ",";	
+    		
+    		long videoInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoStart = 0;
+    		
+    		if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+    		{
+        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+
+        		if (totalIn >= 10000)
+        			videoStart = 10000;
+        		else
+        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+    		}
+    		
+    		String color = "black";
+			if (lblFadeInColor.getText().equals(language.getProperty("white")))
+				color = "white";
+    		
+    		String videoFade = "fade=in:st=" + videoStart + "ms:d=" + videoInValue + "ms:color=" + color;
+    		
+        	filterComplex += videoFade;
+    	}
+    	
+    	//Fade-out
+    	if (caseVideoFadeOut.isSelected())
+    	{
+    		if (filterComplex != "") filterComplex += ",";	
+    		
+    		long videoOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
+    		
+    		if (caseInAndOut.isSelected())
+    		{
+        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+        		long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+        		 
+        		if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+        		{
+	        		if (totalIn >= 10000)
+	        			videoStart = 10000 + (totalOut - totalIn) - videoOutValue;
+	        		else
+	        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - videoOutValue;
+        		}
+        		else //Remove mode
+    	    		videoStart = FFPROBE.dureeTotale - (totalOut - totalIn) - videoOutValue;
+    		}
+    		
+    		String color = "black";
+			if (lblFadeOutColor.getText().equals(language.getProperty("white")))
+				color = "white";
+    		
+    		String videoFade = "fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color;
+    		
+    		filterComplex += videoFade;
+    	}
 		
 		return filterComplex;
 	}
@@ -1334,7 +1380,7 @@ public class DNxHD extends Shutter {
 			if (caseConform.isSelected())
 				return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", ".")) + " -frames:v " + liste.getSize();	
 			else
-				return " -r " + caseSequenceFPS.getText() + " -frames:v " + liste.getSize();
+				return " -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -frames:v " + liste.getSize();
 		}
 		
 		return "";
@@ -1469,8 +1515,8 @@ public class DNxHD extends Shutter {
 				vidstab.delete();
 		}
 		
-		//Traitement de la file en Bout à bout
-		if (Settings.btnSetBab.isSelected())
+		//Mode concat
+		if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 		{		
 			final String extension =  fichier.substring(fichier.lastIndexOf("."));
 			File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 			
@@ -1529,6 +1575,10 @@ public class DNxHD extends Shutter {
 			TCset3.setText(formatter.format((millisecondsToTc / 1000) % 60));				        
 			TCset4.setText(formatter.format((int) (millisecondsToTc / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));	
 		}
+		
+		//Bout à bout
+		if (Settings.btnSetBab.isSelected())
+			return true;
 		
 		//Scan
 		if (Shutter.scanIsRunning)
