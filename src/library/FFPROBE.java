@@ -51,6 +51,8 @@ public static Thread processVideoLevels;
 public static Thread processGOP;
 public static Thread processFindStreams;
 public static Thread processCalculH264;
+public static int subtitleStreams = 0;
+public static int audioStreams = 0;
 public static int dureeTotale;
 public static String getVideoLengthTC;
 public static String lumaLevel;
@@ -91,6 +93,8 @@ public static String qtref = "";
 		dureeTotale = 0;
 		channels = 0;
 		qantization = 16;
+ 		subtitleStreams = 0;
+ 		audioStreams = 0;
 		if (calcul == false) //pour ne pas réactive audioOnly lors de l'analyse calculH264
 			audioOnly = true;
 		lumaLevel = "unavailable";
@@ -98,7 +102,7 @@ public static String qtref = "";
 		audioCodec = null;
 		audioBitrate = null;
 		FFMPEG.error = false;
-		hasAudio = false;
+		hasAudio = false; 		
 		btnStart.setEnabled(false);
 		
 		VideoPlayer.ratio = 1.777777f;
@@ -407,6 +411,14 @@ public static String qtref = "";
 							 audioBitrate =	bitrate[bitrate.length - 1];		
 			        		 
 			        	 }
+			        	 
+			        	 //Extract Audio	
+			        	 if (line.contains("Audio:"))
+			        		 audioStreams ++;
+			        	 
+			        	 //Extract Subtitles			     		
+			        	 if (line.contains("Subtitle:"))
+			        		 subtitleStreams ++;
 			        							 
 						//Timecode
 			            if (line.contains("timecode") && (OverlayWindow.caseShowTimecode.isSelected()
@@ -700,48 +712,48 @@ public static String qtref = "";
 	
 	public static boolean FindStreams(final String fichier) {			
 		
-				try {		
-					String PathToFFPROBE;
-					ProcessBuilder processFFPROBE;
-					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_streams" + " -i " + '"' + fichier + '"');
-					}
-					else
-					{
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + fichier + '"' + " -show_streams");
-					}				
-					
-					isRunning = true;	
-					Process process = processFFPROBE.start();
-					
-					String line;
-					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-									
-					//Analyse
-					while ((line = input.readLine()) != null) {
-						         if (line.contains("Stream"))
-						         {
-						        	 if (line.contains("Video"))
-						        		 return true;					        		 
-						        	 else if (line.contains("Audio"))
-						        		 return false;
-						         }
-					}									
-					process.waitFor();
-					
-					} catch (Exception e) {}
-					finally{
-						isRunning = false;
-					}
-				
-				return false;			
+		try {		
+			String PathToFFPROBE;
+			ProcessBuilder processFFPROBE;
+			if (System.getProperty("os.name").contains("Windows"))
+			{						
+				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
+				PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
+				processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_streams" + " -i " + '"' + fichier + '"');
+			}
+			else
+			{
+				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
+				PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
+				processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + fichier + '"' + " -show_streams");
+			}				
+			
+			isRunning = true;	
+			Process process = processFFPROBE.start();
+			
+			String line;
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
+							
+			//Analyse
+			while ((line = input.readLine()) != null) {
+		         if (line.contains("Stream"))
+		         {
+		        	 if (line.contains("Video"))
+		        		 return true;					        		 
+		        	 else if (line.contains("Audio"))
+		        		 return false;
+		         }
+			}									
+			process.waitFor();
+			
+			} catch (Exception e) {}
+			finally{
+				isRunning = false;
+			}
+		
+		return false;			
 
 	}
 	
@@ -783,21 +795,31 @@ public static String qtref = "";
 		         do {
 						Thread.sleep(100);
 		         } while(processData.isAlive());         
-
 		         
          	if (dureeTotale != 0)
-			{     		
-        	 NumberFormat formatter = new DecimalFormat("00");
-             int secondes = ((dureeTotale) / 1000) % 60;
-             int minutes =  ((dureeTotale) / 60000) % 60;
-             int heures = ((dureeTotale) / 3600000);
-             
-             textH.setText(formatter.format(heures));
-             textMin.setText(formatter.format(minutes));
-             textSec.setText(formatter.format(secondes));
-             
-             setTailleH264();
+			{           		
+    		    if (Shutter.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+    		    {
+    				float debit = (float) ((float) 23000000 / FFPROBE.dureeTotale) * 8;
+    				
+    				if (debit > 38)
+    					Shutter.debitVideo.setSelectedItem(38000);
+    				else
+    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+    		    }	
+         		
+	        	 NumberFormat formatter = new DecimalFormat("00");
+	             int secondes = ((dureeTotale) / 1000) % 60;
+	             int minutes =  ((dureeTotale) / 60000) % 60;
+	             int heures = ((dureeTotale) / 3600000);
+	             
+	             textH.setText(formatter.format(heures));
+	             textMin.setText(formatter.format(minutes));
+	             textSec.setText(formatter.format(secondes));
+	             
+	             setTailleH264();
 			}
+         	
 		 } catch (Exception e) {}
 			finally {
 				calcul = false;

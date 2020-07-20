@@ -27,11 +27,14 @@ import java.awt.Taskbar;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -554,6 +557,143 @@ private static StringBuilder getAll;
 		} catch (SecurityException | IllegalArgumentException | IOException e1) {	}
 	}
 	
+	public static String setConcat(File file, String sortie) 
+	{		
+		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
+		
+		File listeBAB = new File(sortie.replace("\\", "/") + "/" + file.getName().replace(extension, ".txt")); 
+		
+		if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+		{									
+			try {								
+				PrintWriter writer = new PrintWriter(listeBAB.toString(), "UTF-8");
+				
+				NumberFormat formatter = new DecimalFormat("00");
+				NumberFormat formatFrame = new DecimalFormat("000");
+				
+				int h = Integer.parseInt(VideoPlayer.caseInH.getText());
+				int m = Integer.parseInt(VideoPlayer.caseInM.getText());
+				int s = Integer.parseInt(VideoPlayer.caseInS.getText());
+				int f = (int) (Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));	
+				
+				writer.println("file " + "'" + file + "'");							
+				writer.println("outpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
+				
+				h = Integer.parseInt(VideoPlayer.caseOutH.getText());
+				m = Integer.parseInt(VideoPlayer.caseOutM.getText());
+				s = Integer.parseInt(VideoPlayer.caseOutS.getText());
+				f = (int) (Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));	
+				
+				writer.println("file " + "'" + file + "'");	
+				writer.println("inpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
+				
+				FFMPEG.inPoint = "";
+				FFMPEG.postInPoint = "";
+				FFMPEG.outPoint = "";			
+				
+				writer.close();
+				
+			} catch (FileNotFoundException | UnsupportedEncodingException e) {				
+				FFMPEG.error  = true;
+				if (listeBAB.exists())
+					listeBAB.delete();
+			}	
+			
+			return " -safe 0 -f concat";
+		}
+		else if (Settings.btnSetBab.isSelected()) //Mode concat
+		{
+			setBAB(file.getName(), extension, sortie);	
+			
+			if (caseActiverSequence.isSelected() == false)
+				return " -safe 0 -f concat";
+		}
+		
+		return "";
+	}
+	
+	protected static void setBAB(String fichier, String extension, String sortie) {
+					
+		File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 
+		
+		try {			
+			int dureeTotale = 0;
+			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
+			PrintWriter writer = new PrintWriter(listeBAB, "UTF-8");      
+			
+			for (int i = 0 ; i < liste.getSize() ; i++)
+			{				
+				//Scanning
+				if (Settings.btnWaitFileComplete.isSelected())
+	            {
+					File file = new File(liste.getElementAt(i));
+					
+					progressBar1.setIndeterminate(true);
+					lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
+					lblEncodageEnCours.setText(file.getName());
+					tempsRestant.setVisible(false);
+					btnStart.setEnabled(false);
+					btnAnnuler.setEnabled(true);
+					comboFonctions.setEnabled(false);
+					
+					long fileSize = 0;
+					do {
+						fileSize = file.length();
+						try {
+							Thread.sleep(3000);
+						} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
+					} while (fileSize != file.length() && cancelled == false);
+
+					// pour Windows
+					while (file.renameTo(file) == false && cancelled == false) {
+						if (file.exists() == false) // Dans le cas où on annule la copie en cours
+							break;
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {
+						}
+					}
+					
+					if (cancelled)
+					{
+						progressBar1.setIndeterminate(false);
+						lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
+						btnStart.setEnabled(true);
+						btnAnnuler.setEnabled(false);
+						comboFonctions.setEnabled(true);
+						break;
+					}
+					
+					progressBar1.setIndeterminate(false);
+					btnAnnuler.setEnabled(false);
+	            }
+				//Scanning
+				
+				FFPROBE.Data(liste.getElementAt(i));
+				do {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {}
+				} while (FFPROBE.isRunning == true);
+				dureeTotale += FFPROBE.dureeTotale;
+				
+				writer.println("file '" + liste.getElementAt(i) + "'");
+			}				
+			writer.close();
+						
+			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			progressBar1.setMaximum((int) (dureeTotale / 1000));
+			FFPROBE.dureeTotale = progressBar1.getMaximum();
+			FFMPEG.dureeTotale = progressBar1.getMaximum();
+			
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			FFMPEG.error  = true;
+			if (listeBAB.exists())
+				listeBAB.delete();
+		}//End Try
+	}
+	
 	public static void fonctionInOut() throws InterruptedException {
 		
 		if (caseInAndOut.isSelected())
@@ -640,7 +780,7 @@ private static StringBuilder getAll;
 			String ffmpegTime = split[0].replace(".", ":");	  
 					
 			if (caseActiverSequence.isSelected())
-				dureeTotale = (liste.getSize() / Integer.parseInt(caseSequenceFPS.getText()) );
+				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
 			else if (caseInAndOut.isSelected())
 				dureeTotale = VideoPlayer.dureeHeures * 3600 + VideoPlayer.dureeMinutes * 60 + VideoPlayer.dureeSecondes;
 			else
@@ -672,7 +812,8 @@ private static StringBuilder getAll;
 					|| comboFonctions.getSelectedItem().toString().equals("AV1")
 					|| comboFonctions.getSelectedItem().toString().equals("OGV")
 					|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
-					|| comboFonctions.getSelectedItem().toString().equals("Xvid"))
+					|| comboFonctions.getSelectedItem().toString().equals("Xvid")
+					|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 					&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && DVD.multiplesPass)
 				dureeTotale = (dureeTotale * 2);
 				
@@ -774,7 +915,8 @@ private static StringBuilder getAll;
 						|| comboFonctions.getSelectedItem().toString().equals("AV1")
 						|| comboFonctions.getSelectedItem().toString().equals("OGV")
 						|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
-						|| comboFonctions.getSelectedItem().toString().equals("Xvid"))
+						|| comboFonctions.getSelectedItem().toString().equals("Xvid")
+					 	|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 					 	&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && DVD.multiplesPass)
 				 total = (int) ((dureeTotale / 2) * FFPROBE.currentFPS);
 			 
@@ -799,7 +941,8 @@ private static StringBuilder getAll;
 							|| comboFonctions.getSelectedItem().toString().equals("AV1")
 						 	|| comboFonctions.getSelectedItem().toString().equals("OGV")
 							|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
-							|| comboFonctions.getSelectedItem().toString().equals("Xvid"))
+							|| comboFonctions.getSelectedItem().toString().equals("Xvid")
+						 	|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 						 	&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && DVD.multiplesPass)
 				 {
 					 if (pass2 == false)
