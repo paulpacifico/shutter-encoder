@@ -93,7 +93,7 @@ import library.MEDIAINFO;
 		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
 				
 		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
-		lblWait.setFont(new Font("Arial", Font.PLAIN, 20));
+		lblWait.setFont(new Font("FreeSans", Font.PLAIN, 20));
 		lblWait.setSize(lblWait.getPreferredSize().width, 40);
 		lblWait.setLocation(frame.getSize().width / 2 - lblWait.getSize().width / 2, frame.getSize().height / 2);
 		lblWait.setVisible(true);
@@ -101,7 +101,7 @@ import library.MEDIAINFO;
 		
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font("Arial", Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font("FreeSans", Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		lblFlecheBas.setVisible(false);
@@ -229,7 +229,7 @@ import library.MEDIAINFO;
 	public static void addTabControl() {		
 		tabPanel = new JPanel();			
 		tabPanel.setBackground(new Color(50,50,50));
-		tabPanel.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		tabPanel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		tabPanel.setLayout(null);
 		tabPanel.setBounds(0, panelHaut.getSize().height, frame.getSize().width, frame.getSize().height - panelHaut.getSize().height - 20);				
 		
@@ -250,11 +250,11 @@ import library.MEDIAINFO;
 		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		
 		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 15);
+		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 			
 		reduce.addMouseListener(new MouseListener(){
 			

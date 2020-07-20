@@ -145,7 +145,7 @@ public class Ftp {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		panelHaut.setBounds(0, 0, 267, 44);
 		
@@ -258,7 +258,7 @@ public class Ftp {
 
 		textFtp.setBounds(101, 55, 154, 21);
 		frame.getContentPane().add(textFtp);
-		textFtp.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textFtp.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFtp.setColumns(10);		
 		
 		textFtp.addKeyListener(new KeyListener(){
@@ -280,7 +280,7 @@ public class Ftp {
 		});
 		
 		textUser.setBounds(101, 88, 154, 21);
-		textUser.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textUser.setColumns(10);
 		frame.getContentPane().add(textUser);
 		
@@ -315,7 +315,7 @@ public class Ftp {
 		
 		lblMotDePasse.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		
-		textPassword.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPassword.setColumns(10);
 		textPassword.setEchoChar('•');
 		textPassword.setBounds(101, 122, 154, 21);

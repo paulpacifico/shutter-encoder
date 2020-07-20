@@ -97,7 +97,7 @@ public class Renamer {
 		fichier = new File(fullName).getName().replace(ext, "");
 		
 		btnLimit = new JRadioButton(Shutter.language.getProperty("btnLimit"));
-		btnLimit.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnLimit.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnLimit.setBounds(12, 12, 211, 16);
 		frame.getContentPane().add(btnLimit);
 		
@@ -115,13 +115,13 @@ public class Renamer {
 		});
 		
 		spinnerLimit = new JSpinner(new SpinnerNumberModel(fichier.length(), 1, fichier.length(), 1));
-		spinnerLimit.setFont(new Font("Arial", Font.PLAIN, 11));
+		spinnerLimit.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerLimit.setEnabled(false);
 		spinnerLimit.setBounds(226, 10, 46, 20);
 		frame.getContentPane().add(spinnerLimit);
 		
 		btnIncrementer = new JRadioButton(Shutter.language.getProperty("btnIncrementer"));
-		btnIncrementer.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnIncrementer.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnIncrementer.setBounds(12, 34, 150, 16);
 		frame.getContentPane().add(btnIncrementer);
 		
@@ -139,36 +139,36 @@ public class Renamer {
 		});
 		
 		spinnerIncrementer = new JSpinner(new SpinnerNumberModel(0, 0, 99999999, 1));
-		spinnerIncrementer.setFont(new Font("Arial", Font.PLAIN, 11));
+		spinnerIncrementer.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerIncrementer.setEnabled(false);
 		spinnerIncrementer.setBounds(166, 33, 106, 20);
 		frame.getContentPane().add(spinnerIncrementer);
 		
 		lblRemplacer = new JLabel(Shutter.language.getProperty("lblRemplacer"));
-		lblRemplacer.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblRemplacer.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblRemplacer.setBounds(12, 80, 70, 14);
 		frame.getContentPane().add(lblRemplacer);
 		
 		txtRemplacer = new JTextField();
 		txtRemplacer.setColumns(10);
-		txtRemplacer.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		txtRemplacer.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtRemplacer.setBounds(84, 77, 140, 21);
 		frame.getContentPane().add(txtRemplacer);;		
 				
 		lblPar = new JLabel(Shutter.language.getProperty("lblPar"));
-		lblPar.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblPar.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblPar.setBounds(230, 80, 25, 14);
 		frame.getContentPane().add(lblPar);
 		
 		txtPar = new JTextField();
 		txtPar.setColumns(10);
-		txtPar.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		txtPar.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtPar.setBounds(261, 77, txtRemplacer.getWidth(), 21);
 		frame.getContentPane().add(txtPar);
 		
 		lblExemple = new JLabel(Shutter.language.getProperty("lblExemple") + " " + fichier + ext);
 		lblExemple.setForeground(new Color(71,163,236));
-		lblExemple.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		lblExemple.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblExemple.setBounds(12, 104, 481, 14);
 		frame.getContentPane().add(lblExemple);
 						
@@ -178,7 +178,7 @@ public class Renamer {
 		frame.getContentPane().add(Renommer);
 		
 		btnAjouterAvant = new JRadioButton(Shutter.language.getProperty("btnAjouterAvant"));
-		btnAjouterAvant.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnAjouterAvant.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnAjouterAvant.setBounds(280, 12, 115, 16);
 		frame.getContentPane().add(btnAjouterAvant);
 		
@@ -197,13 +197,13 @@ public class Renamer {
 		
 		txtAjouterAvant = new JTextField();
 		txtAjouterAvant.setEnabled(false);
-		txtAjouterAvant.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		txtAjouterAvant.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtAjouterAvant.setColumns(10);
 		txtAjouterAvant.setBounds(390, 10, 108, 21);
 		frame.getContentPane().add(txtAjouterAvant);
 		
 		btnAjouterApres = new JRadioButton(Shutter.language.getProperty("btnAjouterApres"));
-		btnAjouterApres.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnAjouterApres.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnAjouterApres.setBounds(280, 34, 115, 16);
 		frame.getContentPane().add(btnAjouterApres);
 		
@@ -222,13 +222,13 @@ public class Renamer {
 		
 		txtAjouterApres = new JTextField();
 		txtAjouterApres.setEnabled(false);
-		txtAjouterApres.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		txtAjouterApres.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtAjouterApres.setColumns(10);
 		txtAjouterApres.setBounds(390, 32, 108, 21);
 		frame.getContentPane().add(txtAjouterApres);
 		
 		convertToLower = new JRadioButton(Shutter.language.getProperty("convertToLower"));
-		convertToLower.setFont(new Font("Arial", Font.PLAIN, 12));
+		convertToLower.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		convertToLower.setBounds(12, 57, convertToLower.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToLower);
 		
@@ -245,7 +245,7 @@ public class Renamer {
 		});
 		
 		convertToUpper = new JRadioButton(Shutter.language.getProperty("convertToUpper"));
-		convertToUpper.setFont(new Font("Arial", Font.PLAIN, 12));
+		convertToUpper.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		convertToUpper.setBounds(convertToLower.getWidth() + convertToLower.getLocation().x + 7, 57, convertToUpper.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToUpper);
 		
@@ -262,7 +262,7 @@ public class Renamer {
 		});
 		
 		removeSpecialCharacters = new JRadioButton(Shutter.language.getProperty("removeSpecialCharacters"));
-		removeSpecialCharacters.setFont(new Font("Arial", Font.PLAIN, 12));
+		removeSpecialCharacters.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		removeSpecialCharacters.setBounds(convertToUpper.getWidth() + convertToUpper.getLocation().x + 7, 57, removeSpecialCharacters.getPreferredSize().width, 16);
 		frame.getContentPane().add(removeSpecialCharacters);
 		

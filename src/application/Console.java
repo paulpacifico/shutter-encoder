@@ -211,7 +211,7 @@ public class Console extends JFrame {
 		
 		lblTailleDuTexte = new JLabel(Shutter.language.getProperty("lblTailleDuTexte") + " ");
 		lblTailleDuTexte.setForeground(Color.BLACK);
-		lblTailleDuTexte.setFont(new Font("Arial", Font.ITALIC, 13));
+		lblTailleDuTexte.setFont(new Font("FreeSans", Font.ITALIC, 13));
 		
 		menuBar.add(lblTailleDuTexte);
 		
@@ -253,57 +253,57 @@ public class Console extends JFrame {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				consoleFFMPEG.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));			
-				consoleFFPLAY.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));	
-				consoleFFPROBE.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));	
-				consoleBMXTRANSWRAP.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));	
-				consoleDVDAUTHOR.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));	
-				consoleTSMUXER.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));	
-				consoleMEDIAINFO.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));	
-				consoleYOUTUBEDL.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));	
-				consoleEXIFTOOL.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));
-				consoleMKVMERGE.setFont(new Font("Arial", Font.PLAIN, (int) spinner.getValue()));
+				consoleFFMPEG.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));			
+				consoleFFPLAY.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));	
+				consoleFFPROBE.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));	
+				consoleBMXTRANSWRAP.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));	
+				consoleDVDAUTHOR.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));	
+				consoleTSMUXER.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));	
+				consoleMEDIAINFO.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));	
+				consoleYOUTUBEDL.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));	
+				consoleEXIFTOOL.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));
+				consoleMKVMERGE.setFont(new Font("FreeSans", Font.PLAIN, (int) spinner.getValue()));
 			}
 			
 		});
 		
-		consoleFFMPEG.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleFFMPEG.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleFFMPEG.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleFFMPEG.setWrapStyleWord(true);
 		consoleFFMPEG.addKeyListener(kl);
-		consoleFFPLAY.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleFFPLAY.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleFFPLAY.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleFFPLAY.setWrapStyleWord(true);
 		consoleFFPLAY.addKeyListener(kl);
-		consoleFFPROBE.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleFFPROBE.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleFFPROBE.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleFFPROBE.setWrapStyleWord(true);
 		consoleFFPROBE.addKeyListener(kl);
-		consoleBMXTRANSWRAP.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleBMXTRANSWRAP.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleBMXTRANSWRAP.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleBMXTRANSWRAP.setWrapStyleWord(true);
 		consoleBMXTRANSWRAP.addKeyListener(kl);
-		consoleDVDAUTHOR.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleDVDAUTHOR.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleDVDAUTHOR.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleDVDAUTHOR.setWrapStyleWord(true);
 		consoleDVDAUTHOR.addKeyListener(kl);
-		consoleTSMUXER.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleTSMUXER.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleTSMUXER.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleTSMUXER.setWrapStyleWord(true);
 		consoleTSMUXER.addKeyListener(kl);
-		consoleMEDIAINFO.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleMEDIAINFO.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleMEDIAINFO.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleMEDIAINFO.setWrapStyleWord(true);
 		consoleMEDIAINFO.addKeyListener(kl);
-		consoleYOUTUBEDL.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleYOUTUBEDL.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleYOUTUBEDL.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleYOUTUBEDL.setWrapStyleWord(true);
 		consoleYOUTUBEDL.addKeyListener(kl);
-		consoleEXIFTOOL.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleEXIFTOOL.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleEXIFTOOL.setWrapStyleWord(true);
 		consoleEXIFTOOL.addKeyListener(kl);
-		consoleMKVMERGE.setFont(new Font("Arial", Font.PLAIN, 12));	
+		consoleMKVMERGE.setFont(new Font("FreeSans", Font.PLAIN, 12));	
 		consoleMKVMERGE.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
 		consoleMKVMERGE.setWrapStyleWord(true);
 		consoleMKVMERGE.addKeyListener(kl);

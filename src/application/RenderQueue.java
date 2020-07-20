@@ -140,6 +140,46 @@ import javax.swing.ListSelectionModel;
 				
 				if (Shutter.btnAnnuler.isEnabled() == false)		
 				{
+					//File de rendus
+					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals("DVD RIP") == false
+							&& Shutter.comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionVideoLevels")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionNormalization")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlackDetection")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionOfflineDetection")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false) {
+						Shutter.iconList.setVisible(true);
+						if (Shutter.iconPresets.isVisible())
+						{
+							Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
+							Shutter.btnAnnuler.setBounds(205 + Shutter.iconList.getWidth(), 44, 101 - Shutter.iconList.getWidth(), 25);
+						}
+						else
+						{
+							Shutter.iconPresets.setBounds(180, 46, 21, 21);
+							Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+						}						
+					}
+					else
+					{
+						Shutter.iconList.setVisible(false);
+						
+						if (Shutter.iconPresets.isVisible())
+						{
+							Shutter.iconPresets.setBounds(180, 46, 21, 21);
+							Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+						}
+						else
+						{
+							Shutter.btnAnnuler.setBounds(182, 44, 124, 25);
+						}
+					}
+					
 					Utils.changeFrameVisibility(frame, shadow, true);
 					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
 				}				
@@ -208,8 +248,8 @@ import javax.swing.ListSelectionModel;
 					
 					zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
 					
-					quit.setBounds(frame.getSize().width - 35,0,35, 15);				
-					reduce.setBounds(quit.getLocation().x - 21,0,21, 15);
+					quit.setBounds(frame.getSize().width - 24,0,21, 21);				
+					reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 					panelHaut.setBounds(0, 0, frame.getSize().width, 51);	
 					
 					topImage.setLocation(frame.getSize().width / 2 - 200, 0);
@@ -247,7 +287,7 @@ import javax.swing.ListSelectionModel;
 		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 				
 		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 		Image scaledImage = image.getImage().getScaledInstance(panelHaut.getSize().width * 10, panelHaut.getSize().height, Image.SCALE_SMOOTH);
@@ -267,7 +307,7 @@ import javax.swing.ListSelectionModel;
 		
 		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 15);
+		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 		
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -335,8 +375,7 @@ import javax.swing.ListSelectionModel;
 						Shutter.btnAnnuler.doClick();
 					
 					if (Shutter.btnAnnuler.isEnabled() == false)		
-					{
-						
+					{						
 						//File de rendus
 						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
@@ -347,6 +386,7 @@ import javax.swing.ListSelectionModel;
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionNormalization")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlackDetection")) == false
+								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionOfflineDetection")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false) {
 							Shutter.iconList.setVisible(true);
@@ -417,8 +457,8 @@ import javax.swing.ListSelectionModel;
 						
 						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
 						
-						quit.setBounds(frame.getSize().width - 35,0,35, 15);				
-						reduce.setBounds(quit.getLocation().x - 21,0,21, 15);
+						quit.setBounds(frame.getSize().width - 24,0,21, 21);				
+						reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 						panelHaut.setBounds(0, 0, frame.getSize().width, 51);	
 						
 						topImage.setLocation(frame.getSize().width / 2 - 200, 0);
@@ -436,8 +476,8 @@ import javax.swing.ListSelectionModel;
 						
 						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
 						
-						quit.setBounds(frame.getSize().width - 35,0,35, 15);				
-						reduce.setBounds(quit.getLocation().x - 21,0,21, 15);
+						quit.setBounds(frame.getSize().width - 24,0,21, 21);				
+						reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 						panelHaut.setBounds(0, 0, frame.getSize().width, 51);	
 						
 						topImage.setLocation(frame.getSize().width / 2 - 200, 0);						
@@ -486,7 +526,7 @@ import javax.swing.ListSelectionModel;
 	private void table() {
 		
 		JLabel columnFile = new JLabel(Shutter.language.getProperty("columnFile"));
-		columnFile.setFont(new Font("Arial Unicode MS", Font.PLAIN, 11));
+		columnFile.setFont(new Font("SansSerif", Font.PLAIN, 11));
 		
 		tableRow = new DefaultTableModel(new Object[][] {}, new String[] {Shutter.language.getProperty("columnFile"), Shutter.language.getProperty("columnCommand"), Shutter.language.getProperty("destination")});
 		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
@@ -562,10 +602,11 @@ import javax.swing.ListSelectionModel;
 		
 		zebra = new JPanel()
 		{
-            Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra2.jpg")).getImage();
+            Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra.jpg")).getImage();
 	         {
 	            setOpaque(false);
 	         }
+	         
 	         public void paintComponent(Graphics g) {
 	        	 super.paintComponent(g);
 	             int iw = image.getWidth(this);
@@ -947,7 +988,7 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 	    Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    setHorizontalAlignment(JLabel.CENTER);
-	    setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+	    setFont(new Font("SansSerif", Font.PLAIN, 12));
 	    setBackground(new Color(50,50,50));
 	    setForeground(Color.BLACK);
 	      

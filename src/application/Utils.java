@@ -49,7 +49,7 @@ import org.w3c.dom.NodeList;
 import library.FFMPEG;
 
 public class Utils extends Shutter {
-
+	
 	public static void changeFrameVisibility(final JFrame f, final JDialog s, final boolean isVisible) {
 
 		if (isVisible == false) {
@@ -435,7 +435,7 @@ public class Utils extends Shutter {
 			nomDuLabel = nombre / 1000 + "k " + Shutter.language.getProperty("filesEnded");		
 		return nomDuLabel;
 	}
-	
+		
 	@SuppressWarnings({"rawtypes"})
 	public static void saveSettings(boolean update) {
 		
@@ -625,6 +625,38 @@ public class Utils extends Shutter {
 									//Value
 									Element cValue = document.createElement("Value");
 									cValue.appendChild(document.createTextNode(String.valueOf(((JSlider) p).getValue())));
+									component.appendChild(cValue);
+									
+									//State
+									Element cState = document.createElement("Enable");
+									cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+									component.appendChild(cState);
+									
+									//Visible
+									Element cVisible = document.createElement("Visible");
+									cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+									component.appendChild(cVisible);		
+									
+									settings.appendChild(component);
+								}
+								else if (p instanceof JSpinner)
+								{
+									//Component
+									Element component = document.createElement("Component");
+									
+									//Type
+									Element cType = document.createElement("Type");
+									cType.appendChild(document.createTextNode("JSpinner"));
+									component.appendChild(cType);
+		
+									//Name
+									Element cName = document.createElement("Name");
+									cName.appendChild(document.createTextNode(p.getName()));
+									component.appendChild(cName);
+									
+									//Value
+									Element cValue = document.createElement("Value");
+									cValue.appendChild(document.createTextNode(String.valueOf(((JSpinner) p).getValue())));
 									component.appendChild(cValue);
 									
 									//State
@@ -1644,7 +1676,7 @@ public class Utils extends Shutter {
 			} catch (ParserConfigurationException | TransformerException e) {}
 		 }
 	}
-	
+		
 	@SuppressWarnings("rawtypes")
 	public static void loadSettings(File encFile) {
 	
@@ -1803,6 +1835,17 @@ public class Utils extends Shutter {
 										
 										//Visible
 										((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									}
+									else if (p instanceof JSpinner)
+									{							
+										//Value
+										((JSpinner) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+																			
+										//State
+										((JSpinner) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+										
+										//Visible
+										((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 									}
 								}
 							}

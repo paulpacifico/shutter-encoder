@@ -149,7 +149,7 @@ public class VideoWeb {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		
 		quit.addMouseListener(new MouseListener(){
@@ -193,7 +193,7 @@ public class VideoWeb {
 	
 		help = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/help2.png")));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(quit.getLocation().x - 21,0,21, 15);
+		help.setBounds(quit.getLocation().x - 21,0,21, 21);
 		panelHaut.add(help);
 		
 		help.addMouseListener(new MouseListener(){
@@ -300,13 +300,13 @@ public class VideoWeb {
 		
 		lblURL = new JLabel("URL :");
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblURL.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblURL.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblURL.setBounds(26, 23, 35, 16);			
 		grpURL.add(lblURL);
 		
 		textURL = new JTextField();
 		textURL.setForeground(Color.LIGHT_GRAY);
-		textURL.setFont(new Font("Arial Unicode MS", Font.ITALIC, 12));
+		textURL.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		textURL.setText(Shutter.language.getProperty("textURL"));
 		textURL.setBounds(66, 22, 270, 21);
 		textURL.setColumns(10);	
@@ -342,7 +342,7 @@ public class VideoWeb {
 						textURL.setForeground(Color.WHITE);
 					else
 						textURL.setForeground(Color.BLACK);
-					textURL.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+					textURL.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		       		btnOK.setEnabled(true);
 					if (caseAuto.isSelected() == false)
 						caseAuto.doClick();
@@ -372,7 +372,7 @@ public class VideoWeb {
 								
 		caseAuto = new JRadioButton("Auto");
 		caseAuto.setSelected(true);
-		caseAuto.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseAuto.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseAuto.setBounds(66, 52, 45, 16);	
 		caseAuto.setEnabled(false);
 		grpURL.add(caseAuto);
@@ -454,7 +454,7 @@ public class VideoWeb {
 		
 		lblQualit = new JLabel(Shutter.language.getProperty("lblQualit"));
 		lblQualit.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblQualit.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblQualit.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblQualit.setBounds(16, 51, 45, 16);		
 		grpURL.add(lblQualit);
 		
@@ -473,7 +473,7 @@ public class VideoWeb {
 		});
 		
 		caseMP3 = new JRadioButton(Shutter.language.getProperty("caseMP3"));
-		caseMP3.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseMP3.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseMP3.setBounds(121, 52, 127, 16);		
 		grpURL.add(caseMP3);
 		
@@ -498,7 +498,7 @@ public class VideoWeb {
 		});
 		
 		caseWAV = new JRadioButton(Shutter.language.getProperty("caseWAV"));
-		caseWAV.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseWAV.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseWAV.setBounds(248, 52, 127, 16);		
 		grpURL.add(caseWAV);
 		
@@ -525,7 +525,7 @@ public class VideoWeb {
 		frame.getContentPane().add(grpURL);			
 		
 		caseVideoPass = new JRadioButton(Shutter.language.getProperty("caseVideoPass"));
-		caseVideoPass.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseVideoPass.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseVideoPass.setBounds(66, 123, caseVideoPass.getPreferredSize().width, 16);			
 		grpURL.add(caseVideoPass);
 			
@@ -546,14 +546,14 @@ public class VideoWeb {
 		
 		textVideoPass = new JTextField();
 		textVideoPass.setForeground(Color.BLACK);
-		textVideoPass.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textVideoPass.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textVideoPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 120, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		textVideoPass.setEnabled(false);
 		textVideoPass.setColumns(10);	
 		grpURL.add(textVideoPass);
 		
 		caseUser = new JRadioButton(Shutter.language.getProperty("caseUser"));
-		caseUser.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseUser.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseUser.setBounds(66, 79, caseUser.getPreferredSize().width, 16);
 		grpURL.add(caseUser);
 		
@@ -576,13 +576,13 @@ public class VideoWeb {
 		textUser.setEnabled(false);
 		textUser.setText((String) null);
 		textUser.setForeground(Color.BLACK);
-		textUser.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textUser.setColumns(10);
 		textUser.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 76, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		grpURL.add(textUser);
 				
 		casePass = new JRadioButton(Shutter.language.getProperty("casePass"));
-		casePass.setFont(new Font("Arial", Font.PLAIN, 12));
+		casePass.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		casePass.setBounds(66, 101, casePass.getPreferredSize().width, 16);
 		grpURL.add(casePass);
 		
@@ -605,7 +605,7 @@ public class VideoWeb {
 		textPass.setEnabled(false);
 		textPass.setText((String) null);
 		textPass.setForeground(Color.BLACK);
-		textPass.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textPass.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPass.setColumns(10);
 		textPass.setEchoChar('•');
 		textPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 98, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
@@ -756,7 +756,7 @@ public class VideoWeb {
 			textURL.setText("");
 		
 			textURL.setForeground(Color.BLACK);
-			textURL.setFont(new Font("Arial", Font.PLAIN, 13));
+			textURL.setFont(new Font("SansSerif", Font.PLAIN, 13));
        		btnOK.setEnabled(true);
 			if (caseAuto.isSelected() == false)
 				caseAuto.doClick();
@@ -778,7 +778,7 @@ public class VideoWeb {
 		if (textURL.getText().equals(Shutter.language.getProperty("textURL")))
 			textURL.setText("");
 		textURL.setForeground(Color.BLACK);
-		textURL.setFont(new Font("Arial", Font.PLAIN, 13));
+		textURL.setFont(new Font("SansSerif", Font.PLAIN, 13));
 		caseAuto.setEnabled(true);
 		btnOK.setEnabled(true);	
 	}

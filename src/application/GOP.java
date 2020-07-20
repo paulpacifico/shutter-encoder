@@ -78,7 +78,7 @@ public class GOP {
 		});
 		
 		JLabel image1 = new JLabel("I");
-		image1.setFont(new Font("Arial", Font.PLAIN, 40));
+		image1.setFont(new Font("FreeSans", Font.PLAIN, 40));
 		image1.setHorizontalAlignment(SwingConstants.CENTER);
 		image1.setBackground(new Color(232,67,67));
 		image1.setOpaque(true);
@@ -173,7 +173,7 @@ public class GOP {
 		if (type == 'I')
 		{
 			image = new JLabel("I");
-			image.setFont(new Font("Arial", Font.PLAIN, 40));
+			image.setFont(new Font("FreeSans", Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(232,67,67));
@@ -182,7 +182,7 @@ public class GOP {
 		else if (type == 'P')
 		{
 			image = new JLabel("P");
-			image.setFont(new Font("Arial", Font.PLAIN, 40));
+			image.setFont(new Font("FreeSans", Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(68,139,233));
@@ -191,7 +191,7 @@ public class GOP {
 		else
 		{
 			image = new JLabel("B");
-			image.setFont(new Font("Arial", Font.PLAIN, 40));
+			image.setFont(new Font("FreeSans", Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(100,232,67));

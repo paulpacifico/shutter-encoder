@@ -155,7 +155,7 @@ public class Wetransfer {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		panelHaut.setBounds(0, 0, 267, 44);
 		
@@ -267,7 +267,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblYourMail);		
 
 		textFrom.setBounds(101, lblYourMail.getY() - 1, 154, 21);
-		textFrom.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textFrom.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFrom.setColumns(10);		
 		frame.getContentPane().add(textFrom);
 		
@@ -296,7 +296,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblRecipient);		
 				
 		textTo.setBounds(textFrom.getX(), lblRecipient.getY() - 1, 154, 21);
-		textTo.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textTo.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textTo.setColumns(10);
 		frame.getContentPane().add(textTo);		
 		
@@ -307,7 +307,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblMessage);
 		
 		textMessage.setBounds(textTo.getX(), lblMessage.getY() - 1, 154, 83);
-		textMessage.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textMessage.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textMessage.setLineWrap(true);
 		
 		JScrollPane scrollBar = new JScrollPane();
@@ -318,7 +318,7 @@ public class Wetransfer {
 		frame.getContentPane().add(scrollBar);
 		
 		casePlus.setBackground(new Color(50, 50, 50));
-		casePlus.setFont(new Font("Arial", Font.PLAIN, 12));
+		casePlus.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		casePlus.setBounds(10, scrollBar.getY() + scrollBar.getHeight() + 7, casePlus.getPreferredSize().width, 23);
 		frame.getContentPane().add(casePlus);
 		
@@ -356,7 +356,7 @@ public class Wetransfer {
 		frame.getContentPane().add(lblUser);		
 		
 		textUser.setBounds(textFrom.getX(), lblUser.getY() - 1, 154, 21);
-		textUser.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		if (casePlus.isSelected())
 			textUser.setEnabled(true);
 		else
@@ -375,7 +375,7 @@ public class Wetransfer {
 		
 		lblMotDePasse.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		
-		textPassword.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		textPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		if (casePlus.isSelected())
 			textPassword.setEnabled(true);
 		else

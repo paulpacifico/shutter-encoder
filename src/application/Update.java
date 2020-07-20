@@ -117,7 +117,7 @@ public class Update {
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		panelHaut.setBounds(0, 0, 346, 59);
 		

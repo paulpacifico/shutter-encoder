@@ -223,7 +223,7 @@ import javax.swing.JScrollPane;
 		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 				
 		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 		Image scaledImage = image.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_SMOOTH);
@@ -244,7 +244,7 @@ import javax.swing.JScrollPane;
 		
 		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 15);
+		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -386,7 +386,7 @@ import javax.swing.JScrollPane;
 		frame.getContentPane().add(scrollPane);
 		
 		JLabel lblPourcentage = new JLabel("%");
-		lblPourcentage.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblPourcentage.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblPourcentage.setBounds(132, 63, 11, 15);
 		frame.getContentPane().add(lblPourcentage);
 			
@@ -417,7 +417,7 @@ import javax.swing.JScrollPane;
 		});
 		
 		JLabel lblSensibilit = new JLabel(Shutter.language.getProperty("lblSensibility"));
-		lblSensibilit.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblSensibilit.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblSensibilit.setBounds(10, 62, 64, 15);
 		frame.getContentPane().add(lblSensibilit);
 		
@@ -427,7 +427,7 @@ import javax.swing.JScrollPane;
 		
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font("Arial", Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font("FreeSans", Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		lblFlecheBas.setVisible(true);		

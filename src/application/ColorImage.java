@@ -300,7 +300,7 @@ public class ColorImage {
 		panelHaut();
 				
 		JLabel lblExposure = new JLabel(Shutter.language.getProperty("lblExposure"));
-		lblExposure.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblExposure.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblExposure.setBounds(12, 62, 180, 16);		
 		frame.getContentPane().add(lblExposure);
 
@@ -310,7 +310,7 @@ public class ColorImage {
 		sliderExposure.setMaximum(100);
 		sliderExposure.setMinimum(-100);
 		sliderExposure.setValue(0);		
-		sliderExposure.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderExposure.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderExposure.setBounds(12, lblExposure.getY() + lblExposure.getHeight(), 180, 22);	
 		
 		sliderExposure.addMouseListener(new MouseAdapter() {
@@ -347,7 +347,7 @@ public class ColorImage {
 		frame.add(sliderExposure);
 				
 		JLabel lblContrast = new JLabel(Shutter.language.getProperty("lblContrast"));
-		lblContrast.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblContrast.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblContrast.setBounds(12, sliderExposure.getY() + sliderExposure.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblContrast);
 		
@@ -357,7 +357,7 @@ public class ColorImage {
 		sliderContrast.setMaximum(100);
 		sliderContrast.setMinimum(-100);
 		sliderContrast.setValue(0);		
-		sliderContrast.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderContrast.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderContrast.setBounds(12, lblContrast.getY() + lblContrast.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderContrast.addMouseListener(new MouseAdapter() {
@@ -394,7 +394,7 @@ public class ColorImage {
 		frame.add(sliderContrast);
 		
 		JLabel lblHighlights = new JLabel(Shutter.language.getProperty("lblHighlights"));
-		lblHighlights.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblHighlights.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblHighlights.setBounds(12, sliderContrast.getY() + sliderContrast.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblHighlights);
 		
@@ -404,7 +404,7 @@ public class ColorImage {
 		sliderHighlights.setMaximum(100);
 		sliderHighlights.setMinimum(-100);
 		sliderHighlights.setValue(0);		
-		sliderHighlights.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderHighlights.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderHighlights.setBounds(12, lblHighlights.getY() + lblHighlights.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderHighlights.addMouseListener(new MouseAdapter() {
@@ -441,7 +441,7 @@ public class ColorImage {
 		frame.add(sliderHighlights);
 		
 		JLabel lblMediums = new JLabel(Shutter.language.getProperty("lblMediums"));
-		lblMediums.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblMediums.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblMediums.setBounds(12, sliderHighlights.getY() + sliderHighlights.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblMediums);
 		
@@ -451,7 +451,7 @@ public class ColorImage {
 		sliderMediums.setMaximum(100);
 		sliderMediums.setMinimum(-100);
 		sliderMediums.setValue(0);		
-		sliderMediums.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderMediums.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderMediums.setBounds(12, lblMediums.getY() + lblMediums.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderMediums.addMouseListener(new MouseAdapter() {
@@ -488,7 +488,7 @@ public class ColorImage {
 		frame.add(sliderMediums);
 		
 		JLabel lblShadows = new JLabel(Shutter.language.getProperty("lblShadows"));
-		lblShadows.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblShadows.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblShadows.setBounds(12, sliderMediums.getY() + sliderMediums.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblShadows);
 		
@@ -498,7 +498,7 @@ public class ColorImage {
 		sliderShadows.setMaximum(100);
 		sliderShadows.setMinimum(-100);
 		sliderShadows.setValue(0);		
-		sliderShadows.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderShadows.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderShadows.setBounds(12, lblShadows.getY() + lblShadows.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderShadows.addMouseListener(new MouseAdapter() {
@@ -535,7 +535,7 @@ public class ColorImage {
 		frame.add(sliderShadows);
 		
 		JLabel lblRGB = new JLabel(Shutter.language.getProperty("lblRGB"));
-		lblRGB.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblRGB.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblRGB.setBounds(12, sliderShadows.getY() + sliderShadows.getHeight() + 6, lblRGB.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblRGB);
 		
@@ -546,7 +546,7 @@ public class ColorImage {
 		comboRGB.setMaximumRowCount(10);
 		comboRGB.setEditable(false);
 		comboRGB.setSelectedIndex(0);
-		comboRGB.setFont(new Font("Arial", Font.PLAIN, 11));
+		comboRGB.setFont(new Font("FreeSans", Font.PLAIN, 10));
 		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 7, lblRGB.getY() - 3, 80, 22);		
 		frame.getContentPane().add(comboRGB);
 		
@@ -584,7 +584,7 @@ public class ColorImage {
 		});
 		
 		JLabel lblR = new JLabel(Shutter.language.getProperty("lblRED"));
-		lblR.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblR.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblR.setBounds(12, comboRGB.getY() + comboRGB.getHeight() + 3, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblR);
 		
@@ -594,7 +594,7 @@ public class ColorImage {
 		sliderRED.setMaximum(100);
 		sliderRED.setMinimum(-100);
 		sliderRED.setValue(0);		
-		sliderRED.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderRED.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderRED.setBounds(12, lblR.getY() + lblR.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderRED.addMouseListener(new MouseAdapter() {
@@ -661,7 +661,7 @@ public class ColorImage {
 		frame.add(sliderRED);
 		
 		JLabel lblG = new JLabel(Shutter.language.getProperty("lblGREEN"));
-		lblG.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblG.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblG.setBounds(12, sliderRED.getY() + sliderRED.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblG);
 		
@@ -671,7 +671,7 @@ public class ColorImage {
 		sliderGREEN.setMaximum(100);
 		sliderGREEN.setMinimum(-100);
 		sliderGREEN.setValue(0);		
-		sliderGREEN.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderGREEN.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderGREEN.setBounds(12, lblG.getY() + lblG.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderGREEN.addMouseListener(new MouseAdapter() {
@@ -738,7 +738,7 @@ public class ColorImage {
 		frame.add(sliderGREEN);
 		
 		JLabel lblB = new JLabel(Shutter.language.getProperty("lblBLUE"));
-		lblB.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblB.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblB.setBounds(12, sliderGREEN.getY() + sliderGREEN.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblB);
 		
@@ -748,7 +748,7 @@ public class ColorImage {
 		sliderBLUE.setMaximum(100);
 		sliderBLUE.setMinimum(-100);
 		sliderBLUE.setValue(0);		
-		sliderBLUE.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderBLUE.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderBLUE.setBounds(12, lblB.getY() + lblB.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderBLUE.addMouseListener(new MouseAdapter() {
@@ -815,7 +815,7 @@ public class ColorImage {
 		frame.add(sliderBLUE);
 		
 		JLabel lblVibrance = new JLabel(Shutter.language.getProperty("lblVibrance"));
-		lblVibrance.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblVibrance.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblVibrance.setBounds(12, sliderBLUE.getY() + sliderBLUE.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblVibrance);
 		
@@ -825,7 +825,7 @@ public class ColorImage {
 		sliderVibrance.setMaximum(100);
 		sliderVibrance.setMinimum(-100);
 		sliderVibrance.setValue(0);		
-		sliderVibrance.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderVibrance.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderVibrance.setBounds(12, lblVibrance.getY() + lblVibrance.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderVibrance.addMouseListener(new MouseAdapter() {
@@ -862,7 +862,7 @@ public class ColorImage {
 		frame.add(sliderVibrance);			
 		
 		JLabel lblSaturation = new JLabel(Shutter.language.getProperty("lblSaturation"));
-		lblSaturation.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblSaturation.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblSaturation.setBounds(12, sliderVibrance.getY() + sliderVibrance.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblSaturation);
 		
@@ -872,7 +872,7 @@ public class ColorImage {
 		sliderSaturation.setMaximum(100);
 		sliderSaturation.setMinimum(-100);
 		sliderSaturation.setValue(0);		
-		sliderSaturation.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderSaturation.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderSaturation.setBounds(12, lblSaturation.getY() + lblSaturation.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderSaturation.addMouseListener(new MouseAdapter() {
@@ -909,7 +909,7 @@ public class ColorImage {
 		frame.add(sliderSaturation);
 			
 		JLabel lblGrain = new JLabel(Shutter.language.getProperty("lblGrain"));
-		lblGrain.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblGrain.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblGrain.setBounds(12, sliderSaturation.getY() + sliderSaturation.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblGrain);
 		
@@ -919,7 +919,7 @@ public class ColorImage {
 		sliderGrain.setMaximum(100);
 		sliderGrain.setMinimum(-100);
 		sliderGrain.setValue(0);		
-		sliderGrain.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderGrain.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderGrain.setBounds(12, lblGrain.getY() + lblGrain.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderGrain.addMouseListener(new MouseAdapter() {
@@ -956,7 +956,7 @@ public class ColorImage {
 		frame.add(sliderGrain);	
 		
 		JLabel lblRotate = new JLabel(Shutter.language.getProperty("caseRotate"));
-		lblRotate.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblRotate.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblRotate.setBounds(12, sliderGrain.getY() + sliderGrain.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblRotate);
 		
@@ -966,7 +966,7 @@ public class ColorImage {
 		sliderRotate.setMaximum(100);
 		sliderRotate.setMinimum(-100);
 		sliderRotate.setValue(0);		
-		sliderRotate.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderRotate.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderRotate.setBounds(12, lblRotate.getY() + lblRotate.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderRotate.addMouseListener(new MouseAdapter() {
@@ -1003,7 +1003,7 @@ public class ColorImage {
 		frame.add(sliderRotate);	
 		
 		JLabel lblVignette = new JLabel(Shutter.language.getProperty("lblVignette"));
-		lblVignette.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblVignette.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblVignette.setBounds(12, sliderRotate.getY() + sliderRotate.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblVignette);
 		
@@ -1013,7 +1013,7 @@ public class ColorImage {
 		sliderVignette.setMaximum(100);
 		sliderVignette.setMinimum(-100);
 		sliderVignette.setValue(0);		
-		sliderVignette.setFont(new Font("Arial", Font.PLAIN, 11));
+		sliderVignette.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderVignette.setBounds(12, lblVignette.getY() + lblVignette.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderVignette.addMouseListener(new MouseAdapter() {
@@ -1235,7 +1235,7 @@ public class ColorImage {
 		
 		positionVideo.setMaximum(FFPROBE.dureeTotale);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("Arial", Font.PLAIN, 11));
+		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setBounds(212, frame.getHeight() - 33, sliderExposure.getWidth(), 22);	
 		frame.getContentPane().add(positionVideo); 
 		
@@ -1423,6 +1423,9 @@ public class ColorImage {
 					//LUTs
 					eq = setLuts(eq);	
 					
+					//Colormatrix
+					eq = setColormatrix(eq);		
+					
 					//Exposure
 					eq = setExposure(eq);
 					
@@ -1455,6 +1458,9 @@ public class ColorImage {
 					
 					//Vignette
 					eq = setVignette(eq);
+					
+					//FinalEQ
+					setFinalEQ();					
 					
 					if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
 						eq += ",yadif=0:" + FFPROBE.fieldOrder + ":0";		
@@ -1630,6 +1636,9 @@ public class ColorImage {
 					
 					//LUTs
 					eq = setLuts(eq);	
+
+					//Colormatrix
+					eq = setColormatrix(eq);	
 					
 					//Exposure
 					eq = setExposure(eq);
@@ -1663,6 +1672,9 @@ public class ColorImage {
 					
 					//Vignette
 					eq = setVignette(eq);
+					
+					//FinalEQ
+					setFinalEQ();	
 										
 					if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
 						eq += ",yadif=0:" + FFPROBE.fieldOrder + ":0";				 	
@@ -1719,43 +1731,7 @@ public class ColorImage {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String eq = "";
-				
-				//Exposure
-				eq = setExposure(eq);
-				
-				//Highlights 
-				eq = setHighlights(eq);
-				
-				//Mediums 
-				eq = setMediums(eq);
-				
-				//Shadows 
-				eq = setShadows(eq);
-				
-				//Contrast
-				eq = setContrast(eq);
-				
-				//Balance
-				eq = setBalance(eq);
-				
-				//Vibrance
-				eq = setVibrance(eq);
-				
-				//Saturation
-				eq = setSaturation(eq);
-				
-				//Grain
-				eq = setGrain(eq);
-				
-				//Rotate
-				eq = setRotate(eq);
-				
-				//Vignette
-				eq = setVignette(eq);
-				
-				//FinalEQ
-				Shutter.finalEQ = eq.replace("\"", "'");
+				setFinalEQ();
 				
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
@@ -1793,7 +1769,7 @@ public class ColorImage {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -1842,7 +1818,7 @@ public class ColorImage {
 		
 		fullscreen = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/max2.png")));
 		fullscreen.setHorizontalAlignment(SwingConstants.CENTER);
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 15);
+		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
 			
 		fullscreen.addMouseListener(new MouseListener(){
 			
@@ -1908,7 +1884,7 @@ public class ColorImage {
 		
 		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 15);
+		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -2245,6 +2221,9 @@ public class ColorImage {
 						//LUTs
 						eq = setLuts(eq);
 						
+						//Colormatrix
+						eq = setColormatrix(eq);	
+						
 						//Exposure
 						eq = setExposure(eq);
 						
@@ -2279,7 +2258,7 @@ public class ColorImage {
 						eq = setVignette(eq);
 						
 						//FinalEQ
-						Shutter.finalEQ = eq.replace("\"", "'");
+						setFinalEQ();	
 						
 						//Histogramm
 						String histogram = setHistogram(eq);
@@ -2379,6 +2358,17 @@ public class ColorImage {
 		return eq;
 	}
 
+	protected static String setColormatrix(String eq) {
+		if (Shutter.caseColormatrix.isSelected() && Shutter.comboInColormatrix.getSelectedItem().equals("HDR") == false)
+		{
+			if (eq != "") eq += ",";
+			
+			eq += "colormatrix=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+		}
+		
+		return eq;
+	}
+	
 	protected static String setGrain(String eq) {
 		if (sliderGrain.getValue() != 0)
 		{		
@@ -2595,6 +2585,46 @@ public class ColorImage {
 		return eq;
 	}
 
+	protected static void setFinalEQ() {
+		String eq = "";
+		
+		//Exposure
+		eq = setExposure(eq);
+		
+		//Highlights 
+		eq = setHighlights(eq);
+		
+		//Mediums 
+		eq = setMediums(eq);
+		
+		//Shadows 
+		eq = setShadows(eq);
+		
+		//Contrast
+		eq = setContrast(eq);
+		
+		//Balance
+		eq = setBalance(eq);
+		
+		//Vibrance
+		eq = setVibrance(eq);
+		
+		//Saturation
+		eq = setSaturation(eq);
+		
+		//Grain
+		eq = setGrain(eq);
+		
+		//Rotate
+		eq = setRotate(eq);
+		
+		//Vignette
+		eq = setVignette(eq);
+		
+		//FinalEQ
+		Shutter.finalEQ = eq.replace("\"", "'");
+	}
+	
 	public static void loadSettings(File encFile) {
 		
 		Thread t = new Thread (new Runnable() 
@@ -2715,9 +2745,9 @@ public class ColorImage {
 		panelHaut.setBounds(0,0,frame.getSize().width, 52);
 		
 		topImage.setLocation(frame.getSize().width / 2 - topImage.getSize().width / 2, 0);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);	
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 15);
-		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);	
+		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
 		
 		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					

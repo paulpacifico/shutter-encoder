@@ -402,7 +402,7 @@ public class Subtitles {
     	frame.getContentPane().add(lblHelp);    	
     	    	
     	JLabel lblTexte = new JLabel(Shutter.language.getProperty("lblTexte"));
-    	lblTexte.setFont(new Font("Arial", Font.PLAIN, 13));
+    	lblTexte.setFont(new Font("FreeSans", Font.PLAIN, 13));
     	lblTexte.setBounds(10, 12, lblTexte.getPreferredSize().width, 14);
     	frame.getContentPane().add(lblTexte);	
     	
@@ -625,7 +625,7 @@ public class Subtitles {
     	
     	caseShowWaveform.setSelected(true);
     	caseShowWaveform.setEnabled(false);
-    	caseShowWaveform.setFont(new Font("Arial", Font.PLAIN, 12));
+    	caseShowWaveform.setFont(new Font("FreeSans", Font.PLAIN, 12));
     	caseShowWaveform.setBackground(new Color(50, 50, 50));
     	caseShowWaveform.setBounds(btnDebut.getX() - caseShowWaveform.getWidth() - 20, 6, caseShowWaveform.getPreferredSize().width, 23);
     	frame.getContentPane().add(caseShowWaveform);
@@ -659,7 +659,7 @@ public class Subtitles {
     	
 		textOffset.setBounds(images.getX() - images.getWidth() - 27, lblOffset.getLocation().y, 34, 16);
 		textOffset.setHorizontalAlignment(SwingConstants.RIGHT);
-		textOffset.setFont(new Font("Arial", Font.PLAIN, 12));
+		textOffset.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		frame.getContentPane().add(textOffset);
 		
 		textOffset.addKeyListener(new KeyListener(){
@@ -775,7 +775,7 @@ public class Subtitles {
 		});	
 		
 		lblOffset.setHorizontalAlignment(SwingConstants.LEFT);
-		lblOffset.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblOffset.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblOffset.setAlignmentX(SwingConstants.RIGHT);
 		lblOffset.setBounds(textOffset.getX() - lblOffset.getWidth() - 7, 9, lblOffset.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblOffset);

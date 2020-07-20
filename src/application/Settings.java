@@ -135,9 +135,9 @@ public class Settings {
 		frame.setModal(true);
 		
 		if (System.getProperty("os.name").contains("Mac"))
-			frame.setSize(315, 490);
+			frame.setSize(315, 510);
 		else
-			frame.setSize(325, 510);
+			frame.setSize(325, 530);
 
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
 		frame.setForeground(Color.WHITE);
@@ -184,15 +184,15 @@ public class Settings {
             }
         });
 		
-		btnSetBab.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnSetBab.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnSetBab.setBounds(12, 12, btnSetBab.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnSetBab);
 		
-		btnOpenGOP.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnOpenGOP.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnOpenGOP.setBounds(12, btnSetBab.getLocation().y + btnSetBab.getHeight() + 10, btnOpenGOP.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnOpenGOP);
 		
-		btnExtension.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnExtension.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnExtension.setBounds(12, btnOpenGOP.getLocation().y + btnOpenGOP.getHeight() + 10, btnExtension.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnExtension);
 		
@@ -214,23 +214,23 @@ public class Settings {
 		else
 			txtExtension.setEnabled(false);
 		txtExtension.setColumns(10);
-		txtExtension.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExtension);
 		
-		btnWaitFileComplete.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnWaitFileComplete.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnWaitFileComplete.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnWaitFileComplete);
 		
-		btnDisableSound.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnDisableSound.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnDisableSound.setBounds(12, btnWaitFileComplete.getLocation().y + btnWaitFileComplete.getHeight() + 10, btnDisableSound.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableSound);
 		
-		btnDisableUpdate.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnDisableUpdate.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnDisableUpdate.setBounds(12, btnDisableSound.getLocation().y + btnDisableSound.getHeight() + 10, btnDisableUpdate.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableUpdate);
 		
-		btnEndingAction.setFont(new Font("Arial", Font.PLAIN, 12));
+		btnEndingAction.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnEndingAction.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnEndingAction.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEndingAction);
 		
@@ -253,7 +253,7 @@ public class Settings {
 					Shutter.language.getProperty("lblActionShutdown")
 					}));
 			comboAction.setSelectedIndex(1);	
-			comboAction.setFont(new Font("Arial", Font.PLAIN, 11));
+			comboAction.setFont(new Font("FreeSans", Font.PLAIN, 10));
 			comboAction.setEditable(false);
 			comboAction.setEnabled(false);
 			comboAction.setBounds(btnEndingAction.getX() + btnEndingAction.getWidth() + 6, btnEndingAction.getLocation().y - 4,  frame.getWidth() - (btnEndingAction.getLocation().x + btnEndingAction.getWidth()) - 32, 22);
@@ -261,7 +261,7 @@ public class Settings {
 		}
 		frame.getContentPane().add(comboAction);
 		
-		defaultOutput1.setFont(new Font("Arial", Font.PLAIN, 12));
+		defaultOutput1.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		defaultOutput1.setBounds(12,  btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 14, defaultOutput1.getPreferredSize().width, defaultOutput1.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput1);
 
@@ -270,7 +270,7 @@ public class Settings {
 		else
 			lblDestination1.setForeground(new Color(71, 163, 236));
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		lblDestination1.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		lblDestination1.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblDestination1.setBackground(new Color(50, 50, 50));
 		if (lblDestination1.getText() == "")
 		{
@@ -365,7 +365,7 @@ public class Settings {
 			}
 		});
 			
-		lastUsedOutput1.setFont(new Font("Arial", Font.PLAIN, 12));
+		lastUsedOutput1.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lastUsedOutput1.setBounds(defaultOutput1.getX() + defaultOutput1.getWidth() + 10, defaultOutput1.getLocation().y, lastUsedOutput1.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput1);
 		
@@ -380,7 +380,7 @@ public class Settings {
 			}	
 		});
 		
-		defaultOutput2.setFont(new Font("Arial", Font.PLAIN, 12));
+		defaultOutput2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		defaultOutput2.setBounds(12,  lblDestination1.getLocation().y + lblDestination1.getHeight() + 10, defaultOutput2.getPreferredSize().width, defaultOutput2.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput2);
 		
@@ -389,7 +389,7 @@ public class Settings {
 		else
 			lblDestination2.setForeground(new Color(71, 163, 236));
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		lblDestination2.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		lblDestination2.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblDestination2.setBackground(new Color(50, 50, 50));
 		if (lblDestination2.getText() == "")
 		{
@@ -484,7 +484,7 @@ public class Settings {
 			}
 		});
 		
-		lastUsedOutput2.setFont(new Font("Arial", Font.PLAIN, 12));
+		lastUsedOutput2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lastUsedOutput2.setBounds(defaultOutput2.getX() + defaultOutput2.getWidth() + 10, defaultOutput2.getLocation().y, lastUsedOutput2.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput2);
 		
@@ -499,7 +499,7 @@ public class Settings {
 			}	
 		});
 		
-		defaultOutput3.setFont(new Font("Arial", Font.PLAIN, 12));
+		defaultOutput3.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		defaultOutput3.setBounds(12,  lblDestination2.getLocation().y + lblDestination2.getHeight() + 10, defaultOutput3.getPreferredSize().width, defaultOutput3.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput3);
 		
@@ -508,7 +508,7 @@ public class Settings {
 		else
 			lblDestination3.setForeground(new Color(71, 163, 236));
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		lblDestination3.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		lblDestination3.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblDestination3.setBackground(new Color(50, 50, 50));
 		if (lblDestination3.getText() == "")
 		{
@@ -603,7 +603,7 @@ public class Settings {
 			}
 		});
 		
-		lastUsedOutput3.setFont(new Font("Arial", Font.PLAIN, 12));
+		lastUsedOutput3.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lastUsedOutput3.setBounds(defaultOutput3.getX() + defaultOutput3.getWidth() + 10, defaultOutput3.getLocation().y, lastUsedOutput3.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput3);
 		
@@ -623,12 +623,12 @@ public class Settings {
 		lblDestination2.setTransferHandler(new OutputTransferHandler2());
 		lblDestination3.setTransferHandler(new OutputTransferHandler3());
 		
-		lblThreads.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblThreads.setBounds(12, lblDestination3.getLocation().y + lblDestination3.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
 		frame.getContentPane().add(lblThreads);
 		
 		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);
-		txtThreads.setFont(new Font("Arial", Font.PLAIN, 12));
+		txtThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		txtThreads.setColumns(10);
 		txtThreads.setBounds(lblThreads.getLocation().x + lblThreads.getWidth() + 6, lblThreads.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtThreads);
@@ -646,18 +646,18 @@ public class Settings {
 			
 		});
 		
-		lblImageToVideo.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblImageToVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblImageToVideo.setBounds(12, lblThreads.getLocation().y + lblThreads.getHeight() + 10, lblImageToVideo.getPreferredSize().width, lblThreads.getPreferredSize().height);
 		frame.getContentPane().add(lblImageToVideo);
 		
 		txtImageDuration.setHorizontalAlignment(SwingConstants.CENTER);
-		txtImageDuration.setFont(new Font("Arial", Font.PLAIN, 12));
+		txtImageDuration.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		txtImageDuration.setColumns(10);
 		txtImageDuration.setBounds(lblImageToVideo.getLocation().x + lblImageToVideo.getWidth() + 6, lblImageToVideo.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtImageDuration);
 		
 		JLabel lblSec = new JLabel("sec");
-		lblSec.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblSec.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblSec.setBounds(txtImageDuration.getLocation().x + txtImageDuration.getWidth() + 4, lblImageToVideo.getLocation().y, 34, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblSec);
 
@@ -674,18 +674,18 @@ public class Settings {
 			
 		});
 		
-		lblBlackDetection.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblBlackDetection.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblBlackDetection.setBounds(12, lblImageToVideo.getLocation().y + lblImageToVideo.getHeight() + 10, lblImageToVideo.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblBlackDetection);
 		
 		txtBlackDetection.setHorizontalAlignment(SwingConstants.CENTER);
-		txtBlackDetection.setFont(new Font("Arial", Font.PLAIN, 12));
+		txtBlackDetection.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		txtBlackDetection.setColumns(10);
 		txtBlackDetection.setBounds(lblBlackDetection.getLocation().x + lblBlackDetection.getWidth() + 6, lblBlackDetection.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtBlackDetection);
 		
 		JLabel lblFrame = new JLabel(Shutter.language.getProperty("lblFrames"));
-		lblFrame.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblFrame.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblFrame.setBounds(txtBlackDetection.getLocation().x + txtBlackDetection.getWidth() + 4, lblBlackDetection.getY(), lblFrame.getPreferredSize().width, lblBlackDetection.getPreferredSize().height);
 		frame.getContentPane().add(lblFrame);
 
@@ -702,11 +702,11 @@ public class Settings {
 			
 		});
 		
-		lblLanguage.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblLanguage.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblLanguage.setBounds(12, lblBlackDetection.getLocation().y + lblBlackDetection.getHeight() + 10, lblLanguage.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblLanguage);
 			
-		comboLanguage.setFont(new Font("Arial", Font.PLAIN, 11));
+		comboLanguage.setFont(new Font("FreeSans", Font.PLAIN, 10));
 		comboLanguage.setEditable(false);
 		if (Shutter.getLanguage.equals("Français"))
 			comboLanguage.setSelectedItem("Français");
@@ -756,11 +756,11 @@ public class Settings {
 			
 		});
 		
-		lblTheme.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblTheme.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblTheme.setBounds(comboLanguage.getX() + comboLanguage.getWidth() + 12, lblLanguage.getLocation().y, lblTheme.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblTheme);
 			
-		comboTheme.setFont(new Font("Arial", Font.PLAIN, 11));
+		comboTheme.setFont(new Font("FreeSans", Font.PLAIN, 10));
 		comboTheme.setEditable(false);
 		comboTheme.setBounds(lblTheme.getX() + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, comboTheme.getPreferredSize().width, 22);
 		comboTheme.setMaximumRowCount(10);

@@ -105,7 +105,7 @@ public class BlackMagicOutput {
 		caseHD = new JRadioButton(Shutter.language.getProperty("caseHD"));
 		caseHD.setSelected(true);
 		caseHD.setBackground(new Color(50,50,50));
-		caseHD.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseHD.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseHD.setBounds(6, 38, caseHD.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseHD);
 		
@@ -168,14 +168,14 @@ public class BlackMagicOutput {
 		caseForceInterlace = new JRadioButton(Shutter.language.getProperty("caseForcerEntrelacement"));
 		caseForceInterlace.setSelected(false);
 		caseForceInterlace.setBounds(170, 38, caseForceInterlace.getPreferredSize().width + 20, 23);
-		caseForceInterlace.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseForceInterlace.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseForceInterlace.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(caseForceInterlace);
 		
 		caseAfficherLeTimecode = new JRadioButton(Shutter.language.getProperty("caseAfficherLeTimecode"));
 		caseAfficherLeTimecode.setSelected(true);
 		caseAfficherLeTimecode.setBounds(338, 38, caseAfficherLeTimecode.getPreferredSize().width + 20, 23);
-		caseAfficherLeTimecode.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseAfficherLeTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseAfficherLeTimecode.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(caseAfficherLeTimecode);
 		
@@ -187,7 +187,7 @@ public class BlackMagicOutput {
 		
 		lblTimecode = new JLabel("00:00:00:00");
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTimecode.setFont(new Font("Arial", Font.PLAIN, 30));
+		lblTimecode.setFont(new Font("FreeSans", Font.PLAIN, 30));
 		lblTimecode.setForeground(Color.RED);
 		lblTimecode.setBounds(6, 93, 461, 22);
 		frame.getContentPane().add(lblTimecode);

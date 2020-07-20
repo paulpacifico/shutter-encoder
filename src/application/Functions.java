@@ -133,6 +133,51 @@ public class Functions {
 			
 		});
 		
+		frame.addWindowListener(new WindowListener(){
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Shutter.iconPresets.setVisible(true);
+				if (Shutter.iconList.isVisible())
+				{
+					Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
+					Shutter.btnAnnuler.setBounds(205 + Shutter.iconList.getWidth(), 44, 101 - Shutter.iconList.getWidth(), 25);
+				}
+				else
+				{
+					Shutter.iconPresets.setBounds(180, 46, 21, 21);
+					Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+				}
+				
+				Utils.changeFrameVisibility(frame, shadow, true);				
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {	
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {										
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+			
+		});
+		
 		lblSave = new JLabel(Shutter.language.getProperty("lblSaveMac"));
 		
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -141,14 +186,14 @@ public class Functions {
 			lblSave = new JLabel(Shutter.language.getProperty("lblSavePC"));
 				
 		lblSave.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSave.setFont(new Font("Arial", Font.PLAIN, 16));
+		lblSave.setFont(new Font("FreeSans", Font.PLAIN, 16));
 		lblSave.setBounds(10, 112, 313, 45);
 		lblSave.setVisible(false);
 		frame.getContentPane().add(lblSave);
 		
 		lblDrop = new JLabel(Shutter.language.getProperty("lblDrop"));
 		lblDrop.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDrop.setFont(new Font("Arial", Font.PLAIN, 16));
+		lblDrop.setFont(new Font("FreeSans", Font.PLAIN, 16));
 		lblDrop.setBounds(10, 136, 313, 45);
 		lblDrop.setVisible(false);
 		frame.getContentPane().add(lblDrop);
@@ -175,8 +220,9 @@ public class Functions {
 		};
 		listeDeFonctions.setForeground(Color.BLACK);
 		listeDeFonctions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listeDeFonctions.setFont(new Font("Arial", Font.PLAIN, 11));
+		listeDeFonctions.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		listeDeFonctions.setCellRenderer(new FonctionsRenderer());
+		listeDeFonctions.setFixedCellHeight(17);
 		listeDeFonctions.setBounds(0, 52, 333, 198);
 		
 		listeDeFonctions.setTransferHandler(new FonctionsTransferHandler());   	
@@ -321,7 +367,7 @@ public class Functions {
 
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font("Arial", Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font("FreeSans", Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		
@@ -427,7 +473,7 @@ public class Functions {
 	
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		panelHaut.setBounds(0, 0, 1000, 53);
 		
@@ -481,7 +527,7 @@ public class Functions {
 		
 		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 15);
+		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 		panelHaut.add(reduce);
 		panelHaut.setBounds(0, 0, 852, 53);
 			
@@ -671,7 +717,7 @@ class FonctionsRenderer extends DefaultListCellRenderer {
 	      ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png"));
 	      ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(15, 15 , Image.SCALE_DEFAULT));		
 	      setIcon(icon);
-	      setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+	      setFont(new Font("SansSerif", Font.PLAIN, 12));
 	      setForeground(Color.BLACK);
 	      
 	      if (isSelected)

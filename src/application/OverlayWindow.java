@@ -228,7 +228,7 @@ public class OverlayWindow {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		panelHaut.setBounds(0, 0, 1000, 52);
 		
@@ -618,7 +618,7 @@ public class OverlayWindow {
 		
 		JLabel lblFont = new JLabel(Shutter.language.getProperty("lblFont"));
 		lblFont.setAlignmentX(SwingConstants.RIGHT);
-		lblFont.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblFont.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblFont.setBounds(12, frame.getHeight() - 124, lblFont.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblFont);
 		
@@ -767,7 +767,7 @@ public class OverlayWindow {
 		
 		JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
 		lblColor.setAlignmentX(SwingConstants.RIGHT);
-		lblColor.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblColor.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblColor.setBounds(comboFont.getX() + comboFont.getWidth() + 7, lblFont.getY(), lblColor.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblColor);
 		
@@ -865,7 +865,7 @@ public class OverlayWindow {
 				
 		JLabel lblColor2 = new JLabel(Shutter.language.getProperty("lblColor"));
 		lblColor2.setAlignmentX(SwingConstants.RIGHT);
-		lblColor2.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblColor2.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblColor2.setBounds(lblBackground.getLocation().x + lblBackground.getWidth() + 11, lblFont.getY(), lblColor2.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblColor2);
 		
@@ -907,7 +907,7 @@ public class OverlayWindow {
     	});
 				
 		caseAddTimecode.setName("caseAddTimecode");				
-		caseAddTimecode.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseAddTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseAddTimecode.setBackground(new Color(50, 50, 50));
 		caseAddTimecode.setSize(caseAddTimecode.getPreferredSize().width, 23);
 		caseAddTimecode.setLocation(12, frame.getHeight() - 102);
@@ -943,7 +943,7 @@ public class OverlayWindow {
 		TC1.setEnabled(false);
 		TC1.setText("00");
 		TC1.setHorizontalAlignment(SwingConstants.CENTER);
-		TC1.setFont(new Font("Arial", Font.PLAIN, 14));
+		TC1.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC1.setColumns(10);
 		TC1.setBounds(caseAddTimecode.getX() + caseAddTimecode.getWidth() + 7, caseAddTimecode.getY() + 1, 32, 21);
 		frame.add(TC1);
@@ -952,7 +952,7 @@ public class OverlayWindow {
 		TC2.setEnabled(false);
 		TC2.setText("00");
 		TC2.setHorizontalAlignment(SwingConstants.CENTER);
-		TC2.setFont(new Font("Arial", Font.PLAIN, 14));
+		TC2.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC2.setColumns(10);
 		TC2.setBounds(TC1.getX() + 36, TC1.getY(), 32, 21);
 		frame.add(TC2);
@@ -961,7 +961,7 @@ public class OverlayWindow {
 		TC3.setEnabled(false);
 		TC3.setText("00");
 		TC3.setHorizontalAlignment(SwingConstants.CENTER);
-		TC3.setFont(new Font("Arial", Font.PLAIN, 14));
+		TC3.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC3.setColumns(10);
 		TC3.setBounds(TC2.getX() + 36, TC1.getY(), 32, 21);
 		frame.add(TC3);
@@ -970,7 +970,7 @@ public class OverlayWindow {
 		TC4.setEnabled(false);
 		TC4.setText("00");
 		TC4.setHorizontalAlignment(SwingConstants.CENTER);
-		TC4.setFont(new Font("Arial", Font.PLAIN, 14));
+		TC4.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC4.setColumns(10);
 		TC4.setBounds(TC3.getX() + 36, TC1.getY(), 32, 21);
 		frame.add(TC4);
@@ -1060,7 +1060,7 @@ public class OverlayWindow {
 		});
 				
 		caseShowTimecode.setName("caseShowTimecode");
-		caseShowTimecode.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseShowTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseShowTimecode.setBackground(new Color(50, 50, 50));
 		caseShowTimecode.setEnabled(true);
 		caseShowTimecode.setSize(caseShowTimecode.getPreferredSize().width, 23);
@@ -1084,7 +1084,7 @@ public class OverlayWindow {
 		});
 						
 		caseShowFileName.setName("caseShowFileName");
-		caseShowFileName.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseShowFileName.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseShowFileName.setBackground(new Color(50, 50, 50));
 		caseShowFileName.setSize(154, 23);
 		caseShowFileName.setLocation(frame.getWidth() - caseShowFileName.getWidth() - 66, caseShowTimecode.getY());
@@ -1106,7 +1106,7 @@ public class OverlayWindow {
 		});
 		
 		caseShowText.setName("caseShowText");
-		caseShowText.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseShowText.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseShowText.setBackground(new Color(50, 50, 50));
 		caseShowText.setSize((int) caseShowText.getPreferredSize().getWidth(), 23);
 		caseShowText.setLocation(caseShowFileName.getX(), caseAddTimecode.getY());
@@ -1133,7 +1133,7 @@ public class OverlayWindow {
 		text.setLocation(caseShowText.getLocation().x + caseShowText.getWidth() + 7, caseShowText.getLocation().y + 1);
 		text.setSize(frame.getWidth() - text.getX() - 13, 21);
 		text.setHorizontalAlignment(SwingConstants.LEFT);
-		text.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
+		text.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		frame.getContentPane().add(text);
 
 		text.addKeyListener(new KeyListener(){
@@ -1197,7 +1197,7 @@ public class OverlayWindow {
 		
 		positionVideo.setMaximum(FFPROBE.dureeTotale);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("Arial", Font.PLAIN, 11));
+		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setLocation(panelColor2.getX() + panelColor2.getWidth() + 6, panelColor2.getY());
 		positionVideo.setSize(frame.getWidth() - positionVideo.getX() - 12, 22);	
 		
@@ -1221,14 +1221,14 @@ public class OverlayWindow {
 		});
 		
 		JLabel lblSizeTC = new JLabel(Shutter.language.getProperty("lblSize"));
-		lblSizeTC.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblSizeTC.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblSizeTC.setAlignmentX(SwingConstants.RIGHT);
 		lblSizeTC.setBounds(12,  caseShowTimecode.getY() + caseShowTimecode.getHeight() + 7, lblSizeTC.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblSizeTC);
 		
 		spinnerSizeTC = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeTC.setName("spinnerSizeTC");
-		spinnerSizeTC.setFont(new Font("Arial", Font.PLAIN, 11));
+		spinnerSizeTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerSizeTC.setBounds(lblSizeTC.getLocation().x + lblSizeTC.getWidth() + 7, lblSizeTC.getLocation().y - 3, 45, 22);
 		frame.getContentPane().add(spinnerSizeTC);
 		
@@ -1242,14 +1242,14 @@ public class OverlayWindow {
 		});
 		
 		JLabel lblOpacityTC = new JLabel(Shutter.language.getProperty("lblOpacity"));
-		lblOpacityTC.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblOpacityTC.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblOpacityTC.setAlignmentX(SwingConstants.RIGHT);
 		lblOpacityTC.setBounds(spinnerSizeTC.getLocation().x + spinnerSizeTC.getWidth() + 12, lblSizeTC.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblOpacityTC);
 
 		spinnerOpacityTC = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
 		spinnerOpacityTC.setName("spinnerOpacityTC");
-		spinnerOpacityTC.setFont(new Font("Arial", Font.PLAIN, 11));
+		spinnerOpacityTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerOpacityTC.setBounds(lblOpacityTC.getLocation().x + lblOpacityTC.getWidth() + 7, lblSizeTC.getLocation().y - 3, 45, 22);
 		frame.getContentPane().add(spinnerOpacityTC);
 		
@@ -1264,7 +1264,7 @@ public class OverlayWindow {
 		
 		JLabel posX = new JLabel("Pos. X :");
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
-		posX.setFont(new Font("Arial", Font.PLAIN, 12));
+		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX.setForeground(new Color(71,163,236));
 		posX.setAlignmentX(SwingConstants.RIGHT);
 		posX.setBounds(lblSizeTC.getX(), lblSizeTC.getY() + lblSizeTC.getHeight() + 6, posX.getPreferredSize().width, 16);
@@ -1274,7 +1274,7 @@ public class OverlayWindow {
 		textTcPosX.setName("textTcPosX");
 		textTcPosX.setBounds(spinnerSizeTC.getLocation().x, posX.getLocation().y, spinnerSizeTC.getWidth(), 16);
 		textTcPosX.setHorizontalAlignment(SwingConstants.RIGHT);
-		textTcPosX.setFont(new Font("Arial", Font.PLAIN, 12));
+		textTcPosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		frame.getContentPane().add(textTcPosX);
 		
 		textTcPosX.addKeyListener(new KeyListener(){
@@ -1346,7 +1346,7 @@ public class OverlayWindow {
 		});	
 		
 		JLabel posY = new JLabel("Pos. Y :");
-		posY.setFont(new Font("Arial", Font.PLAIN, 12));
+		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY.setForeground(new Color(71,163,236));
 		posY.setAlignmentX(SwingConstants.RIGHT);
 		posY.setBounds(lblOpacityTC.getX(), posX.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);
@@ -1356,7 +1356,7 @@ public class OverlayWindow {
 		textTcPosY.setName("textTcPosY");
 		textTcPosY.setBounds(spinnerOpacityTC.getLocation().x, posY.getLocation().y, spinnerOpacityTC.getWidth(), 16);
 		textTcPosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textTcPosY.setFont(new Font("Arial", Font.PLAIN, 12));
+		textTcPosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		frame.getContentPane().add(textTcPosY);
 		
 		textTcPosY.addKeyListener(new KeyListener(){
@@ -1428,14 +1428,14 @@ public class OverlayWindow {
 		});	
 		
 		JLabel lblSizeName = new JLabel(Shutter.language.getProperty("lblSize"));
-		lblSizeName.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblSizeName.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblSizeName.setAlignmentX(SwingConstants.RIGHT);
 		lblSizeName.setBounds(caseShowFileName.getX(), lblSizeTC.getY(), lblSizeName.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblSizeName);
 		
 		spinnerSizeName = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeName.setName("spinnerSizeName");
-		spinnerSizeName.setFont(new Font("Arial", Font.PLAIN, 11));
+		spinnerSizeName.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerSizeName.setBounds(lblSizeName.getLocation().x + lblSizeName.getWidth() + 7, lblSizeName.getLocation().y - 3, 45, 22);
 		frame.getContentPane().add(spinnerSizeName);
 		
@@ -1450,14 +1450,14 @@ public class OverlayWindow {
 		});
 		
 		JLabel lblOpacityName = new JLabel(Shutter.language.getProperty("lblOpacity"));
-		lblOpacityName.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblOpacityName.setAlignmentX(SwingConstants.RIGHT);
 		lblOpacityName.setBounds(spinnerSizeName.getLocation().x + spinnerSizeName.getWidth() + 12, lblSizeName.getLocation().y, lblOpacityName.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblOpacityName);
 
 		spinnerOpacityName = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
 		spinnerOpacityName.setName("spinnerOpacityName");
-		spinnerOpacityName.setFont(new Font("Arial", Font.PLAIN, 11));
+		spinnerOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerOpacityName.setBounds(lblOpacityName.getLocation().x + lblOpacityName.getWidth() + 7, lblSizeName.getLocation().y - 3, 45, 22);
 		frame.getContentPane().add(spinnerOpacityName);
 		
@@ -1472,7 +1472,7 @@ public class OverlayWindow {
 		
 		JLabel posX2 = new JLabel("Pos. X :");
 		posX2.setHorizontalAlignment(SwingConstants.LEFT);
-		posX2.setFont(new Font("Arial", Font.PLAIN, 12));
+		posX2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX2.setForeground(new Color(71,163,236));
 		posX2.setAlignmentX(SwingConstants.RIGHT);
 		posX2.setBounds(lblSizeName.getX(), lblSizeName.getY() + lblSizeName.getHeight() + 6, posX2.getPreferredSize().width, 16);
@@ -1482,7 +1482,7 @@ public class OverlayWindow {
 		textNamePosX.setName("textNamePosX");
 		textNamePosX.setBounds(spinnerSizeName.getLocation().x, posX2.getLocation().y, spinnerSizeName.getWidth(), 16);
 		textNamePosX.setHorizontalAlignment(SwingConstants.RIGHT);
-		textNamePosX.setFont(new Font("Arial", Font.PLAIN, 12));
+		textNamePosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		frame.getContentPane().add(textNamePosX);
 		
 		textNamePosX.addKeyListener(new KeyListener(){
@@ -1554,7 +1554,7 @@ public class OverlayWindow {
 		});	
 		
 		JLabel posY2 = new JLabel("Pos. Y :");
-		posY2.setFont(new Font("Arial", Font.PLAIN, 12));
+		posY2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY2.setForeground(new Color(71,163,236));
 		posY2.setAlignmentX(SwingConstants.RIGHT);
 		posY2.setBounds(lblOpacityName.getX(), posX2.getLocation().y, lblOpacityName.getPreferredSize().width, 16);
@@ -1564,7 +1564,7 @@ public class OverlayWindow {
 		textNamePosY.setName("textNamePosY");
 		textNamePosY.setBounds(spinnerOpacityName.getLocation().x, posY2.getLocation().y, spinnerOpacityName.getWidth(), 16);
 		textNamePosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textNamePosY.setFont(new Font("Arial", Font.PLAIN, 12));
+		textNamePosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		frame.getContentPane().add(textNamePosY);
 		
 		textNamePosY.addKeyListener(new KeyListener(){
@@ -2056,29 +2056,71 @@ public class OverlayWindow {
 			topBorder.setBackground(Color.BLACK);
 			topBorder.setVisible(false);
 			topBorder.setOpaque(true);	
+			
 			JPanel bottomBorder = new JPanel();
 			bottomBorder.setBackground(Color.BLACK);
 			bottomBorder.setVisible(false);		
-			bottomBorder.setOpaque(true);	
+			bottomBorder.setOpaque(true);					
+			
+			JPanel leftBorder = new JPanel();
+			leftBorder.setBackground(Color.BLACK);
+			leftBorder.setVisible(false);
+			leftBorder.setOpaque(true);	
+			
+			JPanel rightBorder = new JPanel();
+			rightBorder.setBackground(Color.BLACK);
+			rightBorder.setVisible(false);
+			rightBorder.setOpaque(true);	
+			
 			if (Shutter.caseRognage.isSelected())
-			{
-				String c[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
-				int crop = Integer.parseInt(c[1]); 
+			{						
+				String i[] = FFPROBE.imageResolution.split("x");
+				String original = String.valueOf((float) Integer.parseInt(i[0]) / Integer.parseInt(i[1]));
 				
-				int borderHeight = Math.round(((float) containerHeight - ((float) 640 / ((float) ImageWidth / crop))) / 2);
+				String o[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
+				String output = String.valueOf((float) Integer.parseInt(o[0]) / Integer.parseInt(o[1]));
+
+				if (original.length() > 4)
+					original = original.substring(0,4);					
 				
-				topBorder.setSize(newImage.getWidth(), borderHeight);
-				bottomBorder.setSize(newImage.getWidth(), borderHeight);
-				bottomBorder.setLocation(0, containerHeight - bottomBorder.getHeight());
+				//On affiche les côtés
+				if (Float.parseFloat(output) < Float.parseFloat(original))
+				{
+					int crop = Integer.parseInt(o[0]); 
+		        	
+					int borderWidth = (int) Math.floor(((float) containerWidth - ((float) newImage.getHeight() / ((float) ImageHeight / crop))) / 2);
+					
+					leftBorder.setSize(borderWidth, newImage.getHeight());
+					rightBorder.setSize(borderWidth, newImage.getHeight());
+					rightBorder.setLocation(containerWidth - rightBorder.getWidth(), 0);
+
+		    		leftBorder.setVisible(true);
+		    		rightBorder.setVisible(true);	
+		    		
+					newImage.add(leftBorder);
+					newImage.add(rightBorder);	
+		    	}
+				else
+				{
+		    		int crop = Integer.parseInt(o[1]); 
+					
+					int borderHeight = (int) Math.floor(((float) containerHeight - ((float) newImage.getWidth() / ((float) ImageWidth / crop))) / 2);
+									
+					topBorder.setSize(newImage.getWidth(), borderHeight);
+					bottomBorder.setSize(newImage.getWidth(), borderHeight);
+					bottomBorder.setLocation(0, containerHeight - bottomBorder.getHeight());
+		    		
+		    		topBorder.setVisible(true);
+					bottomBorder.setVisible(true);	
+					
+					newImage.add(topBorder);
+					newImage.add(bottomBorder);	
+				}		        	
 				
-				topBorder.setVisible(true);
-				bottomBorder.setVisible(true);			
-			}			
-			newImage.add(topBorder);
-			newImage.add(bottomBorder);			
-    		
-			image.add(newImage); 
-			image.repaint();
+			}
+				    		
+    		image.add(newImage); 
+    		image.repaint();    	
 			
 			fileName.repaint();
 			timecode.repaint();

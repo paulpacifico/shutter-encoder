@@ -99,13 +99,13 @@ public class Help {
 		
 		JLabel lblFonctions = new JLabel(Shutter.language.getProperty("lblFonctions"));
 		lblFonctions.setForeground(Color.WHITE);
-		lblFonctions.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblFonctions.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblFonctions.setBounds(6, 11, lblFonctions.getPreferredSize().width, 15);
 		frame.getContentPane().add(lblFonctions);
 						
 		comboFonctions = new JComboBox<String[]>();		
 		comboFonctions.setModel(Shutter.comboFonctions.getModel());
-		comboFonctions.setFont(new Font("Arial", Font.PLAIN, 11));
+		comboFonctions.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		comboFonctions.setEditable(true);
 		comboFonctions.setMaximumRowCount(Toolkit.getDefaultToolkit().getScreenSize().height / 33);
 		comboFonctions.setBounds(133, 8, 168, 22);
@@ -129,7 +129,7 @@ public class Help {
 		
 		
 		txtFonctions = new WebTextPane(StyleId.textpaneTransparent);
-		txtFonctions.setFont(new Font("Arial", Font.PLAIN, 14));
+		txtFonctions.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		txtFonctions.setLocation(10, 38);
 		txtFonctions.setForeground(Color.WHITE);
 		txtFonctions.setSize(572, txtFonctions.getPreferredSize().height);

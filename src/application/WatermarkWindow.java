@@ -171,7 +171,7 @@ public class WatermarkWindow {
 		});
 		
 		caseSafeArea = new JRadioButton(Shutter.language.getProperty("caseSafeArea"));
-		caseSafeArea.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseSafeArea.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseSafeArea.setBounds(12, 446, 113, 23);
 		caseSafeArea.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(caseSafeArea);
@@ -351,7 +351,7 @@ public class WatermarkWindow {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		panelHaut.setBounds(0, 0, 1000, 52);
 		
@@ -486,7 +486,7 @@ public class WatermarkWindow {
 		
 		positionVideo.setMaximum(FFPROBE.dureeTotale);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("Arial", Font.PLAIN, 11));
+		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setBounds(12, btnOK.getLocation().y - 26, 146, 22);	
 		
 		//Contournement d'un bug
@@ -534,7 +534,7 @@ public class WatermarkWindow {
 		
 		JLabel posX = new JLabel("Position X :");
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
-		posX.setFont(new Font("Arial", Font.PLAIN, 12));
+		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX.setForeground(new Color(71,163,236));
 		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 				
@@ -542,10 +542,10 @@ public class WatermarkWindow {
 		textPosX.setName("textPosX");
 		textPosX.setBounds(posX.getLocation().x + posX.getWidth() + 2, posX.getLocation().y, 34, 16);
 		textPosX.setHorizontalAlignment(SwingConstants.RIGHT);
-		textPosX.setFont(new Font("Arial", Font.PLAIN, 12));
+		textPosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		JLabel px1 = new JLabel("px");
-		px1.setFont(new Font("Arial", Font.PLAIN, 12));
+		px1.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px1.setForeground(new Color(71,163,236));
 		px1.setBounds(textPosX.getLocation().x + textPosX.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
@@ -618,7 +618,7 @@ public class WatermarkWindow {
 		});	
 				
 		JLabel posY = new JLabel("Position Y :");
-		posY.setFont(new Font("Arial", Font.PLAIN, 12));
+		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY.setForeground(new Color(71,163,236));
 		posY.setBounds(px1.getLocation().x + 22, posX.getLocation().y, posY.getPreferredSize().width, 16);
 
@@ -626,7 +626,7 @@ public class WatermarkWindow {
 		textPosY.setName("textPosY");
 		textPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posY.getLocation().y, 34, 16);
 		textPosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textPosY.setFont(new Font("Arial", Font.PLAIN, 12));
+		textPosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		textPosY.addKeyListener(new KeyListener(){
 
@@ -722,12 +722,12 @@ public class WatermarkWindow {
 		
 		
 		JLabel px2 = new JLabel("px");
-		px2.setFont(new Font("Arial", Font.PLAIN, 12));
+		px2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px2.setForeground(new Color(71,163,236));
 		px2.setBounds(textPosY.getLocation().x + textPosY.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		JLabel size = new JLabel(Shutter.language.getProperty("lblSize"));
-		size.setFont(new Font("Arial", Font.PLAIN, 12));
+		size.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		size.setForeground(new Color(71,163,236));
 		size.setBounds(px2.getLocation().x + 42, posX.getLocation().y, size.getPreferredSize().width, 16);
 		
@@ -735,7 +735,7 @@ public class WatermarkWindow {
 		textSize.setName("textSize");
 		textSize.setBounds(size.getLocation().x + size.getWidth() + 2, size.getLocation().y, 34, 16);
 		textSize.setHorizontalAlignment(SwingConstants.RIGHT);
-		textSize.setFont(new Font("Arial", Font.PLAIN, 12));
+		textSize.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		textSize.addKeyListener(new KeyListener(){
 
@@ -811,13 +811,13 @@ public class WatermarkWindow {
 			});	
 		
 		JLabel px3 = new JLabel("%");
-		px3.setFont(new Font("Arial", Font.PLAIN, 12));
+		px3.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px3.setForeground(new Color(71,163,236));
 		px3.setBounds(textSize.getLocation().x + textSize.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		JLabel opacity = new JLabel(Shutter.language.getProperty("lblOpacity"));
 		opacity.setHorizontalAlignment(SwingConstants.RIGHT);
-		opacity.setFont(new Font("Arial", Font.PLAIN, 12));
+		opacity.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		opacity.setForeground(new Color(71,163,236));
 		opacity.setBounds(btnOK.getLocation().x + btnOK.getWidth() - 104, posX.getLocation().y, opacity.getPreferredSize().width, 16);
 		
@@ -826,7 +826,7 @@ public class WatermarkWindow {
 		textOpacity.setBounds(opacity.getLocation().x + opacity.getWidth() + 2, opacity.getLocation().y, 34, 16);
 		textOpacity.setHorizontalAlignment(SwingConstants.RIGHT);
 		textOpacity.setOpaque(false);
-		textOpacity.setFont(new Font("Arial", Font.PLAIN, 12));
+		textOpacity.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		textOpacity.addKeyListener(new KeyListener(){
 
@@ -909,7 +909,7 @@ public class WatermarkWindow {
 			});	
 		
 		JLabel px4 = new JLabel("%");
-		px4.setFont(new Font("Arial", Font.PLAIN, 12));
+		px4.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px4.setForeground(new Color(71,163,236));
 		px4.setBounds(textOpacity.getLocation().x + textOpacity.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
@@ -1014,28 +1014,69 @@ public class WatermarkWindow {
 				topBorder.setBackground(Color.BLACK);
 				topBorder.setVisible(false);
 				topBorder.setOpaque(true);	
+				
 				JPanel bottomBorder = new JPanel();
 				bottomBorder.setBackground(Color.BLACK);
 				bottomBorder.setVisible(false);		
-				bottomBorder.setOpaque(true);	
-				if (Shutter.caseRognage.isSelected())
-				{
-					String c[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
-					int crop = Integer.parseInt(c[1]); 
-					
-					int borderHeight = (int) Math.floor(((float) containerHeight - ((float) 640 / ((float) ImageWidth / crop))) / 2);
-									
-					topBorder.setSize(newImage.getWidth(), borderHeight);
-					bottomBorder.setSize(newImage.getWidth(), borderHeight);
-					bottomBorder.setLocation(0, containerHeight - bottomBorder.getHeight());
-					
-					topBorder.setVisible(true);
-					bottomBorder.setVisible(true);					
-				}
+				bottomBorder.setOpaque(true);					
 				
-				newImage.add(topBorder);
-				newImage.add(bottomBorder);	
-	    		
+				JPanel leftBorder = new JPanel();
+				leftBorder.setBackground(Color.BLACK);
+				leftBorder.setVisible(false);
+				leftBorder.setOpaque(true);	
+				
+				JPanel rightBorder = new JPanel();
+				rightBorder.setBackground(Color.BLACK);
+				rightBorder.setVisible(false);
+				rightBorder.setOpaque(true);	
+				
+				if (Shutter.caseRognage.isSelected())
+				{						
+					String i[] = FFPROBE.imageResolution.split("x");
+					String original = String.valueOf((float) Integer.parseInt(i[0]) / Integer.parseInt(i[1]));
+					
+					String o[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
+					String output = String.valueOf((float) Integer.parseInt(o[0]) / Integer.parseInt(o[1]));
+
+					if (original.length() > 4)
+						original = original.substring(0,4);					
+
+					//On affiche les côtés
+					if (Float.parseFloat(output) < Float.parseFloat(original))
+					{
+						int crop = Integer.parseInt(o[0]); 
+			        	
+						int borderWidth = (int) Math.floor(((float) containerWidth - ((float) newImage.getHeight() / ((float) ImageHeight / crop))) / 2);
+						
+						leftBorder.setSize(borderWidth, newImage.getHeight());
+						rightBorder.setSize(borderWidth, newImage.getHeight());
+						rightBorder.setLocation(containerWidth - rightBorder.getWidth(), 0);
+
+			    		leftBorder.setVisible(true);
+			    		rightBorder.setVisible(true);	
+			    		
+						newImage.add(leftBorder);
+						newImage.add(rightBorder);	
+			    	}
+					else
+					{
+			    		int crop = Integer.parseInt(o[1]); 
+						
+						int borderHeight = (int) Math.floor(((float) containerHeight - ((float) newImage.getWidth() / ((float) ImageWidth / crop))) / 2);
+										
+						topBorder.setSize(newImage.getWidth(), borderHeight);
+						bottomBorder.setSize(newImage.getWidth(), borderHeight);
+						bottomBorder.setLocation(0, containerHeight - bottomBorder.getHeight());
+			    		
+			    		topBorder.setVisible(true);
+						bottomBorder.setVisible(true);	
+						
+						newImage.add(topBorder);
+						newImage.add(bottomBorder);	
+					}		        	
+					
+				}
+					    		
 	    		image.add(newImage); 
 	    		image.repaint();    	
 	    		

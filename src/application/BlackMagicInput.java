@@ -117,14 +117,14 @@ public class BlackMagicInput {
 		
 		lblTimecode = new JLabel("00:00:00");
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTimecode.setFont(new Font("Arial", Font.PLAIN, 30));
+		lblTimecode.setFont(new Font("FreeSans", Font.PLAIN, 30));
 		lblTimecode.setForeground(Color.RED);
 		lblTimecode.setBounds(10, 131, 422, 22);
 		frame.getContentPane().add(lblTimecode);
 		
 		Label lblInput = new Label(Shutter.language.getProperty("lblInput"));
 		lblInput.setAlignment(Label.RIGHT);
-		lblInput.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblInput.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblInput.setForeground(Color.WHITE);
 		lblInput.setBackground(new Color(50,50,50));
 		lblInput.setBounds(10, 9, 46, 22);
@@ -134,20 +134,20 @@ public class BlackMagicInput {
 		comboInput.setBounds(62, 9, 374, 22);	
 		comboInput.setModel(new DefaultComboBoxModel(DECKLINK.formatsList.toArray()));
 		comboInput.setSelectedItem(null);
-		comboInput.setFont(new Font("Arial", Font.PLAIN, 11));
+		comboInput.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		comboInput.setEditable(false);
 		frame.getContentPane().add(comboInput);
 		
 		Label lblOutput = new Label(Shutter.language.getProperty("lblOutput"));
 		lblOutput.setAlignment(Label.RIGHT);
-		lblOutput.setFont(new Font("Arial", Font.PLAIN, 12));
+		lblOutput.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblOutput.setForeground(Color.WHITE);
 		lblOutput.setBackground(new Color(50, 50, 50));
 		lblOutput.setBounds(10, 37, 46, 22);
 		frame.getContentPane().add(lblOutput);
 		
 		comboOutput = new JComboBox<String[]>();
-		comboOutput.setFont(new Font("Arial", Font.PLAIN, 11));
+		comboOutput.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		comboOutput.setEditable(false);
 		comboOutput.setBounds(62, 37, 130, 22);
 		frame.getContentPane().add(comboOutput);
@@ -176,7 +176,7 @@ public class BlackMagicInput {
 		lblDestination.setEditable(false);
 	  	lblDestination.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination.setForeground(new Color(71,163,236));
-		lblDestination.setFont(new Font("Arial Unicode MS", Font.BOLD, 13));
+		lblDestination.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblDestination.setBackground(new Color(50,50,50));
 		if (System.getProperty("os.name").contains("Windows"))
 			lblDestination.setText(System.getProperty("user.home") + "\\Desktop");
@@ -244,13 +244,13 @@ public class BlackMagicInput {
 		});
 			
 		caseDeinterlace = new JRadioButton(Shutter.language.getProperty("caseDeinterlace"));
-		caseDeinterlace.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseDeinterlace.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseDeinterlace.setBackground(new Color(50, 50, 50));
 		caseDeinterlace.setBounds(10, 65, 157, 23);
 		frame.getContentPane().add(caseDeinterlace);
 		
 		caseStopAt = new JRadioButton(Shutter.language.getProperty("caseStopAt"));
-		caseStopAt.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseStopAt.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseStopAt.setBounds(169, 65, 169, 23);
 		caseStopAt.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(caseStopAt);
@@ -278,7 +278,7 @@ public class BlackMagicInput {
 		TC1 = new JTextField("00");
 		TC1.setBounds(336, 66, 32, 21);
 		TC1.setHorizontalAlignment(SwingConstants.CENTER);
-		TC1.setFont(new Font("Arial", Font.PLAIN, 14));
+		TC1.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC1.setColumns(10);
 		TC1.setEnabled(false);
 		frame.getContentPane().add(TC1);
@@ -286,7 +286,7 @@ public class BlackMagicInput {
 		TC2 = new JTextField("00");
 		TC2.setBounds(370, 66, 32, 21);
 		TC2.setHorizontalAlignment(SwingConstants.CENTER);
-		TC2.setFont(new Font("Arial", Font.PLAIN, 14));
+		TC2.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC2.setColumns(10);
 		TC2.setEnabled(false);
 		frame.getContentPane().add(TC2);
@@ -294,7 +294,7 @@ public class BlackMagicInput {
 		TC3 = new JTextField("00");
 		TC3.setBounds(404, 66, 32, 21);
 		TC3.setHorizontalAlignment(SwingConstants.CENTER);
-		TC3.setFont(new Font("Arial", Font.PLAIN, 14));
+		TC3.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC3.setColumns(10);
 		TC3.setEnabled(false);
 		frame.getContentPane().add(TC3);

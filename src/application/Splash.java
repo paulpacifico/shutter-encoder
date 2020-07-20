@@ -37,7 +37,7 @@ public class Splash extends Frame {
         g.fillRoundRect(26, 128, progress, 10, 10, 10);
     }
     
-    public static void splashValue(){    
+    public static void increment(){    
 		if (Splash.splash.isVisible())
 		{
     		Value += 9;  

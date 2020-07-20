@@ -127,7 +127,7 @@ public class ReducedWindow extends JDialog {
 		lblEnCours = new JLabel(Shutter.language.getProperty("lblEnCours"));
 		lblEnCours.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEnCours.setForeground(Color.LIGHT_GRAY);
-		lblEnCours.setFont(new Font("Arial Unicode MS", Font.BOLD, 13));
+		lblEnCours.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblEnCours.setBounds(100, 6, 178, 16);		
 		frame.getContentPane().add(lblEnCours);
 		
@@ -196,12 +196,14 @@ public class ReducedWindow extends JDialog {
 					 if (opacity < 0.99f)
 					 {
 						 opacity +=  0.01f;
-						 frame.setOpacity(opacity);
+						 try {
+							 frame.setOpacity(opacity);
+						 } catch (Exception e) {}
 					 }
 				}
 				
 				//RotateIcon
-				if (Shutter.progressBar1.isIndeterminate() == false)
+				if (Shutter.progressBar1.isIndeterminate() == false && progressBar.getValue() != 0)
 					rotateIcon(( (long) progressBar.getValue() * 360) / ( (long) progressBar.getMaximum()));		
 				 
 				//Pourcentage
@@ -288,7 +290,11 @@ public class ReducedWindow extends JDialog {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
-						frame.setOpacity(opacity);
+						
+						 try {
+							 frame.setOpacity(opacity);
+						 } catch (Exception e2) {}
+						
 					} while (opacity > 0.5f);
 				}
 			}

@@ -157,7 +157,7 @@ public class CropVideo {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		panelHaut.add(quit);
 		panelHaut.setBounds(0, 0, 1000, 52);
 		
@@ -391,6 +391,8 @@ public class CropVideo {
 						ratio = 16/9f;					
 					else if (Float.parseFloat(comboPreset.getSelectedItem().toString()) < 1.77f)
 						ratio = (float) (containerWidth / (image.getSize().width - (2 * (gauche.getSize().getWidth()) ) ) );
+					else if (Float.parseFloat(comboPreset.getSelectedItem().toString()) == 2.33f)
+						ratio = 21/9f;
 					else
 						ratio = (float) (containerWidth / (image.getSize().height - (2 * (haut.getSize().getHeight()) ) ) );
 				}
@@ -419,7 +421,7 @@ public class CropVideo {
 		comboPreset.setEnabled(false);
 		comboPreset.setEditable(true);
 		comboPreset.setSelectedIndex(-1);
-		comboPreset.setFont(new Font("Arial", Font.PLAIN, 11));
+		comboPreset.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		comboPreset.setBounds(465, 433, 63, 22);		
 		frame.getContentPane().add(comboPreset);
 		
@@ -478,12 +480,12 @@ public class CropVideo {
 		});
 		
 		lblPresets = new JLabel(Shutter.language.getProperty("lblPresets"));
-		lblPresets.setFont(new Font("Arial", Font.PLAIN, 13));
+		lblPresets.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblPresets.setBounds(comboPreset.getX() - lblPresets.getPreferredSize().width - 4, 435, lblPresets.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblPresets);
 				
 		caseManuel.setName("caseManuel");
-		caseManuel.setFont(new Font("Arial", Font.PLAIN, 12));
+		caseManuel.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseManuel.setSelected(true);
 		caseManuel.setBounds(250, 435, caseManuel.getPreferredSize().width, 16);		
 		frame.getContentPane().add(caseManuel);
@@ -538,7 +540,7 @@ public class CropVideo {
 		
 		positionVideo.setMaximum(FFPROBE.dureeTotale);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("Arial", Font.PLAIN, 11));
+		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setBounds(12, 432, 146, 22);	
 		
 		//Contournement d'un bug
@@ -579,9 +581,6 @@ public class CropVideo {
 	public static void loadImage(String h, String m, String s) {
         try
         {
-        	
-			
-
         	String fichier = Shutter.liste.firstElement();
 			if (Shutter.scanIsRunning)
 			{

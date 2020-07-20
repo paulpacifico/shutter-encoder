@@ -350,7 +350,7 @@ public class CropImage {
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -400,7 +400,7 @@ public class CropImage {
 		
 		fullscreen = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/max2.png")));
 		fullscreen.setHorizontalAlignment(SwingConstants.CENTER);
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 15);
+		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
 			
 		fullscreen.addMouseListener(new MouseListener(){
 			
@@ -652,7 +652,7 @@ public class CropImage {
 	public static void valeurs() {
 		posX = new JLabel("Position X :");
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
-		posX.setFont(new Font("Arial", Font.PLAIN, 12));
+		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX.setForeground(new Color(71,163,236));
 		posX.setBounds(14, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
@@ -660,10 +660,10 @@ public class CropImage {
 		textPosX.setName("textPosX");
 		textPosX.setBounds(posX.getLocation().x + posX.getWidth() + 2, posX.getLocation().y, 34, 16);
 		textPosX.setHorizontalAlignment(SwingConstants.RIGHT);
-		textPosX.setFont(new Font("Arial", Font.PLAIN, 12));
+		textPosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		px1 = new JLabel("px");
-		px1.setFont(new Font("Arial", Font.PLAIN, 12));
+		px1.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px1.setForeground(new Color(71,163,236));
 		px1.setBounds(textPosX.getLocation().x + textPosX.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
@@ -694,7 +694,7 @@ public class CropImage {
 		});
 		
 		posY = new JLabel("Position Y :");
-		posY.setFont(new Font("Arial", Font.PLAIN, 12));
+		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY.setForeground(new Color(71,163,236));
 		posY.setBounds((int) (btnOK.getWidth() / 2) - 120, posX.getLocation().y, posY.getPreferredSize().width, 16);
 
@@ -702,7 +702,7 @@ public class CropImage {
 		textPosY.setName("textPosY");
 		textPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posY.getLocation().y, 34, 16);
 		textPosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textPosY.setFont(new Font("Arial", Font.PLAIN, 12));
+		textPosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		textPosY.addKeyListener(new KeyListener(){
 
@@ -731,12 +731,12 @@ public class CropImage {
 		});
 		
 		px2 = new JLabel("px");
-		px2.setFont(new Font("Arial", Font.PLAIN, 12));
+		px2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px2.setForeground(new Color(71,163,236));
 		px2.setBounds(textPosY.getLocation().x + textPosY.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		width = new JLabel(Shutter.language.getProperty("lblWidth"));
-		width.setFont(new Font("Arial", Font.PLAIN, 12));
+		width.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		width.setForeground(new Color(71,163,236));
 		width.setBounds((int) (btnOK.getWidth() / 2) + 45, posX.getLocation().y, width.getPreferredSize().width, 16);
 		
@@ -744,7 +744,7 @@ public class CropImage {
 		textWidth.setName("textWidth");
 		textWidth.setBounds(width.getLocation().x + width.getWidth() + 2, width.getLocation().y, 34, 16);
 		textWidth.setHorizontalAlignment(SwingConstants.RIGHT);
-		textWidth.setFont(new Font("Arial", Font.PLAIN, 12));
+		textWidth.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		textWidth.addKeyListener(new KeyListener(){
 
@@ -773,13 +773,13 @@ public class CropImage {
 		});
 		
 		px3 = new JLabel("px");
-		px3.setFont(new Font("Arial", Font.PLAIN, 12));
+		px3.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px3.setForeground(new Color(71,163,236));
 		px3.setBounds(textWidth.getLocation().x + textWidth.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		height = new JLabel(Shutter.language.getProperty("lblHeight"));
 		height.setHorizontalAlignment(SwingConstants.RIGHT);
-		height.setFont(new Font("Arial", Font.PLAIN, 12));
+		height.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		height.setForeground(new Color(71,163,236));
 		height.setBounds(btnOK.getLocation().x + btnOK.getWidth() - 104, posX.getLocation().y, height.getPreferredSize().width, 16);
 		
@@ -787,7 +787,7 @@ public class CropImage {
 		textHeight.setName("textHeight");
 		textHeight.setBounds(height.getLocation().x + height.getWidth() + 2, height.getLocation().y, 34, 16);
 		textHeight.setHorizontalAlignment(SwingConstants.RIGHT);
-		textHeight.setFont(new Font("Arial", Font.PLAIN, 12));
+		textHeight.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		textHeight.addKeyListener(new KeyListener(){
 
@@ -816,7 +816,7 @@ public class CropImage {
 		});
 		
 		px4 = new JLabel("px");
-		px4.setFont(new Font("Arial", Font.PLAIN, 12));
+		px4.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px4.setForeground(new Color(71,163,236));
 		px4.setBounds(textHeight.getLocation().x + textHeight.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
@@ -1379,8 +1379,8 @@ public class CropImage {
 		panelHaut.setBounds(0,0,frame.getSize().width, 52);
 		
 		topImage.setLocation(frame.getSize().width / 2 - topImage.getSize().width / 2, 0);
-		quit.setBounds(frame.getSize().width - 35,0,35, 15);	
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 15);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);	
+		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
 		
 		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					
