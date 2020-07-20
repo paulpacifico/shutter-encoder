@@ -124,7 +124,7 @@ public class LosslessCut extends Shutter {
 						
 					String fichier = file.getName();
 					lblEncodageEnCours.setText(fichier);
-					
+										
 					//Dossier de sortie
 					String sortie = setSortie("", file);
 					
@@ -137,18 +137,25 @@ public class LosslessCut extends Shutter {
 					
 					final String extension =  fichier.substring(fichier.lastIndexOf("."));
 					final String sortieFichier =  sortie + "/" + fichier.replace(extension, nomExtension + extension); 			
-					
+													
 					String audio = setAudio();
 					String audioMapping = setAudioMapping();
 					
 					//InOut		
 					FFMPEG.fonctionInOut();
-					
+															
 	            	//Timecode
 					String timecode = setTimecode();
 					
 					//Si le fichier existe
-					File fileOut = new File(sortieFichier);				
+					File fileOut = new File(sortieFichier);		
+					
+					//Mode concat
+					String concat = FFMPEG.setConcat(file, sortie);					
+					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
+					else
+						concat = " -noaccurate_seek";
 					
 					//Détection de coupe
 					if (SceneDetection.isRunning)
@@ -173,14 +180,16 @@ public class LosslessCut extends Shutter {
 									
 					//Envoi de la commande
 					String cmd = " -avoid_negative_ts make_zero -c copy" + audio + timecode + " -map v?" + audioMapping + " -map s? -y ";
-					FFMPEG.run(FFMPEG.inPoint + " -noaccurate_seek -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
 					
 					//Attente de la fin de FFMPEG
 					do
 							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
-					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+					
+					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
+					|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 					{
 						if (actionsDeFin(fichier, fileOut, sortie))
 						break;
@@ -316,6 +325,14 @@ public class LosslessCut extends Shutter {
 			} catch (Exception e) {}
 			return true;
 		}
+		
+		//Mode concat
+		if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+		{
+			final String extension =  fichier.substring(fichier.lastIndexOf("."));
+			File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 			
+			listeBAB.delete();
+		}
 
 		//Fichiers terminés
 		if (cancelled == false && FFMPEG.error == false)
@@ -339,6 +356,10 @@ public class LosslessCut extends Shutter {
 		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
+		
+		//Séquence d'images et bout à bout
+		if (Settings.btnSetBab.isSelected())
+			return true;
 		
 		//Timecode
 		if (caseIncrementTimecode.isSelected())

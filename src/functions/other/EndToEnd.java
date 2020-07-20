@@ -55,10 +55,7 @@ public class EndToEnd extends Shutter {
 				String extension =  liste.firstElement().substring(toExtension);		
 				
 				FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseFileName"), FileDialog.SAVE);
-				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-					dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
-				else
-					dialog.setDirectory(System.getProperty("user.home") + "\\Desktop");
+				dialog.setDirectory(new File(liste.elementAt(0).toString()).getParent());
 
 				dialog.setVisible(true);
 			    

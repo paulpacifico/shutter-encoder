@@ -126,11 +126,18 @@ public class Rewrap extends Shutter {
 					
 					//Dossier de sortie
 					String sortie = setSortie("", file);
-					
+										
 					final String extension =  fichier.substring(fichier.lastIndexOf("."));
 					final String newExtension = comboFilter.getSelectedItem().toString();
-					final String sortieFichier =  sortie + "/" + fichier.replace(extension, newExtension); 			
+					final String sortieFichier =  sortie + "/" + fichier.replace(extension, newExtension); 		
 					
+					//Mode concat
+					String concat = FFMPEG.setConcat(file, sortie);					
+					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));	
+					else
+						concat = " -noaccurate_seek";
+						
 					String audio = setAudio();
 					String audioMapping = setAudioMapping();
 					
@@ -152,7 +159,7 @@ public class Rewrap extends Shutter {
 									
 					//Envoi de la commande
 					String cmd = " -avoid_negative_ts make_zero -c:v copy -c:s copy" + audio + timecode + " -map v?" + audioMapping + " -map s? -y ";
-					FFMPEG.run(FFMPEG.inPoint + " -noaccurate_seek -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
 					
 					//Attente de la fin de FFMPEG
 					do
@@ -295,6 +302,14 @@ public class Rewrap extends Shutter {
 			} catch (Exception e) {}
 			return true;
 		}
+		
+		//Mode concat
+		if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+		{		
+			final String extension =  fichier.substring(fichier.lastIndexOf("."));
+			File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt")); 			
+			listeBAB.delete();
+		}
 
 		//Fichiers terminés
 		if (cancelled == false && FFMPEG.error == false)
@@ -318,6 +333,10 @@ public class Rewrap extends Shutter {
 		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
+		
+		//Séquence d'images et bout à bout
+		if (Settings.btnSetBab.isSelected())
+			return true;
 		
 		//Timecode
 		if (caseIncrementTimecode.isSelected())
