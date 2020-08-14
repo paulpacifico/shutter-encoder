@@ -409,7 +409,7 @@ public class SubtitlesWindow {
     		
     	});
 		
-		JLabel lblSubtitlesPosition = new JLabel("Y :");
+		JLabel lblSubtitlesPosition = new JLabel(Shutter.language.getProperty("lblSubtitlesPosition"));
 		lblSubtitlesPosition.setAlignmentX(SwingConstants.RIGHT);
 		lblSubtitlesPosition.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblSubtitlesPosition.setBounds(btnI.getLocation().x + btnI.getWidth() + 6, 434, lblSubtitlesPosition.getPreferredSize().width, 16);
@@ -519,7 +519,7 @@ public class SubtitlesWindow {
 			}
 		});	
 		
-		JLabel lblsubtitleNumber = new JLabel("N° :");
+		JLabel lblsubtitleNumber = new JLabel(Shutter.language.getProperty("lblsubtitleNumber"));
 		lblsubtitleNumber.setAlignmentX(SwingConstants.RIGHT);
 		lblsubtitleNumber.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblsubtitleNumber.setBounds(textWidth.getLocation().x + textWidth.getWidth() + 9, 434, lblsubtitleNumber.getPreferredSize().width, 16);

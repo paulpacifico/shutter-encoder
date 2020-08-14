@@ -364,7 +364,7 @@ public class BlackMagicOutput {
 				String fieldOrder = " -field_order progressive";
 				if (caseForceInterlace.isSelected())
 					fieldOrder = " -field_order tt";
-				else if (FFPROBE.entrelaced.equals("1") && FFPROBE.fieldOrder.equals("0"))
+				else if (FFPROBE.entrelaced.equals("1") && FFPROBE.fieldOrder.equals("1"))
 					fieldOrder = " -field_order bt";
 				else if (FFPROBE.entrelaced.equals("1"))
 					fieldOrder = " -field_order tt";

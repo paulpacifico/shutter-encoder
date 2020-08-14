@@ -300,7 +300,7 @@ public class Wetransfer {
 		textTo.setColumns(10);
 		frame.getContentPane().add(textTo);		
 		
-		lblMessage = new JLabel("Message :");
+		lblMessage = new JLabel(Shutter.language.getProperty("lblMessage"));
 		lblMessage.setBounds(2, lblRecipient.getY() + lblRecipient.getHeight() + 17, 95, 16);
 		lblMessage.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblMessage.setFont(new Font("Montserrat", Font.PLAIN, 12));

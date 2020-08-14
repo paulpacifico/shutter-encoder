@@ -298,10 +298,10 @@ public class VideoWeb {
 		grpURL.setBackground(new Color(50,50,50));
 		grpURL.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE));
 		
-		lblURL = new JLabel("URL :");
+		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblURL.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblURL.setBounds(26, 23, 35, 16);			
+		lblURL.setBounds(26, 25, 35, 16);			
 		grpURL.add(lblURL);
 		
 		textURL = new JTextField();

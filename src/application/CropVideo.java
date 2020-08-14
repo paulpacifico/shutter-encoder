@@ -351,7 +351,7 @@ public class CropVideo {
 			        }		
 			        
 			        int borderSize = image.getSize().height - (2 * (haut.getSize().height));
-			        lblRatio.setText("Ratio : " + Math.floor(((float) containerWidth/borderSize) * 100) /100);
+			        lblRatio.setText(Shutter.language.getProperty("ratio") + " " + Math.floor(((float) containerWidth/borderSize) * 100) /100);
 				}
 			}
 
@@ -468,7 +468,7 @@ public class CropVideo {
 				    		droit.setBounds(640, 0, 0, 360);
 						}		        	
 		            
-			        	lblRatio.setText("Ratio : " + comboPreset.getSelectedItem().toString());
+			        	lblRatio.setText(Shutter.language.getProperty("ratio") + " " + comboPreset.getSelectedItem().toString());
 		            
 			        } catch (Exception er) {
 			        	if (comboPreset.getSelectedItem().toString() != "")
@@ -660,12 +660,12 @@ public class CropVideo {
 			if (caseManuel.isSelected())
 			{
 				int borderSize = image.getSize().height - (2 * (haut.getSize().height));
-				lblRatio.setText("Ratio : " + Math.floor(((float) containerWidth/borderSize) * 100) /100);
+				lblRatio.setText(Shutter.language.getProperty("ratio") + " " + Math.floor(((float) containerWidth/borderSize) * 100) /100);
 				bas.setLocation(bas.getLocation().x, image.getHeight() - bas.getHeight());
 			}
 			else
 			{
-				lblRatio.setText("Ratio : " + comboPreset.getSelectedItem().toString());
+				lblRatio.setText(Shutter.language.getProperty("ratio") + " " + comboPreset.getSelectedItem().toString());
 				comboPreset.setSelectedItem(comboPreset.getSelectedItem().toString()); //Equivalent doClick();
 			}
 			

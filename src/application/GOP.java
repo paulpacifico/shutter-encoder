@@ -96,7 +96,7 @@ public class GOP {
 			} catch (InterruptedException e) {}
 		} while (FFPROBE.isRunning);
 		
-		frame.setTitle(Shutter.language.getProperty("analyzeOf") + " " + fichier.getName() + " | GOP " + Shutter.language.getProperty("of") + " : " + FFPROBE.gopCount);
+		frame.setTitle(Shutter.language.getProperty("analyzeOf") + " " + fichier.getName() + " | GOP " + Shutter.language.getProperty("of") + " " + FFPROBE.gopCount);
 		
 		if (FFPROBE.gopCount <= 12)
 		{

@@ -2197,7 +2197,7 @@ public class ColorImage {
 						//Création du fichier preview																		
 						String cmd = deinterlace + " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + " -y ";	
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-							cmd = deinterlace + " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - panelHaut.getHeight() - 35 - 17) + " -y ";
+							cmd = deinterlace + " -vframes 1 -an -s " + Math.round(finalWidth / 2) * 2 + "x" +  Math.round((frame.getHeight() - panelHaut.getHeight() - 35 - 17) / 2) * 2 + " -y ";
 					
 						if (new File(Shutter.dirTemp + "preview.bmp").exists() == false)
 						{											   		
@@ -2333,6 +2333,8 @@ public class ColorImage {
 		
 		histogram += "split=2[a][b];[b]format=yuva444p,histogram=levels_mode=logarithmic:components=1:level_height=50:fgopacity=0.5:bgopacity=0.5,scale=-1:30[b];[a][b]overlay=x=main_w-overlay_w:y=main_h-overlay_h" + '"';
 		
+		//histogram += "split=2[a][b];[b]format=gbrp,waveform=filter=lowpass:scale=ire:graticule=green:flags=numbers+dots:components=7:display=overlay:bgopacity=0.5[b];[a][b]overlay=x=main_w-overlay_w:y=main_h-overlay_h" + '"';
+				
 		return histogram;
 	}
 
@@ -2359,11 +2361,26 @@ public class ColorImage {
 	}
 
 	protected static String setColormatrix(String eq) {
-		if (Shutter.caseColormatrix.isSelected() && Shutter.comboInColormatrix.getSelectedItem().equals("HDR") == false)
+		if (Shutter.caseColormatrix.isSelected())
 		{
 			if (eq != "") eq += ",";
 			
-			eq += "colormatrix=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+			if (Shutter.comboInColormatrix.getSelectedItem().equals("HDR"))
+			{		
+				String pathToLuts;
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
+					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
+				}
+				else
+					pathToLuts = "LUTs/HDR-to-SDR.cube";
+
+				eq += "lut3d=file=" + pathToLuts;	
+			}
+			else
+				eq += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
 		}
 		
 		return eq;

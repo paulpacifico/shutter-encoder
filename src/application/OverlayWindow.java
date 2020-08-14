@@ -1223,13 +1223,13 @@ public class OverlayWindow {
 		JLabel lblSizeTC = new JLabel(Shutter.language.getProperty("lblSize"));
 		lblSizeTC.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblSizeTC.setAlignmentX(SwingConstants.RIGHT);
-		lblSizeTC.setBounds(12,  caseShowTimecode.getY() + caseShowTimecode.getHeight() + 7, lblSizeTC.getPreferredSize().width, 16);		
+		lblSizeTC.setBounds(12,  caseShowTimecode.getY() + caseShowTimecode.getHeight() + 11, lblSizeTC.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblSizeTC);
 		
 		spinnerSizeTC = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeTC.setName("spinnerSizeTC");
 		spinnerSizeTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerSizeTC.setBounds(lblSizeTC.getLocation().x + lblSizeTC.getWidth() + 7, lblSizeTC.getLocation().y - 3, 45, 22);
+		spinnerSizeTC.setBounds(lblSizeTC.getLocation().x + lblSizeTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, 41, 22);
 		frame.getContentPane().add(spinnerSizeTC);
 		
 		spinnerSizeTC.addChangeListener(new ChangeListener() {
@@ -1250,7 +1250,7 @@ public class OverlayWindow {
 		spinnerOpacityTC = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
 		spinnerOpacityTC.setName("spinnerOpacityTC");
 		spinnerOpacityTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerOpacityTC.setBounds(lblOpacityTC.getLocation().x + lblOpacityTC.getWidth() + 7, lblSizeTC.getLocation().y - 3, 45, 22);
+		spinnerOpacityTC.setBounds(lblOpacityTC.getLocation().x + lblOpacityTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, 41, 22);
 		frame.getContentPane().add(spinnerOpacityTC);
 		
 		spinnerOpacityTC.addChangeListener(new ChangeListener() {
@@ -1262,7 +1262,7 @@ public class OverlayWindow {
 			
 		});
 		
-		JLabel posX = new JLabel("Pos. X :");
+		JLabel posX = new JLabel(Shutter.language.getProperty("pX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX.setForeground(new Color(71,163,236));
@@ -1345,7 +1345,7 @@ public class OverlayWindow {
 			}
 		});	
 		
-		JLabel posY = new JLabel("Pos. Y :");
+		JLabel posY = new JLabel(Shutter.language.getProperty("pY"));
 		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY.setForeground(new Color(71,163,236));
 		posY.setAlignmentX(SwingConstants.RIGHT);
@@ -1436,7 +1436,7 @@ public class OverlayWindow {
 		spinnerSizeName = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeName.setName("spinnerSizeName");
 		spinnerSizeName.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerSizeName.setBounds(lblSizeName.getLocation().x + lblSizeName.getWidth() + 7, lblSizeName.getLocation().y - 3, 45, 22);
+		spinnerSizeName.setBounds(lblSizeName.getLocation().x + lblSizeName.getWidth() + 11, lblSizeName.getLocation().y - 3, 41, 22);
 		frame.getContentPane().add(spinnerSizeName);
 		
 		spinnerSizeName.addChangeListener(new ChangeListener() {
@@ -1458,7 +1458,7 @@ public class OverlayWindow {
 		spinnerOpacityName = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
 		spinnerOpacityName.setName("spinnerOpacityName");
 		spinnerOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerOpacityName.setBounds(lblOpacityName.getLocation().x + lblOpacityName.getWidth() + 7, lblSizeName.getLocation().y - 3, 45, 22);
+		spinnerOpacityName.setBounds(lblOpacityName.getLocation().x + lblOpacityName.getWidth() + 11, lblSizeName.getLocation().y - 3, 41, 22);
 		frame.getContentPane().add(spinnerOpacityName);
 		
 		spinnerOpacityName.addChangeListener(new ChangeListener() {
@@ -1470,7 +1470,7 @@ public class OverlayWindow {
 			
 		});
 		
-		JLabel posX2 = new JLabel("Pos. X :");
+		JLabel posX2 = new JLabel(Shutter.language.getProperty("pX"));
 		posX2.setHorizontalAlignment(SwingConstants.LEFT);
 		posX2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX2.setForeground(new Color(71,163,236));
@@ -1553,7 +1553,7 @@ public class OverlayWindow {
 			}
 		});	
 		
-		JLabel posY2 = new JLabel("Pos. Y :");
+		JLabel posY2 = new JLabel(Shutter.language.getProperty("pY"));
 		posY2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY2.setForeground(new Color(71,163,236));
 		posY2.setAlignmentX(SwingConstants.RIGHT);

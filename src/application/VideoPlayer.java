@@ -1845,7 +1845,7 @@ public class VideoPlayer {
 		sliderVolume.setBounds(frame.getSize().width - 12 - 111, sliderIn.getLocation().y - 33, 111, 22);		
 		frame.getContentPane().add(sliderVolume);
 		
-		lblVolume = new JLabel("Volume : ");
+		lblVolume = new JLabel(Shutter.language.getProperty("volume") + " ");
 		lblVolume.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblVolume.setBounds(sliderVolume.getLocation().x - 61, sliderIn.getLocation().y - 30, 61, 16);		
 		frame.getContentPane().add(lblVolume);

@@ -532,7 +532,7 @@ public class WatermarkWindow {
 			
 		});
 		
-		JLabel posX = new JLabel("Position X :");
+		JLabel posX = new JLabel(Shutter.language.getProperty("posX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX.setForeground(new Color(71,163,236));
@@ -617,7 +617,7 @@ public class WatermarkWindow {
 			}
 		});	
 				
-		JLabel posY = new JLabel("Position Y :");
+		JLabel posY = new JLabel(Shutter.language.getProperty("posY"));
 		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY.setForeground(new Color(71,163,236));
 		posY.setBounds(px1.getLocation().x + 22, posX.getLocation().y, posY.getPreferredSize().width, 16);

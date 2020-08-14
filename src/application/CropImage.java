@@ -650,7 +650,7 @@ public class CropImage {
 	}
 	
 	public static void valeurs() {
-		posX = new JLabel("Position X :");
+		posX = new JLabel(Shutter.language.getProperty("posX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posX.setForeground(new Color(71,163,236));
@@ -693,7 +693,7 @@ public class CropImage {
 			
 		});
 		
-		posY = new JLabel("Position Y :");
+		posY = new JLabel(Shutter.language.getProperty("posY"));
 		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		posY.setForeground(new Color(71,163,236));
 		posY.setBounds((int) (btnOK.getWidth() / 2) - 120, posX.getLocation().y, posY.getPreferredSize().width, 16);

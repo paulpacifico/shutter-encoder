@@ -685,6 +685,14 @@ import javax.swing.ListSelectionModel;
 									XPDF.run(cmd.toString().replace("pdftoppm",""));
 									break;
 								case "mkvmerge" :
+									if (cmd.contains("--chromaticity-coordinates")) //HDR
+									{
+										File HDRmkv = fileOut;
+										File tempHDR = new File(fileOut.toString().replace(fileOut.toString().substring(fileOut.toString().lastIndexOf(".")), "_HDR" + fileOut.toString().substring(fileOut.toString().lastIndexOf("."))));
+										fileOut.renameTo(tempHDR);	
+										fileOut = HDRmkv;
+									}
+
 									MKVMERGE.run(cmd.toString().replace("mkvmerge",""));
 									break;
 							}				
@@ -740,8 +748,8 @@ import javax.swing.ListSelectionModel;
 							} 	
 							
 							JTextArea errorText = new JTextArea(errorList.toString() + '\n' +
-									"FFPROBE : " + FFPROBESplit[FFPROBESplit.length - 1] + '\n' +
-									"FFMPEG : " + FFMPEGSplit[FFMPEGSplit.length - 1]);  
+									Shutter.language.getProperty("ffprobe") + " " + FFPROBESplit[FFPROBESplit.length - 1] + '\n' +
+									Shutter.language.getProperty("ffprobe") + " " + FFMPEGSplit[FFMPEGSplit.length - 1]);  
 							errorText.setWrapStyleWord(true);
 							
 							WebScrollPane scrollPane = new WebScrollPane(errorText);  
@@ -815,7 +823,21 @@ import javax.swing.ListSelectionModel;
 	}	
 
 	private static void actionsDeFin(int item, String fichier, File fileOut) {
-
+		
+		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
+		
+		//Suppression fichiers résiduels HDR
+		if (cli[0].toString().equals("mkvmerge"))
+		{
+			if (MKVMERGE.error == false)
+			{
+				File tempHDR = new File(fileOut.toString().replace(fileOut.toString().substring(fileOut.toString().lastIndexOf(".")), "_HDR" + fileOut.toString().substring(fileOut.toString().lastIndexOf("."))));
+				tempHDR.delete();
+			}
+			else
+				FFMPEG.error = true;
+		}
+		
 		//Erreurs
 		if (FFMPEG.error || fileOut.length() == 0)
 		{
@@ -840,8 +862,6 @@ import javax.swing.ListSelectionModel;
 			complete++;
 			Shutter.lblTermine.setText(Utils.fichiersTermines(complete));
 		}
-		
-		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
 		
 		//Suppression fichiers résiduels OP-Atom
 		if (item > 0)
