@@ -79,6 +79,8 @@ public static String videoCodec;
 public static String audioCodec;
 public static String audioBitrate;
 public static String timeBase = "";
+public static float HDRmin = 0;
+public static float HDRmax = 0;
 
 public static int gopCount = 0;
 public static int gopSpace = 124;
@@ -429,6 +431,7 @@ public static String qtref = "";
 			            		|| comboFonctions.getSelectedItem().equals("DNxHR")
 			            		|| comboFonctions.getSelectedItem().equals("Apple ProRes")
 			            		|| comboFonctions.getSelectedItem().equals("QT Animation")
+								|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
 			            		|| comboFonctions.getSelectedItem().equals("Uncompressed YUV")
 			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
 			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))))
@@ -493,6 +496,8 @@ public static String qtref = "";
 		pixelformat = "";
 		imageDepth = 8;		
 		timeBase = "";
+		HDRmin = (float) 0.01;
+		HDRmax = 1000;
 
 		FFMPEG.error = false;
 		btnStart.setEnabled(false);
@@ -593,6 +598,20 @@ public static String qtref = "";
 						  timeBase = s[1];
 						  if (timeBase.contains("1/"))
 							  timeBase = s[1].replace("1/", ""); 
+					  }
+					  
+					  if (line.contains("min_luminance"))
+					  {
+						  String s[] = line.split("=");
+						  String s2[] = s[1].split("/");								  
+						  HDRmin = (float) Integer.parseInt(s2[0]) / Integer.parseInt(s2[1]);						  
+					  }
+					  
+					  if (line.contains("max_luminance"))
+					  {
+						  String s[] = line.split("=");
+						  String s2[] = s[1].split("/");								  
+						  HDRmax = (float) Integer.parseInt(s2[0]) / Integer.parseInt(s2[1]);	
 					  }
 						          						        		
 					}
@@ -856,7 +875,7 @@ public static String qtref = "";
 		else
 			multi = 1;
 		
-		if (lblVBR.getText().equals("CRF") == false || lblVBR.isVisible() == false)
+		if (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false)
 		{
 			if (lock.getIcon().toString().substring(lock.getIcon().toString().lastIndexOf("/") + 1).equals("lock.png"))
 			{

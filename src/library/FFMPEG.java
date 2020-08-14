@@ -173,8 +173,14 @@ private static StringBuilder getAll;
 									pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';										
 									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + FFPROBE.qtref + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + pipe});
 							}						
-							else if (cmd.contains("pipe:stab") || comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
-									(caseForcerDAR.isSelected() && grpAdvanced.isVisible() || caseAddOverlay.isSelected() && grpOverlay.isVisible()  || caseColor.isSelected() && grpLUTs.isVisible() || caseLUTs.isSelected() && grpLUTs.isVisible() || caseDeflicker.isSelected() && grpCorrections.isVisible()) && caseVisualiser.isSelected() == false)
+							else if (cmd.contains("pipe:stab")
+									|| comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
+									(caseForcerDAR.isSelected() && grpAdvanced.isVisible()
+									|| caseAddOverlay.isSelected() && grpOverlay.isVisible() 
+									|| caseColor.isSelected() && grpLUTs.isVisible()
+									|| caseLUTs.isSelected() && grpLUTs.isVisible()
+									|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpLUTs.isVisible()
+									|| caseDeflicker.isSelected() && grpCorrections.isVisible()) && caseVisualiser.isSelected() == false)
 							{
 								PathToFFMPEG = "Library\\ffmpeg.exe";
 								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + FFPROBE.qtref + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y")});
@@ -1182,7 +1188,7 @@ private static StringBuilder getAll;
 	     if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")))
 	     {
                analyseLufs = null;
-               analyseLufs = getAll.toString().substring(getAll.toString().lastIndexOf("Summary:") + 12).replace(":", " :");
+               analyseLufs = getAll.toString().substring(getAll.toString().lastIndexOf("Summary:") + 12);
                               
                shortTermValues = new StringBuilder();
                

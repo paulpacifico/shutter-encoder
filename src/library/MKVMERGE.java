@@ -42,7 +42,8 @@ public static Process process;
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
 		{
-	        RenderQueue.tableRow.addRow(new Object[] {lblEncodageEnCours.getText(), "mkvmerge " + cmd, lblDestination1.getText()});
+			btnStart.setEnabled(true);	
+	        RenderQueue.tableRow.addRow(new Object[] {lblEncodageEnCours.getText(), "mkvmerge " + checkList(cmd), lblDestination1.getText()});
 	        lblEncodageEnCours.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
@@ -113,4 +114,37 @@ public static Process process;
 		}
 	}
 
+	private static String checkList(String cmd) {
+		
+		//On vérifie que le fichier n'existe pas déjà dans le cas contraire on l'incrémente
+		String cmdFinale = cmd;		
+		String s[] = cmd.split("\"");
+		String cmdFile = s[s.length - 1];
+		String cmdFileHDR = s[s.length - 3];
+		
+		int n = 0;
+		for (int i = 0 ; i < RenderQueue.tableRow.getRowCount() ; i++)
+		{								
+			String s2[] = RenderQueue.tableRow.getValueAt(i, 1).toString().split("\"");
+			String renduFile = s2[s2.length - 1];
+			
+			if (cmdFile.equals(renduFile) && RenderQueue.tableRow.getValueAt(i, 1).toString().contains("mkvmerge"))
+			{
+				n++;
+				String s3[] = cmd.split("\"");
+				String ext = cmdFile.substring(cmdFile.lastIndexOf("."), cmdFile.lastIndexOf(".") + 4);
+				
+				String originalCmdFile = s3[s3.length - 1];			
+				cmdFile = originalCmdFile.replace(ext,  "_" + n + ext);	
+				
+				String originalCmdFileHDR = s3[s3.length - 3];	
+				cmdFileHDR = originalCmdFileHDR.replace("_HDR" + ext, "_" + n + "_HDR" + ext);
+			}
+		}
+		
+		String s4[] = cmd.split("\"");
+		cmdFinale = cmd.replace(s4[s4.length - 1], cmdFile).replace(s4[s4.length - 3], cmdFileHDR);
+
+		return cmdFinale;
+	}
 }
