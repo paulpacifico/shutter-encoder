@@ -19,8 +19,8 @@
 
 package functions.video;
 
-import java.awt.Cursor;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -31,18 +31,18 @@ import java.util.Random;
 import javax.swing.JSpinner;
 
 import application.Ftp;
-import application.VideoPlayer;
 import application.OverlayWindow;
-import application.WatermarkWindow;
 import application.Settings;
 import application.Shutter;
 import application.SubtitlesWindow;
 import application.Utils;
+import application.VideoPlayer;
+import application.WatermarkWindow;
 import application.Wetransfer;
 import library.FFMPEG;
 import library.FFPROBE;
 
-public class UncompressedYUV extends Shutter {
+public class CineForm extends Shutter {
 		
 	private static int complete;
 	private static File vidstab = null;
@@ -57,11 +57,11 @@ public class UncompressedYUV extends Shutter {
 					complete = 0;
 				
 				lblTermine.setText(Utils.fichiersTermines(complete));
-				
+
 				for (int i = 0 ; i < liste.getSize() ; i++)
-				{				
-					File file = new File(liste.getElementAt(i));			
-									
+				{
+					File file = new File(liste.getElementAt(i));
+					
 					//SCANNING
 		            if (Shutter.scanIsRunning)
 		            {
@@ -145,7 +145,7 @@ public class UncompressedYUV extends Shutter {
 					//Analyse des données
 					if (analyse(file) == false)
 						continue;	
-				
+					
 					audio = setAudio(audio);							
 					
 					//InOut	
@@ -168,7 +168,7 @@ public class UncompressedYUV extends Shutter {
 					String loop = setLoop(extension);	
 					
 	            	//Logo
-			        String logo = setLogo();	            			          
+			        String logo = setLogo();	
 					
 					//Subtitles
 					String subtitles = setSubtitles();
@@ -177,7 +177,7 @@ public class UncompressedYUV extends Shutter {
 		            String forceField = setInterlace();	
 															
 		            //Débit
-					String codec = setCodec();
+					String codec = setCodec();					
 					
 		            //Colorspace
 		            String colorspace = setColorspace();
@@ -193,16 +193,16 @@ public class UncompressedYUV extends Shutter {
 					
 					//LUTs
 					filterComplex = setLUT(filterComplex);
-		            					
+					
 					//Colormatrix
-					filterComplex = setColormatrix(filterComplex);	
+					filterComplex = setColormatrix(filterComplex);				
 					
 					//Color
 					filterComplex = setColor(filterComplex);
-					
+		            
 					//Stabilisation
 					filterComplex = setStabilisation(vidstab, filterComplex, file, fichier, concat);
-
+						
 					//Deflicker
 					filterComplex= setDeflicker(filterComplex);
 					
@@ -274,13 +274,13 @@ public class UncompressedYUV extends Shutter {
 					
 					//Framerate
 					String frameRate = setFramerate();	
-
+					
 					//Fichier de sortie
 					String nomExtension;
 					if (Settings.btnExtension.isSelected())
 						nomExtension = Settings.txtExtension.getText();
 					else		
-						nomExtension =  "_Uncompressed_" + comboFilter.getSelectedItem().toString().replace(" ","_");
+						nomExtension =  "_CineForm_" + comboFilter.getSelectedItem().toString().replace(" ","_");
 		            
 		            //Sortie
 					String sortieFichier =  sortie.replace("\\", "/") + "/" + fichier.replace(extension, nomExtension + ".mov");
@@ -291,13 +291,13 @@ public class UncompressedYUV extends Shutter {
 					{						
 						fileOut = Utils.fileReplacement(sortie, fichier, extension, nomExtension + "_", ".mov");
 						if (fileOut == null)
-							continue;						
+							continue;							
 					}					
 					
 					String output = '"' + fileOut.toString() + '"';
 					if (caseVisualiser.isSelected())						
-						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
-
+						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';					
+						
 					if (cancelled == false && FFMPEG.error == false)
 					{
 						//Envoi de la commande
@@ -391,36 +391,36 @@ public class UncompressedYUV extends Shutter {
 			audio = " -c:a pcm_s32le"; 
 		
         //Fade-in
-    	if (caseAudioFadeIn.isSelected())
-    	{ 
-    		long audioInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long audioStart = 0;
-    		
-    		if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
-    		{
-    			long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-        		
-        		if (totalIn >= 10000)
-        			audioStart = 10000;
-        		else
-        			audioStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-    		}
+		if (caseAudioFadeIn.isSelected())
+		{ 
+			long audioInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+			long audioStart = 0;
+			
+			if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+			{
+				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+				
+				if (totalIn >= 10000)
+					audioStart = 10000;
+				else
+					audioStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+			}
 
-    		String audioFade = "afade=in:st=" + audioStart + "ms:d=" + audioInValue + "ms";
-    		
-        	if (audio.contains("-filter:a"))
-        		audio += "," + audioFade;
-        	else
-        		audio += " -filter:a " + audioFade;
-    	}
-    	
-    	//Fade-out
-    	if (caseAudioFadeOut.isSelected())
-    	{
-    		long audioOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long audioStart = (long) FFPROBE.dureeTotale - audioOutValue;
-    		
-    		if (caseInAndOut.isSelected())
+			String audioFade = "afade=in:st=" + audioStart + "ms:d=" + audioInValue + "ms";
+			
+			if (audio.contains("-filter:a"))
+				audio += "," + audioFade;
+			else
+				audio += " -filter:a " + audioFade;
+		}
+		
+		//Fade-out
+		if (caseAudioFadeOut.isSelected())
+		{
+			long audioOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+			long audioStart = (long) FFPROBE.dureeTotale - audioOutValue;
+			
+			if (caseInAndOut.isSelected())
 			{
 				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 				long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
@@ -435,14 +435,14 @@ public class UncompressedYUV extends Shutter {
 				else //Remove mode
 					audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
 			}
-    		
-    		String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
-    		
-        	if (audio.contains("-filter:a"))
-        		audio += "," + audioFade;
-        	else
-        		audio += " -filter:a " + audioFade;
-    	}
+			
+			String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
+			
+			if (audio.contains("-filter:a"))
+				audio += "," + audioFade;
+			else
+				audio += " -filter:a " + audioFade;
+		}
 		
     	//Audio Speed
         if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))))     
@@ -459,7 +459,7 @@ public class UncompressedYUV extends Shutter {
         			audio += " -filter:a " + ("atempo=" + value);       			
         	}        			
         }
-			
+    		 			
         if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
         	return " -an";
         else if (caseOPATOM.isSelected())
@@ -532,7 +532,7 @@ public class UncompressedYUV extends Shutter {
 		}
 		return file;
 	}
-	
+
 	protected static String setCrop(String filterComplex) {		
 		
 		if (caseRognerImage.isSelected())
@@ -547,7 +547,7 @@ public class UncompressedYUV extends Shutter {
 	}
 	
 	protected static String setPad(String filterComplex) {	
-		
+				
 		if (caseForcerResolution.isSelected())
 		{
 			String s[] = lblResolution.getSelectedItem().toString().split("x");
@@ -591,7 +591,7 @@ public class UncompressedYUV extends Shutter {
 		
 		return filterComplex;
 	}
-
+	
 	protected static String setDAR(String filterComplex) {
 		if (caseForcerDAR.isSelected())
 		{
@@ -616,7 +616,7 @@ public class UncompressedYUV extends Shutter {
 				case ".bmp":
 				case ".psd":
 					Shutter.progressBar1.setMaximum(10);
-					return " -loop 1 -t " + Settings.txtImageDuration.getText();						
+					return " -loop 1 -t " + Settings.txtImageDuration.getText();								
 			}
 		}
 		
@@ -814,15 +814,27 @@ public class UncompressedYUV extends Shutter {
 	}
 	
 	protected static String setCodec() {	
+		String yuv = "yuv422p10";
+		if (caseAlpha.isSelected())
+			yuv = "gbrap12le";
+		
 		switch (comboFilter.getSelectedItem().toString())
 		{					
-			case "8 Bits 422" :
-				return " -vcodec rawvideo -pix_fmt uyvy422 -vtag 2vuy";
-			case "10 Bits 422" :
-				return " -vcodec v210 -pix_fmt yuv422p10le";
-			default : 
-				return "";
+			case "Low" :
+				return " -c:v cfhd -quality low -pix_fmt " + yuv;
+			case "Medium" :
+				return " -c:v cfhd -quality medium -pix_fmt " + yuv;
+			case "High" :
+				return " -c:v cfhd -quality high -pix_fmt " + yuv;
+			case "Film Scan" :
+				return " -c:v cfhd -quality film1 -pix_fmt " + yuv;
+			case "Film Scan 2" :
+				return " -c:v cfhd -quality film2 -pix_fmt " + yuv;
+			case "Film Scan 3" :
+				return " -c:v cfhd -quality film3 -pix_fmt " + yuv;
 		}
+		
+		return " -c:v cfhd -quality film1 -pix_fmt " + yuv;
 	}
 		
 	protected static String setColorspace() {
@@ -920,7 +932,7 @@ public class UncompressedYUV extends Shutter {
 	}
 	
 	protected static String setFlags() { 
-
+		
 		if (caseDetails.isSelected())
     	{
 			float value = (0 - (float) sliderDetails.getValue() / 10);
@@ -961,14 +973,14 @@ public class UncompressedYUV extends Shutter {
 	
 	protected static String setInterpolation(String filterComplex) {
 		if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
-        {		            		
-        	float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));  
-        		
-            if (filterComplex != "") filterComplex += ",";
-            
-            filterComplex += "minterpolate=fps=" + newFPS;            
-        }
-		
+		{		            		
+			float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));  
+				
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "minterpolate=fps=" + newFPS;            
+		}
+
 		return filterComplex;
 	}
 
@@ -992,7 +1004,7 @@ public class UncompressedYUV extends Shutter {
             
             if (videoFilter != "") videoFilter += ",";
             	
-            videoFilter += "setpts=" + (FFPROBE.currentFPS / newFPS) + "*PTS";   
+            videoFilter += "setpts=" + (FFPROBE.currentFPS / newFPS) + "*PTS";      
 
     		if (comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse")))		            		
                 videoFilter += ",reverse";   			
@@ -1073,12 +1085,12 @@ public class UncompressedYUV extends Shutter {
 	}
 	
 	protected static String showTimecode(String filterComplex, String fichier) {
-		
+				
 		 String tc1 = FFPROBE.timecode1;
 		 String tc2 = FFPROBE.timecode2;
 		 String tc3 = FFPROBE.timecode3;
 		 String tc4 = FFPROBE.timecode4;
-		
+		 
 		if (OverlayWindow.caseAddTimecode.isSelected())
 		{
 			 tc1 = OverlayWindow.TC1.getText();
@@ -1111,7 +1123,7 @@ public class UncompressedYUV extends Shutter {
 	   	{
 	   		if (filterComplex != "") filterComplex += ",";
 	   		filterComplex += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\:" + tc4 + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
-	   	}  
+	   	}   
 	   
 		return filterComplex;
 	}
@@ -1144,7 +1156,7 @@ public class UncompressedYUV extends Shutter {
     	
     	return filterComplex;
 	}
-	
+		
 	protected static String setLimiter(String filterComplex) {
 		if (caseLimiter.isSelected())
 		{			
@@ -1161,7 +1173,7 @@ public class UncompressedYUV extends Shutter {
 		}	
 		return filterComplex;
 	}
-	
+		
 	protected static String setTimecode() {
 		if (caseSetTimecode.isSelected())
 			return " -timecode " + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + ":" + TCset4.getText();
@@ -1171,9 +1183,9 @@ public class UncompressedYUV extends Shutter {
 		return "";
 	}
 	
-	protected static String setConform(String filterComplex) {			
+	protected static String setConform(String filterComplex) {				
 		if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformByBlending")))
-		{	
+		{
 			float newFPS = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
 			
 			float FPS = FFPROBE.currentFPS;
@@ -1309,11 +1321,11 @@ public class UncompressedYUV extends Shutter {
 		return "";
 	}
 	
-	protected static String setSortie(String sortie, File file) {					
+	protected static String setSortie(String sortie, File file) {
 		if (caseChangeFolder1.isSelected())
 		{
-			sortie = lblDestination1.getText();
-			
+			sortie = lblDestination1.getText();					
+		
 			if (caseCreateTree.isSelected())
 			{ 	
 				File pathToFile = null;
@@ -1364,7 +1376,7 @@ public class UncompressedYUV extends Shutter {
 	private static boolean actionsDeFin(String fichier, File fileOut, String sortie, File vidstab) {
 		
 		//Erreurs
-		if (FFMPEG.error || fileOut.length() == 0 || caseCreateOPATOM.isSelected())
+		if (FFMPEG.error || fileOut.length() == 0)
 		{
 			if (FFMPEG.error)
 			{
@@ -1399,7 +1411,7 @@ public class UncompressedYUV extends Shutter {
 			} catch (Exception e) {}
 			return true;
 		}
-
+		
 		//Fichiers terminés
 		if (cancelled == false && FFMPEG.error == false)
 		{
@@ -1422,7 +1434,7 @@ public class UncompressedYUV extends Shutter {
 		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
-				
+		
 		//Séquence d'images et bout à bout
 		if (caseActiverSequence.isSelected() || Settings.btnSetBab.isSelected())
 			return true;
@@ -1452,7 +1464,7 @@ public class UncompressedYUV extends Shutter {
 		if (Shutter.scanIsRunning)
 		{
 			Utils.moveScannedFiles(fichier);
-			UncompressedYUV.main();
+			CineForm.main();
 			return true;
 		}
 		return false;

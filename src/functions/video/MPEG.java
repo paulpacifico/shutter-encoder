@@ -803,7 +803,7 @@ public class MPEG extends Shutter {
 	}
 
 	protected static String setBitrate() {
-        if (lblVBR.getText().equals("CRF"))
+        if (lblVBR.getText().equals("CQ"))
         	return " -crf " + debitVideo.getSelectedItem().toString();   
         else
         	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
@@ -869,10 +869,18 @@ public class MPEG extends Shutter {
 	}
 	
 	protected static String setDeinterlace() {		
-		if (caseForcerDesentrelacement.isSelected() || (FFPROBE.entrelaced.equals("1") && comboFilter.getSelectedIndex() == 0))
+		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
+		{
+			String detelecineFields = "top";
+			if (lblTFF.getText().equals("BFF"))
+				detelecineFields = "bottom";
+			
+			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
+		}			
+		else if (caseForcerDesentrelacement.isSelected() || (FFPROBE.entrelaced.equals("1") && comboFilter.getSelectedIndex() == 0))
 		{
 			int doubler = 0;
-			if (lblTFF.getText().equals("x2"))
+			if (lblTFF.getText().equals("x2") && caseForcerDesentrelacement.isSelected())
 				doubler = 1;
 			
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + FFPROBE.fieldOrder + ":0";
@@ -884,7 +892,7 @@ public class MPEG extends Shutter {
 	protected static String setInterlace() {
         if (FFPROBE.entrelaced.equals("1") && caseForcerDesentrelacement.isSelected() == false && comboFilter.getSelectedIndex() == 1)
         {               
-            if (FFPROBE.entrelaced.equals("1") && FFPROBE.fieldOrder.equals("0")) //Invertion de trames
+            if (FFPROBE.entrelaced.equals("1") && FFPROBE.fieldOrder.equals("1")) //Invertion de trames
             	return " -field_order bt -flags +ildct -top 1";                    	
             else
             	return " -flags +ildct -top 1";	
@@ -952,9 +960,21 @@ public class MPEG extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 			
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
-				filterComplex += "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p";	
+			{		
+				String pathToLuts;
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
+					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
+				}
+				else
+					pathToLuts = "LUTs/HDR-to-SDR.cube";
+
+				filterComplex += "lut3d=file=" + pathToLuts;	
+			}
 			else
-				filterComplex += "colormatrix=" + comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+				filterComplex += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
 		}
 		
 		return filterComplex;

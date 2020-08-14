@@ -37,6 +37,7 @@ import application.Utils;
 import application.Wetransfer;
 import library.FFMPEG;
 import library.FFPROBE;
+import library.MKVMERGE;
 
 public class VP9 extends Shutter {
 		
@@ -224,6 +225,15 @@ public class VP9 extends Shutter {
 			       	//Preset
 			        String preset = setPreset();
 			        
+			        //Quality
+			        String quality = setQuality();
+			        
+					//Tune
+					String tune = setTune();
+			        
+					//GOP
+					String gop = setGOP();
+					
 					//Bitrate
 					String bitrate = setBitrate();
 					
@@ -267,7 +277,7 @@ public class VP9 extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 								
 					//Envoi de la commande
-					cmd = frameRate + resolution + colorspace + pass + filterComplex + " -vcodec" + codec + preset + bitrate + gamma + flags + " -y ";
+					cmd = frameRate + resolution + colorspace + pass + filterComplex + " -vcodec" + codec + preset + quality + tune + gop + bitrate + gamma + flags + " -y ";
 										
 					//Encodage
 					if (encode)
@@ -296,6 +306,34 @@ public class VP9 extends Shutter {
 						//SUPPRESSION DES FICHIERS RESIDUELS
 						final File folder = new File(new File(sortieFichier).getParent());
 						listFilesForFolder(fichier.replace(extension, ""), folder);
+					}
+					
+					//HDR
+					if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR") && FFMPEG.error == false)
+					{
+						lblEncodageEnCours.setText(fichier);
+						
+						File HDRmkv = fileOut;
+						File tempHDR = new File(fileOut.toString().replace(comboFilter.getSelectedItem().toString(), "_HDR" + comboFilter.getSelectedItem().toString()));
+						fileOut.renameTo(tempHDR);	
+						fileOut = HDRmkv;
+
+						String PQorHLG = "16";
+						if (comboColorspace.getSelectedItem().toString().contains("HLG"))
+							PQorHLG = "18";
+						
+						String cmd = " --colour-matrix 0:9 --colour-range 0:1 --colour-transfer-characteristics 0:" + PQorHLG + " --colour-primaries 0:9 --max-luminance 0:" + (int) FFPROBE.HDRmax + " --min-luminance 0:" + FFPROBE.HDRmin + " --chromaticity-coordinates 0:0.68,0.32,0.265,0.690,0.15,0.06 --white-colour-coordinates 0:0.3127,0.3290";
+						MKVMERGE.run(cmd + " " + '"' + tempHDR + '"' + " -o " + '"'  + HDRmkv + '"');		
+						
+						//Attente de la fin de FFMPEG
+						do
+							Thread.sleep(100);
+						while(MKVMERGE.runProcess.isAlive());
+						
+						if (MKVMERGE.error == false)
+							tempHDR.delete();
+						else
+							FFMPEG.error = true;
 					}
 
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
@@ -474,13 +512,38 @@ public class VP9 extends Shutter {
 
 	protected static String setPreset() {
         if (caseQMax.isSelected())
-        	return " -speed 1 -tile-columns 0 -frame-parallel 0 -auto-alt-ref 1 -lag-in-frames 25";
+        	return " -speed 0";
+        else if (caseForceSpeed.isSelected())
+        	return " -speed " + Shutter.comboForceSpeed.getSelectedItem().toString();
         else
-        	return " -speed 4 -tile-columns 6 -frame-parallel 1";
+        	return " -speed 4";
+	}
+	
+	protected static String setQuality() {
+		if (caseQMax.isSelected())
+        	return " -quality best";
+        else if (caseForceQuality.isSelected())
+            return " -quality " + Shutter.comboForceQuality.getSelectedItem().toString();
+        else
+        	return "";
+	}
+	
+	protected static String setTune() {
+        if (caseForceTune.isSelected())
+            return " -tune-content " + Shutter.comboForceTune.getSelectedItem().toString();
+        else
+        	return "";
+	}
+	
+	protected static String setGOP() {
+        if (caseGOP.isSelected())
+            return " -g " + Shutter.gopSize.getText();
+        else
+        	return "";
 	}
 	
 	protected static String setBitrate() {
-        if (lblVBR.getText().equals("CRF"))
+        if (lblVBR.getText().equals("CQ"))
         	return " -crf " + debitVideo.getSelectedItem().toString();   
         else
         	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
@@ -813,19 +876,28 @@ public class VP9 extends Shutter {
 		return filterComplex;
 	}
 
-	protected static String setGamma() {
+	protected static String setGamma() {		
+		String yuv = "yuv";
+		
+        if (caseAlpha.isSelected())
+        {
+        	yuv += "a";
+        }		
+
 		if (caseColorspace.isSelected())
 		{
+        	if (comboColorspace.getSelectedItem().toString().contains("422"))
+        		yuv += "422p";
+        	else
+            	yuv += "420p";
+        	
 			if (comboColorspace.getSelectedItem().toString().contains("10bits"))
-				return " -pix_fmt yuv420p10le";
-			else if (comboColorspace.getSelectedItem().toString().contains("12bits"))
-				return " -pix_fmt yuv420p12le";
+				yuv += "10le";
 		}
-		
-		if (caseAlpha.isSelected())
-			return " -pix_fmt yuva420p";
-		else
-			return " -pix_fmt yuv420p";
+        else
+        	yuv += "420p";
+        
+		return " -pix_fmt " + yuv;
 	}
 
 	protected static boolean analyse(File file) throws InterruptedException {
@@ -873,9 +945,9 @@ public class VP9 extends Shutter {
 			if (comboColorspace.getSelectedItem().toString().contains("Rec. 709"))
 				return " -color_primaries bt709 -color_trc bt709 -colorspace bt709";
 			else if (comboColorspace.getSelectedItem().toString().contains("Rec. 2020 PQ"))
-				return " -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc";
+				return " -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc -profile:v 2";
 			else if (comboColorspace.getSelectedItem().toString().contains("Rec. 2020 HLG"))
-				return " -color_primaries bt2020 -color_trc arib-std-b67 -colorspace bt2020nc";
+				return " -color_primaries bt2020 -color_trc arib-std-b67 -colorspace bt2020nc -profile:v 2";
 			else
 				return "";
 		}
@@ -883,11 +955,19 @@ public class VP9 extends Shutter {
 			return "";
 	}
 	
-	protected static String setDeinterlace() {		
-		if (caseForcerDesentrelacement.isSelected() || FFPROBE.entrelaced.equals("1"))
+	protected static String setDeinterlace() {	
+		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
+		{
+			String detelecineFields = "top";
+			if (lblTFF.getText().equals("BFF"))
+				detelecineFields = "bottom";
+			
+			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
+		}			
+		else if (caseForcerDesentrelacement.isSelected() || FFPROBE.entrelaced.equals("1"))
 		{
 			int doubler = 0;
-			if (lblTFF.getText().equals("x2"))
+			if (lblTFF.getText().equals("x2") && caseForcerDesentrelacement.isSelected())
 				doubler = 1;
 			
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + FFPROBE.fieldOrder + ":0";
@@ -955,9 +1035,21 @@ public class VP9 extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 			
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
-				filterComplex += "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p";	
+			{		
+				String pathToLuts;
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
+					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
+				}
+				else
+					pathToLuts = "LUTs/HDR-to-SDR.cube";
+
+				filterComplex += "lut3d=file=" + pathToLuts;	
+			}
 			else
-				filterComplex += "colormatrix=" + comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+				filterComplex += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
 		}
 		
 		return filterComplex;

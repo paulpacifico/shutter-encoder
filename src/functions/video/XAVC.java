@@ -129,6 +129,9 @@ public class XAVC extends Shutter {
 					 //Interlace
 		            String forceField = setInterlace();	
 					
+		            //Colorspace
+		            String colorspace = setColorspace();
+		            
 			        //Deinterlace
 					String filterComplex = setDeinterlace();	
 					
@@ -255,7 +258,7 @@ public class XAVC extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 							
 					//Envoi de la commande
-					String cmd = silentTrack + frameRate + filterComplex + " -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le -f mxf" + forceField + timecode + flags + " -y ";
+					String cmd = silentTrack + frameRate + colorspace + filterComplex + " -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le -f mxf" + forceField + timecode + flags + " -y ";
 					FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -guess_layout_max 0 -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
 					
 					//Attente de la fin de FFMPEG
@@ -721,11 +724,35 @@ public class XAVC extends Shutter {
 		return "";
 	}
 	
+	protected static String setColorspace() {
+		if (caseColorspace.isSelected())
+		{
+			if (comboColorspace.getSelectedItem().equals("Rec. 709"))
+				return " -color_primaries bt709 -color_trc bt709 -colorspace bt709";
+			else if (comboColorspace.getSelectedItem().equals("Rec. 2020 PQ"))
+				return " -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc";
+			else if (comboColorspace.getSelectedItem().equals("Rec. 2020 HLG"))
+				return " -color_primaries bt2020 -color_trc arib-std-b67 -colorspace bt2020nc";
+			else
+				return "";
+		}
+		else
+			return "";
+	}
+	
 	protected static String setDeinterlace() {		
-		if (caseForcerDesentrelacement.isSelected())
+		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
+		{
+			String detelecineFields = "top";
+			if (lblTFF.getText().equals("BFF"))
+				detelecineFields = "bottom";
+			
+			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
+		}			
+		else if (caseForcerDesentrelacement.isSelected())
 		{
 			int doubler = 0;
-			if (lblTFF.getText().equals("x2"))
+			if (lblTFF.getText().equals("x2") && caseForcerDesentrelacement.isSelected())
 				doubler = 1;
 			
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + FFPROBE.fieldOrder + ":0";
@@ -795,9 +822,21 @@ public class XAVC extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 			
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
-				filterComplex += "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p";	
+			{		
+				String pathToLuts;
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
+					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
+				}
+				else
+					pathToLuts = "LUTs/HDR-to-SDR.cube";
+
+				filterComplex += "lut3d=file=" + pathToLuts;	
+			}
 			else
-				filterComplex += "colormatrix=" + comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+				filterComplex += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
 		}
 		
 		return filterComplex;

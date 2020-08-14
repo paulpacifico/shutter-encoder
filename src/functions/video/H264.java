@@ -842,27 +842,51 @@ public class H264 extends Shutter {
 	}
 
 	protected static String setGamma() {
-        if (FFPROBE.lumaLevel == "0-255"  && caseForceOutput.isSelected()  == false || caseForceOutput.isSelected() && lblNiveaux.getText().equals("0-255"))
+		String yuv = "yuv";
+		
+        if (FFPROBE.lumaLevel == "0-255" && caseForceOutput.isSelected()  == false || caseForceOutput.isSelected() && lblNiveaux.getText().equals("0-255"))
         {
-        	if (caseForceLevel.isSelected() && comboForceProfile.getSelectedItem().equals("high10"))
-        		return " -pix_fmt yuvj420p10le";
+        	yuv += "j";
+        }		
+
+        if (caseForceLevel.isSelected())
+        {
+        	if (comboForceProfile.getSelectedItem().toString().contains("422"))
+        		yuv += "422p";
+        	else if (comboForceProfile.getSelectedItem().toString().contains("444"))
+        		yuv += "444p";
         	else
-        		return " -pix_fmt yuvj420p";
+            	yuv += "420p";
         }
         else
-        {
-        	if (caseForceLevel.isSelected() && comboForceProfile.getSelectedItem().equals("high10"))
-        		return " -pix_fmt yuv420p10le";
-        	else
-        		return " -pix_fmt yuv420p";
-        }
+        	yuv += "420p";
+        
+		if (caseColorspace.isSelected())
+		{
+			if (comboColorspace.getSelectedItem().toString().contains("10bits"))
+				yuv += "10le";
+		}
+        
+        return " -pix_fmt " + yuv;
 	}
 	
 	protected static String setProfile() {
         if (caseForceLevel.isSelected())
-            return " -profile:v " + Shutter.comboForceProfile.getSelectedItem().toString().replace("base", "baseline") + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
+        {
+        	String profile = Shutter.comboForceProfile.getSelectedItem().toString().replace("base", "baseline");
+            if (caseColorspace.isSelected() && profile.equals("high") && comboColorspace.getSelectedItem().toString().contains("10bits") && caseAccel.isSelected() == false)
+    			profile = "high10";
+            
+            return " -profile:v " + profile + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
+        }
         else
-        	return " -profile:v high -level 5.1";
+        {
+        	String profile = "high";
+            if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
+    			profile = "high10";
+            
+        	return " -profile:v " + profile + " -level 5.1";
+        }       
 	}
 	
 	protected static String setTune() {
@@ -880,7 +904,7 @@ public class H264 extends Shutter {
 	}
 	
 	protected static String setBitrate() {
-        if (lblVBR.getText().equals("CRF"))
+        if (lblVBR.getText().equals("CQ"))
         {
         	if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
         		return " -crf " + debitVideo.getSelectedItem().toString();
@@ -963,10 +987,18 @@ public class H264 extends Shutter {
 	}
 	
 	protected static String setDeinterlace() {		
-		if ((caseForcerDesentrelacement.isSelected() || FFPROBE.entrelaced.equals("1")) && caseForcerEntrelacement.isSelected() == false)
+		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
+		{
+			String detelecineFields = "top";
+			if (lblTFF.getText().equals("BFF"))
+				detelecineFields = "bottom";
+			
+			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
+		}			
+		else if ((caseForcerDesentrelacement.isSelected() || FFPROBE.entrelaced.equals("1")) && caseForcerEntrelacement.isSelected() == false)
 		{
 			int doubler = 0;
-			if (lblTFF.getText().equals("x2"))
+			if (lblTFF.getText().equals("x2") && caseForcerDesentrelacement.isSelected())
 				doubler = 1;
 			
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + FFPROBE.fieldOrder + ":0";
@@ -1034,9 +1066,21 @@ public class H264 extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 			
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
-				filterComplex += "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p";	
+			{		
+				String pathToLuts;
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
+					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
+				}
+				else
+					pathToLuts = "LUTs/HDR-to-SDR.cube";
+
+				filterComplex += "lut3d=file=" + pathToLuts;	
+			}
 			else
-				filterComplex += "colormatrix=" + comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+				filterComplex += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
 		}
 		
 		return filterComplex;

@@ -128,6 +128,9 @@ public class HAP extends Shutter {
 					//Codec
 					String codec = setCodec();
 					
+		            //Colorspace
+		            String colorspace = setColorspace();
+					
 			        //Deinterlace
 					String filterComplex = setDeinterlace();
 					
@@ -260,7 +263,7 @@ public class HAP extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 						
 					//Envoi de la commande
-					String cmd =  frameRate + filterComplex + " -c:v hap" + codec + " -chunks 4" + forceField + timecode + flags + " -y ";
+					String cmd =  frameRate + colorspace + filterComplex + " -c:v hap" + codec + " -chunks 4" + forceField + timecode + flags + " -y ";
 					FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);				
 					
 					//Attente de la fin de FFMPEG
@@ -693,11 +696,35 @@ public class HAP extends Shutter {
 		return "";
 	}
 	
+	protected static String setColorspace() {
+		if (caseColorspace.isSelected())
+		{
+			if (comboColorspace.getSelectedItem().equals("Rec. 709"))
+				return " -color_primaries bt709 -color_trc bt709 -colorspace bt709";
+			else if (comboColorspace.getSelectedItem().equals("Rec. 2020 PQ"))
+				return " -color_primaries bt2020 -color_trc smpte2084 -colorspace bt2020nc";
+			else if (comboColorspace.getSelectedItem().equals("Rec. 2020 HLG"))
+				return " -color_primaries bt2020 -color_trc arib-std-b67 -colorspace bt2020nc";
+			else
+				return "";
+		}
+		else
+			return "";
+	}
+	
 	protected static String setDeinterlace() {		
-		if (caseForcerDesentrelacement.isSelected())
+		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
+		{
+			String detelecineFields = "top";
+			if (lblTFF.getText().equals("BFF"))
+				detelecineFields = "bottom";
+			
+			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
+		}			
+		else if (caseForcerDesentrelacement.isSelected())
 		{
 			int doubler = 0;
-			if (lblTFF.getText().equals("x2"))
+			if (lblTFF.getText().equals("x2") && caseForcerDesentrelacement.isSelected())
 				doubler = 1;
 			
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + FFPROBE.fieldOrder + ":0";
@@ -767,9 +794,21 @@ public class HAP extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 			
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
-				filterComplex += "zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p";	
+			{		
+				String pathToLuts;
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
+					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
+				}
+				else
+					pathToLuts = "LUTs/HDR-to-SDR.cube";
+
+				filterComplex += "lut3d=file=" + pathToLuts;	
+			}
 			else
-				filterComplex += "colormatrix=" + comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt") + ":" + comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt");
+				filterComplex += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
 		}
 		
 		return filterComplex;
