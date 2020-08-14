@@ -23,6 +23,9 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
+
 import application.Ftp;
 import application.Settings;
 import application.Shutter;
@@ -33,7 +36,6 @@ import library.FFMPEG;
 import library.FFPROBE;
 
 public class OGG extends Shutter {
-	
 	
 	private static int complete;
 	
@@ -114,22 +116,37 @@ public class OGG extends Shutter {
 						continue;	
 
 					//Dossier de sortie
-					String sortie = setSortie("", file);					
-					final String sortieFichier =  sortie + "/" + fichier.replace(extension, ".ogg") ; 		
+					String sortie = setSortie("", file);
+					
+					//Fichier de sortie
+					String nomExtension;
+					if (Settings.btnExtension.isSelected())
+						nomExtension = Settings.txtExtension.getText();
+					else		
+						nomExtension =  "_MIX";
+					
+					String sortieFichier;
+					if (caseMixAudio.isSelected())						
+						sortieFichier =  sortie + "/" + fichier.replace(extension, nomExtension + ".ogg");
+					else
+						sortieFichier =  sortie + "/" + fichier.replace(extension, ".ogg");		
 					
 		           	//Audio
-					String audio = setAudio();			    	
+					String audio = setAudio("");			    	
 					
 					//InOut		
 					FFMPEG.fonctionInOut();
 					
 					//Si le fichier existe
 					File fileOut = new File(sortieFichier);
-					if(fileOut.exists())
+					if(fileOut.exists() && caseSplitAudio.isSelected() == false)
 					{						
-						fileOut = Utils.fileReplacement(sortie, fichier, extension, "_", ".ogg");
+						if (caseMixAudio.isSelected())						
+							fileOut = Utils.fileReplacement(sortie, fichier, extension, nomExtension + "_", ".ogg");
+						else
+							fileOut = Utils.fileReplacement(sortie, fichier, extension, "_", ".ogg");
 						if (fileOut == null)
-							continue;							
+							continue;	
 					}
 					
 					//Mode concat
@@ -138,17 +155,33 @@ public class OGG extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 
 									
-					//Envoi de la commande
-					String cmd = " -vn " + audio + "-y ";
-					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
-						
+					//Envoi de la commande					
+					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio						
+						splitAudio(fichier, extension, file, sortie);
+					else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
+					{
+						String cmd = " " + audio + "-vn -y ";
+						FFMPEG.run(FFMPEG.inPoint + concat +
+								" -i " + '"' + liste.getElementAt(0) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(1) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(2) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(3) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(4) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(5) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								cmd + '"'  + fileOut + '"');
+					}
+					else
+					{
+						String cmd = " " + audio + "-vn -y ";
+						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
+					}	
 					
 					//Attente de la fin de FFMPEG
 					do
 							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());					
 				
-					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
+					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false
 					|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected() || FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 					{
 						if (actionsDeFin(fichier, fileOut, sortie))
@@ -169,16 +202,197 @@ public class OGG extends Shutter {
 		
     }//main
 
-	protected static String setAudio() {
-		String audio = "-c:a libvorbis -b:a "+ comboFilter.getSelectedItem().toString() + "k ";
-		if (FFPROBE.stereo)
-			audio += "-map a:0 ";
+	private static String setAudio(String audio) {
+		
+		String audioSpeed = "";
+		if (caseConvertAudioFramerate.isSelected())     
+        {
+        	float AudioFPSIn = Float.parseFloat((comboAudioIn.getSelectedItem().toString()).replace(",", "."));
+        	float AudioFPSOut = Float.parseFloat((comboAudioOut.getSelectedItem().toString()).replace(",", "."));
+        	float value = (float) (AudioFPSOut / AudioFPSIn);
+        	audioSpeed = ",atempo=" + value;	
+        }
+		
+		if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")))						
+		{
+			for (int n = 1 ; n < liste.size() ; n++)
+			{
+				audio += "-i " + '"' + liste.elementAt(n) + '"' + " ";
+			}
+			
+			if (FFPROBE.stereo)
+				audio += "-filter_complex amerge=inputs=" + liste.size() + audioSpeed + " -ac 2 ";
+			else
+			{
+				audio += "-filter_complex " + '"';
+				String left = "";
+				int cl = 0;
+				String right = "";
+				int cr = 0;
+				for (int n = 0 ; n < liste.size() ; n++)
+				{
+					if (n % 2 == 0) //les chiffres paires à gauche
+					{
+						left += "[" + n + ":0]";
+						cl++;
+					}
+					else			//les chiffres impaires à droite
+					{
+						right += "[" + n + ":0]";
+						cr++;
+					}
+				}
+				audio += left + "amerge=inputs=" + cl + ",channelmap=map=FL[left];" + right + "amerge=inputs=" + cr + ",channelmap=map=FR[right];";
+						
+				audio += "[left][right]amerge=inputs=2" + audioSpeed + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + " -ac 2 ";
+			}							
+		}
+		else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
+		{
+			audio = "-filter_complex " + '"' + "[0:a][1:a][2:a][3:a][4:a][5:a]join=inputs=6:channel_layout=5.1" + audioSpeed + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";
+		}
+		else if (FFPROBE.stereo)
+		{
+			audio = "-map a:0 ";
+			if (caseConvertAudioFramerate.isSelected())     
+				audio += audioSpeed.replace(",", " -filter_complex ") + " ";
+		}
 		else if (FFPROBE.channels > 1)
-	    	audio += "-filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";	
-	    
-	    return audio;
+	    	audio = "-filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2" + audioSpeed + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";	
+		else //Fichier Mono
+		{
+			if (caseConvertAudioFramerate.isSelected())     
+				audio += audioSpeed.replace(",", " -filter_complex ") + " ";
+		}
+			
+		//Bitrate
+		audio += "-acodec libvorbis -b:a "+ comboFilter.getSelectedItem().toString() + "k ";								
+		
+		//Frequence d'échantillonnage
+		if (caseSampleRate.isSelected())
+			audio += "-ar " + lbl48k.getText() + " ";
+		
+		return audio;
 	}
-
+	
+	private static void splitAudio(String fichier, String extension, File file, String sortie) throws InterruptedException {
+		
+		String audioSpeed = "";
+		if (caseConvertAudioFramerate.isSelected())     
+        {
+        	float AudioFPSIn = Float.parseFloat((comboAudioIn.getSelectedItem().toString()).replace(",", "."));
+        	float AudioFPSOut = Float.parseFloat((comboAudioOut.getSelectedItem().toString()).replace(",", "."));
+        	float value = (float) (AudioFPSOut / AudioFPSIn);
+        	audioSpeed = ",atempo=" + value;	
+        }
+		
+		if (FFPROBE.channels == 1 && lblSplit.getText().equals("Mono"))
+		{			
+			
+			for (int i = 1 ; i < 3; i ++)
+			{
+				//Si le fichier existe
+				String yesno = " -y ";
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".wav"));
+				if(fileOut.exists())
+				{										
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".wav");
+					if (fileOut == null)
+						yesno = " -n ";	
+				}
+				
+				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioSpeed + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -acodec libvorbis -b:a "+ comboFilter.getSelectedItem().toString() + "k -vn" + yesno;
+				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
+				
+				do
+					Thread.sleep(100);
+				while(FFMPEG.runProcess.isAlive());	
+				
+				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				{
+					if (actionsDeFin(fichier, fileOut, sortie))
+						break;
+				}
+			}
+			
+		}
+		else if (FFPROBE.channels == 1 && lblSplit.getText().equals(Shutter.language.getProperty("stereo"))) //Si le fichier est stéréo et demandé en stéréo on ne split rien
+		{
+			JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("theFile") + " " + fichier + " " + Shutter.language.getProperty("isAlreadyStereo"), Shutter.language.getProperty("cantSplitAudio"), JOptionPane.ERROR_MESSAGE);
+		}
+		else if (FFPROBE.channels > 1 && lblSplit.getText().equals("Mono"))
+		{
+			for (int i = 1 ; i < FFPROBE.channels + 1; i ++)
+			{
+				//Si le fichier existe
+				String yesno = " -y ";
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".wav"));
+				if(fileOut.exists())
+				{										
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".wav");
+					if (fileOut == null)
+						yesno = " -n ";	
+				}
+				
+				if (caseConvertAudioFramerate.isSelected())     
+					audioSpeed = audioSpeed.replace(",", " -filter_complex ");
+				
+				String cmd = audioSpeed + " -map a:" + (i - 1) + " -acodec libvorbis -b:a "+ comboFilter.getSelectedItem().toString() + "k -vn" + yesno;
+				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
+				
+				do
+					Thread.sleep(100);
+				while(FFMPEG.runProcess.isAlive());	
+				
+				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				{
+					if (actionsDeFin(fichier, fileOut, sortie))
+						break;
+				}
+			}
+		}
+		else if (FFPROBE.channels > 1 && lblSplit.getText().equals(Shutter.language.getProperty("stereo")))
+		{
+			
+			int number = 1;
+			
+			for (int i = 1 ; i < FFPROBE.channels + 1; i +=2)
+			{
+				
+				//Si le fichier existe
+				String yesno = " -y ";
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + number + ".wav"));
+				if(fileOut.exists())
+				{										
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + number + "_", ".wav");
+					if (fileOut == null)
+						yesno = " -n ";	
+				}
+				
+				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioSpeed + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -acodec libvorbis -b:a "+ comboFilter.getSelectedItem().toString() + "k -vn" + yesno;
+				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
+				
+				do
+					Thread.sleep(100);
+				while(FFMPEG.runProcess.isAlive());	
+				
+				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				{
+					if (actionsDeFin(fichier, fileOut, sortie))
+						break;
+				}
+				
+				number ++;
+			}
+		}
+		else
+		{
+			FFMPEG.errorList.append(fichier);
+		    FFMPEG.errorList.append(System.lineSeparator());
+		}
+		
+	}
+	
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.Data(file.toString());
 
@@ -270,6 +484,10 @@ public class OGG extends Shutter {
 		if (Settings.btnSetBab.isSelected())
 			return true;
 		
+		//MixAudio
+		if (caseMixAudio.isSelected())
+			return true;
+		
 		//Scan
 		if (Shutter.scanIsRunning)
 		{
@@ -279,4 +497,5 @@ public class OGG extends Shutter {
 		}
 		return false;
 	}
+
 }//Class

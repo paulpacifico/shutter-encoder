@@ -158,6 +158,18 @@ public class FLAC extends Shutter {
 					//Envoi de la commande					
 					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio						
 						splitAudio(fichier, extension, file, sortie);
+					else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
+					{
+						String cmd = " " + audio + "-vn -y ";
+						FFMPEG.run(FFMPEG.inPoint + concat +
+								" -i " + '"' + liste.getElementAt(0) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(1) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(2) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(3) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(4) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(5) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								cmd + '"'  + fileOut + '"');
+					}
 					else
 					{
 						String cmd = " " + audio + "-vn -y ";
@@ -201,7 +213,7 @@ public class FLAC extends Shutter {
         	audioSpeed = ",atempo=" + value;	
         }
 		
-		if (caseMixAudio.isSelected())						
+		if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")))						
 		{
 			for (int n = 1 ; n < liste.size() ; n++)
 			{
@@ -234,6 +246,10 @@ public class FLAC extends Shutter {
 						
 				audio += "[left][right]amerge=inputs=2" + audioSpeed + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + " -ac 2 ";
 			}							
+		}
+		else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
+		{
+			audio = "-filter_complex " + '"' + "[0:a][1:a][2:a][3:a][4:a][5:a]join=inputs=6:channel_layout=5.1" + audioSpeed + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";
 		}
 		else if (FFPROBE.stereo)
 		{
