@@ -19,4 +19,4 @@ https://www.shutterencoder.com/en/#downloads
 
 #### Changelog
 
-https://www.shutterencoder.com/changelog.txt
+https://www.shutterencoder.com/changelog.html
