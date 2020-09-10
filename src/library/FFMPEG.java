@@ -238,10 +238,12 @@ private static StringBuilder getAll;
 									|| line.contains("Invalid argument")
 									|| line.contains("Error opening filters!")
 									|| line.contains("matches no streams")
-									|| line.contains("Error while opening encoder"))
+									|| line.contains("Error while opening encoder")
+									|| line.contains("Decoder (codec none) not found")
+									|| line.contains("Unknown encoder"))
 							{
 								error = true;
-								break;
+								//break;
 							} 
 																	
 							if (cancelled == false)
@@ -372,10 +374,12 @@ private static StringBuilder getAll;
 									|| line.contains("Invalid argument")
 									|| line.contains("Error opening filters!")
 									|| line.contains("matches no streams")
-									|| line.contains("Error while opening encoder"))
+									|| line.contains("Error while opening encoder")
+									|| line.contains("Decoder (codec none) not found")
+									|| line.contains("Unknown encoder"))
 							{
 								error = true;
-								break;
+								//break;
 							} 								
 								 
 							 if (line.contains("frame"))
@@ -444,10 +448,11 @@ private static StringBuilder getAll;
 								|| line.contains("Error opening filters!")
 								|| line.contains("matches no streams")
 								|| line.contains("Error while opening encoder")
+								|| line.contains("Decoder (codec none) not found")
 								|| line.contains("Unknown encoder"))
 						{
 							error = true;
-							break;
+							//break;
 						} 
 																		
 					}//While							
@@ -639,7 +644,7 @@ private static StringBuilder getAll;
 					lblEncodageEnCours.setText(file.getName());
 					tempsRestant.setVisible(false);
 					btnStart.setEnabled(false);
-					btnAnnuler.setEnabled(true);
+					btnCancel.setEnabled(true);
 					comboFonctions.setEnabled(false);
 					
 					long fileSize = 0;
@@ -665,13 +670,13 @@ private static StringBuilder getAll;
 						progressBar1.setIndeterminate(false);
 						lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 						btnStart.setEnabled(true);
-						btnAnnuler.setEnabled(false);
+						btnCancel.setEnabled(false);
 						comboFonctions.setEnabled(true);
 						break;
 					}
 					
 					progressBar1.setIndeterminate(false);
-					btnAnnuler.setEnabled(false);
+					btnCancel.setEnabled(false);
 	            }
 				//Scanning
 				
@@ -835,6 +840,11 @@ private static StringBuilder getAll;
     	    
     		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	    	
 
+    		if (progressBar1.getString().equals("NaN"))
+    			progressBar1.setStringPainted(false);
+    		else
+    			progressBar1.setStringPainted(true);
+    		
 			if (pass2)
 				progressBar1.setValue((dureeTotale / 2) + CalculTemps(ffmpegTime));
 			else

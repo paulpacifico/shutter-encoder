@@ -175,8 +175,7 @@ public static String format = "";
 					do {
 						lineOutput = br.readLine();		
 												
-					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());
-		                
+					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());		                
 						          						        		
 					} while(lineOutput != null && Shutter.cancelled == false);	
 					process.waitFor();					

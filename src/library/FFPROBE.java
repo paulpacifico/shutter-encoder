@@ -196,7 +196,7 @@ public static String qtref = "";
 								|| line.contains("Invalid argument"))
 						{
 							FFMPEG.error = true;
-							break;
+							//break;
 						}
 						
 						//QT REF
@@ -373,6 +373,9 @@ public static String qtref = "";
 				            if (line.contains("fps")) {
 				                String str[]= line.split("fps");
 				                currentFPS = Float.parseFloat(str[0].substring(str[0].lastIndexOf(",")).replace("s,", "").replace(", ", ""));
+				                
+				                if (currentFPS == 23.98f)
+				                	currentFPS = 23.976f;
 				            } 
 						 }
 						 
@@ -546,7 +549,7 @@ public static String qtref = "";
 								|| line.contains("Invalid argument"))
 						{
 							FFMPEG.error = true;
-							break;
+							//break;
 						}
 																		
 					  if (line.contains("interlaced_frame") && caseForcerEntrelacement.isSelected() == false) {

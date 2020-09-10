@@ -124,8 +124,8 @@ public static Thread runProcess;
 		                FinalXML.append(System.lineSeparator());
 		           }			        
 									
-					//Ajout de la Tab	           	
-		        	Informations.addTabControl();		           
+		           //Ajout de la Tab	           	
+		           Informations.addTabControl();		           
 		           
 		           String informationsFrameSize = String.valueOf((int) Informations.frame.getSize().width - 320);
 		           String htmlSize = "";
@@ -140,10 +140,11 @@ public static Thread runProcess;
 		        	   }
 		           
 		           	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + FinalXML.toString().replace(htmlSize, informationsFrameSize));
+		           	content.setBackground(new Color(245,245,245));
 		           	content.setForeground(Color.BLACK);
+		           	content.setOpaque(true);
 		           		
 		           	JScrollPane scrollPane = new JScrollPane();
-		   			scrollPane.setBackground(new Color(50,50,50));
 		   			scrollPane.setViewportView(content);
 		   			scrollPane.setBounds(Informations.tabPanel.getBounds());	
 		   			scrollPane.getVerticalScrollBar().setUnitIncrement(16);
