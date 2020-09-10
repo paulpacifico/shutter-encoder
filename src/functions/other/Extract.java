@@ -74,7 +74,7 @@ public class Extract extends Shutter {
 						lblEncodageEnCours.setText(file.getName());
 						tempsRestant.setVisible(false);
 						btnStart.setEnabled(false);
-						btnAnnuler.setEnabled(true);
+						btnCancel.setEnabled(true);
 						comboFonctions.setEnabled(false);
 						
 						long fileSize = 0;
@@ -100,13 +100,13 @@ public class Extract extends Shutter {
 							progressBar1.setIndeterminate(false);
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							btnStart.setEnabled(true);
-							btnAnnuler.setEnabled(false);
+							btnCancel.setEnabled(false);
 							comboFonctions.setEnabled(true);
 							break;
 						}
 						
 						progressBar1.setIndeterminate(false);
-						btnAnnuler.setEnabled(false);
+						btnCancel.setEnabled(false);
 		            }
 		           //SCANNING
 		            

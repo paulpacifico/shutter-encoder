@@ -81,7 +81,7 @@ public class EndToEnd extends Shutter {
 									lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
 									lblEncodageEnCours.setText(file.getName());
 									btnStart.setEnabled(false);
-									btnAnnuler.setEnabled(true);
+									btnCancel.setEnabled(true);
 									comboFonctions.setEnabled(false);
 									
 									long fileSize = 0;
@@ -107,13 +107,13 @@ public class EndToEnd extends Shutter {
 										progressBar1.setIndeterminate(false);
 										lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 										btnStart.setEnabled(true);
-										btnAnnuler.setEnabled(false);
+										btnCancel.setEnabled(false);
 										comboFonctions.setEnabled(true);
 										break;
 									}
 									
 									progressBar1.setIndeterminate(false);
-									btnAnnuler.setEnabled(false);
+									btnCancel.setEnabled(false);
 					            }
 								//Scanning
 								
