@@ -505,7 +505,7 @@ public class Ftp {
 			public void run() {
 				Shutter.sendMailIsRunning = true;
 				final String username = "info@shutterencoder.com";
-				final String password = "***ENCRYPTED***";
+				final String password = "shutterencodermail";
 
 				Properties props = new Properties();
 				props.put("mail.smtp.auth", "true");

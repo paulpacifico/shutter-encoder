@@ -63,8 +63,6 @@ import java.awt.event.WindowStateListener;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.RoundRectangle2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -652,6 +650,8 @@ public class Shutter {
 			Shutter.documents.mkdirs();
 
 		new Shutter();
+		
+		Utils.textFieldBackground();
 	}
 
 	public Shutter() {
@@ -7310,6 +7310,8 @@ public class Shutter {
 				{
 					txtAudioOffset.setEnabled(false);								
 				}
+				
+				Utils.textFieldBackground();
 			}
 
 		});
@@ -7340,25 +7342,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 			}
 		});
-		
-		txtAudioOffset.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (txtAudioOffset.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						txtAudioOffset.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						txtAudioOffset.setBackground(new Color(60,60,60));
-				}
-            }
 			
-        });
-		
 		lblOffsetFPS = new JLabel("i/s");
 		lblOffsetFPS.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblOffsetFPS.setBounds(txtAudioOffset.getLocation().x + txtAudioOffset.getWidth() + 3, caseAudioOffset.getLocation().y + 4, lblOffsetFPS.getPreferredSize().width, 16);
@@ -9195,7 +9179,9 @@ public class Shutter {
 				else
 				{
 					spinnerVideoFadeIn.setEnabled(false);		
-				}				
+				}		
+				
+				Utils.textFieldBackground();
 			}
 			
 		});
@@ -9224,25 +9210,7 @@ public class Shutter {
 			}
 			
 		});
-		
-		spinnerVideoFadeIn.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (spinnerVideoFadeIn.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerVideoFadeIn.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerVideoFadeIn.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
-		
+				
 		JLabel videoInFrames = new JLabel(language.getProperty("lblFrames"));
 		if (getLanguage.equals("Italiano"))
 			videoInFrames.setText("i");
@@ -9307,7 +9275,9 @@ public class Shutter {
 				else
 				{
 					spinnerAudioFadeIn.setEnabled(false);		
-				}			
+				}	
+				
+				Utils.textFieldBackground();
 			}
 			
 		});
@@ -9336,25 +9306,7 @@ public class Shutter {
 			}
 			
 		});
-		
-		spinnerAudioFadeIn.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (spinnerAudioFadeIn.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerAudioFadeIn.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerAudioFadeIn.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
-		
+				
 		JLabel audioInFrames = new JLabel(language.getProperty("lblFrames"));
 		if (getLanguage.equals("Italiano"))
 			audioInFrames.setText("i");
@@ -9490,6 +9442,8 @@ public class Shutter {
 				{
 					spinnerVideoFadeOut.setEnabled(false);		
 				}
+				
+				Utils.textFieldBackground();
 			}
 			
 		});
@@ -9518,24 +9472,6 @@ public class Shutter {
 			}
 			
 		});
-		
-		spinnerVideoFadeOut.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (spinnerVideoFadeOut.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerVideoFadeOut.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerVideoFadeOut.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
 		
 		JLabel videoOutFrames = new JLabel(language.getProperty("lblFrames"));
 		if (getLanguage.equals("Italiano"))
@@ -9601,7 +9537,9 @@ public class Shutter {
 				else
 				{
 					spinnerAudioFadeOut.setEnabled(false);		
-				}			
+				}	
+
+				Utils.textFieldBackground();
 			}
 			
 		});
@@ -9630,25 +9568,7 @@ public class Shutter {
 			}
 			
 		});
-		
-		spinnerAudioFadeOut.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (spinnerAudioFadeOut.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerAudioFadeOut.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						spinnerAudioFadeOut.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
-		
+				
 		JLabel audioOutFrames = new JLabel(language.getProperty("lblFrames"));
 		if (getLanguage.equals("Italiano"))
 			audioOutFrames.setText("i");
@@ -11070,6 +10990,8 @@ public class Shutter {
 				{
 					gopSize.setEnabled(false);		
 				}	
+				
+				Utils.textFieldBackground();
 			}
 			
 		});
@@ -11101,24 +11023,6 @@ public class Shutter {
 
 			}
 		});
-		
-		gopSize.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (gopSize.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						gopSize.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						gopSize.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
 		
 		caseForceLevel = new JRadioButton(language.getProperty("caseForceLevel"));
 		caseForceLevel.setName("caseForceLevel");
@@ -11410,24 +11314,6 @@ public class Shutter {
 		textH.setBounds(86, 43, 32, 21);
 		grpH264.add(textH);
 		
-		textH.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (textH.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						textH.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						textH.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
-		
 		lblH = new JLabel(language.getProperty("lblH"));;
 		lblH.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblH.setBounds(textH.getX() + textH.getWidth() + 4, 45, lblH.getPreferredSize().width, 16);
@@ -11441,25 +11327,7 @@ public class Shutter {
 		textMin.setColumns(10);
 		textMin.setBounds(lblH.getX() + lblH.getWidth() + 4, 43, 32, 21);
 		grpH264.add(textMin);
-		
-		textMin.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (textMin.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						textMin.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						textMin.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
-		
+				
 		lblMin = new JLabel(language.getProperty("lblMin"));
 		lblMin.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblMin.setBounds(textMin.getX() + textMin.getWidth() + 4, 45, lblMin.getPreferredSize().width, 16);
@@ -11473,24 +11341,6 @@ public class Shutter {
 		textSec.setColumns(10);
 		textSec.setBounds(lblMin.getX() + lblMin.getWidth() + 4, 43, 32, 21);
 		grpH264.add(textSec);
-		
-		textSec.addPropertyChangeListener(new PropertyChangeListener() {
-	           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (textSec.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						textSec.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						textSec.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
 		
 		lblSec = new JLabel(language.getProperty("lblSec"));
 		lblSec.setFont(new Font("FreeSans", Font.PLAIN, 12));
@@ -12308,25 +12158,7 @@ public class Shutter {
 		taille.setColumns(10);
 		taille.setBounds(121, 152, 83, 21);
 		grpH264.add(taille);
-		
-		taille.addPropertyChangeListener(new PropertyChangeListener() {
-           
-			@Override
-            public void propertyChange(PropertyChangeEvent evt) {
-				if (taille.isEnabled())
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						taille.setBackground(new Color(80,80,80));
-				}
-				else
-				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						taille.setBackground(new Color(60,60,60));
-				}
-            }
-			
-        });
-		
+				
 		lock = new JLabel();
 		lock.setIcon(new ImageIcon(getClass().getClassLoader().getResource("contents/unlock.png")));
 		lock.setHorizontalAlignment(SwingConstants.CENTER);
@@ -16689,6 +16521,8 @@ public class Shutter {
 			}
 		}
 		
+		Utils.textFieldBackground();
+		
 		frame.repaint();
 	}
 
@@ -16929,6 +16763,8 @@ public class Shutter {
 		btnCancel.setEnabled(false);
 		changementDeFonction(false);
 
+		Utils.textFieldBackground();
+		
 		// Important
 		topPanel.repaint();
 		statusBar.repaint();

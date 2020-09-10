@@ -238,32 +238,28 @@ public class Settings {
 			public void actionPerformed(ActionEvent arg0) {
 				if (btnExtension.isSelected())
 				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						txtExtension.setBackground(new Color(80,80,80));
 					txtExtension.setEnabled(true);
 				}
 				else
 				{
-					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-						txtExtension.setBackground(new Color(60,60,60));
 					txtExtension.setEnabled(false);
 				}
+				
+				Utils.textFieldBackground();
 			}
 			
 		});
-		
+				
 		if (btnExtension.isSelected())
 			txtExtension.setEnabled(true);
 		else
 			txtExtension.setEnabled(false);
 		
 		txtExtension.setColumns(10);
-		if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
-			txtExtension.setBackground(new Color(60,60,60));
 		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExtension);		
-		
+
 		btnDisableAnimations.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnDisableAnimations.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnDisableAnimations.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableAnimations);
@@ -569,6 +565,7 @@ public class Settings {
 		}
 		lblDestination3.setBounds(12, defaultOutput3.getLocation().y + defaultOutput3.getHeight() + 6, frame.getWidth() - 36, lblDestination3.getPreferredSize().height);
 		frame.getContentPane().add(lblDestination3);
+		
 
 		lblDestination3.addMouseListener(new MouseListener() {
 

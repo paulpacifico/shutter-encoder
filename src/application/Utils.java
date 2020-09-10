@@ -86,7 +86,7 @@ public class Utils extends Shutter {
 				public void run() {
 					sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "***ENCRYPTED***";
+					final String password = "shutterencodermail";
 
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
@@ -1930,8 +1930,8 @@ public class Utils extends Shutter {
 			try {
 			    FlatLaf.install( new FlatLightLaf() );
 			} catch( Exception ex ) {}
-		}	
-		
+		}
+
 		UIManager.put("Component.focusWidth", 0 );
 		UIManager.put("ScrollBar.thumbArc", 999);
 		UIManager.put("Button.arc", 6);
@@ -2127,5 +2127,67 @@ public class Utils extends Shutter {
 		
 		UIManager.put("TitledBorder.titleColor", new Color(245,245,245));
 		
+	}
+
+	public static void textFieldBackground() {
+		
+		if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
+		{
+			if (Settings.txtExtension.isEnabled())
+				Settings.txtExtension.setBackground(new Color(80,80,80));
+			else
+				Settings.txtExtension.setBackground(new Color(60,60,60));
+			
+			if (txtAudioOffset.isEnabled())
+				txtAudioOffset.setBackground(new Color(80,80,80));
+			else
+				txtAudioOffset.setBackground(new Color(60,60,60));
+			
+			if (textH.isEnabled())
+				textH.setBackground(new Color(80,80,80));
+			else
+				textH.setBackground(new Color(60,60,60));
+			
+			if (textMin.isEnabled())
+				textMin.setBackground(new Color(80,80,80));
+			else
+				textMin.setBackground(new Color(60,60,60));
+			
+			if (textSec.isEnabled())
+				textSec.setBackground(new Color(80,80,80));
+			else
+				textSec.setBackground(new Color(60,60,60));
+			
+			if (taille.isEnabled())
+				taille.setBackground(new Color(80,80,80));
+			else
+				taille.setBackground(new Color(60,60,60));
+			
+			if (gopSize.isEnabled())
+				gopSize.setBackground(new Color(80,80,80));
+			else
+				gopSize.setBackground(new Color(60,60,60));
+			
+			if (spinnerVideoFadeIn.isEnabled())
+				spinnerVideoFadeIn.setBackground(new Color(80,80,80));
+			else
+				spinnerVideoFadeIn.setBackground(new Color(60,60,60));
+			
+			if (spinnerAudioFadeIn.isEnabled())
+				spinnerAudioFadeIn.setBackground(new Color(80,80,80));
+			else
+				spinnerAudioFadeIn.setBackground(new Color(60,60,60));
+			
+			if (spinnerVideoFadeOut.isEnabled())
+				spinnerVideoFadeOut.setBackground(new Color(80,80,80));
+			else
+				spinnerVideoFadeOut.setBackground(new Color(60,60,60));
+			
+			if (spinnerAudioFadeOut.isEnabled())
+				spinnerAudioFadeOut.setBackground(new Color(80,80,80));
+			else
+				spinnerAudioFadeOut.setBackground(new Color(60,60,60));
+			
+		}		
 	}
 }
