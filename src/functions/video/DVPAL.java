@@ -35,9 +35,6 @@ import library.FFPROBE;
 
 public class DVPAL extends Shutter {
 	
-	
-	
-	
 	private static int complete;
 	
 	public static void main() {
@@ -71,7 +68,7 @@ public class DVPAL extends Shutter {
 						lblEncodageEnCours.setText(file.getName());
 						tempsRestant.setVisible(false);
 						btnStart.setEnabled(false);
-						btnAnnuler.setEnabled(true);
+						btnCancel.setEnabled(true);
 						comboFonctions.setEnabled(false);
 						
 						long fileSize = 0;
@@ -97,13 +94,13 @@ public class DVPAL extends Shutter {
 							progressBar1.setIndeterminate(false);
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							btnStart.setEnabled(true);
-							btnAnnuler.setEnabled(false);
+							btnCancel.setEnabled(false);
 							comboFonctions.setEnabled(true);
 							break;
 						}
 						
 						progressBar1.setIndeterminate(false);
-						btnAnnuler.setEnabled(false);
+						btnCancel.setEnabled(false);
 		            }
 		           //SCANNING
 		            
@@ -121,6 +118,9 @@ public class DVPAL extends Shutter {
 					
 	            	//Timecode
 					String filterComplex = setTimecode(fichier);
+					
+					//Flags
+		    		String flags = setFlags();
 					 					 			            
 					//Dossier de sortie
 					String sortie = setSortie("", file);
@@ -155,7 +155,7 @@ public class DVPAL extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 								
 					//Envoi de la commande
-					String cmd = " -aspect " + comboFilter.getSelectedItem().toString().replace("/", ":") + filterComplex + " -c:a pcm_s16le -map v:0 -map a? -ar 48000 -s 720x576 -vcodec dvvideo -b:v 25000 -r 25 -y ";
+					String cmd = " -aspect " + comboFilter.getSelectedItem().toString().replace("/", ":") + filterComplex + flags + " -c:a pcm_s16le -map v:0 -map a? -ar 48000 -s 720x576 -vcodec dvvideo -b:v 25000 -r 25 -y ";
 					
 					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
 					
@@ -209,29 +209,38 @@ public class DVPAL extends Shutter {
 	         tc3 = String.valueOf(Integer.parseInt(tc3) - Integer.parseInt(VideoPlayer.caseInS.getText()));
 	         tc4 = String.valueOf(Integer.parseInt(tc4) - Integer.parseInt(VideoPlayer.caseInF.getText()));
 		}
+		
+		String rate = String.valueOf(FFPROBE.currentFPS);
+		if (caseConform.isSelected())
+			rate = comboFPS.getSelectedItem().toString().replace(",", ".");
      
        	if (OverlayWindow.caseShowFileName.isSelected() && caseAddOverlay.isSelected())
        	{
        		if (timecodeText != "") timecodeText += ",";
-       		timecodeText += "drawtext=" + OverlayWindow.font + ":text='" + fichier + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
+       		timecodeText += "drawtext=" + OverlayWindow.font + ":text='" + fichier + "':r=" + rate + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
        	}
        	
        	if (OverlayWindow.caseShowText.isSelected() && caseAddOverlay.isSelected())
        	{
        		if (timecodeText != "") timecodeText += ",";
-       		timecodeText += "drawtext=" + OverlayWindow.font + ":text='" + OverlayWindow.text.getText() + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
+       		timecodeText += "drawtext=" + OverlayWindow.font + ":text='" + OverlayWindow.text.getText() + "':r=" + rate + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
        	}
        	
 	   	if ((OverlayWindow.caseAddTimecode.isSelected() || OverlayWindow.caseShowTimecode.isSelected()) && caseAddOverlay.isSelected())
-	   	{
+	   	{	   			
 	   		if (timecodeText != "") timecodeText += ",";
-	   		timecodeText += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\:" + tc4 + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
-	   	}
+	   		timecodeText += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\:" + tc4 + "':r=" + rate + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
+	   	} 
 	   	
 	   	if (timecodeText != "") 
 	   		timecodeText = " -filter_complex " + '"' + timecodeText + '"';
 	   
 		return timecodeText;
+	}
+	
+	protected static String setFlags() { 
+		
+		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 	}
 	
 	protected static boolean analyse(File file) throws InterruptedException {

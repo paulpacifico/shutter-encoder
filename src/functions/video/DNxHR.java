@@ -28,8 +28,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Random;
 
-import javax.swing.JSpinner;
-
 import application.Ftp;
 import application.OverlayWindow;
 import application.Settings;
@@ -80,7 +78,7 @@ public class DNxHR extends Shutter {
 						lblEncodageEnCours.setText(file.getName());
 						tempsRestant.setVisible(false);
 						btnStart.setEnabled(false);
-						btnAnnuler.setEnabled(true);
+						btnCancel.setEnabled(true);
 						comboFonctions.setEnabled(false);
 						
 						long fileSize = 0;
@@ -106,13 +104,13 @@ public class DNxHR extends Shutter {
 							progressBar1.setIndeterminate(false);
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							btnStart.setEnabled(true);
-							btnAnnuler.setEnabled(false);
+							btnCancel.setEnabled(false);
 							comboFonctions.setEnabled(true);
 							break;
 						}
 						
 						progressBar1.setIndeterminate(false);
-						btnAnnuler.setEnabled(false);
+						btnCancel.setEnabled(false);
 		            }
 		           //SCANNING
 										
@@ -414,7 +412,7 @@ public class DNxHR extends Shutter {
         //Fade-in
 		if (caseAudioFadeIn.isSelected())
 		{ 
-			long audioInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+			long audioInValue = (long) (Integer.parseInt(spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 			long audioStart = 0;
 			
 			if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
@@ -438,7 +436,7 @@ public class DNxHR extends Shutter {
 		//Fade-out
 		if (caseAudioFadeOut.isSelected())
 		{
-			long audioOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+			long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 			long audioStart = (long) FFPROBE.dureeTotale - audioOutValue;
 			
 			if (caseInAndOut.isSelected())
@@ -900,15 +898,7 @@ public class DNxHR extends Shutter {
 	}
 	
 	protected static String setFlags(String fichier, String extension) { 
-		String flags = "";
-		
-		if (caseDetails.isSelected())
-    	{
-			float value = (0 - (float) sliderDetails.getValue() / 10);
-			
-			if (value > 0)
-				flags += " -sws_flags lanczos";
-    	}
+		String flags = " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 		
 		if (caseCreateOPATOM.isSelected() && lblOPATOM.getText().equals("OP-Atom"))
 			flags += " -metadata material_package_name=" + '"' + fichier + '"' + " -f mxf_opatom";
@@ -1079,23 +1069,31 @@ public class DNxHR extends Shutter {
 	         tc3 = String.valueOf(Integer.parseInt(tc3) - Integer.parseInt(VideoPlayer.caseInS.getText()));
 	         tc4 = String.valueOf(Integer.parseInt(tc4) - Integer.parseInt(VideoPlayer.caseInF.getText()));
 		}
+		
+		String rate = String.valueOf(FFPROBE.currentFPS);
+		if (caseConform.isSelected())
+			rate = comboFPS.getSelectedItem().toString().replace(",", ".");
        
        	if (OverlayWindow.caseShowFileName.isSelected() && caseAddOverlay.isSelected())
        	{
        		if (filterComplex != "") filterComplex += ",";
-       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + fichier + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
+       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + fichier + "':r=" + rate + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
        	}
        	
        	if (OverlayWindow.caseShowText.isSelected() && caseAddOverlay.isSelected())
        	{
        		if (filterComplex != "") filterComplex += ",";
-       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + OverlayWindow.text.getText() + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
+       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + OverlayWindow.text.getText() + "':r=" + rate + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
        	}
        	
 	   	if ((OverlayWindow.caseAddTimecode.isSelected() || OverlayWindow.caseShowTimecode.isSelected()) && caseAddOverlay.isSelected())
 	   	{
+	   		String dropFrame = ":";
+	   		if (caseConform.isSelected() == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || caseConform.isSelected() && (comboFPS.getSelectedItem().toString().equals("29,97") || comboFPS.getSelectedItem().toString().equals("59,94")))
+	   			dropFrame = ";";
+	   			
 	   		if (filterComplex != "") filterComplex += ",";
-	   		filterComplex += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\:" + tc4 + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
+	   		filterComplex += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
 	   	}    
 	   
 		return filterComplex;
@@ -1182,7 +1180,7 @@ public class DNxHR extends Shutter {
     	{ 
     		if (filterComplex != "") filterComplex += ",";	
     		
-    		long videoInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoInValue = (long) (Integer.parseInt(spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long videoStart = 0;
     		
     		if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
@@ -1209,7 +1207,7 @@ public class DNxHR extends Shutter {
     	{
     		if (filterComplex != "") filterComplex += ",";	
     		
-    		long videoOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
     		
     		if (caseInAndOut.isSelected())

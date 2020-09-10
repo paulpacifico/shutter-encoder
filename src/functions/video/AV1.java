@@ -24,8 +24,6 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JSpinner;
-
 import application.Ftp;
 import application.VideoPlayer;
 import application.WatermarkWindow;
@@ -75,7 +73,7 @@ public class AV1 extends Shutter {
 						lblEncodageEnCours.setText(file.getName());
 						tempsRestant.setVisible(false);
 						btnStart.setEnabled(false);
-						btnAnnuler.setEnabled(true);
+						btnCancel.setEnabled(true);
 						comboFonctions.setEnabled(false);
 						
 						long fileSize = 0;
@@ -101,13 +99,13 @@ public class AV1 extends Shutter {
 							progressBar1.setIndeterminate(false);
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							btnStart.setEnabled(true);
-							btnAnnuler.setEnabled(false);
+							btnCancel.setEnabled(false);
 							comboFonctions.setEnabled(true);
 							break;
 						}
 						
 						progressBar1.setIndeterminate(false);
-						btnAnnuler.setEnabled(false);
+						btnCancel.setEnabled(false);
 		            }
 		           //SCANNING
 		            
@@ -364,7 +362,7 @@ public class AV1 extends Shutter {
     	{ 
     		if (filterComplex != "") filterComplex += ",";	
     		
-    		long videoInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoInValue = (long) (Integer.parseInt(spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long videoStart = 0;
     		
     		if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
@@ -391,7 +389,7 @@ public class AV1 extends Shutter {
     	{
     		if (filterComplex != "") filterComplex += ",";	
     		
-    		long videoOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
     		
     		if (caseInAndOut.isSelected())
@@ -439,7 +437,9 @@ public class AV1 extends Shutter {
 	        		filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
 			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
 				filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
-        	else if (FFPROBE.channels > 1 && lblAudioMapping.getText().equals(language.getProperty("stereo")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
+        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
+        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
+			else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.surround == false)
         		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
         	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && debitAudio.getSelectedItem().toString().equals("0") == false)
         		filterComplex += audio + '"' + " -map " + '"' + "[out]" + '"' + " -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
@@ -454,7 +454,9 @@ public class AV1 extends Shutter {
 	        		filterComplex = " -map v" + audio;
 			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
 				filterComplex = " -map v" + audio;
-        	else if (FFPROBE.channels > 1 && lblAudioMapping.getText().equals(language.getProperty("stereo")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
+        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
+        		filterComplex = audio + " -map v -map " + '"' +  "[a]" + '"';
+			else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.surround == false)
         		filterComplex = audio + " -map v -map " + '"' +  "[a]" + '"';
         	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && debitAudio.getSelectedItem().toString().equals("0") == false)
         		filterComplex = audio + " -map v -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
@@ -576,7 +578,7 @@ public class AV1 extends Shutter {
 			//Fade-in
 	    	if (caseAudioFadeIn.isSelected())
 	    	{ 
-	    		long audioInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioInValue = (long) (Integer.parseInt(spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 	    		long audioStart = 0;
 	    		
 				if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
@@ -600,7 +602,7 @@ public class AV1 extends Shutter {
 	    	//Fade-out
 	    	if (caseAudioFadeOut.isSelected())
 	    	{
-	    		long audioOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 	    		long audioStart =  (long) FFPROBE.dureeTotale - audioOutValue;
 	    		
 	    		if (caseInAndOut.isSelected())
@@ -656,6 +658,13 @@ public class AV1 extends Shutter {
 				    	FFPROBE.stereo = false; //permet de contourner le split audio				    	
 				    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k" + newAudio + " -map a:0";
 			    	}
+					else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+			    	{
+			    		if (newAudio != "") 
+				    		newAudio = newAudio.replace(" -filter:a", "").replace("\"", "") + ",";
+				    	
+				    	audio += " -c:a " + audioCodec + " -ac 1 -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k -filter:a " + '"' + newAudio + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " -map a?";
+			    	}
 				    else	
 				    {
 				    	if (newAudio != "") 
@@ -676,6 +685,26 @@ public class AV1 extends Shutter {
 				    
 				    audio += "[a:0]pan=1c|c0=c" + comboAudio1.getSelectedIndex() + newAudio + "[a1];[a:0]pan=1c|c0=c" + comboAudio2.getSelectedIndex() + newAudio + "[a2]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 		    	}
+				else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+		    	{
+					if (newAudio != "")
+			    		newAudio = "," + newAudio;
+			    	
+				    if (filterComplex != "")
+				    	audio += ";";
+				    else
+				    	audio += " -filter_complex " + '"';	
+					
+		    		if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+						audio += "[0:a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
+					else
+		    		{
+		    			if (comboAudio1.getSelectedIndex() == 0)
+		    				audio += "[0:a]channelsplit=channel_layout=stereo:channels=FL" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";    	
+		    			else
+		    				audio += "[0:a]channelsplit=channel_layout=stereo:channels=FR" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";    	
+		    		}
+				}
 		    	else
 		    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k" + newAudio + " -map a:0";
 		    }
@@ -693,6 +722,21 @@ public class AV1 extends Shutter {
 				    
 			    	audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + newAudio + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";    		 
     			 }
+				 else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+		    	 {
+		    		 if (newAudio != "")
+				    		newAudio = "," + newAudio;
+				    	
+		    		 if (filterComplex != "")
+				    	audio += ";";
+		    		 else
+				    	audio += " -filter_complex " + '"';	
+				    
+		    		 if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
+		    		 else
+		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k"; 
+		    	 }
 		    	 else
 		    	 {
 		    		String mapping = "";
@@ -1073,15 +1117,7 @@ public class AV1 extends Shutter {
 	
 	protected static String setFlags() { 
 		
-		String flags = "";
-		
-		if (caseDetails.isSelected())
-    	{
-			float value = (0 - (float) sliderDetails.getValue() / 10);
-			
-			if (value > 0)
-				flags += " -sws_flags lanczos";
-    	}
+		String flags = " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 		
 		if (caseFastStart.isSelected() && caseFastStart.isEnabled())
 			flags += " -movflags faststart";
@@ -1239,23 +1275,31 @@ public class AV1 extends Shutter {
 	         tc3 = String.valueOf(Integer.parseInt(tc3) - Integer.parseInt(VideoPlayer.caseInS.getText()));
 	         tc4 = String.valueOf(Integer.parseInt(tc4) - Integer.parseInt(VideoPlayer.caseInF.getText()));
 		}
+		
+		String rate = String.valueOf(FFPROBE.currentFPS);
+		if (caseConform.isSelected())
+			rate = comboFPS.getSelectedItem().toString().replace(",", ".");
        
        	if (OverlayWindow.caseShowFileName.isSelected() && caseAddOverlay.isSelected())
        	{
        		if (filterComplex != "") filterComplex += ",";
-       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + fichier + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
+       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + fichier + "':r=" + rate + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
        	}
        	
        	if (OverlayWindow.caseShowText.isSelected() && caseAddOverlay.isSelected())
        	{
        		if (filterComplex != "") filterComplex += ",";
-       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + OverlayWindow.text.getText() + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
+       		filterComplex += "drawtext=" + OverlayWindow.font + ":text='" + OverlayWindow.text.getText() + "':r=" + rate + ":x=" + OverlayWindow.textNamePosX.getText() + ":y=" + OverlayWindow.textNamePosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaName + ":fontsize=" + OverlayWindow.spinnerSizeName.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexName;
        	}
        	
 	   	if ((OverlayWindow.caseAddTimecode.isSelected() || OverlayWindow.caseShowTimecode.isSelected()) && caseAddOverlay.isSelected())
 	   	{
+	   		String dropFrame = ":";
+	   		if (caseConform.isSelected() == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || caseConform.isSelected() && (comboFPS.getSelectedItem().toString().equals("29,97") || comboFPS.getSelectedItem().toString().equals("59,94")))
+	   			dropFrame = ";";
+	   			
 	   		if (filterComplex != "") filterComplex += ",";
-	   		filterComplex += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\:" + tc4 + "':r=" + FFPROBE.currentFPS + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
+	   		filterComplex += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
 	   	}  
 	   
 		return filterComplex;

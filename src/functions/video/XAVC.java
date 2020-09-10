@@ -28,8 +28,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import javax.swing.JComboBox;
-import javax.swing.JSpinner;
-
 import application.Ftp;
 import application.VideoPlayer;
 import application.WatermarkWindow;
@@ -78,7 +76,7 @@ public class XAVC extends Shutter {
 						lblEncodageEnCours.setText(file.getName());
 						tempsRestant.setVisible(false);
 						btnStart.setEnabled(false);
-						btnAnnuler.setEnabled(true);
+						btnCancel.setEnabled(true);
 						comboFonctions.setEnabled(false);
 						
 						long fileSize = 0;
@@ -104,13 +102,13 @@ public class XAVC extends Shutter {
 							progressBar1.setIndeterminate(false);
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							btnStart.setEnabled(true);
-							btnAnnuler.setEnabled(false);
+							btnCancel.setEnabled(false);
 							comboFonctions.setEnabled(true);
 							break;
 						}
 						
 						progressBar1.setIndeterminate(false);
-						btnAnnuler.setEnabled(false);
+						btnCancel.setEnabled(false);
 		            }
 		           //SCANNING
 		            
@@ -359,7 +357,7 @@ public class XAVC extends Shutter {
 		//Fade-in
     	if (caseAudioFadeIn.isSelected())
     	{ 
-    		long audioInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long audioInValue = (long) (Integer.parseInt(spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long audioStart = 0;
     		
 			if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
@@ -380,7 +378,7 @@ public class XAVC extends Shutter {
     	//Fade-out
     	if (caseAudioFadeOut.isSelected())
     	{
-    		long audioOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerAudioFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long audioStart =  (long) FFPROBE.dureeTotale - audioOutValue;
     		
     		if (caseInAndOut.isSelected())
@@ -424,7 +422,7 @@ public class XAVC extends Shutter {
     	{ 
     		if (filterComplex != "") filterComplex += ",";	
     		
-    		long videoInValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeIn.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoInValue = (long) (Integer.parseInt(spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long videoStart = 0;
     		
     		if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
@@ -451,7 +449,7 @@ public class XAVC extends Shutter {
     	{
     		if (filterComplex != "") filterComplex += ",";	
     		
-    		long videoOutValue = (long) (Integer.parseInt(((JSpinner.DefaultEditor)spinnerVideoFadeOut.getEditor()).getTextField().getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
     		
     		if (caseInAndOut.isSelected())
@@ -952,14 +950,7 @@ public class XAVC extends Shutter {
 	
 	protected static String setFlags() { 
 		
-		if (caseDetails.isSelected())
-    	{
-			float value = (0 - (float) sliderDetails.getValue() / 10);
-			
-			if (value > 0)
-				return " -sws_flags lanczos";
-    	}
-		return "";
+		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 	}
 	
 	protected static String setDenoiser(String videoFilter) {

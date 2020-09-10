@@ -71,7 +71,7 @@ public class Picture extends Shutter {
 						lblEncodageEnCours.setText(file.getName());
 						tempsRestant.setVisible(false);
 						btnStart.setEnabled(false);
-						btnAnnuler.setEnabled(true);
+						btnCancel.setEnabled(true);
 						comboFonctions.setEnabled(false);
 						
 						long fileSize = 0;
@@ -97,13 +97,13 @@ public class Picture extends Shutter {
 							progressBar1.setIndeterminate(false);
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							btnStart.setEnabled(true);
-							btnAnnuler.setEnabled(false);
+							btnCancel.setEnabled(false);
 							comboFonctions.setEnabled(true);
 							break;
 						}
 						
 						progressBar1.setIndeterminate(false);
-						btnAnnuler.setEnabled(false);
+						btnCancel.setEnabled(false);
 		            }
 		           //SCANNING
 		            
@@ -179,7 +179,10 @@ public class Picture extends Shutter {
 					filter = setColor(filter);
 					
 	            	//filterComplex
-					filter = setFilterComplex(filter);		
+					filter = setFilterComplex(filter);	
+					
+					//Flags
+		    		String flags = setFlags();
 					
 					//Colorspace
 		            String colorspace = setColorspace();
@@ -211,7 +214,7 @@ public class Picture extends Shutter {
 					}
 					
 					//Envoi de la commande
-					String cmd = filter + singleFrame + colorspace + compression + " -an -y ";
+					String cmd = filter + singleFrame + colorspace + compression + flags + " -an -y ";
 					if (extension.toLowerCase().equals(".pdf"))
 					{
 						for (int p = 1 ; p < XPDF.pagesCount + 1 ; p++)
@@ -501,6 +504,11 @@ public class Picture extends Shutter {
 		}
 		
 		return filter;
+	}
+	
+	protected static String setFlags() { 
+		
+		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 	}
 	
 	protected static String setRotate(String filter) {
