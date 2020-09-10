@@ -19,19 +19,16 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,6 +40,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -79,7 +77,6 @@ import library.XPDF;
 
 public class ColorImage {
 	public static JFrame frame;
-	public static JDialog shadow = new JDialog();
 	private static JPanel image = new JPanel();
 	private static Thread runProcess = new Thread();
 	/*
@@ -88,7 +85,7 @@ public class ColorImage {
 	private JLabel quit;
 	private JLabel fullscreen;
 	private JLabel reduce;
-	private static JPanel panelHaut;
+	private static JPanel topPanel;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameColorImage"));
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel topImage;
@@ -163,17 +160,20 @@ public class ColorImage {
 			frame.setModal(true);*/
 		
 		//frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			setShadow();
+			
 		}
 		
 		dragWindow = false;
@@ -181,7 +181,10 @@ public class ColorImage {
     	frame.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent e2)
 		    {
-		    	frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		        shape1.add(shape2);
+		    	frame.setShape(shape1);
 		    }
  		});
 		
@@ -283,7 +286,7 @@ public class ColorImage {
 
 			@Override
 			public void windowDeiconified(WindowEvent e) {										
-				shadow.setVisible(true);
+				
 				frame.toFront();
 				
 			}
@@ -297,7 +300,7 @@ public class ColorImage {
 			}
 		});
 		
-		panelHaut();
+		topPanel();
 				
 		JLabel lblExposure = new JLabel(Shutter.language.getProperty("lblExposure"));
 		lblExposure.setFont(new Font("FreeSans", Font.PLAIN, 13));
@@ -1052,8 +1055,9 @@ public class ColorImage {
 		loadImage(true);
 		
 		btnPrevious = new JButton(Shutter.language.getProperty("btnPrevious"));
-		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnPrevious.setBounds(12, sliderVignette.getY() + sliderVignette.getHeight() + 4, 88, 25);		
+		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		btnPrevious.setMargin(new Insets(0,0,0,0));
+		btnPrevious.setBounds(14, sliderVignette.getY() + sliderVignette.getHeight() + 6, 84, 21);	
 		frame.getContentPane().add(btnPrevious);
 		
 		btnPrevious.addActionListener(new ActionListener(){
@@ -1110,7 +1114,8 @@ public class ColorImage {
 		
 		btnNext = new JButton(Shutter.language.getProperty("btnNext"));
 		btnNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnNext.setBounds(btnPrevious.getX() + btnPrevious.getWidth() + 4, btnPrevious.getY(), 88, 25);		
+		btnNext.setMargin(new Insets(0,0,0,0));
+		btnNext.setBounds(btnPrevious.getX() + btnPrevious.getWidth() + 6, btnPrevious.getY(), 84, 21);		
 		frame.getContentPane().add(btnNext);
 		
 		btnNext.addActionListener(new ActionListener(){
@@ -1167,7 +1172,7 @@ public class ColorImage {
 		
 		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
 		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnReset.setBounds(12, frame.getHeight() - 35, btnPrevious.getWidth() + 4 + btnNext.getWidth(), 25);		
+		btnReset.setBounds(14, frame.getHeight() - 33, btnPrevious.getWidth() + btnNext.getWidth() + 6, 21);		
 		frame.getContentPane().add(btnReset);		
 		
 		btnReset.addActionListener(new ActionListener(){
@@ -1263,7 +1268,7 @@ public class ColorImage {
 		
 		btnOriginal = new JButton("Original");
 		btnOriginal.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 7, frame.getHeight() - 35, btnOriginal.getPreferredSize().width, 25);		
+		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 9, frame.getHeight() - 33, btnOriginal.getPreferredSize().width, 21);		
 		frame.getContentPane().add(btnOriginal); 
 		
 		btnOriginal.addMouseListener(new MouseAdapter(){
@@ -1283,7 +1288,7 @@ public class ColorImage {
 		            imageIcon.getImage().flush();
 		    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
 		            if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-		            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - panelHaut.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - panelHaut.getHeight() - 35 - 17));  
+		            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 17));  
 		            else
 		            	newImage.setBounds(0, 0, (frame.getWidth() - 48 - sliderExposure.getWidth()),  (int) Math.floor((float) (frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight / ImageWidth)); 
 		            
@@ -1317,7 +1322,7 @@ public class ColorImage {
 			            imageIcon.getImage().flush();
 			    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
 			            if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-			            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - panelHaut.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - panelHaut.getHeight() - 35 - 17));  
+			            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 17));  
 			            else
 			            	newImage.setBounds(0, 0, (frame.getWidth() - 48 - sliderExposure.getWidth()),  (int) Math.floor((float) (frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight / ImageWidth)); 
 			            
@@ -1337,7 +1342,8 @@ public class ColorImage {
 		
 		btnPreview = new JButton(Shutter.language.getProperty("preview"));
 		btnPreview.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnPreview.setBounds(btnOriginal.getX() + btnOriginal.getWidth() + 7, frame.getHeight() - 35, btnPreview.getPreferredSize().width, 25);		
+		btnPreview.setMargin(new Insets(0,0,0,0));
+		btnPreview.setBounds(btnOriginal.getX() + btnOriginal.getWidth() + 9, frame.getHeight() - 33, 120, 21);		
 		frame.getContentPane().add(btnPreview); 
 		
 		btnPreview.addActionListener(new ActionListener(){
@@ -1491,7 +1497,7 @@ public class ColorImage {
 						Thread.sleep(100);
 					} while (FFMPEG.isRunning == false && FFPLAY.isRunning == false && XPDF.isRunning == false && DCRAW.isRunning == false);
 					
-					Utils.changeFrameVisibility(frame, shadow, true);
+					Utils.changeFrameVisibility(frame, true);
 					
 					do {
 						Thread.sleep(100);
@@ -1501,14 +1507,14 @@ public class ColorImage {
 					FFMPEG.enableAll();
 					Shutter.caseRunInBackground.setEnabled(false);	
 					Shutter.caseRunInBackground.setSelected(false);
-					Shutter.btnAnnuler.setEnabled(false);
+					Shutter.btnCancel.setEnabled(false);
 					Shutter.tempsRestant.setVisible(false);
 					Shutter.progressBar1.setValue(0);
 	            	frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	            	
 				} catch (InterruptedException e1) {
 				} finally {					
-					Utils.changeFrameVisibility(frame, shadow, false);
+					Utils.changeFrameVisibility(frame, false);
 					if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 					else
@@ -1519,7 +1525,7 @@ public class ColorImage {
 		
 		btnExportImage = new JButton(Shutter.language.getProperty("btnExportImage"));
 		btnExportImage.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnExportImage.setBounds(btnPreview.getX() + btnPreview.getWidth() + 7, frame.getHeight() - 35, btnExportImage.getPreferredSize().width, 25);		
+		btnExportImage.setBounds(btnPreview.getX() + btnPreview.getWidth() + 9, frame.getHeight() - 33, btnExportImage.getPreferredSize().width, 21);		
 		frame.getContentPane().add(btnExportImage); 
 		
 		btnExportImage.addActionListener(new ActionListener(){
@@ -1702,7 +1708,7 @@ public class ColorImage {
 					FFMPEG.enableAll();
 					Shutter.caseRunInBackground.setEnabled(false);	
 					Shutter.caseRunInBackground.setSelected(false);
-					Shutter.btnAnnuler.setEnabled(false);
+					Shutter.btnCancel.setEnabled(false);
 					Shutter.tempsRestant.setVisible(false);
 					Shutter.progressBar1.setValue(0);
 	            	frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1724,7 +1730,7 @@ public class ColorImage {
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 7, frame.getHeight() - 35, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 21, 25);		
+		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 9, frame.getHeight() - 33, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 25, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -1735,7 +1741,7 @@ public class ColorImage {
 				
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
-	            Utils.changeFrameVisibility(frame, shadow, true);
+	            Utils.changeFrameVisibility(frame, true);
 	            
 	            //Suppression image temporaire	    		
 				File file = new File(Shutter.dirTemp + "preview.bmp");
@@ -1753,7 +1759,7 @@ public class ColorImage {
 			} catch (InterruptedException e1) {}
 		} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 		
-		Utils.changeFrameVisibility(frame, shadow, false);		
+		Utils.changeFrameVisibility(frame, false);		
 	}
 	
 	private static class MousePosition {
@@ -1761,11 +1767,11 @@ public class ColorImage {
 		static int mouseY;
 	}
 			
-	private void panelHaut() {
+	private void topPanel() {
 		
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
-		panelHaut.setBounds(0, 0, frame.getWidth(), 52);
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
+		topPanel.setBounds(0, 0, frame.getWidth(), 52);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
@@ -1791,7 +1797,7 @@ public class ColorImage {
 				{
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);		            
-		            Utils.changeFrameVisibility(frame, shadow, true);
+		            Utils.changeFrameVisibility(frame, true);
 		            
 					//Suppression image temporaire
 							    		
@@ -1906,7 +1912,7 @@ public class ColorImage {
 				
 				if (accept)
 				{					
-					shadow.setVisible(false);
+					
 					frame.setState(frame.ICONIFIED);	
 				}
 			}
@@ -1926,7 +1932,7 @@ public class ColorImage {
 		});
 	
 		bottomImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
@@ -1973,7 +1979,7 @@ public class ColorImage {
 			public void mousePressed(MouseEvent down) {
 				MousePosition.mouseX = down.getPoint().x;
 				MousePosition.mouseY = down.getPoint().y;	
-				shadow.toFront();
+				
 				frame.toFront();
 			}
 
@@ -2007,19 +2013,19 @@ public class ColorImage {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 
-		panelHaut.add(quit);	
-		panelHaut.add(fullscreen);
-		panelHaut.add(reduce);
-		panelHaut.add(topImage);
-		panelHaut.add(bottomImage);
+		topPanel.add(quit);	
+		topPanel.add(fullscreen);
+		topPanel.add(reduce);
+		topPanel.add(topImage);
+		topPanel.add(bottomImage);
 		
-		frame.getContentPane().add(panelHaut);
+		frame.getContentPane().add(topPanel);
 	}
 	
 	private static void image()
@@ -2031,8 +2037,8 @@ public class ColorImage {
 		
 		if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
 		{
-			containerHeight = (frame.getHeight() - panelHaut.getHeight() - 35 - 17);
-			containerWidth =  (int) Math.floor((float) (frame.getHeight() - panelHaut.getHeight() - 35 - 17) * ImageWidth / ImageHeight);
+			containerHeight = (frame.getHeight() - topPanel.getHeight() - 35 - 17);
+			containerWidth =  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth / ImageHeight);
 		}
 		else
 		{
@@ -2042,7 +2048,10 @@ public class ColorImage {
 		
 		image.setSize(containerWidth, containerHeight);
 		
-		frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+        shape1.add(shape2);
+		frame.setShape(shape1);
 		
 		if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
 			image.setLocation((int) Math.floor((float) (frame.getWidth() - containerWidth) / 2) + 100, 62);
@@ -2168,7 +2177,7 @@ public class ColorImage {
 				        	while (FFPROBE.isRunning);
 						}	
 						
-		        		finalWidth = (int) Math.floor(((frame.getHeight() - panelHaut.getHeight() - 35 - 17) * ImageWidth) / ImageHeight);
+		        		finalWidth = (int) Math.floor(((frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth) / ImageHeight);
 			        	
 		        		finalHeight = (int) Math.floor(((frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight) / ImageWidth);
 		        	                    	        						
@@ -2197,7 +2206,7 @@ public class ColorImage {
 						//Création du fichier preview																		
 						String cmd = deinterlace + " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + " -y ";	
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-							cmd = deinterlace + " -vframes 1 -an -s " + Math.round(finalWidth / 2) * 2 + "x" +  Math.round((frame.getHeight() - panelHaut.getHeight() - 35 - 17) / 2) * 2 + " -y ";
+							cmd = deinterlace + " -vframes 1 -an -s " + Math.round(finalWidth / 2) * 2 + "x" +  Math.round((frame.getHeight() - topPanel.getHeight() - 35 - 17) / 2) * 2 + " -y ";
 					
 						if (new File(Shutter.dirTemp + "preview.bmp").exists() == false)
 						{											   		
@@ -2265,7 +2274,7 @@ public class ColorImage {
 						
 						cmd = " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + histogram + " -y ";	
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-							cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - panelHaut.getHeight() - 35 - 17) + histogram + " -y ";
+							cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 17) + histogram + " -y ";
 						
 	          			FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     
 			           
@@ -2291,7 +2300,7 @@ public class ColorImage {
 				            imageIcon.getImage().flush();
 				    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
 				            if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-				            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - panelHaut.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - panelHaut.getHeight() - 35 - 17));  
+				            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 17));  
 				            else
 				            	newImage.setBounds(0, 0, (frame.getWidth() - 48 - sliderExposure.getWidth()),  (int) Math.floor((float) (frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight / ImageWidth)); 
 				            
@@ -2759,74 +2768,23 @@ public class ColorImage {
 	}
 		
 	private void resizeAll() {
-		panelHaut.setBounds(0,0,frame.getSize().width, 52);
+		topPanel.setBounds(0,0,frame.getSize().width, 52);
 		
 		topImage.setLocation(frame.getSize().width / 2 - topImage.getSize().width / 2, 0);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);	
 		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
 		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
 		
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		
 		positionVideo.setBounds(212, frame.getHeight() - 33, sliderExposure.getWidth(), 22);
-		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 7, frame.getHeight() - 35, btnOriginal.getPreferredSize().width, 25);	
-		btnPreview.setBounds(btnOriginal.getX() + btnOriginal.getWidth() + 7, frame.getHeight() - 35, btnPreview.getPreferredSize().width, 25);	
-		btnExportImage.setBounds(btnPreview.getX() + btnPreview.getWidth() + 7, frame.getHeight() - 35, btnExportImage.getPreferredSize().width, 25);	
-		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 7, frame.getHeight() - 35, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 21, 25); 		
+		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 9, frame.getHeight() - 33, btnOriginal.getPreferredSize().width, 21);	
+		btnPreview.setBounds(btnOriginal.getX() + btnOriginal.getWidth() + 9, frame.getHeight() - 33, 120, 21);	
+		btnExportImage.setBounds(btnPreview.getX() + btnPreview.getWidth() + 9, frame.getHeight() - 33, btnExportImage.getPreferredSize().width, 21);	
+		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 9, frame.getHeight() - 33, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 25, 21); 		
 	}
-	 
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	//shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new ColorImageShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-		    }
-		    public void componentResized(ComponentEvent e2)
-		    {
-		    	shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-		    }
- 		});			
-	}
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class ColorImageShadow extends JPanel {
-  public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,ColorImage.frame.getWidth() + 14, ColorImage.frame.getHeight() + 127);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, ColorImage.frame.getWidth() + 13 - i * 2, ColorImage.frame.getHeight() + 2, 20, 20);
-	  }
-   }
 }

@@ -21,9 +21,7 @@ package application;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-
-import com.alee.laf.text.WebTextPane;
-import com.alee.managers.style.StyleId;
+import javax.swing.JTextPane;
 
 import java.awt.*;
 
@@ -45,7 +43,7 @@ public class SubtitlesHelp {
 			
 		frame.setLocation(VideoPlayer.frame.getLocation().x + VideoPlayer.frame.getSize().width/2 - 200, VideoPlayer.frame.getLocation().y + VideoPlayer.frame.getHeight() /2 - 150);
 				
-		WebTextPane lblHelp = new WebTextPane(StyleId.textpaneTransparent);
+		JTextPane lblHelp = new JTextPane();
 		lblHelp.setBackground(new Color(50,50,50));
 		lblHelp.setText(Shutter.language.getProperty("txtShortcuts"));
 		lblHelp.setForeground(Color.WHITE);

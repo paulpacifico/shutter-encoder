@@ -19,23 +19,34 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
-import java.awt.event.*;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -44,26 +55,21 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import java.awt.Image;
-
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.managers.style.StyleId;
 
 import library.BMXTRANSWRAP;
 import library.DCRAW;
@@ -73,19 +79,17 @@ import library.MKVMERGE;
 import library.TSMUXER;
 import library.XPDF;
 
-import javax.swing.ListSelectionModel;
-
 	public class RenderQueue {
 	public static JFrame frame;
-	public static JDialog shadow;;
 	
 	/*
 	 * Composants
 	 */
-	private static JPanel panelHaut;
+	private static JPanel topPanel;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameFileDeRendus"));
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel quit;
+	private JLabel fullscreen;
 	private JLabel reduce;
 	private JLabel topImage;
 	private JLabel bottomImage;
@@ -93,7 +97,7 @@ import javax.swing.ListSelectionModel;
 	public static JButton btnStartRender;
 	public static JTable table;
 	public static DefaultTableModel tableRow;
-	public static WebScrollPane scrollPane;		
+	public static JScrollPane scrollPane;		
 	private static int complete;
 	private static StringBuilder errorList = new StringBuilder();
 	private boolean drag = false;
@@ -103,7 +107,6 @@ import javax.swing.ListSelectionModel;
 	 */
 	public RenderQueue() {
 		frame = new JFrame();
-		shadow = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFileDeRendus"));
@@ -111,34 +114,37 @@ import javax.swing.ListSelectionModel;
 		frame.getContentPane().setLayout(null);
 		frame.setSize(600, 348);
 		frame.setResizable(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y + (int) (Shutter.frame.getSize().getHeight() / 4));
-	    	setShadow();
+	    	
 		}
 				
-		panelHaut();
+		topPanel();
 		table();
 				
 		
 		frame.addWindowListener(new WindowAdapter(){			
 			public void windowDeiconified(WindowEvent we)
 			{
-				shadow.setVisible(true);
+				
 				frame.toFront();
 		    }
 			
 			public void windowClosed(WindowEvent arg0) {
 				if (FFMPEG.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
-					Shutter.btnAnnuler.doClick();
+					Shutter.btnCancel.doClick();
 				
-				if (Shutter.btnAnnuler.isEnabled() == false)		
+				if (Shutter.btnCancel.isEnabled() == false)		
 				{
 					//File de rendus
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
@@ -157,12 +163,12 @@ import javax.swing.ListSelectionModel;
 						if (Shutter.iconPresets.isVisible())
 						{
 							Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
-							Shutter.btnAnnuler.setBounds(205 + Shutter.iconList.getWidth(), 44, 101 - Shutter.iconList.getWidth(), 25);
+							Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 						}
 						else
 						{
 							Shutter.iconPresets.setBounds(180, 46, 21, 21);
-							Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+							Shutter.btnCancel.setBounds(207, 46, 97, 21);
 						}						
 					}
 					else
@@ -172,15 +178,15 @@ import javax.swing.ListSelectionModel;
 						if (Shutter.iconPresets.isVisible())
 						{
 							Shutter.iconPresets.setBounds(180, 46, 21, 21);
-							Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+							Shutter.btnCancel.setBounds(207, 46, 97, 21);
 						}
 						else
 						{
-							Shutter.btnAnnuler.setBounds(182, 44, 124, 25);
+							Shutter.btnCancel.setBounds(184, 46, 120, 21);
 						}
 					}
 					
-					Utils.changeFrameVisibility(frame, shadow, true);
+					Utils.changeFrameVisibility(frame, true);
 					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
 				}				
 			}
@@ -189,7 +195,10 @@ import javax.swing.ListSelectionModel;
     	frame.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent e2)
 		    {
-		    	frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		        shape1.add(shape2);
+		    	frame.setShape(shape1);
 		    }
  		});
     	
@@ -242,15 +251,16 @@ import javax.swing.ListSelectionModel;
 					
 					title.setBounds(0, 0, frame.getWidth(), 52);
 					
-					btnStartRender.setBounds(9, frame.getHeight() - 31, frame.getWidth() - 19, 25);
+					btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
 					
 					scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
 					
 					zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
 					
-					quit.setBounds(frame.getSize().width - 24,0,21, 21);				
-					reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
-					panelHaut.setBounds(0, 0, frame.getSize().width, 51);	
+					quit.setBounds(frame.getSize().width - 24,0,21, 21);		
+					fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+					reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
+					topPanel.setBounds(0, 0, frame.getSize().width, 51);	
 					
 					topImage.setLocation(frame.getSize().width / 2 - 200, 0);
 				}
@@ -272,7 +282,7 @@ import javax.swing.ListSelectionModel;
     		
     	});
 		    	
-		Utils.changeFrameVisibility(frame, shadow, false);
+		Utils.changeFrameVisibility(frame, false);
 		
 	}
 		
@@ -281,16 +291,98 @@ import javax.swing.ListSelectionModel;
 		static int mouseY;
 	}
 	
-	private void panelHaut() {	
-		panelHaut = new JPanel();
-		panelHaut.setLayout(null);
-		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
+	private void topPanel() {	
+		topPanel = new JPanel();
+		topPanel.setLayout(null);
+		topPanel.setBounds(0, 0, frame.getSize().width, 51);
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 				
+		fullscreen = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/max2.png")));
+		fullscreen.setHorizontalAlignment(SwingConstants.CENTER);
+		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+			
+		fullscreen.addMouseListener(new MouseListener(){
+			
+			private boolean accept = false;
+
+			@Override
+			public void mouseClicked(MouseEvent e) {			
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {		
+				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max3.png"))));
+				accept = true;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {		
+				if (accept)
+				{
+					if (frame.getExtendedState() == JFrame.NORMAL)
+					{
+						frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+						
+						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+						Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+						int taskBarHeight = screenSize.height - winSize.height;
+						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight);	
+						
+						title.setBounds(0, 0, frame.getWidth(), 52);
+						
+						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
+						
+						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
+						
+						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
+						
+						quit.setBounds(frame.getSize().width - 24,0,21, 21);	
+						fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+						reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
+						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
+						
+						topImage.setLocation(frame.getSize().width / 2 - 200, 0);
+					}
+					else
+					{
+						frame.setExtendedState(JFrame.NORMAL);
+						frame.setSize(600, 348);
+						title.setBounds(0, 0, frame.getWidth(), 52);
+						
+						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
+						
+						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
+						
+						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
+						
+						quit.setBounds(frame.getSize().width - 24,0,21, 21);
+						fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+						reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
+						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
+						
+						topImage.setLocation(frame.getSize().width / 2 - 200, 0);						
+					}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {			
+				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max.png"))));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {		
+				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max2.png"))));
+				accept = false;
+			}
+			
+			
+		});
+		
 		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		Image scaledImage = image.getImage().getScaledInstance(panelHaut.getSize().width * 10, panelHaut.getSize().height, Image.SCALE_SMOOTH);
+		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width * 10, topPanel.getSize().height, Image.SCALE_SMOOTH);
 		ImageIcon header = new ImageIcon(scaledImage);
 		bottomImage = new JLabel(header);
 		bottomImage.setBounds(0 ,0, frame.getSize().width * 10, 51);
@@ -298,16 +390,16 @@ import javax.swing.ListSelectionModel;
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
 		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
+		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
 		
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -329,7 +421,7 @@ import javax.swing.ListSelectionModel;
 				
 				if (accept)
 				{							
-					shadow.setVisible(false);
+					
 					frame.setState(frame.ICONIFIED);	
 				}
 			}
@@ -348,10 +440,11 @@ import javax.swing.ListSelectionModel;
 			
 		});
 				
-		panelHaut.add(quit);	
-		panelHaut.add(reduce);
-		panelHaut.add(topImage);
-		panelHaut.add(bottomImage);
+		topPanel.add(quit);	
+		topPanel.add(fullscreen);
+		topPanel.add(reduce);
+		topPanel.add(topImage);
+		topPanel.add(bottomImage);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -372,9 +465,9 @@ import javax.swing.ListSelectionModel;
 				if (accept)		
 				{		  
 					if (FFMPEG.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
-						Shutter.btnAnnuler.doClick();
+						Shutter.btnCancel.doClick();
 					
-					if (Shutter.btnAnnuler.isEnabled() == false)		
+					if (Shutter.btnCancel.isEnabled() == false)		
 					{						
 						//File de rendus
 						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
@@ -393,12 +486,12 @@ import javax.swing.ListSelectionModel;
 							if (Shutter.iconPresets.isVisible())
 							{
 								Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
-								Shutter.btnAnnuler.setBounds(205 + Shutter.iconList.getWidth(), 44, 101 - Shutter.iconList.getWidth(), 25);
+								Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 							}
 							else
 							{
 								Shutter.iconPresets.setBounds(180, 46, 21, 21);
-								Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+								Shutter.btnCancel.setBounds(207, 46, 97, 21);
 							}
 							
 						}
@@ -409,15 +502,15 @@ import javax.swing.ListSelectionModel;
 							if (Shutter.iconPresets.isVisible())
 							{
 								Shutter.iconPresets.setBounds(180, 46, 21, 21);
-								Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+								Shutter.btnCancel.setBounds(207, 46, 97, 21);
 							}
 							else
 							{
-								Shutter.btnAnnuler.setBounds(182, 44, 124, 25);
+								Shutter.btnCancel.setBounds(184, 46, 120, 21);
 							}
 						}
 						
-						Utils.changeFrameVisibility(frame, shadow, true);
+						Utils.changeFrameVisibility(frame, true);
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
 					}
 				}
@@ -437,8 +530,8 @@ import javax.swing.ListSelectionModel;
 						
 		});
 		
-		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
-		frame.getContentPane().add(panelHaut);						
+		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		frame.getContentPane().add(topPanel);						
 
 		bottomImage.addMouseListener(new MouseListener() {
 
@@ -449,36 +542,43 @@ import javax.swing.ListSelectionModel;
 					if (frame.getExtendedState() == JFrame.NORMAL)
 					{
 						frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+						
+						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+						Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+						int taskBarHeight = screenSize.height - winSize.height;
+						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight);
+						
 						title.setBounds(0, 0, frame.getWidth(), 52);
 						
-						btnStartRender.setBounds(9, frame.getHeight() - 31, frame.getWidth() - 19, 25);
+						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
 						
 						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
 						
 						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
 						
-						quit.setBounds(frame.getSize().width - 24,0,21, 21);				
-						reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
-						panelHaut.setBounds(0, 0, frame.getSize().width, 51);	
+						quit.setBounds(frame.getSize().width - 24,0,21, 21);		
+						fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+						reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
+						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
 						
 						topImage.setLocation(frame.getSize().width / 2 - 200, 0);
 					}
 					else
 					{
 						frame.setExtendedState(JFrame.NORMAL);
-						frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y + (int) (Shutter.frame.getSize().getHeight() / 4));
 						frame.setSize(600, 348);
 						title.setBounds(0, 0, frame.getWidth(), 52);
 						
-						btnStartRender.setBounds(9, frame.getHeight() - 31, frame.getWidth() - 19, 25);
+						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
 						
 						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
 						
 						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
 						
-						quit.setBounds(frame.getSize().width - 24,0,21, 21);				
-						reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
-						panelHaut.setBounds(0, 0, frame.getSize().width, 51);	
+						quit.setBounds(frame.getSize().width - 24,0,21, 21);
+						fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+						reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
+						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
 						
 						topImage.setLocation(frame.getSize().width / 2 - 200, 0);						
 					}
@@ -489,7 +589,7 @@ import javax.swing.ListSelectionModel;
 			public void mousePressed(MouseEvent down) {
 				MousePosition.mouseX = down.getPoint().x;
 				MousePosition.mouseY = down.getPoint().y;
-				shadow.toFront();
+				
 				frame.toFront();
 			}
 
@@ -551,10 +651,7 @@ import javax.swing.ListSelectionModel;
 		table.setRowHeight(17);
 		table.setBounds(10, 62, 580, 250);
 		table.setOpaque(true);
-        
-		JTableHeader header = table.getTableHeader();
-	    header.setForeground(Color.BLACK);
-		
+
 		table.addKeyListener(new KeyListener() {
 
 			@Override
@@ -592,7 +689,7 @@ import javax.swing.ListSelectionModel;
 
 		    });
 		
-		scrollPane = new WebScrollPane(StyleId.scrollpaneTransparent);
+		scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(table);
 		scrollPane.setBounds(10, 62, 580, 250);	
 		scrollPane.setOpaque(false);
@@ -627,7 +724,7 @@ import javax.swing.ListSelectionModel;
 		btnStartRender = new JButton(Shutter.language.getProperty("btnStartRender"));
 		btnStartRender.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnStartRender.setEnabled(false);
-		btnStartRender.setBounds(9, 317, 581, 25);
+		btnStartRender.setBounds(11, 319, 577, 21);
 		frame.getContentPane().add(btnStartRender);
 		
 		btnStartRender.addActionListener(new ActionListener(){
@@ -752,12 +849,10 @@ import javax.swing.ListSelectionModel;
 									Shutter.language.getProperty("ffprobe") + " " + FFMPEGSplit[FFMPEGSplit.length - 1]);  
 							errorText.setWrapStyleWord(true);
 							
-							WebScrollPane scrollPane = new WebScrollPane(errorText);  
+							JScrollPane scrollPane = new JScrollPane(errorText);  
 							scrollPane.setOpaque(false);
 							scrollPane.getViewport().setOpaque(false); 
 							scrollPane.setPreferredSize( new Dimension( 500, 400 ) );
-							
-							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(errorList.toString()), null);			
 
 							Object[] moreInfo = {"OK", Shutter.language.getProperty("menuItemConsole")};
 					        
@@ -792,34 +887,6 @@ import javax.swing.ListSelectionModel;
 			}			
 		});      		
 
-	}
-		
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setContentPane(new FileDeRendusShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-    	
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-   		
-    	frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-		    }
-		    public void componentResized(ComponentEvent e2)
-		    {
-		    	shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-		    }
- 		});
 	}	
 
 	private static void actionsDeFin(int item, String fichier, File fileOut) {
@@ -1012,40 +1079,19 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 	    setBackground(new Color(50,50,50));
 	    setForeground(Color.BLACK);
 	      
-	      if (isSelected)
-	      {
-	    	  setBackground(new Color(215,215,215));  
-	    	  //setBorder(new LineBorder(new Color(129,198,253)));
-	    	  setOpaque(true);
-	      }
-	      else
-	      {
-	    	  //setBorder(new LineBorder(Color.LIGHT_GRAY));
-	    	  setOpaque(false);
-	      }
+	    if (isSelected)
+	    {
+	    	setBackground(new Color(215,215,215));  
+	    	setBorder(new LineBorder(new Color(129,198,253)));
+	    	setOpaque(true);
+	    }
+	    else
+	    {
+	    	setBackground(new Color(185,185,185));  
+	    	setBorder(new LineBorder(Color.LIGHT_GRAY));
+	    	setOpaque(true);
+	    }
 
 	    return c;
 	}
-}
-	
-//Ombre
-@SuppressWarnings("serial")
-class FileDeRendusShadow extends JPanel {
-    public void paintComponent(Graphics g){
-  	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-  	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-  	  Graphics2D g1 = (Graphics2D)g.create();
-  	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-  	  g1.setRenderingHints(qualityHints);
-  	  g1.setColor(new Color(0,0,0));
-  	  g1.fillRect(0,0,RenderQueue.frame.getWidth() + 14, RenderQueue.frame.getHeight() + 7);
-  	  
- 	  for (int i = 0 ; i < 7; i++) 
- 	  {
- 		  Graphics2D g2 = (Graphics2D)g.create();
- 		  g2.setRenderingHints(qualityHints);
- 		  g2.setColor(new Color(0,0,0, i * 10));
- 		  g2.drawRoundRect(i, i, RenderQueue.frame.getWidth() + 13 - i * 2, RenderQueue.frame.getHeight() + 7, 20, 20);
- 	  }
-     }
 }

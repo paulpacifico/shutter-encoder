@@ -31,19 +31,18 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -74,7 +73,6 @@ import javax.swing.JRadioButton;
 
 public class WatermarkWindow {
 	public static JDialog frame;
-	public static JDialog shadow = new JDialog();
 	private static JPanel image = new JPanel();
 	private static JRadioButton caseSafeArea;
 	public static String logoFile = new String();
@@ -83,7 +81,7 @@ public class WatermarkWindow {
 	 * Composants
 	 */
 	private JLabel quit;
-	private JPanel panelHaut;
+	private JPanel topPanel;
 	private JLabel topImage;	
 	private JButton btnOK;
 	
@@ -135,20 +133,22 @@ public class WatermarkWindow {
 			frame.setModal(true);
 		
 		frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 				
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			setShadow();
 		}
 					
-		panelHaut();
+		topPanel();
 				 
 		image.setLayout(null);        
 		image.setOpaque(false);  
@@ -172,8 +172,7 @@ public class WatermarkWindow {
 		
 		caseSafeArea = new JRadioButton(Shutter.language.getProperty("caseSafeArea"));
 		caseSafeArea.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseSafeArea.setBounds(12, 446, 113, 23);
-		caseSafeArea.setBackground(new Color(50,50,50));
+		caseSafeArea.setBounds(12, 448, caseSafeArea.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseSafeArea);
 		
 		caseSafeArea.addActionListener(new ActionListener(){
@@ -256,7 +255,7 @@ public class WatermarkWindow {
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(170, 446, 480, 25);		
+		btnOK.setBounds(172, 450, 476, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -268,7 +267,7 @@ public class WatermarkWindow {
 				        
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
-	            Utils.changeDialogVisibility(frame, shadow, true);
+	            Utils.changeDialogVisibility(frame, true);
 	            
 	            //Suppression image temporaire
 						    		
@@ -322,7 +321,7 @@ public class WatermarkWindow {
 
 			    }, AWTEvent.KEY_EVENT_MASK);
 	
-		Utils.changeDialogVisibility(frame, shadow, false);		
+		Utils.changeDialogVisibility(frame, false);		
 		frame.repaint();
 	}
 	
@@ -337,23 +336,17 @@ public class WatermarkWindow {
 		static int mouseY;
 		static int offsetY;
 	}
-	
-	private static class LogoSettings {
-		static int size;
-		static int opacity;
-		static int offset;
-	}
-	
-	private void panelHaut() {
 		
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
+	private void topPanel() {
+		
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
-		panelHaut.setBounds(0, 0, 1000, 52);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, 1000, 52);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -375,7 +368,7 @@ public class WatermarkWindow {
 				{
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);		            
-		            Utils.changeDialogVisibility(frame, shadow, true);
+		            Utils.changeDialogVisibility(frame, true);
 		            
 					//Suppression images temporaires
 							    		
@@ -407,17 +400,17 @@ public class WatermarkWindow {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		panelHaut.add(topImage);
-		panelHaut.setBounds(0, 0, 1000, 52);
-		frame.getContentPane().add(panelHaut);
+		topPanel.add(topImage);
+		topPanel.setBounds(0, 0, 1000, 52);
+		frame.getContentPane().add(topPanel);
 		
 		topImage.addMouseListener(new MouseListener() {
 
@@ -487,7 +480,7 @@ public class WatermarkWindow {
 		positionVideo.setMaximum(FFPROBE.dureeTotale);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		positionVideo.setBounds(12, btnOK.getLocation().y - 26, 146, 22);	
+		positionVideo.setBounds(12, btnOK.getLocation().y - 24, 146, 22);	
 		
 		//Contournement d'un bug
 		Component[] components = frame.getContentPane().getComponents();		    
@@ -762,54 +755,6 @@ public class WatermarkWindow {
 			
 		});
 		
-		textSize.addMouseListener(new MouseListener(){
-				
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					textSize.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-				}
-		
-				@Override
-				public void mouseEntered(MouseEvent e) {	
-					textSize.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-				}
-		
-				@Override
-				public void mouseExited(MouseEvent e) {
-					textSize.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-				}
-		
-				@Override
-				public void mousePressed(MouseEvent e) {
-					LogoSettings.size = e.getY();
-					LogoSettings.offset = Integer.parseInt(textSize.getText());
-				}
-		
-				@Override
-				public void mouseReleased(MouseEvent e) {
-				}
-				
-			});
-			
-		textSize.addMouseMotionListener(new MouseMotionListener(){
-		
-				@Override
-				public void mouseDragged(MouseEvent e) {
-					if (textSize.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
-					{
-						textSize.setText(String.valueOf(LogoSettings.offset + (e.getX() - LogoSettings.size)));
-						if (Integer.parseInt(textSize.getText()) > 0)
-							loadLogo(Integer.parseInt(textSize.getText()));
-						else
-							textSize.setText("1");
-					}
-				}
-		
-				@Override
-				public void mouseMoved(MouseEvent e) {		
-				}
-			});	
-		
 		JLabel px3 = new JLabel("%");
 		px3.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		px3.setForeground(new Color(71,163,236));
@@ -825,7 +770,6 @@ public class WatermarkWindow {
 		textOpacity.setName("textOpacity");
 		textOpacity.setBounds(opacity.getLocation().x + opacity.getWidth() + 2, opacity.getLocation().y, 34, 16);
 		textOpacity.setHorizontalAlignment(SwingConstants.RIGHT);
-		textOpacity.setOpaque(false);
 		textOpacity.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		
 		textOpacity.addKeyListener(new KeyListener(){
@@ -857,56 +801,6 @@ public class WatermarkWindow {
 			}			
 			
 		});
-		
-		textOpacity.addMouseListener(new MouseListener(){
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				textOpacity.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-			}
-	
-			@Override
-			public void mouseEntered(MouseEvent e) {	
-				textOpacity.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-			}
-	
-			@Override
-			public void mouseExited(MouseEvent e) {
-				textOpacity.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-			}
-	
-			@Override
-			public void mousePressed(MouseEvent e) {
-				LogoSettings.opacity = e.getY();
-				LogoSettings.offset = Integer.parseInt(textOpacity.getText());
-			}
-	
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-			
-		});
-		
-		textOpacity.addMouseMotionListener(new MouseMotionListener(){
-		
-				@Override
-				public void mouseDragged(MouseEvent e) {
-					if (textOpacity.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
-					{
-						textOpacity.setText(String.valueOf(LogoSettings.offset + (e.getX() - LogoSettings.opacity)));
-						if (Integer.parseInt(textOpacity.getText()) < 0)
-							textOpacity.setText("0");
-						else if (Integer.parseInt(textOpacity.getText()) > 100)
-							textOpacity.setText("100");
-						
-						loadLogo(Integer.parseInt(textSize.getText()));
-					}
-				}
-		
-				@Override
-				public void mouseMoved(MouseEvent e) {		
-				}
-			});	
 		
 		JLabel px4 = new JLabel("%");
 		px4.setFont(new Font("FreeSans", Font.PLAIN, 12));
@@ -1274,51 +1168,4 @@ public class WatermarkWindow {
 		});
 		t.start();	
 	}
-	
- 	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new LogoShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
- 		    public void componentMoved(ComponentEvent e) {
- 		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
- 		    }
- 		});		
-	}
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class LogoShadow extends JPanel {
-  public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,WatermarkWindow.frame.getWidth() + 14, WatermarkWindow.frame.getHeight() + 127);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, WatermarkWindow.frame.getWidth() + 13 - i * 2, WatermarkWindow.frame.getHeight() + 2, 20, 20);
-	  }
-   }
 }

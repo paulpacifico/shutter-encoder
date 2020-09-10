@@ -19,39 +19,34 @@
 
 package application;
 
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JSpinner;
-import javax.swing.JTextArea;
-import javax.swing.SpinnerNumberModel;
+import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
-import java.awt.event.KeyListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.awt.Color;
-import java.awt.FileDialog;
 
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.managers.style.StyleId;
-
-import javax.swing.JTabbedPane;
 
 @SuppressWarnings("serial")
 public class Console extends JFrame {
@@ -68,25 +63,25 @@ public class Console extends JFrame {
 	public static JTextArea consoleEXIFTOOL =  new JTextArea();
 	public static JTextArea consoleMKVMERGE =  new JTextArea();
 	public static JTabbedPane tabbedPane;
-	private WebScrollPane scrollFFMPEG;
-	private WebScrollPane scrollFFPLAY;
-	private WebScrollPane scrollFFPROBE;
-	private WebScrollPane scrollBMXTRANSWRAP;
-	private WebScrollPane scrollDVDAUTHOR;
-	private WebScrollPane scrollTSMUXER;
-	private WebScrollPane scrollMEDIAINFO;
-	private WebScrollPane scrollYOUTUBEDL;
-	private WebScrollPane scrollEXIFTOOL;
-	private WebScrollPane scrollMKVMERGE;
+	private JScrollPane scrollFFMPEG;
+	private JScrollPane scrollFFPLAY;
+	private JScrollPane scrollFFPROBE;
+	private JScrollPane scrollBMXTRANSWRAP;
+	private JScrollPane scrollDVDAUTHOR;
+	private JScrollPane scrollTSMUXER;
+	private JScrollPane scrollMEDIAINFO;
+	private JScrollPane scrollYOUTUBEDL;
+	private JScrollPane scrollEXIFTOOL;
+	private JScrollPane scrollMKVMERGE;
 	private JMenuBar menuBar;
 	private final JSpinner spinner;
-	private final JLabel lblTailleDuTexte;
 	private JCheckBoxMenuItem followLine;
 	
 
 	public Console() {	
 		frmConsole = new JFrame();
 		frmConsole.setTitle("Console");
+		frmConsole.setLayout(null);
 		frmConsole.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frmConsole.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmConsole.setSize(500, 200);
@@ -96,13 +91,15 @@ public class Console extends JFrame {
 		System.setProperty("apple.laf.useScreenMenuBar", "false");
 		
 		JMenu menu = new JMenu("Console");
+		menu.setLayout(null);
 		menu.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		menu.setMnemonic(KeyEvent.VK_ALT);
 
 		menuBar = new JMenuBar();
+		menuBar.setLayout(null);
 		menuBar.add(menu);
 		
-		JMenuItem clear = new JMenuItem(Shutter.language.getProperty("btnVider"), KeyEvent.VK_V);
+		JMenuItem clear = new JMenuItem(Shutter.language.getProperty("btnEmptyList"), KeyEvent.VK_V);
 		clear.addActionListener(new ActionListener(){
 
 			@Override
@@ -209,13 +206,7 @@ public class Console extends JFrame {
 
 		frmConsole.setJMenuBar(menuBar);
 		
-		lblTailleDuTexte = new JLabel(Shutter.language.getProperty("lblTailleDuTexte") + " ");
-		lblTailleDuTexte.setForeground(Color.BLACK);
-		lblTailleDuTexte.setFont(new Font("FreeSans", Font.ITALIC, 13));
-		
-		menuBar.add(lblTailleDuTexte);
-		
-		spinner = new JSpinner( new SpinnerNumberModel( 12,1,100,1 ));		
+		spinner = new JSpinner( new SpinnerNumberModel( 12,1,100,1 ));	
 		spinner.setFont(new Font("Montserrat", Font.PLAIN, 12));				
 		menuBar.add(spinner);
 		
@@ -308,25 +299,25 @@ public class Console extends JFrame {
 		consoleMKVMERGE.setWrapStyleWord(true);
 		consoleMKVMERGE.addKeyListener(kl);
 		
-		scrollFFMPEG = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollFFMPEG = new JScrollPane();	
 		scrollFFMPEG.getViewport().add(consoleFFMPEG);
-		scrollFFPLAY = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollFFPLAY = new JScrollPane();	
 		scrollFFPLAY.getViewport().add(consoleFFPLAY);
-		scrollFFPROBE = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollFFPROBE = new JScrollPane();	
 		scrollFFPROBE.getViewport().add(consoleFFPROBE);
-		scrollBMXTRANSWRAP = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollBMXTRANSWRAP = new JScrollPane();	
 		scrollBMXTRANSWRAP.getViewport().add(consoleBMXTRANSWRAP);
-		scrollDVDAUTHOR = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollDVDAUTHOR = new JScrollPane();	
 		scrollDVDAUTHOR.getViewport().add(consoleDVDAUTHOR);
-		scrollTSMUXER = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollTSMUXER = new JScrollPane();	
 		scrollTSMUXER.getViewport().add(consoleTSMUXER);
-		scrollMEDIAINFO = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollMEDIAINFO = new JScrollPane();	
 		scrollMEDIAINFO.getViewport().add(consoleMEDIAINFO);
-		scrollYOUTUBEDL = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollYOUTUBEDL = new JScrollPane();	
 		scrollYOUTUBEDL.getViewport().add(consoleYOUTUBEDL);
-		scrollEXIFTOOL = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollEXIFTOOL = new JScrollPane();	
 		scrollEXIFTOOL.getViewport().add(consoleEXIFTOOL);
-		scrollMKVMERGE = new WebScrollPane(StyleId.scrollpaneTransparent);	
+		scrollMKVMERGE = new JScrollPane();	
 		scrollMKVMERGE.getViewport().add(consoleMKVMERGE);
 		
 		scrollFFMPEG.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  

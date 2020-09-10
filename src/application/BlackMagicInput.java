@@ -31,9 +31,6 @@ import java.util.List;
 
 import javax.swing.*;
 
-import com.alee.laf.text.WebTextField;
-import com.alee.managers.style.StyleId;
-
 import library.DECKLINK;
 
 public class BlackMagicInput {
@@ -44,7 +41,7 @@ public class BlackMagicInput {
 	public static JLabel lblTimecode;
 	public static JComboBox<String[]> comboInput;
 	private JComboBox<String[]> comboOutput;
-	protected static WebTextField lblDestination;
+	protected static JTextField lblDestination;
 	private JRadioButton caseDeinterlace;
 	public static JTextField TC1;
 	public static JTextField TC2;
@@ -112,14 +109,14 @@ public class BlackMagicInput {
 		
 		btnRecord = new JButton(Shutter.language.getProperty("btnRecord"));
 		btnRecord.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnRecord.setBounds(10, 95, 425, 25);
+		btnRecord.setBounds(12, 97, 423, 21);
 		frame.getContentPane().add(btnRecord);
 		
 		lblTimecode = new JLabel("00:00:00");
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimecode.setFont(new Font("FreeSans", Font.PLAIN, 30));
 		lblTimecode.setForeground(Color.RED);
-		lblTimecode.setBounds(10, 131, 422, 22);
+		lblTimecode.setBounds(10, 133, 422, 24);
 		frame.getContentPane().add(lblTimecode);
 		
 		Label lblInput = new Label(Shutter.language.getProperty("lblInput"));
@@ -172,7 +169,7 @@ public class BlackMagicInput {
 			
 		});
 		
-		lblDestination = new WebTextField(StyleId.textfieldTransparent);
+		lblDestination = new JTextField();
 		lblDestination.setEditable(false);
 	  	lblDestination.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination.setForeground(new Color(71,163,236));
@@ -245,14 +242,12 @@ public class BlackMagicInput {
 			
 		caseDeinterlace = new JRadioButton(Shutter.language.getProperty("caseDeinterlace"));
 		caseDeinterlace.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseDeinterlace.setBackground(new Color(50, 50, 50));
 		caseDeinterlace.setBounds(10, 65, 157, 23);
 		frame.getContentPane().add(caseDeinterlace);
 		
 		caseStopAt = new JRadioButton(Shutter.language.getProperty("caseStopAt"));
 		caseStopAt.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseStopAt.setBounds(169, 65, 169, 23);
-		caseStopAt.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(caseStopAt);
 		
 		caseStopAt.addActionListener(new ActionListener() {

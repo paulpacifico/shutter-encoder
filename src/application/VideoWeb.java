@@ -19,31 +19,26 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +70,6 @@ import javax.swing.JComboBox;
 
 public class VideoWeb {
 	public static JDialog frame;
-	public static JDialog shadow = new JDialog();
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private static int complete;
 		
@@ -84,7 +78,7 @@ public class VideoWeb {
 	 */
 	private JLabel quit;
 	private JLabel help;
-	private JPanel panelHaut;
+	private JPanel topPanel;
 	private JLabel topImage;	
 	private JPanel grpURL;
 	private JLabel lblURL;
@@ -117,23 +111,26 @@ public class VideoWeb {
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 100, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			setShadow();
+			
 		}
 						
-		panelHaut();
+		topPanel();
 		grpURL();
 					
-		Utils.changeDialogVisibility(frame, shadow, false);	
+		Utils.changeDialogVisibility(frame, false);	
 		
 	}
 	
@@ -142,15 +139,15 @@ public class VideoWeb {
 		static int mouseY;
 	}
 			
-	private void panelHaut() {	
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
-		panelHaut.setBounds(0, 0, 420, 52);
+	private void topPanel() {	
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
+		topPanel.setBounds(0, 0, 420, 52);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
+		topPanel.add(quit);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -173,7 +170,7 @@ public class VideoWeb {
 					Shutter.lblEncodageEnCours.setForeground(Color.RED);
 					Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("processCancelled"));
 					Shutter.progressBar1.setValue(0);		            
-					Utils.changeDialogVisibility(frame, shadow, true);
+					Utils.changeDialogVisibility(frame, true);
 				}
 			}
 
@@ -194,7 +191,7 @@ public class VideoWeb {
 		help = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/help2.png")));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
 		help.setBounds(quit.getLocation().x - 21,0,21, 21);
-		panelHaut.add(help);
+		topPanel.add(help);
 		
 		help.addMouseListener(new MouseListener(){
 
@@ -237,17 +234,17 @@ public class VideoWeb {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		panelHaut.add(topImage);
+		topPanel.add(topImage);
 		
-		frame.getContentPane().add(panelHaut);
+		frame.getContentPane().add(topPanel);
 		
 		topImage.addMouseListener(new MouseListener() {
 
@@ -373,7 +370,7 @@ public class VideoWeb {
 		caseAuto = new JRadioButton("Auto");
 		caseAuto.setSelected(true);
 		caseAuto.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseAuto.setBounds(66, 52, 45, 16);	
+		caseAuto.setBounds(66, 52, caseAuto.getPreferredSize().width, 16);	
 		caseAuto.setEnabled(false);
 		grpURL.add(caseAuto);
 				
@@ -460,7 +457,7 @@ public class VideoWeb {
 		
 		btnOK = new JButton("OK");
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(341, 20, 57, 25);		
+		btnOK.setBounds(343, 22, 53, 21);		
 		btnOK.setEnabled(false);
 		grpURL.add(btnOK);
 		
@@ -545,7 +542,6 @@ public class VideoWeb {
 		});
 		
 		textVideoPass = new JTextField();
-		textVideoPass.setForeground(Color.BLACK);
 		textVideoPass.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textVideoPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 120, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		textVideoPass.setEnabled(false);
@@ -575,7 +571,6 @@ public class VideoWeb {
 		textUser = new JTextField();
 		textUser.setEnabled(false);
 		textUser.setText((String) null);
-		textUser.setForeground(Color.BLACK);
 		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textUser.setColumns(10);
 		textUser.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 76, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
@@ -604,7 +599,6 @@ public class VideoWeb {
 		textPass = new JPasswordField();
 		textPass.setEnabled(false);
 		textPass.setText((String) null);
-		textPass.setForeground(Color.BLACK);
 		textPass.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPass.setColumns(10);
 		textPass.setEchoChar('•');
@@ -676,7 +670,7 @@ public class VideoWeb {
 						
 					       do { 
 					    	   Thread.sleep(10);		
-					       }while (YOUTUBEDL.runProcess.isAlive());
+					       }while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
 					       
 					       if (Shutter.cancelled)
 					       {
@@ -695,7 +689,7 @@ public class VideoWeb {
 								
 								       do { 
 											Thread.sleep(100);		
-							       }while (FFMPEG.isRunning);			
+							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 									
 							       //Suppression du fichier audio si processus annulé
 							       if (Shutter.cancelled)
@@ -712,7 +706,7 @@ public class VideoWeb {
 								
 							       do { 
 											Thread.sleep(100);		
-							       }while (FFMPEG.isRunning);			
+							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 							       
 							       //Suppression du fichier audio si processus annulé
 							       if (Shutter.cancelled)
@@ -748,7 +742,7 @@ public class VideoWeb {
 			});
 			downloadProcess.start();
 					
-			Utils.changeDialogVisibility(frame, shadow, true);				
+			Utils.changeDialogVisibility(frame, true);				
 	}
 
 	private void PasteFromClipBoard(boolean mouse){
@@ -782,52 +776,4 @@ public class VideoWeb {
 		caseAuto.setEnabled(true);
 		btnOK.setEnabled(true);	
 	}
-
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	if (shadow.isUndecorated() == false)
-    		shadow.setUndecorated(true);
-    	shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new VideoWebShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
- 		    public void componentMoved(ComponentEvent e) {
- 		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
- 		    }
- 		});
-	}
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class VideoWebShadow extends JPanel {
-public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,VideoWeb.frame.getWidth() + 14, VideoWeb.frame.getHeight() + 7);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, VideoWeb.frame.getWidth() + 13 - i * 2, VideoWeb.frame.getHeight() + 7, 20, 20);
-	  }
-}
 }

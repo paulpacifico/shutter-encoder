@@ -20,14 +20,12 @@
 package application;
 
 import java.awt.AWTEvent;
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
@@ -79,7 +77,6 @@ import javax.swing.JTextField;
 
 public class CropImage {
 	public static JDialog frame;
-	public static JDialog shadow = new JDialog();
 	private static JPanel overImage;
 	private static JPanel image = new JPanel();
 	/*
@@ -87,7 +84,7 @@ public class CropImage {
 	 */
 	private JLabel quit;
 	private JLabel fullscreen;
-	private static JPanel panelHaut;
+	private static JPanel topPanel;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameCropImage"));
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel topImage;
@@ -144,17 +141,20 @@ public class CropImage {
 			frame.setModal(true);
 		
 		frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			setShadow();
+			
 		}
 				
 		dragWindow = false;
@@ -162,7 +162,10 @@ public class CropImage {
     	frame.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent e2)
 		    {
-		    	frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		        shape1.add(shape2);
+		    	frame.setShape(shape1);
 		    }
  		});
 		
@@ -247,13 +250,13 @@ public class CropImage {
 			
 		});
 		
-		panelHaut();
+		topPanel();
 
 		loadImage();
 				
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(12, frame.getHeight() - 35, (frame.getWidth() - 24), 25);		
+		btnOK.setBounds(14, frame.getHeight() - 31, (frame.getWidth() - 28), 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -265,7 +268,7 @@ public class CropImage {
 				        
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
-	            Utils.changeDialogVisibility(frame, shadow, true);
+	            Utils.changeDialogVisibility(frame, true);
 	            
 	            //Suppression image temporaire
 						    		
@@ -334,7 +337,7 @@ public class CropImage {
 		
 		checkSelection();
 		
-		Utils.changeDialogVisibility(frame, shadow, false);		
+		Utils.changeDialogVisibility(frame, false);		
 	}
 	
 	private static class MousePosition {
@@ -342,11 +345,11 @@ public class CropImage {
 		static int mouseY;
 	}
 			
-	private void panelHaut() {
+	private void topPanel() {
 		
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
-		panelHaut.setBounds(0, 0, frame.getWidth(), 52);
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
+		topPanel.setBounds(0, 0, frame.getWidth(), 52);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
@@ -372,7 +375,7 @@ public class CropImage {
 				{
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);		            
-		            Utils.changeDialogVisibility(frame, shadow, true);
+		            Utils.changeDialogVisibility(frame, true);
 		            Shutter.cropFinal = null;
 		            
 					//Suppression image temporaire
@@ -431,7 +434,7 @@ public class CropImage {
 					}
 					else
 					{
-						int setWidth = (int) ((float) (screenSize.height - panelHaut.getHeight() - 35 - 22 - 17 - taskBarHeight) * ((float) ImageWidth / ImageHeight));
+						int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - 35 - 22 - 17 - taskBarHeight) * ((float) ImageWidth / ImageHeight));
 						if (setWidth <= screenSize.width)
 							frame.setSize(setWidth, screenSize.height - taskBarHeight); 
 						else
@@ -468,7 +471,7 @@ public class CropImage {
 		});
 				
 		bottomImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
@@ -491,7 +494,7 @@ public class CropImage {
 						}
 						else
 						{
-							int setWidth = (int) ((float) (screenSize.height - panelHaut.getHeight() - 35 - 22 - 17 - taskBarHeight) * ((float) ImageWidth / ImageHeight));
+							int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - 35 - 22 - 17 - taskBarHeight) * ((float) ImageWidth / ImageHeight));
 							if (setWidth <= screenSize.width)
 								frame.setSize(setWidth, screenSize.height - taskBarHeight); 
 							else
@@ -518,7 +521,7 @@ public class CropImage {
 			public void mousePressed(MouseEvent down) {
 				MousePosition.mouseX = down.getPoint().x;
 				MousePosition.mouseY = down.getPoint().y;	
-				shadow.toFront();
+				
 				frame.toFront();
 			}
 
@@ -552,19 +555,19 @@ public class CropImage {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 
-		panelHaut.add(quit);	
-		panelHaut.add(fullscreen);
-		panelHaut.add(bottomImage);
-		panelHaut.add(topImage);
-		panelHaut.add(bottomImage);
+		topPanel.add(quit);	
+		topPanel.add(fullscreen);
+		topPanel.add(bottomImage);
+		topPanel.add(topImage);
+		topPanel.add(bottomImage);
 		
-		frame.getContentPane().add(panelHaut);
+		frame.getContentPane().add(topPanel);
 	}
 
 	protected static void checkSelection() {
@@ -612,7 +615,7 @@ public class CropImage {
 		if (ImageHeight > ImageWidth)
 		{
 			outW = (int) Math.round((float) ImageWidth / ((float) finalWidth / borderW));				
-			outH = (int) Math.round((float) ImageHeight / ((float) (frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17) / borderH));
+			outH = (int) Math.round((float) ImageHeight / ((float) (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) / borderH));
 		}
 		else
 		{
@@ -843,8 +846,8 @@ public class CropImage {
 		final int containerHeight;
 		if (ImageHeight > ImageWidth)
 		{
-			containerHeight = (frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17);
-			containerWidth =  (int) Math.floor((float) (frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17) * ImageWidth / ImageHeight);
+			containerHeight = (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17);
+			containerWidth =  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth / ImageHeight);
 		}
 		else
 		{
@@ -855,7 +858,10 @@ public class CropImage {
 		image.setSize(containerWidth, containerHeight);
 		
 		//frame.setSize(frame.getWidth(), image.getHeight() + 120);
-		frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+        shape1.add(shape2);
+		frame.setShape(shape1);
 		
 		if (ImageHeight > ImageWidth)
 			image.setLocation((int) Math.floor((float) (frame.getWidth() - containerWidth) / 2) + 10, 62);
@@ -1126,7 +1132,7 @@ public class CropImage {
 		//Position des bouton
 		if (btnOK != null)
 		{
-			CropImage.btnOK.setLocation(12, CropImage.frame.getHeight() - 35);	
+			CropImage.btnOK.setLocation(14, CropImage.frame.getHeight() - 31);	
 			
 		   	CropImage.posX.setLocation(14, CropImage.btnOK.getLocation().y - 22);
 			CropImage.textPosX.setLocation(CropImage.posX.getLocation().x + CropImage.posX.getWidth() + 2, CropImage.posX.getLocation().y);
@@ -1214,7 +1220,7 @@ public class CropImage {
 			}			
 
         	
-        		finalWidth = (int) Math.floor(((frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17) * ImageWidth) / ImageHeight);
+        		finalWidth = (int) Math.floor(((frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth) / ImageHeight);
         			        	
         		finalHeight = (int) Math.floor(((frame.getWidth() - 24) * ImageHeight) / ImageWidth);
         	                   	        		
@@ -1230,7 +1236,7 @@ public class CropImage {
 				//Envoi de la commande
 				String cmd;
 				if (ImageHeight > ImageWidth)
-					cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17) + " -y ";
+					cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) + " -y ";
 				else
 					cmd = " -vframes 1 -an -s " + (frame.getWidth() - 24) + "x" + finalHeight + " -y ";
 					
@@ -1262,7 +1268,7 @@ public class CropImage {
 	            imageIcon.getImage().flush();
 	    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
 	            if (ImageHeight > ImageWidth)
-	            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - panelHaut.getHeight() - 35 - 22 - 17));  
+	            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17));  
 	            else
 	            	newImage.setBounds(0, 0, (frame.getWidth() - 24),  (int) Math.floor((float) (frame.getWidth() - 24) * ImageHeight / ImageWidth)); 
 	            
@@ -1376,69 +1382,18 @@ public class CropImage {
 	}
 		
 	private void resizeAll() {		
-		panelHaut.setBounds(0,0,frame.getSize().width, 52);
+		topPanel.setBounds(0,0,frame.getSize().width, 52);
 		
 		topImage.setLocation(frame.getSize().width / 2 - topImage.getSize().width / 2, 0);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);	
 		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
 		
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_AREA_AVERAGING));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		
-		btnOK.setBounds(12, frame.getHeight() - 35, (frame.getWidth() - 24), 25);	
+		btnOK.setBounds(14, frame.getHeight() - 31, (frame.getWidth() - 28), 21);	
 	}
-	
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new CropImageShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-		    }
-		    public void componentResized(ComponentEvent e2)
-		    {
-		    	shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-		    }
- 		});	
-	}
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class CropImageShadow extends JPanel {
-  public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,CropImage.frame.getWidth() + 14, CropImage.frame.getHeight() + 127);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, CropImage.frame.getWidth() + 13 - i * 2, CropImage.frame.getHeight() + 2, 20, 20);
-	  }
-   }
 }

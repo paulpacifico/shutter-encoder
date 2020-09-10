@@ -104,7 +104,6 @@ public class BlackMagicOutput {
 	private void load(){				
 		caseHD = new JRadioButton(Shutter.language.getProperty("caseHD"));
 		caseHD.setSelected(true);
-		caseHD.setBackground(new Color(50,50,50));
 		caseHD.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseHD.setBounds(6, 38, caseHD.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseHD);
@@ -122,7 +121,7 @@ public class BlackMagicOutput {
 		
 		btnPrevious = new JButton("<");
 		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnPrevious.setBounds(6, 6, 30, 25);
+		btnPrevious.setBounds(8, 8, 26, 21);
 		frame.getContentPane().add(btnPrevious);				
 		
 		btnPrevious.addMouseListener(new MouseAdapter() {
@@ -142,12 +141,12 @@ public class BlackMagicOutput {
 		
 		btnLire = new JButton(Shutter.language.getProperty("btnLire"));
 		btnLire.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnLire.setBounds(12 + 30, 6, 461 - 60, 25);
+		btnLire.setBounds(12 + 32, 8, 461 - 64, 21);
 		frame.getContentPane().add(btnLire);
 		
 		btnNext = new JButton(">");
 		btnNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnNext.setBounds(btnLire.getX() + btnLire.getWidth() + 6, 6, 30, 25);
+		btnNext.setBounds(btnLire.getX() + btnLire.getWidth() + 8, 8, 26, 21);
 		frame.getContentPane().add(btnNext);
 		
 		btnNext.addMouseListener(new MouseAdapter() {
@@ -169,14 +168,12 @@ public class BlackMagicOutput {
 		caseForceInterlace.setSelected(false);
 		caseForceInterlace.setBounds(170, 38, caseForceInterlace.getPreferredSize().width + 20, 23);
 		caseForceInterlace.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseForceInterlace.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(caseForceInterlace);
 		
 		caseAfficherLeTimecode = new JRadioButton(Shutter.language.getProperty("caseAfficherLeTimecode"));
 		caseAfficherLeTimecode.setSelected(true);
 		caseAfficherLeTimecode.setBounds(338, 38, caseAfficherLeTimecode.getPreferredSize().width + 20, 23);
 		caseAfficherLeTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseAfficherLeTimecode.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(caseAfficherLeTimecode);
 		
 		slider = new JSlider();
@@ -189,7 +186,7 @@ public class BlackMagicOutput {
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimecode.setFont(new Font("FreeSans", Font.PLAIN, 30));
 		lblTimecode.setForeground(Color.RED);
-		lblTimecode.setBounds(6, 93, 461, 22);
+		lblTimecode.setBounds(6, 91, 461, 24);
 		frame.getContentPane().add(lblTimecode);
 				
 		slider.addMouseListener(new MouseAdapter(){

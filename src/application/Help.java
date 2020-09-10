@@ -30,17 +30,15 @@ import java.nio.charset.StandardCharsets;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import com.alee.laf.text.WebTextPane;
-import com.alee.managers.style.StyleId;
-
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextPane;
 
 public class Help {
 
 	public static JFrame frame;
 	private String pathToFonctions;
-	private WebTextPane txtFonctions;
+	private JTextPane txtFonctions;
 	private JComboBox<String[]> comboFonctions;
 	private JButton btnVideoDePresentation;
 	private JButton btnFaq;
@@ -53,9 +51,9 @@ public class Help {
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			frame.setSize(625, 64);
+			frame.setSize(640, 64);
 		else
-			frame.setSize(625, 74);
+			frame.setSize(640, 74);
 		frame.setTitle(Shutter.language.getProperty("frameAstuces"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -119,16 +117,18 @@ public class Help {
 		
 		btnFaq = new JButton(Shutter.language.getProperty("btnFaq"));
 		btnFaq.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnFaq.setBounds(308, 7, 130, 25);
+		btnFaq.setMargin(new Insets(0,0,0,0));
+		btnFaq.setBounds(310, 9, 143, 21);
 		frame.getContentPane().add(btnFaq);
 		
 		btnVideoDePresentation = new JButton(Shutter.language.getProperty("btnVideoDePresentation"));
 		btnVideoDePresentation.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnVideoDePresentation.setBounds(btnFaq.getX() + btnFaq.getWidth() + 4, 7, 160, 25);
+		btnVideoDePresentation.setMargin(new Insets(0,0,0,0));
+		btnVideoDePresentation.setBounds(btnFaq.getX() + btnFaq.getWidth() + 6, 9, 156, 21);
 		frame.getContentPane().add(btnVideoDePresentation);
 		
 		
-		txtFonctions = new WebTextPane(StyleId.textpaneTransparent);
+		txtFonctions = new JTextPane();
 		txtFonctions.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		txtFonctions.setLocation(10, 38);
 		txtFonctions.setForeground(Color.WHITE);

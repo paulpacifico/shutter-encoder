@@ -40,7 +40,7 @@ public class Splash extends Frame {
     public static void increment(){    
 		if (Splash.splash.isVisible())
 		{
-    		Value += 9;  
+    		Value += 8;  
 			if (Value > 200) 
 				Value = 200;
 			renderSplashFrame(g, Value);

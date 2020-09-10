@@ -19,7 +19,6 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -35,8 +34,6 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -48,6 +45,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -89,7 +87,6 @@ import library.FFPROBE;
 
 public class OverlayWindow {
 	public static JDialog frame;
-	public static JDialog shadow = new JDialog();
 	private static JPanel image = new JPanel();
 	private static JLabel changePositions = new JLabel("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>");	
 	private static JPanel timecode;
@@ -99,7 +96,7 @@ public class OverlayWindow {
 	 * Composants
 	 */
 	private JLabel quit;
-	private JPanel panelHaut;
+	private JPanel topPanel;
 	private JLabel topImage;	
 	private JButton btnOK;
 	
@@ -179,20 +176,23 @@ public class OverlayWindow {
 			frame.setModal(true);	
 			
 		frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 				
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			setShadow();
+			
 		}
 					
-		panelHaut();
+		topPanel();
 				
 		boutons();
 		
@@ -221,16 +221,16 @@ public class OverlayWindow {
 		static int offsetY;
 	}
 		
-	private void panelHaut() {
+	private void topPanel() {
 		
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
-		panelHaut.setBounds(0, 0, 1000, 52);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, 1000, 52);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -252,7 +252,7 @@ public class OverlayWindow {
 				{
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);		            
-		            Utils.changeDialogVisibility(frame, shadow, true);
+		            Utils.changeDialogVisibility(frame, true);
 		            
 					//Suppression images temporaires
 							    		
@@ -281,17 +281,17 @@ public class OverlayWindow {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		panelHaut.add(topImage);
-		panelHaut.setBounds(0, 0, 1000, 52);
-		frame.getContentPane().add(panelHaut);
+		topPanel.add(topImage);
+		topPanel.setBounds(0, 0, 1000, 52);
+		frame.getContentPane().add(topPanel);
 		
 		image.setBounds(12, 58, 640, 360);		
 		frame.getContentPane().add(image);
@@ -908,7 +908,6 @@ public class OverlayWindow {
 				
 		caseAddTimecode.setName("caseAddTimecode");				
 		caseAddTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseAddTimecode.setBackground(new Color(50, 50, 50));
 		caseAddTimecode.setSize(caseAddTimecode.getPreferredSize().width, 23);
 		caseAddTimecode.setLocation(12, frame.getHeight() - 102);
 		frame.add(caseAddTimecode);
@@ -1061,7 +1060,6 @@ public class OverlayWindow {
 				
 		caseShowTimecode.setName("caseShowTimecode");
 		caseShowTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseShowTimecode.setBackground(new Color(50, 50, 50));
 		caseShowTimecode.setEnabled(true);
 		caseShowTimecode.setSize(caseShowTimecode.getPreferredSize().width, 23);
 		caseShowTimecode.setLocation(caseAddTimecode.getX(), caseAddTimecode.getY() + caseAddTimecode.getHeight());
@@ -1083,93 +1081,6 @@ public class OverlayWindow {
 
 		});
 						
-		caseShowFileName.setName("caseShowFileName");
-		caseShowFileName.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseShowFileName.setBackground(new Color(50, 50, 50));
-		caseShowFileName.setSize(154, 23);
-		caseShowFileName.setLocation(frame.getWidth() - caseShowFileName.getWidth() - 66, caseShowTimecode.getY());
-		frame.add(caseShowFileName);
-		
-		caseShowFileName.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (caseShowFileName.isSelected())
-				{
-					caseShowText.setSelected(false);
-					text.setEnabled(false);
-				}
-				
-				sliderChange(false);
-			}
-			
-		});
-		
-		caseShowText.setName("caseShowText");
-		caseShowText.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseShowText.setBackground(new Color(50, 50, 50));
-		caseShowText.setSize((int) caseShowText.getPreferredSize().getWidth(), 23);
-		caseShowText.setLocation(caseShowFileName.getX(), caseAddTimecode.getY());
-		frame.add(caseShowText);
-		
-		caseShowText.addActionListener(new ActionListener()	{
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (caseShowText.isSelected())
-				{
-					caseShowFileName.setSelected(false);
-					text.setEnabled(true);
-				}
-				else
-					text.setEnabled(false);
-				
-				sliderChange(false);
-			}
-		});
-		
-		text.setName("text");
-		text.setEnabled(false);
-		text.setLocation(caseShowText.getLocation().x + caseShowText.getWidth() + 7, caseShowText.getLocation().y + 1);
-		text.setSize(frame.getWidth() - text.getX() - 13, 21);
-		text.setHorizontalAlignment(SwingConstants.LEFT);
-		text.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		frame.getContentPane().add(text);
-
-		text.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				textTime = System.currentTimeMillis();
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				
-				if (changeText == null || changeText.isAlive() == false)
-				{
-					changeText = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							do {
-								try {
-									Thread.sleep(100);
-								} catch (InterruptedException e1) {}
-							} while (System.currentTimeMillis() - textTime < 500);
-							
-							sliderChange(false);
-						}
-					});
-					changeText.start();
-				}
-			}		
-			
-		});
-		
 		positionVideo = new JSlider();
 		if (Shutter.scanIsRunning)
 		{
@@ -1229,7 +1140,7 @@ public class OverlayWindow {
 		spinnerSizeTC = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeTC.setName("spinnerSizeTC");
 		spinnerSizeTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerSizeTC.setBounds(lblSizeTC.getLocation().x + lblSizeTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, 41, 22);
+		spinnerSizeTC.setBounds(lblSizeTC.getLocation().x + lblSizeTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, 54, 22);
 		frame.getContentPane().add(spinnerSizeTC);
 		
 		spinnerSizeTC.addChangeListener(new ChangeListener() {
@@ -1244,13 +1155,13 @@ public class OverlayWindow {
 		JLabel lblOpacityTC = new JLabel(Shutter.language.getProperty("lblOpacity"));
 		lblOpacityTC.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblOpacityTC.setAlignmentX(SwingConstants.RIGHT);
-		lblOpacityTC.setBounds(spinnerSizeTC.getLocation().x + spinnerSizeTC.getWidth() + 12, lblSizeTC.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);		
+		lblOpacityTC.setBounds(spinnerSizeTC.getLocation().x + spinnerSizeTC.getWidth() + 11, lblSizeTC.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblOpacityTC);
 
 		spinnerOpacityTC = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
 		spinnerOpacityTC.setName("spinnerOpacityTC");
 		spinnerOpacityTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerOpacityTC.setBounds(lblOpacityTC.getLocation().x + lblOpacityTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, 41, 22);
+		spinnerOpacityTC.setBounds(lblOpacityTC.getLocation().x + lblOpacityTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, spinnerSizeTC.getWidth(), 22);
 		frame.getContentPane().add(spinnerOpacityTC);
 		
 		spinnerOpacityTC.addChangeListener(new ChangeListener() {
@@ -1427,16 +1338,136 @@ public class OverlayWindow {
 			}
 		});	
 		
-		JLabel lblSizeName = new JLabel(Shutter.language.getProperty("lblSize"));
-		lblSizeName.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblSizeName.setAlignmentX(SwingConstants.RIGHT);
-		lblSizeName.setBounds(caseShowFileName.getX(), lblSizeTC.getY(), lblSizeName.getPreferredSize().width, 16);		
-		frame.getContentPane().add(lblSizeName);
+		textNamePosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().y * imageRatio) ) ) );
+		textNamePosY.setName("textNamePosY");
+		textNamePosY.setBounds(frame.getWidth() - spinnerOpacityTC.getWidth() - 13, posY.getLocation().y, spinnerOpacityTC.getWidth(), 16);
+		textNamePosY.setHorizontalAlignment(SwingConstants.RIGHT);
+		textNamePosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		frame.getContentPane().add(textNamePosY);
 		
+		textNamePosY.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (textNamePosY.getText().length() > 0)
+					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (textNamePosY.getText().length() >= 4)
+					textNamePosY.setText("");				
+			}			
+			
+		});
+		
+		textNamePosY.addMouseListener(new MouseListener(){
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				textNamePosY.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {	
+				textNamePosY.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				textNamePosY.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				MouseNamePosition.mouseY = e.getY();
+				MouseNamePosition.offsetY = Integer.parseInt(textNamePosY.getText());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+		});
+		
+		textNamePosY.addMouseMotionListener(new MouseMotionListener(){
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if (textNamePosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
+				{
+					textNamePosY.setText(String.valueOf(MouseNamePosition.offsetY + (e.getY() - MouseNamePosition.mouseY)));
+					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+				}
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {		
+			}
+		});	
+					
+		JLabel posY2 = new JLabel(Shutter.language.getProperty("pY"));
+		posY2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posY2.setForeground(new Color(71,163,236));
+		posY2.setAlignmentX(SwingConstants.RIGHT);
+		posY2.setBounds(textNamePosY.getX() - lblOpacityTC.getPreferredSize().width - 11, posY.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);
+		frame.getContentPane().add(posY2);
+		
+		spinnerOpacityName = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
+		spinnerOpacityName.setName("spinnerOpacityName");
+		spinnerOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		spinnerOpacityName.setBounds(textNamePosY.getX(), spinnerOpacityTC.getLocation().y, spinnerOpacityTC.getWidth(), 22);
+		frame.getContentPane().add(spinnerOpacityName);
+		
+		spinnerOpacityName.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (textNamePosY.getText().length() > 0)
+					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (textNamePosY.getText().length() >= 4)
+					textNamePosY.setText("");				
+			}			
+			
+		});
+		
+		spinnerOpacityName.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {		
+				sliderChange(false);		
+			}
+			
+		});
+		
+		JLabel lblOpacityName = new JLabel(Shutter.language.getProperty("lblOpacity"));
+		lblOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblOpacityName.setAlignmentX(SwingConstants.RIGHT);
+		lblOpacityName.setBounds(spinnerOpacityName.getLocation().x - lblOpacityTC.getPreferredSize().width - 11, lblOpacityTC.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);		
+		frame.getContentPane().add(lblOpacityName);
+				
 		spinnerSizeName = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeName.setName("spinnerSizeName");
 		spinnerSizeName.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerSizeName.setBounds(lblSizeName.getLocation().x + lblSizeName.getWidth() + 11, lblSizeName.getLocation().y - 3, 41, 22);
+		spinnerSizeName.setBounds(lblOpacityName.getLocation().x - spinnerSizeTC.getWidth() - 15, lblOpacityTC.getLocation().y - 3, spinnerSizeTC.getWidth(), 22);
 		frame.getContentPane().add(spinnerSizeName);
 		
 		spinnerSizeName.addChangeListener(new ChangeListener() {
@@ -1449,38 +1480,15 @@ public class OverlayWindow {
 			
 		});
 		
-		JLabel lblOpacityName = new JLabel(Shutter.language.getProperty("lblOpacity"));
-		lblOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblOpacityName.setAlignmentX(SwingConstants.RIGHT);
-		lblOpacityName.setBounds(spinnerSizeName.getLocation().x + spinnerSizeName.getWidth() + 12, lblSizeName.getLocation().y, lblOpacityName.getPreferredSize().width, 16);		
-		frame.getContentPane().add(lblOpacityName);
-
-		spinnerOpacityName = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
-		spinnerOpacityName.setName("spinnerOpacityName");
-		spinnerOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerOpacityName.setBounds(lblOpacityName.getLocation().x + lblOpacityName.getWidth() + 11, lblSizeName.getLocation().y - 3, 41, 22);
-		frame.getContentPane().add(spinnerOpacityName);
-		
-		spinnerOpacityName.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent arg0) {		
-				sliderChange(false);		
-			}
-			
-		});
-		
-		JLabel posX2 = new JLabel(Shutter.language.getProperty("pX"));
-		posX2.setHorizontalAlignment(SwingConstants.LEFT);
-		posX2.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posX2.setForeground(new Color(71,163,236));
-		posX2.setAlignmentX(SwingConstants.RIGHT);
-		posX2.setBounds(lblSizeName.getX(), lblSizeName.getY() + lblSizeName.getHeight() + 6, posX2.getPreferredSize().width, 16);
-		frame.getContentPane().add(posX2);
-				
+		JLabel lblSizeName = new JLabel(Shutter.language.getProperty("lblSize"));
+		lblSizeName.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblSizeName.setAlignmentX(SwingConstants.RIGHT);
+		lblSizeName.setBounds(spinnerSizeName.getX() - lblSizeTC.getWidth() - 11, lblSizeTC.getY(), lblSizeTC.getPreferredSize().width, 16);		
+		frame.getContentPane().add(lblSizeName);
+						
 		textNamePosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().x * imageRatio) ) ) );
 		textNamePosX.setName("textNamePosX");
-		textNamePosX.setBounds(spinnerSizeName.getLocation().x, posX2.getLocation().y, spinnerSizeName.getWidth(), 16);
+		textNamePosX.setBounds(posY2.getLocation().x - textNamePosY.getWidth() - 15, posY2.getLocation().y, textNamePosY.getWidth(), 16);
 		textNamePosX.setHorizontalAlignment(SwingConstants.RIGHT);
 		textNamePosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		frame.getContentPane().add(textNamePosX);
@@ -1553,114 +1561,17 @@ public class OverlayWindow {
 			}
 		});	
 		
-		JLabel posY2 = new JLabel(Shutter.language.getProperty("pY"));
-		posY2.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posY2.setForeground(new Color(71,163,236));
-		posY2.setAlignmentX(SwingConstants.RIGHT);
-		posY2.setBounds(lblOpacityName.getX(), posX2.getLocation().y, lblOpacityName.getPreferredSize().width, 16);
-		frame.getContentPane().add(posY2);
-
-		textNamePosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().y * imageRatio) ) ) );
-		textNamePosY.setName("textNamePosY");
-		textNamePosY.setBounds(spinnerOpacityName.getLocation().x, posY2.getLocation().y, spinnerOpacityName.getWidth(), 16);
-		textNamePosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textNamePosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		frame.getContentPane().add(textNamePosY);
-		
-		textNamePosY.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (textNamePosY.getText().length() > 0)
-					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (textNamePosY.getText().length() >= 4)
-					textNamePosY.setText("");				
-			}			
-			
-		});
-		
-		textNamePosY.addMouseListener(new MouseListener(){
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				textNamePosY.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {	
-				textNamePosY.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				textNamePosY.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				MouseNamePosition.mouseY = e.getY();
-				MouseNamePosition.offsetY = Integer.parseInt(textNamePosY.getText());
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-			
-		});
-		
-		textNamePosY.addMouseMotionListener(new MouseMotionListener(){
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				if (textNamePosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
-				{
-					textNamePosY.setText(String.valueOf(MouseNamePosition.offsetY + (e.getY() - MouseNamePosition.mouseY)));
-					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
-				}
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent e) {		
-			}
-		});	
-		
-		spinnerOpacityName.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if (textNamePosY.getText().length() > 0)
-					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (textNamePosY.getText().length() >= 4)
-					textNamePosY.setText("");				
-			}			
-			
-		});
+		JLabel posX2 = new JLabel(Shutter.language.getProperty("pX"));
+		posX2.setHorizontalAlignment(SwingConstants.LEFT);
+		posX2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posX2.setForeground(new Color(71,163,236));
+		posX2.setAlignmentX(SwingConstants.RIGHT);
+		posX2.setBounds(lblSizeName.getX(), posX.getY(), posX.getPreferredSize().width, 16);
+		frame.getContentPane().add(posX2);
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(textTcPosY.getX() + textTcPosY.getWidth() + 7, textTcPosY.getY() - 7, frame.getWidth() - (textTcPosY.getX() + textTcPosY.getWidth()) - (frame.getWidth() - posX2.getX()) - 14, 25);		
+		btnOK.setBounds(textTcPosY.getX() + textTcPosY.getWidth() + 9, textTcPosY.getY() - 4, frame.getWidth() - (textTcPosY.getX() + textTcPosY.getWidth()) - (frame.getWidth() - posX2.getX()) - 18, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -1670,7 +1581,7 @@ public class OverlayWindow {
 				
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
-	            Utils.changeDialogVisibility(frame, shadow, true);
+	            Utils.changeDialogVisibility(frame, true);
 	            
 	            //Suppression image temporaire
 						    		
@@ -1745,12 +1656,98 @@ public class OverlayWindow {
 			
 		});
 	
+		caseShowFileName.setName("caseShowFileName");
+		caseShowFileName.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseShowFileName.setSize(caseShowFileName.getPreferredSize().width, 23);
+		caseShowFileName.setLocation(lblSizeName.getX(), caseShowTimecode.getY());
+		frame.add(caseShowFileName);
+		
+		caseShowFileName.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (caseShowFileName.isSelected())
+				{
+					caseShowText.setSelected(false);
+					text.setEnabled(false);
+				}
+				
+				sliderChange(false);
+			}
+			
+		});
+		
+		caseShowText.setName("caseShowText");
+		caseShowText.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseShowText.setSize((int) caseShowText.getPreferredSize().getWidth(), 23);
+		caseShowText.setLocation(caseShowFileName.getX(), caseAddTimecode.getY());
+		frame.add(caseShowText);
+		
+		caseShowText.addActionListener(new ActionListener()	{
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (caseShowText.isSelected())
+				{
+					caseShowFileName.setSelected(false);
+					text.setEnabled(true);
+				}
+				else
+					text.setEnabled(false);
+				
+				sliderChange(false);
+			}
+		});
+		
+		text.setName("text");
+		text.setEnabled(false);
+		text.setLocation(caseShowText.getLocation().x + caseShowText.getWidth() + 7, caseShowText.getLocation().y + 1);
+		text.setSize(frame.getWidth() - text.getX() - 13, 21);
+		text.setHorizontalAlignment(SwingConstants.LEFT);
+		text.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		frame.getContentPane().add(text);
+
+		text.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				textTime = System.currentTimeMillis();
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				
+				if (changeText == null || changeText.isAlive() == false)
+				{
+					changeText = new Thread(new Runnable() {
+						@Override
+						public void run() {
+							do {
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e1) {}
+							} while (System.currentTimeMillis() - textTime < 500);
+							
+							sliderChange(false);
+						}
+					});
+					changeText.start();
+				}
+			}		
+			
+		});
+		
+		
 		changePositions.setBackground(new Color(80, 80, 80));
 		changePositions.setOpaque(true);
 		changePositions.setHorizontalAlignment(JLabel.CENTER);
 		changePositions.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		changePositions.setSize(changePositions.getPreferredSize());
-		changePositions.setLocation((btnOK.getX() + btnOK.getWidth()/2) - changePositions.getWidth()/2, btnOK.getY() - changePositions.getHeight() - 21);
+		changePositions.setLocation((btnOK.getX() + btnOK.getWidth()/2) - changePositions.getWidth()/2, btnOK.getY() - changePositions.getHeight() - 14);
 		changePositions.addMouseListener(new MouseListener() {
 
 			@Override
@@ -2127,7 +2124,7 @@ public class OverlayWindow {
 									
     		if (frame.isVisible() == false)
     		{
-    			Utils.changeDialogVisibility(frame, shadow, false);
+    			Utils.changeDialogVisibility(frame, false);
     		}
 
 			Shutter.tempsRestant.setVisible(false);
@@ -2301,84 +2298,32 @@ public class OverlayWindow {
 		});
 		t.start();	
 	}
+
+	@SuppressWarnings({ "unused", "rawtypes" })
+	private class ComboRendererOverlay extends BasicComboBoxRenderer {
 	
- 	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new OverlayWindowShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
- 		    public void componentMoved(ComponentEvent e) {
- 		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
- 		    }
- 		});		
-	}
-}
-
-@SuppressWarnings({ "unused", "rawtypes" })
-class ComboRendererOverlay extends BasicComboBoxRenderer {
-
-        private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1L;
 		private JComboBox comboBox;
-        final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-        private int row;
-
-		ComboRendererOverlay(JComboBox fontsBox) {
-            comboBox = fontsBox;
-        }
-        
+		final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+		private int row;
+	
+		private ComboRendererOverlay(JComboBox fontsBox) {
+			comboBox = fontsBox;
+		}
+		
 		@Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if (list.getModel().getSize() > 0) {
-            	 final Object comp = comboBox.getUI().getAccessibleChild(comboBox, 0);
-            }
-            final JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, row, isSelected, cellHasFocus);
-            final Object fntObj = value;
-            final String fontFamilyName = (String) fntObj;
-            if (Settings.comboTheme.getSelectedItem().toString().equals(Shutter.language.getProperty("clearTheme")))
-				setForeground(Color.BLACK);
-			else
-				setForeground(Color.WHITE);
-            
-            setFont(new Font(fontFamilyName, Font.PLAIN, 16));	            
-    		setOpaque(false);
-            
-            return this;
-        }
-    }
-
-//Ombre
-@SuppressWarnings("serial")
-class OverlayWindowShadow extends JPanel {
-  public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,OverlayWindow.frame.getWidth() + 14, OverlayWindow.frame.getHeight() + 127);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, OverlayWindow.frame.getWidth() + 13 - i * 2, OverlayWindow.frame.getHeight() + 2, 20, 20);
-	  }
-   }
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			if (list.getModel().getSize() > 0) {
+				 final Object comp = comboBox.getUI().getAccessibleChild(comboBox, 0);
+			}
+			final JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, row, isSelected, cellHasFocus);
+			final Object fntObj = value;
+			final String fontFamilyName = (String) fntObj;
+			
+			setFont(new Font(fontFamilyName, Font.PLAIN, 16));	            
+			
+			return this;
+		}
+	}
 }

@@ -19,23 +19,18 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
@@ -45,6 +40,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -89,14 +85,13 @@ import library.FFPROBE;
 
 public class SubtitlesWindow {
 	public static JDialog frame;
-	public static JDialog shadow = new JDialog();
 	private static JPanel image = new JPanel();
 	
 	/*
 	 * Composants
 	 */
 	private JLabel quit;
-	private JPanel panelHaut;
+	private JPanel topPanel;
 	private JLabel topImage;	
 	private JButton btnOK;
     public static int ImageWidth;
@@ -143,21 +138,24 @@ public class SubtitlesWindow {
 			frame.setModal(true);
 		
 		frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);				
-			setShadow();
+			
 		}
 		
 		
-		panelHaut();
+		topPanel();
 		boutons();
 		
 		image.setLayout(null);        
@@ -175,16 +173,16 @@ public class SubtitlesWindow {
 		static int offsetX;
 	}
 	
-	private void panelHaut() {
+	private void topPanel() {
 		
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
-		panelHaut.setBounds(0, 0, 1000, 52);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, 1000, 52);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -212,7 +210,7 @@ public class SubtitlesWindow {
 		            Shutter.progressBar1.setValue(0);
 		            Shutter.caseSubtitles.setSelected(false);
 		            
-		            Utils.changeDialogVisibility(frame, shadow, true);
+		            Utils.changeDialogVisibility(frame, true);
 	            	Shutter.frame.setOpacity(1.0f);
 	            	Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
@@ -236,17 +234,17 @@ public class SubtitlesWindow {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		panelHaut.add(topImage);
-		panelHaut.setBounds(0, 0, 1000, 52);
-		frame.getContentPane().add(panelHaut);
+		topPanel.add(topImage);
+		topPanel.setBounds(0, 0, 1000, 52);
+		frame.getContentPane().add(topPanel);
 		
 		image.setBounds(12, 58, 640, 360);		
 		frame.getContentPane().add(image);
@@ -308,7 +306,7 @@ public class SubtitlesWindow {
 		comboFont.setFont(new Font("Arial", Font.PLAIN, 11));
 		comboFont.setRenderer(new ComboRenderer(comboFont));
 		comboFont.setEditable(true);
-		comboFont.setBounds(65, 431, 153, 22);
+		comboFont.setBounds(65, 431, 120, 22);
 		frame.getContentPane().add(comboFont);
 		
 		comboFont.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() 
@@ -371,7 +369,7 @@ public class SubtitlesWindow {
     	btnG.setFont(new Font("Montserrat", Font.PLAIN, 13));
     	btnG.setForeground(Color.BLACK);
     	btnG.setName("btnG");
-    	btnG.setBounds(comboFont.getLocation().x + comboFont.getWidth() + 2, 429, 26, 26);    	
+    	btnG.setBounds(comboFont.getLocation().x + comboFont.getWidth() + 4, 431, 22, 22);    	
     	frame.getContentPane().add(btnG);
     	
     	btnG.addActionListener(new ActionListener(){
@@ -392,7 +390,7 @@ public class SubtitlesWindow {
     	btnI.setFont(new Font("Courier New", Font.ITALIC, 13));
     	btnI.setForeground(Color.BLACK);
     	btnI.setName("btnI");
-    	btnI.setBounds(btnG.getLocation().x + btnG.getWidth(), 429, 26, 26);    	
+    	btnI.setBounds(btnG.getLocation().x + btnG.getWidth() + 2, 431, 22, 22);    	
     	frame.getContentPane().add(btnI);
     	
     	btnI.addActionListener(new ActionListener(){
@@ -418,7 +416,7 @@ public class SubtitlesWindow {
 		spinnerSubtitlesPosition.setName("spinnerSubtitlesPosition");
 		spinnerSubtitlesPosition.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerSubtitlesPosition.setValue(0);
-		spinnerSubtitlesPosition.setBounds(lblSubtitlesPosition.getLocation().x + lblSubtitlesPosition.getWidth() + 5, lblSubtitlesPosition.getLocation().y - 3, 52, 22);
+		spinnerSubtitlesPosition.setBounds(lblSubtitlesPosition.getLocation().x + lblSubtitlesPosition.getWidth() + 5, lblSubtitlesPosition.getLocation().y - 3, 58, 22);
 		frame.getContentPane().add(spinnerSubtitlesPosition);
 		
 		spinnerSubtitlesPosition.addChangeListener(new ChangeListener() {
@@ -527,7 +525,7 @@ public class SubtitlesWindow {
 		
 		spinnerSubtitle.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		spinnerSubtitle.setValue(1);
-		spinnerSubtitle.setBounds(lblsubtitleNumber.getLocation().x + lblsubtitleNumber.getWidth() + 5, lblsubtitleNumber.getLocation().y - 3, 45, 22);
+		spinnerSubtitle.setBounds(lblsubtitleNumber.getLocation().x + lblsubtitleNumber.getWidth() + 5, lblsubtitleNumber.getLocation().y - 3, 50, 22);
 		frame.getContentPane().add(spinnerSubtitle);
 		
 		spinnerSubtitle.addChangeListener(new ChangeListener() {
@@ -607,7 +605,7 @@ public class SubtitlesWindow {
 		spinnerSize = new JSpinner(new SpinnerNumberModel(18, 1, 999, 1));
 		spinnerSize.setName("spinnerSize");
 		spinnerSize.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerSize.setBounds(panelColor.getLocation().x + 99, lblColor.getLocation().y - 3, 45, 22);
+		spinnerSize.setBounds(panelColor.getLocation().x + 99, lblColor.getLocation().y - 3, 50, 22);
 		frame.getContentPane().add(spinnerSize);
 		
 		spinnerSize.addChangeListener(new ChangeListener() {
@@ -671,7 +669,7 @@ public class SubtitlesWindow {
 		spinnerOpacity = new JSpinner(new SpinnerNumberModel(100, 0, 100, 1));
 		spinnerOpacity.setName("spinnerOpacity");
 		spinnerOpacity.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerOpacity.setBounds(lblOpacity.getLocation().x + lblOpacity.getWidth() + 11, lblColor2.getLocation().y - 3, 45, 22);
+		spinnerOpacity.setBounds(lblOpacity.getLocation().x + lblOpacity.getWidth() + 11, lblColor2.getLocation().y - 3, 54, 22);
 		frame.getContentPane().add(spinnerOpacity);
 		
 		spinnerOpacity.addChangeListener(new ChangeListener() {
@@ -733,7 +731,7 @@ public class SubtitlesWindow {
 		
 		btnOK = new JButton("OK");
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(spinnerOpacity.getLocation().x + spinnerOpacity.getWidth() + 11, 466, frame.getWidth() - (spinnerOpacity.getLocation().x + spinnerOpacity.getWidth() + 7) - 16, 25);		
+		btnOK.setBounds(spinnerOpacity.getLocation().x + spinnerOpacity.getWidth() + 13, 468, frame.getWidth() - (spinnerOpacity.getLocation().x + spinnerOpacity.getWidth() + 7) - 20, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -779,7 +777,7 @@ public class SubtitlesWindow {
 		            bufferedWriter.close();
 				} catch (Exception e1) {}
 	            
-				Utils.changeDialogVisibility(frame, shadow, true);
+				Utils.changeDialogVisibility(frame, true);
 				
             	Shutter.frame.setOpacity(1.0f);
             	Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1054,7 +1052,7 @@ public class SubtitlesWindow {
 		    		image.repaint(); 
 		    		
 		    		if (frame.isVisible() ==  false)
-		    			Utils.changeDialogVisibility(frame, shadow, false);
+		    			Utils.changeDialogVisibility(frame, false);
 	
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);
@@ -1210,84 +1208,32 @@ public class SubtitlesWindow {
 		});
 		t.start();	
 	}
-	
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new SubtitlesWindowShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
- 		    public void componentMoved(ComponentEvent e) {
- 		    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
- 		    }
- 		});
-	}
 
 	@SuppressWarnings({ "unused", "rawtypes" })
 	private class ComboRenderer extends BasicComboBoxRenderer {
 
-	        private static final long serialVersionUID = 1L;
-			private JComboBox comboBox;
-	        final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-	        private int row;
+        private static final long serialVersionUID = 1L;
+		private JComboBox comboBox;
+        final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+        private int row;
 
-			private ComboRenderer(JComboBox fontsBox) {
-	            comboBox = fontsBox;
-	        }
-	        
-			@Override
-	        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-	            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-	            if (list.getModel().getSize() > 0) {
-	            	 final Object comp = comboBox.getUI().getAccessibleChild(comboBox, 0);
-	            }
-	            final JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, row, isSelected, cellHasFocus);
-	            final Object fntObj = value;
-	            final String fontFamilyName = (String) fntObj;
-	            if (Settings.comboTheme.getSelectedItem().toString().equals(Shutter.language.getProperty("clearTheme")))
-					setForeground(Color.BLACK);
-				else
-					setForeground(Color.WHITE);
-	            
-	            setFont(new Font(fontFamilyName, Font.PLAIN, 16));	            
-	    		setOpaque(false);
-	            
-	            return this;
-	        }
-	    }
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class SubtitlesWindowShadow extends JPanel {
-  public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,SubtitlesWindow.frame.getWidth() + 14, SubtitlesWindow.frame.getHeight() + 7);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, SubtitlesWindow.frame.getWidth() + 13 - i * 2, SubtitlesWindow.frame.getHeight() + 7, 20, 20);
-	  }
- }
+		private ComboRenderer(JComboBox fontsBox) {
+            comboBox = fontsBox;
+        }
+        
+		@Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (list.getModel().getSize() > 0) {
+            	 final Object comp = comboBox.getUI().getAccessibleChild(comboBox, 0);
+            }
+            final JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(list, value, row, isSelected, cellHasFocus);
+            final Object fntObj = value;
+            final String fontFamilyName = (String) fntObj;
+            
+            setFont(new Font(fontFamilyName, Font.PLAIN, 16));	            
+            
+            return this;
+        }
+    }
 }

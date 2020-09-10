@@ -19,14 +19,14 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -62,13 +62,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 
 public class CropVideo {
 	public static JDialog frame;
-	public static JDialog shadow = new JDialog();
 	private static JPanel image = new JPanel();
 	public static JComboBox<String> comboPreset = new JComboBox<String>();
 	
@@ -76,7 +73,7 @@ public class CropVideo {
 	 * Composants
 	 */
 	private JLabel quit;
-	private JPanel panelHaut;
+	private JPanel topPanel;
 	private JLabel topImage;	
 	private static JPanel haut;
 	private static JPanel bas;
@@ -122,27 +119,30 @@ public class CropVideo {
 			frame.setModal(true);
 		
 		frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);				
-			setShadow();
+			
 		}
 		
-		panelHaut();
+		topPanel();
 		image();
 		boutons();
 		loadImage("00","00","00");
 		globalTimer();
 		Shutter.ratioFinal = 0;
 
-		Utils.changeDialogVisibility(frame, shadow, false);
+		Utils.changeDialogVisibility(frame, false);
 	}
 	
 	private static class MousePosition {
@@ -150,16 +150,16 @@ public class CropVideo {
 		static int mouseY;
 	}
 	
-	private void panelHaut() {
+	private void topPanel() {
 		
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
-		panelHaut.setBounds(0, 0, 1000, 52);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, 1000, 52);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -187,7 +187,7 @@ public class CropVideo {
 		            Shutter.progressBar1.setValue(0);
 
 		            Shutter.ratioFinal = 0;
-		            Utils.changeDialogVisibility(frame, shadow, true);
+		            Utils.changeDialogVisibility(frame, true);
 				}
 			}
 
@@ -209,17 +209,17 @@ public class CropVideo {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		panelHaut.add(topImage);
-		panelHaut.setBounds(0, 0, 1000, 52);
-		frame.getContentPane().add(panelHaut);
+		topPanel.add(topImage);
+		topPanel.setBounds(0, 0, 1000, 52);
+		frame.getContentPane().add(topPanel);
 		image.setBounds(12, 58, 640, 360);
 		
 		frame.getContentPane().add(image);
@@ -370,7 +370,7 @@ public class CropVideo {
 	private void boutons()	{
 		btnOK = new JButton("OK");
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(535, 431, 117, 25);		
+		btnOK.setBounds(537, 433, 113, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -408,7 +408,7 @@ public class CropVideo {
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				if (file.exists()) file.delete();
 	            
-				Utils.changeDialogVisibility(frame, shadow, true);
+				Utils.changeDialogVisibility(frame, true);
 			}
 			
 		});
@@ -804,51 +804,4 @@ public class CropVideo {
 		});
 		t.start();	
 	}
-	
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new CropVideoShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
- 		    public void componentMoved(ComponentEvent e) {
- 		    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
- 		    }
- 		});
-	}
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class CropVideoShadow extends JPanel {
-  public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,CropVideo.frame.getWidth() + 14, CropVideo.frame.getHeight() + 7);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, CropVideo.frame.getWidth() + 13 - i * 2, CropVideo.frame.getHeight() + 7, 20, 20);
-	  }
- }
 }

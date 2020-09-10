@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.FileDialog;
+import java.awt.Insets;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +20,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -30,6 +32,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,29 +49,31 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+
 import library.FFMPEG;
 
 public class Utils extends Shutter {
 	
-	public static void changeFrameVisibility(final JFrame f, final JDialog s, final boolean isVisible) {
+	public static String getTheme = null;
+	
+	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
 		if (isVisible == false) {
-			s.setVisible(true);
 			f.setVisible(true);
 		} else {
-			s.setVisible(false);
 			f.setVisible(false);
 		}
 
 	}
 
-	public static void changeDialogVisibility(final JDialog f, final JDialog s, final boolean isVisible) {
+	public static void changeDialogVisibility(final JDialog f, final boolean isVisible) {
 
 		if (isVisible == false) {
-			s.setVisible(true);
 			f.setVisible(true);
 		} else {
-			s.setVisible(false);
 			f.setVisible(false);
 		}
 
@@ -350,7 +355,7 @@ public class Utils extends Shutter {
 		// Action de fin
 		progressBar1.setIndeterminate(false);
 		enableAll();
-		btnVider.doClick();
+		btnEmptyList.doClick();
 
 		return null;
 	}
@@ -1653,15 +1658,14 @@ public class Utils extends Shutter {
 				if (update == false && Functions.frame != null)
 				{
 					if (Functions.frame.isVisible())					
-						changeFrameVisibility(Functions.frame, shadow, true);
+						changeFrameVisibility(Functions.frame, true);
 					
-					changeFrameVisibility(Functions.frame, shadow, false);
+					changeFrameVisibility(Functions.frame, false);
 				}
 				else if (update == false)
 				{
 					new Functions();
 					Functions.frame.setVisible(true);
-					Functions.shadow.setVisible(true);
 					Functions.frame.toFront();
 				}
 				else
@@ -1669,9 +1673,9 @@ public class Utils extends Shutter {
 				
 				iconPresets.setVisible(false);
 				if (iconList.isVisible())
-					btnAnnuler.setBounds(205, 44, 101, 25);
+					btnCancel.setBounds(207, 46, 97, 21);
 				else
-					btnAnnuler.setBounds(182, 44, 124, 25);
+					btnCancel.setBounds(184, 46, 120, 21);
 				
 			} catch (ParserConfigurationException | TransformerException e) {}
 		 }
@@ -1805,12 +1809,12 @@ public class Utils extends Shutter {
 											
 											//Visible
 											((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-																						
+															
 											if (p.getName().equals("comboFonctions"))
 											{
 												do {
 													Thread.sleep(100);
-												} while (btnReset.getX() > 334);
+												} while (btnReset.getX() > 336);
 											}										
 										}
 									}
@@ -1885,4 +1889,243 @@ public class Utils extends Shutter {
 	}
 }
 
+	public static void loadThemes() {
+
+		//Theme
+		if (new File(Shutter.documents + "/settings.xml").exists())
+		{				
+			try {
+				File fXmlFile = new File(Shutter.documents + "/settings.xml");
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(fXmlFile);
+				doc.getDocumentElement().normalize();
+			
+				NodeList nList = doc.getElementsByTagName("Component");
+								
+				for (int temp = 0; temp < nList.getLength(); temp++) {
+					Node nNode = nList.item(temp);
+					
+					if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+						Element eElement = (Element) nNode;
+
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboTheme"))
+							getTheme = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();							
+					}
+				}	
+								
+				if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
+					FlatLaf.install( new FlatDarkLaf() );
+				else
+					FlatLaf.install( new FlatLightLaf() );
+				
+			} catch (Exception e) {
+				try {
+				    FlatLaf.install( new FlatLightLaf() );
+				} catch( Exception ex ) {}
+			}
+		}
+		else
+		{
+			try {
+			    FlatLaf.install( new FlatLightLaf() );
+			} catch( Exception ex ) {}
+		}	
+		
+		UIManager.put("Component.focusWidth", 0 );
+		UIManager.put("ScrollBar.thumbArc", 999);
+		UIManager.put("Button.arc", 6);
+		UIManager.put("TextField.arc", 6);
+		UIManager.put("ProgressBar.arc", 6);
+		UIManager.put("TextComponent.arc", 6);
+		UIManager.put("Component.arc", 6);
+		
+		if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
+		{
+			UIManager.put("Component.borderColor", new Color(40,40,40));
+			UIManager.put("Component.disabledBorderColor", new Color(40,40,40));
+			
+			UIManager.put("Button.startBorderColor", new Color(40,40,40));
+			UIManager.put("Button.endBorderColor", new Color(40,40,40));
+			UIManager.put("Button.startBackground", new Color(100,100,100));
+			UIManager.put("Button.endBackground", new Color(80,80,80));
+			UIManager.put("Button.disabledBorderColor", new Color(40,40,40));
+			UIManager.put("Button.disabledBackground", new Color(60,60,60));
+			UIManager.put("Button.foreground", new Color(245,245,245));
+			UIManager.put("Button.default.foreground", new Color(245,245,245));
+			UIManager.put("Button.default.startBackground", new Color(100,100,100));
+			UIManager.put("Button.default.endBackground", new Color(80,80,80));
+							
+			UIManager.put("ComboBox.background", new Color(80,80,80));		
+			UIManager.put("ComboBox.foreground", new Color(245,245,245));
+			UIManager.put("ComboBox.disabledBackground", new Color(60,60,60));
+			UIManager.put("ComboBox.selectionBackground", new Color(100,100,100));
+			UIManager.put("ComboBox.disabledForeground", new Color(120,120,120));
+			UIManager.put("ComboBox.buttonBackground", new Color(80,80,80));			
+			
+			UIManager.put("MenuItem.background", new Color(80,80,80));		
+			UIManager.put("MenuItem.foreground", new Color(245,245,245));
+			UIManager.put("MenuItem.selectionBackground", new Color(100,100,100));
+			
+			UIManager.put("CheckBoxMenuItem.background", new Color(80,80,80));		
+			UIManager.put("CheckBoxMenuItem.foreground", new Color(245,245,245));
+			UIManager.put("CheckBoxMenuItem.selectionBackground", new Color(100,100,100));
+			
+			UIManager.put("CheckBox.icon.borderColor", new Color(40,40,40));		
+			UIManager.put("CheckBox.icon.background", new Color(80,80,80));
+			UIManager.put("CheckBox.icon.disabledBorderColor", new Color(60,60,60));	
+			UIManager.put("CheckBox.icon.disabledBackground", new Color(60,60,60));	
+			UIManager.put("CheckBox.icon.focusedBorderColor", new Color(40,40,40));
+			
+			UIManager.put("TableHeader.foreground", new Color(245,245,245));
+			UIManager.put("Table.foreground", new Color(245,245,245));
+			UIManager.put("Table.selectionBackground", new Color(100,100,100));
+						
+			UIManager.put("TextField.foreground",new Color(245,245,245));
+			UIManager.put("TextField.background", new Color(80,80,80));
+			UIManager.put("TextField.selectionBackground", new Color(100,100,100));
+			UIManager.put("TextField.inactiveForeground", new Color(120,120,120));
+			
+			UIManager.put("TextArea.foreground",new Color(245,245,245));
+			UIManager.put("TextArea.background", new Color(80,80,80));
+			UIManager.put("TextArea.selectionBackground", new Color(100,100,100));
+			UIManager.put("TextArea.inactiveForeground", new Color(120,120,120));
+			
+			UIManager.put("PasswordField.foreground", new Color(245,245,245));
+			UIManager.put("PasswordField.background", new Color(80,80,80));	
+			UIManager.put("PasswordField.selectionBackground", new Color(100,100,100));			
+			UIManager.put("PasswordField.inactiveForeground", new Color(120,120,120));
+			
+			UIManager.put("Spinner.foreground", new Color(245,245,245));
+			UIManager.put("Spinner.disabledBackground", new Color(80,80,80));
+			UIManager.put("Spinner.background", new Color(80,80,80));
+			UIManager.put("FormattedTextField.selectionBackground", new Color(100,100,100));
+						
+			UIManager.put("ScrollBar.background", new Color(50,50,50));
+			UIManager.put("ScrollBar.thumb", new Color(80,80,80));
+						
+			UIManager.put("MenuBar.foreground", new Color(245,245,245));
+			
+			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(40,40,40)));
+		}
+		else
+		{
+			UIManager.put("Component.borderColor", new Color(150,150,150));
+			UIManager.put("Component.disabledBorderColor", new Color(150,150,150));
+			
+			UIManager.put("Button.startBorderColor", new Color(150,150,150));
+			UIManager.put("Button.endBorderColor", new Color(150,150,150));
+			UIManager.put("Button.startBackground", new Color(245,245,245));
+			UIManager.put("Button.endBackground", new Color(225,225,225));
+			UIManager.put("Button.disabledBorderColor", new Color(150,150,150));
+			UIManager.put("Button.foreground", Color.BLACK);
+			UIManager.put("Button.default.foreground", Color.BLACK);
+			UIManager.put("Button.default.startBackground", new Color(245,245,245));
+			UIManager.put("Button.default.endBackground", new Color(225,225,225));
+			
+			UIManager.put("ComboBox.background", new Color(245,245,245));		
+			UIManager.put("ComboBox.foreground", Color.BLACK);
+			UIManager.put("ComboBox.disabledBackground", new Color(245,245,245));
+			UIManager.put("ComboBox.selectionBackground", new Color(71, 163, 236));
+			
+			UIManager.put("MenuItem.background", new Color(245,245,245));		
+			UIManager.put("MenuItem.foreground", Color.BLACK);
+			UIManager.put("MenuItem.selectionBackground", new Color(71, 163, 236));
+			
+			UIManager.put("CheckBoxMenuItem.background", new Color(245,245,245));		
+			UIManager.put("CheckBoxMenuItem.foreground", Color.BLACK);
+			UIManager.put("CheckBoxMenuItem.selectionBackground", new Color(71, 163, 236));
+			
+			UIManager.put("TableHeader.foreground", Color.BLACK);
+			UIManager.put("Table.foreground", Color.BLACK);
+			UIManager.put("Table.selectionBackground", new Color(71, 163, 236));
+						
+			UIManager.put("TextField.foreground", Color.BLACK);
+			UIManager.put("TextField.background", new Color(245,245,245));
+			UIManager.put("TextField.selectionBackground", new Color(71, 163, 236));
+			
+			UIManager.put("TextArea.foreground", Color.BLACK);
+			UIManager.put("TextArea.background", new Color(245,245,245));
+			UIManager.put("TextArea.selectionBackground", new Color(71, 163, 236));
+
+			UIManager.put("PasswordField.foreground", Color.BLACK);
+			UIManager.put("PasswordField.background", new Color(245,245,245));	
+			UIManager.put("PasswordField.selectionBackground", new Color(71, 163, 236));
+			
+			UIManager.put("Spinner.foreground", Color.BLACK);
+			UIManager.put("Spinner.disabledBackground", new Color(245,245,245));
+			UIManager.put("Spinner.background", new Color(245,245,245));
+			UIManager.put("FormattedTextField.selectionBackground", new Color(71, 163, 236));
+									
+			UIManager.put("MenuBar.foreground", Color.BLACK);
+			UIManager.put("CheckBoxMenuItem.foreground", Color.BLACK);
+			
+			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(150,150,150)));
+		}
+				
+		UIManager.put("Panel.selectionForeground", Color.WHITE);
+		UIManager.put("TextPane.selectionForeground", Color.WHITE);
+		UIManager.put("FormattedTextField.selectionForeground",  Color.WHITE);
+		UIManager.put("TextArea.selectionForeground", Color.WHITE);
+		UIManager.put("TextField.selectionForeground", Color.WHITE);		
+		UIManager.put("PasswordField.selectionForeground", Color.WHITE);		
+		UIManager.put("CheckBoxMenuItem.selectionForeground", Color.WHITE);
+		UIManager.put("MenuItem.selectionForeground", Color.WHITE);
+		UIManager.put("ComboBox.selectionForeground", Color.WHITE);
+		UIManager.put("Menu.selectionForeground", Color.WHITE);
+										
+		UIManager.put("TabbedPane.focusColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.tabInsets", new Insets(0,5,0,5));
+	    UIManager.put("TabbedPane.tabAreaInsets", new Insets(-5,0,-5,0));
+		UIManager.put("TabbedPane.background", new Color(40,40,40));
+		UIManager.put("TabbedPane.selectedBackground", new Color(50,50,50));
+		UIManager.put("TabbedPane.hoverColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.highlight", new Color(50,50,50));
+		UIManager.put("TabbedPane.underlineColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.disabledUnderlineColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.contentAreaColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.foreground", new Color(245,245,245));
+		
+		UIManager.put("CheckBox.icon.checkmarkColor", new Color(71, 163, 236));	
+		UIManager.put("CheckBox.icon.disabledCheckmarkColor", new Color(100, 100, 100));	
+		UIManager.put("RadioButton.icon.centerDiameter", 9);
+		
+		UIManager.put("ProgressBar.background" , new Color(40, 40, 40));
+		UIManager.put("ProgressBar.foreground" , new Color(71, 163, 236));	
+		UIManager.put("ProgressBar.selectionBackground", new Color(245,245,245));
+        UIManager.put("ProgressBar.selectionForeground", new Color(245,245,245));
+		
+		UIManager.put("Slider.thumbColor", new Color(71, 163, 236));
+		UIManager.put("Slider.hoverColor", new Color(129,198,253));
+		UIManager.put("Slider.trackColor", new Color(40,40,40));
+		
+		UIManager.put("RadioButton.foreground" , new Color(245,245,245));
+		UIManager.put("RadioButton.background" , new Color(50,50,50,0));	
+		
+		UIManager.put("ColorChooser.background", new Color(50,50,50));
+		UIManager.put("ColorChooser.foreground", new Color(245,245,245));
+		        
+		UIManager.put("TextPane.foreground", Color.BLACK);
+		UIManager.put("TextPane.background", Color.WHITE);
+		UIManager.put("TextPane.selectionBackground", new Color(71, 163, 236));		
+		
+		UIManager.put("Component.arrowType", "triangle");
+			
+		UIManager.put("ComboBox.padding", new Insets(2,2,2,0));
+				
+		UIManager.put("Spinner.padding", new Insets(2,2,2,0));
+		
+		UIManager.put("Panel.background", new Color(50,50,50));
+		
+		UIManager.put("TextField.margin", new Insets(0,0,0,0));
+				
+		UIManager.put("ScrollBar.thumbInsets", new Insets( 2, 2, 2, 2 ));
+		
+		UIManager.put("Label.foreground", new Color(245,245,245));	
+		
+		UIManager.put("OptionPane.background", new Color(50,50,50));
+		
+		UIManager.put("TitledBorder.titleColor", new Color(245,245,245));
+		
+	}
 }

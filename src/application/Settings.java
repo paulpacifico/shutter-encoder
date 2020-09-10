@@ -23,8 +23,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -34,8 +39,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Area;
+import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -50,8 +58,8 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -63,6 +71,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -74,11 +83,16 @@ import org.w3c.dom.NodeList;
 public class Settings {
 
 	public static JDialog frame = new JDialog();
+	private JLabel quit;
+	private JPanel topPanel;
+	private JLabel topImage;
 	public static File settingsXML = new File(Shutter.documents + "/settings.xml");
 	private JLabel lblThreads = new JLabel(Shutter.language.getProperty("lblThreads"));
 	public static JTextField txtThreads = new JTextField();
 	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
+	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
+	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});
 	private JLabel lblBlackDetection = new JLabel(Shutter.language.getProperty("lblBlackDetection"));
 	private JLabel lblLanguage = new JLabel(Shutter.language.getProperty("lblLanguage"));
 	private JLabel lblTheme = new JLabel(Shutter.language.getProperty("lblTheme"));
@@ -89,10 +103,12 @@ public class Settings {
 	public static JRadioButton btnOpenGOP = new JRadioButton(Shutter.language.getProperty("btnOpenGOP"));
 	public static JRadioButton btnExtension = new JRadioButton(Shutter.language.getProperty("btnExtension"));
 	public static JRadioButton btnWaitFileComplete = new JRadioButton(Shutter.language.getProperty("btnWaitFileComplete"));
+	public static JRadioButton btnEmptyListAtEnd = new JRadioButton(Shutter.language.getProperty("btnEmptyListAtEnd"));
 	public static JRadioButton btnEndingAction = new JRadioButton(Shutter.language.getProperty("btnEndingAction"));
 	public static JComboBox<String> comboAction = new JComboBox<String>();
-	public static JRadioButton btnDisableSound = new JRadioButton(Shutter.language.getProperty("disableSound"));
-	public static JRadioButton btnDisableUpdate = new JRadioButton(Shutter.language.getProperty("disableUpdate"));
+	public static JRadioButton btnDisableAnimations = new JRadioButton(Shutter.language.getProperty("btnDisableAnimations"));
+	public static JRadioButton btnDisableSound = new JRadioButton(Shutter.language.getProperty("btnDisableSound"));
+	public static JRadioButton btnDisableUpdate = new JRadioButton(Shutter.language.getProperty("btnDisableUpdate"));
 	public static JTextField txtExtension = new JTextField();
 	public static JLabel lblDestination1 = new JLabel(); 
 	public static JLabel lblDestination2 = new JLabel(); 
@@ -103,6 +119,7 @@ public class Settings {
 	public static JRadioButton lastUsedOutput1 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
 	public static JRadioButton lastUsedOutput2 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
 	public static JRadioButton lastUsedOutput3 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
+	public static int videoPlayerVolume = 50;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -114,8 +131,10 @@ public class Settings {
 		btnExtension.setName("btnExtension");
 		txtExtension.setName("txtExtension");
 		btnWaitFileComplete.setName("btnWaitFileComplete");
+		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
 		btnDisableUpdate.setName("btnDisableUpdate");
+		btnEmptyListAtEnd.setName("btnEmptyListAtEnd");
 		btnEndingAction.setName("btnEndingAction");
 		comboAction.setName("comboAction");
 		lblDestination1.setName("lblDestination1");
@@ -124,26 +143,39 @@ public class Settings {
 		lastUsedOutput1.setName("lastUsedOutput1");
 		lastUsedOutput2.setName("lastUsedOutput2");
 		lastUsedOutput3.setName("lastUsedOutput3");
+		comboScale.setName("comboScale");
 		txtThreads.setName("txtThreads");
 		txtImageDuration.setName("txtImageDuration");
 		txtBlackDetection.setName("txtBlackDetection");
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.getContentPane().setLayout(null);
-		frame.setResizable(false);
-		frame.setModal(true);
-		
-		if (System.getProperty("os.name").contains("Mac"))
-			frame.setSize(315, 510);
-		else
-			frame.setSize(325, 530);
-
+		frame.setSize(332, 615);
+		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(new Color(50,50,50));				
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
-		frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		frame.getContentPane().setLayout(null); 
+		frame.setResizable(false);
+		frame.setModal(true);
+		frame.setAlwaysOnTop(true);		
+		
+		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
+		{
+			frame.setUndecorated(true);
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
+			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
+			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
+			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+			
+		}
+		
+		topPanel();
 		
 		frame.setLocation(Shutter.frame.getLocation().x + ((Shutter.frame.getWidth() - frame.getWidth()) / 2), Shutter.frame.getLocation().y + ((Shutter.frame.getHeight() - frame.getHeight()) / 2));
 
@@ -185,15 +217,19 @@ public class Settings {
         });
 		
 		btnSetBab.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnSetBab.setBounds(12, 12, btnSetBab.getPreferredSize().width, 16);
+		btnSetBab.setBounds(12, 56, btnSetBab.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnSetBab);
 		
 		btnOpenGOP.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnOpenGOP.setBounds(12, btnSetBab.getLocation().y + btnSetBab.getHeight() + 10, btnOpenGOP.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnOpenGOP);
+				
+		btnWaitFileComplete.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnWaitFileComplete.setBounds(12, btnOpenGOP.getLocation().y + btnOpenGOP.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnWaitFileComplete);
 		
 		btnExtension.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnExtension.setBounds(12, btnOpenGOP.getLocation().y + btnOpenGOP.getHeight() + 10, btnExtension.getPreferredSize().width, 16);
+		btnExtension.setBounds(12, btnWaitFileComplete.getLocation().y + btnWaitFileComplete.getHeight() + 10, btnExtension.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnExtension);
 		
 		btnExtension.addActionListener(new ActionListener(){
@@ -201,10 +237,17 @@ public class Settings {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (btnExtension.isSelected())
+				{
+					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
+						txtExtension.setBackground(new Color(80,80,80));
 					txtExtension.setEnabled(true);
+				}
 				else
+				{
+					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
+						txtExtension.setBackground(new Color(60,60,60));
 					txtExtension.setEnabled(false);
-				
+				}
 			}
 			
 		});
@@ -213,25 +256,32 @@ public class Settings {
 			txtExtension.setEnabled(true);
 		else
 			txtExtension.setEnabled(false);
+		
 		txtExtension.setColumns(10);
+		if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
+			txtExtension.setBackground(new Color(60,60,60));
 		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
-		frame.getContentPane().add(txtExtension);
+		frame.getContentPane().add(txtExtension);		
 		
-		btnWaitFileComplete.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnWaitFileComplete.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
-		frame.getContentPane().add(btnWaitFileComplete);
+		btnDisableAnimations.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnDisableAnimations.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnDisableAnimations.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnDisableAnimations);
 		
 		btnDisableSound.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnDisableSound.setBounds(12, btnWaitFileComplete.getLocation().y + btnWaitFileComplete.getHeight() + 10, btnDisableSound.getPreferredSize().width, 16);
+		btnDisableSound.setBounds(12, btnDisableAnimations.getLocation().y + btnDisableAnimations.getHeight() + 10, btnDisableSound.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableSound);
-		
+
 		btnDisableUpdate.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		btnDisableUpdate.setBounds(12, btnDisableSound.getLocation().y + btnDisableSound.getHeight() + 10, btnDisableUpdate.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableUpdate);
 		
+		btnEmptyListAtEnd.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnEmptyListAtEnd.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnEmptyListAtEnd.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnEmptyListAtEnd);
+		
 		btnEndingAction.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnEndingAction.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnEndingAction.getPreferredSize().width, 16);
+		btnEndingAction.setBounds(12, btnEmptyListAtEnd.getLocation().y + btnEmptyListAtEnd.getHeight() + 10, btnEndingAction.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEndingAction);
 		
 		btnEndingAction.addActionListener(new ActionListener() {
@@ -623,8 +673,19 @@ public class Settings {
 		lblDestination2.setTransferHandler(new OutputTransferHandler2());
 		lblDestination3.setTransferHandler(new OutputTransferHandler3());
 		
+		lblScaleMode.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblScaleMode.setBounds(12, lblDestination3.getLocation().y + lblDestination3.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
+		frame.getContentPane().add(lblScaleMode);
+				
+		comboScale.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboScale.setEditable(false);
+		comboScale.setSelectedItem("bicubic");
+		comboScale.setBounds(lblScaleMode.getX() + lblScaleMode.getWidth() + 6, lblScaleMode.getLocation().y - 4, comboScale.getPreferredSize().width, 22);
+		comboScale.setMaximumRowCount(10);
+		frame.getContentPane().add(comboScale);
+		
 		lblThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblThreads.setBounds(12, lblDestination3.getLocation().y + lblDestination3.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
+		lblThreads.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
 		frame.getContentPane().add(lblThreads);
 		
 		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);
@@ -772,7 +833,7 @@ public class Settings {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (frame.isVisible())
-				{
+				{			
 					saveSettings();
 												
 					try {
@@ -852,7 +913,116 @@ public class Settings {
 		readSettings();
 		
 	}
-	
+
+	private static class MousePosition {
+		static int mouseX;
+		static int mouseY;
+	}
+			
+	private void topPanel() {
+		
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
+			
+		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
+		quit.setHorizontalAlignment(SwingConstants.CENTER);
+		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, frame.getWidth(), 44);
+		
+		quit.addMouseListener(new MouseListener(){
+
+			private boolean accept = false;
+
+			@Override
+			public void mouseClicked(MouseEvent e) {			
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {		
+				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				accept = true;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {	
+				if (accept)		
+				{
+					quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+					Utils.changeDialogVisibility(frame, true);
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {			
+				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {		
+				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				accept = false;
+			}
+					
+		});
+
+		JLabel title = new JLabel(Shutter.language.getProperty("frameSettings"));
+		title.setHorizontalAlignment(JLabel.CENTER);
+		title.setBounds(0, 0, frame.getWidth(), 44);
+		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		topPanel.add(title);
+		
+		topImage = new JLabel();
+		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
+		topImage.setIcon(imageIcon);		
+		topImage.setBounds(title.getBounds());
+		
+		topPanel.add(topImage);
+
+		frame.getContentPane().add(topPanel);
+		
+		topImage.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent down) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent down) {
+				MousePosition.mouseX = down.getPoint().x;
+				MousePosition.mouseY = down.getPoint().y;					
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {					
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {				
+			}		
+
+		 });
+		
+		topImage.addMouseMotionListener(new MouseMotionListener(){
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+			}
+			
+		});
+		
+	}
+
 	@SuppressWarnings("rawtypes")
 	public static void readSettings() {
 
@@ -932,6 +1102,12 @@ public class Settings {
 								((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 							}
 						}
+					}
+					
+					//Volume video player
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderVolume"))
+					{
+						videoPlayerVolume = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 					}
 				}
 			}		
@@ -1083,6 +1259,30 @@ public class Settings {
 					}
 				}
 			}
+			
+			//Volume video player
+			//Component
+			Element component = document.createElement("Component");
+			
+			//Type
+			Element cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JSlider"));
+			component.appendChild(cType);
+			
+			//Name
+			Element cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("sliderVolume"));
+			component.appendChild(cName);
+			
+			//Value
+			Element cValue = document.createElement("Value");
+			if (VideoPlayer.sliderVolume != null)
+				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.sliderVolume.getValue())));
+			else
+				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerVolume)));
+			component.appendChild(cValue);	
+			
+			root.appendChild(component);
 			
 			// creation du fichier XML
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();

@@ -46,9 +46,6 @@ import javax.swing.JDialog;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
-import com.alee.laf.text.WebTextField;
-import com.alee.managers.style.StyleId;
-
 import java.awt.Font;
 
 import javax.swing.JLabel;
@@ -60,7 +57,7 @@ public class SubtitlesEdit {
 
 	private static JDialog frame;
 	private final JButton btnAppliquer = new JButton(Shutter.language.getProperty("btnApply"));
-	private final JButton btnAnnuler = new JButton(Shutter.language.getProperty("btnCancel"));
+	private final JButton btnCancel = new JButton(Shutter.language.getProperty("btnCancel"));
 	
 	static int textPosition;
 	private JScrollBar scrollBar;
@@ -85,9 +82,9 @@ public class SubtitlesEdit {
 						
 		btnAppliquer.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			btnAppliquer.setBounds(frame.getWidth() / 2 + 3, frame.getHeight() - 56, frame.getWidth() / 2 - 6, 29);
+			btnAppliquer.setBounds(frame.getWidth() / 2 - 2, frame.getHeight() - 52, frame.getWidth() / 2 - 2, 21);
 		else
-			btnAppliquer.setBounds(frame.getWidth() / 2 + 3, frame.getHeight() - 71, frame.getWidth() / 2 - 22, 29);
+			btnAppliquer.setBounds(frame.getWidth() / 2 - 2, frame.getHeight() - 67, frame.getWidth() / 2 - 18, 21);
 		frame.getContentPane().add(btnAppliquer);
 		
 		btnAppliquer.addActionListener(new ActionListener(){
@@ -148,14 +145,14 @@ public class SubtitlesEdit {
 			
 		});
 		
-		btnAnnuler.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		btnCancel.setFont(new Font("Montserrat", Font.PLAIN, 12));	
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			btnAnnuler.setBounds(3, frame.getHeight() - 56, frame.getWidth() / 2 - 6, 29);		
+			btnCancel.setBounds(3, frame.getHeight() - 52, frame.getWidth() / 2 - 2, 21);		
 		else
-			btnAnnuler.setBounds(3, frame.getHeight() - 71, frame.getWidth() / 2 - 16, 29);		
-		frame.getContentPane().add(btnAnnuler);		
+			btnCancel.setBounds(3, frame.getHeight() - 67, frame.getWidth() / 2 - 12, 21);		
+		frame.getContentPane().add(btnCancel);		
 		
-		btnAnnuler.addActionListener(new ActionListener(){
+		btnCancel.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -173,6 +170,7 @@ public class SubtitlesEdit {
 		addSubtitles();
 				
 		scrollBar = new JScrollBar();
+		scrollBar.setBackground(new Color(50,50,50));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		if (numberOfSubs > 10)
 			scrollBar.setVisible(true);
@@ -258,7 +256,7 @@ public class SubtitlesEdit {
 	}
 	
 	private static JTextField addInPoint(String subIn){
-		WebTextField in = new WebTextField(StyleId.textfieldTransparent);
+		JTextField in = new JTextField();
 		in.setText(subIn);
 		in.setBorder(BorderFactory.createLineBorder(new Color(255,255,255,50)));
 		in.setForeground(new Color(71,163,236));
@@ -270,7 +268,7 @@ public class SubtitlesEdit {
 	}
 	
 	private static JTextField addOutPoint(String subOut){
-		WebTextField out = new WebTextField(StyleId.textfieldTransparent);
+		JTextField out = new JTextField();
 		out.setText(subOut);
 		out.setBorder(BorderFactory.createLineBorder(new Color(255,255,255,50)));
 		out.setForeground(new Color(71,163,236));

@@ -20,11 +20,12 @@
 package application;
 
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,23 +42,19 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 
-import com.alee.laf.scroll.WebScrollPane;
-import com.alee.managers.style.StyleId;
-
 import library.SEVENZIP;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -66,7 +63,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 
 import javax.swing.ListSelectionModel;
@@ -74,14 +70,13 @@ import javax.swing.ListSelectionModel;
 public class Functions {
 
 	public static JFrame frame;
-	public static JDialog shadow = new JDialog();
 	private static DefaultListModel<String> liste = new DefaultListModel<String>();	
 	public static JList<String> listeDeFonctions;
 	public static JLabel lblSave;
 	public static JLabel lblDrop;
-	private WebScrollPane scrollPane;
+	private JScrollPane scrollPane;
 	private JPopupMenu popupListe;
-	private JPanel panelHaut;
+	private JPanel topPanel;
 	private JLabel topImage;
 	private JLabel quit;
 	private JLabel reduce;
@@ -101,11 +96,13 @@ public class Functions {
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
-		frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+        shape1.add(shape2);
+		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y + frame.getSize().height / 2);	
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );	
+		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y + frame.getSize().height / 2);		
 		
 		frame.addMouseListener(new MouseListener(){
 
@@ -145,15 +142,15 @@ public class Functions {
 				if (Shutter.iconList.isVisible())
 				{
 					Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
-					Shutter.btnAnnuler.setBounds(205 + Shutter.iconList.getWidth(), 44, 101 - Shutter.iconList.getWidth(), 25);
+					Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 				}
 				else
 				{
 					Shutter.iconPresets.setBounds(180, 46, 21, 21);
-					Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+					Shutter.btnCancel.setBounds(207, 46, 97, 21);
 				}
 				
-				Utils.changeFrameVisibility(frame, shadow, true);				
+				Utils.changeFrameVisibility(frame, true);				
 			}
 
 			@Override
@@ -227,7 +224,7 @@ public class Functions {
 		
 		listeDeFonctions.setTransferHandler(new FonctionsTransferHandler());   	
 		
-		scrollPane = new WebScrollPane(StyleId.scrollpaneTransparent);		
+		scrollPane = new JScrollPane();		
 		scrollPane.getViewport().add(listeDeFonctions);
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
@@ -293,18 +290,18 @@ public class Functions {
 			public void actionPerformed(ActionEvent e) {							        	
 				try {
 					Desktop.getDesktop().open(fonctionsFolder);
-					Utils.changeFrameVisibility(frame, shadow, true);
+					Utils.changeFrameVisibility(frame, true);
 					
 					Shutter.iconPresets.setVisible(true);
 					if (Shutter.iconList.isVisible())
 					{
 						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
-						Shutter.btnAnnuler.setBounds(205 + Shutter.iconList.getWidth(), 44, 101 - Shutter.iconList.getWidth(), 25);
+						Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 					}
 					else
 					{
 						Shutter.iconPresets.setBounds(180, 46, 21, 21);
-						Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+						Shutter.btnCancel.setBounds(207, 46, 97, 21);
 					}
 					
 				} catch (IOException e1) {}
@@ -373,7 +370,7 @@ public class Functions {
 		
 		frame.getContentPane().add(lblFlecheBas);
 		
-		panelHaut();
+		topPanel();
 		
 		drag = false;		
 		
@@ -385,7 +382,7 @@ public class Functions {
 		       	{	
 			        frame.setSize(frame.getSize().width, e.getY() + 10);		
 			    	lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
-			    	scrollPane.setBounds(0, panelHaut.getSize().height, frame.getSize().width, frame.getSize().height - panelHaut.getSize().height - 20);	
+			    	scrollPane.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);	
 		       	}	
 			}
 
@@ -426,7 +423,7 @@ public class Functions {
 				{
 					frame.setSize(frame.getSize().width, 100);
 		    		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
-		    		scrollPane.setBounds(0, panelHaut.getSize().height, frame.getSize().width, frame.getSize().height - panelHaut.getSize().height - 20);	
+		    		scrollPane.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);	
 				}
 			}
 
@@ -445,19 +442,20 @@ public class Functions {
 			
 		    public void componentResized(ComponentEvent e2)
 		    {
-		    	frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		        shape1.add(shape2);
+		    	frame.setShape(shape1);
 		    }
 		});
 			
 		frame.addWindowListener(new WindowAdapter(){			
 			public void windowDeiconified(WindowEvent we)
 		    {
-		       shadow.setVisible(true);
+		       
 			   frame.toFront();
 		    }
 		});
-		
-		setShadow();
 	}
 
 	private static class MousePosition {
@@ -465,17 +463,17 @@ public class Functions {
 		static int mouseY;
 	}
 	
-	private void panelHaut() {
+	private void topPanel() {
 				
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
 	
 	
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
-		panelHaut.setBounds(0, 0, 1000, 53);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, 1000, 53);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -499,15 +497,15 @@ public class Functions {
 					if (Shutter.iconList.isVisible())
 					{
 						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
-						Shutter.btnAnnuler.setBounds(205 + Shutter.iconList.getWidth(), 44, 101 - Shutter.iconList.getWidth(), 25);
+						Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 					}
 					else
 					{
 						Shutter.iconPresets.setBounds(180, 46, 21, 21);
-						Shutter.btnAnnuler.setBounds(205, 44, 101, 25);
+						Shutter.btnCancel.setBounds(207, 46, 97, 21);
 					}
 					
-					Utils.changeFrameVisibility(frame, shadow, true);
+					Utils.changeFrameVisibility(frame, true);
 				}
 			}
 
@@ -528,8 +526,8 @@ public class Functions {
 		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
 		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
-		panelHaut.add(reduce);
-		panelHaut.setBounds(0, 0, 852, 53);
+		topPanel.add(reduce);
+		topPanel.setBounds(0, 0, 852, 53);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -549,7 +547,7 @@ public class Functions {
 			public void mouseReleased(MouseEvent e) {			
 				if (accept)
 				{
-					shadow.setVisible(false);
+					
 					frame.setState(Frame.ICONIFIED);
 				}
 			}
@@ -568,23 +566,23 @@ public class Functions {
 			
 		});
 		
-		panelHaut.setBounds(0, 0, 333, 52);
+		topPanel.setBounds(0, 0, 333, 52);
 			
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFonctions"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		panelHaut.add(topImage);		
-		panelHaut.setBounds(0, 0, 1000, 53);
-		frame.getContentPane().add(panelHaut);
+		topPanel.add(topImage);		
+		topPanel.setBounds(0, 0, 1000, 53);
+		frame.getContentPane().add(topPanel);
 		
 		topImage.addMouseListener(new MouseListener() {
 
@@ -596,7 +594,7 @@ public class Functions {
 			public void mousePressed(MouseEvent down) {	
 				MousePosition.mouseX = down.getPoint().x;
 				MousePosition.mouseY = down.getPoint().y;
-				shadow.toFront();
+				
 				frame.toFront();
 			}
 
@@ -676,35 +674,6 @@ public class Functions {
         for (int i = 0 ; i < data.length ; i++) { 
 			liste.addElement(data[i].toString());
 	    }
-}
-
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setContentPane(new FonctionsShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-    	
-    	shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-		    }
-		    public void componentResized(ComponentEvent e2)
-		    {
-		    	shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-		    }
- 		});
-	}
 }
 
 //Modifications de la liste de fonctions
@@ -820,26 +789,5 @@ public boolean importData(JComponent comp, Transferable t) {
 	  }
 	  return false;
 	}
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class FonctionsShadow extends JPanel {
-public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,Functions.frame.getWidth() + 14, Functions.frame.getHeight() + 7);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();		 
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, Functions.frame.getWidth() + 13 - i * 2, Functions.frame.getHeight() + 7, 20, 20);
-	  }
-}
+	}
 }

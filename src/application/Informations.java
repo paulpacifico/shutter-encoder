@@ -19,30 +19,26 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -57,12 +53,11 @@ import library.MEDIAINFO;
 
 	public class Informations {
 	public static JFrame frame;
-	public static JDialog shadow = new JDialog();
 	
 	/*
 	 * Composants
 	 */
-	private static JPanel panelHaut;
+	private static JPanel topPanel;
 	private boolean drag;
 	private JLabel quit;
 	private JLabel reduce;
@@ -86,11 +81,14 @@ import library.MEDIAINFO;
 		frame.setSize(600, 600);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
-		frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+        shape1.add(shape2);
+		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);	
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 				
 		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
 		lblWait.setFont(new Font("FreeSans", Font.PLAIN, 20));
@@ -108,7 +106,7 @@ import library.MEDIAINFO;
 		
 		frame.getContentPane().add(lblFlecheBas);
 				
-		panelHaut();
+		topPanel();
 		
 		drag = false;		
 				
@@ -120,7 +118,7 @@ import library.MEDIAINFO;
 		       	{	
 			        frame.setSize(frame.getSize().width, e.getY() + 10);		
 			    	lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
-			    	tabPanel.setBounds(0, panelHaut.getSize().height, frame.getSize().width, frame.getSize().height - panelHaut.getSize().height - 20);	
+			    	tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);	
 			    	infoTabbedPane.setBounds(tabPanel.getBounds());	
 		       	}	
 			}
@@ -163,7 +161,7 @@ import library.MEDIAINFO;
 				{
 					frame.setSize(frame.getSize().width, 100);
 		    		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
-		    		tabPanel.setBounds(0, panelHaut.getSize().height, frame.getSize().width, frame.getSize().height - panelHaut.getSize().height - 20);	
+		    		tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);	
 		    		infoTabbedPane.setBounds(tabPanel.getBounds());	
 				}
 			}
@@ -195,7 +193,7 @@ import library.MEDIAINFO;
 					if (e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
 					{
 						infoTabbedPane.removeAll();
-						Utils.changeFrameVisibility(frame, shadow, true);
+						Utils.changeFrameVisibility(frame, true);
 					}
 				}
 			}
@@ -212,18 +210,20 @@ import library.MEDIAINFO;
     	frame.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent e2)
 		    {
-		    	frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		        shape1.add(shape2);
+		    	frame.setShape(shape1);
 		    }
  		});
 		
 		frame.addWindowListener(new WindowAdapter(){			
 			public void windowDeiconified(WindowEvent we) {
-		       shadow.setVisible(true);
+		       
 			   frame.toFront();
 		    }
 		});
-    	
-    	setShadow();
+        	
 	}
 	
 	public static void addTabControl() {		
@@ -231,10 +231,11 @@ import library.MEDIAINFO;
 		tabPanel.setBackground(new Color(50,50,50));
 		tabPanel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		tabPanel.setLayout(null);
-		tabPanel.setBounds(0, panelHaut.getSize().height, frame.getSize().width, frame.getSize().height - panelHaut.getSize().height - 20);				
+		tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);				
 		
-		infoTabbedPane.setBounds(tabPanel.getBounds());
-				
+		infoTabbedPane.setBounds(tabPanel.getBounds());	
+		infoTabbedPane.setForeground(Color.WHITE);
+		
 		frame.getContentPane().add(infoTabbedPane);			
 		
 	}
@@ -244,10 +245,10 @@ import library.MEDIAINFO;
 		static int mouseY;
 	}
 	
-	private void panelHaut() {	
-		panelHaut	= new JPanel();
-		panelHaut.setLayout(null);
-		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
+	private void topPanel() {	
+		topPanel	= new JPanel();
+		topPanel.setLayout(null);
+		topPanel.setBounds(0, 0, frame.getSize().width, 51);
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
@@ -276,7 +277,7 @@ import library.MEDIAINFO;
 				
 				if (accept)
 				{							
-					shadow.setVisible(false);
+					
 					frame.setState(frame.ICONIFIED);	
 				}
 			}
@@ -296,7 +297,7 @@ import library.MEDIAINFO;
 		});
 				
 		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		Image scaledImage = image.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_SMOOTH);
+		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_SMOOTH);
 		ImageIcon header = new ImageIcon(scaledImage);
 		bottomImage = new JLabel(header);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 51);
@@ -305,17 +306,17 @@ import library.MEDIAINFO;
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 				
-		panelHaut.add(quit);	
-		panelHaut.add(reduce);	
-		panelHaut.add(topImage);
-		panelHaut.add(bottomImage);
+		topPanel.add(quit);	
+		topPanel.add(reduce);	
+		topPanel.add(topImage);
+		topPanel.add(bottomImage);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -336,7 +337,7 @@ import library.MEDIAINFO;
 				if (accept)		
 				{		  
 					infoTabbedPane.removeAll();
-					Utils.changeFrameVisibility(frame, shadow, true);	
+					Utils.changeFrameVisibility(frame, true);	
 				}
 			}
 
@@ -353,8 +354,8 @@ import library.MEDIAINFO;
 
 						
 		});
-		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
-		frame.getContentPane().add(panelHaut);						
+		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		frame.getContentPane().add(topPanel);						
 		
 		bottomImage.addMouseListener(new MouseListener() {
 
@@ -366,7 +367,7 @@ import library.MEDIAINFO;
 			public void mousePressed(MouseEvent down) {
 				MousePosition.mouseX = down.getPoint().x;
 				MousePosition.mouseY = down.getPoint().y;	
-				shadow.toFront();
+				
 				frame.toFront();
 			}
 
@@ -398,54 +399,4 @@ import library.MEDIAINFO;
 		});
 		
 	}
-
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setContentPane(new InformationsShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-    	
-    	shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-   		
-    	frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-		    }
-		    public void componentResized(ComponentEvent e2)
-		    {
-		    	shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-		    }
- 		});
-	}
 }
-
-//Ombre
-@SuppressWarnings("serial")
-class InformationsShadow extends JPanel {
-    public void paintComponent(Graphics g){
-    	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  	  Graphics2D g1 = (Graphics2D)g.create();
-	  	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  	  g1.setRenderingHints(qualityHints);
-	  	  g1.setColor(new Color(0,0,0));
-	  	  g1.fillRect(0,0,Informations.frame.getWidth() + 14, Informations.frame.getHeight() + 7);
-	  	  
-	 	  for (int i = 0 ; i < 7; i++) 
-	 	  {
-	 		  Graphics2D g2 = (Graphics2D)g.create();
-	 		  g2.setRenderingHints(qualityHints);
-	 		  g2.setColor(new Color(0,0,0, i * 10));
-	 		  g2.drawRoundRect(i, i, Informations.frame.getWidth() + 13 - i * 2, Informations.frame.getHeight() + 7, 20, 20);
-	 	  }
-     }
- }

@@ -19,20 +19,18 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -54,11 +52,9 @@ import java.awt.Image;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JSpinner;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 import library.FFMPEG;
 import library.FFPROBE;
@@ -69,12 +65,11 @@ import javax.swing.JScrollPane;
 
 	public class SceneDetection {
 	public static JFrame frame;
-	public static JDialog shadow;;
 	
 	/*
 	 * Composants
 	 */
-	private static JPanel panelHaut;
+	private static JPanel topPanel;
 	private boolean drag;
 	private JLabel quit;
 	private JLabel reduce;
@@ -96,13 +91,9 @@ import javax.swing.JScrollPane;
 	public static boolean isRunning = false;
 	private static StringBuilder errorList = new StringBuilder();
 	private static int complete;
-	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
+
 	public SceneDetection(boolean runAnalyse) {
 		frame = new JFrame();
-		shadow = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameDetectionCoupe"));
@@ -111,19 +102,21 @@ import javax.swing.JScrollPane;
 		frame.setSize(400, 600);
 		frame.setResizable(false);
 		frame.setAlwaysOnTop(true);	
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
-	    	setShadow();
+	    	
 		}
 				
-		panelHaut();
+		topPanel();
 		contenu();
 		
 		drag = false;
@@ -137,8 +130,8 @@ import javax.swing.JScrollPane;
 			        frame.setSize(frame.getSize().width, e.getY() + 10);	
 			        scrollPane.setSize(scrollPane.getSize().width, frame.getSize().height - 160);
 			    	lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);		
-					btnEDL.setBounds(7, 89 + scrollPane.getHeight() + 2, 190, 25);
-					btnExport.setBounds(202, 89 + scrollPane.getHeight() + 2, 190, 25);
+					btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 4, 186, 21);
+					btnExport.setBounds(204, 89 + scrollPane.getHeight() + 4, 186, 21);
 					lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 32, 245, 15);
 		       	}	
 			}
@@ -194,7 +187,7 @@ import javax.swing.JScrollPane;
 		frame.addWindowListener(new WindowAdapter(){			
 			public void windowDeiconified(WindowEvent we)
 		    {
-		       shadow.setVisible(true);
+		       
 			   frame.toFront();
 		    }
 		});
@@ -202,11 +195,14 @@ import javax.swing.JScrollPane;
     	frame.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent e2)
 		    {
-		    	frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		        shape1.add(shape2);
+		    	frame.setShape(shape1);
 		    }
  		});
 		    	
-		Utils.changeFrameVisibility(frame, shadow, false);
+		Utils.changeFrameVisibility(frame, false);
 		
 		if (runAnalyse)
 			btnAnalyse.doClick();
@@ -217,16 +213,16 @@ import javax.swing.JScrollPane;
 		static int mouseY;
 	}
 	
-	private void panelHaut() {	
-		panelHaut	= new JPanel();
-		panelHaut.setLayout(null);
-		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
+	private void topPanel() {	
+		topPanel = new JPanel();
+		topPanel.setLayout(null);
+		topPanel.setBounds(0, 0, frame.getSize().width, 51);
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 				
 		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		Image scaledImage = image.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_SMOOTH);
+		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_SMOOTH);
 		ImageIcon header = new ImageIcon(scaledImage);
 		bottomImage = new JLabel(header);
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 51);
@@ -235,10 +231,10 @@ import javax.swing.JScrollPane;
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
@@ -266,7 +262,7 @@ import javax.swing.JScrollPane;
 				
 				if (accept)
 				{							
-					shadow.setVisible(false);
+					
 					frame.setState(frame.ICONIFIED);	
 				}
 			}
@@ -285,10 +281,10 @@ import javax.swing.JScrollPane;
 			
 		});
 				
-		panelHaut.add(quit);	
-		panelHaut.add(reduce);
-		panelHaut.add(topImage);
-		panelHaut.add(bottomImage);
+		topPanel.add(quit);	
+		topPanel.add(reduce);
+		topPanel.add(topImage);
+		topPanel.add(bottomImage);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -309,14 +305,14 @@ import javax.swing.JScrollPane;
 				if (accept)		
 				{		  
 					if (FFMPEG.runProcess.isAlive())
-						Shutter.btnAnnuler.doClick();
+						Shutter.btnCancel.doClick();
 					
-					if (Shutter.btnAnnuler.isEnabled() == false)
+					if (Shutter.btnCancel.isEnabled() == false)
 					{
 						if (sortieDossier.exists())
 							deleteDirectory(sortieDossier);
 						
-						Utils.changeFrameVisibility(frame, shadow, true);	
+						Utils.changeFrameVisibility(frame, true);	
 						}
 				}
 			}
@@ -335,8 +331,8 @@ import javax.swing.JScrollPane;
 						
 		});
 		
-		panelHaut.setBounds(0, 0, frame.getSize().width, 51);
-		frame.getContentPane().add(panelHaut);						
+		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		frame.getContentPane().add(topPanel);						
 
 		bottomImage.addMouseListener(new MouseListener() {
 
@@ -346,7 +342,7 @@ import javax.swing.JScrollPane;
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				shadow.toFront();
+				
 				MousePosition.mouseX = down.getPoint().x;
 				MousePosition.mouseY = down.getPoint().y;					
 			}
@@ -387,12 +383,12 @@ import javax.swing.JScrollPane;
 		
 		JLabel lblPourcentage = new JLabel("%");
 		lblPourcentage.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblPourcentage.setBounds(132, 63, 11, 15);
+		lblPourcentage.setBounds(143, 63, 11, 15);
 		frame.getContentPane().add(lblPourcentage);
 			
 		btnAnalyse = new JButton(Shutter.language.getProperty("btnAnalyse"));
 		btnAnalyse.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnAnalyse.setBounds(151, 57, 238, 25);
+		btnAnalyse.setBounds(164, 59, 223, 21);
 		frame.getContentPane().add(btnAnalyse);
 		
 		btnAnalyse.addActionListener(new ActionListener(){
@@ -422,7 +418,7 @@ import javax.swing.JScrollPane;
 		frame.getContentPane().add(lblSensibilit);
 		
 		tolerance = new JSpinner(new SpinnerNumberModel(80, 0, 100, 10));
-		tolerance.setBounds(81, 56, 49, 27);
+		tolerance.setBounds(86, 59, 55, 21);
 		frame.getContentPane().add(tolerance);	
 		
 		lblFlecheBas = new JLabel("▲▼");
@@ -436,7 +432,7 @@ import javax.swing.JScrollPane;
 		btnEDL = new JButton(Shutter.language.getProperty("btnEDL"));
 		btnEDL.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnEDL.setEnabled(false);
-		btnEDL.setBounds(7, 89 + scrollPane.getHeight() + 2, 190, 25);
+		btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 4, 186, 21);
 		frame.getContentPane().add(btnEDL);
 		
 		btnEDL.addActionListener(new ActionListener(){
@@ -446,7 +442,7 @@ import javax.swing.JScrollPane;
     		
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				frame.setVisible(false);
-				shadow.setVisible(false);
+				
 				final FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveEDL"), FileDialog.SAVE);
 				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 					dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
@@ -458,7 +454,7 @@ import javax.swing.JScrollPane;
 			    				
 			    frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));		
 				frame.setVisible(true);
-				shadow.setVisible(true);
+				
 				frame.toFront();
 			    
 			    if (dialog.getFile() != null)
@@ -587,7 +583,7 @@ import javax.swing.JScrollPane;
 		
 		btnExport = new JButton(Shutter.language.getProperty("btnExport"));
 		btnExport.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnExport.setBounds(202, 89 + scrollPane.getHeight() + 2, 190, 25);
+		btnExport.setBounds(204, 89 + scrollPane.getHeight() + 4, 186, 21);
 		btnExport.setEnabled(false);
 		frame.getContentPane().add(btnExport);
 		
@@ -598,7 +594,7 @@ import javax.swing.JScrollPane;
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			    
 		    	frame.setVisible(false);
-		    	shadow.setVisible(false);
+		    	
 				final FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseFileName"), FileDialog.SAVE);
 				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 					dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
@@ -610,7 +606,7 @@ import javax.swing.JScrollPane;
 			    				
 			    frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			    
 		    	frame.setVisible(true);
-		    	shadow.setVisible(true);
+		    	
 				frame.toFront();
 			    
 			    if (dialog.getFile() != null)
@@ -632,7 +628,7 @@ import javax.swing.JScrollPane;
 			    		if (i == 0)
 			    		{
 			    			//On cache la fenêtre 
-			    			Utils.changeFrameVisibility(frame, shadow, true);
+			    			Utils.changeFrameVisibility(frame, true);
 			    			
 			    			//On choisit la fonction
 	    			    	Shutter.comboFonctions.setSelectedItem(Shutter.language.getProperty("functionCut"));
@@ -646,7 +642,6 @@ import javax.swing.JScrollPane;
 								Thread.sleep(100);
 							} while (VideoPlayer.frame.isVisible() == false);
 							VideoPlayer.frame.setVisible(false);
-							VideoPlayer.shadow.setVisible(false);
 							
 							//On démarre le lecteur puis on fait pause
 							do {
@@ -717,7 +712,7 @@ import javax.swing.JScrollPane;
     	                }
     	                
 		    			//On réouvre la fenêtre 
-		    			Utils.changeFrameVisibility(frame, shadow, false);
+		    			Utils.changeFrameVisibility(frame, false);
 				    	
 				    	//On ferme le lecteur une fois terminé
 				    	Shutter.caseInAndOut.setSelected(false);
@@ -772,14 +767,10 @@ import javax.swing.JScrollPane;
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setRowHeight(80);
-		table.setForeground(Color.BLACK);
 		table.getColumnModel().getColumn(0).setPreferredWidth(18);
 		table.getColumnModel().getColumn(1).setPreferredWidth(table.getColumnModel().getColumn(1).getPreferredWidth());
 		table.setBounds(9, 89, 380, frame.getHeight() - 134);
 		scrollPane.setViewportView(table);
-		
-		JTableHeader header = table.getTableHeader();
-	    header.setForeground(Color.BLACK);
 		
 		table.addKeyListener(new KeyListener() {
 
@@ -879,35 +870,7 @@ import javax.swing.JScrollPane;
 		});
 
 	}
-	
-	private void setShadow() {
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setContentPane(new DetectionCoupeShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
 
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-   		
-    	frame.addComponentListener(new ComponentAdapter() {
-		    public void componentMoved(ComponentEvent e) {
-		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-		    }
-		    public void componentResized(ComponentEvent e2)
-		    {
-		    	shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-		    }
- 		});
-	}
-	
 	public static void runAnalyse() {
 		
 		Thread thread = new Thread(new Runnable(){			
@@ -1027,25 +990,3 @@ import javax.swing.JScrollPane;
 	}
 	
 }
-	
-//Ombre
-@SuppressWarnings("serial")
-class DetectionCoupeShadow extends JPanel {
-    public void paintComponent(Graphics g){
-  	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-  	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-  	  Graphics2D g1 = (Graphics2D)g.create();
-  	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-  	  g1.setRenderingHints(qualityHints);
-  	  g1.setColor(new Color(0,0,0));
-  	  g1.fillRect(0,0,SceneDetection.frame.getWidth() + 14, SceneDetection.frame.getHeight() + 7);
-  	  
- 	  for (int i = 0 ; i < 7; i++) 
- 	  {
- 		  Graphics2D g2 = (Graphics2D)g.create();
- 		  g2.setRenderingHints(qualityHints);
- 		  g2.setColor(new Color(0,0,0, i * 10));
- 		  g2.drawRoundRect(i, i, SceneDetection.frame.getWidth() + 13 - i * 2, SceneDetection.frame.getHeight() + 7, 20, 20);
- 	  }
-     }
- }

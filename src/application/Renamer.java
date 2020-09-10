@@ -98,7 +98,7 @@ public class Renamer {
 		
 		btnLimit = new JRadioButton(Shutter.language.getProperty("btnLimit"));
 		btnLimit.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnLimit.setBounds(12, 12, 211, 16);
+		btnLimit.setBounds(7, 12, 211, 16);
 		frame.getContentPane().add(btnLimit);
 		
 		btnLimit.addActionListener(new ActionListener(){
@@ -122,7 +122,7 @@ public class Renamer {
 		
 		btnIncrementer = new JRadioButton(Shutter.language.getProperty("btnIncrementer"));
 		btnIncrementer.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnIncrementer.setBounds(12, 34, 150, 16);
+		btnIncrementer.setBounds(7, 34, btnIncrementer.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnIncrementer);
 		
 		btnIncrementer.addActionListener(new ActionListener(){
@@ -152,18 +152,18 @@ public class Renamer {
 		txtRemplacer = new JTextField();
 		txtRemplacer.setColumns(10);
 		txtRemplacer.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtRemplacer.setBounds(84, 77, 140, 21);
+		txtRemplacer.setBounds(84, 77, 135, 21);
 		frame.getContentPane().add(txtRemplacer);;		
 				
 		lblPar = new JLabel(Shutter.language.getProperty("lblPar"));
 		lblPar.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblPar.setBounds(230, 80, 25, 14);
+		lblPar.setBounds(226, 80, 25, 14);
 		frame.getContentPane().add(lblPar);
 		
 		txtPar = new JTextField();
 		txtPar.setColumns(10);
 		txtPar.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtPar.setBounds(261, 77, txtRemplacer.getWidth(), 21);
+		txtPar.setBounds(257, 77, txtRemplacer.getWidth(), 21);
 		frame.getContentPane().add(txtPar);
 		
 		lblExemple = new JLabel(Shutter.language.getProperty("lblExemple") + " " + fichier + ext);
@@ -173,7 +173,7 @@ public class Renamer {
 		frame.getContentPane().add(lblExemple);
 						
 		Renommer = new JButton(Shutter.language.getProperty("renommer"));
-		Renommer.setBounds(407, 75, 91, 25);
+		Renommer.setBounds(400, 77, 98, 21);
 		Renommer.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(Renommer);
 		
@@ -229,7 +229,7 @@ public class Renamer {
 		
 		convertToLower = new JRadioButton(Shutter.language.getProperty("convertToLower"));
 		convertToLower.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		convertToLower.setBounds(12, 57, convertToLower.getPreferredSize().width, 16);
+		convertToLower.setBounds(7, 57, convertToLower.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToLower);
 		
 		convertToLower.addActionListener(new ActionListener(){

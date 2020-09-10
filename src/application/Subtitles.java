@@ -69,7 +69,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -79,6 +78,7 @@ import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
@@ -87,15 +87,11 @@ import javax.swing.text.StyleConstants;
 
 import org.apache.commons.io.FileUtils;
 
-import com.alee.laf.text.WebTextPane;
-import com.alee.managers.style.StyleId;
-
 import library.FFPROBE;
 
 public class Subtitles {
 
 	public static JFrame frame;
-	public static JDialog shadow;
 	public static JTextPane txtSubtitles;
 	private static JLabel lblHelp;
 	public static File srt;
@@ -140,7 +136,6 @@ public class Subtitles {
 	
 	public Subtitles(int positionX, int positionY) {
     	frame = new JFrame();
-    	shadow = new JDialog();
     	frame.setResizable(true);
     	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -164,7 +159,7 @@ public class Subtitles {
 			@Override
 			public void windowClosed(WindowEvent arg0) {				
 
-			Utils.changeFrameVisibility(VideoPlayer.frame, VideoPlayer.shadow, true);
+			Utils.changeFrameVisibility(VideoPlayer.frame, true);
 			if (VideoPlayer.mediaPlayerComponentLeft != null)
 				VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().stop();
 			if (VideoPlayer.mediaPlayerComponentRight != null)
@@ -172,8 +167,8 @@ public class Subtitles {
 			VideoPlayer.frame.getContentPane().removeAll();
 			Shutter.caseInAndOut.setSelected(false);
 			
-			Utils.changeFrameVisibility(Shutter.frame, Shutter.shadow, false);						
-			Utils.changeFrameVisibility(frame, shadow, true);
+			Utils.changeFrameVisibility(Shutter.frame, false);						
+			Utils.changeFrameVisibility(frame, true);
 			
     		if (Shutter.comboFonctions.getSelectedItem().equals("H.264") || Shutter.comboFonctions.getSelectedItem().equals("H.264"))
     			FFPROBE.CalculH264();
@@ -351,6 +346,7 @@ public class Subtitles {
 							if (cursor.getLocation().x >= c.getLocation().x && cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
 							{		
 								((JTextPane) c).setText(txtSubtitles.getText());
+								repaintTimeline();
 								newSubtitle = false;
 								break;
 							}
@@ -407,7 +403,7 @@ public class Subtitles {
     	frame.getContentPane().add(lblTexte);	
     	
     	btnI.setFont(new Font("Courier New", Font.ITALIC, 13));
-    	btnI.setBounds(lblTexte.getLocation().x + lblTexte.getWidth() + 7, 4, 35, 29);    	
+    	btnI.setBounds(lblTexte.getLocation().x + lblTexte.getWidth() + 7, 8, 22, 22);    	
     	frame.getContentPane().add(btnI);
     	
     	btnI.addActionListener(new ActionListener(){
@@ -426,6 +422,7 @@ public class Subtitles {
 						if (cursor.getLocation().x >= c.getLocation().x && cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
 						{
 							((JTextPane) c).setText(txtSubtitles.getText());	
+							repaintTimeline();
 							break;
 						}
 					}
@@ -438,7 +435,7 @@ public class Subtitles {
     	});
     	
     	btnG.setFont(new Font("Montserrat", Font.PLAIN, 13));
-    	btnG.setBounds(btnI.getLocation().x + btnI.getWidth(), 4, 35, 29);    	
+    	btnG.setBounds(btnI.getLocation().x + btnI.getWidth() + 4, 8, 22, 22);    	
     	frame.getContentPane().add(btnG);
     	
     	btnG.addActionListener(new ActionListener(){
@@ -457,6 +454,7 @@ public class Subtitles {
 						if (cursor.getLocation().x >= c.getLocation().x && cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
 						{
 							((JTextPane) c).setText(txtSubtitles.getText());	
+							repaintTimeline();
 							break;
 						}
 					}
@@ -469,11 +467,11 @@ public class Subtitles {
     	});
     	    	
     	btnEditAll.setFont(new Font("Montserrat", Font.PLAIN, 12));
-    	btnEditAll.setSize(60, 25);
+    	btnEditAll.setSize(btnEditAll.getPreferredSize().width, 21);
     	if (System.getProperty("os.name").contains("Windows"))    		
-    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 6);
+    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 22, 8);
     	else
-    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 12, 6);
+    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 10, 8);
     	frame.getContentPane().add(btnEditAll);
     	
     	btnEditAll.addActionListener(new ActionListener(){
@@ -489,7 +487,7 @@ public class Subtitles {
     	  	
     	btnAjouter = new JButton(Shutter.language.getProperty("btnAdd"));
     	btnAjouter.setFont(new Font("Montserrat", Font.PLAIN, 12));
-    	btnAjouter.setBounds(btnEditAll.getLocation().x - btnAjouter.getWidth() - 4, 6, 77, 25);
+    	btnAjouter.setBounds(btnEditAll.getLocation().x - btnAjouter.getWidth() - 2, 8, btnAjouter.getPreferredSize().width, 21);
     	frame.getContentPane().add(btnAjouter);
     	    	
     	btnAjouter.addActionListener(new ActionListener(){
@@ -503,7 +501,8 @@ public class Subtitles {
 
     	btnSupprimer = new JButton(Shutter.language.getProperty("btnDelete"));
     	btnSupprimer.setFont(new Font("Montserrat", Font.PLAIN, 12));
-    	btnSupprimer.setBounds(btnAjouter.getLocation().x - btnSupprimer.getWidth() - 4, 6, 80, 25);
+    	btnSupprimer.setMargin(new Insets(0,0,0,0));
+    	btnSupprimer.setBounds(btnAjouter.getLocation().x - btnSupprimer.getWidth() - 2, 8, 80, 21);
     	btnSupprimer.setEnabled(false);
     	frame.getContentPane().add(btnSupprimer);
     	
@@ -540,7 +539,7 @@ public class Subtitles {
      	    	 
     	btnFin = new JButton(Shutter.language.getProperty("btnFin"));
     	btnFin.setFont(new Font("Montserrat", Font.PLAIN, 12));
-    	btnFin.setBounds(btnSupprimer.getLocation().x - btnFin.getWidth() - 4, 6, 67, 25);
+    	btnFin.setBounds(btnSupprimer.getLocation().x - btnFin.getWidth() - 2, 8, btnFin.getPreferredSize().width, 21);
     	btnFin.setEnabled(false);
     	frame.getContentPane().add(btnFin);
     	
@@ -579,7 +578,7 @@ public class Subtitles {
     	  	    	
      	btnDebut = new JButton(Shutter.language.getProperty("btnDebut"));
     	btnDebut.setFont(new Font("Montserrat", Font.PLAIN, 12));
-    	btnDebut.setBounds(btnFin.getLocation().x - btnDebut.getWidth() - 4, 6, 70, 25);
+    	btnDebut.setBounds(btnFin.getLocation().x - btnDebut.getWidth() - 2, 8, btnDebut.getPreferredSize().width, 21);
     	btnDebut.setEnabled(false);
     	frame.getContentPane().add(btnDebut);
     	
@@ -626,7 +625,6 @@ public class Subtitles {
     	caseShowWaveform.setSelected(true);
     	caseShowWaveform.setEnabled(false);
     	caseShowWaveform.setFont(new Font("FreeSans", Font.PLAIN, 12));
-    	caseShowWaveform.setBackground(new Color(50, 50, 50));
     	caseShowWaveform.setBounds(btnDebut.getX() - caseShowWaveform.getWidth() - 20, 6, caseShowWaveform.getPreferredSize().width, 23);
     	frame.getContentPane().add(caseShowWaveform);
     	
@@ -644,7 +642,7 @@ public class Subtitles {
         			if (waveform != null)
         			{
 	        			timeline.remove(waveform);
-		        		timeline.repaint();	
+	        			repaintTimeline();
         			}
         		}
 	        			
@@ -842,6 +840,7 @@ public class Subtitles {
 								if (cursor.getLocation().x >= c.getLocation().x && cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
 								{		
 									((JTextPane) c).setText(txtSubtitles.getText());
+									repaintTimeline();
 									break;
 								}
 							}
@@ -862,6 +861,7 @@ public class Subtitles {
 										((JComponent) c).setBorder(new RoundedBorder(5, Color.RED));		
 										c.setForeground(Color.RED);
 										selectedSubs.add(index);
+										repaintTimeline();
 									}
 								}
 						 }
@@ -1062,8 +1062,7 @@ public class Subtitles {
 			        }
 			     }, AWTEvent.KEY_EVENT_MASK);	
 		
-    	shadow.setUndecorated(true);
-		Utils.changeFrameVisibility(frame, shadow, false);
+		Utils.changeFrameVisibility(frame, false);
 		
 		JPanel timelineBackround = new JPanel();
 		timelineBackround.setBackground(new Color(50,50,50));
@@ -1109,6 +1108,7 @@ public class Subtitles {
 				}
 				
 				selectedSubs.clear();
+				repaintTimeline();
 			}
 
 			@Override
@@ -1134,6 +1134,7 @@ public class Subtitles {
 		
 		timelineScrollBar.setVisible(true);
 		timelineScrollBar.setValue(0);
+		timelineScrollBar.setBackground(new Color(50,50,50));
 		timelineScrollBar.setOrientation(JScrollBar.HORIZONTAL);	
 		timelineScrollBar.setBounds(0, 0, frame.getContentPane().getWidth(), 17);
 		
@@ -1218,13 +1219,13 @@ public class Subtitles {
             	
             	//Buttons
             	if (System.getProperty("os.name").contains("Windows"))    		
-            		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 6);
+            		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 8);
             	else
-            		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 12, 6);
-            	btnAjouter.setBounds(btnEditAll.getLocation().x - btnAjouter.getWidth() - 4, 6, 77, 25);
-            	btnSupprimer.setBounds(btnAjouter.getLocation().x - btnSupprimer.getWidth() - 4, 6, 80, 25);
-            	btnFin.setBounds(btnSupprimer.getLocation().x - btnFin.getWidth() - 4, 6, 67, 25);
-            	btnDebut.setBounds(btnFin.getLocation().x - btnDebut.getWidth() - 4, 6, 70, 25);   
+            		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 12, 8);
+            	btnAjouter.setBounds(btnEditAll.getLocation().x - btnAjouter.getWidth() - 2, 8, btnAjouter.getPreferredSize().width, 21);
+            	btnSupprimer.setBounds(btnAjouter.getLocation().x - btnSupprimer.getWidth() - 2, 8, 80, 21);
+            	btnFin.setBounds(btnSupprimer.getLocation().x - btnFin.getWidth() - 2, 8, btnFin.getPreferredSize().width, 21);
+            	btnDebut.setBounds(btnFin.getLocation().x - btnDebut.getWidth() - 2, 8, btnDebut.getPreferredSize().width, 21);  
                	caseShowWaveform.setBounds(btnDebut.getX() - caseShowWaveform.getWidth() - 20, 6, caseShowWaveform.getPreferredSize().width, 23);
                	images.setBounds(caseShowWaveform.getX() - images.getWidth() - 7, 9, 10, 16);
                	textOffset.setBounds(images.getX() - images.getWidth() - 27, lblOffset.getLocation().y, 34, 16);
@@ -1345,8 +1346,8 @@ public class Subtitles {
     }
 	
 	private static JTextPane addText(String subContent, int x, int size) {
-		WebTextPane text = new WebTextPane(StyleId.textpaneTransparent);
-		text.setBackground(new Color(50,50,50));
+		JTextPane text = new JTextPane();
+		text.setBackground(new Color(50,50,50, 120));
 		text.setForeground(Color.WHITE);
 		text.setText(subContent);	
 		text.setBorder(new RoundedBorder(5, new Color(71,163,236)));		
@@ -1354,7 +1355,7 @@ public class Subtitles {
 		text.setHighlighter(null);
 		text.setEditable(false);
 		text.setBounds((int) (x - (float)timelineScrollBar.getValue()*zoom), 20, size, timeline.getHeight() - 30);			
-
+		
 		text.addMouseListener(new MouseListener() {
 
 			@Override
@@ -1476,6 +1477,8 @@ public class Subtitles {
 				
 				enableTimelineScroll = false;
 				enableAutoScroll = true;
+				
+				repaintTimeline();
 			}
 
 			@Override
@@ -1750,7 +1753,7 @@ public class Subtitles {
 						}
 					}	
 					
-					timeline.repaint();
+					repaintTimeline();
 				}	
 				} catch (Exception e) {
 					System.out.println(e);
@@ -1781,7 +1784,7 @@ public class Subtitles {
 					        		waveform = new JLabel(resizedWaveform);
 					        		waveform.setBounds(0,0,timeline.getWidth(), timeline.getHeight());        		
 					        		timeline.add(waveform);
-					        		timeline.repaint();
+					        		repaintTimeline();
 								} catch (IOException e) {}								
 
 							}
@@ -1797,7 +1800,7 @@ public class Subtitles {
 								public void run() {	
 									try { 		
 						        		timeline.add(waveform);
-						        		timeline.repaint();
+						        		repaintTimeline();
 									} catch (Exception e) {}
 								}
 							});
@@ -1844,7 +1847,7 @@ public class Subtitles {
 				timeline.add(waveform);
 			}
 
-			timeline.repaint();
+			repaintTimeline();
 		}
 	}
 	
@@ -1916,7 +1919,7 @@ public class Subtitles {
 			}
 		}
 		
-		//On récupère le sous-titre suivant pour lemagnett
+		//On récupère le sous-titre suivant pour le magnétisme
 		for (Component c : timeline.getComponents())
 		{
 			if (c instanceof JTextPane)
@@ -2246,6 +2249,17 @@ public class Subtitles {
 		}
 	}
 		
+	private static void repaintTimeline() {
+		
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+				timeline.invalidate();
+				timeline.validate();
+				timeline.repaint();
+		    }});
+		
+	}
+	
 	private void PasteFromClipBoard(){				
     	   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
            Transferable clipTf = sysClip.getContents(null);
@@ -2270,6 +2284,7 @@ public class Subtitles {
     							if (cursor.getLocation().x >= c.getLocation().x && cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
     							{
     								((JTextPane) c).setText(txtSubtitles.getText());	
+    								repaintTimeline();
     								newSubtitle = false;
     								break;
     							}

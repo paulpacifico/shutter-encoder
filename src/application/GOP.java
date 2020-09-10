@@ -56,6 +56,7 @@ public class GOP {
 		scrollBar = new JScrollBar();
 		scrollBar.setOrientation(JScrollBar.HORIZONTAL);
 		scrollBar.setVisible(true);
+		scrollBar.setBackground(new Color(50,50,50));
 		frame.getContentPane().add(scrollBar);
 		
 		scrollBar.addAdjustmentListener(new AdjustmentListener(){

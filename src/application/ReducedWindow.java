@@ -78,7 +78,7 @@ public class ReducedWindow extends JDialog {
 		frame.getContentPane().setLayout(null);
 		frame.setSize(290, 94);
 		frame.setResizable(false);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
@@ -207,7 +207,8 @@ public class ReducedWindow extends JDialog {
 					rotateIcon(( (long) progressBar.getValue() * 360) / ( (long) progressBar.getMaximum()));		
 				 
 				//Pourcentage
-				pourcentage.setText(String.valueOf(( (long) progressBar.getValue() * 100) / ( (long) progressBar.getMaximum()) + "%"));
+				if (Shutter.progressBar1.isIndeterminate() == false && progressBar.getValue() != 0)
+					pourcentage.setText(String.valueOf(( (long) progressBar.getValue() * 100) / ( (long) progressBar.getMaximum()) + "%"));
 			}	
 		};    			
 		Timer timer = new Timer();
@@ -257,8 +258,7 @@ public class ReducedWindow extends JDialog {
 					
 					Shutter.frame.setState(Shutter.frame.NORMAL);
 					Shutter.caseRunInBackground.setBounds(6, 64, 170, 23);		
-					Shutter.grpProgression.add(Shutter.caseRunInBackground);
-					Shutter.shadow.setVisible(true);	
+					Shutter.grpProgression.add(Shutter.caseRunInBackground);	
 				}
 			}
 

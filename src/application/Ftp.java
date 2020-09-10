@@ -19,31 +19,26 @@
 
 package application;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,7 +74,6 @@ import library.FFMPEG;
 
 public class Ftp {
 	public static JDialog frame;
-	public static JDialog shadow;
 	public static FTPClient ftp;
 	public static boolean isRunning = false;
 	
@@ -87,7 +81,7 @@ public class Ftp {
 	 * Composants
 	 */
 	private JLabel quit;
-	private JPanel panelHaut;
+	private JPanel topPanel;
 	private JLabel topImage;	
 	private static JTextField textFtp = new JTextField();
 	private JLabel lblFtp;
@@ -111,26 +105,28 @@ public class Ftp {
 		frame.setSize(267, 185);
 		frame.setResizable(false);
 		frame.setModal(true);
-		frame.setAlwaysOnTop(true);
-		frame.getRootPane().putClientProperty( "Window.shadow", Boolean.FALSE );
+		frame.setAlwaysOnTop(true);		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight() + 18, 15, 15));
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        shape1.add(shape2);
+			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			setShadow();
+			
 		}
 						
-		panelHaut();
+		topPanel();
 		grpFtp();
 		
 		frame.getRootPane().setDefaultButton(btnOK);	
 			
-		Utils.changeDialogVisibility(Ftp.frame, Ftp.shadow, false);		
+		Utils.changeDialogVisibility(Ftp.frame, false);		
 	}
 
 	private static class MousePosition {
@@ -138,16 +134,16 @@ public class Ftp {
 		static int mouseY;
 	}
 			
-	private void panelHaut() {
+	private void topPanel() {
 		
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
-		panelHaut.setBounds(0, 0, 267, 44);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, 267, 44);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -167,15 +163,8 @@ public class Ftp {
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{
-					//Suppression image temporaire
-							    		
-					File file = new File(Shutter.dirTemp + "fileToCrop.jpg");
-					if (file.exists()) file.delete();
-					Shutter.tempsRestant.setVisible(false);
-		            Shutter.progressBar1.setValue(0);
-		            btnReset.doClick();
 					quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
-					Utils.changeDialogVisibility(frame, shadow, true);
+					Utils.changeDialogVisibility(frame, true);
 				}
 			}
 
@@ -196,17 +185,17 @@ public class Ftp {
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 44);
 		title.setFont(new Font("Magneto", Font.PLAIN, 26));
-		panelHaut.add(title);
+		topPanel.add(title);
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(panelHaut.getSize().width, panelHaut.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		panelHaut.add(topImage);
+		topPanel.add(topImage);
 
-		frame.getContentPane().add(panelHaut);
+		frame.getContentPane().add(topPanel);
 		
 		topImage.addMouseListener(new MouseListener() {
 
@@ -341,7 +330,7 @@ public class Ftp {
 		
 		btnOK = new JButton("OK");
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setBounds(99, textPassword.getX() + textPassword.getHeight() + 30, 158, 25);		
+		btnOK.setBounds(101, textPassword.getX() + textPassword.getHeight() + 32, 154, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -373,7 +362,7 @@ public class Ftp {
 							}
 						}
 						else
-							Utils.changeDialogVisibility(frame, shadow, true);
+							Utils.changeDialogVisibility(frame, true);
 				} catch (IOException er) {
 					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("connectionRefused"), Shutter.language.getProperty("connectionError"), JOptionPane.ERROR_MESSAGE);
 					for (Component component : frame.getContentPane().getComponents())
@@ -390,7 +379,7 @@ public class Ftp {
 		
 		btnReset = new JButton("Reset");
 		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnReset.setBounds(10, textPassword.getX() + textPassword.getHeight() + 30, 86, 25);		
+		btnReset.setBounds(12, textPassword.getX() + textPassword.getHeight() + 32, 82, 21);		
 		frame.getContentPane().add(btnReset);	
 		
 		btnReset.addActionListener(new ActionListener(){
@@ -431,7 +420,7 @@ public class Ftp {
 		{			
 				FFMPEG.disableAll();
 				FFMPEG.btnStart.setEnabled(false);
-				FFMPEG.btnAnnuler.setEnabled(true);
+				FFMPEG.btnCancel.setEnabled(true);
 			
 				Shutter.cancelled = false;
 				boolean uploaded = false;
@@ -456,7 +445,7 @@ public class Ftp {
 
 			        Shutter.progressBar1.setMaximum((int) fichier.length());
 			        	
-					Shutter.btnAnnuler.setEnabled(true);
+					Shutter.btnCancel.setEnabled(true);
 						   
 			        ftp.setCopyStreamListener(new CopyStreamAdapter() {
 						 @Override
@@ -562,53 +551,4 @@ public class Ftp {
 		
 	   }
 	}
-
-	private void setShadow() {
-		shadow = new JDialog();
-		shadow.setSize(frame.getSize().width + 14, frame.getSize().height + 7);
-    	shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
-    	shadow.setUndecorated(true);
-    	shadow.setAlwaysOnTop(true);
-    	shadow.setContentPane(new FtpShadow());
-    	shadow.setBackground(new Color(255,255,255,0));
-		
-		shadow.setFocusableWindowState(false);
-		
-		shadow.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent down) {
-				frame.toFront();
-			}
-    		
-    	});
-
-    	frame.addComponentListener(new ComponentAdapter() {
- 		    public void componentMoved(ComponentEvent e) {
- 		        shadow.setLocation(frame.getLocation().x - 7, frame.getLocation().y - 7);
- 		    }
- 		});
- 		
-	}
-}
-
-//Ombre
-@SuppressWarnings("serial")
-class FtpShadow extends JPanel {
-public void paintComponent(Graphics g){
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  Graphics2D g1 = (Graphics2D)g.create();
-	  g1.setComposite(AlphaComposite.SrcIn.derive(0.0f));
-	  g1.setRenderingHints(qualityHints);
-	  g1.setColor(new Color(0,0,0));
-	  g1.fillRect(0,0,Ftp.frame.getWidth() + 14, Ftp.frame.getHeight() + 7);
-	  
-	  for (int i = 0 ; i < 7; i++) 
-	  {
-		  Graphics2D g2 = (Graphics2D)g.create();
-		  g2.setRenderingHints(qualityHints);
-		  g2.setColor(new Color(0,0,0, i * 10));
-		  g2.drawRoundRect(i, i, Ftp.frame.getWidth() + 13 - i * 2, Ftp.frame.getHeight() + 7, 20, 20);
-	  }
-}
 }

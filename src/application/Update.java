@@ -59,7 +59,7 @@ public class Update {
 	private final static JProgressBar progressBar = new JProgressBar();
 	private final JLabel lblNewVersion = new JLabel(Shutter.language.getProperty("lblNewVersion"));
 	
-	private static JPanel panelHaut;
+	private static JPanel topPanel;
 	private static JLabel quit;
 	
 	private static boolean cancelled = false;
@@ -111,15 +111,15 @@ public class Update {
 	}
 	
 	private void content() {
-		panelHaut = new JPanel();		
-		panelHaut.setLayout(null);
-		panelHaut.setBackground(new Color(50,50,50));
+		topPanel = new JPanel();		
+		topPanel.setLayout(null);
+		topPanel.setBackground(new Color(50,50,50));
 		
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		panelHaut.add(quit);
-		panelHaut.setBounds(0, 0, 346, 59);
+		topPanel.add(quit);
+		topPanel.setBounds(0, 0, 346, 59);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -159,13 +159,13 @@ public class Update {
 		});
 						
 		progressBar.setBounds(6, 29, 334, 23);		
-		panelHaut.add(progressBar);
+		topPanel.add(progressBar);
 		
 		lblNewVersion.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		lblNewVersion.setBounds(6, 11, 295, 16);		
-		panelHaut.add(lblNewVersion);
+		topPanel.add(lblNewVersion);
 		
-		panelHaut.addMouseListener(new MouseListener() {
+		topPanel.addMouseListener(new MouseListener() {
 
 			public void mouseClicked(MouseEvent down) {
 			}
@@ -189,7 +189,7 @@ public class Update {
 
 		 });
 		
-		panelHaut.addMouseMotionListener(new MouseMotionListener(){
+		topPanel.addMouseMotionListener(new MouseMotionListener(){
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -203,7 +203,7 @@ public class Update {
 			
 		});
 		
-		frame.getContentPane().add(panelHaut);
+		frame.getContentPane().add(topPanel);
 	}
 
 	public static void newVersion(){	
