@@ -86,7 +86,7 @@ public class Utils extends Shutter {
 				public void run() {
 					sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "shutterencodermail";
+					final String password = "***ENCRYPTED***";
 
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
