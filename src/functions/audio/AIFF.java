@@ -196,7 +196,7 @@ public class AIFF extends Shutter {
 				}//End For	
 				
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});
@@ -230,7 +230,7 @@ public class AIFF extends Shutter {
 		if (caseAudioFadeOut.isSelected())
 		{
 			long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-			long audioStart = (long) FFPROBE.dureeTotale - audioOutValue;
+			long audioStart = (long) FFPROBE.totalLength - audioOutValue;
 			
 			if (caseInAndOut.isSelected())
 			{
@@ -245,7 +245,7 @@ public class AIFF extends Shutter {
 						audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
 				}
 				else //Remove mode
-					audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+					audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
 			}
 			
 			audioFilter += ",afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
@@ -361,7 +361,7 @@ public class AIFF extends Shutter {
 		if (caseAudioFadeOut.isSelected())
 		{
 			long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-			long audioStart = (long) FFPROBE.dureeTotale - audioOutValue;
+			long audioStart = (long) FFPROBE.totalLength - audioOutValue;
 			
 			if (caseInAndOut.isSelected())
 			{
@@ -376,7 +376,7 @@ public class AIFF extends Shutter {
 						audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
 				}
 				else //Remove mode
-					audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+					audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
 			}
 			
 			audioFilter += ",afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
