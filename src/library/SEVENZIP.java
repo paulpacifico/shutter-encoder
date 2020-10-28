@@ -98,7 +98,7 @@ public class SEVENZIP extends Shutter {
 			        	
 				progressBar1.setIndeterminate(false);		
 								
-				FFMPEG.FinDeFonction();
+				FFMPEG.enfOfFunction();
 				FFMPEG.enableAll();
 			 }
 			 

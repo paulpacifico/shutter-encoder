@@ -53,7 +53,7 @@ public static Thread processFindStreams;
 public static Thread processCalculH264;
 public static int subtitleStreams = 0;
 public static int audioStreams = 0;
-public static int dureeTotale;
+public static int totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
 public static float currentFPS = 25.0f; //Utilisé pour lire l'audio avec vlc
@@ -92,7 +92,7 @@ public static String qtref = "";
 		getVideoLengthTC = null;
 		stereo = false;	
 		surround = false;
-		dureeTotale = 0;
+		totalLength = 0;
 		channels = 0;
 		qantization = 16;
  		subtitleStreams = 0;
@@ -230,19 +230,22 @@ public static String qtref = "";
 				    		String ffmpegTime = s[0].replace(".", ":");	  
 				    					    		
 				    		getVideoLengthTC = ffmpegTime;
-				    		dureeTotale = (CalculTemps(ffmpegTime));
-
-				         	if (grpH264.isVisible() && dureeTotale != 0)
-							{     		
+				    		totalLength = (CalculTemps(ffmpegTime));
+				    		
+				         	if (grpH264.isVisible() && totalLength != 0)
+							{     						         		
 					        	 NumberFormat formatter = new DecimalFormat("00");
-					             int secondes = ((dureeTotale) / 1000) % 60;
-					             int minutes =  ((dureeTotale) / 60000) % 60;
-					             int heures = ((dureeTotale) / 3600000);
+					             int secondes = ((totalLength) / 1000) % 60;
+					             int minutes =  ((totalLength) / 60000) % 60;
+					             int heures = ((totalLength) / 3600000);
 					             
 					             textH.setText(formatter.format(heures));
 					             textMin.setText(formatter.format(minutes));
 					             textSec.setText(formatter.format(secondes));
 					             
+					      		if (caseInAndOut.isSelected() && VideoPlayer.mediaPlayerComponentLeft != null)	
+					     			VideoPlayer.dureeTotale();
+
 					             setTailleH264();
 							}
 			            }
@@ -818,11 +821,11 @@ public static String qtref = "";
 						Thread.sleep(100);
 		         } while(processData.isAlive());         
 		         
-         	if (dureeTotale != 0)
+         	if (totalLength != 0)
 			{           		
     		    if (Shutter.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
     		    {
-    				float debit = (float) ((float) 23000000 / FFPROBE.dureeTotale) * 8;
+    				float debit = (float) ((float) 23000000 / FFPROBE.totalLength) * 8;
     				
     				if (debit > 38)
     					Shutter.debitVideo.setSelectedItem(38000);
@@ -831,13 +834,16 @@ public static String qtref = "";
     		    }	
          		
 	        	 NumberFormat formatter = new DecimalFormat("00");
-	             int secondes = ((dureeTotale) / 1000) % 60;
-	             int minutes =  ((dureeTotale) / 60000) % 60;
-	             int heures = ((dureeTotale) / 3600000);
+	             int secondes = ((totalLength) / 1000) % 60;
+	             int minutes =  ((totalLength) / 60000) % 60;
+	             int heures = ((totalLength) / 3600000);
 	             
 	             textH.setText(formatter.format(heures));
 	             textMin.setText(formatter.format(minutes));
 	             textSec.setText(formatter.format(secondes));
+	             
+	             if (caseInAndOut.isSelected() && VideoPlayer.mediaPlayerComponentLeft != null)	
+		     			VideoPlayer.dureeTotale();
 	             
 	             setTailleH264();
 			}
@@ -877,7 +883,7 @@ public static String qtref = "";
 		}
 		else
 			multi = 1;
-		
+				
 		if (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false)
 		{
 			if (lock.getIcon().toString().substring(lock.getIcon().toString().lastIndexOf("/") + 1).equals("lock.png"))
