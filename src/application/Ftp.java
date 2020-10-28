@@ -240,7 +240,7 @@ public class Ftp {
 
 	private void grpFtp() {
 		lblFtp = new JLabel(Shutter.language.getProperty("lblFtp"));
-		lblFtp.setBounds(10, 56, 86, 16);
+		lblFtp.setBounds(10, 56, 90, 16);
 		lblFtp.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblFtp.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(lblFtp);		
@@ -292,14 +292,14 @@ public class Ftp {
 		});
 		
 		lblUtilisateur = new JLabel(Shutter.language.getProperty("lblUser"));
-		lblUtilisateur.setBounds(10, 89, 86, 16);
+		lblUtilisateur.setBounds(10, 89, 90, 16);
 		lblUtilisateur.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblUtilisateur.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(lblUtilisateur);		
 			
 		lblMotDePasse = new JLabel(Shutter.language.getProperty("lblPassword"));
 		lblMotDePasse.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblMotDePasse.setBounds(8, 123, 88, 16);
+		lblMotDePasse.setBounds(8, 123, 92, 16);
 		frame.getContentPane().add(lblMotDePasse);
 		
 		lblMotDePasse.setFont(new Font("Montserrat", Font.PLAIN, 12));

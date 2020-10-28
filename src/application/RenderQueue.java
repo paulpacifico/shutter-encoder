@@ -29,7 +29,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,23 +45,15 @@ import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
-import java.io.IOException;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -99,7 +90,6 @@ import library.XPDF;
 	public static DefaultTableModel tableRow;
 	public static JScrollPane scrollPane;		
 	private static int complete;
-	private static StringBuilder errorList = new StringBuilder();
 	private boolean drag = false;
 	
 	/**
@@ -115,7 +105,6 @@ import library.XPDF;
 		frame.setSize(600, 348);
 		frame.setResizable(true);
 		
-
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
@@ -130,8 +119,7 @@ import library.XPDF;
 		}
 				
 		topPanel();
-		table();
-				
+		table();				
 		
 		frame.addWindowListener(new WindowAdapter(){			
 			public void windowDeiconified(WindowEvent we)
@@ -757,9 +745,9 @@ import library.XPDF;
 							
 							
 							if (cmd.contains("pipe:play"))
-								Shutter.caseVisualiser.setSelected(true);
+								Shutter.caseDisplay.setSelected(true);
 							else
-								Shutter.caseVisualiser.setSelected(false);
+								Shutter.caseDisplay.setSelected(false);
 							
 							switch (cli[0].toString())
 							{
@@ -822,63 +810,10 @@ import library.XPDF;
 							}
 							
 						}//End For
-
-						//Affichage des erreurs
-						String[] FFPROBESplit = Console.consoleFFPROBE.getText().split(System.lineSeparator());
-						String[] FFMPEGSplit = Console.consoleFFMPEG.getText().split(System.lineSeparator());
 						
-						if (errorList.length() != 0)
-						{
-							if (Settings.btnDisableSound.isSelected() == false) {
-								try {
-									AudioInputStream audioIn = AudioSystem.getAudioInputStream(Shutter.soundErrorURL);
-									Clip clip = AudioSystem.getClip();
-									clip.open(audioIn);
-									clip.start();
-								} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-								}
-							}
-							
-							if (System.getProperty("os.name").contains("Windows") && Taskbar.isTaskbarSupported()) 
-							{ 
-								Taskbar.getTaskbar().setWindowProgressState(frame, Taskbar.State.ERROR);
-							} 	
-							
-							JTextArea errorText = new JTextArea(errorList.toString() + '\n' +
-									Shutter.language.getProperty("ffprobe") + " " + FFPROBESplit[FFPROBESplit.length - 1] + '\n' +
-									Shutter.language.getProperty("ffprobe") + " " + FFMPEGSplit[FFMPEGSplit.length - 1]);  
-							errorText.setWrapStyleWord(true);
-							
-							JScrollPane scrollPane = new JScrollPane(errorText);  
-							scrollPane.setOpaque(false);
-							scrollPane.getViewport().setOpaque(false); 
-							scrollPane.setPreferredSize( new Dimension( 500, 400 ) );
-
-							Object[] moreInfo = {"OK", Shutter.language.getProperty("menuItemConsole")};
-					        
-							int result =  JOptionPane.showOptionDialog(Shutter.frame, scrollPane, Shutter.language.getProperty("notProcessedFiles"), JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, moreInfo, null);
-							
-							if (result == JOptionPane.NO_OPTION)
-							{
-								if (Console.frmConsole != null) {
-									if (Console.frmConsole.isVisible())
-										Console.frmConsole.toFront();
-									else
-										new Console();
-								} else
-									new Console();
-							}
-					            
-							errorList.setLength(0);
-							
-							btnStartRender.setEnabled(true);
-						}
-						else if (errorList.length() == 0 && Shutter.cancelled == false)
-							tableRow.setRowCount(0);
-							
-						errorList.setLength(0);						
+						btnStartRender.setEnabled(true);
 						Shutter.enableAll();
-						Shutter.FinDeFonction();
+						Shutter.enfOfFunction();
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 						
 					}//End Run
@@ -908,7 +843,7 @@ import library.XPDF;
 		//Erreurs
 		if (FFMPEG.error || fileOut.length() == 0)
 		{
-			FFMPEG.errorList.append(fichier);
+			FFMPEG.errorList.append(Shutter.language.getProperty("file") + " N°" + (item + 1) + " - " +fichier);
 		    FFMPEG.errorList.append(System.lineSeparator());
 			try {
 				fileOut.delete();
@@ -1082,7 +1017,7 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 	    if (isSelected)
 	    {
 	    	setBackground(new Color(215,215,215));  
-	    	setBorder(new LineBorder(new Color(129,198,253)));
+	    	setBorder(new LineBorder(Utils.highlightColor));
 	    	setOpaque(true);
 	    }
 	    else

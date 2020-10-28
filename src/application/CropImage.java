@@ -42,6 +42,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
+import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -49,6 +50,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -79,6 +81,7 @@ public class CropImage {
 	public static JDialog frame;
 	private static JPanel overImage;
 	private static JPanel image = new JPanel();
+	
 	/*
 	 * Composants
 	 */
@@ -95,6 +98,7 @@ public class CropImage {
 	private static int startY = 0;
 	private static int ancrageDroit;
 	private static int ancrageBas;
+	public static JSlider positionVideo;
 	
 	/*
 	 * Valeurs
@@ -121,10 +125,8 @@ public class CropImage {
     public static JLabel px2;
     public static JLabel px3;
     public static JLabel px4;
-
-	/**
-	 * @wbp.parser.entryPoint
-	 */
+    
+    
 	public CropImage() {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -253,7 +255,7 @@ public class CropImage {
 		topPanel();
 
 		loadImage();
-				
+						
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnOK.setBounds(14, frame.getHeight() - 31, (frame.getWidth() - 28), 21);		
@@ -656,7 +658,7 @@ public class CropImage {
 		posX = new JLabel(Shutter.language.getProperty("posX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posX.setForeground(new Color(71,163,236));
+		posX.setForeground(Utils.themeColor);
 		posX.setBounds(14, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		textPosX = new JTextField();
@@ -667,7 +669,7 @@ public class CropImage {
 		
 		px1 = new JLabel("px");
 		px1.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px1.setForeground(new Color(71,163,236));
+		px1.setForeground(Utils.themeColor);
 		px1.setBounds(textPosX.getLocation().x + textPosX.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		textPosX.addKeyListener(new KeyListener(){
@@ -698,7 +700,7 @@ public class CropImage {
 		
 		posY = new JLabel(Shutter.language.getProperty("posY"));
 		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posY.setForeground(new Color(71,163,236));
+		posY.setForeground(Utils.themeColor);
 		posY.setBounds((int) (btnOK.getWidth() / 2) - 120, posX.getLocation().y, posY.getPreferredSize().width, 16);
 
 		textPosY = new JTextField();
@@ -735,12 +737,12 @@ public class CropImage {
 		
 		px2 = new JLabel("px");
 		px2.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px2.setForeground(new Color(71,163,236));
+		px2.setForeground(Utils.themeColor);
 		px2.setBounds(textPosY.getLocation().x + textPosY.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		width = new JLabel(Shutter.language.getProperty("lblWidth"));
 		width.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		width.setForeground(new Color(71,163,236));
+		width.setForeground(Utils.themeColor);
 		width.setBounds((int) (btnOK.getWidth() / 2) + 45, posX.getLocation().y, width.getPreferredSize().width, 16);
 		
 		textWidth = new JTextField();
@@ -777,13 +779,13 @@ public class CropImage {
 		
 		px3 = new JLabel("px");
 		px3.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px3.setForeground(new Color(71,163,236));
+		px3.setForeground(Utils.themeColor);
 		px3.setBounds(textWidth.getLocation().x + textWidth.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		height = new JLabel(Shutter.language.getProperty("lblHeight"));
 		height.setHorizontalAlignment(SwingConstants.RIGHT);
 		height.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		height.setForeground(new Color(71,163,236));
+		height.setForeground(Utils.themeColor);
 		height.setBounds(btnOK.getLocation().x + btnOK.getWidth() - 104, posX.getLocation().y, height.getPreferredSize().width, 16);
 		
 		textHeight = new JTextField();
@@ -820,7 +822,7 @@ public class CropImage {
 		
 		px4 = new JLabel("px");
 		px4.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px4.setForeground(new Color(71,163,236));
+		px4.setForeground(Utils.themeColor);
 		px4.setBounds(textHeight.getLocation().x + textHeight.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		frame.getContentPane().add(posX);	
@@ -835,6 +837,61 @@ public class CropImage {
 		frame.getContentPane().add(height);
 		frame.getContentPane().add(textHeight);	
 		frame.getContentPane().add(px4);
+		
+		positionVideo = new JSlider();
+		if (Shutter.scanIsRunning)
+		{
+			File dir = new File(Shutter.liste.firstElement());
+        	for (File f : dir.listFiles())
+        	{
+	        	if (f.isHidden() == false && f.isFile())
+	        	{    	    
+	        		FFPROBE.Data(f.toString());
+	        	}
+        	}
+		}
+		else		 
+		{
+    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+		}
+		do {
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e1) {}
+		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+
+		if (FFPROBE.totalLength > 100) //Plus d'une image
+			positionVideo.setVisible(true);
+		else
+			positionVideo.setVisible(false);
+		
+		positionVideo.setMaximum(FFPROBE.totalLength);
+		positionVideo.setValue(0);		
+		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		positionVideo.setBounds(14, posX.getY() - 22, (frame.getWidth() - 28), 22);	
+		frame.getContentPane().add(positionVideo); 
+		
+		positionVideo.addMouseListener(new MouseAdapter(){
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {								
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
+					File file = new File(Shutter.dirTemp + "preview.bmp");
+					if (file.exists()) file.delete();	
+						
+					loadImage();
+						
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
+						
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
+			}
+			
+		});
 	}
 	
 	@SuppressWarnings("serial")
@@ -876,7 +933,7 @@ public class CropImage {
 
 		selection = new JPanel() {
 			public void paintComponent(Graphics g) {
-				g.setColor(new Color(71,163,236));
+				g.setColor(Utils.themeColor);
 				g.fillRect(0, 0, 6, 6); //NW
 				g.fillRect(selection.getWidth() / 2 - 3,0, 6, 6); //N
 				g.fillRect(selection.getWidth() - 6, 0, 6, 6); //NE
@@ -1129,27 +1186,6 @@ public class CropImage {
 		frame.getContentPane().add(overImage);
 		frame.getContentPane().add(image);
 		
-		//Position des bouton
-		if (btnOK != null)
-		{
-			CropImage.btnOK.setLocation(14, CropImage.frame.getHeight() - 31);	
-			
-		   	CropImage.posX.setLocation(14, CropImage.btnOK.getLocation().y - 22);
-			CropImage.textPosX.setLocation(CropImage.posX.getLocation().x + CropImage.posX.getWidth() + 2, CropImage.posX.getLocation().y);
-			CropImage.px1.setLocation(CropImage.textPosX.getLocation().x + CropImage.textPosX.getWidth() + 2, CropImage.btnOK.getLocation().y - 22);
-			
-		    CropImage.posY.setLocation((int) (CropImage.btnOK.getWidth() / 4) + posY.getWidth(), CropImage.posX.getLocation().y);
-		    CropImage.textPosY.setLocation(CropImage.posY.getLocation().x + CropImage.posY.getWidth() + 2, CropImage.posY.getLocation().y);
-		    CropImage.px2.setLocation(CropImage.textPosY.getLocation().x + CropImage.textPosY.getWidth() + 2, CropImage.btnOK.getLocation().y - 22);
-		    
-		    CropImage.width.setLocation((int) (CropImage.btnOK.getWidth() / 4) * 2 + width.getWidth(), CropImage.posX.getLocation().y);
-		    CropImage.textWidth.setLocation(CropImage.width.getLocation().x + CropImage.width.getWidth() + 2, CropImage.width.getLocation().y);
-		    CropImage.px3.setLocation(CropImage.textWidth.getLocation().x + CropImage.textWidth.getWidth() + 2, CropImage.btnOK.getLocation().y - 22);
-		    
-		    CropImage.height.setLocation(CropImage.btnOK.getLocation().x + CropImage.btnOK.getWidth() - 104, CropImage.posX.getLocation().y);
-		    CropImage.textHeight.setLocation(CropImage.height.getLocation().x + CropImage.height.getWidth() + 2, CropImage.height.getLocation().y);		    					   
-		    CropImage.px4.setLocation(CropImage.textHeight.getLocation().x + CropImage.textHeight.getWidth() + 2, CropImage.btnOK.getLocation().y - 22);
-		}
 	}
 	
 	public static void loadImage() {
@@ -1233,6 +1269,17 @@ public class CropImage {
 				//InOut		
 				FFMPEG.fonctionInOut();
 				
+				//Slider
+				if (positionVideo != null && positionVideo.getValue() > 0 && positionVideo.getValue() < positionVideo.getMaximum() && FFPROBE.totalLength > 100)
+				{
+					DecimalFormat tc = new DecimalFormat("00");			
+					String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
+					String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
+					String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
+					
+					FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+				}
+				
 				//Envoi de la commande
 				String cmd;
 				if (ImageHeight > ImageWidth)
@@ -1251,9 +1298,7 @@ public class CropImage {
 	            {
 	            	Thread.sleep(100);  
 	            } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
-	            
-	            Shutter.enableAll();
-	            
+
 	           	if (FFMPEG.error)
 	      	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);	           	
 	           		       
@@ -1292,6 +1337,13 @@ public class CropImage {
 	    {
  	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	    }
+        finally {
+        	Shutter.enableAll();     
+        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+			else
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+        }
 	}
 
 	public static void loadSettings(File encFile) {
@@ -1393,7 +1445,25 @@ public class CropImage {
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
 		
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		
+				
 		btnOK.setBounds(14, frame.getHeight() - 31, (frame.getWidth() - 28), 21);	
+		
+	   	posX.setLocation(14, btnOK.getLocation().y - 22);
+		textPosX.setLocation(posX.getLocation().x + posX.getWidth() + 2, posX.getLocation().y);
+		px1.setLocation(textPosX.getLocation().x + textPosX.getWidth() + 2, btnOK.getLocation().y - 22);
+		
+	    posY.setLocation((int) (btnOK.getWidth() / 4) + posY.getWidth(), posX.getLocation().y);
+	    textPosY.setLocation(posY.getLocation().x + posY.getWidth() + 2, posY.getLocation().y);
+	    px2.setLocation(textPosY.getLocation().x + textPosY.getWidth() + 2, btnOK.getLocation().y - 22);
+	    
+	    width.setLocation((int) (btnOK.getWidth() / 4) * 2 + width.getWidth(), posX.getLocation().y);
+	    textWidth.setLocation(width.getLocation().x + width.getWidth() + 2, width.getLocation().y);
+	    px3.setLocation(textWidth.getLocation().x + textWidth.getWidth() + 2, btnOK.getLocation().y - 22);
+	    
+	    height.setLocation(btnOK.getLocation().x + btnOK.getWidth() - 104, posX.getLocation().y);
+	    textHeight.setLocation(height.getLocation().x + height.getWidth() + 2, height.getLocation().y);		    					   
+	    px4.setLocation(textHeight.getLocation().x + textHeight.getWidth() + 2, btnOK.getLocation().y - 22);
+	    
+		positionVideo.setBounds(14, posX.getY() - 22, (frame.getWidth() - 28), 22);
 	}
 }

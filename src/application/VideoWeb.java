@@ -643,7 +643,7 @@ public class VideoWeb {
 	        			
 	        			Shutter.progressBar1.setIndeterminate(false);
 	        			FFMPEG.enableAll();	 
-	        			FFMPEG.FinDeFonction();	     
+	        			FFMPEG.enfOfFunction();	     
 	        		}
 	        		else 
 	        		{		        	
@@ -733,7 +733,7 @@ public class VideoWeb {
 								}
 					       }
 							FFMPEG.enableAll();
-							FFMPEG.FinDeFonction();							
+							FFMPEG.enfOfFunction();							
 		        			Utils.sendMail(YOUTUBEDL.fichierDeSortie.toString());		        			
 	        			}
 					       				        
@@ -749,14 +749,13 @@ public class VideoWeb {
 		if (textURL.getText().equals(Shutter.language.getProperty("textURL")))
 			textURL.setText("");
 		
-			textURL.setForeground(Color.BLACK);
 			textURL.setFont(new Font("SansSerif", Font.PLAIN, 13));
        		btnOK.setEnabled(true);
 			if (caseAuto.isSelected() == false)
 				caseAuto.doClick();
 			caseAuto.setEnabled(true);
-					
-		if (System.getProperty("os.name").contains("Mac") || mouse)
+		
+		if (mouse)
 		{
     	   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
            Transferable clipTf = sysClip.getContents(null);
@@ -767,11 +766,16 @@ public class VideoWeb {
                    } catch (Exception er) {}
                }
            }
-		}	        
+		}       
         
 		if (textURL.getText().equals(Shutter.language.getProperty("textURL")))
 			textURL.setText("");
-		textURL.setForeground(Color.BLACK);
+		
+
+		if (Settings.comboTheme.getSelectedItem().equals(Shutter.language.getProperty("darkTheme")))
+			textURL.setForeground(Color.WHITE);
+		else
+			textURL.setForeground(Color.BLACK);
 		textURL.setFont(new Font("SansSerif", Font.PLAIN, 13));
 		caseAuto.setEnabled(true);
 		btnOK.setEnabled(true);	

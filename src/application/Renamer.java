@@ -157,7 +157,7 @@ public class Renamer {
 				
 		lblPar = new JLabel(Shutter.language.getProperty("lblPar"));
 		lblPar.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblPar.setBounds(226, 80, 25, 14);
+		lblPar.setBounds(226, 80, 29, 14);
 		frame.getContentPane().add(lblPar);
 		
 		txtPar = new JTextField();
@@ -167,13 +167,14 @@ public class Renamer {
 		frame.getContentPane().add(txtPar);
 		
 		lblExemple = new JLabel(Shutter.language.getProperty("lblExemple") + " " + fichier + ext);
-		lblExemple.setForeground(new Color(71,163,236));
+		lblExemple.setForeground(Utils.themeColor);
 		lblExemple.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblExemple.setBounds(12, 104, 481, 14);
 		frame.getContentPane().add(lblExemple);
 						
 		Renommer = new JButton(Shutter.language.getProperty("renommer"));
 		Renommer.setBounds(400, 77, 98, 21);
+		Renommer.setMargin(new Insets(0,0,0,0));
 		Renommer.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(Renommer);
 		

@@ -139,10 +139,6 @@ public class ColorImage {
     private static String balanceMedium = "";
     private static String balanceLow = "";
     
-
-	/**
-	 * @wbp.parser.entryPoint
-	 */
  	public ColorImage() {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -1094,7 +1090,7 @@ public class ColorImage {
 					} while (FFPROBE.isRunning);
 					
 					positionVideo.setValue(0);
-					positionVideo.setMaximum(FFPROBE.dureeTotale);
+					positionVideo.setMaximum(FFPROBE.totalLength);
 					
      				loadImage(true);
      				
@@ -1152,7 +1148,7 @@ public class ColorImage {
 					} while (FFPROBE.isRunning);
 					
 					positionVideo.setValue(0);
-					positionVideo.setMaximum(FFPROBE.dureeTotale);
+					positionVideo.setMaximum(FFPROBE.totalLength);
 					
 	      			loadImage(true);
 	      			
@@ -1236,9 +1232,14 @@ public class ColorImage {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
-		} while (FFPROBE.dureeTotale == 0 && FFPROBE.isRunning);
+		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
-		positionVideo.setMaximum(FFPROBE.dureeTotale);
+		if (FFPROBE.totalLength > 100) //Plus d'une image
+			positionVideo.setEnabled(true);
+		else
+			positionVideo.setEnabled(false);
+		
+		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setBounds(212, frame.getHeight() - 33, sliderExposure.getWidth(), 22);	
@@ -1268,6 +1269,7 @@ public class ColorImage {
 		
 		btnOriginal = new JButton("Original");
 		btnOriginal.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOriginal.setMargin(new Insets(0,0,0,0));
 		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 9, frame.getHeight() - 33, btnOriginal.getPreferredSize().width, 21);		
 		frame.getContentPane().add(btnOriginal); 
 		
@@ -1359,7 +1361,7 @@ public class ColorImage {
 					FFMPEG.fonctionInOut();
 					
 					//Slider
-					if (positionVideo.getValue() > 0 && FFPROBE.dureeTotale > 100)
+					if (positionVideo.getValue() > 0 && FFPROBE.totalLength > 100)
 					{
 						DecimalFormat tc = new DecimalFormat("00");			
 						String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
@@ -1428,6 +1430,9 @@ public class ColorImage {
 					
 					//LUTs
 					eq = setLuts(eq);	
+					
+					//Levels
+					eq = setLevels(eq);
 					
 					//Colormatrix
 					eq = setColormatrix(eq);		
@@ -1534,10 +1539,10 @@ public class ColorImage {
 				
 				//Important permet de lancer le runtime process dans FFMPEG
 				boolean display = false;
-				if (Shutter.caseVisualiser.isSelected())
+				if (Shutter.caseDisplay.isSelected())
 				{
 					display = true;
-					Shutter.caseVisualiser.setSelected(false);
+					Shutter.caseDisplay.setSelected(false);
 				}
 				
 				try {							
@@ -1548,7 +1553,7 @@ public class ColorImage {
 					FFMPEG.fonctionInOut();	
 					
 					//Slider
-					if (positionVideo.getValue() > 0 && FFPROBE.dureeTotale > 100)
+					if (positionVideo.getValue() > 0 && FFPROBE.totalLength > 100)
 					{
 						DecimalFormat tc = new DecimalFormat("00");			
 						String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
@@ -1643,6 +1648,9 @@ public class ColorImage {
 					//LUTs
 					eq = setLuts(eq);	
 
+					//Levels
+					eq = setLevels(eq);
+					
 					//Colormatrix
 					eq = setColormatrix(eq);	
 					
@@ -1717,7 +1725,7 @@ public class ColorImage {
 		        finally 
 		        {
 		    		if (display)
-		    			Shutter.caseVisualiser.setSelected(true);
+		    			Shutter.caseDisplay.setSelected(true);
 		        }
 				
 				if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
@@ -2091,10 +2099,10 @@ public class ColorImage {
 				
 				//Important permet de lancer le runtime process dans FFMPEG
 				boolean display = false;
-				if (Shutter.caseVisualiser.isSelected())
+				if (Shutter.caseDisplay.isSelected())
 				{
 					display = true;
-					Shutter.caseVisualiser.setSelected(false);
+					Shutter.caseDisplay.setSelected(false);
 				}
 				
 		        try
@@ -2188,7 +2196,7 @@ public class ColorImage {
 						FFMPEG.fonctionInOut();
 						
 						//Slider
-						if (positionVideo.getValue() > 0 && FFPROBE.dureeTotale > 100)
+						if (positionVideo.getValue() > 0 && FFPROBE.totalLength > 100)
 						{
 							DecimalFormat tc = new DecimalFormat("00");			
 							String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
@@ -2230,6 +2238,9 @@ public class ColorImage {
 						//LUTs
 						eq = setLuts(eq);
 						
+						//Levels
+						eq = setLevels(eq);
+					
 						//Colormatrix
 						eq = setColormatrix(eq);	
 						
@@ -2324,7 +2335,7 @@ public class ColorImage {
 			        finally 
 			        {
 			    		if (display)
-			    			Shutter.caseVisualiser.setSelected(true);
+			    			Shutter.caseDisplay.setSelected(true);
 			        }
 				}
 			});
@@ -2369,6 +2380,18 @@ public class ColorImage {
 		return eq;
 	}
 
+	protected static String setLevels(String eq) {
+		
+		if (Shutter.caseLevels.isSelected())
+		{			
+			if (eq != "") eq += ",";
+			
+			eq += "scale=in_range=" + Shutter.comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full") + ":out_range=" + Shutter.comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");		
+		}
+
+		return eq;
+	}
+	
 	protected static String setColormatrix(String eq) {
 		if (Shutter.caseColormatrix.isSelected())
 		{

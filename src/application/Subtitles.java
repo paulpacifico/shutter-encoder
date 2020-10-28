@@ -393,7 +393,7 @@ public class Subtitles {
     	    	
     	lblHelp = new JLabel(Shutter.language.getProperty("lblHelp"));
     	lblHelp.setFont(new Font("Montserrat", Font.PLAIN, 12));
-    	lblHelp.setForeground(new Color(71,163,236));
+    	lblHelp.setForeground(Utils.themeColor);
     	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 40, 10, lblHelp.getPreferredSize().width, 14);
     	frame.getContentPane().add(lblHelp);    	
     	    	
@@ -467,6 +467,7 @@ public class Subtitles {
     	});
     	    	
     	btnEditAll.setFont(new Font("Montserrat", Font.PLAIN, 12));
+    	btnEditAll.setMargin(new Insets(0,0,0,0));
     	btnEditAll.setSize(btnEditAll.getPreferredSize().width, 21);
     	if (System.getProperty("os.name").contains("Windows"))    		
     		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 22, 8);
@@ -1102,7 +1103,7 @@ public class Subtitles {
 				{
 					for (int index = 0 ; index < selectedSubs.size() ; index++)
 					{
-						((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, new Color(71,163,236)));
+						((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.themeColor));
 						((JComponent) timeline.getComponent(selectedSubs.get(index))).setForeground(Color.WHITE);
 					}
 				}
@@ -1350,7 +1351,7 @@ public class Subtitles {
 		text.setBackground(new Color(50,50,50, 120));
 		text.setForeground(Color.WHITE);
 		text.setText(subContent);	
-		text.setBorder(new RoundedBorder(5, new Color(71,163,236)));		
+		text.setBorder(new RoundedBorder(5, Utils.themeColor));		
 		text.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		text.setHighlighter(null);
 		text.setEditable(false);
@@ -1374,7 +1375,7 @@ public class Subtitles {
 				{
 					if (text.getForeground() == Color.RED) //Si on veut déselectionner un sub
 					{
-						text.setBorder(new RoundedBorder(5, new Color(71,163,236)));
+						text.setBorder(new RoundedBorder(5, Utils.themeColor));
 						text.setForeground(Color.WHITE);
 					}
 					else
@@ -1467,7 +1468,7 @@ public class Subtitles {
 					{
 						for (int index = 0 ; index < selectedSubs.size() ; index++)
 						{
-							((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, new Color(71,163,236)));
+							((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.themeColor));
 							((JComponent) timeline.getComponent(selectedSubs.get(index))).setForeground(Color.WHITE);
 						}
 					}

@@ -52,12 +52,15 @@ import org.w3c.dom.NodeList;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.extras.FlatInspector;
 
 import library.FFMPEG;
 
 public class Utils extends Shutter {
 	
 	public static String getTheme = null;
+	public static Color themeColor = new Color(71, 163, 236);
+	public static Color highlightColor = new Color(129, 198, 253);
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -1858,7 +1861,7 @@ public class Utils extends Shutter {
 				}
 			}
 			
-			changementDeFonction(false);							
+			changeFunction(false);							
 			
 			if (lblPad.getText().equals(language.getProperty("lblPad")))
 			{
@@ -1890,7 +1893,7 @@ public class Utils extends Shutter {
 }
 
 	public static void loadThemes() {
-
+								
 		//Theme
 		if (new File(Shutter.documents + "/settings.xml").exists())
 		{				
@@ -1910,7 +1913,15 @@ public class Utils extends Shutter {
 						Element eElement = (Element) nNode;
 
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboTheme"))
-							getTheme = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();							
+							getTheme = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();		
+						
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("accentColor"))
+						{					
+							String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
+							String s2[] = s[1].split(",");
+							themeColor = new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2]));
+
+						}
 					}
 				}	
 								
@@ -1931,8 +1942,15 @@ public class Utils extends Shutter {
 			    FlatLaf.install( new FlatLightLaf() );
 			} catch( Exception ex ) {}
 		}
+		
+		int R = Math.max(0, Math.min(255, themeColor.getRed() + 25));
+		int G = Math.max(0, Math.min(255, themeColor.getGreen() + 25));
+		int B = Math.max(0, Math.min(255, themeColor.getBlue() + 25));
 
+		highlightColor = new Color(R, G, B);
+		
 		UIManager.put("Component.focusWidth", 0 );
+		UIManager.put("Component.innerFocusWidth", 0 );
 		UIManager.put("ScrollBar.thumbArc", 999);
 		UIManager.put("Button.arc", 6);
 		UIManager.put("TextField.arc", 6);
@@ -1955,13 +1973,15 @@ public class Utils extends Shutter {
 			UIManager.put("Button.default.foreground", new Color(245,245,245));
 			UIManager.put("Button.default.startBackground", new Color(100,100,100));
 			UIManager.put("Button.default.endBackground", new Color(80,80,80));
+			UIManager.put("Button.default.borderColor", new Color(40,40,40));
 							
 			UIManager.put("ComboBox.background", new Color(80,80,80));		
 			UIManager.put("ComboBox.foreground", new Color(245,245,245));
 			UIManager.put("ComboBox.disabledBackground", new Color(60,60,60));
 			UIManager.put("ComboBox.selectionBackground", new Color(100,100,100));
 			UIManager.put("ComboBox.disabledForeground", new Color(120,120,120));
-			UIManager.put("ComboBox.buttonBackground", new Color(80,80,80));			
+			UIManager.put("ComboBox.buttonBackground", new Color(80,80,80));	
+			UIManager.put("ComboBox.buttonEditableBackground", new Color(60,60,60));	
 			
 			UIManager.put("MenuItem.background", new Color(80,80,80));		
 			UIManager.put("MenuItem.foreground", new Color(245,245,245));
@@ -2000,13 +2020,15 @@ public class Utils extends Shutter {
 			UIManager.put("Spinner.disabledBackground", new Color(80,80,80));
 			UIManager.put("Spinner.background", new Color(80,80,80));
 			UIManager.put("FormattedTextField.selectionBackground", new Color(100,100,100));
+			UIManager.put("Spinner.buttonBackground", new Color(60,60,60));
 						
 			UIManager.put("ScrollBar.background", new Color(50,50,50));
 			UIManager.put("ScrollBar.thumb", new Color(80,80,80));
 						
 			UIManager.put("MenuBar.foreground", new Color(245,245,245));
 			
-			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(40,40,40)));
+			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(40,40,40)));			
+			
 		}
 		else
 		{
@@ -2022,45 +2044,47 @@ public class Utils extends Shutter {
 			UIManager.put("Button.default.foreground", Color.BLACK);
 			UIManager.put("Button.default.startBackground", new Color(245,245,245));
 			UIManager.put("Button.default.endBackground", new Color(225,225,225));
+			UIManager.put("Button.default.borderColor", new Color(220,220,220));
 			
 			UIManager.put("ComboBox.background", new Color(245,245,245));		
 			UIManager.put("ComboBox.foreground", Color.BLACK);
 			UIManager.put("ComboBox.disabledBackground", new Color(245,245,245));
-			UIManager.put("ComboBox.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("ComboBox.selectionBackground", themeColor);
 			
 			UIManager.put("MenuItem.background", new Color(245,245,245));		
 			UIManager.put("MenuItem.foreground", Color.BLACK);
-			UIManager.put("MenuItem.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("MenuItem.selectionBackground", themeColor);
 			
 			UIManager.put("CheckBoxMenuItem.background", new Color(245,245,245));		
 			UIManager.put("CheckBoxMenuItem.foreground", Color.BLACK);
-			UIManager.put("CheckBoxMenuItem.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("CheckBoxMenuItem.selectionBackground", themeColor);
+			UIManager.put("CheckBox.icon.focusedBorderColor", new Color(220, 220, 220));
 			
 			UIManager.put("TableHeader.foreground", Color.BLACK);
 			UIManager.put("Table.foreground", Color.BLACK);
-			UIManager.put("Table.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("Table.selectionBackground", themeColor);
 						
 			UIManager.put("TextField.foreground", Color.BLACK);
 			UIManager.put("TextField.background", new Color(245,245,245));
-			UIManager.put("TextField.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("TextField.selectionBackground", themeColor);
 			
 			UIManager.put("TextArea.foreground", Color.BLACK);
 			UIManager.put("TextArea.background", new Color(245,245,245));
-			UIManager.put("TextArea.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("TextArea.selectionBackground", themeColor);
 
 			UIManager.put("PasswordField.foreground", Color.BLACK);
 			UIManager.put("PasswordField.background", new Color(245,245,245));	
-			UIManager.put("PasswordField.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("PasswordField.selectionBackground", themeColor);
 			
 			UIManager.put("Spinner.foreground", Color.BLACK);
 			UIManager.put("Spinner.disabledBackground", new Color(245,245,245));
 			UIManager.put("Spinner.background", new Color(245,245,245));
-			UIManager.put("FormattedTextField.selectionBackground", new Color(71, 163, 236));
+			UIManager.put("FormattedTextField.selectionBackground", themeColor);
 									
 			UIManager.put("MenuBar.foreground", Color.BLACK);
 			UIManager.put("CheckBoxMenuItem.foreground", Color.BLACK);
 			
-			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(150,150,150)));
+			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(150,150,150)));			
 		}
 				
 		UIManager.put("Panel.selectionForeground", Color.WHITE);
@@ -2086,17 +2110,19 @@ public class Utils extends Shutter {
 		UIManager.put("TabbedPane.contentAreaColor", new Color(50,50,50));
 		UIManager.put("TabbedPane.foreground", new Color(245,245,245));
 		
-		UIManager.put("CheckBox.icon.checkmarkColor", new Color(71, 163, 236));	
+		UIManager.put("CheckBox.icon.checkmarkColor", themeColor);	
+		UIManager.put("CheckBox.icon.hoverBorderColor", highlightColor);
+		UIManager.put("CheckBox.icon.selectedFocusedBorderColor", highlightColor);
 		UIManager.put("CheckBox.icon.disabledCheckmarkColor", new Color(100, 100, 100));	
 		UIManager.put("RadioButton.icon.centerDiameter", 9);
 		
 		UIManager.put("ProgressBar.background" , new Color(40, 40, 40));
-		UIManager.put("ProgressBar.foreground" , new Color(71, 163, 236));	
+		UIManager.put("ProgressBar.foreground" , themeColor);	
 		UIManager.put("ProgressBar.selectionBackground", new Color(245,245,245));
         UIManager.put("ProgressBar.selectionForeground", new Color(245,245,245));
 		
-		UIManager.put("Slider.thumbColor", new Color(71, 163, 236));
-		UIManager.put("Slider.hoverColor", new Color(129,198,253));
+		UIManager.put("Slider.thumbColor", themeColor);		
+		UIManager.put("Slider.hoverColor", highlightColor);
 		UIManager.put("Slider.trackColor", new Color(40,40,40));
 		
 		UIManager.put("RadioButton.foreground" , new Color(245,245,245));
@@ -2107,9 +2133,17 @@ public class Utils extends Shutter {
 		        
 		UIManager.put("TextPane.foreground", Color.BLACK);
 		UIManager.put("TextPane.background", Color.WHITE);
-		UIManager.put("TextPane.selectionBackground", new Color(71, 163, 236));		
+		UIManager.put("TextPane.selectionBackground", themeColor);		
 		
 		UIManager.put("Component.arrowType", "triangle");
+		UIManager.put("Component.focusColor", highlightColor);
+		UIManager.put("Component.focusedBorderColor", highlightColor);
+		
+		UIManager.put("Button.hoverBorderColor", highlightColor);		
+		UIManager.put("Button.focusedBorderColor", highlightColor);
+		UIManager.put("Button.default.focusColor", highlightColor);
+		UIManager.put("Button.default.hoverBorderColor", highlightColor);
+		UIManager.put("Button.default.focusedBorderColor", highlightColor);
 			
 		UIManager.put("ComboBox.padding", new Insets(2,2,2,0));
 				
@@ -2121,12 +2155,13 @@ public class Utils extends Shutter {
 				
 		UIManager.put("ScrollBar.thumbInsets", new Insets( 2, 2, 2, 2 ));
 		
-		UIManager.put("Label.foreground", new Color(245,245,245));	
+		UIManager.put("Label.foreground", new Color(245,245,245));		
 		
 		UIManager.put("OptionPane.background", new Color(50,50,50));
 		
 		UIManager.put("TitledBorder.titleColor", new Color(245,245,245));
 		
+		FlatInspector.install("ctrl shift alt X");		
 	}
 
 	public static void textFieldBackground() {

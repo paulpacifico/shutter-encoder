@@ -142,7 +142,7 @@ public class ReducedWindow extends JDialog {
 		lblTempsRestant = new JLabel(Shutter.language.getProperty("tempsRestant") + " ");
 		lblTempsRestant.setVisible(false);
 		lblTempsRestant.setHorizontalAlignment(SwingConstants.LEFT);
-		lblTempsRestant.setForeground(new Color(71, 163, 236));
+		lblTempsRestant.setForeground(Utils.themeColor);
 		lblTempsRestant.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		lblTempsRestant.setBounds(100, 72, 178, 16);		
 		frame.getContentPane().add(lblTempsRestant);

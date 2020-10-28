@@ -251,7 +251,7 @@ public class Wetransfer {
 
 	private void grpWetransfer() {
 		lblYourMail = new JLabel(Shutter.language.getProperty("lblYourMail"));
-		lblYourMail.setBounds(7, 56, 90, 16);
+		lblYourMail.setBounds(7, 56, 94, 16);
 		lblYourMail.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYourMail.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(lblYourMail);		
@@ -280,7 +280,7 @@ public class Wetransfer {
 		});
 					
 		lblRecipient = new JLabel(Shutter.language.getProperty("lblRecipient"));
-		lblRecipient.setBounds(2, lblYourMail.getY() + lblYourMail.getHeight() + 17, 95, 16);
+		lblRecipient.setBounds(2, lblYourMail.getY() + lblYourMail.getHeight() + 17, 99, 16);
 		lblRecipient.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblRecipient.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(lblRecipient);		
@@ -291,7 +291,7 @@ public class Wetransfer {
 		frame.getContentPane().add(textTo);		
 		
 		lblMessage = new JLabel(Shutter.language.getProperty("lblMessage"));
-		lblMessage.setBounds(2, lblRecipient.getY() + lblRecipient.getHeight() + 17, 95, 16);
+		lblMessage.setBounds(2, lblRecipient.getY() + lblRecipient.getHeight() + 17, 99, 16);
 		lblMessage.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblMessage.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(lblMessage);
@@ -335,7 +335,7 @@ public class Wetransfer {
 		});
 		
 		lblUser = new JLabel(Shutter.language.getProperty("lblUser"));
-		lblUser.setBounds(10, casePlus.getY() + casePlus.getHeight() + 7, 86, 16);
+		lblUser.setBounds(10, casePlus.getY() + casePlus.getHeight() + 7, 90, 16);
 		lblUser.setHorizontalAlignment(SwingConstants.RIGHT);
 		if (casePlus.isSelected())
 			lblUser.setEnabled(true);
@@ -359,7 +359,7 @@ public class Wetransfer {
 			lblMotDePasse.setEnabled(true);
 		else
 			lblMotDePasse.setEnabled(false);
-		lblMotDePasse.setBounds(8, lblUser.getY() + lblUser.getHeight() + 17, 88, 16);
+		lblMotDePasse.setBounds(8, lblUser.getY() + lblUser.getHeight() + 17, 92, 16);
 		frame.getContentPane().add(lblMotDePasse);
 		
 		lblMotDePasse.setFont(new Font("Montserrat", Font.PLAIN, 12));

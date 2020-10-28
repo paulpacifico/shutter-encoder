@@ -729,7 +729,7 @@ import javax.swing.JScrollPane;
 		});
 		
 		lblEdit = new JLabel(Shutter.language.getProperty("lblEdit"));
-		lblEdit.setForeground(new Color(71,163,236));
+		lblEdit.setForeground(Utils.themeColor);
 		lblEdit.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEdit.setFont(new Font("Montserrat", Font.PLAIN, 13));
 		lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 32, 245, 15);
@@ -942,7 +942,7 @@ import javax.swing.JScrollPane;
 					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Shutter.language.getProperty("encodingError"), JOptionPane.ERROR_MESSAGE);
 				errorList.setLength(0);
 				
-				FFMPEG.FinDeFonction();
+				FFMPEG.enfOfFunction();
 			}//run
 			
 		});

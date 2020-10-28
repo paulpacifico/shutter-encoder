@@ -454,7 +454,7 @@ public class VideoPlayer {
   		lblVideo = new JLabel();    
   		lblVideo.setVisible(false);
 		lblVideo.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblVideo.setForeground(new Color(71, 163, 236));
+		lblVideo.setForeground(Utils.themeColor);
 		lblVideo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVideo.setBounds(btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6, topPanel.getSize().height + 12, frame.getSize().width - (btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6 + btnPreview.getSize().width + 12), 16);        		
 		frame.getContentPane().add(lblVideo);
@@ -482,7 +482,7 @@ public class VideoPlayer {
 		lblDuree = new JLabel();
 		lblDuree.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDuree.setFont(new Font("Montserrat", Font.PLAIN, 13));
-		lblDuree.setForeground(new Color(71, 163, 236));
+		lblDuree.setForeground(Utils.themeColor);
 		lblDuree.setBounds(0, frame.getSize().height - 16 - 12, frame.getWidth(), 16);   		
 		frame.getContentPane().add(lblDuree);
 		        		        		
@@ -807,7 +807,7 @@ public class VideoPlayer {
 							if (FFPROBE.hasAudio)
 							{
 								String border = "";
-								long size = (long) (FFPROBE.dureeTotale / 10);
+								long size = (long) (FFPROBE.totalLength / 10);
 								if (size > 549944)
 									size = 549944;
 								if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
@@ -891,7 +891,7 @@ public class VideoPlayer {
 										sliderOut.setValue(sliderOut.getMaximum());
 										
 										//Injection du temps 
-										long temps = FFPROBE.dureeTotale;
+										long temps = FFPROBE.totalLength;
 										NumberFormat formatter = new DecimalFormat("00");
 								        caseOutH.setText(formatter.format((temps/1000) / 3600));
 								        caseOutM.setText(formatter.format( ((temps/1000) / 60) % 60) );
@@ -1320,7 +1320,7 @@ public class VideoPlayer {
 					}
 
 					
-					mediaPlayerComponentRight.getMediaPlayer().setTime(formatTemps(FFPROBE.dureeTotale));
+					mediaPlayerComponentRight.getMediaPlayer().setTime(formatTemps(FFPROBE.totalLength));
 					if (panelWaveformRight != null)
 						panelWaveformRight.setLocation(waveformRight.getWidth() - 2, panelWaveformRight.getLocation().y);	
 					sliderOut.setValue(sliderOut.getMaximum());
@@ -1354,7 +1354,7 @@ public class VideoPlayer {
 				rightStop.setVisible(false);
 				
 				//Injection du temps 
-				long temps = FFPROBE.dureeTotale;
+				long temps = FFPROBE.totalLength;
 				NumberFormat formatter = new DecimalFormat("00");
 		        caseOutH.setText(formatter.format((temps/1000) / 3600));
 		        caseOutM.setText(formatter.format( ((temps/1000) / 60) % 60) );
@@ -1477,7 +1477,7 @@ public class VideoPlayer {
 					sliderOut.setEnabled(true);
 											
 					//Injection du temps 
-					long temps = formatTemps(FFPROBE.dureeTotale);
+					long temps = formatTemps(FFPROBE.totalLength);
 					NumberFormat formatter = new DecimalFormat("00");
 			        caseOutH.setText(formatter.format((temps/1000) / 3600));
 			        caseOutM.setText(formatter.format( ((temps/1000) / 60) % 60) );
@@ -1485,8 +1485,8 @@ public class VideoPlayer {
 			        caseOutF.setText(formatter.format((int) (temps / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));
 			        
 					//On définit les valeurs des sliders
-					sliderIn.setMaximum((int) formatTemps(FFPROBE.dureeTotale));
-					sliderOut.setMaximum((int) formatTemps(FFPROBE.dureeTotale));
+					sliderIn.setMaximum((int) formatTemps(FFPROBE.totalLength));
+					sliderOut.setMaximum((int) formatTemps(FFPROBE.totalLength));
 					sliderOut.setValue(sliderOut.getMaximum());
 					
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -1764,7 +1764,7 @@ public class VideoPlayer {
 							rightPlay.setVisible(true);
 							rightStop.setVisible(true);
 
-							if (mediaPlayerComponentRight.getMediaPlayer().getTime() == -1 || mediaPlayerComponentRight.getMediaPlayer().getTime() == FFPROBE.dureeTotale) // Seul moyen pour effectuer l'action seulement quand le playerRight est invisible
+							if (mediaPlayerComponentRight.getMediaPlayer().getTime() == -1 || mediaPlayerComponentRight.getMediaPlayer().getTime() == FFPROBE.totalLength) // Seul moyen pour effectuer l'action seulement quand le playerRight est invisible
 							{
 								
 								if (mediaPlayerComponentLeft != null)
@@ -2639,7 +2639,7 @@ public class VideoPlayer {
     			if (sliderOut.getValue() < sliderOut.getMaximum())
     				tempOut = (long) (mediaPlayerComponentRight.getMediaPlayer().getTime());
     			else
-    				tempOut = (long) (FFPROBE.dureeTotale);
+    				tempOut = (long) (FFPROBE.totalLength);
     			
     			tempOut += offset;
 
@@ -3403,7 +3403,7 @@ public class VideoPlayer {
 							sliderOut.setValue(sliderOut.getMaximum());
 							
 							//Injection du temps 
-							long temps = FFPROBE.dureeTotale;
+							long temps = FFPROBE.totalLength;
 							NumberFormat formatter = new DecimalFormat("00");
 					        caseOutH.setText(formatter.format((temps/1000) / 3600));
 					        caseOutM.setText(formatter.format( ((temps/1000) / 60) % 60) );
@@ -3457,7 +3457,7 @@ public class VideoPlayer {
 		long sommeTotal = totalOut - totalIn;
 		
 		if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
-			sommeTotal = FFPROBE.dureeTotale - sommeTotal;	
+			sommeTotal = FFPROBE.totalLength - sommeTotal;	
 		
 		dureeHeures = (int) (sommeTotal / 3600000);
 		dureeMinutes = (int) (sommeTotal / 60000 % 60);
@@ -3562,7 +3562,7 @@ public class VideoPlayer {
 		if (caseTcInterne.isSelected())
 			temps += offset;
 
-    	if (mediaPlayerComponentLeft.getMediaPlayer().getMediaState() != null && calculIn && temps < FFPROBE.dureeTotale)
+    	if (mediaPlayerComponentLeft.getMediaPlayer().getMediaState() != null && calculIn && temps < FFPROBE.totalLength)
     	{    		
 			mediaPlayerComponentLeft.getMediaPlayer().setVolume(sliderVolume.getValue());
     		
@@ -3625,7 +3625,7 @@ public class VideoPlayer {
 		if (caseTcInterne.isSelected())
 			temps += offset;
 		
-		if (temps >= FFPROBE.dureeTotale)
+		if (temps >= FFPROBE.totalLength)
 		{
 			sliderOutChange = true;
 			sliderOut.setValue(sliderOut.getMaximum());
@@ -3637,7 +3637,7 @@ public class VideoPlayer {
 			mediaPlayerComponentRight.getMediaPlayer().setVolume(sliderVolume.getValue());
     		
     		//Lorsque la video atteint le maximum
-    		if (mediaPlayerComponentRight.getMediaPlayer().getTime() >= FFPROBE.dureeTotale)
+    		if (mediaPlayerComponentRight.getMediaPlayer().getTime() >= FFPROBE.totalLength)
     		{
     			if (mediaPlayerComponentRight.getMediaPlayer().isPlaying())
     				mediaPlayerComponentRight.getMediaPlayer().setTime(formatTemps(sliderIn.getValue()));    				

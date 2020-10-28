@@ -352,7 +352,7 @@ public class BlackMagicOutput {
 				
 				String videoFilter = "";
 				if (caseAfficherLeTimecode.isSelected())		
-					videoFilter = " -vf " + '"' + "drawtext=fontfile=" + Shutter.pathToFont + ":timecode='"+h+"\\:"+m+"\\:"+s+"\\:"+f+"':r=" + FFPROBE.currentFPS + ":x=(w-tw)*0.5:y=(lh*0.5):fontcolor=white:fontsize=(" + FFPROBE.imageResolution.substring(FFPROBE.imageResolution.lastIndexOf("x") + 1) + "*0.0422):box=1:boxcolor=0x00000099" + '"';		
+					videoFilter = " -vf " + '"' + "drawtext=fontfile=" + Shutter.pathToFont.replace("Montserrat", "FreeSans") + ":timecode='"+h+"\\:"+m+"\\:"+s+"\\:"+f+"':r=" + FFPROBE.currentFPS + ":x=(w-tw)*0.5:y=(lh*0.5):fontcolor=white:fontsize=(" + FFPROBE.imageResolution.substring(FFPROBE.imageResolution.lastIndexOf("x") + 1) + "*0.0422):box=1:boxcolor=0x00000099" + '"';		
 						
 				String format = "";
 				if (caseHD.isSelected())

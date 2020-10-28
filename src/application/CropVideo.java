@@ -512,7 +512,7 @@ public class CropVideo {
 		
 		lblRatio.setName("lblRatio");
 		lblRatio.setFont(new Font("Montserrat", Font.PLAIN, 13));
-		lblRatio.setForeground(new Color(71,163,236));
+		lblRatio.setForeground(Utils.themeColor);
 		lblRatio.setBounds(170, 434, 88, 16);		
 		frame.getContentPane().add(lblRatio);
 
@@ -536,9 +536,9 @@ public class CropVideo {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
-		} while (FFPROBE.dureeTotale == 0 && FFPROBE.isRunning);
+		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
-		positionVideo.setMaximum(FFPROBE.dureeTotale);
+		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setBounds(12, 432, 146, 22);	
@@ -624,9 +624,7 @@ public class CropVideo {
 	        {
 	        	Thread.sleep(100);  
 	        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
-		    
-	        Shutter.enableAll();
-	 
+		    	 
            	if (FFMPEG.error)
       	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	        
@@ -678,7 +676,11 @@ public class CropVideo {
  	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	    }
         finally {
-        	Shutter.enableAll();        	
+        	Shutter.enableAll();     
+        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+			else
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
         }
 	}
 	

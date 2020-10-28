@@ -475,9 +475,9 @@ public class WatermarkWindow {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
-		} while (FFPROBE.dureeTotale == 0 && FFPROBE.isRunning);
+		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
-		positionVideo.setMaximum(FFPROBE.dureeTotale);
+		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setBounds(12, btnOK.getLocation().y - 24, 146, 22);	
@@ -514,7 +514,7 @@ public class WatermarkWindow {
 							} while (FFPROBE.isRunning);
 							
 							//Si le fichier est une vidéo on recharge le logo
-							if (FFPROBE.dureeTotale > 40)
+							if (FFPROBE.totalLength > 40)
 								loadImage(h,m,s, true, Integer.parseInt(textSize.getText()), true);
 							else
 								loadImage(h,m,s, false, -1, true);
@@ -528,7 +528,7 @@ public class WatermarkWindow {
 		JLabel posX = new JLabel(Shutter.language.getProperty("posX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posX.setForeground(new Color(71,163,236));
+		posX.setForeground(Utils.themeColor);
 		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 				
 		textPosX = new JTextField(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
@@ -539,7 +539,7 @@ public class WatermarkWindow {
 		
 		JLabel px1 = new JLabel("px");
 		px1.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px1.setForeground(new Color(71,163,236));
+		px1.setForeground(Utils.themeColor);
 		px1.setBounds(textPosX.getLocation().x + textPosX.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		textPosX.addKeyListener(new KeyListener(){
@@ -612,7 +612,7 @@ public class WatermarkWindow {
 				
 		JLabel posY = new JLabel(Shutter.language.getProperty("posY"));
 		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posY.setForeground(new Color(71,163,236));
+		posY.setForeground(Utils.themeColor);
 		posY.setBounds(px1.getLocation().x + 22, posX.getLocation().y, posY.getPreferredSize().width, 16);
 
 		textPosY = new JTextField(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) );
@@ -716,12 +716,12 @@ public class WatermarkWindow {
 		
 		JLabel px2 = new JLabel("px");
 		px2.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px2.setForeground(new Color(71,163,236));
+		px2.setForeground(Utils.themeColor);
 		px2.setBounds(textPosY.getLocation().x + textPosY.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		JLabel size = new JLabel(Shutter.language.getProperty("lblSize"));
 		size.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		size.setForeground(new Color(71,163,236));
+		size.setForeground(Utils.themeColor);
 		size.setBounds(px2.getLocation().x + 42, posX.getLocation().y, size.getPreferredSize().width, 16);
 		
 		textSize = new JTextField("100");
@@ -757,13 +757,13 @@ public class WatermarkWindow {
 		
 		JLabel px3 = new JLabel("%");
 		px3.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px3.setForeground(new Color(71,163,236));
+		px3.setForeground(Utils.themeColor);
 		px3.setBounds(textSize.getLocation().x + textSize.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		JLabel opacity = new JLabel(Shutter.language.getProperty("lblOpacity"));
 		opacity.setHorizontalAlignment(SwingConstants.RIGHT);
 		opacity.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		opacity.setForeground(new Color(71,163,236));
+		opacity.setForeground(Utils.themeColor);
 		opacity.setBounds(btnOK.getLocation().x + btnOK.getWidth() - 104, posX.getLocation().y, opacity.getPreferredSize().width, 16);
 		
 		textOpacity = new JTextField("100");
@@ -804,7 +804,7 @@ public class WatermarkWindow {
 		
 		JLabel px4 = new JLabel("%");
 		px4.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		px4.setForeground(new Color(71,163,236));
+		px4.setForeground(Utils.themeColor);
 		px4.setBounds(textOpacity.getLocation().x + textOpacity.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		frame.getContentPane().add(posX);	
@@ -992,7 +992,11 @@ public class WatermarkWindow {
  	       	JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	    }
         finally {
-        	Shutter.enableAll();       
+        	Shutter.enableAll();   
+        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+			else
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
         }
 	}
 	
@@ -1025,7 +1029,7 @@ public class WatermarkWindow {
 			
 			//Si le fichier est une vidéo
 			String offset = "";			
-			if (FFPROBE.dureeTotale > 40 && positionVideo != null 
+			if (FFPROBE.totalLength > 40 && positionVideo != null 
 				&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG") == false)
 			{
 				DecimalFormat tc = new DecimalFormat("00");			
@@ -1077,7 +1081,11 @@ public class WatermarkWindow {
            	       	
 		} catch (Exception e) {
 		} finally {
-        	Shutter.enableAll();       
+        	Shutter.enableAll();  
+        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+			else
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
         }
 	return true;
 	}

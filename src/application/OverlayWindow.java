@@ -156,10 +156,9 @@ public class OverlayWindow {
 	public static String hex = "FFFFFF";
 	public static String hex2 = "000000";
 	public static String alpha = "7F";
+	//private Integer screenDPI = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
+	//private Float DPIfactor = (float) screenDPI / 96;
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public OverlayWindow() {		
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -402,26 +401,22 @@ public class OverlayWindow {
 					}
 					
 			        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
-			        
-			        bounds = getStringBounds(g2, str, 0, bounds.height);	
-			        
-					int offset = (int) bounds.getY();
-					
-			        bounds = getStringBounds(g2, str, 0, (bounds.height - offset));
 					
 					if (lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
 						g2.setColor(new Color(backgroundColor.getRed(),backgroundColor.getGreen(),backgroundColor.getBlue(), (int) ( (float) (Integer.parseInt(spinnerOpacityTC.getValue().toString()) * 255) /  100)));
 					else
 						g2.setColor(new Color(0,0,0,0));
 					
-			        g2.fill(bounds);
+					g2.fillRect(0, 0, bounds.width, bounds.height);
 					
 					if (lblBackground.getText().equals(Shutter.language.getProperty("aucun")))
 						g2.setColor(new Color(fontColor.getRed(),fontColor.getGreen(),fontColor.getBlue(), (int) ( (float) (Integer.parseInt(spinnerOpacityTC.getValue().toString()) * 255) /  100)));
 					else				
 						g2.setColor(fontColor);
-
-			        g2.drawString(str, 0, bounds.height);
+					
+					Integer offset = bounds.height + (int) bounds.getY();
+					
+					g2.drawString(str, 0, bounds.height - offset);	
 			        
 			        image.repaint();
 					timecode.repaint();
@@ -525,26 +520,22 @@ public class OverlayWindow {
 					str = text.getText();
 				
 		        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
-		        				
-		        bounds = getStringBounds(g2, str, 0, bounds.height);
-		        
-				int offset = (int) bounds.getY();
-				
-		        bounds = getStringBounds(g2, str, 0, (bounds.height - offset));
-		        
+		        		        								
 				if (lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
 					g2.setColor(new Color(backgroundColor.getRed(),backgroundColor.getGreen(),backgroundColor.getBlue(), (int) ( (float) (Integer.parseInt(spinnerOpacityName.getValue().toString()) * 255) /  100)));
 				else
 					g2.setColor(new Color(0,0,0,0));
-				
-		        g2.fill(bounds);
+
+		        g2.fillRect(0, 0, bounds.width, bounds.height);
 				
 				if (lblBackground.getText().equals(Shutter.language.getProperty("aucun")))
 					g2.setColor(new Color(fontColor.getRed(),fontColor.getGreen(),fontColor.getBlue(), (int) ( (float) (Integer.parseInt(spinnerOpacityName.getValue().toString()) * 255) /  100)));
 				else				
 					g2.setColor(fontColor);
-
-		        g2.drawString(str, 0, (bounds.height - offset));		
+				
+				Integer offset = bounds.height + (int) bounds.getY();
+						
+				g2.drawString(str, 0, bounds.height - offset);		
 		        
 		        image.repaint();
 				fileName.repaint();
@@ -624,83 +615,7 @@ public class OverlayWindow {
 		
 		String Fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 		
-		comboFont = new JComboBox<String>();
-		
-		 for (String fontFile : Fonts)
-		 {			 
-			 //Permet d'afficher seulement les polices trouvées sur Mac
-			 if (System.getProperty("os.name").contains("Mac"))
-			 {					 
-				 boolean fontAdded = false;
-
-				 //Si la police existe déjà				 
-				 for (int i = 0; i < comboFont.getItemCount(); i++)
-				 {
-					 if (comboFont.getItemAt(i).toString().equals(fontFile))
-					 {
-					 	 fontAdded = true;
-					 	 break;
-					 }
-				 }
-				 
-				 //Library
-				 File[] fontFolder =  new File("/Library/Fonts").listFiles();
-		
-				 if (fontAdded == false)
-				 {
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-					   if (fontFolder[i].isFile() && fontFolder[i].toString().toLowerCase().replace(" ",  "").contains(fontFile.toLowerCase().replace(" ",  "")))
-					   {
-						   comboFont.addItem(fontFile);   
-						   fontAdded = true;
-						   break;
-					   }
-					 }
-				 }
-				 		
-				 //System Library
-				 if (fontAdded == false)
-				 {
-					 fontFolder = new File("/System/Library/Fonts").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-					   if (fontFolder[i].isFile() && fontFolder[i].toString().toLowerCase().replace(" ",  "").contains(fontFile.toLowerCase().replace(" ",  "")))
-					   {
-						   comboFont.addItem(fontFile);   
-						   fontAdded = true;
-						   break;
-					   }
-					 }
-				 }
-				 
-				 //User Library					 
-				 if (fontAdded == false)
-				 {
-					 fontFolder = new File(System.getProperty("user.home") + "/Library/Fonts").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-					   if (fontFolder[i].isFile() && fontFolder[i].toString().toLowerCase().replace(" ",  "").contains(fontFile.toLowerCase().replace(" ",  "")))
-					   {
-						   comboFont.addItem(fontFile);   
-						   fontAdded = true;
-						   break;
-					   }  
-					 }
-				 }			 		 
-			 }
-			 else //Merci windows		 
-				 comboFont.addItem(fontFile);
-		 }				 
-
-		 String[] fontsAvailable = new String[comboFont.getItemCount()];
-
-		 for (int i = 0; i < comboFont.getItemCount(); i++) {
-			   fontsAvailable[i] = comboFont.getItemAt(i);
-		 }
-		
+		comboFont = new JComboBox<String>(Fonts);		
 		comboFont.setName("comboFont");
 		comboFont.setSelectedItem("Arial");
 		comboFont.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -721,15 +636,15 @@ public class OverlayWindow {
 						text = String.valueOf(e.getKeyChar());
 
 					if (Character.isLetterOrDigit(e.getKeyChar())) {
-						comboFont.setModel(new DefaultComboBoxModel(fontsAvailable));
+						comboFont.setModel(new DefaultComboBoxModel(Fonts));
 						text += e.getKeyChar();
 
 						ArrayList<String> newList = new ArrayList<String>();
 						for (int i = 0; i < comboFont.getItemCount(); i++) {
-							if (fontsAvailable[i].toString().length() >= text.length()) {
-								if (fontsAvailable[i].toString().toLowerCase().substring(0, text.length()).contains(text)
-										&& fontsAvailable[i].toString().contains(":") == false) {
-									newList.add(fontsAvailable[i].toString());
+							if (Fonts[i].toString().length() >= text.length()) {
+								if (Fonts[i].toString().toLowerCase().substring(0, text.length()).contains(text)
+										&& Fonts[i].toString().contains(":") == false) {
+									newList.add(Fonts[i].toString());
 								}
 							}
 						}
@@ -743,7 +658,7 @@ public class OverlayWindow {
 						}
 
 					} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						comboFont.setModel(new DefaultComboBoxModel(fontsAvailable));
+						comboFont.setModel(new DefaultComboBoxModel(Fonts));
 						comboFont.getEditor().setItem("");
 						comboFont.hidePopup();
 						text = "";
@@ -768,7 +683,7 @@ public class OverlayWindow {
 		JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
 		lblColor.setAlignmentX(SwingConstants.RIGHT);
 		lblColor.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblColor.setBounds(comboFont.getX() + comboFont.getWidth() + 7, lblFont.getY(), lblColor.getPreferredSize().width, 16);
+		lblColor.setBounds(comboFont.getX() + comboFont.getWidth() + 7, lblFont.getY(), lblColor.getPreferredSize().width + 4, 16);
 		frame.getContentPane().add(lblColor);
 		
 		panelColor = new JPanel();
@@ -866,7 +781,7 @@ public class OverlayWindow {
 		JLabel lblColor2 = new JLabel(Shutter.language.getProperty("lblColor"));
 		lblColor2.setAlignmentX(SwingConstants.RIGHT);
 		lblColor2.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblColor2.setBounds(lblBackground.getLocation().x + lblBackground.getWidth() + 11, lblFont.getY(), lblColor2.getPreferredSize().width, 16);
+		lblColor2.setBounds(lblBackground.getLocation().x + lblBackground.getWidth() + 11, lblFont.getY(), lblColor2.getPreferredSize().width + 4, 16);
 		frame.getContentPane().add(lblColor2);
 		
 		panelColor2 = new JPanel();
@@ -1101,12 +1016,12 @@ public class OverlayWindow {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
-		} while (FFPROBE.dureeTotale == 0 && FFPROBE.isRunning);
+		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
 		String sp[] = FFPROBE.imageResolution.split("x");
 		imageRatio = (float) Integer.parseInt(sp[0])/containerWidth;
 		
-		positionVideo.setMaximum(FFPROBE.dureeTotale);
+		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		positionVideo.setLocation(panelColor2.getX() + panelColor2.getWidth() + 6, panelColor2.getY());
@@ -1176,9 +1091,9 @@ public class OverlayWindow {
 		JLabel posX = new JLabel(Shutter.language.getProperty("pX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posX.setForeground(new Color(71,163,236));
+		posX.setForeground(Utils.themeColor);
 		posX.setAlignmentX(SwingConstants.RIGHT);
-		posX.setBounds(lblSizeTC.getX(), lblSizeTC.getY() + lblSizeTC.getHeight() + 6, posX.getPreferredSize().width, 16);
+		posX.setBounds(lblSizeTC.getX(), lblSizeTC.getY() + lblSizeTC.getHeight() + 6, lblOpacityTC.getPreferredSize().width + 2, 16);
 		frame.getContentPane().add(posX);
 				
 		textTcPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(timecode.getLocation().x * imageRatio) ) ) );
@@ -1258,7 +1173,7 @@ public class OverlayWindow {
 		
 		JLabel posY = new JLabel(Shutter.language.getProperty("pY"));
 		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posY.setForeground(new Color(71,163,236));
+		posY.setForeground(Utils.themeColor);
 		posY.setAlignmentX(SwingConstants.RIGHT);
 		posY.setBounds(lblOpacityTC.getX(), posX.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);
 		frame.getContentPane().add(posY);
@@ -1415,7 +1330,7 @@ public class OverlayWindow {
 					
 		JLabel posY2 = new JLabel(Shutter.language.getProperty("pY"));
 		posY2.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posY2.setForeground(new Color(71,163,236));
+		posY2.setForeground(Utils.themeColor);
 		posY2.setAlignmentX(SwingConstants.RIGHT);
 		posY2.setBounds(textNamePosY.getX() - lblOpacityTC.getPreferredSize().width - 11, posY.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);
 		frame.getContentPane().add(posY2);
@@ -1461,7 +1376,7 @@ public class OverlayWindow {
 		JLabel lblOpacityName = new JLabel(Shutter.language.getProperty("lblOpacity"));
 		lblOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblOpacityName.setAlignmentX(SwingConstants.RIGHT);
-		lblOpacityName.setBounds(spinnerOpacityName.getLocation().x - lblOpacityTC.getPreferredSize().width - 11, lblOpacityTC.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);		
+		lblOpacityName.setBounds(spinnerOpacityName.getLocation().x - lblOpacityTC.getPreferredSize().width - 11, lblOpacityTC.getLocation().y, lblOpacityName.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblOpacityName);
 				
 		spinnerSizeName = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
@@ -1483,7 +1398,7 @@ public class OverlayWindow {
 		JLabel lblSizeName = new JLabel(Shutter.language.getProperty("lblSize"));
 		lblSizeName.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblSizeName.setAlignmentX(SwingConstants.RIGHT);
-		lblSizeName.setBounds(spinnerSizeName.getX() - lblSizeTC.getWidth() - 11, lblSizeTC.getY(), lblSizeTC.getPreferredSize().width, 16);		
+		lblSizeName.setBounds(spinnerSizeName.getX() - lblSizeTC.getWidth() - 11, lblSizeTC.getY(), lblSizeName.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblSizeName);
 						
 		textNamePosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().x * imageRatio) ) ) );
@@ -1564,7 +1479,7 @@ public class OverlayWindow {
 		JLabel posX2 = new JLabel(Shutter.language.getProperty("pX"));
 		posX2.setHorizontalAlignment(SwingConstants.LEFT);
 		posX2.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		posX2.setForeground(new Color(71,163,236));
+		posX2.setForeground(Utils.themeColor);
 		posX2.setAlignmentX(SwingConstants.RIGHT);
 		posX2.setBounds(lblSizeName.getX(), posX.getY(), posX.getPreferredSize().width, 16);
 		frame.getContentPane().add(posX2);
@@ -1679,7 +1594,7 @@ public class OverlayWindow {
 		
 		caseShowText.setName("caseShowText");
 		caseShowText.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseShowText.setSize((int) caseShowText.getPreferredSize().getWidth(), 23);
+		caseShowText.setSize(caseShowText.getPreferredSize().width + 4, 23);
 		caseShowText.setLocation(caseShowFileName.getX(), caseAddTimecode.getY());
 		frame.add(caseShowText);
 		
@@ -2136,6 +2051,10 @@ public class OverlayWindow {
 	    }
         finally {
         	Shutter.enableAll();        
+        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+			else
+				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
         }
 	}
 	

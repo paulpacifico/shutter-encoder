@@ -54,6 +54,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -91,11 +92,15 @@ public class Settings {
 	public static JTextField txtThreads = new JTextField();
 	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
+	private JLabel lblGpuDecoding = new JLabel(Shutter.language.getProperty("lblGpuDecoding"));
+	public static JComboBox<String> comboGPU;
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});
 	private JLabel lblBlackDetection = new JLabel(Shutter.language.getProperty("lblBlackDetection"));
 	private JLabel lblLanguage = new JLabel(Shutter.language.getProperty("lblLanguage"));
 	private JLabel lblTheme = new JLabel(Shutter.language.getProperty("lblTheme"));
+	private JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
+	private static JPanel accentColor = new JPanel();
 	public static JComboBox<String> comboLanguage = new JComboBox<String>(new String [] {"Français", "English", "Italiano"});
 	public static JComboBox<String> comboTheme = new JComboBox<String>(new String [] {Shutter.language.getProperty("clearTheme"), Shutter.language.getProperty("darkTheme")});
 	public static JTextField txtBlackDetection = new JTextField();
@@ -143,6 +148,7 @@ public class Settings {
 		lastUsedOutput1.setName("lastUsedOutput1");
 		lastUsedOutput2.setName("lastUsedOutput2");
 		lastUsedOutput3.setName("lastUsedOutput3");
+		comboGPU.setName("comboGPU");
 		comboScale.setName("comboScale");
 		txtThreads.setName("txtThreads");
 		txtImageDuration.setName("txtImageDuration");
@@ -150,7 +156,7 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(332, 615);
+		frame.setSize(332, 665);
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -216,16 +222,8 @@ public class Settings {
             }
         });
 		
-		btnSetBab.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnSetBab.setBounds(12, 56, btnSetBab.getPreferredSize().width, 16);
-		frame.getContentPane().add(btnSetBab);
-		
-		btnOpenGOP.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnOpenGOP.setBounds(12, btnSetBab.getLocation().y + btnSetBab.getHeight() + 10, btnOpenGOP.getPreferredSize().width, 16);
-		frame.getContentPane().add(btnOpenGOP);
-				
 		btnWaitFileComplete.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnWaitFileComplete.setBounds(12, btnOpenGOP.getLocation().y + btnOpenGOP.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
+		btnWaitFileComplete.setBounds(12, 56, btnWaitFileComplete.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnWaitFileComplete);
 		
 		btnExtension.setFont(new Font("FreeSans", Font.PLAIN, 12));
@@ -259,9 +257,17 @@ public class Settings {
 		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExtension);		
+		
+		btnSetBab.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnSetBab.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnSetBab.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnSetBab);
+		
+		btnOpenGOP.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnOpenGOP.setBounds(12, btnSetBab.getLocation().y + btnSetBab.getHeight() + 10, btnOpenGOP.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnOpenGOP);
 
 		btnDisableAnimations.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnDisableAnimations.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnDisableAnimations.getPreferredSize().width, 16);
+		btnDisableAnimations.setBounds(12, btnOpenGOP.getLocation().y + btnOpenGOP.getHeight() + 10, btnDisableAnimations.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableAnimations);
 		
 		btnDisableSound.setFont(new Font("FreeSans", Font.PLAIN, 12));
@@ -314,7 +320,7 @@ public class Settings {
 		if (lastUsedOutput1.isSelected())
 			lblDestination1.setForeground(Color.LIGHT_GRAY);
 		else
-			lblDestination1.setForeground(new Color(71, 163, 236));
+			lblDestination1.setForeground(Utils.themeColor);
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination1.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblDestination1.setBackground(new Color(50, 50, 50));
@@ -422,7 +428,7 @@ public class Settings {
 				if (lastUsedOutput1.isSelected())
 					lblDestination1.setForeground(Color.LIGHT_GRAY);
 				else
-					lblDestination1.setForeground(new Color(71, 163, 236));				
+					lblDestination1.setForeground(Utils.themeColor);				
 			}	
 		});
 		
@@ -433,7 +439,7 @@ public class Settings {
 		if (lastUsedOutput2.isSelected())
 			lblDestination2.setForeground(Color.LIGHT_GRAY);
 		else
-			lblDestination2.setForeground(new Color(71, 163, 236));
+			lblDestination2.setForeground(Utils.themeColor);
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination2.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblDestination2.setBackground(new Color(50, 50, 50));
@@ -541,7 +547,7 @@ public class Settings {
 				if (lastUsedOutput2.isSelected())
 					lblDestination2.setForeground(Color.LIGHT_GRAY);
 				else
-					lblDestination2.setForeground(new Color(71, 163, 236));				
+					lblDestination2.setForeground(Utils.themeColor);				
 			}	
 		});
 		
@@ -552,7 +558,7 @@ public class Settings {
 		if (lastUsedOutput3.isSelected())
 			lblDestination3.setForeground(Color.LIGHT_GRAY);
 		else
-			lblDestination3.setForeground(new Color(71, 163, 236));
+			lblDestination3.setForeground(Utils.themeColor);
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination3.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblDestination3.setBackground(new Color(50, 50, 50));
@@ -661,7 +667,7 @@ public class Settings {
 				if (lastUsedOutput3.isSelected())
 					lblDestination3.setForeground(Color.LIGHT_GRAY);
 				else
-					lblDestination3.setForeground(new Color(71, 163, 236));				
+					lblDestination3.setForeground(Utils.themeColor);				
 			}	
 		});
 		
@@ -670,8 +676,19 @@ public class Settings {
 		lblDestination2.setTransferHandler(new OutputTransferHandler2());
 		lblDestination3.setTransferHandler(new OutputTransferHandler3());
 		
+		lblGpuDecoding.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblGpuDecoding.setBounds(12, lblDestination3.getLocation().y + lblDestination3.getHeight() + 10, lblGpuDecoding.getPreferredSize().width, 16);
+		frame.getContentPane().add(lblGpuDecoding);
+		
+		comboGPU.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboGPU.setEditable(false);
+		comboGPU.setSelectedItem(Shutter.language.getProperty("aucun"));
+		comboGPU.setBounds(lblGpuDecoding.getX() + lblGpuDecoding.getWidth() + 6, lblGpuDecoding.getLocation().y - 4, comboGPU.getPreferredSize().width, 22);
+		comboGPU.setMaximumRowCount(10);
+		frame.getContentPane().add(comboGPU);
+		
 		lblScaleMode.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblScaleMode.setBounds(12, lblDestination3.getLocation().y + lblDestination3.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
+		lblScaleMode.setBounds(12, lblGpuDecoding.getLocation().y + lblGpuDecoding.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblScaleMode);
 				
 		comboScale.setFont(new Font("FreeSans", Font.PLAIN, 10));
@@ -760,8 +777,128 @@ public class Settings {
 			
 		});
 		
+		lblTheme.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblTheme.setBounds(12, lblBlackDetection.getLocation().y + lblBlackDetection.getHeight() + 10, lblTheme.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblTheme);
+			
+		comboTheme.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboTheme.setEditable(false);
+		comboTheme.setBounds(lblTheme.getX() + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, comboTheme.getPreferredSize().width, 22);
+		comboTheme.setMaximumRowCount(10);
+		frame.getContentPane().add(comboTheme);
+		
+		comboTheme.addActionListener(new ActionListener() {
+			
+			@SuppressWarnings("unused")
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (frame.isVisible())
+				{			
+					saveSettings();
+												
+					try {
+						String newShutter;
+						if (System.getProperty("os.name").contains("Windows")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
+							String[] arguments = new String[] { newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else if (System.getProperty("os.name").contains("Mac")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+							newShutter = newShutter.substring(0, newShutter.length() - 1);
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
+									"\\ ");
+							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else { //Linux	
+							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
+							Process proc = new ProcessBuilder(arguments).start();
+						}
+	
+					} catch (Exception error) {
+					}
+				
+					System.exit(0);
+				}
+			}
+			
+		});
+		
+		lblColor.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblColor.setBounds(comboTheme.getX() + comboTheme.getWidth() + 12, lblTheme.getLocation().y, lblColor.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblColor);
+		
+		accentColor = new JPanel();
+		accentColor.setName("accentColor");
+		accentColor.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.BLACK));
+		accentColor.setBackground(Utils.themeColor);
+		accentColor.setBounds(lblColor.getLocation().x + lblColor.getWidth() + 12, lblColor.getLocation().y - 4, 41, 22);
+		frame.getContentPane().add(accentColor);
+		
+		accentColor.addMouseListener(new MouseListener(){
+
+			@SuppressWarnings("unused")
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Utils.themeColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), new Color(71, 163, 236));
+								
+				if (Utils.themeColor != null)
+				{
+					accentColor.setBackground(Utils.themeColor);	
+					
+					saveSettings();
+					
+					try {
+						String newShutter;
+						if (System.getProperty("os.name").contains("Windows")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
+							String[] arguments = new String[] { newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else if (System.getProperty("os.name").contains("Mac")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+							newShutter = newShutter.substring(0, newShutter.length() - 1);
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
+									"\\ ");
+							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else { //Linux	
+							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
+							Process proc = new ProcessBuilder(arguments).start();
+						}
+
+					} catch (Exception error) {
+					}
+				
+					System.exit(0);
+				}
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {		
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+    		
+    	});
+		
 		lblLanguage.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblLanguage.setBounds(12, lblBlackDetection.getLocation().y + lblBlackDetection.getHeight() + 10, lblLanguage.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
+		lblLanguage.setBounds(12, lblTheme.getLocation().y + lblTheme.getHeight() + 10, lblLanguage.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblLanguage);
 			
 		comboLanguage.setFont(new Font("FreeSans", Font.PLAIN, 10));
@@ -813,56 +950,7 @@ public class Settings {
 			}
 			
 		});
-		
-		lblTheme.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblTheme.setBounds(comboLanguage.getX() + comboLanguage.getWidth() + 12, lblLanguage.getLocation().y, lblTheme.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblTheme);
-			
-		comboTheme.setFont(new Font("FreeSans", Font.PLAIN, 10));
-		comboTheme.setEditable(false);
-		comboTheme.setBounds(lblTheme.getX() + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, comboTheme.getPreferredSize().width, 22);
-		comboTheme.setMaximumRowCount(10);
-		frame.getContentPane().add(comboTheme);
-		
-		comboTheme.addActionListener(new ActionListener() {
-			
-			@SuppressWarnings("unused")
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (frame.isVisible())
-				{			
-					saveSettings();
-												
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
-						}
-	
-					} catch (Exception error) {
-					}
 				
-					System.exit(0);
-				}
-			}
-			
-		});
-		
 		JLabel donate;
 		if (comboLanguage.getSelectedItem().equals("Français"))
 			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
@@ -1043,8 +1131,18 @@ public class Settings {
 					for (Component p : frame.getContentPane().getComponents())
 					{						
 						if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-						{												
-							if (p instanceof JRadioButton)
+						{								
+							if (p instanceof JPanel)
+							{						
+								//Value
+								String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
+								String s2[] = s[1].split(",");
+								((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
+								
+								if (p.getName().equals("accentColor"))
+									Utils.themeColor = accentColor.getBackground();
+							}
+							else if (p instanceof JRadioButton)
 							{
 								//Value
 								if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
@@ -1240,6 +1338,38 @@ public class Settings {
 						//Value
 						Element cValue = document.createElement("Value");
 						cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
+						component.appendChild(cValue);
+						
+						//State
+						Element cState = document.createElement("Enable");
+						cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+						component.appendChild(cState);
+						
+						//Visible
+						Element cVisible = document.createElement("Visible");
+						cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+						component.appendChild(cVisible);		
+						
+						root.appendChild(component);
+					}
+					else if (p instanceof JPanel)
+					{
+						//Component
+						Element component = document.createElement("Component");
+						
+						//Type
+						Element cType = document.createElement("Type");
+						cType.appendChild(document.createTextNode("JPanel"));
+						component.appendChild(cType);
+
+						//Name
+						Element cName = document.createElement("Name");
+						cName.appendChild(document.createTextNode(p.getName()));
+						component.appendChild(cName);
+						
+						//Value
+						Element cValue = document.createElement("Value");
+						cValue.appendChild(document.createTextNode(String.valueOf(((JPanel) p).getBackground())));
 						component.appendChild(cValue);
 						
 						//State

@@ -692,7 +692,7 @@ class FonctionsRenderer extends DefaultListCellRenderer {
 	      if (isSelected)
 	      {
 	    	  setBackground(new Color(215,215,215));  
-	    	  setBorder(new LineBorder(new Color(129,198,253)));
+	    	  setBorder(new LineBorder(Utils.highlightColor));
 	    	  setOpaque(true);
 	      }
 	      else

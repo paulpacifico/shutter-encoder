@@ -172,7 +172,7 @@ public class BlackMagicInput {
 		lblDestination = new JTextField();
 		lblDestination.setEditable(false);
 	  	lblDestination.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-		lblDestination.setForeground(new Color(71,163,236));
+		lblDestination.setForeground(Utils.themeColor);
 		lblDestination.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblDestination.setBackground(new Color(50,50,50));
 		if (System.getProperty("os.name").contains("Windows"))
