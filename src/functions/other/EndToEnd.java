@@ -123,7 +123,7 @@ public class EndToEnd extends Shutter {
 										Thread.sleep(100);
 									} catch (InterruptedException e1) {}
 								} while (FFPROBE.isRunning == true);
-								dureeTotale += FFPROBE.dureeTotale;
+								dureeTotale += FFPROBE.totalLength;
 								
 								writer.println("file '" + liste.getElementAt(i) + "'");
 							}				
@@ -132,7 +132,7 @@ public class EndToEnd extends Shutter {
 							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 																				
 							progressBar1.setMaximum((int) (dureeTotale / 1000));
-							FFPROBE.dureeTotale = progressBar1.getMaximum();	
+							FFPROBE.totalLength = progressBar1.getMaximum();	
 							FFMPEG.dureeTotale = progressBar1.getMaximum();
 												
 							lblEncodageEnCours.setText(Shutter.language.getProperty("babEncoding"));
@@ -169,7 +169,7 @@ public class EndToEnd extends Shutter {
 			}//End dialog
 				
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});

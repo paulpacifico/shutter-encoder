@@ -148,7 +148,7 @@ public class BlackDetection extends Shutter {
 				}//End For	
 								
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});

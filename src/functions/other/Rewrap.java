@@ -166,6 +166,18 @@ public class Rewrap extends Shutter {
 							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
+					if (FFMPEG.error)
+					{
+						//Envoi de la commande
+						cmd = " -avoid_negative_ts make_zero -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + " -y ";
+						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
+						
+						//Attente de la fin de FFMPEG
+						do
+								Thread.sleep(100);
+						while(FFMPEG.runProcess.isAlive());
+					}
+					
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 					{
 						if (actionsDeFin(fichier, fileOut, sortie))
@@ -178,7 +190,7 @@ public class Rewrap extends Shutter {
 			}//End For	
 								
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});
@@ -344,7 +356,7 @@ public class Rewrap extends Shutter {
 			NumberFormat formatter = new DecimalFormat("00");
 
 			int timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
-			int millisecondsToTc = timecodeToMs + FFPROBE.dureeTotale;
+			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
 			if (caseInAndOut.isSelected())
 				millisecondsToTc = timecodeToMs + VideoPlayer.dureeHeures * 3600000 + VideoPlayer.dureeMinutes * 60000 + VideoPlayer.dureeSecondes * 1000 + VideoPlayer.dureeImages * (int) (1000 / FFPROBE.currentFPS);

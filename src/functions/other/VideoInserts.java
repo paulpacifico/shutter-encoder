@@ -119,7 +119,7 @@ public class VideoInserts extends Shutter {
 							Thread.sleep(100);
 						while(FFPROBE.isRunning);
 						
-						listeFichiers[i] = tcInMs() + "=" + '"' + liste.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.dureeTotale);
+						listeFichiers[i] = tcInMs() + "=" + '"' + liste.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
 					}
 																								
 					int temps = 0;	
@@ -134,10 +134,10 @@ public class VideoInserts extends Shutter {
 							Thread.sleep(100);
 						} while (FFPROBE.isRunning);	
 						
-						if (FFPROBE.dureeTotale > temps)
+						if (FFPROBE.totalLength > temps)
 						{
 							fichierMaster = listeFichiers[i];		
-							temps = FFPROBE.dureeTotale;
+							temps = FFPROBE.totalLength;
 						}
 					}
 																			
@@ -345,7 +345,7 @@ public class VideoInserts extends Shutter {
 				}//End Try
 							
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});
