@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Random;
 
 import application.Ftp;
@@ -46,7 +47,7 @@ public class DNxHR extends Shutter {
 	private static File OPAtomFolder;
 	private static File vidstab = null;
 	
-	public static void main() {
+	public static void main(boolean encode) {
 
 		Thread thread = new Thread(new Runnable(){			
 			@Override
@@ -190,6 +191,9 @@ public class DNxHR extends Shutter {
 					//LUTs
 					filterComplex = setLUT(filterComplex);
 		            					
+					//Levels
+					filterComplex = setLevels(filterComplex);
+					
 					//Colormatrix
 					filterComplex = setColormatrix(filterComplex);	
 					
@@ -212,7 +216,7 @@ public class DNxHR extends Shutter {
 					filterComplex = setDenoiser(filterComplex);
 					
 					//Exposure
-					filterComplex = setExposure(filterComplex);		
+					filterComplex = setExposure(filterComplex);	
 
 					//Interpolation
 					filterComplex = setInterpolation(filterComplex);					
@@ -295,7 +299,7 @@ public class DNxHR extends Shutter {
 					}						
 					
 					String output = '"' + fileOut.toString() + '"';
-					if (caseVisualiser.isSelected())						
+					if (caseDisplay.isSelected())						
 						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:play" + '"';
 
 					if (cancelled == false && FFMPEG.error == false)
@@ -308,7 +312,16 @@ public class DNxHR extends Shutter {
 							FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + " -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab |" + stab + output);
 						}
 						else
-							FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
+						{
+							//Encodage
+							if (encode)
+								FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);	
+							else //Preview
+							{						
+								FFMPEG.toFFPLAY(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + " -f mxf pipe:play |");
+								break;
+							}
+						}
 										
 						//Attente de la fin de FFMPEG
 						do
@@ -334,7 +347,7 @@ public class DNxHR extends Shutter {
 					}
 					
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
-					|| FFMPEG.saveCode == false && caseActiverSequence.isSelected()
+					|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
 					|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected() || FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 					{
 						if (actionsDeFin(fichier, fileOut, sortie, vidstab))
@@ -347,8 +360,8 @@ public class DNxHR extends Shutter {
 				
 				OPAtomFolder = null;
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && encode)
+					enfOfFunction();
 			}//run
 			
 		});
@@ -437,7 +450,7 @@ public class DNxHR extends Shutter {
 		if (caseAudioFadeOut.isSelected())
 		{
 			long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-			long audioStart = (long) FFPROBE.dureeTotale - audioOutValue;
+			long audioStart = (long) FFPROBE.totalLength - audioOutValue;
 			
 			if (caseInAndOut.isSelected())
 			{
@@ -452,7 +465,7 @@ public class DNxHR extends Shutter {
 						audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
 				}
 				else //Remove mode
-					audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+					audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
 			}
 			
 			String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
@@ -522,7 +535,7 @@ public class DNxHR extends Shutter {
 	}
 	
 	protected static String setSequence(File file, String extension) {
-		if (caseActiverSequence.isSelected())
+		if (caseEnableSequence.isSelected())
 		{
 			int n = 0;
 			do {
@@ -539,7 +552,7 @@ public class DNxHR extends Shutter {
 	}
 	
 	protected static File setSequenceName(File file, String extension) {
-		if (caseActiverSequence.isSelected())
+		if (caseEnableSequence.isSelected())
 		{
 			int n = 0;
 			do {
@@ -567,9 +580,9 @@ public class DNxHR extends Shutter {
 	
 	protected static String setPad(String filterComplex) {	
 		
-		if (caseForcerResolution.isSelected())
+		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
-			String s[] = lblResolution.getSelectedItem().toString().split("x");
+			String s[] = comboResolution.getSelectedItem().toString().split("x");
 			
 			if (lblPad.getText().equals(language.getProperty("lblPad")))
 			{
@@ -622,7 +635,7 @@ public class DNxHR extends Shutter {
 	}
 	
 	protected static String setLoop(String extension) {
-		if (caseActiverSequence.isSelected() == false)
+		if (caseEnableSequence.isSelected() == false)
 		{
 			switch (extension)
 			{
@@ -724,6 +737,18 @@ public class DNxHR extends Shutter {
 			else
 				filterComplex = "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 		}
+		return filterComplex;
+	}
+	
+	protected static String setLevels(String filterComplex) {
+		
+		if (caseLevels.isSelected())
+		{			
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "scale=in_range=" + comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full") + ":out_range=" + comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");		
+		}
+
 		return filterComplex;
 	}
 	
@@ -870,7 +895,7 @@ public class DNxHR extends Shutter {
 		}
 		return filterComplex;
 	}
-	
+		
 	protected static String setDeband(String filterComplex) {
 		
 		if (caseBanding.isSelected())
@@ -902,7 +927,7 @@ public class DNxHR extends Shutter {
 		
 		if (caseCreateOPATOM.isSelected() && lblOPATOM.getText().equals("OP-Atom"))
 			flags += " -metadata material_package_name=" + '"' + fichier + '"' + " -f mxf_opatom";
-		
+				
 		return flags;
 	}
 	
@@ -933,7 +958,7 @@ public class DNxHR extends Shutter {
 		
 		return filterComplex;
 	}
-	
+
 	protected static String setInterpolation(String filterComplex) {
 		if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
 		{		            		
@@ -1006,38 +1031,61 @@ public class DNxHR extends Shutter {
 	
 	protected static String setSubtitles() {
     	if (caseSubtitles.isSelected() && subtitlesBurn)
-    	{    		
-    		String background = "" ;
-			if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-				background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
-			else
-				background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
-			
-			//Bold
-			if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
-				background += ",Bold=1";
-			
-			//Italic
-			if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
-				background += ",Italic=1";
-    		
-			String i[] = FFPROBE.imageResolution.split("x");
-			if (caseForcerResolution.isSelected())
-			{
-	   			String s[] = lblResolution.getSelectedItem().toString().split("x");
-	        	int iw = Integer.parseInt(i[0]);
-	        	int ih = Integer.parseInt(i[1]);
-	        	int ow = Integer.parseInt(s[0]);
-	        	int oh = Integer.parseInt(s[1]);      
-	        	
-	        	int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
-	        	int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
+    	{    	
+			if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+    		{	
+				String background = "" ;
+				if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+					background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
+				else
+					background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
+				
+				//Bold
+				if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
+					background += ",Bold=1";
+				
+				//Italic
+				if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
+					background += ",Italic=1";
+				
+				String i[] = FFPROBE.imageResolution.split("x");
+				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");
+					int iw = Integer.parseInt(i[0]);
+					int ih = Integer.parseInt(i[1]);
+					int ow = Integer.parseInt(s[0]);
+					int oh = Integer.parseInt(s[1]);      
+					
+					int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
+					int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
 
-				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+				}
+				else
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';		
 			}
-			else
-				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';		
-			 
+			else // ASS or SSA
+			{
+				String i[] = FFPROBE.imageResolution.split("x");
+				SubtitlesWindow.textWidth.setText(i[0]); //IMPORTANT
+				
+				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");
+		        	int iw = Integer.parseInt(i[0]);
+		        	int ih = Integer.parseInt(i[1]);
+		        	int ow = Integer.parseInt(s[0]);
+		        	int oh = Integer.parseInt(s[1]);        	
+		        	
+		        	int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
+		        	int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
+		        	
+		        	return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+				}
+				else
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+			}
 		}
 		else if (caseSubtitles.isSelected() && subtitlesBurn == false)
     	{
@@ -1106,9 +1154,9 @@ public class DNxHR extends Shutter {
         	int ImageWidth = Integer.parseInt(i[0]);
         	
         	int posX = ((int) (ImageWidth - Integer.parseInt(SubtitlesWindow.textWidth.getText())) / 2);
-        	if (caseForcerResolution.isSelected())
+        	if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
         	{
-	        	String s[] = lblResolution.getSelectedItem().toString().split("x");
+	        	String s[] = comboResolution.getSelectedItem().toString().split("x");
 	        	int iw = Integer.parseInt(i[0]);
 	        	int ow = Integer.parseInt(s[0]);  
 	        	posX =  (int) (posX / ((float) iw/ow));
@@ -1160,7 +1208,7 @@ public class DNxHR extends Shutter {
 			float newFPS = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
 			
 			float FPS = FFPROBE.currentFPS;
-			if (caseActiverSequence.isSelected())
+			if (caseEnableSequence.isSelected())
 				FPS = Float.valueOf(caseSequenceFPS.getSelectedItem().toString().replace(",", ".").replace(",", "."));
 			
 			if (FPS != newFPS)
@@ -1208,7 +1256,7 @@ public class DNxHR extends Shutter {
     		if (filterComplex != "") filterComplex += ",";	
     		
     		long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
+    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
     		
     		if (caseInAndOut.isSelected())
     		{
@@ -1223,7 +1271,7 @@ public class DNxHR extends Shutter {
 	        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - videoOutValue;
         		}
         		else //Remove mode
-    	    		videoStart = FFPROBE.dureeTotale - (totalOut - totalIn) - videoOutValue;
+    	    		videoStart = FFPROBE.totalLength - (totalOut - totalIn) - videoOutValue;
     		}
     		
     		String color = "black";
@@ -1258,7 +1306,16 @@ public class DNxHR extends Shutter {
         
         //On map les sous-titres que l'on intègre        
         if (caseSubtitles.isSelected() && subtitlesBurn == false)
-        	filterComplex += " -map 1:s -c:s mov_text";
+        {
+        	String map = " -map 1:s";
+        	if (caseLogo.isSelected())
+        		map = " -map 2:s";
+        	
+        	String[] languages = Locale.getISOLanguages();			
+			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
+        	
+        	filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
+        }
         
         return filterComplex;
 	}
@@ -1283,7 +1340,7 @@ public class DNxHR extends Shutter {
 			return " -r " + FFPROBE.currentFPS;
 		else if (caseConform.isSelected())
 			return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
-		else if (caseActiverSequence.isSelected())
+		else if (caseEnableSequence.isSelected())
 		{
 			if (caseConform.isSelected())
 				return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", ".")) + " -frames:v " + liste.getSize();	
@@ -1464,7 +1521,7 @@ public class DNxHR extends Shutter {
 		Utils.copyFile(fileOut);
 		
 		//Séquence d'images et bout à bout
-		if (caseActiverSequence.isSelected() || Settings.btnSetBab.isSelected())
+		if (caseEnableSequence.isSelected() || Settings.btnSetBab.isSelected())
 			return true;
 		
 		//Timecode
@@ -1473,7 +1530,7 @@ public class DNxHR extends Shutter {
 			NumberFormat formatter = new DecimalFormat("00");
 
 			int timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
-			int millisecondsToTc = timecodeToMs + FFPROBE.dureeTotale;
+			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
 			if (caseInAndOut.isSelected())
 				millisecondsToTc = timecodeToMs + VideoPlayer.dureeHeures * 3600000 + VideoPlayer.dureeMinutes * 60000 + VideoPlayer.dureeSecondes * 1000 + VideoPlayer.dureeImages * (int) (1000 / FFPROBE.currentFPS);
@@ -1492,7 +1549,7 @@ public class DNxHR extends Shutter {
 		if (Shutter.scanIsRunning)
 		{
 			Utils.moveScannedFiles(fichier);
-			DNxHR.main();
+			DNxHR.main(true);
 			return true;
 		}
 		return false;

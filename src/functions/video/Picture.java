@@ -40,7 +40,7 @@ public class Picture extends Shutter {
 	
 	private static int complete;
 	
-	public static void main() {
+	public static void main(boolean encode) {
 
 		Thread thread = new Thread(new Runnable(){			
 			@Override
@@ -172,6 +172,9 @@ public class Picture extends Shutter {
 					//LUTs
 					filter = setLUT(filter);
 					
+					//Levels
+					filter = setLevels(filter);
+					
 					//Colormatrix
 					filter = setColormatrix(filter);	
 					
@@ -270,8 +273,8 @@ public class Picture extends Shutter {
 					}//End Try
 				}//End For	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && encode)
+					enfOfFunction();
 			}//run
 			
 		});
@@ -594,6 +597,18 @@ public class Picture extends Shutter {
 		return filterComplex;
 	}
 	
+	protected static String setLevels(String filterComplex) {
+		
+		if (caseLevels.isSelected())
+		{			
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "scale=in_range=" + comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full") + ":out_range=" + comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");		
+		}
+
+		return filterComplex;
+	}
+	
 	protected static String setColormatrix(String filterComplex) {
 		if (caseColormatrix.isSelected())
 		{
@@ -761,7 +776,7 @@ public class Picture extends Shutter {
 		if (Shutter.scanIsRunning)
 		{
 			Utils.moveScannedFiles(fichier);				
-			Picture.main();
+			Picture.main(true);
 			return true;
 		}
 		return false;

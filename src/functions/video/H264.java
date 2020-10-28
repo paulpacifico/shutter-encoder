@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import application.Ftp;
 import application.OverlayWindow;
@@ -170,19 +171,25 @@ public class H264 extends Shutter {
 					
 					//LUTs
 					filterComplex = setLUT(filterComplex);
-										
+						
+					//Levels
+					filterComplex = setLevels(filterComplex);
+									
 					//Colormatrix
 					filterComplex = setColormatrix(filterComplex);	
 					
 					//Color
 					filterComplex = setColor(filterComplex);
 					
+					//Decimate
+					filterComplex = setDecimate(filterComplex);
+					
 					//Interpolation
 					filterComplex = setInterpolation(filterComplex);
 					
 					//Ralenti
 					filterComplex = setSlowMotion(filterComplex);
-					
+										
 			        //PTS
 					filterComplex = setPTS(filterComplex);		      		                     	
 	            	     
@@ -273,7 +280,7 @@ public class H264 extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 					
 					String output = '"' + fileOut.toString() + '"';
-					if (caseVisualiser.isSelected())
+					if (caseDisplay.isSelected())
 						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
 					
 					//Envoi de la commande
@@ -309,7 +316,7 @@ public class H264 extends Shutter {
 					}
 
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
-					|| FFMPEG.saveCode == false && caseActiverSequence.isSelected()
+					|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
 					|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
 					|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 					{
@@ -322,7 +329,7 @@ public class H264 extends Shutter {
 			}//End For	
 
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && encode)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});
@@ -386,7 +393,7 @@ public class H264 extends Shutter {
     		if (filterComplex != "") filterComplex += ",";	
     		
     		long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
+    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
     		
     		if (caseInAndOut.isSelected())
     		{
@@ -401,7 +408,7 @@ public class H264 extends Shutter {
 	        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - videoOutValue;
         		}
         		else //Remove mode
-    	    		videoStart = FFPROBE.dureeTotale - (totalOut - totalIn) - videoOutValue;
+    	    		videoStart = FFPROBE.totalLength - (totalOut - totalIn) - videoOutValue;
     		}
     		
     		String color = "black";
@@ -463,10 +470,18 @@ public class H264 extends Shutter {
 		//On map les sous-titres que l'on intègre        
         if (caseSubtitles.isSelected() && subtitlesBurn == false)
         {
+        	String map = " -map 1:s";
+        	if (caseLogo.isSelected())
+        		map = " -map 2:s";
+        	
+        	String[] languages = Locale.getISOLanguages();			
+			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
+			        	
         	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
-        		filterComplex += " -map 1:s -c:s srt";
+        		filterComplex += map + " -c:s srt -metadata:s:s:0 language=" + loc.getISO3Language();
         	else
-        		filterComplex += " -map 1:s -c:s mov_text";
+        		filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();      	
+    
         }
         
         return filterComplex;
@@ -590,7 +605,7 @@ public class H264 extends Shutter {
 	    	if (caseAudioFadeOut.isSelected())
 	    	{
 	    		long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-	    		long audioStart =  (long) FFPROBE.dureeTotale - audioOutValue;
+	    		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
 	    		
 	    		if (caseInAndOut.isSelected())
 				{
@@ -605,7 +620,7 @@ public class H264 extends Shutter {
 							audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
 					}
 					else //Remove mode
-						audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+						audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
 				}
 	    		
 	    		String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
@@ -759,7 +774,7 @@ public class H264 extends Shutter {
 	}
 
 	protected static File setSequenceName(File file, String extension) {
-		if (caseActiverSequence.isSelected())
+		if (caseEnableSequence.isSelected())
 		{
 			int n = 0;
 			do {
@@ -773,7 +788,7 @@ public class H264 extends Shutter {
 	}
 	
 	protected static String setLoop(String extension) {
-		if (caseActiverSequence.isSelected() == false)
+		if (caseEnableSequence.isSelected() == false)
 		{
 			switch (extension)
 			{
@@ -794,7 +809,7 @@ public class H264 extends Shutter {
 	}
 
 	protected static String setSequence(File file, String extension) {
-		if (caseActiverSequence.isSelected())
+		if (caseEnableSequence.isSelected())
 		{
 			int n = 0;
 			do {
@@ -1119,6 +1134,18 @@ public class H264 extends Shutter {
 		return filterComplex;
 	}
 	
+	protected static String setLevels(String filterComplex) {
+		
+		if (caseLevels.isSelected())
+		{			
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "scale=in_range=" + comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full") + ":out_range=" + comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");		
+		}
+
+		return filterComplex;
+	}
+	
 	protected static String setColormatrix(String filterComplex) {
 		if (caseColormatrix.isSelected())
 		{
@@ -1187,8 +1214,11 @@ public class H264 extends Shutter {
 		
 		String flags = " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 		
-		if (caseFastStart.isSelected() && caseFastStart.isEnabled())
+		if (caseFastStart.isSelected() && (comboFilter.getSelectedItem().toString().equals(".mp4") || comboFilter.getSelectedItem().toString().equals(".mov")))
 			flags += " -movflags faststart";
+		
+		if (caseDecimate.isSelected())		
+			flags += " -vsync vfr";	
 		
 		return flags;
 	}
@@ -1205,6 +1235,18 @@ public class H264 extends Shutter {
 		}
 		
 		return videoFilter;
+	}
+	
+	protected static String setDecimate(String filterComplex) {
+		if (caseDecimate.isSelected())
+		{			
+			if (filterComplex != "")
+				filterComplex += ",mpdecimate";	
+			else
+				filterComplex = "mpdecimate";	
+		}
+
+		return filterComplex;
 	}
 	
 	protected static String setInterpolation(String filterComplex) {
@@ -1251,44 +1293,69 @@ public class H264 extends Shutter {
 		
 	protected static String setSubtitles() {
     	if (caseSubtitles.isSelected() && subtitlesBurn)
-    	{    	    		
-    		String background = "" ;
-			if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-				background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
-			else
-				background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
-    		
-			//Bold
-			if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
-				background += ",Bold=1";
-			
-			//Italic
-			if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
-				background += ",Italic=1";
-			
-			String i[] = FFPROBE.imageResolution.split("x");
-			if (caseRognage.isSelected() && lblPad.getText().equals(Shutter.language.getProperty("lblCrop")))
-				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + FFPROBE.cropWidth + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
-			else if (caseRognage.isSelected() == false && lblPad.getText().equals(language.getProperty("lblPad")) && comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+    	{    	
+    		if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+    		{
+	    		String background = "" ;
+				if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+					background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
+				else
+					background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
+	    		
+				//Bold
+				if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
+					background += ",Bold=1";
+				
+				//Italic
+				if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
+					background += ",Italic=1";
+				
+				String i[] = FFPROBE.imageResolution.split("x");
+				if (caseRognage.isSelected() && lblPad.getText().equals(Shutter.language.getProperty("lblCrop")))
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + FFPROBE.cropWidth + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+				else if (caseRognage.isSelected() == false && lblPad.getText().equals(language.getProperty("lblPad")) && comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				{
+		        	String s[] = comboH264Taille.getSelectedItem().toString().split("x");
+		        	int iw = Integer.parseInt(i[0]);
+		        	int ih = Integer.parseInt(i[1]);
+		        	int ow = Integer.parseInt(s[0]);
+		        	int oh = Integer.parseInt(s[1]);        	
+		        	
+		        	int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
+		        	int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
+		        	
+		    		
+		    		return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+				}
+				else
+				{
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';	
+				}
+    		}
+			else // ASS or SSA
 			{
-	        	String s[] = comboH264Taille.getSelectedItem().toString().split("x");
-	        	int iw = Integer.parseInt(i[0]);
-	        	int ih = Integer.parseInt(i[1]);
-	        	int ow = Integer.parseInt(s[0]);
-	        	int oh = Integer.parseInt(s[1]);        	
-	        	
-	        	int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
-	        	int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
-	        	
-				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
-			}
-			else
-			{
-				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+				String i[] = FFPROBE.imageResolution.split("x");
+				SubtitlesWindow.textWidth.setText(i[0]); //IMPORTANT
+				
+				if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				{
+					String s[] = comboH264Taille.getSelectedItem().toString().split("x");
+		        	int iw = Integer.parseInt(i[0]);
+		        	int ih = Integer.parseInt(i[1]);
+		        	int ow = Integer.parseInt(s[0]);
+		        	int oh = Integer.parseInt(s[1]);        	
+		        	
+		        	int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
+		        	int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
+		        	
+		        	return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+				}
+				else
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
 			}
 		}
     	else if (caseSubtitles.isSelected() && subtitlesBurn == false)
-    	{
+    	{			
     		return FFMPEG.inPoint + " -i " + '"' +  subtitlesFile.toString() + '"';
     	}
     	
@@ -1379,7 +1446,7 @@ public class H264 extends Shutter {
 			float newFPS = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
 			
 			float FPS = FFPROBE.currentFPS;
-			if (caseActiverSequence.isSelected())
+			if (caseEnableSequence.isSelected())
 				FPS = Float.valueOf(caseSequenceFPS.getSelectedItem().toString().replace(",", ".").replace(",", "."));
 			
 			if (FPS != newFPS)
@@ -1398,7 +1465,7 @@ public class H264 extends Shutter {
 			return " -r " + FFPROBE.currentFPS;
 		else if (caseConform.isSelected())
 	    	return " -r " + Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));            
-        else if (caseActiverSequence.isSelected())
+        else if (caseEnableSequence.isSelected())
         {
         	if (caseConform.isSelected())
         		return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", ".")) + " -frames:v " + liste.getSize();	
@@ -1496,7 +1563,7 @@ public class H264 extends Shutter {
 		Utils.copyFile(fileOut);
 		
 		//Séquence d'images et bout à bout
-		if (caseActiverSequence.isSelected() || Settings.btnSetBab.isSelected())
+		if (caseEnableSequence.isSelected() || Settings.btnSetBab.isSelected())
 			return true;
 		
 		//Scan

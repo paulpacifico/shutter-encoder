@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
 import application.Ftp;
@@ -249,7 +250,7 @@ public class DVD extends Shutter {
 				}//End For	
 
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});
@@ -261,8 +262,8 @@ public class DVD extends Shutter {
 		FFPROBE.Data(file);
 		do {
 			Thread.sleep(100);
-		} while (FFPROBE.dureeTotale == 0 && FFPROBE.isRunning);
-		float debit = (float) ((float) 4000000 / FFPROBE.dureeTotale) * 8;
+		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+		float debit = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
 		
 		NumberFormat formatter = new DecimalFormat("0000");
 		
@@ -430,23 +431,33 @@ public class DVD extends Shutter {
 	
 	protected static String setSubtitles() {
     	if (caseSubtitles.isSelected() && subtitlesBurn)
-    	{    		
-    		String background = "" ;
-			if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-				background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
-			else
-				background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
-			
-			//Bold
-			if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
-				background += ",Bold=1";
-			
-			//Italic
-			if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
-				background += ",Italic=1";
-    		
-			String i[] = FFPROBE.imageResolution.split("x");
-			return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+    	{    	
+			if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+    		{	
+				String background = "" ;
+				if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+					background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
+				else
+					background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
+				
+				//Bold
+				if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
+					background += ",Bold=1";
+				
+				//Italic
+				if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
+					background += ",Italic=1";
+				
+				String i[] = FFPROBE.imageResolution.split("x");
+				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+			}
+			else // ASS or SSA
+			{
+				String i[] = FFPROBE.imageResolution.split("x");
+				SubtitlesWindow.textWidth.setText(i[0]); //IMPORTANT
+
+				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+			}
 		}
 		else if (caseSubtitles.isSelected() && subtitlesBurn == false)
     	{
@@ -537,7 +548,7 @@ public class DVD extends Shutter {
 	    	if (caseAudioFadeOut.isSelected())
 	    	{
 	    		long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-	    		long audioStart =  (long) FFPROBE.dureeTotale - audioOutValue;
+	    		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
 	    		
 	    		if (caseInAndOut.isSelected())
 				{
@@ -552,7 +563,7 @@ public class DVD extends Shutter {
 							audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
 					}
 					else //Remove mode
-						audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+						audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
 				}
 	    		
 	    		String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
@@ -739,7 +750,7 @@ public class DVD extends Shutter {
     		if (filterComplex != "") filterComplex += ",";	
     		
     		long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
+    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
     		
     		if (caseInAndOut.isSelected())
     		{
@@ -754,7 +765,7 @@ public class DVD extends Shutter {
 	        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - videoOutValue;
         		}
         		else //Remove mode
-    	    		videoStart = FFPROBE.dureeTotale - (totalOut - totalIn) - videoOutValue;
+    	    		videoStart = FFPROBE.totalLength - (totalOut - totalIn) - videoOutValue;
     		}
     		
     		String color = "black";
@@ -802,7 +813,16 @@ public class DVD extends Shutter {
         
 		//On map les sous-titres que l'on intègre        
         if (caseSubtitles.isSelected() && subtitlesBurn == false)
-        	filterComplex += " -map 1:s -c:s mov_text";
+        {
+        	String map = " -map 1:s";
+        	if (caseLogo.isSelected())
+        		map = " -map 2:s";
+        	
+        	String[] languages = Locale.getISOLanguages();			
+			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
+        	
+        	filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
+        }
 		
         return filterComplex;
 	}

@@ -120,7 +120,7 @@ public class DVDRIP extends Shutter {
 										Thread.sleep(100);
 									} catch (InterruptedException e1) {}
 								} while (FFPROBE.isRunning == true);
-								dureeTotale += FFPROBE.dureeTotale;
+								dureeTotale += FFPROBE.totalLength;
 								
 								Console.consoleFFMPEG.append(VOB + System.lineSeparator());					
 							}
@@ -154,7 +154,7 @@ public class DVDRIP extends Shutter {
 				}
 				
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});

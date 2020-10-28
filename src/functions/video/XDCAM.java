@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.swing.JComboBox;
 import application.Ftp;
@@ -45,7 +46,7 @@ public class XDCAM extends Shutter {
 	private static int complete;
 	private static String silentTrack = "";
 	
-	public static void main() {
+	public static void main(boolean encode) {
 		
 		Thread thread = new Thread(new Runnable(){			
 			@Override
@@ -141,13 +142,16 @@ public class XDCAM extends Shutter {
 					
 					//LUTs
 					filterComplex = setLUT(filterComplex);
-										
+							
+					//Levels
+					filterComplex = setLevels(filterComplex);
+								
 					//Colormatrix
 					filterComplex = setColormatrix(filterComplex);	
 					
 					//Color
 					filterComplex = setColor(filterComplex);
-					
+										
 					//Interpolation
 					filterComplex = setInterpolation(filterComplex);
 					
@@ -234,19 +238,19 @@ public class XDCAM extends Shutter {
 					
 	            	//Timecode
 					String timecode = setTimecode();
-					final String sortieFichier =  sortie.replace("\\", "/") + "/" + fichier.replace(extension, nomExtension + ".mxf") ; 				
+					final String sortieFichier =  sortie.replace("\\", "/") + "/" + fichier.replace(extension, nomExtension + comboFilter.getSelectedItem().toString()) ; 				
 					
 					//Si le fichier existe
 					File fileOut = new File(sortieFichier);
 					if(fileOut.exists())
 					{						
-						fileOut = Utils.fileReplacement(sortie, fichier, extension, nomExtension + "_", ".mxf");
+						fileOut = Utils.fileReplacement(sortie, fichier, extension, nomExtension + "_", comboFilter.getSelectedItem().toString());
 						if (fileOut == null)
 							continue;						
 					}
 					
 					String output = '"' + fileOut.toString() + '"';
-					if (caseVisualiser.isSelected())						
+					if (caseDisplay.isSelected())						
 						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:play" + '"';
 							
 					//Mode concat
@@ -256,7 +260,15 @@ public class XDCAM extends Shutter {
 							
 					//Envoi de la commande
 					String cmd = silentTrack + " -shortest -map_metadata -1" +  frameRate + colorspace + filterComplex + " -g 12 -vcodec mpeg2video -pix_fmt yuv422p -color_range 1 -non_linear_quant 1 -dc 10 -intra_vlc 1 -q:v 2 -qmin 2 -qmax 12 -lmin " + '"' + "1*QP2LAMBDA" + '"' + " -rc_max_vbv_use 1 -rc_min_vbv_use 1 -b:v 50000000 -minrate 50000000 -maxrate 50000000 -bufsize 17825792 -rc_init_occupancy 17825792 -sc_threshold 1000000000 -bf 2" + forceField + timecode + flags + " -y ";
-					FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
+
+					//Encodage
+					if (encode)
+						FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);	
+					else //Preview
+					{						
+						FFMPEG.toFFPLAY(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + " -f mxf pipe:play |");
+						break;
+					}
 					
 					//Attente de la fin de FFMPEG
 					do
@@ -268,7 +280,7 @@ public class XDCAM extends Shutter {
 					{
 						lblEncodageEnCours.setText(Shutter.language.getProperty("createAS10Format"));
 
-						BMXTRANSWRAP.run("-t as10 -p -o " + '"' + sortie + "/" + fichier.replace(extension, "_AS10.mxf") + '"' + " --shim-name " + '"' + comboAS10.getSelectedItem().toString() + '"' + " " + '"' + fileOut.toString() + '"');
+						BMXTRANSWRAP.run("-t as10 -p -o " + '"' + sortie + "/" + fichier.replace(extension, "_AS10" + comboFilter.getSelectedItem().toString()) + '"' + " --shim-name " + '"' + comboAS10.getSelectedItem().toString() + '"' + " " + '"' + fileOut.toString() + '"');
 					
 						//Attente de la fin de BMXTRANSWRAP
 						do
@@ -288,8 +300,8 @@ public class XDCAM extends Shutter {
 					}//End Try
 				}//End For	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && encode)
+					enfOfFunction();
 			}//run
 			
 		});
@@ -380,7 +392,7 @@ public class XDCAM extends Shutter {
     	if (caseAudioFadeOut.isSelected())
     	{
     		long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long audioStart =  (long) FFPROBE.dureeTotale - audioOutValue;
+    		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
     		
     		if (caseInAndOut.isSelected())
     		{
@@ -395,7 +407,7 @@ public class XDCAM extends Shutter {
 	        			audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
         		}
         		else //Remove mode
-        			audioStart = FFPROBE.dureeTotale - (totalOut - totalIn) - audioOutValue;
+        			audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
     		}
 			
     		String audioFade = "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
@@ -451,7 +463,7 @@ public class XDCAM extends Shutter {
     		if (filterComplex != "") filterComplex += ",";	
     		
     		long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long videoStart = (long) FFPROBE.dureeTotale - videoOutValue;
+    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
     				
     		if (caseInAndOut.isSelected())
     		{
@@ -466,7 +478,7 @@ public class XDCAM extends Shutter {
 	        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - videoOutValue;
         		}
         		else //Remove mode
-    	    		videoStart = FFPROBE.dureeTotale - (totalOut - totalIn) - videoOutValue;
+    	    		videoStart = FFPROBE.totalLength - (totalOut - totalIn) - videoOutValue;
     		}
     		
     		String color = "black";
@@ -582,8 +594,17 @@ public class XDCAM extends Shutter {
 		}		
 		
 		//On map les sous-titres que l'on intègre        
-		if (caseSubtitles.isSelected() && subtitlesBurn == false)
-			mapping += " -map 1:s -c:s mov_text";
+        if (caseSubtitles.isSelected() && subtitlesBurn == false)
+        {
+        	String map = " -map 1:s";
+        	if (caseLogo.isSelected())
+        		map = " -map 2:s";
+        	
+        	String[] languages = Locale.getISOLanguages();			
+			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
+        	
+        	filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
+        }
 		
 		return mapping;
 	}
@@ -610,7 +631,7 @@ public class XDCAM extends Shutter {
 	}
 	
 	protected static File setSequenceName(File file, String extension) {
-		if (caseActiverSequence.isSelected())
+		if (caseEnableSequence.isSelected())
 		{
 			int n = 0;
 			do {
@@ -624,7 +645,7 @@ public class XDCAM extends Shutter {
 	}
 
 	protected static String setSequence(File file, String extension) {
-		if (caseActiverSequence.isSelected())
+		if (caseEnableSequence.isSelected())
 		{
 			int n = 0;
 			do {
@@ -655,9 +676,9 @@ public class XDCAM extends Shutter {
 		
 	protected static String setPad(String filterComplex) {	
 		
-		String s[] = lblResolution.getSelectedItem().toString().split("x");
+		String s[] = comboResolution.getSelectedItem().toString().split("x");
 		
-		if (caseForcerResolution.isSelected())
+		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{			
 			if (filterComplex != "") filterComplex += "[c];[c]";
 			
@@ -708,7 +729,7 @@ public class XDCAM extends Shutter {
 	}
 	
 	protected static String setLoop(String extension) {
-		if (caseActiverSequence.isSelected() == false)
+		if (caseEnableSequence.isSelected() == false)
 		{
 			switch (extension)
 			{
@@ -817,6 +838,18 @@ public class XDCAM extends Shutter {
 			else
 				filterComplex = "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 		}
+		return filterComplex;
+	}
+	
+	protected static String setLevels(String filterComplex) {
+		
+		if (caseLevels.isSelected())
+		{			
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "scale=in_range=" + comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full") + ":out_range=" + comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");		
+		}
+
 		return filterComplex;
 	}
 	
@@ -1017,38 +1050,61 @@ public class XDCAM extends Shutter {
 	
 	protected static String setSubtitles() {
     	if (caseSubtitles.isSelected() && subtitlesBurn)
-    	{    		
-    		String background = "" ;
-			if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-				background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
-			else
-				background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
-			
-			//Bold
-			if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
-				background += ",Bold=1";
-			
-			//Italic
-			if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
-				background += ",Italic=1";
-    		
-			String i[] = FFPROBE.imageResolution.split("x");
-			if (caseForcerResolution.isSelected())
-			{
-	   			String s[] = lblResolution.getSelectedItem().toString().split("x");
-	        	int iw = Integer.parseInt(i[0]);
-	        	int ih = Integer.parseInt(i[1]);
-	        	int ow = Integer.parseInt(s[0]);
-	        	int oh = Integer.parseInt(s[1]);      
-	        	
-	        	int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
-	        	int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
+    	{    	
+			if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+    		{	
+				String background = "" ;
+				if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+					background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
+				else
+					background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
+				
+				//Bold
+				if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)
+					background += ",Bold=1";
+				
+				//Italic
+				if (SubtitlesWindow.btnI.getForeground() != Color.BLACK)
+					background += ",Italic=1";
+				
+				String i[] = FFPROBE.imageResolution.split("x");
+				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");
+					int iw = Integer.parseInt(i[0]);
+					int ih = Integer.parseInt(i[1]);
+					int ow = Integer.parseInt(s[0]);
+					int oh = Integer.parseInt(s[1]);      
+					
+					int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
+					int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
 
-				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
+				}
+				else
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';		
 			}
-			else
-				return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + SubtitlesWindow.textWidth.getText() + ":" + i[1] + "+" + SubtitlesWindow.spinnerSubtitlesPosition.getValue() + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';		
-			 
+			else // ASS or SSA
+			{
+				String i[] = FFPROBE.imageResolution.split("x");
+				SubtitlesWindow.textWidth.setText(i[0]); //IMPORTANT
+				
+				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");
+		        	int iw = Integer.parseInt(i[0]);
+		        	int ih = Integer.parseInt(i[1]);
+		        	int ow = Integer.parseInt(s[0]);
+		        	int oh = Integer.parseInt(s[1]);        	
+		        	
+		        	int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
+		        	int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
+		        	
+		        	return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+				}
+				else
+					return " -f lavfi" + FFMPEG.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+			}
 		}
 		else if (caseSubtitles.isSelected() && subtitlesBurn == false)
     	{
@@ -1065,9 +1121,9 @@ public class XDCAM extends Shutter {
         	int ImageWidth = Integer.parseInt(i[0]);
         	
         	int posX = ((int) (ImageWidth - Integer.parseInt(SubtitlesWindow.textWidth.getText())) / 2);
-        	if (caseForcerResolution.isSelected())
+        	if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
         	{
-	        	String s[] = lblResolution.getSelectedItem().toString().split("x");
+	        	String s[] = comboResolution.getSelectedItem().toString().split("x");
 	        	int iw = Integer.parseInt(i[0]);
 	        	int ow = Integer.parseInt(s[0]);  
 	        	posX =  (int) (posX / ((float) iw/ow));
@@ -1119,7 +1175,7 @@ public class XDCAM extends Shutter {
 			float newFPS = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
 			
 			float FPS = FFPROBE.currentFPS;
-			if (caseActiverSequence.isSelected())
+			if (caseEnableSequence.isSelected())
 				FPS = Float.valueOf(caseSequenceFPS.getSelectedItem().toString().replace(",", ".").replace(",", "."));
 			
 			if (FPS != newFPS)
@@ -1144,7 +1200,7 @@ public class XDCAM extends Shutter {
 			return " -r " + FFPROBE.currentFPS;
 		else if (caseConform.isSelected())
 			return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
-		else if (caseActiverSequence.isSelected())
+		else if (caseEnableSequence.isSelected())
 		{
 			if (caseConform.isSelected())
 				return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", ".")) + " -frames:v " + liste.getSize();	
@@ -1229,14 +1285,14 @@ public class XDCAM extends Shutter {
 		//Envoi par e-mail et FTP
 		Utils.sendMail(fichier);
 		if (caseAS10.isSelected())
-			Wetransfer.addFile(new File(sortie + "/" + fichier.replace(fichier.substring(fichier.lastIndexOf(".")), "_AS10.mxf")));
+			Wetransfer.addFile(new File(sortie + "/" + fichier.replace(fichier.substring(fichier.lastIndexOf(".")), "_AS10" + comboFilter.getSelectedItem().toString())));
 		else
 			Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
 		
 		//Séquence d'images et bout à bout
-		if (caseActiverSequence.isSelected() || Settings.btnSetBab.isSelected())
+		if (caseEnableSequence.isSelected() || Settings.btnSetBab.isSelected())
 			return true;
 		
 		//Timecode
@@ -1245,7 +1301,7 @@ public class XDCAM extends Shutter {
 			NumberFormat formatter = new DecimalFormat("00");
 
 			int timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
-			int millisecondsToTc = timecodeToMs + FFPROBE.dureeTotale;
+			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
 			if (caseInAndOut.isSelected())
 				millisecondsToTc = timecodeToMs + VideoPlayer.dureeHeures * 3600000 + VideoPlayer.dureeMinutes * 60000 + VideoPlayer.dureeSecondes * 1000 + VideoPlayer.dureeImages * (int) (1000 / FFPROBE.currentFPS);
@@ -1264,7 +1320,7 @@ public class XDCAM extends Shutter {
 		if (Shutter.scanIsRunning)
 		{
 			Utils.moveScannedFiles(fichier);
-			XDCAM.main();
+			XDCAM.main(true);
 			return true;
 		}
 		return false;

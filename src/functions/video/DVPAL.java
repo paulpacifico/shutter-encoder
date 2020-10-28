@@ -146,7 +146,7 @@ public class DVPAL extends Shutter {
 					}
 										
 					String output = '"' + fileOut.toString() + '"';
-					if (caseVisualiser.isSelected())
+					if (caseDisplay.isSelected())
 						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
 								
 					//Mode concat
@@ -177,7 +177,7 @@ public class DVPAL extends Shutter {
 				}//End For	
 				
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					FinDeFonction();
+					enfOfFunction();
 			}//run
 			
 		});
