@@ -7,7 +7,7 @@ tsMuxeR : www.videohelp.com/software/tsMuxeR
 mkvmerge : mkvtoolnix.download
 mediainfo : mediaarea.net/fr/MediaInfo
 dvdauthor : dvdauthor.sourceforge.net
-youtube-dl : rg3.github.io/youtube-dl
+youtube-dl : youtube-dl.org
 WeTransfer : developers.wetransfer.com
 XpdfReader : www.xpdfreader.com
 bmxtranswrap : sourceforge.net/p/bmxlib/home/Home
