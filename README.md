@@ -9,6 +9,8 @@ Use [MANIFEST.MF](../master/MANIFEST.MF) if you make your own [.jar](../master/S
 
 Include [fonts](../master/fonts) with JRE.
 
+I'm using Java version 13 for High-DPI support using jlink --compress 0 --strip-debug --no-header-files --no-man-pages --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.security.sasl,java.xml,jdk.crypto.ec --output JRE
+
 ## Official website
 
 https://www.shutterencoder.com
