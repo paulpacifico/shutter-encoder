@@ -268,7 +268,6 @@ private static StringBuilder getAll;
 						} finally {
 							isRunning = false;
 							caseRunInBackground.setEnabled(false);	
-							caseRunInBackground.setSelected(false);
 							caseDisplay.setEnabled(true);
 						}
 					
