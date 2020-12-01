@@ -75,18 +75,20 @@ public class BlackMagicInput {
 		frame.addWindowListener(new WindowAdapter(){
 
 			public void windowClosing(WindowEvent arg0) {
-				if (DECKLINK.isRunning)
+				if (DECKLINK.runProcess != null)
 				{
-					try {
-						DECKLINK.writer.write('q');
-						DECKLINK.writer.flush();
-						DECKLINK.writer.close();
-					} catch (IOException er) {}
+					if (DECKLINK.process.isAlive())
+					{
+						try {
+							DECKLINK.writer.write('q');
+							DECKLINK.writer.flush();
+							DECKLINK.writer.close();
+						} catch (IOException er) {}
+					}
+					
+					if (DECKLINK.isRunning)
+						DECKLINK.process.destroy();				
 				}
-				
-				if (DECKLINK.isRunning)
-					DECKLINK.process.destroy();				
-
 			}
 			
 		});
@@ -104,8 +106,20 @@ public class BlackMagicInput {
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {
-				if (DECKLINK.isRunning)
-					DECKLINK.process.destroy();				
+				if (DECKLINK.runProcess != null)
+				{
+					if (DECKLINK.process.isAlive())
+					{
+						try {
+							DECKLINK.writer.write('q');
+							DECKLINK.writer.flush();
+							DECKLINK.writer.close();
+						} catch (IOException er) {}
+					}
+					
+					if (DECKLINK.isRunning)
+						DECKLINK.process.destroy();				
+				}			
 			}			
 			
 		});
@@ -641,7 +655,29 @@ public class BlackMagicInput {
 		btnRecord.addActionListener(new ActionListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				if (DECKLINK.runProcess != null)
+				{
+					if (DECKLINK.process.isAlive())
+					{
+						try {
+							DECKLINK.writer.write('q');
+							DECKLINK.writer.flush();
+							DECKLINK.writer.close();
+						} catch (IOException er) {}
+					}
+					
+					if (DECKLINK.isRunning)
+						DECKLINK.process.destroy();				
+				}
+				
+				do {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {}
+				} while (DECKLINK.process.isAlive());
+				
 				if (btnRecord.getText().equals(Shutter.language.getProperty("btnRecord")))
 				{
 					record();
@@ -655,19 +691,7 @@ public class BlackMagicInput {
 					btnRecord.setText(Shutter.language.getProperty("btnStopRecording"));
 				}
 				else if (btnRecord.getText().equals(Shutter.language.getProperty("btnStopRecording")))
-				{															
-					try {
-						DECKLINK.writer.write('q');
-						DECKLINK.writer.flush();
-						DECKLINK.writer.close();
-					} catch (IOException er) {}
-					
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {}
-					} while (DECKLINK.process.isAlive());
-										
+				{																							
 					comboInput.setEnabled(true);
 					comboOutput.setEnabled(true);
 					caseDeinterlace.setEnabled(true);
@@ -763,10 +787,10 @@ public class BlackMagicInput {
 			if (comboOutput.getSelectedItem().toString().contains("H.264"))
 			{
 				if (lblDestination2.getText().equals(Shutter.language.getProperty("aucune")) == false)
-					output += " -f mp4 " + '"' + fileOut.toString().replace("\\", "/").replace(lblDestination1.getText(), lblDestination2.getText()) + '"';
+					output += " -f mp4 " + '"' + fileOut.toString().replace(lblDestination1.getText(), lblDestination2.getText()).replace("\\", "/") + '"';
 				
 				if (lblDestination3.getText().equals(Shutter.language.getProperty("aucune")) == false)
-					output += " -f mp4 " + '"' + fileOut.toString().replace("\\", "/").replace(lblDestination1.getText(), lblDestination3.getText()) + '"';
+					output += " -f mp4 " + '"' + fileOut.toString().replace(lblDestination1.getText(), lblDestination3.getText()).replace("\\", "/") + '"';
 			}
 			
 			switch (comboOutput.getSelectedItem().toString())
