@@ -92,9 +92,6 @@ import library.XPDF;
 	private static int complete;
 	private boolean drag = false;
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public RenderQueue() {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(50,50,50));

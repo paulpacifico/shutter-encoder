@@ -92,9 +92,6 @@ public class Ftp {
 	public static JButton btnOK; //Si le bouton est disable alors la connexion est établie
 	private JButton btnReset;
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public Ftp() {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));

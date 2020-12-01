@@ -58,9 +58,6 @@ public class BlackMagicOutput {
 	public static Integer timecode3 = 0;
 	public static Integer timecode4 = 0;
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public BlackMagicOutput() {
 		
 		frame = new JFrame();
@@ -378,7 +375,7 @@ public class BlackMagicOutput {
 				
 				 if (btnLire.getText().equals(Shutter.language.getProperty("btnLire")))
 				 {
-					 Console.consoleFFMPEG.append(Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
+					 Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 					 
 					 btnPrevious.setEnabled(false);
 					 btnNext.setEnabled(false);

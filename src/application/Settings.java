@@ -126,9 +126,6 @@ public class Settings {
 	public static JRadioButton lastUsedOutput3 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
 	public static int videoPlayerVolume = 50;
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public Settings() {
 		//Pour la sauvegarde
 		btnSetBab.setName("btnSetBab");	
@@ -140,8 +137,6 @@ public class Settings {
 		btnDisableSound.setName("btnDisableSound");	
 		btnDisableUpdate.setName("btnDisableUpdate");
 		btnEmptyListAtEnd.setName("btnEmptyListAtEnd");
-		btnEndingAction.setName("btnEndingAction");
-		comboAction.setName("comboAction");
 		lblDestination1.setName("lblDestination1");
 		lblDestination2.setName("lblDestination2");
 		lblDestination3.setName("lblDestination3");
@@ -307,10 +302,10 @@ public class Settings {
 			comboAction.setSelectedIndex(1);	
 			comboAction.setFont(new Font("FreeSans", Font.PLAIN, 10));
 			comboAction.setEditable(false);
-			comboAction.setEnabled(false);
 			comboAction.setBounds(btnEndingAction.getX() + btnEndingAction.getWidth() + 6, btnEndingAction.getLocation().y - 4,  frame.getWidth() - (btnEndingAction.getLocation().x + btnEndingAction.getWidth()) - 32, 22);
 			comboAction.setMaximumRowCount(10);
 		}
+		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
 		
 		defaultOutput1.setFont(new Font("FreeSans", Font.PLAIN, 12));
@@ -778,7 +773,7 @@ public class Settings {
 		});
 		
 		lblTheme.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblTheme.setBounds(12, lblBlackDetection.getLocation().y + lblBlackDetection.getHeight() + 10, lblTheme.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
+		lblTheme.setBounds(12, lblBlackDetection.getLocation().y + lblBlackDetection.getHeight() + 10, lblTheme.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblTheme);
 			
 		comboTheme.setFont(new Font("FreeSans", Font.PLAIN, 10));
@@ -921,6 +916,7 @@ public class Settings {
 				if (frame.isVisible())
 				{
 					saveSettings();
+					
 					try {
 						String newShutter;
 						if (System.getProperty("os.name").contains("Windows")) {
@@ -1176,8 +1172,18 @@ public class Settings {
 							else if (p instanceof JComboBox)
 							{
 								//Value
-								((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																	
+								if (p.getName().equals(comboTheme.getName()))
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(Shutter.language.getProperty("clearTheme")))
+										((JComboBox) p).setSelectedIndex(0);
+									else if (eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(Shutter.language.getProperty("darkTheme")))	
+										((JComboBox) p).setSelectedIndex(1);
+									else
+										((JComboBox) p).setSelectedIndex(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+								}
+								else
+									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+								
 								//State
 								((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 								
@@ -1304,8 +1310,11 @@ public class Settings {
 						component.appendChild(cName);
 						
 						//Value
-						Element cValue = document.createElement("Value");
-						cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
+						Element cValue = document.createElement("Value");						
+						if (p.getName().equals(comboTheme.getName()))
+							cValue.appendChild(document.createTextNode(String.valueOf(((JComboBox) p).getSelectedIndex())));
+						else
+							cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));						
 						component.appendChild(cValue);
 						
 						//State

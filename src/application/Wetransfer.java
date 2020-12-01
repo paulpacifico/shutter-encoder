@@ -102,9 +102,6 @@ public class Wetransfer {
 	private JButton btnReset;
 	private static String wetransferAdress = "";
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public Wetransfer() {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));

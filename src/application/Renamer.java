@@ -71,9 +71,6 @@ public class Renamer {
 	private String fichier;	
 	private String ext;
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public Renamer() {
 		frame = new JDialog();
 		frame.getContentPane().setLayout(null);

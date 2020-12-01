@@ -109,8 +109,9 @@ public class ColorImage {
 	public static JSlider sliderVibrance = new JSlider();
 	public static JSlider sliderSaturation = new JSlider();
 	public static JSlider sliderGrain = new JSlider();
-	public static JSlider sliderRotate = new JSlider();
 	public static JSlider sliderVignette = new JSlider();
+	public static JComboBox<String> comboRotate = new JComboBox<String>();
+	public static JSlider sliderAngle = new JSlider();
 	public static JSlider positionVideo;
 	
 	
@@ -146,7 +147,7 @@ public class ColorImage {
 		frame.setTitle(Shutter.language.getProperty("frameColorImage"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(1100, 700);
+		frame.setSize(1200, 720);
 		frame.setResizable(false);
 		
 		/*
@@ -188,7 +189,7 @@ public class ColorImage {
  			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				if (e.getX() >= (700 - 20) && e.getY() >= (700 - 20) && dragWindow)
+				if (e.getX() >= (720 - 20) && e.getY() >= (720 - 20) && dragWindow)
 				{
 			        frame.setSize(e.getX() + 20, e.getY() + 20);	
 				}
@@ -225,9 +226,9 @@ public class ColorImage {
 			public void mouseReleased(MouseEvent e) {	
 				if (dragWindow)
 				{
-					if (frame.getSize().width < 700 || frame.getSize().height < 700)
+					if (frame.getSize().width < 1200 || frame.getSize().height < 720)
 					{						
-						frame.setSize(1100, 700);							
+						frame.setSize(1200, 720);							
 						resizeAll();
 					}     				
 				}
@@ -237,7 +238,7 @@ public class ColorImage {
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				if (file.exists()) file.delete();	
 					
-					loadImage(true);
+				loadImage(true);
 					
 				do {
 					try {
@@ -953,57 +954,10 @@ public class ColorImage {
 		});
 		
 		frame.add(sliderGrain);	
-		
-		JLabel lblRotate = new JLabel(Shutter.language.getProperty("caseRotate"));
-		lblRotate.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblRotate.setBounds(12, sliderGrain.getY() + sliderGrain.getHeight() + 4, lblExposure.getSize().width, 16);		
-		frame.getContentPane().add(lblRotate);
-		
-		frame.add(lblRotate);
-		
-		sliderRotate.setName("sliderRotate");
-		sliderRotate.setMaximum(100);
-		sliderRotate.setMinimum(-100);
-		sliderRotate.setValue(0);		
-		sliderRotate.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		sliderRotate.setBounds(12, lblRotate.getY() + lblRotate.getHeight(), sliderExposure.getWidth(), 22);	
-		
-		sliderRotate.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2)
-				{
-					sliderRotate.setValue(0);	
-					lblRotate.setText(Shutter.language.getProperty("caseRotate"));
-				}
-			}
-
-		});
-		
-		sliderRotate.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				if (sliderRotate.getValue() == 0)
-				{
-					lblRotate.setText(Shutter.language.getProperty("caseRotate"));
-				}
-				else
-				{
-					lblRotate.setText(Shutter.language.getProperty("caseRotate") + " " + sliderRotate.getValue());
-				}
 				
-				loadImage(false);
-			}
-			
-		});
-		
-		frame.add(sliderRotate);	
-		
 		JLabel lblVignette = new JLabel(Shutter.language.getProperty("lblVignette"));
 		lblVignette.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblVignette.setBounds(12, sliderRotate.getY() + sliderRotate.getHeight() + 4, lblExposure.getSize().width, 16);		
+		lblVignette.setBounds(12, sliderGrain.getY() + sliderGrain.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblVignette);
 		
 		frame.add(lblVignette);
@@ -1048,12 +1002,97 @@ public class ColorImage {
 		
 		frame.add(sliderVignette);		
 		
+		JLabel lblRotate = new JLabel(Shutter.language.getProperty("caseRotate"));
+		lblRotate.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblRotate.setBounds(12, sliderVignette.getY() + sliderVignette.getHeight() + 6, lblRotate.getPreferredSize().width, 16);		
+		frame.getContentPane().add(lblRotate);
+		
+		frame.add(lblRotate);
+
+		comboRotate = new JComboBox<String>();
+		comboRotate.setName("comboRotate");
+		comboRotate.setModel(new DefaultComboBoxModel<String>(new String[] { Shutter.language.getProperty("aucun"), "90", "-90", "180" }));
+		comboRotate.setSelectedIndex(0);
+		comboRotate.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboRotate.setEditable(false);
+		comboRotate.setBounds(lblRotate.getX() + lblRotate.getWidth() + 7, lblRotate.getY() - 3, 80, 22);
+		comboRotate.setMaximumRowCount(20);
+		frame.add(comboRotate);
+		
+		comboRotate.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
+				File file = new File(Shutter.dirTemp + "preview.bmp");
+				if (file.exists()) file.delete();	
+					
+				loadImage(true);
+					
+				do {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {}
+				} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
+					
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
+			}
+			
+		});
+		
+		JLabel lblAngle = new JLabel(Shutter.language.getProperty("caseAngle"));
+		lblAngle.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblAngle.setBounds(12, comboRotate.getY() + comboRotate.getHeight() + 3, lblExposure.getSize().width, 16);		
+		frame.getContentPane().add(lblAngle);
+		
+		sliderAngle.setName("sliderAngle");
+		sliderAngle.setMaximum(100);
+		sliderAngle.setMinimum(-100);
+		sliderAngle.setValue(0);		
+		sliderAngle.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderAngle.setBounds(12, lblAngle.getY() + lblAngle.getHeight(), sliderExposure.getWidth(), 22);	
+		
+		sliderAngle.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderAngle.setValue(0);	
+					lblAngle.setText(Shutter.language.getProperty("caseAngle"));
+				}
+			}
+
+		});
+		
+		sliderAngle.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderAngle.getValue() == 0)
+				{
+					lblAngle.setText(Shutter.language.getProperty("caseAngle"));
+				}
+				else
+				{
+					lblAngle.setText(Shutter.language.getProperty("caseAngle") + " " + sliderAngle.getValue());
+				}
+				
+				loadImage(false);
+			}
+			
+		});
+		
+		frame.add(sliderAngle);	
+						
 		loadImage(true);
 		
 		btnPrevious = new JButton(Shutter.language.getProperty("btnPrevious"));
 		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));	
 		btnPrevious.setMargin(new Insets(0,0,0,0));
-		btnPrevious.setBounds(14, sliderVignette.getY() + sliderVignette.getHeight() + 6, 84, 21);	
+		btnPrevious.setBounds(14, sliderAngle.getY() + sliderAngle.getHeight() + 6, 84, 21);	
 		frame.getContentPane().add(btnPrevious);
 		
 		btnPrevious.addActionListener(new ActionListener(){
@@ -1202,12 +1241,15 @@ public class ColorImage {
 				sliderVibrance.setValue(0);	
 				sliderSaturation.setValue(0);
 				sliderGrain.setValue(0);
-				sliderRotate.setValue(0);	
-				sliderVignette.setValue(0);	
+				sliderVignette.setValue(0);
+				sliderAngle.setValue(0);			
+					
 				//important
 				comboRGB.setSelectedIndex(0);
+				comboRotate.setSelectedIndex(0);
 				
-				loadImage(true);
+				//pas besoin car déjà chargé par ComboRotate
+				//loadImage(true);
 			}
 			
 		});
@@ -1859,7 +1901,7 @@ public class ColorImage {
 				}
 				else if (accept)
 				{
-	        		frame.setSize(1100, 700);
+	        		frame.setSize(1200, 720);
 	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);						
 				}
@@ -1950,9 +1992,9 @@ public class ColorImage {
 			public void mouseClicked(MouseEvent down) {	
 				if (down.getClickCount() == 2 && down.getButton() == MouseEvent.BUTTON1)
 				{
-					if (frame.getWidth() > 1100)
+					if (frame.getWidth() > 1200)
 					{
-						frame.setSize(1100, 700);
+						frame.setSize(1200, 720);
 		        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
 					}
@@ -2185,11 +2227,19 @@ public class ColorImage {
 				        	while (FFPROBE.isRunning);
 						}	
 						
+						if (comboRotate.getSelectedIndex() == 1 || comboRotate.getSelectedIndex() == 2)
+						{
+							Integer iw = ImageWidth;
+							Integer ih = ImageHeight;
+							ImageWidth = ih;
+							ImageHeight = iw;
+						}
+						
 		        		finalWidth = (int) Math.floor(((frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth) / ImageHeight);
 			        	
 		        		finalHeight = (int) Math.floor(((frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight) / ImageWidth);
 		        	                    	        						
-						Console.consoleFFMPEG.append(Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
+						Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 					}
 						
 						//InOut	
@@ -2294,9 +2344,6 @@ public class ColorImage {
 			            } while (FFMPEG.isRunning && FFMPEG.error == false);
 	          			
 	          			Shutter.enableAll();
-	          			
-	    	           	if (FFMPEG.error)
-	    		      	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 
 			            if (fileOut.exists())
 			            {
@@ -2434,16 +2481,36 @@ public class ColorImage {
 	}
 	
 	protected static String setRotate(String eq) {
-		if (sliderRotate.getValue() != 0)
+
+		if (comboRotate.getSelectedIndex() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+			
+			switch (comboRotate.getSelectedItem().toString()) 
+			{
+				case "90":
+					eq += "transpose=1";
+					break;
+				case "-90":
+					eq += "transpose=2";
+					break;
+				case "180":
+					eq += "transpose=1,transpose=1";
+					break;
+			}
+		}
+		
+		if (sliderAngle.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
 			float angle;
-			if (sliderRotate.getValue() > 0)
-				angle = (float) ((float) ((float) sliderRotate.getValue() / 10) * Math.PI) / 180;
+			if (sliderAngle.getValue() > 0)
+				angle = (float) ((float) ((float) sliderAngle.getValue() / 10) * Math.PI) / 180;
 			else
-				angle = (float) ((float) (0 - (float) sliderRotate.getValue() / 10) * Math.PI) / 180;
+				angle = (float) ((float) (0 - (float) sliderAngle.getValue() / 10) * Math.PI) / 180;
 			
 			float ratio = (float) ImageWidth / ImageHeight;
 			float h = (float) ( (float) ImageHeight / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
@@ -2460,7 +2527,7 @@ public class ColorImage {
 			w = (float) (2 - ((float) ImageWidth / w));
 			h = (float) (2 - ((float) ImageHeight / h));			
 			
-			eq += "rotate=" + ((float) sliderRotate.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
+			eq += "rotate=" + ((float) sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
 		}
 		
 		return eq;
@@ -2720,6 +2787,13 @@ public class ColorImage {
 									
 									//Visible
 									((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+								}
+								else if (p instanceof JComboBox)
+								{		
+									if (p.getName().equals("comboRotate"))
+									{
+										comboRotate.setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									}								
 								}
 							}							
 						}

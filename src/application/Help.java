@@ -43,9 +43,6 @@ public class Help {
 	private JButton btnVideoDePresentation;
 	private JButton btnFaq;
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public Help() {
 		frame = new JFrame();
 		frame.getContentPane().setLayout(null);
@@ -68,16 +65,22 @@ public class Help {
 		
 		try {
 			txtFonctions.setText(readFile(pathToFonctions + "/" + comboFonctions.getSelectedItem().toString() + ".txt"));
-		} catch (IOException e) {}
-		if (txtFonctions.getText().length() > 0)
-		{
-			txtFonctions.setSize(572, txtFonctions.getPreferredSize().height);		
+			
+			if (txtFonctions.getText().length() > 0)
+			{
+				txtFonctions.setSize(572, txtFonctions.getPreferredSize().height);		
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+					frame.setSize(640, txtFonctions.getHeight() + 56);
+				else
+					frame.setSize(640, txtFonctions.getHeight() + 66);
+			}				
+		} catch (IOException e) {
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				frame.setSize(625, txtFonctions.getHeight() + 56);
+				frame.setSize(640, 64);
 			else
-				frame.setSize(625, txtFonctions.getHeight() + 66);
-		}	
-		
+				frame.setSize(640, 74);
+		}
+			
 	}
 	
 	private void loadFonctions(){		
@@ -142,14 +145,20 @@ public class Help {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					txtFonctions.setText(readFile(pathToFonctions + "/" + comboFonctions.getSelectedItem().toString() + ".txt"));
-				} catch (IOException e) {}
-				if (txtFonctions.getText().length() > 0)
-				{
-					txtFonctions.setSize(572, txtFonctions.getPreferredSize().height);				
+					
+					if (txtFonctions.getText().length() > 0)
+					{
+						txtFonctions.setSize(572, txtFonctions.getPreferredSize().height);				
+						if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+							frame.setSize(640, txtFonctions.getHeight() + 56);
+						else
+							frame.setSize(640, txtFonctions.getHeight() + 66);
+					}
+				} catch (IOException e) {
 					if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-						frame.setSize(625, txtFonctions.getHeight() + 56);
+						frame.setSize(640, 64);
 					else
-						frame.setSize(625, txtFonctions.getHeight() + 66);
+						frame.setSize(640, 74);
 				}				
 			}
 			

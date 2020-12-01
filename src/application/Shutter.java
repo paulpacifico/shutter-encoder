@@ -149,7 +149,7 @@ import functions.audio.WAV;
 import functions.other.BlackDetection;
 import functions.other.Command;
 import functions.other.Conform;
-import functions.other.EndToEnd;
+import functions.other.Merge;
 import functions.other.Extract;
 import functions.other.LosslessCut;
 import functions.other.OfflineDetection;
@@ -203,7 +203,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "14.3";
+	public static String actualVersion = "14.4";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static File documents = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
@@ -932,14 +932,12 @@ public class Shutter {
 					String ext = droppedFiles.toString().substring(s);
 					
 					if (ext.equals(".enc") == false && droppedFiles.isHidden() == false && droppedFiles.getName().contains("."))
-					{
 						liste.addElement(droppedFiles.toString());
-						addToList.setVisible(false);
-					}
 				} else
 					Utils.FileFinder(droppedFiles.toString());
 			}
 			
+			addToList.setVisible(false);			
 			lblFichiers.setText(Utils.nombreDeFichiers());
 		}
 		
@@ -1146,12 +1144,7 @@ public class Shutter {
 						rootPath = rootPath.substring(1,rootPath.length()-1);
 						rootPath = rootPath.substring(0,(int) (rootPath.lastIndexOf("/"))).replace("%20", " ");
 					}
-					else if (System.getProperty("os.name").contains("Mac"))
-					{
-						rootPath = rootPath.substring(0,rootPath.length()-1);
-						rootPath = rootPath.substring(0,(int) (rootPath.lastIndexOf("/"))).replace("%20", " ");
-					}
-					else //Linux
+					else
 					{
 						rootPath = dirTemp;
 					}
@@ -1159,6 +1152,7 @@ public class Shutter {
 					for (File subs : new File(rootPath).listFiles())
 					{
 						if (subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("srt")
+						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("vtt")
 						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("ssa")
 						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("ass"))
 							subs.delete();
@@ -2316,7 +2310,7 @@ public class Shutter {
 		lblFichiers = new JLabel(Utils.nombreDeFichiers());
 		lblFichiers.setForeground(Color.WHITE);
 		lblFichiers.setFont(new Font("Montserrat", Font.PLAIN, 13));
-		lblFichiers.setBounds(213, 30, 79, 16);
+		lblFichiers.setBounds(213, 30, 83, 16);
 		grpChoixDesFichiers.add(lblFichiers);
 
 		btnBrowse = new JButton(language.getProperty("btnBrowse"));
@@ -2733,7 +2727,7 @@ public class Shutter {
 									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else
-									EndToEnd.main();
+									Merge.main();
 							} else if (language.getProperty("functionExtract").equals(fonction)) { 
 								if (comboFilter.getSelectedItem().toString().equals(language.getProperty("setAll")))
 									Extract.extractAll();
@@ -7556,7 +7550,7 @@ public class Shutter {
 		caseAudioOffset = new JRadioButton(language.getProperty("caseAudioOffset"));
 		caseAudioOffset.setName("caseAudioOffset");
 		caseAudioOffset.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseAudioOffset.setBounds(7, caseChangeAudioCodec.getLocation().y + caseChangeAudioCodec.getHeight(), caseAudioOffset.getPreferredSize().width, 23);
+		caseAudioOffset.setBounds(7, caseChangeAudioCodec.getLocation().y + caseChangeAudioCodec.getHeight(), caseAudioOffset.getPreferredSize().width + 4, 23);
 		grpSetAudio.add(caseAudioOffset);
 		
 		caseAudioOffset.addActionListener(new ActionListener() {
@@ -8601,7 +8595,7 @@ public class Shutter {
 		
 		lblFromTo = new JLabel(language.getProperty("lblFromTo"));
 		lblFromTo.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblFromTo.setSize(lblFromTo.getPreferredSize().width, 16);
+		lblFromTo.setSize(lblFromTo.getPreferredSize().width + 4, 16);
 		lblFromTo.setLocation(comboAudioIn.getLocation().x + comboAudioIn.getWidth() + 7, caseConvertAudioFramerate.getLocation().y + 3);
 		grpAudio.add(lblFromTo);
 		
@@ -10437,7 +10431,7 @@ public class Shutter {
 		caseSubtitles = new JRadioButton(language.getProperty("caseSubtitles"));
 		caseSubtitles.setName("caseSubtitles");
 		caseSubtitles.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseSubtitles.setSize(caseSubtitles.getPreferredSize().width, 23);
+		caseSubtitles.setSize(caseSubtitles.getPreferredSize().width + 4, 23);
 
 		caseSubtitles.addActionListener(new ActionListener() {
 
@@ -10453,15 +10447,9 @@ public class Shutter {
 					} 
 					else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionSubtitles")))
 					{
-						if (System.getProperty("os.name").contains("Mac")) {
-							String PathToSubtitles = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToSubtitles = PathToSubtitles.substring(0, PathToSubtitles.length() - 1);
-							PathToSubtitles = PathToSubtitles.substring(0, (int) (PathToSubtitles.lastIndexOf("/"))).replace("%20", " ") + "/"  + Subtitles.srt.getName();
-							subtitlesFile = new File(PathToSubtitles);
-						} 
-						else if (System.getProperty("os.name").contains("Windows"))
+						if (System.getProperty("os.name").contains("Windows"))
 							subtitlesFile = new File(Subtitles.srt.getName());
-						else //Linux
+						else
 							subtitlesFile = new File(dirTemp + Subtitles.srt.getName());
 									            
 						Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
@@ -10565,6 +10553,7 @@ public class Shutter {
 					{
 						FileDialog dialog = new FileDialog(frame, language.getProperty("chooseSubtitles"),	FileDialog.LOAD);
 						dialog.setDirectory(new File(liste.elementAt(0).toString()).getParent());
+						dialog.setFile("*.srt;*.vtt;*.ass;*.ssa");
 						dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
 						dialog.setAlwaysOnTop(true);
 						dialog.setMultipleMode(false);
@@ -10573,20 +10562,14 @@ public class Shutter {
 						if (dialog.getFile() != null) 
 						{
 							String input = dialog.getFile().substring(dialog.getFile().lastIndexOf("."));
-							if (input.equals(".srt") || input.equals(".ssa") || input.equals(".ass"))
+							if (input.equals(".srt") || input.equals(".vtt") || input.equals(".ssa") || input.equals(".ass"))
 							{
-								if (System.getProperty("os.name").contains("Mac")) {
-									String PathToSubtitles = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-									PathToSubtitles = PathToSubtitles.substring(0, PathToSubtitles.length() - 1);
-									PathToSubtitles = PathToSubtitles.substring(0, (int) (PathToSubtitles.lastIndexOf("/"))).replace("%20", " ") + "/"  + dialog.getFile();
-									subtitlesFile = new File(PathToSubtitles);
-								}
-								else if (System.getProperty("os.name").contains("Windows"))
+								if (System.getProperty("os.name").contains("Windows"))
 									subtitlesFile = new File(dialog.getFile());
-								else //Linux
+								else
 									subtitlesFile = new File(dirTemp + dialog.getFile());
 								
-								if (input.equals(".srt"))
+								if (input.equals(".srt") || input.equals(".vtt"))
 								{
 									Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
 									
@@ -10595,13 +10578,34 @@ public class Shutter {
 										    options,
 										    options[0]);
 										
-									if (sub == 0)
+									if (sub == 0) //Burn
 									{
-										subtitlesBurn = true;									
+										subtitlesBurn = true;							
+																
+										//Conversion du .vtt en .srt
+										if (input.equals(".vtt"))
+										{	
+											subtitlesFile = new File(subtitlesFile.toString().replace(".vtt", ".srt"));
+											
+											FFMPEG.run(" -i " + '"' + dialog.getDirectory() + dialog.getFile().toString() + '"' + " -y " + '"' + subtitlesFile.toString().replace(".srt", "_vtt.srt") + '"');
+											
+											//Attente de la fin de FFMPEG
+											do
+											{
+												try {
+													Thread.sleep(100);
+												} catch (InterruptedException e) {}
+											}
+											while(FFMPEG.runProcess.isAlive());
+											
+											enableAll();
+											
+											SubtitlesWindow.subtitlesFile = subtitlesFile.toString().replace(".srt", "_vtt.srt");
+										}
+										else											
+											SubtitlesWindow.subtitlesFile = dialog.getDirectory() + dialog.getFile().toString();			
 										
-										SubtitlesWindow.subtitlesFile = dialog.getDirectory() + dialog.getFile().toString();									            
-										writeSub(SubtitlesWindow.subtitlesFile, StandardCharsets.UTF_8);
-	
+										writeSub(SubtitlesWindow.subtitlesFile, StandardCharsets.UTF_8);										
 									}
 									else
 									{
@@ -10742,7 +10746,7 @@ public class Shutter {
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
-						new SubtitlesWindow();
+						new SubtitlesWindow();					
 					}
 					else
 					{
@@ -10752,7 +10756,7 @@ public class Shutter {
 					}
 						
 				} catch (Exception e) {
-										
+					
 					if (encoding == StandardCharsets.UTF_8)
 					{						
 						writeSub(srt, StandardCharsets.ISO_8859_1);
@@ -10781,7 +10785,7 @@ public class Shutter {
 		comboSubtitles.setSelectedItem("English");
 		comboSubtitles.setFont(new Font("FreeSans", Font.PLAIN, 10));
 		comboSubtitles.setEditable(false);
-		comboSubtitles.setSize(grpOverlay.getWidth() - caseSubtitles.getX() - caseSubtitles.getWidth() - 18, 18);
+		comboSubtitles.setSize(100, 18);
 		
 		comboSubtitles.addComponentListener( new ComponentAdapter ()
 	    {
@@ -10939,7 +10943,7 @@ public class Shutter {
 						{
 							if (System.getProperty("os.name").contains("Windows"))
 							{
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -f null -" + '"');
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -s 640x360 -f null -" + '"');
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -10949,7 +10953,7 @@ public class Shutter {
 							}
 							else if (System.getProperty("os.name").contains("Linux"))
 							{
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -f null -");
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -s 640x360 -f null -");
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -10967,7 +10971,7 @@ public class Shutter {
 							//Accélération graphique Windows
 							if (System.getProperty("os.name").contains("Windows"))
 							{
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -f null -" + '"');
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -s 640x360 -f null -" + '"');
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -10975,7 +10979,7 @@ public class Shutter {
 								if (FFMPEG.error == false)
 									graphicsAccel.add("Nvidia NVENC");
 		
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_qsv -f null -" + '"');
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_qsv -s 640x360 -f null -" + '"');
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -10983,7 +10987,7 @@ public class Shutter {
 								if (FFMPEG.error == false)
 									graphicsAccel.add("Intel Quick Sync");
 								
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_amf -f null -" + '"');
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_amf -s 640x360 -f null -" + '"');
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -10993,7 +10997,7 @@ public class Shutter {
 							}	
 							else if (System.getProperty("os.name").contains("Linux"))
 							{
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -f null -");
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -s 640x360 -f null -");
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -11001,7 +11005,7 @@ public class Shutter {
 								if (FFMPEG.error == false)
 									graphicsAccel.add("Nvidia NVENC");
 										
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_vaapi -f null -");
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_vaapi -s 640x360 -f null -");
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -11011,7 +11015,7 @@ public class Shutter {
 								
 								if (comboFonctions.getSelectedItem().toString().equals("H.264"))
 								{
-									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_v4l2m2m -f null -");
+									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_v4l2m2m -s 640x360 -f null -");
 									do {
 										Thread.sleep(10);
 									} while (FFMPEG.runProcess.isAlive());
@@ -11019,7 +11023,7 @@ public class Shutter {
 									if (FFMPEG.error == false)
 										graphicsAccel.add("V4L2 M2M");	
 									
-									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_omx -f null -");
+									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_omx -s 640x360 -f null -");
 									do {
 										Thread.sleep(10);
 									} while (FFMPEG.runProcess.isAlive());
@@ -11231,7 +11235,7 @@ public class Shutter {
 		caseGOP = new JRadioButton(language.getProperty("caseGOP"));
 		caseGOP.setName("caseGOP");
 		caseGOP.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseGOP.setSize(caseGOP.getPreferredSize().width, 23);
+		caseGOP.setSize(caseGOP.getPreferredSize().width + 4, 23);
 		
 		caseGOP.addActionListener(new ActionListener() {
 
@@ -13915,7 +13919,7 @@ public class Shutter {
 				new ImageIcon(getClass().getClassLoader().getResource("contents/bouton.jpg")).getImage()
 						.getScaledInstance(1000, 22, Image.SCALE_DEFAULT));
 
-		lblYears = new JLabel("2013-2020");
+		lblYears = new JLabel("2013-2021");
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYears.setForeground(Color.BLACK);
 		lblYears.setFont(new Font("FreeSans", Font.PLAIN, 12));
@@ -14899,7 +14903,7 @@ public class Shutter {
 							//grpOverlay
 							caseSubtitles.setLocation(7, 16);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth() + 4, caseSubtitles.getLocation().y + 3);
+							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
 							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
@@ -15171,7 +15175,7 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);	
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth() + 4, caseSubtitles.getLocation().y + 3);
+							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
 							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
@@ -15484,7 +15488,7 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);											
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth() + 4, caseSubtitles.getLocation().y + 3);
+							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
 							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
@@ -15824,7 +15828,7 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);												
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth() + 4, caseSubtitles.getLocation().y + 3);
+							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
 							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
@@ -16230,7 +16234,7 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);											
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth() + 4, caseSubtitles.getLocation().y + 3);
+							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
 							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);

@@ -119,9 +119,6 @@ public class SubtitlesWindow {
 	public static JLabel lblBackground; 
 	public static String subtitlesFile;
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public SubtitlesWindow() {	
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -202,17 +199,17 @@ public class SubtitlesWindow {
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{
-					//Suppression image temporaire
-							    		
+					//Suppression image temporaire							    		
 					File file = new File(Shutter.dirTemp + "preview.bmp");
 					if (file.exists()) file.delete();
+					
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);
 		            Shutter.caseSubtitles.setSelected(false);
 		            
 		            Utils.changeDialogVisibility(frame, true);
 	            	Shutter.frame.setOpacity(1.0f);
-	            	Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	            	Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	            	
 				}
 			}
 
@@ -739,8 +736,7 @@ public class SubtitlesWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 	            
-				//Suppression image temporaire
-						    		
+				//Suppression image temporaire						    		
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				if (file.exists()) file.delete();
 				
@@ -776,7 +772,7 @@ public class SubtitlesWindow {
 		            bufferedReader.close();  
 		            bufferedWriter.close();
 				} catch (Exception e1) {}
-	            
+					            
 				Utils.changeDialogVisibility(frame, true);
 				
             	Shutter.frame.setOpacity(1.0f);
@@ -903,7 +899,7 @@ public class SubtitlesWindow {
 					File file = new File(Shutter.dirTemp + "preview.bmp");
 					if (file.exists()) file.delete();
 					
-					Console.consoleFFMPEG.append(Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
+					Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 	
 					//Couleurs	
 					if (fontColor != null)

@@ -29,9 +29,6 @@ public class SubtitlesHelp {
 
 	public static JFrame frame;
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public SubtitlesHelp() {
 		frame = new JFrame();
 		frame.getContentPane().setLayout(null);

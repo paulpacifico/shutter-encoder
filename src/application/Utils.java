@@ -781,6 +781,38 @@ public class Utils extends Shutter {
 								
 								color.appendChild(component);
 							}
+							else if (p instanceof JComboBox)
+							{
+								//Component
+								Element component = document.createElement("Component");
+								
+								//Type
+								Element cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JComboBox"));
+								component.appendChild(cType);
+																	
+								//Name
+								Element cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(p.getName()));
+								component.appendChild(cName);
+								
+								//Value
+								Element cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
+								component.appendChild(cValue);
+								
+								//State
+								Element cState = document.createElement("Enable");
+								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+								component.appendChild(cState);
+								
+								//Visible
+								Element cVisible = document.createElement("Visible");
+								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+								component.appendChild(cVisible);		
+								
+								color.appendChild(component);
+							}
 						}												
 					}
 					
@@ -1913,7 +1945,15 @@ public class Utils extends Shutter {
 						Element eElement = (Element) nNode;
 
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboTheme"))
+						{
 							getTheme = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();		
+							
+							if (getTheme.equals("0"))
+								getTheme = Shutter.language.getProperty("clearTheme");
+							else if (getTheme.equals("1"))
+								getTheme = Shutter.language.getProperty("darkTheme");
+							
+						}
 						
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("accentColor"))
 						{					

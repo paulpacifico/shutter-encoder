@@ -203,9 +203,6 @@ public class VideoPlayer {
 	public static JPanel panelWaveformLeft;
 	private static JPanel panelWaveformRight;
 		
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public VideoPlayer() {  	
 		
 		showInfoMessage = true;

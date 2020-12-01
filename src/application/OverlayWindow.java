@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.MouseInfo;
@@ -45,6 +46,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
 import java.io.File;
@@ -136,6 +138,7 @@ public class OverlayWindow {
 	public static JSpinner spinnerOpacityName;
     
 	public static JRadioButton caseAddTimecode = new JRadioButton(Shutter.language.getProperty("caseAddTimecode"));//IMPORTANT
+	public static JLabel lblTimecode = new JLabel(Shutter.language.getProperty("lblTimecode"));
 	public static JTextField TC1 = new JTextField("00");
 	public static JTextField TC2 = new JTextField("00");
 	public static JTextField TC3 = new JTextField("00");
@@ -397,7 +400,16 @@ public class OverlayWindow {
 				        String secondes = (formatter.format((offset/1000) % 60));				        
 				        String images = (formatter.format(tcI));	
 				        
-						str = heures+":"+minutes+":"+secondes+":"+images;	
+				        if (caseAddTimecode.isSelected() && lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
+				        {
+				        	str = String.format("%.0f",
+				        	Integer.parseInt(heures) * 3600 * FFPROBE.currentFPS +
+				        	Integer.parseInt(minutes) * 60 * FFPROBE.currentFPS +
+				        	Integer.parseInt(secondes) * FFPROBE.currentFPS +
+				        	Integer.parseInt(images));
+				        }
+				        else
+				        	str = heures+":"+minutes+":"+secondes+":"+images;	
 					}
 					
 			        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
@@ -406,17 +418,30 @@ public class OverlayWindow {
 						g2.setColor(new Color(backgroundColor.getRed(),backgroundColor.getGreen(),backgroundColor.getBlue(), (int) ( (float) (Integer.parseInt(spinnerOpacityTC.getValue().toString()) * 255) /  100)));
 					else
 						g2.setColor(new Color(0,0,0,0));
-					
-					g2.fillRect(0, 0, bounds.width, bounds.height);
+										
+					GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+			        AffineTransform transform = gfxConfig.getDefaultTransform();
+			        
+					if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = Retina
+				        g2.fillRect(0, 0, bounds.width, bounds.height / 2);
+					else
+						g2.fillRect(0, 0, bounds.width, bounds.height);
 					
 					if (lblBackground.getText().equals(Shutter.language.getProperty("aucun")))
 						g2.setColor(new Color(fontColor.getRed(),fontColor.getGreen(),fontColor.getBlue(), (int) ( (float) (Integer.parseInt(spinnerOpacityTC.getValue().toString()) * 255) /  100)));
 					else				
 						g2.setColor(fontColor);
 					
-					Integer offset = bounds.height + (int) bounds.getY();
-					
-					g2.drawString(str, 0, bounds.height - offset);	
+					if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = Retina
+			        {
+			        	Integer offset = bounds.height + (int) bounds.getY();						
+						g2.drawString(str, 0, bounds.height / 2 - offset / 2);	
+			        }
+					else
+					{
+						Integer offset = bounds.height + (int) bounds.getY();						
+						g2.drawString(str, 0, bounds.height - offset);	
+					}
 			        
 			        image.repaint();
 					timecode.repaint();
@@ -526,16 +551,29 @@ public class OverlayWindow {
 				else
 					g2.setColor(new Color(0,0,0,0));
 
-		        g2.fillRect(0, 0, bounds.width, bounds.height);
+				GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+		        AffineTransform transform = gfxConfig.getDefaultTransform();
+				
+				if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = Retina
+			        g2.fillRect(0, 0, bounds.width, bounds.height / 2);
+				else
+					g2.fillRect(0, 0, bounds.width, bounds.height);
 				
 				if (lblBackground.getText().equals(Shutter.language.getProperty("aucun")))
 					g2.setColor(new Color(fontColor.getRed(),fontColor.getGreen(),fontColor.getBlue(), (int) ( (float) (Integer.parseInt(spinnerOpacityName.getValue().toString()) * 255) /  100)));
 				else				
-					g2.setColor(fontColor);
+					g2.setColor(fontColor);				
 				
-				Integer offset = bounds.height + (int) bounds.getY();
-						
-				g2.drawString(str, 0, bounds.height - offset);		
+				if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = Retina
+		        {
+		        	Integer offset = bounds.height + (int) bounds.getY();						
+					g2.drawString(str, 0, bounds.height / 2 - offset / 2);	
+		        }
+				else
+				{
+					Integer offset = bounds.height + (int) bounds.getY();						
+					g2.drawString(str, 0, bounds.height - offset);	
+				}	
 		        
 		        image.repaint();
 				fileName.repaint();
@@ -853,13 +891,51 @@ public class OverlayWindow {
 
 		});
 
+		lblTimecode.setName("lblTimecode");
+		lblTimecode.setBackground(new Color(80, 80, 80));
+		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTimecode.setOpaque(true);
+		lblTimecode.setFont(new Font("Montserrat", Font.PLAIN, 11));
+		lblTimecode.setBounds(caseAddTimecode.getLocation().x + caseAddTimecode.getWidth() + 2, caseAddTimecode.getLocation().y + 3, 70, 16);
+		frame.add(lblTimecode);
+		
+		lblTimecode.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if (lblTimecode.getText().equals(Shutter.language.getProperty("lblTimecode")))
+					lblTimecode.setText(Shutter.language.getProperty("lblFrameNumber"));
+				else
+					lblTimecode.setText(Shutter.language.getProperty("lblTimecode"));
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+			
+		});
+		
 		TC1.setName("TC1");
 		TC1.setEnabled(false);
 		TC1.setText("00");
 		TC1.setHorizontalAlignment(SwingConstants.CENTER);
 		TC1.setFont(new Font("FreeSans", Font.PLAIN, 14));
 		TC1.setColumns(10);
-		TC1.setBounds(caseAddTimecode.getX() + caseAddTimecode.getWidth() + 7, caseAddTimecode.getY() + 1, 32, 21);
+		TC1.setBounds(lblTimecode.getX() + lblTimecode.getWidth() + 7, caseAddTimecode.getY(), 32, 21);
 		frame.add(TC1);
 		
 		TC2.setName("TC2");
@@ -1749,7 +1825,7 @@ public class OverlayWindow {
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				if (file.exists()) file.delete();
 				
-				Console.consoleFFMPEG.append(Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());		
+				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());		
 					
 	    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
 		  		FFPROBE.Data(fichier);		
@@ -1922,12 +1998,21 @@ public class OverlayWindow {
 				
 				long offset =  positionVideo.getValue() + tcH + tcM + tcS;
 				NumberFormat formatter = new DecimalFormat("00");
-		        String heures =  (formatter.format((offset/1000) / 3600));
+		        String heures = (formatter.format((offset/1000) / 3600));
 		        String minutes = (formatter.format( ((offset/1000) / 60) % 60) );
 		        String secondes = (formatter.format((offset/1000) % 60));				        
-		        String images = (formatter.format(tcI));								
-							
-		        addTimecode.setText(heures+":"+minutes+":"+secondes+":"+images);	
+		        String images = (formatter.format(tcI));							
+		        
+		        if (caseAddTimecode.isSelected() && lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
+		        {
+		        	addTimecode.setText(String.format("%.0f",
+		        	Integer.parseInt(heures) * 3600 * FFPROBE.currentFPS +
+		        	Integer.parseInt(minutes) * 60 * FFPROBE.currentFPS +
+		        	Integer.parseInt(secondes) * FFPROBE.currentFPS +
+		        	Integer.parseInt(images)));
+		        }
+		        else
+		        	addTimecode.setText(heures+":"+minutes+":"+secondes+":"+images);	
 				
 				image.add(timecode);
 				

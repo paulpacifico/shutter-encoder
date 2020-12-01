@@ -96,10 +96,6 @@ public class VideoWeb {
 	private JRadioButton caseVideoPass;
 	private JComboBox<String> comboFormats;
 
-	/**
-	 * @wbp.parser.entryPoint
-	 */
-	
 	public VideoWeb() {	
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));

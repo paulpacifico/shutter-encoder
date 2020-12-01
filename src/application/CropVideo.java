@@ -98,10 +98,6 @@ public class CropVideo {
     public static int containerWidth =  640;	
     public static int containerHeight = 360;
 	
-
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	public CropVideo() {	
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -598,7 +594,7 @@ public class CropVideo {
 			File file = new File(Shutter.dirTemp + "preview.bmp");
 			if (file.exists()) file.delete();
 			
-			Console.consoleFFMPEG.append(Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());		
+			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());		
 				
     	  	//On récupère la taille du logo pour l'adater à l'image vidéo
 	  		FFPROBE.Data(fichier);		

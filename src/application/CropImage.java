@@ -1264,7 +1264,7 @@ public class CropImage {
 				File fileOut = new File(Shutter.dirTemp + "preview.bmp");
 				if (fileOut.exists()) fileOut.delete();
 				
-				Console.consoleFFMPEG.append(Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
+				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 				
 				//InOut		
 				FFMPEG.fonctionInOut();

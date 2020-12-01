@@ -67,10 +67,7 @@ import library.MEDIAINFO;
 	public static JLabel lblWait;
 	public static JLabel lblFlecheBas;
 	public static JTabbedPane infoTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
+
 	public Informations() {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(50,50,50));
