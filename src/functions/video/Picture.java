@@ -154,7 +154,7 @@ public class Picture extends Shutter {
 	            	//Logo
 			        String logo = setLogo();	
 					
-			    	//Watermak
+			    	//Watermark
 					filter = setWatermark(filter);
 					
 					//Framesize

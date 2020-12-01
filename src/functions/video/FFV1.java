@@ -181,7 +181,7 @@ public class FFV1 extends Shutter {
 					//Logo
 			        String logo = setLogo();
 					
-	            	//Watermak
+	            	//Watermark
 			        filterComplex = setWatermark(filterComplex);
 			        
 			    	//Rognage

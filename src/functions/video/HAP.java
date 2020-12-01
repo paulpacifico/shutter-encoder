@@ -184,7 +184,7 @@ public class HAP extends Shutter {
 					//Logo
 			        String logo = setLogo();
 					
-	            	//Watermak
+	            	//Watermark
 			        filterComplex = setWatermark(filterComplex);
 			        
 			    	//Rognage

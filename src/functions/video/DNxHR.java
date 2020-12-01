@@ -228,13 +228,13 @@ public class DNxHR extends Shutter {
 					filterComplex = setPTS(filterComplex);
 					
 					//Conformisation
-					filterComplex = setConform(filterComplex);
+					filterComplex = setConform(filterComplex);					
+									
+			    	//Watermark
+					filterComplex = setWatermark(filterComplex);
 					
 	            	//Timecode
-					filterComplex = showTimecode(filterComplex, fichier);	
-					
-			    	//Watermak
-					filterComplex = setWatermark(filterComplex);
+					filterComplex = showTimecode(filterComplex, fichier);
 					
 			    	//Rognage
 			        filterComplex = setCrop(filterComplex);
@@ -1141,7 +1141,14 @@ public class DNxHR extends Shutter {
 	   			dropFrame = ";";
 	   			
 	   		if (filterComplex != "") filterComplex += ",";
-	   		filterComplex += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
+	   		
+	   		if (OverlayWindow.caseAddTimecode.isSelected() && OverlayWindow.lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
+	   		{
+	   			String startNumber = String.format("%.0f", Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS + Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS + Integer.parseInt(tc3) * FFPROBE.currentFPS + Integer.parseInt(tc4));
+	   			filterComplex += "drawtext=" + OverlayWindow.font + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc;
+	   		}
+	   		else
+	   			filterComplex += "drawtext=" + OverlayWindow.font + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + OverlayWindow.textTcPosX.getText() + ":y=" + OverlayWindow.textTcPosY.getText() + ":fontcolor=0x" + OverlayWindow.hex + OverlayWindow.hexAlphaTc + ":fontsize=" + OverlayWindow.spinnerSizeTC.getValue() + ":box=1:boxcolor=0x" + OverlayWindow.hex2 + OverlayWindow.hexTc + ":tc24hmax=1";	      
 	   	}    
 	   
 		return filterComplex;
