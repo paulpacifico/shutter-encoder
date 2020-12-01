@@ -155,8 +155,30 @@ public class MP3 extends Shutter {
 					
 									
 					//Envoi de la commande					
-					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio						
-						splitAudio(fichier, extension, file, sortie);
+					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio
+					{
+						if (FFPROBE.surround)
+						{
+							if (lblSplit.getText().equals(language.getProperty("mono")))
+							{								
+								String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd
+								+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(".mp3", "_FL.mp3") + '"'
+								+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(".mp3", "_FR.mp3") + '"'
+								+ " -map " + '"' + "[FC]" + '"' + " " + '"'  + fileOut.toString().replace(".mp3", "_FC.mp3") + '"'
+								+ " -map " + '"' + "[LFE]" + '"' + " " + '"'  + fileOut.toString().replace(".mp3", "_LFE.mp3") + '"'
+								+ " -map " + '"' + "[BL]" + '"' + " " + '"'  + fileOut.toString().replace(".mp3", "_BL.mp3") + '"'
+								+ " -map " + '"' + "[BR]" + '"' + " " + '"'  + fileOut.toString().replace(".mp3", "_BR.mp3") + '"');
+							}
+							else if (lblSplit.getText().equals(language.getProperty("stereo")))
+							{		
+								String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
+							}
+						}
+						else 
+							splitAudio(fichier, extension, file, sortie);
+					}
 					else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 					{
 						String cmd = " " + audio + "-vn -y ";
@@ -392,10 +414,10 @@ public class MP3 extends Shutter {
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".wav"));
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".mp3"));
 				if(fileOut.exists())
 				{										
-					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".wav");
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".mp3");
 					if (fileOut == null)
 						yesno = " -n ";	
 				}
@@ -425,10 +447,10 @@ public class MP3 extends Shutter {
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".wav"));
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".mp3"));
 				if(fileOut.exists())
 				{										
-					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".wav");
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".mp3");
 					if (fileOut == null)
 						yesno = " -n ";	
 				}
@@ -460,10 +482,10 @@ public class MP3 extends Shutter {
 				
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + number + ".wav"));
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + number + ".mp3"));
 				if(fileOut.exists())
 				{										
-					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + number + "_", ".wav");
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + number + "_", ".mp3");
 					if (fileOut == null)
 						yesno = " -n ";	
 				}

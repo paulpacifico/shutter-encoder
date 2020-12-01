@@ -153,8 +153,30 @@ public class WAV extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 									
 					//Envoi de la commande					
-					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio						
-						splitAudio(fichier, extension, file, sortie);
+					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio
+					{
+						if (FFPROBE.surround)
+						{
+							if (lblSplit.getText().equals(language.getProperty("mono")))
+							{								
+								String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd
+								+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(".wav", "_FL.wav") + '"'
+								+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(".wav", "_FR.wav") + '"'
+								+ " -map " + '"' + "[FC]" + '"' + " " + '"'  + fileOut.toString().replace(".wav", "_FC.wav") + '"'
+								+ " -map " + '"' + "[LFE]" + '"' + " " + '"'  + fileOut.toString().replace(".wav", "_LFE.wav") + '"'
+								+ " -map " + '"' + "[BL]" + '"' + " " + '"'  + fileOut.toString().replace(".wav", "_BL.wav") + '"'
+								+ " -map " + '"' + "[BR]" + '"' + " " + '"'  + fileOut.toString().replace(".wav", "_BR.wav") + '"');
+							}
+							else if (lblSplit.getText().equals(language.getProperty("stereo")))
+							{		
+								String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
+							}
+						}
+						else 
+							splitAudio(fichier, extension, file, sortie);
+					}
 					else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 					{
 						String cmd = " " + audio + "-vn -y ";

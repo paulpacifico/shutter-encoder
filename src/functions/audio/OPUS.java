@@ -155,8 +155,30 @@ public class OPUS extends Shutter {
 					
 					
 					//Envoi de la commande					
-					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio						
-						splitAudio(fichier, extension, file, sortie);
+					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio
+					{
+						if (FFPROBE.surround)
+						{
+							if (lblSplit.getText().equals(language.getProperty("mono")))
+							{								
+								String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd
+								+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(".opus", "_FL.opus") + '"'
+								+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(".opus", "_FR.opus") + '"'
+								+ " -map " + '"' + "[FC]" + '"' + " " + '"'  + fileOut.toString().replace(".opus", "_FC.opus") + '"'
+								+ " -map " + '"' + "[LFE]" + '"' + " " + '"'  + fileOut.toString().replace(".opus", "_LFE.opus") + '"'
+								+ " -map " + '"' + "[BL]" + '"' + " " + '"'  + fileOut.toString().replace(".opus", "_BL.opus") + '"'
+								+ " -map " + '"' + "[BR]" + '"' + " " + '"'  + fileOut.toString().replace(".opus", "_BR.opus") + '"');
+							}
+							else if (lblSplit.getText().equals(language.getProperty("stereo")))
+							{		
+								String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
+							}
+						}
+						else 
+							splitAudio(fichier, extension, file, sortie);
+					}
 					else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 					{
 						String cmd = " " + audio + "-vn -y ";
@@ -392,10 +414,10 @@ public class OPUS extends Shutter {
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".wav"));
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".opus"));
 				if(fileOut.exists())
 				{										
-					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".wav");
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".opus");
 					if (fileOut == null)
 						yesno = " -n ";	
 				}
@@ -425,10 +447,10 @@ public class OPUS extends Shutter {
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".wav"));
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + i + ".opus"));
 				if(fileOut.exists())
 				{										
-					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".wav");
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + i + "_", ".opus");
 					if (fileOut == null)
 						yesno = " -n ";	
 				}
@@ -460,10 +482,10 @@ public class OPUS extends Shutter {
 				
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + number + ".wav"));
+				File fileOut = new File(sortie + "/" + fichier.replace(extension, "_Audio_" + number + ".opus"));
 				if(fileOut.exists())
 				{										
-					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + number + "_", ".wav");
+					fileOut = Utils.fileReplacement(sortie, fichier, extension, "_Audio_" + number + "_", ".opus");
 					if (fileOut == null)
 						yesno = " -n ";	
 				}

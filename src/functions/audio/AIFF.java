@@ -158,8 +158,30 @@ public class AIFF extends Shutter {
 
 						
 					//Envoi de la commande					
-					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio						
-						splitAudio(fichier, extension, file, sortie);
+					if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio
+					{
+						if (FFPROBE.surround)
+						{
+							if (lblSplit.getText().equals(language.getProperty("mono")))
+							{								
+								String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd
+								+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_FL.aif") + '"'
+								+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_FR.aif") + '"'
+								+ " -map " + '"' + "[FC]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_FC.aif") + '"'
+								+ " -map " + '"' + "[LFE]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_LFE.aif") + '"'
+								+ " -map " + '"' + "[BL]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_BL.aif") + '"'
+								+ " -map " + '"' + "[BR]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_BR.aif") + '"');
+							}
+							else if (lblSplit.getText().equals(language.getProperty("stereo")))
+							{		
+								String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -vn -y ";
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
+							}
+						}
+						else 
+							splitAudio(fichier, extension, file, sortie);
+					}
 					else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 					{
 						String cmd = " " + audio + "-vn -y ";
