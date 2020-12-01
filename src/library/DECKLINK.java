@@ -167,6 +167,7 @@ public static ArrayList<String> formatsList;
 					process = processDECKLINK.start();
 					
 					BlackMagicInput.comboInput.setEnabled(false);
+					BlackMagicInput.btnRecord.setEnabled(false);
 											
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));			
@@ -202,6 +203,7 @@ public static ArrayList<String> formatsList;
 					} finally {
 						isRunning = false;
 						BlackMagicInput.comboInput.setEnabled(true);
+						BlackMagicInput.btnRecord.setEnabled(true);
 					}
 				
 			}				
@@ -210,16 +212,7 @@ public static ArrayList<String> formatsList;
 }
 	
 	public static void toFFMPEG(final String cmd) {
-		
-		if (process.isAlive())
-			process.destroy();
-		
-		do {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {}
-		} while (process.isAlive());
-		
+						
 		//Permet le bon démarrage
 		try {
 			Thread.sleep(500);
@@ -286,8 +279,8 @@ public static ArrayList<String> formatsList;
 							 
 						if (line.contains("time="))
 						{
-							 String s[] = line.split("=");
-							 String time = s[5].replace(" bitrate", "");
+							 String s[] = line.split("time=");
+							 String time = s[1].replace(" bitrate", "");
 							 String s2[] = time.split("\\.");
 							 BlackMagicInput.lblTimecode.setText(s2[0]);
 							 
