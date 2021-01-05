@@ -392,7 +392,7 @@ public class VideoWeb {
 					
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (Exception er){}
 					}while (YOUTUBEDL.runProcess.isAlive() && Shutter.cancelled == false);
 					
@@ -636,7 +636,7 @@ public class VideoWeb {
 	        			        			
 	        			do 
 	        			{
-	        				Thread.sleep(10);
+	        				Thread.sleep(100);
 	        			}while(YOUTUBEDL.isRunning);
 	        			
 	        			Shutter.progressBar1.setIndeterminate(false);
@@ -667,7 +667,7 @@ public class VideoWeb {
 						YOUTUBEDL.run(textURL.getText(), options());
 						
 					       do { 
-					    	   Thread.sleep(10);		
+					    	   Thread.sleep(100);		
 					       }while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
 					       
 					       if (Shutter.cancelled)
@@ -686,7 +686,7 @@ public class VideoWeb {
 									FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".wav") + '"');	
 								
 								       do { 
-											Thread.sleep(10);		
+											Thread.sleep(100);		
 							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 									
 							       //Suppression du fichier audio si processus annulé
@@ -703,7 +703,7 @@ public class VideoWeb {
 					    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".mp3") + '"');	
 								
 							       do { 
-											Thread.sleep(10);		
+											Thread.sleep(100);		
 							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 							       
 							       //Suppression du fichier audio si processus annulé

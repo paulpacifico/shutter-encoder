@@ -84,7 +84,7 @@ public class DVPAL extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -161,7 +161,7 @@ public class DVPAL extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-						Thread.sleep(10);
+						Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
@@ -253,7 +253,7 @@ public class DVPAL extends Shutter {
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.FrameData(file.toString());	
 		 do
-		 	Thread.sleep(10);						 
+		 	Thread.sleep(100);						 
 		 while (FFPROBE.isRunning);
 		 
 		 if (errorAnalyse(file.toString()))
@@ -262,7 +262,7 @@ public class DVPAL extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))

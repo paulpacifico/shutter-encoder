@@ -639,13 +639,13 @@ import javax.swing.JScrollPane;
 							Shutter.caseInAndOut.doClick();								
 							
 							do {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} while (VideoPlayer.frame.isVisible() == false);
 							VideoPlayer.frame.setVisible(false);
 							
 							//On démarre le lecteur puis on fait pause
 							do {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} while (VideoPlayer.leftPlay.getText().equals(Shutter.language.getProperty("btnPause")) == false);
 							
 							VideoPlayer.leftPlay.doClick();	
@@ -687,12 +687,12 @@ import javax.swing.JScrollPane;
 							
 							//On attend que le processus se lance
 							do {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} while (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")));		
 							
 							//On attend que le fichier soit terminé
 							do {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} while (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")) == false);							
 														
 			    			} catch (Exception e){}
@@ -894,7 +894,7 @@ import javax.swing.JScrollPane;
 						// Analyse des données					 
 						 FFPROBE.Data(file.toString());						 
 						 do
-							Thread.sleep(10);	
+							Thread.sleep(100);	
 						 while (FFPROBE.isRunning);
 							 																	
 						String fichier = file.getName();
@@ -914,7 +914,7 @@ import javax.swing.JScrollPane;
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());										
 						
 						//On créer le tableau ici après la première image
@@ -927,7 +927,7 @@ import javax.swing.JScrollPane;
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());						
 					
 						actionsDeFin();

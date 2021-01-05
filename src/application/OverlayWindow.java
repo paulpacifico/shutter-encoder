@@ -363,7 +363,7 @@ public class OverlayWindow {
 						{
 							do {
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e) {}
 							} while (FFPROBE.isRunning);
 						}
@@ -778,7 +778,7 @@ public class OverlayWindow {
 					lblBackground.setText(Shutter.language.getProperty("aucun"));
 					spinnerOpacityTC.setValue(100);
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {}
 					spinnerOpacityName.setValue(100);
 				}
@@ -787,7 +787,7 @@ public class OverlayWindow {
 					lblBackground.setText(Shutter.language.getProperty("lblBackgroundOn"));
 					spinnerOpacityTC.setValue(50);
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {}
 					spinnerOpacityName.setValue(50);
 				}
@@ -1090,7 +1090,7 @@ public class OverlayWindow {
 		}
 		do {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -1719,7 +1719,7 @@ public class OverlayWindow {
 						public void run() {
 							do {
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e1) {}
 							} while (System.currentTimeMillis() - textTime < 500);
 							
@@ -1831,7 +1831,7 @@ public class OverlayWindow {
 					FFPROBE.Data(fichier);		
 				
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (FFPROBE.isRunning);	
 				
 				if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "")
@@ -1865,7 +1865,7 @@ public class OverlayWindow {
 	        	
 		        do
 		        {
-		        	Thread.sleep(10);  
+		        	Thread.sleep(100);  
 		        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 		        
         	}
@@ -1973,7 +1973,7 @@ public class OverlayWindow {
 				if (FFPROBE.isRunning) //Contourne un bug incompréhensible
 				{
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while (FFPROBE.isRunning);
 				}
 				
@@ -2158,7 +2158,7 @@ public class OverlayWindow {
 				
 			try {
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (OverlayWindow.frame == null && OverlayWindow.frame.isVisible() == false);
 				
 				
@@ -2185,7 +2185,7 @@ public class OverlayWindow {
 								if (p instanceof JPanel)
 								{
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2224,7 +2224,7 @@ public class OverlayWindow {
 								else if (p instanceof JLabel)
 								{
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2239,7 +2239,7 @@ public class OverlayWindow {
 								else if (p instanceof JComboBox)
 								{
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2255,7 +2255,7 @@ public class OverlayWindow {
 								else if (p instanceof JTextField)
 								{											
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2283,7 +2283,7 @@ public class OverlayWindow {
 								else if (p instanceof JSpinner)
 								{									
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (file.exists() == false);
 									
 									//Value

@@ -844,7 +844,7 @@ private static StringBuilder getAll;
 						if (file.exists() == false) // Dans le cas où on annule la copie en cours
 							break;
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
 						}
 					}
@@ -867,7 +867,7 @@ private static StringBuilder getAll;
 				FFPROBE.Data(liste.getElementAt(i));
 				do {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e1) {}
 				} while (FFPROBE.isRunning == true);
 				dureeTotale += FFPROBE.totalLength;
@@ -1202,7 +1202,7 @@ private static StringBuilder getAll;
           //Permet d'attendre la création de l'image
           do {
 	          try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 	          } catch (InterruptedException e) {}
           } while (imageName.exists() == false);
           

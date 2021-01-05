@@ -857,7 +857,7 @@ public class CropImage {
 		}
 		do {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 
@@ -885,7 +885,7 @@ public class CropImage {
 						
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -1238,14 +1238,14 @@ public class CropImage {
 			{
 				 XPDF.toFFPROBE(file.toString());	
 				 do
-					Thread.sleep(10);
+					Thread.sleep(100);
 				 while (XPDF.isRunning);
 			}				
 			else if (isRaw)
 			{
 				 EXIFTOOL.run(file.toString());	
 				 do
-				 	Thread.sleep(10);						 
+				 	Thread.sleep(100);						 
 				 while (EXIFTOOL.isRunning);
 			}
 			else
@@ -1254,7 +1254,7 @@ public class CropImage {
 					FFPROBE.Data(file.toString());
 				
 	        	do
-	            	Thread.sleep(10);   
+	            	Thread.sleep(100);   
 	        	while (FFPROBE.isRunning);
 			}			
 
@@ -1301,7 +1301,7 @@ public class CropImage {
 					         	            
 	            do
 	            {
-	            	Thread.sleep(10);  
+	            	Thread.sleep(100);  
 	            } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 
 	           	if (FFMPEG.error)
@@ -1360,14 +1360,14 @@ public class CropImage {
 				
 			try {
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
 				
 				
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (file.exists() == false);				
 				
 				File fXmlFile = encFile;
@@ -1391,7 +1391,7 @@ public class CropImage {
 								if (p instanceof JTextField)
 								{											
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (file.exists() == false);
 									
 									//Value

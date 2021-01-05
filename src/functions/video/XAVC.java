@@ -95,7 +95,7 @@ public class XAVC extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -292,7 +292,7 @@ public class XAVC extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-						Thread.sleep(10);
+						Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					//Création des fichiers OPATOM
@@ -304,7 +304,7 @@ public class XAVC extends Shutter {
 					
 						//Attente de la fin de BMXTRANSWRAP
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(BMXTRANSWRAP.isRunning);
 					}
 
@@ -642,7 +642,7 @@ public class XAVC extends Shutter {
 			 FFPROBE.FrameData(file.toString());	
 			 do
 			 {
-			 	Thread.sleep(10);
+			 	Thread.sleep(100);
 			 }
 			 while (FFPROBE.isRunning);
 			 
@@ -654,7 +654,7 @@ public class XAVC extends Shutter {
 
 		 do
 		 {
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 }
 		 while (FFPROBE.isRunning);
 		 					 		 

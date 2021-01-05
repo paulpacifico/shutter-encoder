@@ -87,7 +87,7 @@ public class Command extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -140,7 +140,7 @@ public class Command extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-						Thread.sleep(10);
+						Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 			        if (cmd.contains("-pass"))
@@ -148,7 +148,7 @@ public class Command extends Shutter {
 
 					//Attente de la fin de FFMPEG
 					do
-						Thread.sleep(10);
+						Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					//Création des fichiers OPATOM
@@ -161,7 +161,7 @@ public class Command extends Shutter {
 					
 						//Attente de la fin de BMXTRANSWRAP
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(BMXTRANSWRAP.isRunning);
 					}
 					

@@ -91,7 +91,7 @@ public class HAP extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -297,7 +297,7 @@ public class HAP extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
@@ -614,7 +614,7 @@ public class HAP extends Shutter {
 			 FFPROBE.FrameData(file.toString());	
 			 do
 			 {
-			 	Thread.sleep(10);
+			 	Thread.sleep(100);
 			 }
 			 while (FFPROBE.isRunning);
 			 
@@ -626,7 +626,7 @@ public class HAP extends Shutter {
 
 		 do
 		 {
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 }
 		 while (FFPROBE.isRunning);
 		 					 		 

@@ -184,8 +184,11 @@ public static int gopSpace = 124;
 									s = Utils.setOverlayDevice().split("-f ");
 								
 								String id[] = s[1].split("\"");
+								if (Utils.audioDeviceIndex > 0 && overlayDeviceIsRunning == false)
+									id =  s[2].split("\"");;
+
 								String inputDevice = id[0] + '"' + id[1] + '"';
-							
+								
 								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f " + inputDevice);
 							}
 							else if (fichier.equals("Capture.input.device") && Utils.videoDeviceIndex > 0)
@@ -698,7 +701,7 @@ public static int gopSpace = 124;
 					
 					//Attente de l'ouverture de la fenêtre
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while(GOP.frame == null);
 					
 					Process process = processFFPROBE.start();
@@ -848,7 +851,7 @@ public static int gopSpace = 124;
 				
 				//Attente d'analyse
 		         do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 		         } while(processData.isAlive());         
 		         
          	if (totalLength != 0)

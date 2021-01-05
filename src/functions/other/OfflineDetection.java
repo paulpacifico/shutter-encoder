@@ -86,7 +86,7 @@ public class OfflineDetection extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -136,7 +136,7 @@ public class OfflineDetection extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					//On Affiche la détection
@@ -166,7 +166,7 @@ public class OfflineDetection extends Shutter {
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.FrameData(file.toString());	
 		 do
-		 	Thread.sleep(10);						 
+		 	Thread.sleep(100);						 
 		 while (FFPROBE.isRunning);
 		 
 		 if (errorAnalyse(file.toString()))
@@ -175,7 +175,7 @@ public class OfflineDetection extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))

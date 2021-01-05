@@ -97,7 +97,7 @@ public class Merge extends Shutter {
 										if (file.exists() == false) // Dans le cas où on annule la copie en cours
 											break;
 										try {
-											Thread.sleep(10);
+											Thread.sleep(100);
 										} catch (InterruptedException e) {
 										}
 									}
@@ -120,7 +120,7 @@ public class Merge extends Shutter {
 								FFPROBE.Data(liste.getElementAt(i));
 								do {
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException e1) {}
 								} while (FFPROBE.isRunning == true);
 								dureeTotale += FFPROBE.totalLength;
@@ -149,7 +149,7 @@ public class Merge extends Shutter {
 					
 							//Attente de la fin de FFMPEG
 							do
-								Thread.sleep(10);
+								Thread.sleep(100);
 							while(FFMPEG.runProcess.isAlive());
 														
 							listeBAB.delete();							

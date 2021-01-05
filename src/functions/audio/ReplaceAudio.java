@@ -76,7 +76,7 @@ public class ReplaceAudio extends Shutter {
 						
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFPROBE.isRunning);
@@ -92,7 +92,7 @@ public class ReplaceAudio extends Shutter {
 						audioFiles = setMulipleAudioFiles(videoFile, "", offset);
 													
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while (FFPROBE.isRunning);	
 				}
 				else
@@ -132,7 +132,7 @@ public class ReplaceAudio extends Shutter {
 							
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					

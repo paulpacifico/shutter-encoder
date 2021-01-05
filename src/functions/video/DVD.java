@@ -96,7 +96,7 @@ public class DVD extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -216,7 +216,7 @@ public class DVD extends Shutter {
 				
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (FFMPEG.cancelled == false && pass != "")
@@ -224,7 +224,7 @@ public class DVD extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					//Création des fichiers VOB
@@ -261,7 +261,7 @@ public class DVD extends Shutter {
 	protected static int setBitrate(String file) throws InterruptedException {
 		FFPROBE.Data(file);
 		do {
-			Thread.sleep(10);
+			Thread.sleep(100);
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		float debit = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
 		
@@ -289,7 +289,7 @@ public class DVD extends Shutter {
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.FrameData(file.toString());	
 		 do
-		 	Thread.sleep(10);						 
+		 	Thread.sleep(100);						 
 		 while (FFPROBE.isRunning);
 		 
 		 if (errorAnalyse(file.toString()))
@@ -298,7 +298,7 @@ public class DVD extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))
@@ -880,7 +880,7 @@ public class DVD extends Shutter {
 					DVDAUTHOR.run("-o " + '"' + dvdFolder.toString() + '"' + " -x " + '"' + dvdFolder.toString() + "/dvd.xml" + '"');	
 					
                 do {
-                	Thread.sleep(10);
+                	Thread.sleep(100);
                 } while (DVDAUTHOR.isRunning);
 	}
 	

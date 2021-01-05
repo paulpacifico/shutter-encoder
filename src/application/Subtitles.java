@@ -388,7 +388,7 @@ public class Subtitles {
 							do {
 								keyboardLoop = true;
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e) {}
 							} while ((keyboardTime + 1000) > System.currentTimeMillis());
 							
@@ -1349,7 +1349,7 @@ public class Subtitles {
 								do
 								{
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException e) {}
 								} while (VideoPlayer.addWaveformIsRunning);
 								
@@ -1838,7 +1838,7 @@ public class Subtitles {
 									while (VideoPlayer.waveform.exists() == false)
 									{
 										try {
-											Thread.sleep(10);
+											Thread.sleep(100);
 										} catch (InterruptedException e) {}
 									}
 									caseShowWaveform.setEnabled(true);

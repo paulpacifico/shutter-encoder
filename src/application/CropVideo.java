@@ -531,7 +531,7 @@ public class CropVideo {
 		}
 		do {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -602,7 +602,7 @@ public class CropVideo {
 				FFPROBE.Data(fichier);	
 			
 			do {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} while (FFPROBE.isRunning);
 							
 			//Ratio Widescreen
@@ -625,7 +625,7 @@ public class CropVideo {
         	
 	        do
 	        {
-	        	Thread.sleep(10);  
+	        	Thread.sleep(100);  
 	        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 		    	 
            	if (FFMPEG.error)
@@ -712,14 +712,14 @@ public class CropVideo {
 				
 			try {
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
 				
 				
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (file.exists() == false);				
 				
 				File fXmlFile = encFile;

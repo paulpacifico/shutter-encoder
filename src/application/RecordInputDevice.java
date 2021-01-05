@@ -255,7 +255,7 @@ public class RecordInputDevice {
 						FFPROBE.Data("Capture.input.device");	
 						do
 						{
-							Thread.sleep(10);
+							Thread.sleep(100);
 						}
 						while (FFPROBE.isRunning);
 					

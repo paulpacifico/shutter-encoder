@@ -117,7 +117,7 @@ public class DVDRIP extends Shutter {
 								FFPROBE.Data(VOB);
 								do {
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException e1) {}
 								} while (FFPROBE.isRunning == true);
 								dureeTotale += FFPROBE.totalLength;
@@ -204,7 +204,7 @@ public class DVDRIP extends Shutter {
 				
 				//Attente de la fin de FFMPEG
 				do
-					Thread.sleep(10);
+					Thread.sleep(100);
 				while(FFMPEG.runProcess.isAlive());
 			}
 			else

@@ -951,7 +951,7 @@ public class Shutter {
 				
 		do {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
 		} while (FFMPEG.runProcess.isAlive());
 						
@@ -1556,7 +1556,7 @@ public class Shutter {
 			DECKLINK.run("-f decklink -list_devices 1 -i dummy");
 			do {
 				try {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} catch (InterruptedException e1) {
 				}
 			} while (DECKLINK.isRunning);
@@ -1632,7 +1632,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -1761,7 +1761,7 @@ public class Shutter {
 								break;
 							}
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFMPEG.isRunning || FFMPEG.error);
@@ -1820,7 +1820,7 @@ public class Shutter {
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
@@ -1859,7 +1859,7 @@ public class Shutter {
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning == true);
@@ -2060,7 +2060,7 @@ public class Shutter {
 						
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {}
 						} while (FFMPEG.isRunning);
 						
@@ -2573,7 +2573,7 @@ public class Shutter {
 
 							do {
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e1) {
 								}
 							} while (FFMPEG.runProcess.isAlive());
@@ -3154,7 +3154,7 @@ public class Shutter {
 
 								do {
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException e1) {
 									}
 								} while (FFMPEG.runProcess.isAlive());
@@ -4524,7 +4524,7 @@ public class Shutter {
 						}
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -4548,7 +4548,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException er) {}
 								} while (CropImage.frame.isVisible());
 								
@@ -4687,7 +4687,7 @@ public class Shutter {
 					FFPROBE.Data(file.toString());	
 					do
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					while (FFPROBE.isRunning);
 				
@@ -4819,7 +4819,7 @@ public class Shutter {
 							 XPDF.toFFPROBE(file.toString());	
 							 do
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e1) {}
 							 while (XPDF.isRunning);
 						}
@@ -4828,7 +4828,7 @@ public class Shutter {
 							 EXIFTOOL.run(file.toString());	
 							 do
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e1) {}
 							 while (EXIFTOOL.isRunning);
 						}
@@ -4839,7 +4839,7 @@ public class Shutter {
 							
 							do
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e1) {}
 							while (FFPROBE.isRunning);
 						}
@@ -4964,7 +4964,7 @@ public class Shutter {
 								
 								do
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException e1) {}
 								while(FFMPEG.runProcess.isAlive());
 								
@@ -5005,7 +5005,7 @@ public class Shutter {
 					public void run() {	
 						try {
 							do {								
-								Thread.sleep(10);								
+								Thread.sleep(100);								
 							} while (FFMPEG.isRunning == false);	
 							
 							enableAll();
@@ -5013,7 +5013,7 @@ public class Shutter {
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							
 							do {								
-								Thread.sleep(10);								
+								Thread.sleep(100);								
 							} while (FFMPEG.isRunning);	
 						} catch (InterruptedException e1) {}	
 					}
@@ -6067,7 +6067,7 @@ public class Shutter {
 						}
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -6083,7 +6083,7 @@ public class Shutter {
 						
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {}
 						} while (new File(dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -6098,7 +6098,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException er) {}
 								} while (ColorImage.frame.isVisible());
 								
@@ -7284,7 +7284,7 @@ public class Shutter {
 							}
 							do {
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e1) {}
 							} while (FFPROBE.isRunning);
 							
@@ -7304,7 +7304,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException er) {}
 								} while (OverlayWindow.frame.isVisible());
 								
@@ -7886,7 +7886,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -7897,7 +7897,7 @@ public class Shutter {
 							
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -7936,7 +7936,7 @@ public class Shutter {
 								break;
 							}
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFMPEG.isRunning || FFMPEG.error);
@@ -9852,7 +9852,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 
@@ -10111,7 +10111,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 
@@ -10753,7 +10753,7 @@ public class Shutter {
 										
 										//Attente de la fin de FFMPEG
 										do {
-											Thread.sleep(10);
+											Thread.sleep(100);
 										} while(FFMPEG.runProcess.isAlive());
 										
 										//Erreurs
@@ -10849,7 +10849,7 @@ public class Shutter {
 											do
 											{
 												try {
-													Thread.sleep(10);
+													Thread.sleep(100);
 												} catch (InterruptedException e) {}
 											}
 											while(FFMPEG.runProcess.isAlive());
@@ -10998,7 +10998,7 @@ public class Shutter {
 						}
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -11201,7 +11201,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11211,7 +11211,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -s 640x360 -f null -");
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11229,7 +11229,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11237,7 +11237,7 @@ public class Shutter {
 		
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_qsv -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11245,7 +11245,7 @@ public class Shutter {
 								
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_amf -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11255,7 +11255,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -s 640x360 -f null -");
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11263,7 +11263,7 @@ public class Shutter {
 										
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_vaapi -s 640x360 -f null -");
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11273,7 +11273,7 @@ public class Shutter {
 								{
 									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_v4l2m2m -s 640x360 -f null -");
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (FFMPEG.runProcess.isAlive());
 			
 									if (FFMPEG.error == false)
@@ -11281,7 +11281,7 @@ public class Shutter {
 									
 									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_omx -s 640x360 -f null -");
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (FFMPEG.runProcess.isAlive());
 			
 									if (FFMPEG.error == false)
@@ -11292,7 +11292,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_videotoolbox -s 640x360 -f null -");
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)								
@@ -11759,7 +11759,7 @@ public class Shutter {
 				if (caseLogo.isSelected())
 				{					
 					boolean addDevice = false;
-					if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && System.getProperty("os.name").contains("Windows"))
+					if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) )
 					{
 						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("addInputDevice"),
 								language.getProperty("menuItemInputDevice"), JOptionPane.YES_NO_OPTION,
@@ -11776,7 +11776,7 @@ public class Shutter {
 								language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
 						caseLogo.setSelected(false);
 					}
-					else if (overlayDeviceIsRunning && addDevice)
+					else if (addDevice)
 					{
 						//Nothing
 					}
@@ -11811,7 +11811,7 @@ public class Shutter {
 									public void run() {
 										do {
 											try {
-												Thread.sleep(10);
+												Thread.sleep(100);
 											} catch (InterruptedException er) {}
 										} while (WatermarkWindow.frame.isVisible());
 										
@@ -12141,7 +12141,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} catch (InterruptedException er) {}
 								} while (CropVideo.frame.isVisible());
 								
@@ -12537,7 +12537,7 @@ public class Shutter {
 					public void run() {	
 						try {
 							do {								
-								Thread.sleep(10);								
+								Thread.sleep(100);								
 							} while (FFMPEG.isRunning == false);	
 							
 							enableAll();
@@ -12545,7 +12545,7 @@ public class Shutter {
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							
 							do {								
-								Thread.sleep(10);								
+								Thread.sleep(100);								
 							} while (FFMPEG.isRunning);	
 						} catch (InterruptedException e1) {}
 												

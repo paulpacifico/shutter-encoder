@@ -242,7 +242,7 @@ public class ColorImage {
 					
 				do {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e1) {}
 				} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 					
@@ -1033,7 +1033,7 @@ public class ColorImage {
 					
 				do {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e1) {}
 				} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 					
@@ -1125,7 +1125,7 @@ public class ColorImage {
 					}
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 					
@@ -1136,7 +1136,7 @@ public class ColorImage {
      				
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
      				
@@ -1184,7 +1184,7 @@ public class ColorImage {
 					}
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 					
@@ -1195,7 +1195,7 @@ public class ColorImage {
 	      			
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
      				
@@ -1275,7 +1275,7 @@ public class ColorImage {
 		}
 		do {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -1303,7 +1303,7 @@ public class ColorImage {
 						
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -1446,14 +1446,14 @@ public class ColorImage {
 					{
 						 XPDF.toFFPROBE(file.toString());	
 						 do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						 while (XPDF.isRunning);
 					}				
 					else if (isRaw)
 					{
 						 EXIFTOOL.run(file.toString());	
 						 do
-						 	Thread.sleep(10);						 
+						 	Thread.sleep(100);						 
 						 while (EXIFTOOL.isRunning);
 					}
 					else
@@ -1462,13 +1462,13 @@ public class ColorImage {
 							FFPROBE.Data(file.toString());
 						
 			        	do
-			            	Thread.sleep(10);   
+			            	Thread.sleep(100);   
 			        	while (FFPROBE.isRunning);
 					}
 					
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -1546,13 +1546,13 @@ public class ColorImage {
 						FFPLAY.run(FFMPEG.inPoint + " -fs -i " + '"' + file + '"' + filter + '"');
 
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while (FFMPEG.isRunning == false && FFPLAY.isRunning == false && XPDF.isRunning == false && DCRAW.isRunning == false);
 					
 					Utils.changeFrameVisibility(frame, true);
 					
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while((FFMPEG.isRunning && FFMPEG.error == false) || (FFPLAY.isRunning && FFPLAY.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));	
 									
 					
@@ -1665,14 +1665,14 @@ public class ColorImage {
 					{
 						 XPDF.toFFPROBE(file.toString());	
 						 do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						 while (XPDF.isRunning);
 					}				
 					else if (isRaw)
 					{
 						 EXIFTOOL.run(file.toString());	
 						 do
-						 	Thread.sleep(10);						 
+						 	Thread.sleep(100);						 
 						 while (EXIFTOOL.isRunning);
 					}
 					else
@@ -1681,14 +1681,14 @@ public class ColorImage {
 							FFPROBE.Data(file.toString());
 			        	
 						do
-			            	Thread.sleep(10);   
+			            	Thread.sleep(100);   
 			        	while (FFPROBE.isRunning);
 					}	
 					
 					 // Analyse des données
 					 FFPROBE.FrameData(file.toString());	
 					 do
-					 	Thread.sleep(10);						 
+					 	Thread.sleep(100);						 
 					 while (FFPROBE.isRunning);
 					
 						
@@ -1761,7 +1761,7 @@ public class ColorImage {
 	          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');		
 					
 					do{
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while(FFMPEG.isRunning);
 					
 					FFMPEG.enableAll();
@@ -1814,7 +1814,7 @@ public class ColorImage {
 		
 		do {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
 		} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 		
@@ -1926,7 +1926,7 @@ public class ColorImage {
 					
 				do {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e1) {}
 				} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 					
@@ -2026,7 +2026,7 @@ public class ColorImage {
 						
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -2133,7 +2133,7 @@ public class ColorImage {
 				public void run() {
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {}
 					} while (FFMPEG.isRunning || runProcess.isAlive());
 				}
@@ -2218,14 +2218,14 @@ public class ColorImage {
 						{
 							 XPDF.toFFPROBE(file.toString());	
 							 do
-								Thread.sleep(10);
+								Thread.sleep(100);
 							 while (XPDF.isRunning);
 						}				
 						else if (isRaw)
 						{
 							 EXIFTOOL.run(file.toString());	
 							 do
-							 	Thread.sleep(10);						 
+							 	Thread.sleep(100);						 
 							 while (EXIFTOOL.isRunning);
 						}
 						else
@@ -2234,7 +2234,7 @@ public class ColorImage {
 								FFPROBE.Data(file.toString());
 							
 				        	do
-				            	Thread.sleep(10);   
+				            	Thread.sleep(100);   
 				        	while (FFPROBE.isRunning);
 						}	
 						
@@ -2289,7 +2289,7 @@ public class ColorImage {
 			          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');			
 							
 				            do {
-				            	Thread.sleep(10);  
+				            	Thread.sleep(100);  
 				            } while((FFMPEG.isRunning && FFMPEG.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));
 				            
 				            file = fileOut;
@@ -2363,7 +2363,7 @@ public class ColorImage {
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     
 			           
 	          			do {
-			            	Thread.sleep(10);  
+			            	Thread.sleep(100);  
 			            } while (FFMPEG.isRunning && FFMPEG.error == false);
 	          			
 	          			Shutter.enableAll();
@@ -2773,13 +2773,13 @@ public class ColorImage {
 				
 			try {
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
 				
 				File file = new File(Shutter.dirTemp + "color.bmp");
 				
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (file.exists() == false);				
 				
 				File fXmlFile = encFile;
@@ -2876,7 +2876,7 @@ public class ColorImage {
 			loadImage(true);
 			
 			do {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} while (file.exists() == false || FFMPEG.isRunning || FFPROBE.isRunning);
 			
 			Shutter.enableAll();

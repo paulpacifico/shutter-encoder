@@ -301,7 +301,7 @@ public class ReducedWindow extends JDialog {
 					do {
 						opacity -= 0.01f;
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
 						
 						 try {

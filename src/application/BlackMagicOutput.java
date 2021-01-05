@@ -205,7 +205,7 @@ public class BlackMagicOutput {
 							DECKLINK.process.destroy();								
 							
 							do
-								Thread.sleep(10);
+								Thread.sleep(100);
 							while (DECKLINK.isRunning);					
 							
 							DecimalFormat tc = new DecimalFormat("00");							
@@ -248,7 +248,7 @@ public class BlackMagicOutput {
 					
 					 do
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {}		
 					 while (DECKLINK.isRunning);	
 					
@@ -272,7 +272,7 @@ public class BlackMagicOutput {
 					
 					 do
 						try {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {}		
 					 while (DECKLINK.isRunning);	
 					
@@ -332,13 +332,13 @@ public class BlackMagicOutput {
 				FFPROBE.Data(file);
 				
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (FFPROBE.isRunning);
 				
 				FFPROBE.FrameData(file);
 				
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (FFPROBE.isRunning);				
 				
 				DecimalFormat tc = new DecimalFormat("00");	
@@ -390,7 +390,7 @@ public class BlackMagicOutput {
 					 FFMPEG.run(position + " -i " + '"' + file + '"' + videoFilter + " -vframes 1 -an -y " + '"' + stopframe + '"');
 					
 					 do {
-						 Thread.sleep(10);
+						 Thread.sleep(100);
 					 } while (stopframe.exists() == false && FFMPEG.error == false);
 				
 					 btnPrevious.setEnabled(true);
@@ -417,7 +417,7 @@ public class BlackMagicOutput {
 		  		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       		  	
 				do
-					Thread.sleep(10);
+					Thread.sleep(100);
 				while (DECKLINK.isRunning);
 					
 				} catch (InterruptedException e) {}	

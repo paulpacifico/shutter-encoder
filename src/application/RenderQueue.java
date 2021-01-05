@@ -786,7 +786,7 @@ import library.XPDF;
 							
 							try {
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 								
 								
@@ -794,7 +794,7 @@ import library.XPDF;
 								Thread.sleep(1000);
 								
 								do {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 							} catch (InterruptedException e) {}
 

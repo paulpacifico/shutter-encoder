@@ -683,7 +683,7 @@ public class Wetransfer {
 				{					
 					Shutter.sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "***ENCRYPTED***";
+					final String password = "";
 	
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");

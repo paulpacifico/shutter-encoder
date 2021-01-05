@@ -92,7 +92,7 @@ public class VideoInserts extends Shutter {
 								if (file.exists() == false) // Dans le cas où on annule la copie en cours
 									break;
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e) {
 								}
 							}
@@ -116,7 +116,7 @@ public class VideoInserts extends Shutter {
 						
 						//Attente de la fin de FFPROBE
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(FFPROBE.isRunning);
 						
 						listeFichiers[i] = tcInMs() + "=" + '"' + liste.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
@@ -131,7 +131,7 @@ public class VideoInserts extends Shutter {
 						FFPROBE.Data(fichier[1].replace("\"", ""));
 						
 						do {
-							Thread.sleep(10);
+							Thread.sleep(100);
 						} while (FFPROBE.isRunning);	
 						
 						if (FFPROBE.totalLength > temps)
@@ -156,7 +156,7 @@ public class VideoInserts extends Shutter {
 					//On analyse le fichier Master pour obtenir le timescale
 					FFPROBE.FrameData(master[1].replace("\"", ""));					
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while (FFPROBE.isRunning);	
 					
 					//Fichier de sortie
@@ -211,7 +211,7 @@ public class VideoInserts extends Shutter {
 									//On intègre le timescale à chaque plan
 									FFMPEG.run(" -i " + s[1] + " -video_track_timescale " + FFPROBE.timeBase + " -c copy -map v? -map a? -map s? -y "  + withTempFolder);	
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (FFMPEG.isRunning);
 								}
 								
@@ -331,7 +331,7 @@ public class VideoInserts extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 					}
 			

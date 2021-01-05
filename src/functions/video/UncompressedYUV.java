@@ -96,7 +96,7 @@ public class UncompressedYUV extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -342,7 +342,7 @@ public class UncompressedYUV extends Shutter {
 									
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(10);
+								Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 					}
 					
@@ -374,7 +374,7 @@ public class UncompressedYUV extends Shutter {
 			 FFPROBE.FrameData(file.toString());	
 			 do
 			 {
-			 	Thread.sleep(10);
+			 	Thread.sleep(100);
 			 }
 			 while (FFPROBE.isRunning);
 			 
@@ -386,7 +386,7 @@ public class UncompressedYUV extends Shutter {
 
 		 do
 		 {
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 }
 		 while (FFPROBE.isRunning);
 		 					 		 
@@ -857,7 +857,7 @@ public class UncompressedYUV extends Shutter {
 			
 			//Attente de la fin de FFMPEG
 			do
-				Thread.sleep(10);
+				Thread.sleep(100);
 			while(FFMPEG.runProcess.isAlive());						
 			
 			if (filterComplex != "")

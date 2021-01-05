@@ -100,7 +100,7 @@ public class Utils extends Shutter {
 				public void run() {
 					sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "***ENCRYPTED***";
+					final String password = "";
 
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
@@ -356,7 +356,7 @@ public class Utils extends Shutter {
 					if (f.exists() == false) // Dans le cas où on annule la copie en cours
 						break;
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {
 					}
 				}
@@ -2065,7 +2065,7 @@ public class Utils extends Shutter {
 											if (p.getName().equals("comboFonctions"))
 											{
 												do {
-													Thread.sleep(10);
+													Thread.sleep(100);
 												} while (btnReset.getX() > 336);
 											}										
 										}

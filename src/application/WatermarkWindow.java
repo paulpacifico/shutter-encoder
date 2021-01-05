@@ -474,7 +474,7 @@ public class WatermarkWindow {
 		}
 		do {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -510,7 +510,7 @@ public class WatermarkWindow {
 							FFPROBE.Data(logoFile);	    		
 							do {
 								try {
-									Thread.sleep(10);
+									Thread.sleep(100);
 								} catch (InterruptedException e) {}
 							} while (FFPROBE.isRunning);
 							
@@ -856,7 +856,7 @@ public class WatermarkWindow {
 					FFPROBE.Data(fichier);		
 					
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while (FFPROBE.isRunning);
 				}
 							
@@ -892,7 +892,7 @@ public class WatermarkWindow {
 
 		        do
 		        {
-		        	Thread.sleep(10);  
+		        	Thread.sleep(100);  
 		        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 	            
         	}		
@@ -1028,7 +1028,7 @@ public class WatermarkWindow {
 
 				do {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {}
 				} while (FFPROBE.isRunning);
 			}
@@ -1066,7 +1066,7 @@ public class WatermarkWindow {
 				FFMPEG.run(offset + " -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
 			
 			do {
-	        	Thread.sleep(10);  
+	        	Thread.sleep(100);  
 	        } while (logoTemp.exists() == false && FFMPEG.error == false);		
 			
 	       	if (FFMPEG.error)
@@ -1123,14 +1123,14 @@ public class WatermarkWindow {
 				
 			try {
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
 				
 				
 				File file = new File(Shutter.dirTemp + "logo.png");
 				
 				do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (file.exists() == false);	
 				
 				int posX = 0;
@@ -1157,7 +1157,7 @@ public class WatermarkWindow {
 								if (p instanceof JTextField)
 								{											
 									do {
-										Thread.sleep(10);
+										Thread.sleep(100);
 									} while (file.exists() == false);
 																		
 									//Value
@@ -1181,7 +1181,7 @@ public class WatermarkWindow {
 										loadLogo(Integer.parseInt(textSize.getText()));		
 										
 										do {
-											Thread.sleep(10);
+											Thread.sleep(100);
 										} while (file.exists() == false);
 										
 										//Position des éléments après l'opacity et size

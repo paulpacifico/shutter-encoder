@@ -85,7 +85,7 @@ public class MP3 extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -199,7 +199,7 @@ public class MP3 extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());					
 				
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false 
@@ -426,7 +426,7 @@ public class MP3 extends Shutter {
 				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
-					Thread.sleep(10);
+					Thread.sleep(100);
 				while(FFMPEG.runProcess.isAlive());	
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
@@ -462,7 +462,7 @@ public class MP3 extends Shutter {
 				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
-					Thread.sleep(10);
+					Thread.sleep(100);
 				while(FFMPEG.runProcess.isAlive());	
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
@@ -494,7 +494,7 @@ public class MP3 extends Shutter {
 				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
-					Thread.sleep(10);
+					Thread.sleep(100);
 				while(FFMPEG.runProcess.isAlive());	
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
@@ -518,7 +518,7 @@ public class MP3 extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))

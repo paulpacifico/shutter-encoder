@@ -87,7 +87,7 @@ public class Rewrap extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -116,7 +116,7 @@ public class Rewrap extends Shutter {
 
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {}
 						} while (FFPROBE.isRunning);
 					}
@@ -163,7 +163,7 @@ public class Rewrap extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (FFMPEG.error)
@@ -174,7 +174,7 @@ public class Rewrap extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(10);
+								Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 					}
 					

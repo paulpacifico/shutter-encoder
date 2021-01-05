@@ -764,7 +764,7 @@ public boolean importData(JComponent comp, Transferable t) {
 	            	
 	            	try {
 		            	do {
-		            		Thread.sleep(10);
+		            		Thread.sleep(100);
 		            	} while (SEVENZIP.isRunning);
 	            	} catch (Exception e){}
 	            	

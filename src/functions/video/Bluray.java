@@ -93,7 +93,7 @@ public class Bluray extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -228,7 +228,7 @@ public class Bluray extends Shutter {
 
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (case2pass.isSelected())
@@ -238,7 +238,7 @@ public class Bluray extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(10);
+								Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 					}
 					
@@ -282,7 +282,7 @@ public class Bluray extends Shutter {
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.FrameData(file.toString());	
 		 do
-		 	Thread.sleep(10);						 
+		 	Thread.sleep(100);						 
 		 while (FFPROBE.isRunning);
 		 
 		 if (errorAnalyse(file.toString()))
@@ -291,7 +291,7 @@ public class Bluray extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))
@@ -998,7 +998,7 @@ public class Bluray extends Shutter {
 				TSMUXER.run('"' + blurayFolder.toString().replace("\\", "/") + "/bluray.meta" + '"' + " " + '"' + blurayFolder.toString().replace("\\", "/") + '"');	
 					
                 do {
-                	Thread.sleep(10);
+                	Thread.sleep(100);
                 } while (TSMUXER.isRunning);
 	}
 	

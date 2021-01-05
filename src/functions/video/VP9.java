@@ -92,7 +92,7 @@ public class VP9 extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -314,7 +314,7 @@ public class VP9 extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (case2pass.isSelected())
@@ -324,7 +324,7 @@ public class VP9 extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(10);
+								Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 						
 						//SUPPRESSION DES FICHIERS RESIDUELS
@@ -351,7 +351,7 @@ public class VP9 extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(MKVMERGE.runProcess.isAlive());
 						
 						if (MKVMERGE.error == false)
@@ -1010,7 +1010,7 @@ public class VP9 extends Shutter {
 			 FFPROBE.FrameData(file.toString());	
 			 do
 			 {
-			 	Thread.sleep(10);
+			 	Thread.sleep(100);
 			 }
 			 while (FFPROBE.isRunning);
 			 
@@ -1022,7 +1022,7 @@ public class VP9 extends Shutter {
 
 		 do
 		 {
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 }
 		 while (FFPROBE.isRunning);
 		 					 		 

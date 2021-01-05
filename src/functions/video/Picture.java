@@ -87,7 +87,7 @@ public class Picture extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -233,7 +233,7 @@ public class Picture extends Shutter {
 							
 							//Attente de la fin de FFMPEG
 							do
-								Thread.sleep(10);
+								Thread.sleep(100);
 							while(XPDF.runProcess.isAlive());
 						}						
 						btnStart.setEnabled(true);	
@@ -250,7 +250,7 @@ public class Picture extends Shutter {
 					if (isRaw)
 					{
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(DCRAW.runProcess.isAlive());
 						
 						btnStart.setEnabled(true);	
@@ -258,7 +258,7 @@ public class Picture extends Shutter {
 					else
 					{
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 					}
 					
@@ -288,7 +288,7 @@ public class Picture extends Shutter {
 
 		 EXIFTOOL.run(file.toString());	
 		 do
-		 	Thread.sleep(10);						 
+		 	Thread.sleep(100);						 
 		 while (EXIFTOOL.isRunning);
 		 
 		 if (errorAnalyse(file.toString()))
@@ -298,7 +298,7 @@ public class Picture extends Shutter {
 		{
 			 FFPROBE.FrameData(file.toString());	
 			 do
-			 	Thread.sleep(10);						 
+			 	Thread.sleep(100);						 
 			 while (FFPROBE.isRunning);
 			 
 			 if (errorAnalyse(file.toString()))
@@ -307,7 +307,7 @@ public class Picture extends Shutter {
 			 FFPROBE.Data(file.toString());
 	
 			 do
-				Thread.sleep(10);
+				Thread.sleep(100);
 			 while (FFPROBE.isRunning);
 			 					 
 			 if (errorAnalyse(file.toString()))
@@ -317,7 +317,7 @@ public class Picture extends Shutter {
 		{
 			 XPDF.info(file.toString());	
 			 do
-			 	Thread.sleep(10);						 
+			 	Thread.sleep(100);						 
 			 while (XPDF.isRunning);
 			 
 			 if (errorAnalyse(file.toString()))
@@ -325,7 +325,7 @@ public class Picture extends Shutter {
 			 
 			 XPDF.toFFPROBE(file.toString());	
 			 do
-			 	Thread.sleep(10);						 
+			 	Thread.sleep(100);						 
 			 while (XPDF.isRunning);
 			 
 			 if (errorAnalyse(file.toString()))
@@ -348,7 +348,7 @@ public class Picture extends Shutter {
 		{
 			 EXIFTOOL.run(file.toString());	
 			 do
-			 	Thread.sleep(10);						 
+			 	Thread.sleep(100);						 
 			 while (EXIFTOOL.isRunning);
 			 
 			String date[] = EXIFTOOL.exifDate.split(":");

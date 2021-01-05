@@ -84,7 +84,7 @@ public class Conform extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -149,7 +149,7 @@ public class Conform extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-						Thread.sleep(10);
+						Thread.sleep(100);
 					while(MKVMERGE.runProcess.isAlive());					
 					
 					if (tempMKV.exists() && cancelled == false || btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
@@ -159,7 +159,7 @@ public class Conform extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(10);
+							Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 						
 						btnStart.setEnabled(true);	
@@ -207,7 +207,7 @@ public class Conform extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))

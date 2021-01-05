@@ -91,7 +91,7 @@ public class H264 extends Shutter {
 							if (file.exists() == false) // Dans le cas où on annule la copie en cours
 								break;
 							try {
-								Thread.sleep(10);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 							}
 						}
@@ -316,7 +316,7 @@ public class H264 extends Shutter {
 										
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(10);
+							Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 						
 					if (case2pass.isSelected())
@@ -326,7 +326,7 @@ public class H264 extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(10);
+								Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());
 						
 						//SUPPRESSION DES FICHIERS RESIDUELS
@@ -1056,7 +1056,7 @@ public class H264 extends Shutter {
 			 FFPROBE.FrameData(file.toString());	
 			 do
 			 {
-			 	Thread.sleep(10);
+			 	Thread.sleep(100);
 			 }
 			 while (FFPROBE.isRunning);
 			 
@@ -1068,7 +1068,7 @@ public class H264 extends Shutter {
 
 		 do
 		 {
-			Thread.sleep(10);
+			Thread.sleep(100);
 		 }
 		 while (FFPROBE.isRunning);
 		 					 		 

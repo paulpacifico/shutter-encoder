@@ -55,7 +55,7 @@ public static Thread runProcess;
 					
 					do
 					{
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while (FFPROBE.isRunning);
 					
 					String PathToMEDIAINFO;
