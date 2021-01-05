@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -242,7 +242,7 @@ public class ColorImage {
 					
 				do {
 					try {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} catch (InterruptedException e1) {}
 				} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 					
@@ -1033,7 +1033,7 @@ public class ColorImage {
 					
 				do {
 					try {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} catch (InterruptedException e1) {}
 				} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 					
@@ -1099,10 +1099,10 @@ public class ColorImage {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	      		if (Shutter.listeDeFichiers.getSelectedIndex() > 0)
+	      		if (Shutter.fileList.getSelectedIndex() > 0)
 	      		{     			
 	      			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
-	      			Shutter.listeDeFichiers.setSelectedIndex(Shutter.listeDeFichiers.getSelectedIndex() - 1);
+	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() - 1);
 	      			
 					File file = new File(Shutter.dirTemp + "preview.bmp");
 					if (file.exists()) file.delete();	
@@ -1120,11 +1120,12 @@ public class ColorImage {
 					}
 					else		 
 					{
-			    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+						if (Utils.inputDeviceIsRunning == false)
+							FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
 					}
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 					
@@ -1135,7 +1136,7 @@ public class ColorImage {
      				
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
      				
@@ -1157,10 +1158,10 @@ public class ColorImage {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	      		if (Shutter.listeDeFichiers.getSelectedIndex() < Shutter.liste.getSize())
+	      		if (Shutter.fileList.getSelectedIndex() < Shutter.liste.getSize())
 	      		{      				
 	      			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	      			Shutter.listeDeFichiers.setSelectedIndex(Shutter.listeDeFichiers.getSelectedIndex() + 1);
+	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() + 1);
 	      			
 					File file = new File(Shutter.dirTemp + "preview.bmp");
 					if (file.exists()) file.delete();	
@@ -1178,11 +1179,12 @@ public class ColorImage {
 					}
 					else		 
 					{
-			    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+						if (Utils.inputDeviceIsRunning == false)
+							FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
 					}
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 					
@@ -1193,7 +1195,7 @@ public class ColorImage {
 	      			
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
      				
@@ -1268,11 +1270,12 @@ public class ColorImage {
 		}
 		else		 
 		{
-    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+			if (Utils.inputDeviceIsRunning == false)
+				FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
 		}
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -1300,7 +1303,7 @@ public class ColorImage {
 						
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -1398,7 +1401,7 @@ public class ColorImage {
 				
 				try {
 					
-					File file = new File (Shutter.listeDeFichiers.getSelectedValue().toString());
+					File file = new File (Shutter.fileList.getSelectedValue().toString());
 					
 					FFMPEG.fonctionInOut();
 					
@@ -1443,27 +1446,29 @@ public class ColorImage {
 					{
 						 XPDF.toFFPROBE(file.toString());	
 						 do
-							Thread.sleep(100);
+							Thread.sleep(10);
 						 while (XPDF.isRunning);
 					}				
 					else if (isRaw)
 					{
 						 EXIFTOOL.run(file.toString());	
 						 do
-						 	Thread.sleep(100);						 
+						 	Thread.sleep(10);						 
 						 while (EXIFTOOL.isRunning);
 					}
 					else
 					{
-						FFPROBE.Data(file.toString());
+						if (Utils.inputDeviceIsRunning == false)
+							FFPROBE.Data(file.toString());
+						
 			        	do
-			            	Thread.sleep(100);   
+			            	Thread.sleep(10);   
 			        	while (FFPROBE.isRunning);
 					}
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -1541,13 +1546,13 @@ public class ColorImage {
 						FFPLAY.run(FFMPEG.inPoint + " -fs -i " + '"' + file + '"' + filter + '"');
 
 					do {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while (FFMPEG.isRunning == false && FFPLAY.isRunning == false && XPDF.isRunning == false && DCRAW.isRunning == false);
 					
 					Utils.changeFrameVisibility(frame, true);
 					
 					do {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while((FFMPEG.isRunning && FFMPEG.error == false) || (FFPLAY.isRunning && FFPLAY.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));	
 									
 					
@@ -1589,7 +1594,7 @@ public class ColorImage {
 				
 				try {							
 	            	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					File file = new File (Shutter.listeDeFichiers.getSelectedValue().toString());
+					File file = new File (Shutter.fileList.getSelectedValue().toString());
 					String ext = file.toString().substring(file.toString().lastIndexOf("."));
 					
 					FFMPEG.fonctionInOut();	
@@ -1660,28 +1665,30 @@ public class ColorImage {
 					{
 						 XPDF.toFFPROBE(file.toString());	
 						 do
-							Thread.sleep(100);
+							Thread.sleep(10);
 						 while (XPDF.isRunning);
 					}				
 					else if (isRaw)
 					{
 						 EXIFTOOL.run(file.toString());	
 						 do
-						 	Thread.sleep(100);						 
+						 	Thread.sleep(10);						 
 						 while (EXIFTOOL.isRunning);
 					}
 					else
 					{
-						FFPROBE.Data(file.toString());
-			        	do
-			            	Thread.sleep(100);   
+						if (Utils.inputDeviceIsRunning == false)
+							FFPROBE.Data(file.toString());
+			        	
+						do
+			            	Thread.sleep(10);   
 			        	while (FFPROBE.isRunning);
 					}	
 					
 					 // Analyse des données
 					 FFPROBE.FrameData(file.toString());	
 					 do
-					 	Thread.sleep(100);						 
+					 	Thread.sleep(10);						 
 					 while (FFPROBE.isRunning);
 					
 						
@@ -1748,11 +1755,13 @@ public class ColorImage {
 						XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
 					else if (isRaw)
 						DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
+					else if (Shutter.inputDeviceIsRunning) //Screen capture			
+						FFMPEG.run(" " +  Utils.setInputDevices() + cmd + '"' + fileOut + '"');
 					else
 	          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');		
 					
 					do{
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while(FFMPEG.isRunning);
 					
 					FFMPEG.enableAll();
@@ -1805,7 +1814,7 @@ public class ColorImage {
 		
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 		
@@ -1917,7 +1926,7 @@ public class ColorImage {
 					
 				do {
 					try {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} catch (InterruptedException e1) {}
 				} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 					
@@ -2017,7 +2026,7 @@ public class ColorImage {
 						
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -2124,7 +2133,7 @@ public class ColorImage {
 				public void run() {
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e) {}
 					} while (FFMPEG.isRunning || runProcess.isAlive());
 				}
@@ -2150,10 +2159,10 @@ public class ColorImage {
 		        try
 		        {		 
 					
-					if (Shutter.listeDeFichiers.getSelectedValue() == null)
-						Shutter.listeDeFichiers.setSelectedIndex(0);
+					if (Shutter.fileList.getSelectedValue() == null)
+						Shutter.fileList.setSelectedIndex(0);
 		        	
-		        	File file = new File (Shutter.listeDeFichiers.getSelectedValue().toString());
+		        	File file = new File (Shutter.fileList.getSelectedValue().toString());
 		        			        						
 					if (Shutter.scanIsRunning)
 					{
@@ -2209,21 +2218,23 @@ public class ColorImage {
 						{
 							 XPDF.toFFPROBE(file.toString());	
 							 do
-								Thread.sleep(100);
+								Thread.sleep(10);
 							 while (XPDF.isRunning);
 						}				
 						else if (isRaw)
 						{
 							 EXIFTOOL.run(file.toString());	
 							 do
-							 	Thread.sleep(100);						 
+							 	Thread.sleep(10);						 
 							 while (EXIFTOOL.isRunning);
 						}
 						else
 						{
-							FFPROBE.Data(file.toString());
+							if (Utils.inputDeviceIsRunning == false)
+								FFPROBE.Data(file.toString());
+							
 				        	do
-				            	Thread.sleep(100);   
+				            	Thread.sleep(10);   
 				        	while (FFPROBE.isRunning);
 						}	
 						
@@ -2272,11 +2283,13 @@ public class ColorImage {
 								XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
 							else if (isRaw)
 								DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
-							else
+							else if (Shutter.inputDeviceIsRunning) //Screen capture		
+								FFMPEG.run(" " +  Utils.setInputDevices() + cmd + '"' + fileOut + '"');
+							else									
 			          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');			
 							
 				            do {
-				            	Thread.sleep(100);  
+				            	Thread.sleep(10);  
 				            } while((FFMPEG.isRunning && FFMPEG.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));
 				            
 				            file = fileOut;
@@ -2337,7 +2350,17 @@ public class ColorImage {
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
 							cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 17) + histogram + " -y ";
 						
-	          			FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     
+						//Screen capture
+						if (Shutter.inputDeviceIsRunning)
+						{
+							File preview = new File(Shutter.dirTemp + "preview.bmp");
+							if (preview.exists())
+								FFMPEG.run(" -i " + '"' + preview + '"' + cmd + '"' + fileOut + '"');
+							else								
+								FFMPEG.run(" " +  Utils.setInputDevices() + cmd + '"' + fileOut + '"');
+						}
+						else
+							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     
 			           
 	          			do {
 			            	Thread.sleep(10);  
@@ -2750,13 +2773,13 @@ public class ColorImage {
 				
 			try {
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (frame == null && frame.isVisible() == false);
 				
 				File file = new File(Shutter.dirTemp + "color.bmp");
 				
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (file.exists() == false);				
 				
 				File fXmlFile = encFile;
@@ -2853,7 +2876,7 @@ public class ColorImage {
 			loadImage(true);
 			
 			do {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} while (file.exists() == false || FFMPEG.isRunning || FFPROBE.isRunning);
 			
 			Shutter.enableAll();

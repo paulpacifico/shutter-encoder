@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,10 @@ public class ReducedWindow extends JDialog {
 		    }
 		}
 		
-		frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width, Shutter.MiniWindowY);	
+		if (System.getProperty("os.name").contains("Windows"))
+			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width, Shutter.MiniWindowY);	
+		else
+			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width, Shutter.MiniWindowY);	
 		
 		panel = new JPanel();	
 		panel.setLayout(null);
@@ -217,10 +220,21 @@ public class ReducedWindow extends JDialog {
 		frame.addMouseMotionListener(new MouseMotionListener(){
 
 			@Override
-			public void mouseDragged(MouseEvent e) {										
-				GraphicsEnvironment g = GraphicsEnvironment.getLocalGraphicsEnvironment();
-				GraphicsDevice[] devices = g.getScreenDevices();
-				int screenHeight = devices[0].getDisplayMode().getHeight();	
+			public void mouseDragged(MouseEvent e) {						
+				GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
+				GraphicsDevice myScreen = config.getDevice();
+				GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsDevice[] allScreens = env.getScreenDevices();
+				int screenIndex = -1;
+				for (int i = 0; i < allScreens.length; i++) {
+				    if (allScreens[i].equals(myScreen))
+				    {
+				    	screenIndex = i;
+				        break;
+				    }
+				}
+
+				int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 				
 				int position;
 				if (MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY < 0)
@@ -237,7 +251,6 @@ public class ReducedWindow extends JDialog {
 				{				
 					frame.setLocation(frame.getLocation().x, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);		
 				}
-				
 							
 			}
 

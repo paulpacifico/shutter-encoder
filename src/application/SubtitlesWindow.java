@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -942,7 +942,7 @@ public class SubtitlesWindow {
 			    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
 				  		FFPROBE.Data(fichier);		
 						do {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} while (FFPROBE.isRunning);
 		        	}
 		        	
@@ -998,7 +998,7 @@ public class SubtitlesWindow {
 				      
 		            do
 		            {
-		            	Thread.sleep(100);  
+		            	Thread.sleep(10);  
 		            } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 	     
 		            frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1081,7 +1081,7 @@ public class SubtitlesWindow {
 				
 			try {
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (frame == null && frame.isVisible() == false);
 				
 				
@@ -1108,7 +1108,7 @@ public class SubtitlesWindow {
 								if (p instanceof JPanel)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -1127,7 +1127,7 @@ public class SubtitlesWindow {
 								if (p instanceof JButton)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -1138,7 +1138,7 @@ public class SubtitlesWindow {
 								else if (p instanceof JLabel)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -1153,7 +1153,7 @@ public class SubtitlesWindow {
 								else if (p instanceof JComboBox)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -1169,7 +1169,7 @@ public class SubtitlesWindow {
 								else if (p instanceof JTextField)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -1184,7 +1184,7 @@ public class SubtitlesWindow {
 								else if (p instanceof JSpinner)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value

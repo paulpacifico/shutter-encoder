@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -379,6 +379,7 @@ public class VideoWeb {
 				if (caseAuto.isSelected())
 				{		
 					comboFormats.addItem("bestvideo+bestaudio");
+					comboFormats.addItem("bestvideo");
 					comboFormats.addItem("bestaudio");
 				}
 				else
@@ -420,6 +421,7 @@ public class VideoWeb {
 			
 		comboFormats = new JComboBox<String>();
 		comboFormats.addItem("bestvideo+bestaudio");
+		comboFormats.addItem("bestvideo");
 		comboFormats.addItem("bestaudio");
 		comboFormats.setLocation(16, 153);	
 		comboFormats.setSize(380, 22);
@@ -620,7 +622,7 @@ public class VideoWeb {
 				public void run(){ 
 						
 				complete = 0;
-				Shutter.lblTermine.setText(Utils.fichiersTermines(complete));
+				Shutter.lblTermine.setText(Utils.completedFiles(complete));
 						
 		        try {
 		        	
@@ -634,7 +636,7 @@ public class VideoWeb {
 	        			        			
 	        			do 
 	        			{
-	        				Thread.sleep(100);
+	        				Thread.sleep(10);
 	        			}while(YOUTUBEDL.isRunning);
 	        			
 	        			Shutter.progressBar1.setIndeterminate(false);
@@ -684,7 +686,7 @@ public class VideoWeb {
 									FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".wav") + '"');	
 								
 								       do { 
-											Thread.sleep(100);		
+											Thread.sleep(10);		
 							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 									
 							       //Suppression du fichier audio si processus annulé
@@ -701,7 +703,7 @@ public class VideoWeb {
 					    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".mp3") + '"');	
 								
 							       do { 
-											Thread.sleep(100);		
+											Thread.sleep(10);		
 							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 							       
 							       //Suppression du fichier audio si processus annulé
@@ -716,7 +718,7 @@ public class VideoWeb {
 					       if (Shutter.cancelled == false)
 					       {
 								complete++;
-								Shutter.lblTermine.setText(Utils.fichiersTermines(complete));
+								Shutter.lblTermine.setText(Utils.completedFiles(complete));
 								
 								//Ouverture du dossier
 								if (Shutter.caseOpenFolderAtEnd1.isSelected())

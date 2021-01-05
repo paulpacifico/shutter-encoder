@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -125,10 +125,10 @@ public class BlackMagicOutput {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-	      		if (Shutter.listeDeFichiers.getSelectedIndex() > 0)
+	      		if (Shutter.fileList.getSelectedIndex() > 0)
 	      		{     				
 	      			slider.setValue(0);
-	      			Shutter.listeDeFichiers.setSelectedIndex(Shutter.listeDeFichiers.getSelectedIndex() - 1);
+	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() - 1);
       				btnLire.setText(Shutter.language.getProperty("btnLire"));
       				btnLire.doClick();	      				
 	      		}					
@@ -150,10 +150,10 @@ public class BlackMagicOutput {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-	      		if (Shutter.listeDeFichiers.getSelectedIndex() < Shutter.liste.getSize())
+	      		if (Shutter.fileList.getSelectedIndex() < Shutter.liste.getSize())
 	      		{      				
 	      			slider.setValue(0);
-	      			Shutter.listeDeFichiers.setSelectedIndex(Shutter.listeDeFichiers.getSelectedIndex() + 1);
+	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() + 1);
       				btnLire.setText(Shutter.language.getProperty("btnLire"));
       				btnLire.doClick();
 	      		}				
@@ -205,7 +205,7 @@ public class BlackMagicOutput {
 							DECKLINK.process.destroy();								
 							
 							do
-								Thread.sleep(100);
+								Thread.sleep(10);
 							while (DECKLINK.isRunning);					
 							
 							DecimalFormat tc = new DecimalFormat("00");							
@@ -248,7 +248,7 @@ public class BlackMagicOutput {
 					
 					 do
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e) {}		
 					 while (DECKLINK.isRunning);	
 					
@@ -272,7 +272,7 @@ public class BlackMagicOutput {
 					
 					 do
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e) {}		
 					 while (DECKLINK.isRunning);	
 					
@@ -324,21 +324,21 @@ public class BlackMagicOutput {
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				
 				String file;
-				if (Shutter.listeDeFichiers.getSelectedIndices().length == 0)			
+				if (Shutter.fileList.getSelectedIndices().length == 0)			
 					file = Shutter.liste.firstElement();
 				else
-					file = Shutter.listeDeFichiers.getSelectedValue().toString();
+					file = Shutter.fileList.getSelectedValue().toString();
 				
 				FFPROBE.Data(file);
 				
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (FFPROBE.isRunning);
 				
 				FFPROBE.FrameData(file);
 				
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (FFPROBE.isRunning);				
 				
 				DecimalFormat tc = new DecimalFormat("00");	
@@ -362,12 +362,17 @@ public class BlackMagicOutput {
 					fieldOrder = " -field_order bt";
 				else if (FFPROBE.entrelaced.equals("1"))
 					fieldOrder = " -field_order tt";
-				
-				String audio = " -ar 48000";
+								
+				String audio = " -c:a pcm_s16le";
+				if (FFPROBE.qantization == 24)
+					audio = " -c:a pcm_s24le";
+
 				if (FFPROBE.channels > 1)
-					audio = " -ar 48000 -filter_complex " + '"' + "amerge=inputs=2,channelmap=0|1:channel_layout=stereo" + '"';
+					audio += " -ar 48000 -filter_complex " + '"' + "amerge=inputs=2,channelmap=0|1:channel_layout=stereo" + '"';
 				else if (FFPROBE.channels == 0)
-					audio = " -an";
+					audio += " -an";
+				else
+					audio += " -ar 48000";
 				
 				 
 				 File stopframe = new File(Shutter.dirTemp + "frame.png");
@@ -385,7 +390,7 @@ public class BlackMagicOutput {
 					 FFMPEG.run(position + " -i " + '"' + file + '"' + videoFilter + " -vframes 1 -an -y " + '"' + stopframe + '"');
 					
 					 do {
-						 Thread.sleep(100);
+						 Thread.sleep(10);
 					 } while (stopframe.exists() == false && FFMPEG.error == false);
 				
 					 btnPrevious.setEnabled(true);
@@ -412,7 +417,7 @@ public class BlackMagicOutput {
 		  		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
       		  	
 				do
-					Thread.sleep(100);
+					Thread.sleep(10);
 				while (DECKLINK.isRunning);
 					
 				} catch (InterruptedException e) {}	
@@ -424,9 +429,9 @@ public class BlackMagicOutput {
 			      		caseAfficherLeTimecode.setEnabled(true);
 			      		caseHD.setEnabled(true);
 			      		
-			      		if (Shutter.listeDeFichiers.getSelectedIndex() < Shutter.liste.getSize() - 1)
+			      		if (Shutter.fileList.getSelectedIndex() < Shutter.liste.getSize() - 1)
 			      		{
-			      			Shutter.listeDeFichiers.setSelectedIndex(Shutter.listeDeFichiers.getSelectedIndex() + 1);
+			      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() + 1);
 			      			btnLire.doClick();
 			      		}
 					}

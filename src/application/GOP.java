@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -87,13 +87,13 @@ public class GOP {
 		image1.setBounds(12, 12, 100, 100);
 		frame.getContentPane().add(image1);
 		
-		File fichier = new File(Shutter.listeDeFichiers.getSelectedValue());
+		File fichier = new File(Shutter.fileList.getSelectedValue());
 		
 		FFPROBE.AnalyseGOP(fichier.toString());
 		
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {}
 		} while (FFPROBE.isRunning);
 		

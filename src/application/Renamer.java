@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ public class Renamer {
 		
 		frame.setLocation(Shutter.frame.getLocation().x - 85, Shutter.frame.getLocation().y + 200);
 			
-		String fullName = new File(Shutter.listeDeFichiers.getSelectedValuesList().get(0)).getName();
+		String fullName = new File(Shutter.fileList.getSelectedValuesList().get(0)).getName();
 		
 		ext = fullName.substring(fullName.lastIndexOf("."));	
 		fichier = new File(fullName).getName().replace(ext, "");
@@ -321,7 +321,7 @@ public class Renamer {
 				
 				errorList = new StringBuilder();
 				
-				String count = String.valueOf(Shutter.listeDeFichiers.getSelectedIndices().length); 		
+				String count = String.valueOf(Shutter.fileList.getSelectedIndices().length); 		
 				String format = "";
 				
 				for (int i = 0 ; i < count.length(); i++)
@@ -335,7 +335,7 @@ public class Renamer {
 					@Override
 					public void run() {				
 						int number = (int) spinnerIncrementer.getValue();
-						for (String item : Shutter.listeDeFichiers.getSelectedValuesList())
+						for (String item : Shutter.fileList.getSelectedValuesList())
 						{				
 							ext = item.substring(item.lastIndexOf("."));	
 							fichier = new File(item).getName().replace(ext, "");;
@@ -405,7 +405,7 @@ public class Renamer {
 							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Shutter.language.getProperty("filesAlreadyExists"), JOptionPane.INFORMATION_MESSAGE);
 						errorList.setLength(0);
 									
-						Shutter.lblFichiers.setText(Utils.nombreDeFichiers());
+						Shutter.lblFichiers.setText(Utils.filesNumber());
 						
 						frame.dispose();
 					}
@@ -421,7 +421,7 @@ public class Renamer {
 
 	private void update() {	
 		
-		String count = String.valueOf(Shutter.listeDeFichiers.getSelectedIndices().length); 		
+		String count = String.valueOf(Shutter.fileList.getSelectedIndices().length); 		
 		String format = "";
 		
 		for (int i = 0 ; i < count.length(); i++)

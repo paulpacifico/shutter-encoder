@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -84,8 +84,7 @@ import library.MEDIAINFO;
 		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);	
-		
+		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);		
 				
 		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
 		lblWait.setFont(new Font("FreeSans", Font.PLAIN, 20));
@@ -270,11 +269,9 @@ import library.MEDIAINFO;
 
 			@SuppressWarnings("static-access")
 			@Override
-			public void mouseReleased(MouseEvent e) {		
-				
+			public void mouseReleased(MouseEvent e) {	
 				if (accept)
-				{							
-					
+				{						
 					frame.setState(frame.ICONIFIED);	
 				}
 			}

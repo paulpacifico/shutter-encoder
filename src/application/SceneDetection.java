@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -639,13 +639,13 @@ import javax.swing.JScrollPane;
 							Shutter.caseInAndOut.doClick();								
 							
 							do {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} while (VideoPlayer.frame.isVisible() == false);
 							VideoPlayer.frame.setVisible(false);
 							
 							//On démarre le lecteur puis on fait pause
 							do {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} while (VideoPlayer.leftPlay.getText().equals(Shutter.language.getProperty("btnPause")) == false);
 							
 							VideoPlayer.leftPlay.doClick();	
@@ -676,7 +676,7 @@ import javax.swing.JScrollPane;
 								VideoPlayer.caseOutS.setText(tcEnd[2]);
 								VideoPlayer.caseOutF.setText(tcEnd[3]);
 		
-								VideoPlayer.dureeTotale();
+								VideoPlayer.totalDuration();
 							}
 							else
 								VideoPlayer.sliderOut.setValue(VideoPlayer.sliderOut.getMaximum());		
@@ -687,12 +687,12 @@ import javax.swing.JScrollPane;
 							
 							//On attend que le processus se lance
 							do {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} while (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")));		
 							
 							//On attend que le fichier soit terminé
 							do {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} while (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")) == false);							
 														
 			    			} catch (Exception e){}
@@ -878,7 +878,7 @@ import javax.swing.JScrollPane;
 			public void run() {				
 				complete = 0;
 			
-				Shutter.lblTermine.setText(Utils.fichiersTermines(complete));
+				Shutter.lblTermine.setText(Utils.completedFiles(complete));
 
 					
 				for (int i = 0 ; i < Shutter.liste.getSize() ; i++)
@@ -894,7 +894,7 @@ import javax.swing.JScrollPane;
 						// Analyse des données					 
 						 FFPROBE.Data(file.toString());						 
 						 do
-							Thread.sleep(100);	
+							Thread.sleep(10);	
 						 while (FFPROBE.isRunning);
 							 																	
 						String fichier = file.getName();
@@ -914,7 +914,7 @@ import javax.swing.JScrollPane;
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(100);
+							Thread.sleep(10);
 						while(FFMPEG.runProcess.isAlive());										
 						
 						//On créer le tableau ici après la première image
@@ -927,7 +927,7 @@ import javax.swing.JScrollPane;
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(100);
+							Thread.sleep(10);
 						while(FFMPEG.runProcess.isAlive());						
 					
 						actionsDeFin();
@@ -961,7 +961,7 @@ import javax.swing.JScrollPane;
 		if (FFMPEG.cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			Shutter.lblTermine.setText(Utils.fichiersTermines(complete));
+			Shutter.lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		tolerance.setEnabled(true);

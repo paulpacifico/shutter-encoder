@@ -1,5 +1,5 @@
 /*******************************************************************************************
- * Copyright (C) 2020 PACIFICO PAUL
+ * Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -786,7 +786,7 @@ import library.XPDF;
 							
 							try {
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 								
 								
@@ -794,7 +794,7 @@ import library.XPDF;
 								Thread.sleep(1000);
 								
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 							} catch (InterruptedException e) {}
 
@@ -859,7 +859,7 @@ import library.XPDF;
 		if (Shutter.cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			Shutter.lblTermine.setText(Utils.fichiersTermines(complete));
+			Shutter.lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Suppression fichiers résiduels OP-Atom

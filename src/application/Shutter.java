@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -155,7 +155,6 @@ import functions.other.LosslessCut;
 import functions.other.OfflineDetection;
 import functions.other.Rewrap;
 import functions.other.VideoInserts;
-import functions.other.VideoLevels;
 import functions.video.AV1;
 import functions.video.AVC;
 import functions.video.AppleProRes;
@@ -203,7 +202,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "14.4";
+	public static String actualVersion = "14.5";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static File documents = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
@@ -215,10 +214,13 @@ public class Shutter {
 	public static URL soundErrorURL;
 	public static JFrame frame = new JFrame();
 	public static boolean cancelled = false;
-	public static float ratioFinal = 0; // Fenêtre CropVideo
-	public static String cropFinal = null; // Fenêtre CropImage
-	public static String finalEQ = null; // Fenêtre ColorImage
+	public static float ratioFinal = 0; // CropVideo
+	public static String cropFinal = null; // CropImage
+	public static String finalEQ = null; // ColorImage
 	public static boolean scanIsRunning = false;
+	public static JMenuItem inputDevice;
+	public static boolean inputDeviceIsRunning = false;
+	public static boolean overlayDeviceIsRunning = false;
 	public static boolean sendMailIsRunning = false;
 	protected static boolean canScroll = true;
 	public static JMenuItem scan;
@@ -251,8 +253,8 @@ public class Shutter {
 	private static JLabel newInstance;
 
 	public static DefaultListModel<String> liste = new DefaultListModel<String>();
-	protected static PopupMenu lblDposezVosFichiers;
-	public static JList<String> listeDeFichiers;
+	protected static PopupMenu dropFiles;
+	public static JList<String> fileList;
 	static JLabel addToList = new JLabel();
 	public static JComboBox<String[]> comboFonctions;
 
@@ -440,8 +442,8 @@ public class Shutter {
 	/*
 	 * Groupes Boxes
 	 */
-	protected static JPanel grpChoixDesFichiers;
-	protected static JPanel grpChoixFonction;
+	protected static JPanel grpChooseFiles;
+	protected static JPanel grpChooseFunction;
 	protected static JTabbedPane grpDestination;
 	protected static JPanel destination1;
 	protected static JPanel destination2;
@@ -450,7 +452,7 @@ public class Shutter {
 	protected static JPanel grpProgression;
 	protected static JPanel grpResolution;
 	protected static JPanel grpImageSequence;
-	protected static JPanel grpFiltreImage;
+	protected static JPanel grpImageFilter;
 	protected static JPanel grpLUTs;
 	protected static JPanel grpInAndOut;
 	protected static JPanel grpSetTimecode;
@@ -793,7 +795,7 @@ public class Shutter {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				listeDeFichiers.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
+				fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
 				lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
 				lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
 				lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));					
@@ -884,10 +886,10 @@ public class Shutter {
 							i = 0;
 						
 						//Pré calcul
-						if (top.getY() + i >= grpChoixDesFichiers.getY() && i > 0)
+						if (top.getY() + i >= grpChooseFiles.getY() && i > 0)
 						{
-							if (i < grpChoixDesFichiers.getY())
-								i = grpChoixDesFichiers.getY() - top.getY();	
+							if (i < grpChooseFiles.getY())
+								i = grpChooseFiles.getY() - top.getY();	
 							else
 								i = 0;
 						}
@@ -908,7 +910,7 @@ public class Shutter {
 						grpAudio.setLocation(grpAudio.getLocation().x, grpAudio.getLocation().y + i);
 						grpInAndOut.setLocation(grpInAndOut.getLocation().x, grpInAndOut.getLocation().y + i);
 						grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + i);
-						grpFiltreImage.setLocation(grpFiltreImage.getLocation().x, grpFiltreImage.getLocation().y + i);
+						grpImageFilter.setLocation(grpImageFilter.getLocation().x, grpImageFilter.getLocation().y + i);
 						grpLUTs.setLocation(grpLUTs.getLocation().x, grpLUTs.getLocation().y + i);
 						grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + i);
 						grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + i);
@@ -934,11 +936,11 @@ public class Shutter {
 					if (ext.equals(".enc") == false && droppedFiles.isHidden() == false && droppedFiles.getName().contains("."))
 						liste.addElement(droppedFiles.toString());
 				} else
-					Utils.FileFinder(droppedFiles.toString());
+					Utils.findFiles(droppedFiles.toString());
 			}
 			
 			addToList.setVisible(false);			
-			lblFichiers.setText(Utils.nombreDeFichiers());
+			lblFichiers.setText(Utils.filesNumber());
 		}
 		
 		//GPU decoding
@@ -946,13 +948,36 @@ public class Shutter {
 			FFMPEG.hwaccel("-hwaccels" + '"');
 		else
 			FFMPEG.hwaccel("-hwaccels");
-		
+				
 		do {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFMPEG.runProcess.isAlive());
 		
+		//list devices		
+		if (System.getProperty("os.name").contains("Mac"))
+		{					
+			Thread checkDevices = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					FFMPEG.devices("-f avfoundation -list_devices true -i dummy");	
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {}
+					} while (FFMPEG.isRunning);
+					FFMPEG.devices("-f openal -list_devices true -i dummy");
+				}
+			});
+			checkDevices.start();
+		}
+		else if (System.getProperty("os.name").contains("Windows"))
+		{
+			FFMPEG.devices("-f dshow -list_devices true -i dummy" + '"');
+		}
+				
 		new Settings();
 		Splash.increment();
 		
@@ -1040,14 +1065,10 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (accept) {
-					try {
-						frame.setOpacity(0.5f);
-					} catch (Exception er) {}
-					Settings.frame.setVisible(true);
-					frame.setOpacity(1.0f);		
-					
-					
+				if (accept)
+				{
+					Settings.frame.setVisible(true);							
+					Settings.frame.setLocation(Shutter.frame.getLocation().x - Settings.frame.getSize().width -20, Shutter.frame.getLocation().y);
 				}
 			}
 
@@ -1219,8 +1240,10 @@ public class Shutter {
 			@SuppressWarnings("static-access")
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (accept) {
-					new ReducedWindow();
+				if (accept) 
+				{
+					if (inputDeviceIsRunning == false)
+						new ReducedWindow();
 					
 					frame.setState(frame.ICONIFIED);
 				}
@@ -1398,7 +1421,7 @@ public class Shutter {
 	@SuppressWarnings("unchecked")
 	private void grpChooseFiles() {
 			
-		listeDeFichiers = new JList<String>(liste) {
+		fileList = new JList<String>(liste) {
 			Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra.jpg")).getImage();
 			{
 				setOpaque(false);
@@ -1419,40 +1442,51 @@ public class Shutter {
 				super.paintComponent(g);
 			}
 		};
-		listeDeFichiers.setForeground(Color.BLACK);
-		listeDeFichiers.setCellRenderer(new FilesCellRenderer());
-		listeDeFichiers.setFixedCellHeight(17);
-		listeDeFichiers.setBounds(10, 50, 292, 255);
-		listeDeFichiers.setToolTipText(language.getProperty("rightClick"));
+		fileList.setForeground(Color.BLACK);
+		fileList.setCellRenderer(new FilesCellRenderer());
+		fileList.setFixedCellHeight(17);
+		fileList.setBounds(10, 50, 292, 255);
+		fileList.setToolTipText(language.getProperty("rightClick"));
 				
 		addToList.setText(language.getProperty("dropFilesHere"));
-		addToList.setSize(listeDeFichiers.getSize());
+		addToList.setSize(fileList.getSize());
 		addToList.setForeground(new Color(150,150,150));
 		addToList.setBackground(new Color(0,0,0,0));
 		addToList.setFont(new Font("FreeSans", Font.PLAIN, 16));
 		addToList.setHorizontalAlignment(SwingConstants.CENTER);
 		addToList.setVerticalAlignment(SwingConstants.CENTER);
-		listeDeFichiers.add(addToList);
+		fileList.add(addToList);
 				
-		grpChoixDesFichiers = new JPanel();
-		grpChoixDesFichiers.setLayout(null);
-		grpChoixDesFichiers.setBounds(10, 59, 312, 315);
-		grpChoixDesFichiers.setBackground(new Color(50, 50, 50));
-		grpChoixDesFichiers.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpChooseFiles = new JPanel();
+		grpChooseFiles.setLayout(null);
+		grpChooseFiles.setBounds(10, 59, 312, 315);
+		grpChooseFiles.setBackground(new Color(50, 50, 50));
+		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
 				language.getProperty("grpChoixDesFichiers") + " ", 0, 0, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE));
-		frame.getContentPane().add(grpChoixDesFichiers);
+		frame.getContentPane().add(grpChooseFiles);
 
 		btnEmptyList = new JButton(language.getProperty("btnEmptyList"));
 		btnEmptyList.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnEmptyList.setBounds(124, 21, 82, 21);
-		grpChoixDesFichiers.add(btnEmptyList);
+		grpChooseFiles.add(btnEmptyList);
 
 		btnEmptyList.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Screen record
+				if (inputDeviceIsRunning)
+					caseDisplay.setSelected(false);
+				inputDeviceIsRunning = false;
+				
+				if (overlayDeviceIsRunning)
+				{
+					caseLogo.setSelected(false);
+					overlayDeviceIsRunning = false;
+				}
+				
 				// Scan
 				scan.setText(language.getProperty("menuItemStartScan"));
-				scanIsRunning = false;
+				scanIsRunning = false;				
 
 				liste.clear();
 				addToList.setVisible(true);
@@ -1466,47 +1500,57 @@ public class Shutter {
 
 				// Lecteur
 				VideoPlayer.setMedia();
-
+				
 				changeFilters();
 
-				lblFichiers.setText(Utils.nombreDeFichiers());
+				lblFichiers.setText(Utils.filesNumber());
 			}
 
 		});
 
 		scrollBar = new JScrollPane();
-		scrollBar.getViewport().add(listeDeFichiers);
+		scrollBar.getViewport().add(fileList);
 		scrollBar.setBounds(10, 50, 292, 255);
 		scrollBar.setOpaque(false);
 		scrollBar.getViewport().setOpaque(false);
-		grpChoixDesFichiers.add(scrollBar);
+		grpChooseFiles.add(scrollBar);
 
 		// Drag & Drop
-		listeDeFichiers.setTransferHandler(new ListeFileTransferHandler());
+		fileList.setTransferHandler(new ListeFileTransferHandler());
 
-		listeDeFichiers.addKeyListener(new KeyListener() {
+		fileList.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
 				if (liste.getSize() == 0)
+				{
+					if (inputDeviceIsRunning)
+						caseDisplay.setSelected(false);
+					inputDeviceIsRunning = false;
+					if (overlayDeviceIsRunning)
+					{
+						caseLogo.setSelected(false);
+						overlayDeviceIsRunning = false;
+					}
 					changeFilters();
+				}
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (scanIsRunning == false) {
 					if ((e.getKeyCode() == KeyEvent.VK_A) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0))
-						listeDeFichiers.setSelectionInterval(0, liste.getSize() - 1);
+						fileList.setSelectionInterval(0, liste.getSize() - 1);
 
 					if (e.getKeyCode() == 127 && liste.getSize() > 0 || e.getKeyCode() == 8 && liste.getSize() > 0) {
 						do {
-							liste.remove(listeDeFichiers.getSelectedIndex());
-						} while (listeDeFichiers.getSelectedIndices().length > 0);
+							liste.remove(fileList.getSelectedIndex());
+						} while (fileList.getSelectedIndices().length > 0);
 						
 						if (liste.getSize() == 0)
 							addToList.setVisible(true);
 						
-						lblFichiers.setText(Utils.nombreDeFichiers());
+						lblFichiers.setText(Utils.filesNumber());
 						FFPROBE.CalculH264();
 
 						// VideoPlayer
@@ -1551,6 +1595,7 @@ public class Shutter {
 		final JMenuItem ouvrirDossier = new JMenuItem(language.getProperty("menuItemOuvrirDossier"));
 		final JMenuItem info = new JMenuItem(language.getProperty("menuItemInfo"));
 		final JMenuItem rename = new JMenuItem(language.getProperty("menuItemRename"));
+		inputDevice = new JMenuItem(Shutter.language.getProperty("menuItemInputDevice"));
 		final JMenuItem arborescence = new JMenuItem(language.getProperty("menuItemArborescence"));
 		final JMenuItem tempsTotal = new JMenuItem(language.getProperty("menuItemTempsTotal"));
 		final JMenuItem poids = new JMenuItem(language.getProperty("menuItemPoids"));
@@ -1583,13 +1628,13 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (listeDeFichiers.getSelectedIndices().length > 1) {
+				if (fileList.getSelectedIndices().length > 1) {
 					String input = "";
 					String filter = "";
 					String hstack = "";
-					int n = listeDeFichiers.getSelectedIndices().length;
+					int n = fileList.getSelectedIndices().length;
 					int i = 0;
-					for (String video : listeDeFichiers.getSelectedValuesList()) {
+					for (String video : fileList.getSelectedValuesList()) {
 						input += " -i " + '"' + video + '"';
 						filter += "[" + i + ":v]scale=iw/" + n + ":ih/2[v" + i + "];";
 						i++;
@@ -1604,11 +1649,13 @@ public class Shutter {
 					FFMPEG.toFFPLAY(input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map "
 							+ '"' + "[out]" + '"' + " -map a? -f nut pipe:play |");
 				} else {
-					FFPROBE.Data(listeDeFichiers.getSelectedValue());
 
+					if (inputDeviceIsRunning == false) //Already analyzed
+						FFPROBE.Data(fileList.getSelectedValue());					
+					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -1616,7 +1663,9 @@ public class Shutter {
 					String channels = "";
 					String videoOutput = "";
 					String audioOutput = "";
-					if (FFPROBE.audioOnly) {
+					
+					if (FFPROBE.audioOnly) 
+					{
 						if (FFPROBE.channels > 1) {
 							int i;
 							for (i = 0; i < FFPROBE.channels; i++) {
@@ -1629,35 +1678,103 @@ public class Shutter {
 						} else if (FFPROBE.channels <= 1)
 							audioOutput = "[0:a:0]showvolume=f=0.001:b=4:w=720:h=12[volume]" + '"' + " -map " + '"'
 									+ "[volume]" + '"';
-					} else {
-						if (FFPROBE.channels > 1) {
-							int i;
-							for (i = 0; i < FFPROBE.channels; i++) {
-								channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=1080:h=12[a" + i + "];";
-								audioOutput += "[a" + i + "]";
+					} 
+					else
+					{
+						if (FFPROBE.channels > 1)
+						{
+							
+							if (inputDeviceIsRunning)
+							{
+								channels += "[0:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+								channels += "[2:a]showvolume=f=0.001:b=4:w=1080:h=12[a2];";
+								audioOutput += "[a0]";
+								audioOutput += "[a2]";
+								
+								audioOutput += "vstack=3[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
 							}
-							audioOutput += "vstack=" + (i + 1) + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+							else
+							{		
+								int i = 0;
+								for (i = 0; i < FFPROBE.channels; i++)
+								{
+									channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=1080:h=12[a" + i + "];";
+									audioOutput += "[a" + i + "]";
+								}
+								
+								audioOutput += "vstack=" + (i + 1) + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+							}
 						} else if (FFPROBE.channels == 1) {
-							channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
-							audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+							if (inputDeviceIsRunning && Utils.audioDeviceIndex > 0 && overlayDeviceIsRunning && Utils.overlayAudioDeviceIndex > 0)
+							{
+								channels = "[2:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+								audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+							}
+							else if (inputDeviceIsRunning && overlayDeviceIsRunning && Utils.overlayAudioDeviceIndex > 0)
+							{
+								channels = "[1:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+								audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+							}
+							else
+							{
+								channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+								audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+							}
 						}
 
 						// On ajoute la vidéo
 						videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
-
-						if (FFPROBE.channels == 0) {
+						
+						if (FFPROBE.channels == 0 || liste.getElementAt(0).equals("Capture.input.device")) {
 							videoOutput = "scale=1080:-1" + '"';
 							audioOutput = "";
 						}
 
 					}
-
+					
+					if (inputDeviceIsRunning && overlayDeviceIsRunning)
+					{	     
+						
+						if (Utils.audioDeviceIndex > 0)
+						{
+							videoOutput = "[2:v]scale=iw*" + ((float)  Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) +			
+			        				",lut=a=val*" + ((float) Integer.parseInt(WatermarkWindow.textOpacity.getText()) / 100) + 
+			        				"[scaledwatermark];[1:v][scaledwatermark]overlay=" + WatermarkWindow.textPosX.getText() + ":" + WatermarkWindow.textPosY.getText() + ",scale=1080:-1[v]";			
+						}
+						else
+						{
+							videoOutput = "[1:v]scale=iw*" + ((float)  Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) +			
+			        				",lut=a=val*" + ((float) Integer.parseInt(WatermarkWindow.textOpacity.getText()) / 100) + 
+			        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + WatermarkWindow.textPosX.getText() + ":" + WatermarkWindow.textPosY.getText() + ",scale=1080:-1[v]";	
+						}
+							
+						if (audioOutput != "")
+							videoOutput += ";" + channels + "[v]";
+						else
+							videoOutput += '"';
+					}
+					
 					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
 							+ " -c:v rawvideo -map a? -f nut pipe:play |";
 
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					FFMPEG.toFFPLAY(" -i " + '"' + listeDeFichiers.getSelectedValue() + '"' + cmd);
-
+					
+					if (inputDeviceIsRunning)
+					{
+						if (liste.getElementAt(0).equals("Capture.current.screen") && Utils.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && liste.getElementAt(0).equals("Capture.input.device") && Utils.audioDeviceIndex > 0)
+							cmd = cmd.replace("0:v", "1:v");	
+						
+						if (overlayDeviceIsRunning && audioOutput == "")
+							cmd = cmd.replace("-map a?", "-map " + '"' + "[v]" + '"');
+							
+						if (overlayDeviceIsRunning)
+							FFMPEG.toFFPLAY(Utils.setInputDevices() + " " + Utils.setOverlayDevice() + cmd);
+						else
+							FFMPEG.toFFPLAY(Utils.setInputDevices() + cmd);
+					} 
+					else
+						FFMPEG.toFFPLAY(" -i " + '"' + fileList.getSelectedValue() + '"' + cmd);					
+					
 					if (FFMPEG.isRunning) {
 						do {
 							if (FFMPEG.error) {
@@ -1667,7 +1784,7 @@ public class Shutter {
 								break;
 							}
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFMPEG.isRunning || FFMPEG.error);
@@ -1699,19 +1816,19 @@ public class Shutter {
 				if (System.getProperty("os.name").contains("Mac")) 
 				{
 					try {
-						Runtime.getRuntime().exec(new String[]{"/usr/bin/open", "-R", listeDeFichiers.getSelectedValue()});
+						Runtime.getRuntime().exec(new String[]{"/usr/bin/open", "-R", fileList.getSelectedValue()});
 					} catch (Exception e2){}
 				}
 				else if (System.getProperty("os.name").contains("Linux"))
 				{
 					try {
-						Desktop.getDesktop().open(new File(listeDeFichiers.getSelectedValue()).getParentFile());
+						Desktop.getDesktop().open(new File(fileList.getSelectedValue()).getParentFile());
 					} catch (Exception e2){}
 				}
 				else //Windows
 				{
 					try {
-						Runtime.getRuntime().exec("explorer.exe /select," + listeDeFichiers.getSelectedValue());
+						Runtime.getRuntime().exec("explorer.exe /select," + fileList.getSelectedValue());
 					} catch (IOException e1) {}
 				}
 			}
@@ -1721,12 +1838,12 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int dureeTotale = 0;
-				for (String file : listeDeFichiers.getSelectedValuesList()) {
+				for (String file : fileList.getSelectedValuesList()) {
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
@@ -1749,7 +1866,7 @@ public class Shutter {
 					dureeFinale = s + "sec " + f + "i";
 
 				JOptionPane.showMessageDialog(frame,
-						listeDeFichiers.getSelectedIndices().length + " " + language.getProperty("selectedFiles")
+						fileList.getSelectedIndices().length + " " + language.getProperty("selectedFiles")
 								+ System.lineSeparator() + System.lineSeparator() + language.getProperty("totalTime")
 								+ " " + dureeFinale,
 						language.getProperty("totalTimeFiles"), JOptionPane.INFORMATION_MESSAGE);
@@ -1760,12 +1877,12 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int dureeTotale = 0;
-				for (String file : listeDeFichiers.getSelectedValuesList()) {
+				for (String file : fileList.getSelectedValuesList()) {
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning == true);
@@ -1905,7 +2022,7 @@ public class Shutter {
 					taille = poidsFinal + " Mo";
 
 				JOptionPane.showMessageDialog(frame,
-						listeDeFichiers.getSelectedIndices().length + " " + language.getProperty("selectedFiles")
+						fileList.getSelectedIndices().length + " " + language.getProperty("selectedFiles")
 								+ System.lineSeparator() + System.lineSeparator() + taille + " "
 								+ language.getProperty("to") + " " + codec,
 						language.getProperty("approximativeWeight"), JOptionPane.INFORMATION_MESSAGE);
@@ -1922,7 +2039,7 @@ public class Shutter {
 				if (Informations.infoTabbedPane.getTabCount() == 0)
 					Utils.changeFrameVisibility(Informations.frame, false);
 
-				for (String item : listeDeFichiers.getSelectedValuesList()) {
+				for (String item : fileList.getSelectedValuesList()) {
 					MEDIAINFO.run("--Output=HTML " + '"' + item + '"', item);
 				}
 			}
@@ -1942,7 +2059,18 @@ public class Shutter {
 
 			}
 		});
+		
+		inputDevice.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {							
+				if (RecordInputDevice.frame != null)
+					RecordInputDevice.frame.setVisible(true);
+				else
+					new RecordInputDevice();
+			}			
+		});
+		
 		arborescence.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1950,8 +2078,8 @@ public class Shutter {
 				if (System.getProperty("os.name").contains("Mac")) {
 					FileDialog dialog = new FileDialog(frame, language.getProperty("chooseFolderToCopy"), FileDialog.LOAD);
 					
-					if (listeDeFichiers.getSelectedIndices().length > 0)
-						dialog.setDirectory(new File(listeDeFichiers.getSelectedValue().toString()).getParent());
+					if (fileList.getSelectedIndices().length > 0)
+						dialog.setDirectory(new File(fileList.getSelectedValue().toString()).getParent());
 					else	
 						dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
 					
@@ -1985,8 +2113,8 @@ public class Shutter {
 
 					DirectoryDialog dialog = new DirectoryDialog(shell);
 					dialog.setText(language.getProperty("chooseFolderToCopy"));
-					if (listeDeFichiers.getSelectedIndices().length > 0)
-						dialog.setFilterPath(new File(listeDeFichiers.getSelectedValue().toString()).getParent());
+					if (fileList.getSelectedIndices().length > 0)
+						dialog.setFilterPath(new File(fileList.getSelectedValue().toString()).getParent());
 					else						
 						dialog.setFilterPath(System.getProperty("user.home") + "\\Desktop");
 
@@ -2112,7 +2240,7 @@ public class Shutter {
 					progressBar1.setIndeterminate(true);
 
 					StringBuilder items = new StringBuilder();
-					for (String item : listeDeFichiers.getSelectedValuesList()) {
+					for (String item : fileList.getSelectedValuesList()) {
 						items.append(" " + '"' + item + '"');
 					}
 
@@ -2127,7 +2255,7 @@ public class Shutter {
 		unzip.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				File fichier = new File(listeDeFichiers.getSelectedValue());
+				File fichier = new File(fileList.getSelectedValue());
 				String path = fichier.getParentFile() + "/"
 						+ fichier.getName().substring(0, fichier.getName().toString().lastIndexOf("."));
 
@@ -2152,8 +2280,8 @@ public class Shutter {
 					File destination = null;
 					if (liste.getSize() > 0)
 					{
-						if (listeDeFichiers.getSelectedIndices().length > 0)
-							destination = new File(new File(listeDeFichiers.getSelectedValue()).getParent());							
+						if (fileList.getSelectedIndices().length > 0)
+							destination = new File(new File(fileList.getSelectedValue()).getParent());							
 						else
 							destination = new File(new File(liste.getElementAt(0)).getParent());
 									
@@ -2181,11 +2309,11 @@ public class Shutter {
 					btnEmptyList.doClick();
 					scanIsRunning = false;
 				}
-				lblFichiers.setText(Utils.nombreDeFichiers());
+				lblFichiers.setText(Utils.filesNumber());
 			}
 		});
 
-		listeDeFichiers.addMouseListener(new MouseAdapter() {
+		fileList.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -2195,8 +2323,16 @@ public class Shutter {
 						&& liste.getSize() > 0)
 					visualiser.doClick();
 
-				if (e.getButton() == MouseEvent.BUTTON3 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1) {
-					if (listeDeFichiers.getSelectedIndices().length > 0 && scan.getText().equals(language.getProperty("menuItemStartScan"))) {
+				if (e.getButton() == MouseEvent.BUTTON3 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1)
+				{
+					if (inputDeviceIsRunning)
+					{
+						popupListe.removeAll();
+						popupListe.add(visualiser);
+						popupListe.show(fileList, e.getX() - 30, e.getY());
+					}
+					else if (fileList.getSelectedIndices().length > 0 && scan.getText().equals(language.getProperty("menuItemStartScan")))
+					{
 						if (FFMPEG.isRunning == false && BMXTRANSWRAP.isRunning == false && DVDAUTHOR.isRunning == false
 								&& TSMUXER.isRunning == false) {
 							// Ajout à la liste
@@ -2217,6 +2353,7 @@ public class Shutter {
 							}
 							popupListe.add(info);
 							popupListe.add(rename);
+							popupListe.add(inputDevice);
 							popupListe.add(arborescence);
 							popupListe.add(gop);
 							popupListe.add(ftp);
@@ -2224,10 +2361,10 @@ public class Shutter {
 							popupListe.add(unzip);
 
 							// Décompression d'archives
-							String firstElement = listeDeFichiers.getSelectedValue();
+							String firstElement = fileList.getSelectedValue();
 							if (firstElement.contains(".zip") || firstElement.contains(".rar")
 									|| firstElement.contains(".7z") || firstElement.contains(".iso")) {
-								if (listeDeFichiers.getSelectedIndices().length == 1)
+								if (fileList.getSelectedIndices().length == 1)
 									unzip.setVisible(true);
 								else
 									unzip.setVisible(false);
@@ -2240,12 +2377,12 @@ public class Shutter {
 								unzip.setVisible(false);
 							}
 
-							File fileOrDirectory = new File(listeDeFichiers.getSelectedValue());
+							File fileOrDirectory = new File(fileList.getSelectedValue());
 
 							if (fileOrDirectory.isFile())
-								popupListe.show(listeDeFichiers, e.getX() - 30, e.getY());
+								popupListe.show(fileList, e.getX() - 30, e.getY());
 							else
-								scanListe.show(listeDeFichiers, e.getX() - 30, e.getY());
+								scanListe.show(fileList, e.getX() - 30, e.getY());
 						} else {
 							// Ajout à la liste
 							popupListe.removeAll();
@@ -2259,37 +2396,40 @@ public class Shutter {
 								break;
 							}
 							popupListe.add(info);
+							popupListe.add(inputDevice);
 							popupListe.add(arborescence);
 							popupListe.add(gop);
-							popupListe.show(listeDeFichiers, e.getX() - 30, e.getY());
+							popupListe.show(fileList, e.getX() - 30, e.getY());
 						}
 
 					} else {
+						scanListe.removeAll();
 						scanListe.add(numeriser);
 						scanListe.add(scan);
+						scanListe.add(inputDevice);
 						scanListe.add(arborescence);
-						scanListe.show(listeDeFichiers, e.getX() - 30, e.getY());
+						scanListe.show(fileList, e.getX() - 30, e.getY());
 					}
 				}
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				listeDeFichiers.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
+				fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
 			}
 
 		});
 
-		listeDeFichiers.addMouseMotionListener(new MouseMotionListener() {
+		fileList.addMouseMotionListener(new MouseMotionListener() {
 
 			int anchor = -1;
 
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
 				if (anchor == -1)
-					anchor = listeDeFichiers.getSelectedIndex();
+					anchor = fileList.getSelectedIndex();
 
-				listeDeFichiers.setSelectionInterval(anchor, listeDeFichiers.getSelectedIndex());
+				fileList.setSelectionInterval(anchor, fileList.getSelectedIndex());
 			}
 
 			@Override
@@ -2305,18 +2445,18 @@ public class Shutter {
 		lblTermine.setForeground(Utils.themeColor);
 		lblTermine.setVisible(false);
 		lblTermine.setBounds(213, 15, 94, 16);
-		grpChoixDesFichiers.add(lblTermine);
+		grpChooseFiles.add(lblTermine);
 
-		lblFichiers = new JLabel(Utils.nombreDeFichiers());
+		lblFichiers = new JLabel(Utils.filesNumber());
 		lblFichiers.setForeground(Color.WHITE);
 		lblFichiers.setFont(new Font("Montserrat", Font.PLAIN, 13));
 		lblFichiers.setBounds(213, 30, 83, 16);
-		grpChoixDesFichiers.add(lblFichiers);
+		grpChooseFiles.add(lblFichiers);
 
 		btnBrowse = new JButton(language.getProperty("btnBrowse"));
 		btnBrowse.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnBrowse.setBounds(8, 21, 113, 21);
-		grpChoixDesFichiers.add(btnBrowse);
+		grpChooseFiles.add(btnBrowse);
 
 		btnBrowse.addActionListener(new ActionListener() {
 
@@ -2354,7 +2494,7 @@ public class Shutter {
 						
 						liste.addElement(file.getAbsolutePath());
 					}
-					lblFichiers.setText(Utils.nombreDeFichiers());
+					lblFichiers.setText(Utils.filesNumber());
 					changeFilters();
 
 					switch (comboFonctions.getSelectedItem().toString()) {
@@ -2387,20 +2527,20 @@ public class Shutter {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void grpChooseFunction() {
 
-		grpChoixFonction = new JPanel();
-		grpChoixFonction.setLayout(null);
-		grpChoixFonction.setBounds(10, 380, 312, 76);
-		grpChoixFonction.setBackground(new Color(50, 50, 50));
-		grpChoixFonction.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpChooseFunction = new JPanel();
+		grpChooseFunction.setLayout(null);
+		grpChooseFunction.setBounds(10, 380, 312, 76);
+		grpChooseFunction.setBackground(new Color(50, 50, 50));
+		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
 				language.getProperty("grpChoixFonction") + " ", 0, 0, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE));
-		frame.getContentPane().add(grpChoixFonction);
+		frame.getContentPane().add(grpChooseFunction);
 
 		btnCancel = new JButton(language.getProperty("btnCancel"));
 		btnCancel.setEnabled(false);
 		btnCancel.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnCancel.setMargin(new Insets(0,0,0,0));
 		btnCancel.setBounds(207, 46, 97, 21);
-		grpChoixFonction.add(btnCancel);
+		grpChooseFunction.add(btnCancel);
 
 		btnCancel.addActionListener(new ActionListener() {
 
@@ -2429,10 +2569,9 @@ public class Shutter {
 							if (comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false)
 								FFMPEG.process.destroy();
 
-
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {
 								}
 							} while (FFMPEG.runProcess.isAlive());
@@ -2535,7 +2674,7 @@ public class Shutter {
 		iconList.setHorizontalAlignment(SwingConstants.CENTER);
 		iconList.setVisible(false);
 		iconList.setBounds(180, 46, 21, 21);
-		grpChoixFonction.add(iconList);
+		grpChooseFunction.add(iconList);
 
 		iconList.addMouseListener(new MouseListener() {
 
@@ -2592,7 +2731,7 @@ public class Shutter {
 		iconPresets.setHorizontalAlignment(SwingConstants.CENTER);
 		iconPresets.setVisible(true);
 		iconPresets.setBounds(180, 46, 21, 21);
-		grpChoixFonction.add(iconPresets);
+		grpChooseFunction.add(iconPresets);
 
 		iconPresets.addMouseListener(new MouseListener() {
 
@@ -2651,7 +2790,7 @@ public class Shutter {
 		btnStart.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnStart.setMargin(new Insets(0,0,0,0));
 		btnStart.setBounds(8, 46, 168, 21);
-		grpChoixFonction.add(btnStart);
+		grpChooseFunction.add(btnStart);
 
 		btnStart.addActionListener(new ActionListener() {
 
@@ -2694,7 +2833,9 @@ public class Shutter {
 						{
 							String fonction = comboFonctions.getSelectedItem().toString();
 							if (language.getProperty("functionCut").equals(fonction)) {
-								if (caseInAndOut.isSelected() || caseSetTimecode.isSelected())
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (caseInAndOut.isSelected() || caseSetTimecode.isSelected())
 									LosslessCut.main();
 								else {
 									JOptionPane.showMessageDialog(frame, language.getProperty("chooseInOutPoint"),
@@ -2703,33 +2844,62 @@ public class Shutter {
 									new VideoPlayer();									
 								}
 							} else if ("WAV".equals(fonction)) {
-								WAV.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									WAV.main();
 							} else if ("MP3".equals(fonction)) {
-								MP3.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									MP3.main();
 							} else if ("AAC".equals(fonction)) {
-								AAC.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									AAC.main();
 							} else if ("AC3".equals(fonction)) {
-								AC3.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									AC3.main();
 							} else if ("OPUS".equals(fonction)) {
-								OPUS.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									OPUS.main();
 							} else if ("OGG".equals(fonction)) {
-								OGG.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									OGG.main();
 							} else if ("AIFF".equals(fonction)) {
-								AIFF.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									AIFF.main();
 							} else if ("FLAC".equals(fonction)) {
-								FLAC.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									FLAC.main();
 							} else if ("Loudness & True Peak".equals(fonction)) {
-								LoudnessTruePeak.main();
-							} else if (language.getProperty("functionVideoLevels").equals(fonction)) {
-								VideoLevels.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
+									LoudnessTruePeak.main();
 							} else if (language.getProperty("functionBab").equals(fonction)) {
-								if (scanIsRunning)
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (scanIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else
 									Merge.main();
 							} else if (language.getProperty("functionExtract").equals(fonction)) { 
-								if (comboFilter.getSelectedItem().toString().equals(language.getProperty("setAll")))
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("setAll")))
 									Extract.extractAll();
 								else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 									Extract.extractAudio();
@@ -2738,18 +2908,26 @@ public class Shutter {
 								else
 									Extract.main();
 							} else if (language.getProperty("functionConform").equals(fonction)) {
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else
 									Conform.main();				
 							} else if (language.getProperty("functionInsert").equals(fonction)) {
-								if (scanIsRunning)
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (scanIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else
 									VideoInserts.main();
 							} else if (language.getProperty("functionReplaceAudio").equals(fonction)) {
-								if (scanIsRunning)
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (scanIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
-								else {
+								else
+								{
 									if (liste.getSize() < 2)
 									{
 										if (caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
@@ -2761,7 +2939,9 @@ public class Shutter {
 										ReplaceAudio.main();
 								}
 							} else if (language.getProperty("functionSubtitles").equals(fonction)) {
-								if (scanIsRunning)
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (scanIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else {
@@ -2769,9 +2949,14 @@ public class Shutter {
 									Utils.changeFrameVisibility(frame, true);
 								}
 							} else if (language.getProperty("functionNormalization").equals(fonction)) {
-								AudioNormalization.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else 
+									AudioNormalization.main();
 							} else if (language.getProperty("functionSceneDetection").equals(fonction)) {
-								if (scanIsRunning)
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (scanIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else {
@@ -2783,7 +2968,10 @@ public class Shutter {
 									}
 								}
 							} else if (language.getProperty("functionBlackDetection").equals(fonction)) {
-								BlackDetection.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else 
+									BlackDetection.main();
 							} else if (language.getProperty("functionOfflineDetection").equals(fonction)) {
 								
 								Object[] options = {"Avid", "Davinci", "Premiere", "Custom"};
@@ -2881,13 +3069,24 @@ public class Shutter {
 							} else if ("DV PAL".equals(fonction)) {
 								DVPAL.main();
 							} else if ("DVD".equals(fonction)) {
-								DVD.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else 
+									DVD.main();
 							} else if ("Blu-ray".equals(fonction)) {
-								Bluray.main();
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else 
+									Bluray.main();
 							} else if (language.getProperty("functionPicture").equals(fonction) || "JPEG".equals(fonction)) {
-								Picture.main(true);
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else 
+									Picture.main(true);
 							} else if (language.getProperty("functionRewrap").equals(fonction)) {
-								if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
+								if (inputDeviceIsRunning)
+									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								else if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
 										|| comboFilter.getEditor().getItem().toString().equals("")
 										|| comboFilter.getEditor().getItem().toString().equals(" ")
 										|| comboFilter.getEditor().getItem().toString().contains(".") == false)
@@ -2900,19 +3099,16 @@ public class Shutter {
 					}
 				} else { // Fonctions n'ayant pas de fichiers dans la liste
 					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) {
-						if (scanIsRunning)
-							JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
-									language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
-						else {
 							try {
 								frame.setOpacity(0.5f);
 							} catch (Exception er) {}
 							new VideoWeb();
 							frame.setOpacity(1.0f);
-						}
 					} else if (comboFonctions.getSelectedItem().equals("DVD RIP")
 							&& btnStart.getText().equals(language.getProperty("btnStartFunction"))) {
-						if (scanIsRunning)
+						if (inputDeviceIsRunning)
+							JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+						else if (scanIsRunning)
 							JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 									language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 						else {
@@ -2931,12 +3127,39 @@ public class Shutter {
 							JOptionPane.showConfirmDialog(frame, language.getProperty("useBarSpace"), language.getProperty("btnPauseFunction"), JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE);
 
 						tempsRestant.setText(language.getProperty("timePause"));
-					} else if (btnStart.getText().equals(language.getProperty("btnResumeFunction"))) {
+					} 
+					else if (btnStart.getText().equals(language.getProperty("btnResumeFunction"))) {
 						caseRunInBackground.setEnabled(true);
 
 						FFMPEG.resumeProcess();
 
 						btnStart.setText(language.getProperty("btnPauseFunction"));
+					}
+					else if (btnStart.getText().equals(language.getProperty("btnStopRecording")))
+					{
+						if (FFMPEG.runProcess != null)
+						{							
+							if (FFMPEG.runProcess.isAlive()) {
+
+								try {
+									FFMPEG.writer.write('q');
+									FFMPEG.writer.flush();
+									FFMPEG.writer.close();
+								} catch (IOException er) {
+								}
+								
+								FFMPEG.process.destroy();
+
+								do {
+									try {
+										Thread.sleep(10);
+									} catch (InterruptedException e1) {
+									}
+								} while (FFMPEG.runProcess.isAlive());
+							}
+						}
+						
+						btnStart.setText(language.getProperty("btnStartFunction"));
 					}
 				}
 			}
@@ -3010,7 +3233,7 @@ public class Shutter {
 		comboFonctions.setBounds(8, 19, 168, 22);
 		comboFonctions.getModel().setSelectedItem("");
 		comboFonctions.setRenderer(new ComboBoxRenderer());
-		grpChoixFonction.add(comboFonctions);
+		grpChooseFunction.add(comboFonctions);
 
 		comboFonctions.addActionListener(new ActionListener() {
 			
@@ -3223,7 +3446,7 @@ public class Shutter {
 		comboFilter.setEditable(true);
 		comboFilter.setMaximumRowCount(20);
 		comboFilter.setBounds(228, 19, 76, 22);
-		grpChoixFonction.add(comboFilter);
+		grpChooseFunction.add(comboFilter);
 
 		comboFilter.addActionListener(new ActionListener() {
 
@@ -3278,7 +3501,7 @@ public class Shutter {
 		lblFilter.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblFilter.setFont(new Font("Montserrat", Font.PLAIN, 13));
 		lblFilter.setBounds(164, 21, 60, 16);
-		grpChoixFonction.add(lblFilter);
+		grpChooseFunction.add(lblFilter);
 
 	}
 
@@ -3313,11 +3536,15 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (scanIsRunning) {
+				
+				if (scanIsRunning)
+				{
 					caseChangeFolder1.setSelected(true);
-				} else {
-
-					if (caseChangeFolder1.isSelected()) {
+				}
+				else 
+				{
+					if (caseChangeFolder1.isSelected() || inputDeviceIsRunning) 
+					{
 						File destination = null;
 						if (System.getProperty("os.name").contains("Mac")) {
 							FileDialog dialog = new FileDialog(frame, language.getProperty("chooseDestinationFolder"),
@@ -3377,8 +3604,8 @@ public class Shutter {
 							shell.dispose();
 						}
 
-						if (destination != null) {
-							
+						if (destination != null)
+						{							
 							//Montage du chemin UNC
 							if (System.getProperty("os.name").contains("Windows") && destination.toString().substring(0, 2).equals("\\\\"))
 								destination = Utils.UNCPath(destination);
@@ -3420,15 +3647,19 @@ public class Shutter {
 								Settings.lblDestination1.setText(lblDestination1.getText());
 							
 						} else {
-							caseChangeFolder1.setSelected(false);
-
+							
 							if (scan.getText().equals(language.getProperty("menuItemStopScan")))
 								btnEmptyList.doClick();
+							
+							if (inputDeviceIsRunning == false)
+								caseChangeFolder1.setSelected(false);
 						}
 					} else {
+						
 						if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))
 								|| comboFonctions.getSelectedItem().toString().equals("DVD RIP")
-								|| comboFonctions.getSelectedItem().toString().equals("CD RIP")) {
+								|| comboFonctions.getSelectedItem().toString().equals("CD RIP")
+								|| inputDeviceIsRunning) {
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 								lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
 							else
@@ -3436,6 +3667,10 @@ public class Shutter {
 						} else
 							lblDestination1.setText(language.getProperty("sameAsSource"));
 					}
+					
+					if (inputDeviceIsRunning)
+						caseChangeFolder1.setSelected(true);
+					
 				} // End if scan
 			}
 		});
@@ -3593,7 +3828,8 @@ public class Shutter {
 					} else {
 						if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))
 								|| comboFonctions.getSelectedItem().toString().equals("DVD RIP")
-								|| comboFonctions.getSelectedItem().toString().equals("CD RIP")) {
+								|| comboFonctions.getSelectedItem().toString().equals("CD RIP")
+								|| inputDeviceIsRunning) {
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 								lblDestination2.setText(System.getProperty("user.home") + "/Desktop");
 							else
@@ -3760,7 +3996,8 @@ public class Shutter {
 					} else {
 						if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))
 								|| comboFonctions.getSelectedItem().toString().equals("DVD RIP")
-								|| comboFonctions.getSelectedItem().toString().equals("CD RIP")) {
+								|| comboFonctions.getSelectedItem().toString().equals("CD RIP")
+								|| inputDeviceIsRunning) {
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 								lblDestination3.setText(System.getProperty("user.home") + "/Desktop");
 							else
@@ -4280,11 +4517,12 @@ public class Shutter {
 						}
 						else		 
 						{
-				    		FFPROBE.Data(liste.firstElement());
+							if (Utils.inputDeviceIsRunning == false)
+								FFPROBE.Data(liste.firstElement());
 						}
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -4308,7 +4546,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException er) {}
 								} while (CropImage.frame.isVisible());
 								
@@ -4428,7 +4666,7 @@ public class Shutter {
 					
 					String file = ""; 
 					// Fichiers sélectionnés ?
-					if (listeDeFichiers.getSelectedIndices().length > 0) {
+					if (fileList.getSelectedIndices().length > 0) {
 						if (scanIsRunning) {
 							File dir = new File(Shutter.liste.firstElement());
 							for (File f : dir.listFiles()) {
@@ -4438,7 +4676,7 @@ public class Shutter {
 								}
 							}
 						} else
-							file = listeDeFichiers.getSelectedValue().toString();
+							file = fileList.getSelectedValue().toString();
 
 					} else
 						file = liste.firstElement();
@@ -4447,7 +4685,7 @@ public class Shutter {
 					FFPROBE.Data(file.toString());	
 					do
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					while (FFPROBE.isRunning);
 				
@@ -4533,7 +4771,7 @@ public class Shutter {
 						
 						String file = ""; 
 						// Fichiers sélectionnés ?
-						if (listeDeFichiers.getSelectedIndices().length > 0) {
+						if (fileList.getSelectedIndices().length > 0) {
 							if (scanIsRunning) {
 								File dir = new File(Shutter.liste.firstElement());
 								for (File f : dir.listFiles()) {
@@ -4543,7 +4781,7 @@ public class Shutter {
 									}
 								}
 							} else
-								file = listeDeFichiers.getSelectedValue().toString();
+								file = fileList.getSelectedValue().toString();
 
 						} else
 							file = liste.firstElement();
@@ -4579,7 +4817,7 @@ public class Shutter {
 							 XPDF.toFFPROBE(file.toString());	
 							 do
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							 while (XPDF.isRunning);
 						}
@@ -4588,16 +4826,18 @@ public class Shutter {
 							 EXIFTOOL.run(file.toString());	
 							 do
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							 while (EXIFTOOL.isRunning);
 						}
 						else
 						{
-							 FFPROBE.Data(file.toString());	
-							 do
+							if (Utils.inputDeviceIsRunning == false)
+								FFPROBE.Data(file.toString());	
+							
+							do
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							while (FFPROBE.isRunning);
 						}
@@ -4722,7 +4962,7 @@ public class Shutter {
 								
 								do
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException e1) {}
 								while(FFMPEG.runProcess.isAlive());
 								
@@ -4763,7 +5003,7 @@ public class Shutter {
 					public void run() {	
 						try {
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning == false);	
 							
 							enableAll();
@@ -4771,7 +5011,7 @@ public class Shutter {
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning);	
 						} catch (InterruptedException e1) {}	
 					}
@@ -4886,8 +5126,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -4943,9 +5183,9 @@ public class Shutter {
 											fps = 0;
 										}
 
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -4961,8 +5201,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -5133,8 +5373,8 @@ public class Shutter {
 					else
 					{
 						String fileOut = file;
-						if (listeDeFichiers.getSelectedIndices().length > 0)
-							fileOut = listeDeFichiers.getSelectedValue().toString();
+						if (fileList.getSelectedIndices().length > 0)
+							fileOut = fileList.getSelectedValue().toString();
 						
 						FFPLAY.run("-fs -i " + '"' + fileOut + '"' + " -vf " + '"' + "[in]split=2[v0][v1];[v0]scale=iw/2:ih/2[video1];[v1]"
 								+ blend + ",scale=iw/2:ih/2[video2];[video1][video2]hstack" + '"');
@@ -5200,20 +5440,20 @@ public class Shutter {
 	}
 	
 	private void grpImageFilter() {
-		grpFiltreImage = new JPanel();
-		grpFiltreImage.setLayout(null);
-		grpFiltreImage.setVisible(false);
-		grpFiltreImage.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpImageFilter = new JPanel();
+		grpImageFilter.setLayout(null);
+		grpImageFilter.setVisible(false);
+		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
 				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE));
-		grpFiltreImage.setBackground(new Color(50, 50, 50));
-		grpFiltreImage.setBounds(334, 199, 312, 17);
-		frame.getContentPane().add(grpFiltreImage);
+		grpImageFilter.setBackground(new Color(50, 50, 50));
+		grpImageFilter.setBounds(334, 199, 312, 17);
+		frame.getContentPane().add(grpImageFilter);
 
-		grpFiltreImage.addMouseListener(new MouseListener() {
+		grpImageFilter.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (grpFiltreImage.getSize().height < 122) {
+				if (grpImageFilter.getSize().height < 122) {
 					Thread changeSize = new Thread(new Runnable() {
 						@Override
 						public void run() {
@@ -5228,8 +5468,8 @@ public class Shutter {
 										else
 											i ++;
 										
-										grpFiltreImage.setSize(312, i);
-										btnReset.setLocation(336, grpFiltreImage.getSize().height + grpFiltreImage.getLocation().y + 6);
+										grpImageFilter.setSize(312, i);
+										btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
 
 										Thread.sleep(sleep);
 										
@@ -5261,8 +5501,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -5295,8 +5535,8 @@ public class Shutter {
 										else
 											i --;
 										
-										grpFiltreImage.setSize(312, i);
-										btnReset.setLocation(336, grpFiltreImage.getSize().height + grpFiltreImage.getLocation().y + 6);
+										grpImageFilter.setSize(312, i);
+										btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
 
 										Thread.sleep(sleep);
 										
@@ -5313,9 +5553,9 @@ public class Shutter {
 											fps = 0;
 										}
 										
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -5331,8 +5571,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -5375,7 +5615,7 @@ public class Shutter {
 		caseYear.setName("caseYear");
 		caseYear.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseYear.setBounds(7, 16, caseYear.getPreferredSize().width, 23);
-		grpFiltreImage.add(caseYear);
+		grpImageFilter.add(caseYear);
 		
 		caseYear.addActionListener(new ActionListener() {
 
@@ -5408,13 +5648,13 @@ public class Shutter {
 		comboYear.setEditable(true);
 		comboYear.setBounds(caseYear.getWidth() + caseYear.getLocation().x + 4, caseYear.getLocation().y + 4, 54, 16);
 		comboYear.setMaximumRowCount(15);
-		grpFiltreImage.add(comboYear);
+		grpImageFilter.add(comboYear);
 		
 		caseMonth = new JRadioButton(language.getProperty("caseMonth"));
 		caseMonth.setName("caseMonth");
 		caseMonth.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseMonth.setBounds(7 , caseYear.getLocation().y + caseYear.getHeight() + 2, caseMonth.getPreferredSize().width, 23);
-		grpFiltreImage.add(caseMonth);
+		grpImageFilter.add(caseMonth);
 		
 		caseMonth.addActionListener(new ActionListener() {
 
@@ -5448,13 +5688,13 @@ public class Shutter {
 		comboMonth.setEditable(true);
 		comboMonth.setBounds(caseMonth.getWidth() + caseMonth.getLocation().x + 4, caseMonth.getLocation().y + 4, 40, 16);
 		comboMonth.setMaximumRowCount(15);
-		grpFiltreImage.add(comboMonth);
+		grpImageFilter.add(comboMonth);
 		
 		caseDay = new JRadioButton(language.getProperty("caseDay"));
 		caseDay.setName("caseDay");
 		caseDay.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseDay.setBounds(7 , caseMonth.getLocation().y + caseMonth.getHeight() + 2, caseDay.getPreferredSize().width, 23);
-		grpFiltreImage.add(caseDay);
+		grpImageFilter.add(caseDay);
 		
 		caseDay.addActionListener(new ActionListener() {
 
@@ -5488,13 +5728,13 @@ public class Shutter {
 		comboDay.setEditable(true);
 		comboDay.setBounds(caseDay.getWidth() + caseDay.getLocation().x + 4, caseDay.getLocation().y + 4, 40, 16);
 		comboDay.setMaximumRowCount(15);
-		grpFiltreImage.add(comboDay);	
+		grpImageFilter.add(comboDay);	
 		
 		caseFrom = new JRadioButton(language.getProperty("caseFrom"));
 		caseFrom.setName("caseFrom");
 		caseFrom.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseFrom.setBounds(7, caseDay.getLocation().y + caseDay.getHeight() + 2, caseFrom.getPreferredSize().width, 23);
-		grpFiltreImage.add(caseFrom);
+		grpImageFilter.add(caseFrom);
 		
 		caseFrom.addActionListener(new ActionListener() {
 
@@ -5539,12 +5779,12 @@ public class Shutter {
 		comboFrom.setEditable(true);
 		comboFrom.setBounds(caseFrom.getWidth() + caseFrom.getLocation().x + 4, caseFrom.getLocation().y + 4, 54, 16);
 		comboFrom.setMaximumRowCount(15);
-		grpFiltreImage.add(comboFrom);
+		grpImageFilter.add(comboFrom);
 	
 		JLabel h1 = new JLabel(language.getProperty("lblH"));
 		h1.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		h1.setBounds(comboFrom.getLocation().x + comboFrom.getWidth() + 5, caseFrom.getLocation().y + 3, 16, 16);
-		grpFiltreImage.add(h1);
+		grpImageFilter.add(h1);
 		
 		comboTo = new JComboBox<String>();
 		comboTo.setName("comboTo");
@@ -5573,12 +5813,12 @@ public class Shutter {
 		comboTo.setEditable(true);
 		comboTo.setBounds(h1.getWidth() + h1.getLocation().x, comboFrom.getLocation().y, 54, 16);
 		comboTo.setMaximumRowCount(15);
-		grpFiltreImage.add(comboTo);
+		grpImageFilter.add(comboTo);
 		
 		JLabel h2 = new JLabel(language.getProperty("lblH"));
 		h2.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		h2.setBounds(comboTo.getLocation().x + comboTo.getWidth() + 5, caseFrom.getLocation().y + 3, 16, 16);
-		grpFiltreImage.add(h2);
+		grpImageFilter.add(h2);
 		
 	}
 
@@ -5615,8 +5855,8 @@ public class Shutter {
 										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG"))
 										{
 											grpLUTs.setSize(312, i);
-											grpFiltreImage.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);
-											btnReset.setLocation(336, grpFiltreImage.getSize().height + grpFiltreImage.getLocation().y + 6);										
+											grpImageFilter.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);
+											btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);										
 										}
 										else
 										{
@@ -5657,8 +5897,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -5694,8 +5934,8 @@ public class Shutter {
 										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG"))
 										{
 											grpLUTs.setSize(312, i);
-											grpFiltreImage.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);
-											btnReset.setLocation(336, grpFiltreImage.getSize().height + grpFiltreImage.getLocation().y + 6);										
+											grpImageFilter.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);
+											btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);										
 										}
 										else
 										{
@@ -5721,9 +5961,9 @@ public class Shutter {
 											fps = 0;
 										}
 
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -5739,8 +5979,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -5820,11 +6060,12 @@ public class Shutter {
 						}
 						else		 
 						{
-				    		FFPROBE.Data(liste.firstElement());
+							if (Utils.inputDeviceIsRunning == false)
+								FFPROBE.Data(liste.firstElement());
 						}
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -5840,7 +6081,7 @@ public class Shutter {
 						
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (new File(dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -5855,7 +6096,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException er) {}
 								} while (ColorImage.frame.isVisible());
 								
@@ -6289,7 +6530,7 @@ public class Shutter {
 					// Définition de la taille
 					if (liste.getSize() > 0) {
 						// Fichiers sélectionnés ?
-						if (listeDeFichiers.getSelectedIndices().length > 0) {
+						if (fileList.getSelectedIndices().length > 0) {
 							if (scanIsRunning) {
 								File dir = new File(Shutter.liste.firstElement());
 								for (File f : dir.listFiles()) {
@@ -6299,7 +6540,7 @@ public class Shutter {
 									}
 								}
 							} else
-								file = '"' + listeDeFichiers.getSelectedValue().toString() + '"';
+								file = '"' + fileList.getSelectedValue().toString() + '"';
 	
 						} else
 							file = '"' + liste.firstElement() + '"';
@@ -6461,8 +6702,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -6535,9 +6776,9 @@ public class Shutter {
 											fps = 0;
 										}
 										
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -6553,8 +6794,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -6804,8 +7045,8 @@ public class Shutter {
 										{
 											grpOverlay.setSize(312, i);
 											grpLUTs.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
-											grpFiltreImage.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);	
-											btnReset.setLocation(336, grpFiltreImage.getSize().height + grpFiltreImage.getLocation().y + 6);											
+											grpImageFilter.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);	
+											btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);											
 										}
 										else if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray")) 
 										{
@@ -6855,8 +7096,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -6898,8 +7139,8 @@ public class Shutter {
 										{
 											grpOverlay.setSize(312, i);
 											grpLUTs.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
-											grpFiltreImage.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);	
-											btnReset.setLocation(336, grpFiltreImage.getSize().height + grpFiltreImage.getLocation().y + 6);											
+											grpImageFilter.setLocation(334, grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);	
+											btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);											
 										}
 										else if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray")) 
 										{
@@ -6934,9 +7175,9 @@ public class Shutter {
 											fps = 0;
 										}
 
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -6952,8 +7193,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -7036,11 +7277,12 @@ public class Shutter {
 							}
 							else		 
 							{
-					    		FFPROBE.Data(liste.firstElement());
+								if (Utils.inputDeviceIsRunning == false)
+									FFPROBE.Data(liste.firstElement());
 							}
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							} while (FFPROBE.isRunning);
 							
@@ -7060,7 +7302,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException er) {}
 								} while (OverlayWindow.frame.isVisible());
 								
@@ -7113,6 +7355,12 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				if (inputDeviceIsRunning)
+				{
+					JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+					caseInAndOut.setSelected(false);
+				}
+				
 				if (liste.getSize() == 0 && VideoPlayer.frame != null && VideoPlayer.frame.isVisible() == false)
 				{
 					caseInAndOut.setSelected(false);
@@ -7309,8 +7557,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y - 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y - 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y - 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y - 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y - 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -7413,9 +7661,9 @@ public class Shutter {
 												fps = 0;
 											}
 	
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -7431,8 +7679,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -7636,7 +7884,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -7647,7 +7895,7 @@ public class Shutter {
 							
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -7686,7 +7934,7 @@ public class Shutter {
 								break;
 							}
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFMPEG.isRunning || FFMPEG.error);
@@ -7825,8 +8073,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y - 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y - 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y - 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y - 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y - 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -7904,9 +8152,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -7922,8 +8170,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -8704,8 +8952,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -8758,9 +9006,9 @@ public class Shutter {
 											fps = 0;
 										}
 
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -8776,8 +9024,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -8874,7 +9122,7 @@ public class Shutter {
 				// Définition de la taille
 				if (liste.getSize() > 0) {
 					// Fichiers sélectionnés ?
-					if (listeDeFichiers.getSelectedIndices().length > 0) {
+					if (fileList.getSelectedIndices().length > 0) {
 						if (scanIsRunning) {
 							File dir = new File(Shutter.liste.firstElement());
 							for (File f : dir.listFiles()) {
@@ -8884,7 +9132,7 @@ public class Shutter {
 								}
 							}
 						} else
-							file = '"' + listeDeFichiers.getSelectedValue().toString() + '"';
+							file = '"' + fileList.getSelectedValue().toString() + '"';
 
 					} else
 						file = '"' + liste.firstElement() + '"';
@@ -9002,7 +9250,7 @@ public class Shutter {
 				// Définition de la taille
 				if (liste.getSize() > 0) {
 					// Fichiers sélectionnés ?
-					if (listeDeFichiers.getSelectedIndices().length > 0) {
+					if (fileList.getSelectedIndices().length > 0) {
 						if (scanIsRunning) {
 							File dir = new File(Shutter.liste.firstElement());
 							for (File f : dir.listFiles()) {
@@ -9012,7 +9260,7 @@ public class Shutter {
 								}
 							}
 						} else
-							file = '"' + listeDeFichiers.getSelectedValue().toString() + '"';
+							file = '"' + fileList.getSelectedValue().toString() + '"';
 
 					} else
 						file = '"' + liste.firstElement() + '"';
@@ -9130,7 +9378,7 @@ public class Shutter {
 				// Définition de la taille
 				if (liste.getSize() > 0) {
 					// Fichiers sélectionnés ?
-					if (listeDeFichiers.getSelectedIndices().length > 0) {
+					if (fileList.getSelectedIndices().length > 0) {
 						if (scanIsRunning) {
 							File dir = new File(Shutter.liste.firstElement());
 							for (File f : dir.listFiles()) {
@@ -9140,7 +9388,7 @@ public class Shutter {
 								}
 							}
 						} else
-							file = '"' + listeDeFichiers.getSelectedValue().toString() + '"';
+							file = '"' + fileList.getSelectedValue().toString() + '"';
 
 					} else
 						file = '"' + liste.firstElement() + '"';
@@ -9295,8 +9543,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -9357,9 +9605,9 @@ public class Shutter {
 											fps = 0;
 										}
 
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -9375,8 +9623,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -9602,7 +9850,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 
@@ -9644,8 +9892,8 @@ public class Shutter {
 					else
 					{
 						String fileOut = file;
-						if (listeDeFichiers.getSelectedIndices().length > 0)
-							fileOut = listeDeFichiers.getSelectedValue().toString();
+						if (fileList.getSelectedIndices().length > 0)
+							fileOut = fileList.getSelectedValue().toString();
 						
 						FFPLAY.run("-autoexit -i " + '"' + fileOut + '"' + videoFade + audioFade + " -t " + duration + "ms");
 					}
@@ -9861,7 +10109,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 
@@ -9906,8 +10154,8 @@ public class Shutter {
 					else
 					{
 						String fileOut = file;
-						if (listeDeFichiers.getSelectedIndices().length > 0)
-							fileOut = listeDeFichiers.getSelectedValue().toString();
+						if (fileList.getSelectedIndices().length > 0)
+							fileOut = fileList.getSelectedValue().toString();
 						
 						FFPLAY.run("-autoexit -ss " + forward + "ms -i " + '"' + fileOut + '"' + videoFade + audioFade);
 					}
@@ -10042,8 +10290,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y - 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y - 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y - 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y - 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y - 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -10094,9 +10342,9 @@ public class Shutter {
 											fps = 0;
 										}
 
-										if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-												 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-												 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 											grpH264.setLocation(grpH264.getLocation().x,
 													grpH264.getLocation().y + 1);
@@ -10112,8 +10360,8 @@ public class Shutter {
 													grpImageSequence.getLocation().y + 1);
 											grpLUTs.setLocation(grpLUTs.getLocation().x,
 													grpLUTs.getLocation().y + 1);
-											grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-													grpFiltreImage.getLocation().y + 1);
+											grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+													grpImageFilter.getLocation().y + 1);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + 1);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -10294,7 +10542,7 @@ public class Shutter {
 		comboDAR = new JComboBox<String>();
 		comboDAR.setName("comboDAR");
 		comboDAR.setMaximumRowCount(20);
-		comboDAR.setModel(new DefaultComboBoxModel<String>(new String[] { "1:1", "4:3", "16:9", "21:9"}));
+		comboDAR.setModel(new DefaultComboBoxModel<String>(new String[] { "1:1", "4:3", "16:9", "21:9", "1.85", "2.35", "2.39"}));
 		comboDAR.setSelectedIndex(2);
 		comboDAR.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		comboDAR.setEditable(true);
@@ -10423,7 +10671,7 @@ public class Shutter {
 						liste.addElement(data[i].toString());
 				    }
 				}
-				lblFichiers.setText(Utils.nombreDeFichiers());
+				lblFichiers.setText(Utils.filesNumber());
 			}
 
 		});
@@ -10437,6 +10685,12 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				if (inputDeviceIsRunning)
+				{
+					JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+					caseSubtitles.setSelected(false);
+				}
 				
 				if (caseSubtitles.isSelected())
 				{
@@ -10497,7 +10751,7 @@ public class Shutter {
 										
 										//Attente de la fin de FFMPEG
 										do {
-											Thread.sleep(100);
+											Thread.sleep(10);
 										} while(FFMPEG.runProcess.isAlive());
 										
 										//Erreurs
@@ -10514,7 +10768,7 @@ public class Shutter {
 										
 										//Fichiers terminés
 										if (cancelled == false && FFMPEG.error == false)
-											lblTermine.setText(Utils.fichiersTermines(1));
+											lblTermine.setText(Utils.completedFiles(1));
 										
 										//Ouverture du dossier
 										if (caseOpenFolderAtEnd1.isSelected() && cancelled == false && FFMPEG.error == false)
@@ -10593,7 +10847,7 @@ public class Shutter {
 											do
 											{
 												try {
-													Thread.sleep(100);
+													Thread.sleep(10);
 												} catch (InterruptedException e) {}
 											}
 											while(FFMPEG.runProcess.isAlive());
@@ -10742,7 +10996,7 @@ public class Shutter {
 						}
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -11065,7 +11319,7 @@ public class Shutter {
 							case2pass.setSelected(false);
 							case2pass.setEnabled(false);
 							
-							if (lblVBR.getText().equals("CBR"))
+							if (lblVBR.getText().equals("CBR") || lblVBR.getText().equals("CQ") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 							{								
 								lblVBR.setText("VBR");
 								debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "2500", "2000", "1500", "1000", "500" }));
@@ -11500,12 +11754,32 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (caseLogo.isSelected()) {
+				if (caseLogo.isSelected())
+				{					
+					boolean addDevice = false;
+					if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && System.getProperty("os.name").contains("Windows"))
+					{
+						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("addInputDevice"),
+								language.getProperty("menuItemInputDevice"), JOptionPane.YES_NO_OPTION,
+								JOptionPane.PLAIN_MESSAGE);
+						if (reply == JOptionPane.YES_OPTION)
+						{
+							addDevice = true;
+							inputDevice.doClick();
+						}						
+					}
+					
 					if (liste.getSize() == 0) {
 						JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),
 								language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
 						caseLogo.setSelected(false);
-					} else {
+					}
+					else if (overlayDeviceIsRunning && addDevice)
+					{
+						//Nothing
+					}
+					else
+					{
 						FileDialog dialog = new FileDialog(frame, language.getProperty("chooseLogo"), FileDialog.LOAD);
 						dialog.setDirectory(new File(liste.elementAt(0).toString()).getParent());
 						dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
@@ -11535,7 +11809,7 @@ public class Shutter {
 									public void run() {
 										do {
 											try {
-												Thread.sleep(100);
+												Thread.sleep(10);
 											} catch (InterruptedException er) {}
 										} while (WatermarkWindow.frame.isVisible());
 										
@@ -11553,6 +11827,9 @@ public class Shutter {
 							
 						} else {
 							caseLogo.setSelected(false);
+							
+							if (overlayDeviceIsRunning)
+								overlayDeviceIsRunning = false;
 						}
 					}
 				}
@@ -11710,6 +11987,13 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				if (inputDeviceIsRunning)
+				{
+					JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+					case2pass.setSelected(false);
+				}
+				
 				if (case2pass.isSelected()) {
 					comboH264Taille.setEnabled(true);
 					debitVideo.setEnabled(true);
@@ -11718,9 +12002,7 @@ public class Shutter {
 					textMin.setEnabled(true);
 					textSec.setEnabled(true);
 				}
-
 			}
-
 		});
 
 		caseRognage = new JRadioButton(language.getProperty("caseRognage"));
@@ -11814,8 +12096,8 @@ public class Shutter {
 																grpImageSequence.getLocation().y - 1);
 														grpLUTs.setLocation(grpLUTs.getLocation().x,
 																grpLUTs.getLocation().y - 1);
-														grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-																grpFiltreImage.getLocation().y - 1);
+														grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+																grpImageFilter.getLocation().y - 1);
 														grpCorrections.setLocation(grpCorrections.getLocation().x,
 																grpCorrections.getLocation().y - 1);
 														grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -11857,7 +12139,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException er) {}
 								} while (CropVideo.frame.isVisible());
 								
@@ -11902,8 +12184,7 @@ public class Shutter {
 					else 
 					{						
 						frame.setOpacity(1.0f);
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-						
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));						
 	
 						//Largeur
 			        	String i[] = FFPROBE.imageResolution.split("x");
@@ -12254,7 +12535,7 @@ public class Shutter {
 					public void run() {	
 						try {
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning == false);	
 							
 							enableAll();
@@ -12262,7 +12543,7 @@ public class Shutter {
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning);	
 						} catch (InterruptedException e1) {}
 												
@@ -12331,7 +12612,8 @@ public class Shutter {
 				{
 					lblVBR.setText("CBR");
 				}
-				else if (lblVBR.getText().equals("CBR") || lblVBR.getText().equals("VBR") && caseAccel.isSelected() && comboFonctions.getSelectedItem().toString().contains("H.26")
+				else if (lblVBR.getText().equals("CBR")
+						|| lblVBR.getText().equals("VBR") && caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox") == false && comboFonctions.getSelectedItem().toString().contains("H.26")
 						|| (comboFonctions.getSelectedItem().toString().contains("H.26") == false && (comboFonctions.getSelectedItem().toString().equals("VP9") || comboFonctions.getSelectedItem().toString().equals("AV1")) && lblVBR.getText().equals("VBR")))
 				{
 					lblVBR.setText("CQ");
@@ -12798,9 +13080,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -12816,8 +13098,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -12889,9 +13171,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -12907,8 +13189,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -12980,9 +13262,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -12998,8 +13280,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -13071,9 +13353,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -13089,8 +13371,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -13162,9 +13444,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -13180,8 +13462,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -13253,9 +13535,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -13271,8 +13553,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -13344,9 +13626,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -13362,8 +13644,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -13435,9 +13717,9 @@ public class Shutter {
 												fps = 0;
 											}
 
-											if (grpH264.getLocation().y < grpChoixDesFichiers.getLocation().y && grpH264.isVisible() 
-													 || grpInAndOut.getLocation().y < grpChoixDesFichiers.getLocation().y && grpInAndOut.isVisible()
-													 || grpResolution.getLocation().y < grpChoixDesFichiers.getLocation().y && grpResolution.isVisible() ) {
+											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
+													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
+													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
 												grpH264.setLocation(grpH264.getLocation().x,
 														grpH264.getLocation().y + 1);
@@ -13453,8 +13735,8 @@ public class Shutter {
 														grpImageSequence.getLocation().y + 1);
 												grpLUTs.setLocation(grpLUTs.getLocation().x,
 														grpLUTs.getLocation().y + 1);
-												grpFiltreImage.setLocation(grpFiltreImage.getLocation().x,
-														grpFiltreImage.getLocation().y + 1);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x,
+														grpImageFilter.getLocation().y + 1);
 												grpCorrections.setLocation(grpCorrections.getLocation().x,
 														grpCorrections.getLocation().y + 1);
 												grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -14039,14 +14321,14 @@ public class Shutter {
 		frame.getContentPane().add(statusBar);
 		frame.getContentPane()
 				.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[] { btnBrowse, btnEmptyList,
-						listeDeFichiers, comboFonctions, comboFilter, btnStart, btnCancel, caseOpenFolderAtEnd1,
+						fileList, comboFonctions, comboFilter, btnStart, btnCancel, caseOpenFolderAtEnd1,
 						caseChangeFolder1, caseRunInBackground, iconTVResolution, comboResolution, caseRognerImage,
 						caseCreateSequence, caseSequenceFPS, caseAddOverlay,
 						caseMixAudio, caseInAndOut, textH, textMin, textSec, comboH264Taille, debitVideo, debitAudio,
 						taille, case2pass, caseRognage, caseQMax, topPanel, lblV, quit, reduce, help, topImage,
-						grpChoixDesFichiers, scrollBar, lblTermine, lblFichiers, grpChoixFonction, lblFilter,
+						grpChooseFiles, scrollBar, lblTermine, lblFichiers, grpChooseFunction, lblFilter,
 						grpDestination, lblDestination1, grpProgression, progressBar1, lblEncodageEnCours, grpResolution,
-						lblTaille, grpImageSequence, grpFiltreImage, grpOverlay, grpInAndOut, grpSetAudio, grpAudio,
+						lblTaille, grpImageSequence, grpImageFilter, grpOverlay, grpInAndOut, grpSetAudio, grpAudio,
 						grpAdvanced, grpH264, lblDureH264, lblMin, lblH, lblTailleH264, lblH264, iconTVH264, lblSize, lblDbitVido, lblDbitAudio }));
 
 	}
@@ -14058,7 +14340,7 @@ public class Shutter {
 				|| language.getProperty("functionReplaceAudio").equals(fonction)
 				|| "WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction)
 				|| "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction)
-				|| "OGG".equals(fonction) || "Loudness & True Peak".equals(fonction) || language.getProperty("functionVideoLevels").equals(fonction)
+				|| "OGG".equals(fonction) || "Loudness & True Peak".equals(fonction)
 				|| language.getProperty("functionBlackDetection").equals(fonction) || language.getProperty("functionOfflineDetection").equals(fonction) 
 				|| "DNxHD".equals(fonction)	|| "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed YUV".equals(fonction)
 				|| "H.264".equals(fonction) || "H.265".equals(fonction) || "DV PAL".equals(fonction)
@@ -14105,7 +14387,6 @@ public class Shutter {
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
 				&& comboFonctions.getSelectedItem().equals("DVD RIP") == false
 				&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionVideoLevels")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionNormalization")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
@@ -14165,7 +14446,7 @@ public class Shutter {
 		}
 
 		// Désactivation du grpChoixDesFichiers
-		Component[] components = grpChoixDesFichiers.getComponents();
+		Component[] components = grpChooseFiles.getComponents();
 		if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionWeb"))
 				|| comboFonctions.getSelectedItem().toString().equals("DVD RIP")
 				|| comboFonctions.getSelectedItem().toString().equals("CD RIP")) {
@@ -14179,7 +14460,8 @@ public class Shutter {
 		// Modification des cases par rapport aux fonctions
 		if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionWeb"))
 				|| comboFonctions.getSelectedItem().toString().equals("DVD RIP")
-				|| comboFonctions.getSelectedItem().toString().equals("CD RIP")) {
+				|| comboFonctions.getSelectedItem().toString().equals("CD RIP")
+				|| inputDeviceIsRunning) {
 			if (caseChangeFolder1.isSelected() == false) {
 				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 					lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
@@ -14193,7 +14475,6 @@ public class Shutter {
 				
 		// Modifications du statut des cases
 		if (comboFonctions.getSelectedItem().equals("Loudness & True Peak")
-		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionVideoLevels"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection"))
@@ -14250,7 +14531,6 @@ public class Shutter {
 					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
 					&& comboFonctions.getSelectedItem().equals("DVD RIP") == false
 					&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
-				    && comboFonctions.getSelectedItem().equals(language.getProperty("functionVideoLevels")) == false
 					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionNormalization")) == false
 					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
 					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
@@ -14473,7 +14753,7 @@ public class Shutter {
 								grpAudio.setLocation(i, grpAudio.getLocation().y);
 								grpInAndOut.setLocation(i, grpInAndOut.getLocation().y);
 								grpImageSequence.setLocation(i, grpImageSequence.getLocation().y);
-								grpFiltreImage.setLocation(i, grpFiltreImage.getLocation().y);
+								grpImageFilter.setLocation(i, grpImageFilter.getLocation().y);
 								grpLUTs.setLocation(i, grpLUTs.getLocation().y);
 								grpCorrections.setLocation(i, grpCorrections.getLocation().y);
 								grpTransitions.setLocation(i, grpTransitions.getLocation().y);
@@ -14503,7 +14783,7 @@ public class Shutter {
 						{
 							grpAdvanced.setSize(grpAdvanced.getSize().width, 17);
 							grpOverlay.setSize(grpOverlay.getSize().width, 17);
-							grpFiltreImage.setSize(grpFiltreImage.getSize().width, 17);
+							grpImageFilter.setSize(grpImageFilter.getSize().width, 17);
 							grpSetAudio.setSize(grpSetAudio.getSize().width, 17);
 							grpImageSequence.setSize(grpImageSequence.getSize().width, 17);
 							grpLUTs.setSize(grpLUTs.getSize().width, 17);
@@ -14521,7 +14801,7 @@ public class Shutter {
 								addToList.setText(language.getProperty("filesVideoOrAudioOrPicture"));
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(false);
 							grpResolution.setVisible(false);
 							grpH264.setVisible(false);
@@ -14617,7 +14897,7 @@ public class Shutter {
 								addToList.setText(language.getProperty("filesVideoOrAudio"));
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(false);
 							grpResolution.setVisible(false);
 							grpH264.setVisible(false);
@@ -14660,7 +14940,7 @@ public class Shutter {
 							addToList.setText(language.getProperty("filesVideoOrAudio"));
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(false);
 							grpResolution.setVisible(false);
 							grpH264.setVisible(false);
@@ -14683,13 +14963,11 @@ public class Shutter {
 							grpAdvanced.setVisible(false);
 							btnReset.setLocation(336, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 						} else if ("Loudness & True Peak".equals(fonction)
-								|| language.getProperty("functionVideoLevels").equals(fonction)
 								|| language.getProperty("functionBlackDetection").equals(fonction)
 								|| language.getProperty("functionOfflineDetection").equals(fonction)
 								|| language.getProperty("functionInsert").equals(fonction)) {
 
-							if (language.getProperty("functionVideoLevels").equals(fonction)
-								|| language.getProperty("functionBlackDetection").equals(fonction)
+							if (language.getProperty("functionBlackDetection").equals(fonction)
 								|| language.getProperty("functionOfflineDetection").equals(fonction))
 								addToList.setText(language.getProperty("filesVideo"));
 							else if (language.getProperty("functionInsert").equals(fonction))
@@ -14698,7 +14976,7 @@ public class Shutter {
 								addToList.setText(language.getProperty("filesVideoOrAudio"));
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(false);
 							grpResolution.setVisible(false);
 							grpH264.setVisible(false);
@@ -14860,7 +15138,7 @@ public class Shutter {
 							else
 								caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpH264.setVisible(false);
 							grpSetTimecode.setVisible(true);
 							grpSetTimecode.setLocation(334, grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);
@@ -15094,7 +15372,7 @@ public class Shutter {
 							grpImageSequence.setLocation(334, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 							grpOverlay.setVisible(true);
 							grpOverlay.setLocation(334, grpImageSequence.getSize().height + grpImageSequence.getLocation().y + 6);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(true);
 							grpLUTs.setLocation(334, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
 							if (comboColorspace.getItemCount() != 3)
@@ -15212,12 +15490,15 @@ public class Shutter {
 							grpAdvanced.add(lblTFF);								
 							comboForcerDesentrelacement.setLocation(lblTFF.getLocation().x + lblTFF.getWidth() + 4, lblTFF.getLocation().y - 1);
 							grpAdvanced.add(comboForcerDesentrelacement);	
-							
-							caseForcerEntrelacement.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
-							grpAdvanced.add(caseForcerEntrelacement);
-							
-							caseForcerInversion.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
-							grpAdvanced.add(caseForcerInversion);												
+														
+							if (comboFonctions.getSelectedItem().toString().equals("DNxHR") == false)
+							{
+								caseForcerEntrelacement.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
+								grpAdvanced.add(caseForcerEntrelacement);
+								
+								caseForcerInversion.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
+								grpAdvanced.add(caseForcerInversion);
+							}
 
 							if (comboFonctions.getSelectedItem().equals("GoPro CineForm"))
 							{
@@ -15227,7 +15508,10 @@ public class Shutter {
 							}
 							else
 							{
-								caseCreateTree.setLocation(7, caseForcerInversion.getLocation().y + 17);
+								if (comboFonctions.getSelectedItem().toString().equals("DNxHR"))
+									caseCreateTree.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
+								else
+									caseCreateTree.setLocation(7, caseForcerInversion.getLocation().y + 17);
 							}							
 							grpAdvanced.add(caseCreateTree);
 							caseCreateOPATOM.setLocation(7, caseCreateTree.getLocation().y + 17);
@@ -15494,7 +15778,7 @@ public class Shutter {
 							grpOverlay.add(caseLogo);
 														
 							grpAudio.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(true);
 							grpLUTs.setLocation(334, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);			
 							
@@ -15637,6 +15921,8 @@ public class Shutter {
 							grpAdvanced.add(comboFPS);
 							lblIsConform.setLocation(comboFPS.getX() + comboFPS.getWidth() + 4, comboFPS.getLocation().y);
 							grpAdvanced.add(lblIsConform);
+							caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
+							grpAdvanced.add(caseCreateTree);
 							
 							// grpCorrections
 							caseBanding.setLocation(7, 14);
@@ -15834,7 +16120,7 @@ public class Shutter {
 							grpOverlay.add(caseLogo);
 
 							grpAudio.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(true);
 							grpLUTs.setLocation(334, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
 							
@@ -16046,6 +16332,8 @@ public class Shutter {
 							grpAdvanced.add(comboFPS);
 							lblIsConform.setLocation(comboFPS.getX() + comboFPS.getWidth() + 4, comboFPS.getLocation().y);
 							grpAdvanced.add(lblIsConform);
+							caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
+							grpAdvanced.add(caseCreateTree);
 
 							// grpCorrections
 							caseBanding.setLocation(7, 14);
@@ -16066,7 +16354,7 @@ public class Shutter {
 							addToList.setText(language.getProperty("filesVideo"));
 							caseDisplay.setEnabled(true);
 							grpImageSequence.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(false);
 							grpResolution.setVisible(false);
 							grpH264.setVisible(false);
@@ -16100,7 +16388,7 @@ public class Shutter {
 														
 							caseForcerProgressif.setEnabled(true);
 							grpImageSequence.setVisible(false);
-							grpFiltreImage.setVisible(false);
+							grpImageFilter.setVisible(false);
 							grpLUTs.setVisible(false);
 							grpResolution.setVisible(false);
 							grpH264.setVisible(false);
@@ -16368,12 +16656,12 @@ public class Shutter {
 							grpSetAudio.setVisible(false);
 							grpAudio.setVisible(false);
 							grpInAndOut.setVisible(true);
-							grpFiltreImage.setVisible(true);
-							grpFiltreImage.setLocation(334,	grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);
+							grpImageFilter.setVisible(true);
+							grpImageFilter.setLocation(334,	grpLUTs.getSize().height + grpLUTs.getLocation().y + 6);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpAdvanced.setVisible(false);
-							btnReset.setLocation(336, grpFiltreImage.getSize().height + grpFiltreImage.getLocation().y + 6);
+							btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
 						} else {
 							if (language.getProperty("functionConform").equals(fonction) || language.getProperty("functionExtract").equals(fonction)) 
 								addToList.setText(language.getProperty("filesVideo"));
@@ -16415,7 +16703,7 @@ public class Shutter {
 								grpAudio.setLocation(i2, grpAudio.getLocation().y);
 								grpInAndOut.setLocation(i2, grpInAndOut.getLocation().y);
 								grpImageSequence.setLocation(i2, grpImageSequence.getLocation().y);
-								grpFiltreImage.setLocation(i2, grpFiltreImage.getLocation().y);
+								grpImageFilter.setLocation(i2, grpImageFilter.getLocation().y);
 								grpLUTs.setLocation(i2, grpLUTs.getLocation().y);
 								grpCorrections.setLocation(i2, grpCorrections.getLocation().y);
 								grpTransitions.setLocation(i2, grpTransitions.getLocation().y);
@@ -16818,11 +17106,11 @@ public class Shutter {
 		Component[] components = frame.getContentPane().getComponents();
 
 		if (scanIsRunning) {
-			components = grpChoixDesFichiers.getComponents();
+			components = grpChooseFiles.getComponents();
 			for (int i = 0; i < components.length; i++) {
 				components[i].setEnabled(false);
 			}
-			listeDeFichiers.setEnabled(false);
+			fileList.setEnabled(false);
 		}
 
 		components = grpDestination.getComponents();
@@ -16853,7 +17141,7 @@ public class Shutter {
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(false);
 		}
-		components = grpFiltreImage.getComponents();
+		components = grpImageFilter.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(false);
 		}
@@ -16911,6 +17199,9 @@ public class Shutter {
 		cancelled = false;
 		btnCancel.setEnabled(true);
 
+		if (inputDeviceIsRunning)
+			progressBar1.setIndeterminate(true);
+		
 		progressBar1.setValue(0);
 
 		if (FFMPEG.isRunning)
@@ -16926,7 +17217,11 @@ public class Shutter {
 	
 				caseDisplay.setEnabled(false);
 				btnStart.setEnabled(true);
-				btnStart.setText(language.getProperty("btnPauseFunction"));
+				
+				if (inputDeviceIsRunning)
+					btnStart.setText(language.getProperty("btnStopRecording"));
+				else
+					btnStart.setText(language.getProperty("btnPauseFunction"));
 			} 
 			else
 			{	
@@ -16945,11 +17240,11 @@ public class Shutter {
 		Component[] components = frame.getContentPane().getComponents();
 
 		if (scanIsRunning) {
-			components = grpChoixDesFichiers.getComponents();
+			components = grpChooseFiles.getComponents();
 			for (int i = 0; i < components.length; i++) {
 				components[i].setEnabled(true);
 			}
-			listeDeFichiers.setEnabled(true);
+			fileList.setEnabled(true);
 		}
 
 		components = grpDestination.getComponents();
@@ -17000,7 +17295,7 @@ public class Shutter {
 		if (caseEnableSequence.isSelected() == false)
 			caseSequenceFPS.setEnabled(false);
 		
-		components = grpFiltreImage.getComponents();
+		components = grpImageFilter.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(true);
 		}		
@@ -17172,7 +17467,7 @@ public class Shutter {
 			caseForceQuality.setEnabled(false);
 			comboForceQuality.setEnabled(false);	
 		}
-			
+
 			
 		// Dans tous les cas
 		caseRunInBackground.setEnabled(false);
@@ -17190,6 +17485,9 @@ public class Shutter {
 		// Important
 		topPanel.repaint();
 		statusBar.repaint();
+		
+		if (inputDeviceIsRunning)
+			progressBar1.setIndeterminate(false);
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
@@ -17448,18 +17746,18 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 	}
 }
 
-// Drag & Drop listeDeFichiers
+// Drag & Drop fileList
 @SuppressWarnings("serial")
 class ListeFileTransferHandler extends TransferHandler {
 
 	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
 		for (int i = 0; i < arg1.length; i++) {
 			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.scanIsRunning == false
+			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.scanIsRunning == false && Shutter.inputDeviceIsRunning == false
 					&& Shutter.comboFonctions.getSelectedItem().equals("DVD RIP") == false && Shutter.comboFonctions
 							.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false) {
 
-				Shutter.listeDeFichiers.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 1));
+				Shutter.fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 1));
 				return true;
 			}
 		}
@@ -17524,12 +17822,12 @@ class ListeFileTransferHandler extends TransferHandler {
 										Shutter.liste.addElement(file.getCanonicalPath().toString());
 								}
 							} else {
-								Utils.FileFinder(file.getCanonicalPath().toString());
+								Utils.findFiles(file.getCanonicalPath().toString());
 							}
 						}
 
 						Shutter.addToList.setVisible(false);
-						Shutter.lblFichiers.setText(Utils.nombreDeFichiers());
+						Shutter.lblFichiers.setText(Utils.filesNumber());
 
 					}
 
@@ -17565,7 +17863,7 @@ class ListeFileTransferHandler extends TransferHandler {
 									item = -1;
 								}
 							}
-							Shutter.lblFichiers.setText(Utils.nombreDeFichiers());
+							Shutter.lblFichiers.setText(Utils.filesNumber());
 						}
 						break;
 					}
@@ -17577,7 +17875,7 @@ class ListeFileTransferHandler extends TransferHandler {
 					Shutter.changeFilters();
 
 					// Border
-					Shutter.listeDeFichiers.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
+					Shutter.fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
 
 					return true;
 				}

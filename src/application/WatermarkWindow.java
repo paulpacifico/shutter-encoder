@@ -1,6 +1,6 @@
 /*******************************************************************************************
 
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -469,11 +469,12 @@ public class WatermarkWindow {
 		}
 		else		 
 		{
-    		FFPROBE.Data(Shutter.liste.firstElement());
+			if (Utils.inputDeviceIsRunning == false)
+				FFPROBE.Data(Shutter.liste.firstElement());
 		}
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -509,7 +510,7 @@ public class WatermarkWindow {
 							FFPROBE.Data(logoFile);	    		
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e) {}
 							} while (FFPROBE.isRunning);
 							
@@ -822,10 +823,9 @@ public class WatermarkWindow {
 }
 	
 	public static void loadImage(String h, String m, String s, boolean logo, int size,  boolean loadImage) {
-        try
+       
+		try
         {
-        	
-			
         	String fichier = Shutter.liste.firstElement();
 			if (Shutter.scanIsRunning)
 			{
@@ -843,15 +843,22 @@ public class WatermarkWindow {
         	if (loadImage)
         	{
 				File file = new File(Shutter.dirTemp + "preview.bmp");
-				if (file.exists()) file.delete();
+				if (file.exists() && Shutter.inputDeviceIsRunning == false)
+					file.delete();
 				
 				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 				
 	    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
-		  		FFPROBE.Data(fichier);		
-				do {
-					Thread.sleep(100);
-				} while (FFPROBE.isRunning);
+				if (Utils.inputDeviceIsRunning)
+					Utils.setInputDevices();
+				else
+				{
+					FFPROBE.Data(fichier);		
+					
+					do {
+						Thread.sleep(10);
+					} while (FFPROBE.isRunning);
+				}
 							
 				//Ratio Widescreen
 				if ((float) ImageWidth/ImageHeight >= (float) 640/360)
@@ -866,17 +873,26 @@ public class WatermarkWindow {
 				}
 				
 				//Ratio entre l'image d'entrée et celle affichée
-				logoRatio = (float) ImageHeight / containerHeight;	
+				logoRatio = (float) ImageHeight / containerHeight;				
 				
 				String seek = " ";				
 				if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG") == false)
 					seek = " -ss "+h+":"+m+":"+s+".0";
 
-				FFMPEG.run(seek + " -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth + ":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+				//Screen capture
+				if (Shutter.inputDeviceIsRunning)
+				{					
+					if (file.exists())
+						FFMPEG.run(" -i " + '"' + file + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+					else								
+						FFMPEG.run(" " +  Utils.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+				}			
+				else
+					FFMPEG.run(seek + " -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth + ":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 
 		        do
 		        {
-		        	Thread.sleep(100);  
+		        	Thread.sleep(10);  
 		        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 	            
         	}		
@@ -1002,15 +1018,20 @@ public class WatermarkWindow {
 	
 	public static boolean loadLogo(int size) {
 		try {
-				
+							
 			//Logo    		
-			FFPROBE.Data(logoFile);	    		
-			do {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {}
-			} while (FFPROBE.isRunning);
-			
+			if (Shutter.overlayDeviceIsRunning)
+				Utils.setOverlayDevice();
+			else
+			{
+				FFPROBE.Data(logoFile);							
+
+				do {
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {}
+				} while (FFPROBE.isRunning);
+			}
 				
 			File logoTemp = new File(Shutter.dirTemp + "logo.png");
 							
@@ -1038,11 +1059,14 @@ public class WatermarkWindow {
 				String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));			
 				offset = " -ss "+h+":"+m+":"+s+".0";
 			}
-				
-			FFMPEG.run(offset + " -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
+
+			if (Shutter.overlayDeviceIsRunning)
+				FFMPEG.run(" " + Utils.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
+			else
+				FFMPEG.run(offset + " -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
 			
 			do {
-	        	Thread.sleep(100);  
+	        	Thread.sleep(10);  
 	        } while (logoTemp.exists() == false && FFMPEG.error == false);		
 			
 	       	if (FFMPEG.error)
@@ -1099,14 +1123,14 @@ public class WatermarkWindow {
 				
 			try {
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (frame == null && frame.isVisible() == false);
 				
 				
 				File file = new File(Shutter.dirTemp + "logo.png");
 				
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (file.exists() == false);	
 				
 				int posX = 0;
@@ -1133,7 +1157,7 @@ public class WatermarkWindow {
 								if (p instanceof JTextField)
 								{											
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 																		
 									//Value
@@ -1157,7 +1181,7 @@ public class WatermarkWindow {
 										loadLogo(Integer.parseInt(textSize.getText()));		
 										
 										do {
-											Thread.sleep(100);
+											Thread.sleep(10);
 										} while (file.exists() == false);
 										
 										//Position des éléments après l'opacity et size

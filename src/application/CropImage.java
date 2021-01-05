@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -852,11 +852,12 @@ public class CropImage {
 		}
 		else		 
 		{
-    		FFPROBE.Data(Shutter.listeDeFichiers.getSelectedValue().toString());
+			if (Utils.inputDeviceIsRunning == false)
+				FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
 		}
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 
@@ -884,7 +885,7 @@ public class CropImage {
 						
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -1237,21 +1238,23 @@ public class CropImage {
 			{
 				 XPDF.toFFPROBE(file.toString());	
 				 do
-					Thread.sleep(100);
+					Thread.sleep(10);
 				 while (XPDF.isRunning);
 			}				
 			else if (isRaw)
 			{
 				 EXIFTOOL.run(file.toString());	
 				 do
-				 	Thread.sleep(100);						 
+				 	Thread.sleep(10);						 
 				 while (EXIFTOOL.isRunning);
 			}
 			else
 			{
-				FFPROBE.Data(file.toString());
+				if (Utils.inputDeviceIsRunning == false)
+					FFPROBE.Data(file.toString());
+				
 	        	do
-	            	Thread.sleep(100);   
+	            	Thread.sleep(10);   
 	        	while (FFPROBE.isRunning);
 			}			
 
@@ -1291,12 +1294,14 @@ public class CropImage {
 					XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
 				else if (isRaw)
 					DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
-				else
+				else if (Shutter.inputDeviceIsRunning) //Screen capture			
+					FFMPEG.run(" " +  Utils.setInputDevices() + cmd + '"' + fileOut + '"');
+				else					
           			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');
 					         	            
 	            do
 	            {
-	            	Thread.sleep(100);  
+	            	Thread.sleep(10);  
 	            } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 
 	           	if (FFMPEG.error)
@@ -1355,14 +1360,14 @@ public class CropImage {
 				
 			try {
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (frame == null && frame.isVisible() == false);
 				
 				
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (file.exists() == false);				
 				
 				File fXmlFile = encFile;
@@ -1386,7 +1391,7 @@ public class CropImage {
 								if (p instanceof JTextField)
 								{											
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value

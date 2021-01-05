@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -59,6 +57,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -83,13 +82,19 @@ import org.w3c.dom.NodeList;
 
 public class Settings {
 
-	public static JDialog frame = new JDialog();
+	public static JFrame frame = new JFrame();
 	private JLabel quit;
+	private JLabel reduce;
+	private JLabel help;
 	private JPanel topPanel;
 	private JLabel topImage;
 	public static File settingsXML = new File(Shutter.documents + "/settings.xml");
 	private JLabel lblThreads = new JLabel(Shutter.language.getProperty("lblThreads"));
 	public static JTextField txtThreads = new JTextField();
+	private JLabel lblScreenRecord = new JLabel(Shutter.language.getProperty("lblScreenRecord"));
+	public static JTextField txtScreenRecord = new JTextField();
+	private JLabel lblInputDevice = new JLabel(Shutter.language.getProperty("lblInputDevice"));
+	public static JTextField txtInputDevice = new JTextField();
 	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
 	private JLabel lblGpuDecoding = new JLabel(Shutter.language.getProperty("lblGpuDecoding"));
@@ -127,8 +132,7 @@ public class Settings {
 	public static int videoPlayerVolume = 50;
 	
 	public Settings() {
-		//Pour la sauvegarde
-		btnSetBab.setName("btnSetBab");	
+		//Pour la sauvegarde	
 		btnOpenGOP.setName("btnOpenGOP");
 		btnExtension.setName("btnExtension");
 		txtExtension.setName("txtExtension");
@@ -146,40 +150,32 @@ public class Settings {
 		comboGPU.setName("comboGPU");
 		comboScale.setName("comboScale");
 		txtThreads.setName("txtThreads");
+		txtScreenRecord.setName("txtScreenRecord");
+		txtInputDevice.setName("txtInputDevice");
 		txtImageDuration.setName("txtImageDuration");
 		txtBlackDetection.setName("txtBlackDetection");
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(332, 665);
+		frame.setSize(332, 725);
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setResizable(false);
-		frame.setModal(true);
-		frame.setAlwaysOnTop(true);		
-		
-		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
-		{
-			frame.setUndecorated(true);
-			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
-	        shape1.add(shape2);
-			frame.setShape(shape1);
-			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
-			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			
-		}
+		frame.setResizable(false);			
+		frame.setUndecorated(true);
+		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+        shape1.add(shape2);
+		frame.setShape(shape1);
+		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
+		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
+		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
 		
 		topPanel();
 		
-		frame.setLocation(Shutter.frame.getLocation().x + ((Shutter.frame.getWidth() - frame.getWidth()) / 2), Shutter.frame.getLocation().y + ((Shutter.frame.getHeight() - frame.getHeight()) / 2));
-
 		frame.addMouseListener(new MouseListener() {
 
 			@Override
@@ -693,8 +689,59 @@ public class Settings {
 		comboScale.setMaximumRowCount(10);
 		frame.getContentPane().add(comboScale);
 		
+		lblScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblScreenRecord.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
+		frame.getContentPane().add(lblScreenRecord);
+		
+		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
+		txtScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtScreenRecord.setText("30");
+		txtScreenRecord.setColumns(10);
+		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
+		frame.getContentPane().add(txtScreenRecord);
+		
+		txtScreenRecord.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtScreenRecord.getText().length() >= 3)
+					txtScreenRecord.setText("");				
+			}			
+			
+		});
+		
+		lblInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
+		frame.getContentPane().add(lblInputDevice);
+		
+		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
+		txtInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		if (System.getProperty("os.name").contains("Windows"))
+			txtInputDevice.setText("30");
+		else
+			txtInputDevice.setText("29.97");
+		txtInputDevice.setColumns(10);
+		txtInputDevice.setBounds(txtScreenRecord.getLocation().x, lblInputDevice.getLocation().y - 4, 40, 21);
+		frame.getContentPane().add(txtInputDevice);
+		
+		txtInputDevice.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != '.'|| String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtInputDevice.getText().length() >= 5)
+					txtInputDevice.setText("");				
+			}			
+			
+		});
+		
 		lblThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblThreads.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
+		lblThreads.setBounds(12, lblInputDevice.getLocation().y + lblInputDevice.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
 		frame.getContentPane().add(lblThreads);
 		
 		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);
@@ -717,7 +764,7 @@ public class Settings {
 		});
 		
 		lblImageToVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblImageToVideo.setBounds(12, lblThreads.getLocation().y + lblThreads.getHeight() + 10, lblImageToVideo.getPreferredSize().width, lblThreads.getPreferredSize().height);
+		lblImageToVideo.setBounds(12, lblThreads.getLocation().y + lblThreads.getHeight() + 10, lblImageToVideo.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblImageToVideo);
 		
 		txtImageDuration.setHorizontalAlignment(SwingConstants.CENTER);
@@ -751,7 +798,7 @@ public class Settings {
 		txtBlackDetection.setHorizontalAlignment(SwingConstants.CENTER);
 		txtBlackDetection.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		txtBlackDetection.setColumns(10);
-		txtBlackDetection.setBounds(lblBlackDetection.getLocation().x + lblBlackDetection.getWidth() + 6, lblBlackDetection.getLocation().y - 4, 36, 21);
+		txtBlackDetection.setBounds(txtImageDuration.getX(), lblBlackDetection.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtBlackDetection);
 		
 		JLabel lblFrame = new JLabel(Shutter.language.getProperty("lblFrames"));
@@ -1008,8 +1055,6 @@ public class Settings {
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		topPanel.add(quit);
-		topPanel.setBounds(0, 0, frame.getWidth(), 44);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -1030,7 +1075,7 @@ public class Settings {
 				if (accept)		
 				{
 					quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
-					Utils.changeDialogVisibility(frame, true);
+					Utils.changeFrameVisibility(frame, true);
 				}
 			}
 
@@ -1046,7 +1091,95 @@ public class Settings {
 			}
 					
 		});
+		
+		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
+		reduce.setHorizontalAlignment(SwingConstants.CENTER);
+		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
+			
+		reduce.addMouseListener(new MouseListener(){
+			
+			private boolean accept = false;
 
+			@Override
+			public void mouseClicked(MouseEvent e) {			
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {		
+				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce3.png"))));
+				accept = true;
+			}
+
+			@SuppressWarnings("static-access")
+			@Override
+			public void mouseReleased(MouseEvent e) {	
+				if (accept)
+				{						
+					frame.setState(frame.ICONIFIED);	
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {			
+				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce.png"))));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {		
+				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce2.png"))));
+				accept = false;
+			}
+			
+			
+		});
+
+		help = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/help2.png")));
+		help.setHorizontalAlignment(SwingConstants.CENTER);
+		help.setBounds(reduce.getLocation().x - 21, 0, 21, 21);
+		topPanel.add(help);
+
+		help.addMouseListener(new MouseListener() {
+
+			private boolean accept = false;
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help3.png"))));
+				accept = true;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (accept)
+				{
+					try {
+						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation.html#Settings-icon"));
+					}catch(Exception er){}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help.png"))));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help2.png"))));
+				accept = false;
+			}
+
+		});
+		
+		topPanel.add(quit);
+		topPanel.add(reduce);
+		topPanel.add(help);
+		topPanel.setBounds(0, 0, frame.getWidth(), 44);
+		
 		JLabel title = new JLabel(Shutter.language.getProperty("frameSettings"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 44);

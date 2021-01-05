@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -177,8 +177,7 @@ public class OverlayWindow {
 		else
 			frame.setModal(true);	
 			
-		frame.setAlwaysOnTop(true);
-		
+		frame.setAlwaysOnTop(true);		
 				
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
@@ -364,7 +363,7 @@ public class OverlayWindow {
 						{
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e) {}
 							} while (FFPROBE.isRunning);
 						}
@@ -779,7 +778,7 @@ public class OverlayWindow {
 					lblBackground.setText(Shutter.language.getProperty("aucun"));
 					spinnerOpacityTC.setValue(100);
 					try {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} catch (InterruptedException e) {}
 					spinnerOpacityName.setValue(100);
 				}
@@ -788,7 +787,7 @@ public class OverlayWindow {
 					lblBackground.setText(Shutter.language.getProperty("lblBackgroundOn"));
 					spinnerOpacityTC.setValue(50);
 					try {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} catch (InterruptedException e) {}
 					spinnerOpacityName.setValue(50);
 				}
@@ -1086,11 +1085,12 @@ public class OverlayWindow {
 		}
 		else		 
 		{
-    		FFPROBE.Data(Shutter.liste.firstElement());
+			if (Utils.inputDeviceIsRunning == false)
+				FFPROBE.Data(Shutter.liste.firstElement());
 		}
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -1719,7 +1719,7 @@ public class OverlayWindow {
 						public void run() {
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							} while (System.currentTimeMillis() - textTime < 500);
 							
@@ -1802,10 +1802,9 @@ public class OverlayWindow {
 	}
 	
 	public static void loadImage(String h, String m, String s, boolean loadImage) {
-        try
-        {        	
-        			
-        	
+       
+		try
+        {      			
         	String fichier = Shutter.liste.firstElement();
 			if (Shutter.scanIsRunning)
 			{
@@ -1828,9 +1827,11 @@ public class OverlayWindow {
 				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());		
 					
 	    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
-		  		FFPROBE.Data(fichier);		
+				if (Utils.inputDeviceIsRunning == false)
+					FFPROBE.Data(fichier);		
+				
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (FFPROBE.isRunning);	
 				
 				if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "")
@@ -1856,11 +1857,15 @@ public class OverlayWindow {
 					containerHeight = 360;
 				}
 				
-	        	FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+				//Screen capture
+				if (Shutter.inputDeviceIsRunning)				
+					FFMPEG.run(" " +  Utils.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+				else
+					FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 	        	
 		        do
 		        {
-		        	Thread.sleep(100);  
+		        	Thread.sleep(10);  
 		        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 		        
         	}
@@ -1968,7 +1973,7 @@ public class OverlayWindow {
 				if (FFPROBE.isRunning) //Contourne un bug incompréhensible
 				{
 					do {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while (FFPROBE.isRunning);
 				}
 				
@@ -2153,7 +2158,7 @@ public class OverlayWindow {
 				
 			try {
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (OverlayWindow.frame == null && OverlayWindow.frame.isVisible() == false);
 				
 				
@@ -2180,7 +2185,7 @@ public class OverlayWindow {
 								if (p instanceof JPanel)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2219,7 +2224,7 @@ public class OverlayWindow {
 								else if (p instanceof JLabel)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2234,7 +2239,7 @@ public class OverlayWindow {
 								else if (p instanceof JComboBox)
 								{
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2250,7 +2255,7 @@ public class OverlayWindow {
 								else if (p instanceof JTextField)
 								{											
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value
@@ -2278,7 +2283,7 @@ public class OverlayWindow {
 								else if (p instanceof JSpinner)
 								{									
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (file.exists() == false);
 									
 									//Value

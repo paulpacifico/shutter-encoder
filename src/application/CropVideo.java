@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -526,11 +526,12 @@ public class CropVideo {
 		}
 		else		 
 		{
-    		FFPROBE.Data(Shutter.liste.firstElement());
+			if (Utils.inputDeviceIsRunning == false)
+				FFPROBE.Data(Shutter.liste.firstElement());
 		}
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		
@@ -597,9 +598,11 @@ public class CropVideo {
 			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());		
 				
     	  	//On récupère la taille du logo pour l'adater à l'image vidéo
-	  		FFPROBE.Data(fichier);		
+			if (Utils.inputDeviceIsRunning == false)
+				FFPROBE.Data(fichier);	
+			
 			do {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} while (FFPROBE.isRunning);
 							
 			//Ratio Widescreen
@@ -614,11 +617,15 @@ public class CropVideo {
 				containerHeight = 360;
 			}
 			
-        	FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+			//Screen capture
+			if (Shutter.inputDeviceIsRunning)				
+				FFMPEG.run(" " +  Utils.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+			else
+				FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
         	
 	        do
 	        {
-	        	Thread.sleep(100);  
+	        	Thread.sleep(10);  
 	        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
 		    	 
            	if (FFMPEG.error)
@@ -705,14 +712,14 @@ public class CropVideo {
 				
 			try {
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (frame == null && frame.isVisible() == false);
 				
 				
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				
 				do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (file.exists() == false);				
 				
 				File fXmlFile = encFile;

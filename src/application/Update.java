@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -99,8 +99,11 @@ public class Update {
 		    }
 		}
 		
-		frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width
-				, allScreens[screenIndex].getDefaultConfiguration().getBounds().height - 99);
+		if (System.getProperty("os.name").contains("Windows"))
+			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width, allScreens[screenIndex].getDefaultConfiguration().getBounds().height - 99);	
+		else
+			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width, allScreens[screenIndex].getDisplayMode().getHeight() - 99);	
+		
 		
 		frame.setVisible(true);		
 		

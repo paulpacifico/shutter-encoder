@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ public class Help {
 	private JTextPane txtFonctions;
 	private JComboBox<String[]> comboFonctions;
 	private JButton btnVideoDePresentation;
-	private JButton btnFaq;
+	private JButton btnDoc;
 
 	public Help() {
 		frame = new JFrame();
@@ -118,16 +118,16 @@ public class Help {
 		else
 			comboFonctions.setEnabled(true);
 		
-		btnFaq = new JButton(Shutter.language.getProperty("btnFaq"));
-		btnFaq.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnFaq.setMargin(new Insets(0,0,0,0));
-		btnFaq.setBounds(310, 9, 143, 21);
-		frame.getContentPane().add(btnFaq);
+		btnDoc = new JButton(Shutter.language.getProperty("btnDoc"));
+		btnDoc.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnDoc.setMargin(new Insets(0,0,0,0));
+		btnDoc.setBounds(310, 9, 143, 21);
+		frame.getContentPane().add(btnDoc);
 		
 		btnVideoDePresentation = new JButton(Shutter.language.getProperty("btnVideoDePresentation"));
 		btnVideoDePresentation.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnVideoDePresentation.setMargin(new Insets(0,0,0,0));
-		btnVideoDePresentation.setBounds(btnFaq.getX() + btnFaq.getWidth() + 6, 9, 156, 21);
+		btnVideoDePresentation.setBounds(btnDoc.getX() + btnDoc.getWidth() + 6, 9, 156, 21);
 		frame.getContentPane().add(btnVideoDePresentation);
 		
 		
@@ -175,15 +175,12 @@ public class Help {
 					
 		});
 		
-		btnFaq.addActionListener(new ActionListener(){
+		btnDoc.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					if (Shutter.getLanguage.equals("Français"))
-						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/fr/faq.html"));
-					else
-						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/en/faq.html"));
+					Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation.html"));
 				}catch(Exception e){}				
 			}
 					

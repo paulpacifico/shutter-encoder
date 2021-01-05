@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -84,8 +84,8 @@ public class Console extends JFrame {
 		frmConsole.setLayout(null);
 		frmConsole.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frmConsole.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frmConsole.setSize(500, 200);
-		frmConsole.setLocation(Shutter.frame.getLocation().x + Shutter.frame.getSize().width + 20, Shutter.frame.getLocation().y + Shutter.frame.getSize().height - frmConsole.getSize().height);			
+		frmConsole.setSize(500, Shutter.frame.getHeight());
+		frmConsole.setLocation(Shutter.frame.getLocation().x + Shutter.frame.getSize().width + 20, Shutter.frame.getLocation().y);			
 		frmConsole.getContentPane().setLayout(null);
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "false");
@@ -382,7 +382,7 @@ public class Console extends JFrame {
 	    });
 				
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBounds(0, 0, 484, 135);
+		tabbedPane.setBounds(0, 0, frmConsole.getWidth(), frmConsole.getHeight());
 		tabbedPane.add("FFMPEG", scrollFFMPEG);
 		tabbedPane.add("FFPLAY", scrollFFPLAY);
 		tabbedPane.add("FFPROBE", scrollFFPROBE);
