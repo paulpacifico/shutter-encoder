@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ public class Bluray extends Shutter {
 				if (scanIsRunning == false)
 					complete = 0;
 				
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
@@ -228,7 +228,7 @@ public class Bluray extends Shutter {
 
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(100);
+							Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (case2pass.isSelected())
@@ -238,7 +238,7 @@ public class Bluray extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(100);
+								Thread.sleep(10);
 						while(FFMPEG.runProcess.isAlive());
 					}
 					
@@ -282,7 +282,7 @@ public class Bluray extends Shutter {
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.FrameData(file.toString());	
 		 do
-		 	Thread.sleep(100);						 
+		 	Thread.sleep(10);						 
 		 while (FFPROBE.isRunning);
 		 
 		 if (errorAnalyse(file.toString()))
@@ -291,7 +291,7 @@ public class Bluray extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(100);
+			Thread.sleep(10);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))
@@ -998,7 +998,7 @@ public class Bluray extends Shutter {
 				TSMUXER.run('"' + blurayFolder.toString().replace("\\", "/") + "/bluray.meta" + '"' + " " + '"' + blurayFolder.toString().replace("\\", "/") + '"');	
 					
                 do {
-                	Thread.sleep(100);
+                	Thread.sleep(10);
                 } while (TSMUXER.isRunning);
 	}
 	
@@ -1055,7 +1055,7 @@ public class Bluray extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ public class VideoInserts extends Shutter {
 			@Override
 			public void run() {
 				complete = 0;
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 				
 				int toExtension = liste.firstElement().toString().lastIndexOf('.');
 				String extension =  liste.firstElement().substring(toExtension);		
@@ -116,7 +116,7 @@ public class VideoInserts extends Shutter {
 						
 						//Attente de la fin de FFPROBE
 						do
-							Thread.sleep(100);
+							Thread.sleep(10);
 						while(FFPROBE.isRunning);
 						
 						listeFichiers[i] = tcInMs() + "=" + '"' + liste.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
@@ -131,7 +131,7 @@ public class VideoInserts extends Shutter {
 						FFPROBE.Data(fichier[1].replace("\"", ""));
 						
 						do {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} while (FFPROBE.isRunning);	
 						
 						if (FFPROBE.totalLength > temps)
@@ -156,7 +156,7 @@ public class VideoInserts extends Shutter {
 					//On analyse le fichier Master pour obtenir le timescale
 					FFPROBE.FrameData(master[1].replace("\"", ""));					
 					do {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while (FFPROBE.isRunning);	
 					
 					//Fichier de sortie
@@ -211,7 +211,7 @@ public class VideoInserts extends Shutter {
 									//On intègre le timescale à chaque plan
 									FFMPEG.run(" -i " + s[1] + " -video_track_timescale " + FFPROBE.timeBase + " -c copy -map v? -map a? -map s? -y "  + withTempFolder);	
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (FFMPEG.isRunning);
 								}
 								
@@ -331,7 +331,7 @@ public class VideoInserts extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-							Thread.sleep(100);
+							Thread.sleep(10);
 						while(FFMPEG.runProcess.isAlive());
 					}
 			
@@ -458,7 +458,7 @@ public class VideoInserts extends Shutter {
 		{
 			if(FFMPEG.error == false)
 				complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

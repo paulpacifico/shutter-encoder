@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
 import application.Ftp;
@@ -50,7 +52,7 @@ public class FFV1 extends Shutter {
 				if (scanIsRunning == false)
 					complete = 0;
 				
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
@@ -259,8 +261,25 @@ public class FFV1 extends Shutter {
 					//Envoi de la commande
 					String cmd =  frameRate + colorspace + filterComplex + " -c:v ffv1 -level 3 " + forceField + timecode + flags + " -y ";
 					
-					//Encodage
-					if (encode)
+					//Screen capture
+					if (inputDeviceIsRunning)
+					{						
+						String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
+
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && Utils.audioDeviceIndex > 0)
+							cmd = cmd.replace("1:v", "2:v").replace("-map v", "-map 1:v").replace("0:v", "1:v");
+							
+						if (encode)
+							FFMPEG.run(" " + Utils.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
+						else
+						{
+							FFMPEG.toFFPLAY(" " + Utils.setInputDevices() + logo + cmd + " -f matroska pipe:play |");							
+							break;
+						}						
+						
+						fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
+					}
+					else if (encode) //Encodage
 						FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);	
 					else //Preview
 					{						
@@ -270,7 +289,7 @@ public class FFV1 extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(100);
+							Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
@@ -295,11 +314,12 @@ public class FFV1 extends Shutter {
     }//main
 
 	protected static String setLogo() {
-		if (caseLogo.isSelected())	        	
+		if (caseLogo.isSelected() && Shutter.overlayDeviceIsRunning)
+			return " " + Utils.setOverlayDevice(); 
+		else if (caseLogo.isSelected())
 			return " -i " + '"' + WatermarkWindow.logoFile + '"'; 
 		else
 			return "";
-
 	}
 		
 	protected static String setWatermark(String filterComplex) {
@@ -507,7 +527,14 @@ public class FFV1 extends Shutter {
 		}
 		else
 		{			
-			if (FFPROBE.channels == 1) //Si le son est stereo alors on split
+			if (inputDeviceIsRunning)
+			{
+				if (liste.getElementAt(0).equals("Capture.current.screen") && Utils.audioDeviceIndex > 0 && Utils.overlayAudioDeviceIndex > 0)
+					mapping = " -map a? -map 2?";
+				else
+					mapping = " -map a?";	
+			}
+			else if (FFPROBE.channels == 1) //Si le son est stereo alors on split
 			{
 				if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 					mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]" + audioFade + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
@@ -563,25 +590,33 @@ public class FFV1 extends Shutter {
 		return mapping;
 	}
 
-	protected static boolean analyse(File file) throws InterruptedException {		 						 					 
-		 FFPROBE.FrameData(file.toString());	
-		 do
-		 	Thread.sleep(100);						 
-		 while (FFPROBE.isRunning);
-		 
-		 if (errorAnalyse(file.toString()))
-			 return false;
-		 						 					 
+	protected static boolean analyse(File file) throws InterruptedException {
+		
+		if (inputDeviceIsRunning == false) //Already analyzed
+		{
+			 FFPROBE.FrameData(file.toString());	
+			 do
+			 {
+			 	Thread.sleep(10);
+			 }
+			 while (FFPROBE.isRunning);
+			 
+			 if (errorAnalyse(file.toString()))
+				 return false;
+		}	 
+		
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(100);
+		 {
+			Thread.sleep(10);
+		 }
 		 while (FFPROBE.isRunning);
-		 					 
+		 					 		 
 		 if (errorAnalyse(file.toString()))
 			return false;
-		 
-		 return true;
+
+		return true;
 	}
 	
 	protected static File setSequenceName(File file, String extension) {
@@ -1155,6 +1190,8 @@ public class FFV1 extends Shutter {
 			else
 				return " -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -frames:v " + liste.getSize();
 		}
+		else if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen"))
+			return " -r " + Settings.txtScreenRecord.getText();
 		
 		return "";
 	}
@@ -1213,7 +1250,7 @@ public class FFV1 extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

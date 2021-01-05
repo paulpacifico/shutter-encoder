@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ public class DVD extends Shutter {
 				if (scanIsRunning == false)
 					complete = 0;
 				
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
@@ -216,7 +216,7 @@ public class DVD extends Shutter {
 				
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(100);
+							Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (FFMPEG.cancelled == false && pass != "")
@@ -224,7 +224,7 @@ public class DVD extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(100);
+							Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 					//Création des fichiers VOB
@@ -261,7 +261,7 @@ public class DVD extends Shutter {
 	protected static int setBitrate(String file) throws InterruptedException {
 		FFPROBE.Data(file);
 		do {
-			Thread.sleep(100);
+			Thread.sleep(10);
 		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 		float debit = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
 		
@@ -289,7 +289,7 @@ public class DVD extends Shutter {
 	protected static boolean analyse(File file) throws InterruptedException {
 		 FFPROBE.FrameData(file.toString());	
 		 do
-		 	Thread.sleep(100);						 
+		 	Thread.sleep(10);						 
 		 while (FFPROBE.isRunning);
 		 
 		 if (errorAnalyse(file.toString()))
@@ -298,7 +298,7 @@ public class DVD extends Shutter {
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(100);
+			Thread.sleep(10);
 		 while (FFPROBE.isRunning);
 		 					 
 		 if (errorAnalyse(file.toString()))
@@ -880,7 +880,7 @@ public class DVD extends Shutter {
 					DVDAUTHOR.run("-o " + '"' + dvdFolder.toString() + '"' + " -x " + '"' + dvdFolder.toString() + "/dvd.xml" + '"');	
 					
                 do {
-                	Thread.sleep(100);
+                	Thread.sleep(10);
                 } while (DVDAUTHOR.isRunning);
 	}
 	
@@ -937,7 +937,7 @@ public class DVD extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

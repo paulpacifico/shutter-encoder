@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ public class Merge extends Shutter {
 			@Override
 			public void run() {
 				complete = 0;
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 				
 				String sortieFichier;
 				
@@ -120,7 +120,7 @@ public class Merge extends Shutter {
 								FFPROBE.Data(liste.getElementAt(i));
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException e1) {}
 								} while (FFPROBE.isRunning == true);
 								dureeTotale += FFPROBE.totalLength;
@@ -149,7 +149,7 @@ public class Merge extends Shutter {
 					
 							//Attente de la fin de FFMPEG
 							do
-								Thread.sleep(100);
+								Thread.sleep(10);
 							while(FFMPEG.runProcess.isAlive());
 														
 							listeBAB.delete();							
@@ -198,7 +198,7 @@ public class Merge extends Shutter {
 		{
 			if(FFMPEG.error == false)
 				complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Envoi par e-mail et FTP

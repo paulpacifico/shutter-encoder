@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
 import application.Ftp;
@@ -50,7 +52,7 @@ public class OGV extends Shutter {
 				if (scanIsRunning == false)
 					complete = 0;
 				
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
@@ -268,8 +270,25 @@ public class OGV extends Shutter {
 					//Envoi de la commande
 					cmd = frameRate + resolution + colorspace + pass + filterComplex + " -vcodec libtheora" + bitrate + gamma + flags + " -y ";
 					
-					//Encodage
-					if (encode)
+					//Screen capture
+					if (inputDeviceIsRunning)
+					{						
+						String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
+
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && Utils.audioDeviceIndex > 0)
+							cmd = cmd.replace("1:v", "2:v").replace("-map v", "-map 1:v").replace("0:v", "1:v");
+							
+						if (encode)
+							FFMPEG.run(" " + Utils.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
+						else
+						{
+							FFMPEG.toFFPLAY(" " + Utils.setInputDevices() + logo + cmd + " -f matroska pipe:play |");							
+							break;
+						}						
+						
+						fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
+					}
+					else if (encode) //Encodage
 						FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
 					else //Preview
 					{						
@@ -279,7 +298,7 @@ public class OGV extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(100);
+							Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (case2pass.isSelected())
@@ -289,7 +308,7 @@ public class OGV extends Shutter {
 						
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(100);
+								Thread.sleep(10);
 						while(FFMPEG.runProcess.isAlive());
 						
 						//SUPPRESSION DES FICHIERS RESIDUELS
@@ -443,11 +462,12 @@ public class OGV extends Shutter {
 	}
 	
 	protected static String setLogo() {
-		if (caseLogo.isSelected())	        	
+		if (caseLogo.isSelected() && Shutter.overlayDeviceIsRunning)
+			return " " + Utils.setOverlayDevice(); 
+		else if (caseLogo.isSelected())
 			return " -i " + '"' + WatermarkWindow.logoFile + '"'; 
 		else
 			return "";
-
 	}
 	
 	protected static String setWatermark(String filterComplex) {
@@ -644,7 +664,32 @@ public class OGV extends Shutter {
 		    }
 		    else if (FFPROBE.channels > 1)
 		    {
-		    	 if (lblAudioMapping.getText().equals(language.getProperty("stereo")))
+		    	 if (inputDeviceIsRunning)
+		         {
+		        	 if (newAudio != "")
+				    		newAudio = "," + newAudio;
+				    	
+					    if (filterComplex != "")
+					    	audio += ";";
+					    else
+					    	audio += " -filter_complex " + '"';	
+					    
+					    if (lblAudioMapping.getText().equals(language.getProperty("stereo")))
+					    	audio += "[0:a][2:a]amix=inputs=2" + newAudio + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";   
+					    else if (lblAudioMapping.getText().equals("Multi"))
+				    	{
+					    	if (newAudio != "") newAudio = " -filter:a " + '"' + newAudio + '"';
+				    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k" + newAudio + " -map 0:a? -map 2:a?";
+				    	}
+					    else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+					    {
+					    	if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+				    			 audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a][" + String.valueOf(comboAudio2.getSelectedIndex()).replace("1","2") + ":a]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
+				    		 else
+				    			 audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
+					    }
+		         }
+		    	 else if (lblAudioMapping.getText().equals(language.getProperty("stereo")))
     			 {
 			    	if (newAudio != "")
 			    		newAudio = "," + newAudio;
@@ -849,24 +894,32 @@ public class OGV extends Shutter {
 	}
 
 	protected static boolean analyse(File file) throws InterruptedException {
-		 FFPROBE.FrameData(file.toString());	
-		 do
-		 	Thread.sleep(100);						 
-		 while (FFPROBE.isRunning);
-		 
-		 if (errorAnalyse(file.toString()))
-			 return false;
-		 						 					 
+		
+		if (inputDeviceIsRunning == false) //Already analyzed
+		{
+			 FFPROBE.FrameData(file.toString());	
+			 do
+			 {
+			 	Thread.sleep(10);
+			 }
+			 while (FFPROBE.isRunning);
+			 
+			 if (errorAnalyse(file.toString()))
+				 return false;
+		}	 
+		
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(100);
+		 {
+			Thread.sleep(10);
+		 }
 		 while (FFPROBE.isRunning);
-		 					 
+		 					 		 
 		 if (errorAnalyse(file.toString()))
 			return false;
-		 
-		 return true;
+
+		return true;
 	}
 	
 	protected static String setResolution() {		
@@ -1318,13 +1371,34 @@ public class OGV extends Shutter {
         	else
         		return " -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -frames:v " + liste.getSize();
         }
+		else if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen"))
+			return " -r " + Settings.txtScreenRecord.getText();
 		
 		return "";
 	}
 	
 	protected static String setSortie(String sortie, File file) {					
 		if (caseChangeFolder1.isSelected())
+		{
 			sortie = lblDestination1.getText();
+			
+			if (caseCreateTree.isSelected())
+			{ 	
+				File pathToFile = null;
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					String s[] = file.getParent().toString().split("/");
+					pathToFile = new File(lblDestination1.getText() + file.getParent().toString().replace("/Volumes", "").replace(s[2], ""));	
+				}
+				else
+					pathToFile = new File (lblDestination1.getText() + file.getParent().toString().substring(2));
+				
+				if (pathToFile.exists() == false)
+					pathToFile.mkdirs();
+				
+				sortie = pathToFile.toString();
+			}
+		}
 		else
 		{
 			sortie =  file.getParent();
@@ -1389,7 +1463,7 @@ public class OGV extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

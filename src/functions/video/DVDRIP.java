@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public class DVDRIP extends Shutter {
 			public void run() {
 				complete = 0;
 				
-				lblTermine.setText(Utils.fichiersTermines(complete));			
+				lblTermine.setText(Utils.completedFiles(complete));			
 				
 				//Scan du dossier VIDEO_TS
 				File [] volumes;
@@ -117,7 +117,7 @@ public class DVDRIP extends Shutter {
 								FFPROBE.Data(VOB);
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException e1) {}
 								} while (FFPROBE.isRunning == true);
 								dureeTotale += FFPROBE.totalLength;
@@ -204,7 +204,7 @@ public class DVDRIP extends Shutter {
 				
 				//Attente de la fin de FFMPEG
 				do
-					Thread.sleep(100);
+					Thread.sleep(10);
 				while(FFMPEG.runProcess.isAlive());
 			}
 			else
@@ -254,7 +254,7 @@ public class DVDRIP extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

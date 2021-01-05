@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Random;
 
@@ -56,7 +58,7 @@ public class DNxHR extends Shutter {
 				if (scanIsRunning == false)
 					complete = 0;
 				
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
@@ -313,8 +315,25 @@ public class DNxHR extends Shutter {
 						}
 						else
 						{
-							//Encodage
-							if (encode)
+							//Screen capture
+							if (inputDeviceIsRunning)
+							{						
+								String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
+
+								if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && Utils.audioDeviceIndex > 0)
+									cmd = cmd.replace("1:v", "2:v").replace("-map v", "-map 1:v").replace("0:v", "1:v");
+									
+								if (encode)
+									FFMPEG.run(" " + Utils.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
+								else
+								{
+									FFMPEG.toFFPLAY(" " + Utils.setInputDevices() + logo + cmd + " -f matroska pipe:play |");							
+									break;
+								}						
+								
+								fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
+							}
+							else if (encode) //Encodage
 								FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);	
 							else //Preview
 							{						
@@ -325,7 +344,7 @@ public class DNxHR extends Shutter {
 										
 						//Attente de la fin de FFMPEG
 						do
-								Thread.sleep(100);
+								Thread.sleep(10);
 						while(FFMPEG.runProcess.isAlive());					
 						
 						//Création des fichiers OPATOM
@@ -341,7 +360,7 @@ public class DNxHR extends Shutter {
 						
 							//Attente de la fin de BMXTRANSWRAP
 							do
-								Thread.sleep(100);
+								Thread.sleep(10);
 							while(BMXTRANSWRAP.isRunning);*/
 						}
 					}
@@ -370,24 +389,32 @@ public class DNxHR extends Shutter {
     }//main
 
 	protected static boolean analyse(File file) throws InterruptedException {
-		 FFPROBE.FrameData(file.toString());	
-		 do
-		 	Thread.sleep(100);						 
-		 while (FFPROBE.isRunning);
-		 
-		 if (errorAnalyse(file.toString()))
-			 return false;
-		 						 					 
+		
+		if (inputDeviceIsRunning == false) //Already analyzed
+		{
+			 FFPROBE.FrameData(file.toString());	
+			 do
+			 {
+			 	Thread.sleep(10);
+			 }
+			 while (FFPROBE.isRunning);
+			 
+			 if (errorAnalyse(file.toString()))
+				 return false;
+		}	 
+		
 		 FFPROBE.Data(file.toString());
 
 		 do
-			Thread.sleep(100);
+		 {
+			Thread.sleep(10);
+		 }
 		 while (FFPROBE.isRunning);
-		 					 
+		 					 		 
 		 if (errorAnalyse(file.toString()))
 			return false;
-		 
-		 return true;
+
+		return true;
 	}
 	
 	protected static String setAudioFiles(String audioFiles, File file) {
@@ -499,7 +526,14 @@ public class DNxHR extends Shutter {
 		else
 		{
 			String mapping = "";
-			if (comboAudio1.getSelectedIndex() == 0
+			if (inputDeviceIsRunning)
+			{
+				if (liste.getElementAt(0).equals("Capture.current.screen") && Utils.audioDeviceIndex > 0 && Utils.overlayAudioDeviceIndex > 0)
+					mapping = " -map a? -map 2?";
+				else
+					mapping = " -map a?";	
+			}
+			else if (comboAudio1.getSelectedIndex() == 0
 				&& comboAudio2.getSelectedIndex() == 1
 				&& comboAudio3.getSelectedIndex() == 2
 				&& comboAudio4.getSelectedIndex() == 3
@@ -682,7 +716,7 @@ public class DNxHR extends Shutter {
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + FFPROBE.fieldOrder + ":0";
 		}		
 		else if (FFPROBE.entrelaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation"))))
-				return comboForcerDesentrelacement.getSelectedItem().toString() + "=0:" + FFPROBE.fieldOrder + ":0";
+			return comboForcerDesentrelacement.getSelectedItem().toString() + "=0:" + FFPROBE.fieldOrder + ":0";
 		else
 			return "";
 	}
@@ -815,7 +849,7 @@ public class DNxHR extends Shutter {
 			
 			//Attente de la fin de FFMPEG
 			do
-				Thread.sleep(100);
+				Thread.sleep(10);
 			while(FFMPEG.runProcess.isAlive());						
 			
 			if (filterComplex != "")
@@ -1002,11 +1036,12 @@ public class DNxHR extends Shutter {
 	}
 	
 	protected static String setLogo() {
-		if (caseLogo.isSelected())	        	
+		if (caseLogo.isSelected() && Shutter.overlayDeviceIsRunning)
+			return " " + Utils.setOverlayDevice(); 
+		else if (caseLogo.isSelected())
 			return " -i " + '"' + WatermarkWindow.logoFile + '"'; 
 		else
 			return "";
-
 	}
 	
 	protected static String setWatermark(String filterComplex) {
@@ -1019,7 +1054,7 @@ public class DNxHR extends Shutter {
         				"[scaledwatermark];[v][scaledwatermark]overlay=" + WatermarkWindow.textPosX.getText() + ":" + WatermarkWindow.textPosY.getText();
         	}
         	else
-        	{
+        	{	
             	filterComplex = "[1:v]scale=iw*" + ((float)  Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) +			
         				",lut=a=val*" + ((float) Integer.parseInt(WatermarkWindow.textOpacity.getText()) / 100) + 
         				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + WatermarkWindow.textPosX.getText() + ":" + WatermarkWindow.textPosY.getText();
@@ -1337,13 +1372,7 @@ public class DNxHR extends Shutter {
 	}
 	
 	protected static String setFramerate() {
-		if (caseForcerEntrelacement.isSelected() && caseConform.isSelected() && comboFPS.getSelectedItem().toString().equals("50"))
-			return " -r 25";
-		else if (caseForcerEntrelacement.isSelected() && caseConform.isSelected() && comboFPS.getSelectedItem().toString().equals("59,94"))
-			return " -r 29.97";
-		else if (caseForcerEntrelacement.isSelected() && caseConform.isSelected() && comboFPS.getSelectedItem().toString().equals("60"))
-			return " -r 30";
-		else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
+		if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
 			return " -r " + FFPROBE.currentFPS;
 		else if (caseConform.isSelected())
 			return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
@@ -1354,6 +1383,8 @@ public class DNxHR extends Shutter {
 			else
 				return " -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -frames:v " + liste.getSize();
 		}
+		else if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen"))
+			return " -r " + Settings.txtScreenRecord.getText();
 		
 		return "";
 	}
@@ -1508,7 +1539,7 @@ public class DNxHR extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

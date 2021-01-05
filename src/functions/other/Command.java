@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ public class Command extends Shutter {
 				if (scanIsRunning == false)
 					complete = 0;
 				
-				lblTermine.setText(Utils.fichiersTermines(complete));
+				lblTermine.setText(Utils.completedFiles(complete));
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
@@ -140,7 +140,7 @@ public class Command extends Shutter {
 					
 					//Attente de la fin de FFMPEG
 					do
-						Thread.sleep(100);
+						Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 			        if (cmd.contains("-pass"))
@@ -148,7 +148,7 @@ public class Command extends Shutter {
 
 					//Attente de la fin de FFMPEG
 					do
-						Thread.sleep(100);
+						Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 					//Création des fichiers OPATOM
@@ -161,7 +161,7 @@ public class Command extends Shutter {
 					
 						//Attente de la fin de BMXTRANSWRAP
 						do
-							Thread.sleep(100);
+							Thread.sleep(10);
 						while(BMXTRANSWRAP.isRunning);
 					}
 					
@@ -237,7 +237,7 @@ public class Command extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier

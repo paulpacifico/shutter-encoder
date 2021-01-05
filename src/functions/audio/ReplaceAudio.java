@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ public class ReplaceAudio extends Shutter {
 				String audioExt = "";
 				File videoFile;
 				complete = 0;	
-				lblTermine.setText(Utils.fichiersTermines(complete));				
+				lblTermine.setText(Utils.completedFiles(complete));				
 
 			try {
 					
@@ -76,7 +76,7 @@ public class ReplaceAudio extends Shutter {
 						
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFPROBE.isRunning);
@@ -92,7 +92,7 @@ public class ReplaceAudio extends Shutter {
 						audioFiles = setMulipleAudioFiles(videoFile, "", offset);
 													
 					do {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while (FFPROBE.isRunning);	
 				}
 				else
@@ -132,7 +132,7 @@ public class ReplaceAudio extends Shutter {
 							
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(100);
+							Thread.sleep(10);
 					while(FFMPEG.runProcess.isAlive());
 					
 					
@@ -278,7 +278,7 @@ public class ReplaceAudio extends Shutter {
 		if (cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			lblTermine.setText(Utils.fichiersTermines(complete));
+			lblTermine.setText(Utils.completedFiles(complete));
 		}
 		
 		//Ouverture du dossier
