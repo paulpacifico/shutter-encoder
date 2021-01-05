@@ -51,7 +51,9 @@ public class RecordInputDevice {
 		frame.setModal(true);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.setSize(350, 210);
-		else
+		else if (System.getProperty("os.name").contains("Mac"))
+			frame.setSize(330, 165);
+		else //Linux
 			frame.setSize(330, 130);
 		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
 		
@@ -160,7 +162,7 @@ public class RecordInputDevice {
 		JLabel inputVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
 		inputVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		inputVideo.setBounds(12, screenAudio.getY() + screenAudio.getHeight() + 25, 40, 14);
-		if (System.getProperty("os.name").contains("Windows"))
+		if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 			frame.getContentPane().add(inputVideo);
 		
 		comboInputVideo = new JComboBox<String>(FFMPEG.videoDevices.toString().split(":"));
@@ -169,7 +171,7 @@ public class RecordInputDevice {
 		comboInputVideo.setEnabled(true);
 		comboInputVideo.setMaximumRowCount(20);
 		comboInputVideo.setBounds(comboScreenVideo.getX(), inputVideo.getLocation().y - 3, comboScreenVideo.getWidth(), 22);
-		if (System.getProperty("os.name").contains("Windows"))
+		if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 			frame.getContentPane().add(comboInputVideo);
 		
 		JLabel inputAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
@@ -192,6 +194,8 @@ public class RecordInputDevice {
 		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 4, 21);	
 		if (System.getProperty("os.name").contains("Windows"))
 			btnOK.setLocation(12, comboInputAudio.getY() + comboInputAudio.getHeight() + 14);	
+		else if (System.getProperty("os.name").contains("Mac"))
+			btnOK.setLocation(12, comboInputVideo.getY() + comboInputVideo.getHeight() + 14);
 		else
 			btnOK.setLocation(12, comboScreenAudio.getY() + comboScreenAudio.getHeight() + 14);	
 		frame.getContentPane().add(btnOK);
