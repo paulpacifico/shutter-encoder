@@ -183,9 +183,8 @@ public static int gopSpace = 124;
 								if (overlayDeviceIsRunning)
 									s = Utils.setOverlayDevice().split("-f ");
 								
-								String inputDevice = s[1];
-								if (Utils.audioDeviceIndex > 0)
-									inputDevice =  s[2];
+								String id[] = s[1].split("\"");
+								String inputDevice = id[0] + '"' + id[1] + '"';
 							
 								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f " + inputDevice);
 							}
