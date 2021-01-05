@@ -954,30 +954,7 @@ public class Shutter {
 				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFMPEG.runProcess.isAlive());
-		
-		//list devices		
-		if (System.getProperty("os.name").contains("Mac"))
-		{					
-			Thread checkDevices = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					FFMPEG.devices("-f avfoundation -list_devices true -i dummy");	
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (FFMPEG.isRunning);
-					FFMPEG.devices("-f openal -list_devices true -i dummy");
-				}
-			});
-			checkDevices.start();
-		}
-		else if (System.getProperty("os.name").contains("Windows"))
-		{
-			FFMPEG.devices("-f dshow -list_devices true -i dummy" + '"');
-		}
-				
+						
 		new Settings();
 		Splash.increment();
 		
@@ -2063,11 +2040,51 @@ public class Shutter {
 		inputDevice.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {							
-				if (RecordInputDevice.frame != null)
-					RecordInputDevice.frame.setVisible(true);
-				else
+			public void actionPerformed(ActionEvent arg0) {		
+				
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
+				//list devices		
+				if (System.getProperty("os.name").contains("Mac"))
+				{					
+					Thread checkDevices = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							FFMPEG.devices("-f avfoundation -list_devices true -i dummy");	
+							do {
+								try {
+									Thread.sleep(10);
+								} catch (InterruptedException e) {}
+							} while (FFMPEG.isRunning);
+							
+							FFMPEG.devices("-f openal -list_devices true -i dummy");
+							do {
+								try {
+									Thread.sleep(10);
+								} catch (InterruptedException e) {}
+							} while (FFMPEG.isRunning);
+							
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				
+							new RecordInputDevice();
+						}
+					});
+					checkDevices.start();
+				}
+				else if (System.getProperty("os.name").contains("Windows"))
+				{
+					FFMPEG.devices("-f dshow -list_devices true -i dummy" + '"');
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {}
+					} while (FFMPEG.isRunning);
+					
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				
 					new RecordInputDevice();
+				}
+				
+
 			}			
 		});
 		

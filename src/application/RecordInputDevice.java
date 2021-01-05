@@ -286,7 +286,7 @@ public class RecordInputDevice {
 				
 				Shutter.changeFilters();
 				
-				frame.setVisible(false);
+				frame.dispose();
 			}
 			
 		});
