@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,6 @@ public static BufferedWriter writer;
 public static Thread runProcess = new Thread();
 public static Process process;
 public static String analyseLufs;
-public static String analyseVideo;
 public static Float mseSensibility = 800f;
 public static float newVolume;
 public static StringBuilder shortTermValues;
@@ -83,6 +82,9 @@ public static String inPoint = "";
 public static String outPoint = "";
 public static String postInPoint = "";	
 private static boolean firstInput = true;
+public static int firstScreenIndex = 0;
+public static StringBuilder videoDevices;
+public static StringBuilder audioDevices;
 
 public static int differenceMax;
 
@@ -92,25 +94,14 @@ private static long time = 0;
 public static long elapsedTime = 0;
 public static int previousElapsedTime = 0;
 private static int fps = 0;
-private static int signalstatsFrames = 0;
-private static boolean brngError = false;
-private static int Y = 0;
-private static int U = 0;
-private static int V = 0;
 
 private static StringBuilder getAll;
 
-	public static void run(final String cmd) {
+	public static void run(String cmd) {
 			
 		time = 0;
 		fps = 0;
-		signalstatsFrames = 0;
-		brngError = false;
-		Y = 0;
-		U = 0;
-		V = 0;
 
-		analyseVideo = "";
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
 		firstInput = true;
@@ -172,7 +163,7 @@ private static StringBuilder getAll;
 										aspect = ",setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
 								
 									pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';										
-									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + FFPROBE.qtref + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + pipe});
+									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + pipe});
 							}						
 							else if (cmd.contains("pipe:stab")
 									|| comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
@@ -184,11 +175,11 @@ private static StringBuilder getAll;
 									|| caseDeflicker.isSelected() && grpCorrections.isVisible()) && caseDisplay.isSelected() == false)
 							{
 								PathToFFMPEG = "Library\\ffmpeg.exe";
-								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + FFPROBE.qtref + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y")});
+								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y")});
 							}
 							else //Permet de mettre en pause FFMPEG
 							{		
-								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + FFPROBE.qtref + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y"));
+								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y"));
 								//processFFMPEG.directory(new File("E:"));
 								process = processFFMPEG.start();
 							}
@@ -213,7 +204,7 @@ private static StringBuilder getAll;
 								pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"'  + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';
 							}
 							
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + FFPROBE.qtref + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + pipe);									
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + pipe);									
 							process = processFFMPEG.start();
 						}	
 							
@@ -241,7 +232,10 @@ private static StringBuilder getAll;
 									|| line.contains("matches no streams")
 									|| line.contains("Error while opening encoder")
 									|| line.contains("Decoder (codec none) not found")
-									|| line.contains("Unknown encoder"))
+									|| line.contains("Unknown encoder")
+									|| line.contains("Could not set video options")
+									|| line.contains("Input/output error")
+									|| line.contains("Operation not permitted"))
 							{
 								error = true;
 								//break;
@@ -258,13 +252,14 @@ private static StringBuilder getAll;
 								break;
 																			
 						}//While							
-						process.waitFor();
-							
+						process.waitFor();	
+						
 						if (cancelled == false)
 							postAnalyse();						
 					   					     																		
-						} catch (IOException | InterruptedException e) {
-							error = true;
+						} catch (IOException io) {//Bug Linux							
+						} catch (InterruptedException e) {
+							error = true;			
 						} finally {
 							isRunning = false;
 							caseRunInBackground.setEnabled(false);	
@@ -327,10 +322,10 @@ private static StringBuilder getAll;
 						String PathToFFMPEG;
 						ProcessBuilder processFFMPEG;
 						File file;
-						if (listeDeFichiers.getSelectedIndices().length == 0)
+						if (fileList.getSelectedIndices().length == 0)
 							file = new File(liste.firstElement());
 						else							
-							file = new File(listeDeFichiers.getSelectedValue());
+							file = new File(fileList.getSelectedValue());
 					
 						String fullscreen = "";
 						if (ColorImage.frame != null)
@@ -376,7 +371,10 @@ private static StringBuilder getAll;
 									|| line.contains("matches no streams")
 									|| line.contains("Error while opening encoder")
 									|| line.contains("Decoder (codec none) not found")
-									|| line.contains("Unknown encoder"))
+									|| line.contains("Unknown encoder")
+									|| line.contains("Could not set video options")
+									|| line.contains("Input/output error")
+									|| line.contains("Operation not permitted"))
 							{
 								error = true;
 								//break;
@@ -389,7 +387,8 @@ private static StringBuilder getAll;
 						}//While					
 						process.waitFor();															
 					   					     																		
-						} catch (IOException | InterruptedException e) {
+						} catch (IOException io) {//Bug Linux							
+						} catch (InterruptedException e) {
 							error = true;
 						} finally {
 							isRunning = false;
@@ -474,7 +473,10 @@ private static StringBuilder getAll;
 									|| line.contains("matches no streams")
 									|| line.contains("Error while opening encoder")
 									|| line.contains("Decoder (codec none) not found")
-									|| line.contains("Unknown encoder"))
+									|| line.contains("Unknown encoder")
+									|| line.contains("Could not set video options")
+									|| line.contains("Input/output error")
+									|| line.contains("Operation not permitted"))
 							{
 								error = true;
 								//break;
@@ -485,8 +487,163 @@ private static StringBuilder getAll;
 					
 					process.waitFor();					
 				   					     																		
-					} catch (IOException | InterruptedException e) {
+					} catch (IOException io) {//Bug Linux							
+					} catch (InterruptedException e) {
 						error = true;
+					}
+				
+			}				
+		});		
+		runProcess.start();
+	}
+
+	public static void devices(final String cmd) {
+		
+		error = false;		
+		isRunning = true;
+		
+	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+			
+		runProcess = new Thread(new Runnable()  {
+			@Override
+			public void run() {
+				try {
+					String PathToFFMPEG;
+					ProcessBuilder processFFMPEG;
+					if (System.getProperty("os.name").contains("Windows"))
+					{							
+						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
+						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+														
+						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
+						process = processFFMPEG.start();
+					}
+					else
+					{
+						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
+						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
+
+						
+						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
+						process = processFFMPEG.start();
+					}		
+					
+					String line;
+					
+					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
+
+					boolean isVideoDevices = false;
+					boolean isAudioDevices = false;
+					if (cmd.contains("openal") == false) //IMPORTANT
+					{
+						videoDevices = new StringBuilder();
+						videoDevices.append(language.getProperty("noVideo"));
+					}
+					
+					audioDevices = new StringBuilder();
+					audioDevices.append(language.getProperty("noAudio"));
+					
+					while ((line = input.readLine()) != null) {						
+						
+						Console.consoleFFMPEG.append(line + System.lineSeparator());		
+											
+						//Get devices Mac
+						if (cmd.contains("avfoundation") && line.contains("]")) 
+						{		
+							/*
+							if (isAudioDevices)
+							{								
+								String s[] = line.split("\\]");
+								audioDevices.append(":" + s[2].substring(1, s[2].length()));
+							}*/
+							
+							if (line.contains("AVFoundation audio devices"))
+							{
+								isAudioDevices = true;
+							}
+							
+							if (isVideoDevices && line.contains("Capture screen") == false && isAudioDevices == false)
+							{						
+								String s[] = line.split("\\]");
+								videoDevices.append(":" + s[2].substring(1, s[2].length()));
+							}
+							
+							if (line.contains("AVFoundation video devices"))
+								isVideoDevices = true;
+						}
+						
+						if (cmd.contains("openal") && line.contains("]"))
+						{
+							if (isAudioDevices)
+							{								
+								String s[] = line.split("\\]");
+								audioDevices.append(":" + s[1].substring(3, s[1].length()));
+							}
+							
+							if (line.contains("List of OpenAL capture devices on this system"))
+							{
+								isAudioDevices = true;
+							}
+						}
+						
+						//Get current screen index
+						if (cmd.contains("avfoundation") && line.contains("Capture screen")) 
+						{
+							String s[] = line.split("\\[");
+							String s2[] = s[2].split("\\]");
+							firstScreenIndex = Integer.parseInt(s2[0]);
+						}
+						
+						//Get devices Windows
+						if (cmd.contains("dshow"))
+						{
+							if (line.contains("DirectShow audio devices"))
+								isAudioDevices = true;
+							else if (isAudioDevices && line.contains("\"") && line.contains("Alternative name") == false)
+							{
+								String s[] = line.split("\"");
+								audioDevices.append(":" + s[1]);
+							}
+							
+							if (line.contains("DirectShow video devices"))
+								isVideoDevices = true;
+							else if (isVideoDevices && line.contains("\"") && line.contains("Alternative name") == false && isAudioDevices == false)
+							{
+								String s[] = line.split("\"");
+								videoDevices.append(":" + s[1]);
+							}
+						}
+
+						//Erreurs
+						if (line.contains("Invalid data found when processing input") 
+								|| line.contains("No such file or directory")
+								|| line.contains("Invalid data found")
+								|| line.contains("No space left")
+								|| line.contains("does not contain any stream")
+								|| line.contains("Invalid argument")
+								|| line.contains("Error opening filters!")
+								|| line.contains("matches no streams")
+								|| line.contains("Error while opening encoder")
+								|| line.contains("Decoder (codec none) not found")
+								|| line.contains("Unknown encoder")
+								|| line.contains("Could not set video options")
+								|| line.contains("Input/output error")
+								|| line.contains("Operation not permitted"))
+						{
+							error = true;
+						} 
+																		
+					}//While			
+					
+					process.waitFor();					
+				   					     																		
+					} catch (IOException io) {//Bug Linux							
+					} catch (InterruptedException e) {
+						error = true;
+					} finally {
+						isRunning = false;
 					}
 				
 			}				
@@ -710,7 +867,7 @@ private static StringBuilder getAll;
 				FFPROBE.Data(liste.getElementAt(i));
 				do {
 					try {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} catch (InterruptedException e1) {}
 				} while (FFPROBE.isRunning == true);
 				dureeTotale += FFPROBE.totalLength;
@@ -870,7 +1027,7 @@ private static StringBuilder getAll;
     	    
     		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	    	
 
-    		if (progressBar1.getString().equals("NaN"))
+    		if (progressBar1.getString().equals("NaN") || inputDeviceIsRunning)
     			progressBar1.setStringPainted(false);
     		else
     			progressBar1.setStringPainted(true);
@@ -1027,169 +1184,6 @@ private static StringBuilder getAll;
 	  else if (line.contains("frame=") && caseDisplay.isSelected() == false) //Pour afficher le temps écoulé
 		  tempsEcoule.setVisible(true);
 	  
-	  //Analyse vidéo
-	  
-	  //int min = 3535; //4096 - ((60160-4095)*1/100)
-	  //int max = 61842;//60160 + ((60160-4095)*3/100)
-	  //int cmax = 63160;//61440 + ((61440-4095)*3/100)
-	  //int satmax = 32768; //128 * 256
-	  
-	  int min = 14;
-	  int max = 242;
-	  int cmax = 247;
-	  int satmax = 128; //128 * 256
-	  
-	  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionVideoLevels")) && line.contains("Parsed_metadata"))
-	  {
-		  if (line.contains("frame:"))
-	      {
-			 String[] split = line.split(":");
-			 signalstatsFrames = Integer.parseInt(split[1].replace("pts", "").replace(" ", ""));	
-		  }	  
-	
-		  int temps = (int) ((float) signalstatsFrames * ((float) 1000 / FFPROBE.currentFPS));
-		  
-		  NumberFormat formatter = new DecimalFormat("00");
-		  String h = formatter.format(temps / 3600000);
-		  String m = formatter.format((temps / 60000) % 60);
-		  String s = formatter.format((temps / 1000) % 60);
-		  String f = formatter.format((int) (temps / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS));
-
-		  //BRNG
-		  if (line.contains("BRNG"))
-		  {
-			  float brng = Float.parseFloat(line.substring(line.lastIndexOf("=") + 1));
-			  if (String.valueOf(brng).contains("E") == false && brng > 0.01)
-				  brngError = true;
-			  else
-				  brngError = false;
-			  
-		  }
-		  else if (line.contains("YMIN"))
-		  {		  			  			  
-			  int luma = Integer.parseInt(line.substring(line.lastIndexOf("=") + 1));
-			  
-			  if (luma < min && brngError)
-			  {
-				  	lblEncodageEnCours.setForeground(Color.RED);
-	        		lblEncodageEnCours.setText(language.getProperty("error") + " luminance : " + h + ":" + m + ":" + s + ":" + f);
-	        		analyseVideo += System.lineSeparator() + "     Luminance <16: " + h + ":" + m + ":" + s + ":" + f; 
-			  }
-		  }	
-		  else if (line.contains("YMAX")) //Y
-		  {		  			  			  
-			  int luma = Integer.valueOf(line.substring(line.lastIndexOf("=") + 1));
-			  
-			  Y = luma;
-			  
-			  if (luma > max && brngError)
-			  {
-				  	lblEncodageEnCours.setForeground(Color.RED);
-	        		lblEncodageEnCours.setText(language.getProperty("error") + " luminance : " + h + ":" + m + ":" + s + ":" + f);
-	        		analyseVideo += System.lineSeparator() + "     Luminance >235: " + h + ":" + m + ":" + s + ":" + f; 
-			  }
-		  }	 
-		  else if (line.contains("UMIN"))
-		  {		  			  			  
-			  int luma = Integer.parseInt(line.substring(line.lastIndexOf("=") + 1));
-			  
-			  if (luma < min && brngError)
-			  {
-				  	lblEncodageEnCours.setForeground(Color.RED);
-	        		lblEncodageEnCours.setText(language.getProperty("error") + " chrominance : " + h + ":" + m + ":" + s + ":" + f);
-	        		analyseVideo += System.lineSeparator() + "     Chrominance <16: " + h + ":" + m + ":" + s + ":" + f; 
-			  }
-		  }	
-		  else if (line.contains("UMAX")) //U
-		  {		  			  			  
-			  int luma = Integer.parseInt(line.substring(line.lastIndexOf("=") + 1));
-			  
-			  U = luma;
-			   
-			  if (luma > cmax && brngError)
-			  {
-				  	lblEncodageEnCours.setForeground(Color.RED);
-	        		lblEncodageEnCours.setText(language.getProperty("error") + " chrominance : " + h + ":" + m + ":" + s + ":" + f);
-	        		analyseVideo += System.lineSeparator() + "     Chrominance >235: " + h + ":" + m + ":" + s + ":" + f; 
-			  }
-		  }
-		  else if (line.contains("VMIN"))
-		  {		  			  			  
-			  int luma = Integer.parseInt(line.substring(line.lastIndexOf("=") + 1));
-			  
-			  if (luma < min && brngError)
-			  {
-				  	lblEncodageEnCours.setForeground(Color.RED);
-	        		lblEncodageEnCours.setText(language.getProperty("error") + " chrominance : " + h + ":" + m + ":" + s + ":" + f);
-	        		analyseVideo += System.lineSeparator() + "     Chrominance <16: " + h + ":" + m + ":" + s + ":" + f; 
-			  }
-		  }	
-		  else if (line.contains("VMAX")) //V
-		  {		  			  			  
-			  int luma = Integer.parseInt(line.substring(line.lastIndexOf("=") + 1));
-			  
-			  V = luma;
-			  
-			  if (luma > cmax && brngError)
-			  {
-				  	lblEncodageEnCours.setForeground(Color.RED);
-	        		lblEncodageEnCours.setText(language.getProperty("error") + " chrominance : " + h + ":" + m + ":" + s + ":" + f);
-	        		analyseVideo += System.lineSeparator() + "     Chrominance >235: " + h + ":" + m + ":" + s + ":" + f; 
-			  }
-		  }
-		  else if (line.contains("SATMAX")) //SAT
-		  {		  			  			  
-			  int luma = Integer.parseInt(line.substring(line.lastIndexOf("=") + 1));
-			  
-			  if (luma > satmax)
-			  {
-				  	lblEncodageEnCours.setForeground(Color.RED);
-	        		lblEncodageEnCours.setText(language.getProperty("error") + " saturation : " + h + ":" + m + ":" + s + ":" + f);
-	        		analyseVideo += System.lineSeparator() + "     Saturation >128: " + h + ":" + m + ":" + s + ":" + f; 
-			  }
-		  }
-		 
-		  //RGB
-		  //int R = Integer.valueOf((int) ((float) Y + 1.370705*(V-128)));
-		  //int G = Integer.valueOf((int) ((float) Y - 0.698001*(U-128) - 0.337633*(V-128)));
-		  //int B = Integer.valueOf((int) ((float) Y + 1.732446*(U-128)));
-		  
-		  int R = Integer.valueOf((int) ((float) Y + 1.4075*(V-128)));
-		  int G = Integer.valueOf((int) ((float) Y - 0.3455*(U-128) - 0.7169*(V-128)));
-		  int B = Integer.valueOf((int) ((float) Y + 1.7790*(U-128)));
-		  
-		  //int R = (int) ((float) Y + 2*(V-128)*(1-0.2126));
-		  //int G = (int) ((float) Y - 2*(U-128)*(1-0.0722)*(0.0722/0.7152) - 2*(V-128)*(1-0.2126)*(0.2126/0.7152));
-		  //int B = (int) ((float) Y + 2*(U-128)*(1-0.0722));
-		  		  		  
-		  
-		  /*float Kr = 0.2126f;
-		  float Kg = 0.7152f;
-		  float Kb = 0.0722f;
-		  int y = Y;
-		  int u = U;
-		  int v = V;
-		  float R = (255/219)*y + (255/112)*v*(1-Kr) - (255*16/219 + 255*128/112*(1-Kr)) ;
-		  float G = (255/219)*y - (255/112)*u*(1-Kb)*Kb/Kg - (255/112)*v*(1-Kr)*Kr/Kg - (255*16/219 - 255/112*128*(1-Kb)*Kb/Kg - 255/112*128*(1-Kr)*Kr/Kg);
-		  float B = (255/219)*y + (255/112)*u*(1-Kb) - (255*16/219 + 255*128/112*(1-Kb));*/
-		  
-		  System.out.println("R : " + R);
-		  System.out.println("G : " + G);
-		  System.out.println("B : " + B);
-		  
-		  if (Y != 0 && U != 0 && V != 0)
-		  {
-			  if (R > 248 || R < 3 || G > 248 || G < 3 || B > 248 || B < 3) //RGB
-			  {		  			  			  
-			  	lblEncodageEnCours.setForeground(Color.RED);
-	    		lblEncodageEnCours.setText(language.getProperty("error") + " RGB : " + h + ":" + m + ":" + s + ":" + f);
-	    		analyseVideo += System.lineSeparator() + "     RGB : " + h + ":" + m + ":" + s + ":" + f; 	    					
-			
-			  }			 
-		  }
-
-	  	}
-	  
 	  //Détection de coupe
 	  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) && line.contains("pts"))
 	  {
@@ -1208,7 +1202,7 @@ private static StringBuilder getAll;
           //Permet d'attendre la création de l'image
           do {
 	          try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 	          } catch (InterruptedException e) {}
           } while (imageName.exists() == false);
           

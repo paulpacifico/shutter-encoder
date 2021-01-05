@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ public static Thread runProcess;
 					
 					do
 					{
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while (FFPROBE.isRunning);
 					
 					String PathToMEDIAINFO;

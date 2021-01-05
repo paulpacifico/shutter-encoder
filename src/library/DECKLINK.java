@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,11 @@ public static ArrayList<String> formatsList;
 							}
 											
 						String line;
-						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
+						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));	
+						
+						//Permet d'écrire dans le flux
+						OutputStream stdin = process.getOutputStream();
+				        writer = new BufferedWriter(new OutputStreamWriter(stdin));
 						
 						while ((line = input.readLine()) != null) {
 							
@@ -167,7 +171,6 @@ public static ArrayList<String> formatsList;
 					process = processDECKLINK.start();
 					
 					BlackMagicInput.comboInput.setEnabled(false);
-					BlackMagicInput.btnRecord.setEnabled(false);
 											
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));			
@@ -203,7 +206,6 @@ public static ArrayList<String> formatsList;
 					} finally {
 						isRunning = false;
 						BlackMagicInput.comboInput.setEnabled(true);
-						BlackMagicInput.btnRecord.setEnabled(true);
 					}
 				
 			}				

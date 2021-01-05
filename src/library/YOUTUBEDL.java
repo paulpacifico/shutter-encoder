@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,8 @@ public static String format = "";
 					do {
 						lineOutput = br.readLine();		
 												
+						System.out.println(lineOutput);
+						
 					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());
 		                
 					    if (lineOutput != null)
@@ -107,6 +109,7 @@ public static String format = "";
 		                        String[] splitPercent= lineOutput.split("%");
 		                        String progress = splitPercent[0].replace("[download]", "");
 		                        progressBar1.setValue((int) Math.floor(Double.valueOf(progress)));
+		                        
 		                        String[] splitETA = lineOutput.split("ETA");
 		                        String[] time = splitETA[1].split(":");
 		                        tempsRestant.setVisible(true);

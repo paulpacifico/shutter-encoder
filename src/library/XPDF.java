@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -213,10 +213,10 @@ public static int pagesCount = 1;
 					String PathToXPDF;
 					ProcessBuilder processToXPDF;
 					File file;
-					if (listeDeFichiers.getSelectedIndices().length == 0)
+					if (fileList.getSelectedIndices().length == 0)
 						file = new File(liste.firstElement());
 					else							
-						file = new File(listeDeFichiers.getSelectedValue());
+						file = new File(fileList.getSelectedValue());
 				
 					String fullscreen = "";
 					if (ColorImage.frame != null)

@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2020 PACIFICO PAUL
+* Copyright (C) 2021 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,10 @@
 package library;
 
 import java.awt.Cursor;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -32,11 +35,12 @@ import application.Console;
 import application.CropImage;
 import application.CropVideo;
 import application.GOP;
-import application.VideoPlayer;
-import application.WatermarkWindow;
 import application.OverlayWindow;
 import application.Shutter;
 import application.SubtitlesWindow;
+import application.Utils;
+import application.VideoPlayer;
+import application.WatermarkWindow;
 
 public class FFPROBE extends Shutter {
 	
@@ -84,16 +88,19 @@ public static float HDRmax = 0;
 
 public static int gopCount = 0;
 public static int gopSpace = 124;
-public static boolean quickTimeRef = false;
-public static String quickTimeFile = "";
-public static String qtref = "";
 
-	public static void Data(final String fichier) {		
+	public static void Data(final String fichier) {	
+		
 		getVideoLengthTC = null;
-		stereo = false;	
+		
+		if (inputDeviceIsRunning == false)
+		{
+			channels = 0;
+			stereo = false;	
+		}
+		
 		surround = false;
 		totalLength = 0;
-		channels = 0;
 		qantization = 16;
  		subtitleStreams = 0;
  		audioStreams = 0;
@@ -136,45 +143,63 @@ public static String qtref = "";
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + qtref + " -i " + '"' + fichier + '"');
+						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';						
+						
+						if (inputDeviceIsRunning && (fichier.equals("Capture.current.screen") || fichier.equals("Capture.input.device")))
+						{
+							if (fichier.equals("Capture.input.device") && Utils.inputDeviceResolution == "")
+							{		
+								String s[] = Utils.setInputDevices().split("-f ");
+								if (overlayDeviceIsRunning)
+									s = Utils.setOverlayDevice().split("-f ");
+								
+								String id[] = s[1].split("\"");
+								String inputDevice = id[0] + '"' + id[1] + '"';
+
+								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f " + inputDevice);		
+							}
+							else if (fichier.equals("Capture.input.device") && Utils.videoDeviceIndex > 0)
+							{
+								String[] deviceSize = Utils.inputDeviceResolution.split("x");
+								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
+							}
+							else
+								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f lavfi -i nullsrc=s=" + Utils.screenWidth + "x" + Utils.screenHeigth + ":d=0" + '"');	
+						}	
+						else
+							processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -i " + '"' + fichier + '"');
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + qtref + " -i " + '"' + fichier + '"');
-					}
-					
-					/*/QuickTime Reference
-					if (quickTimeRef)
-					{
-						File [] volumes;
-						if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-							volumes = new File("/Volumes").listFiles();		
-						else
-							volumes = File.listRoots();	
-							
-						for (File folder : volumes)
+						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";						
+						
+						if (inputDeviceIsRunning && (fichier.equals("Capture.current.screen") || fichier.equals("Capture.input.device")))
 						{
-							Console.consoleFFMPEG.append(String.valueOf(folder) + System.lineSeparator());
-														
-							if (new File(folder + quickTimeFile).exists())
+							if (fichier.equals("Capture.input.device") && Utils.inputDeviceResolution == "")
 							{
-								if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-									processFFPROBE.directory(folder);	
-								else
-									processFFPROBE.directory(new File(folder.toString().substring(0, 1) + ":"));	
+								String s[] = Utils.setInputDevices().split("-f ");
+								if (overlayDeviceIsRunning)
+									s = Utils.setOverlayDevice().split("-f ");
 								
-								qtref = " -enable_drefs 1 -use_absolute_path 1";
-								break;
-							}			
-						}	
-						quickTimeRef = false;
-					}	
-					else
-						qtref = "";*/
+								String inputDevice = s[1];
+								if (Utils.audioDeviceIndex > 0)
+									inputDevice =  s[2];
+							
+								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f " + inputDevice);
+							}
+							else if (fichier.equals("Capture.input.device") && Utils.videoDeviceIndex > 0)
+							{
+								String[] deviceSize = Utils.inputDeviceResolution.split("x");
+								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
+							}
+							else
+								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f lavfi -i nullsrc=s=" + Utils.screenWidth + "x" + Utils.screenHeigth + ":d=0");	
+						}
+						else
+							processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + fichier + '"');
+					}
 					
 					isRunning = true;
 					process = processFFPROBE.start();
@@ -185,8 +210,8 @@ public static String qtref = "";
 					while ((line = input.readLine()) != null) {
 						//// Analyse des données	
 						
-						Console.consoleFFPROBE.append(line + System.lineSeparator() );		
-											
+						Console.consoleFFPROBE.append(line + System.lineSeparator());		
+																
 						//Erreurs
 						if (line.contains("Invalid data found when processing input") 
 								|| line.contains("No such file or directory")
@@ -196,32 +221,22 @@ public static String qtref = "";
 								|| line.contains("Invalid argument"))
 						{
 							FFMPEG.error = true;
-							//break;
 						}
-						
-						//QT REF
-						if (line.contains("Skipped opening external track") && quickTimeRef == false)
-						{
-							String s[] = line.split("=");
-							String s2[] = s[1].split(",");
-							quickTimeFile = s2[0].replace("\'", "");
-							quickTimeRef = true;
-							FFPROBE.Data(fichier);
-							break;
-						}
-						
+												
 						//Entrelacement
-						if ((line.contains("top first") || line.contains("top coded first")) && caseForcerDesentrelacement.isSelected() == false)
+						if (line.contains("top first") || line.contains("top coded first"))
 						{
 							entrelaced = "1";
-							fieldOrder = "0";
+							if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+								fieldOrder = "0";
 						}
-						else if ((line.contains("bottom first") || line.contains("bottom coded first")) && caseForcerDesentrelacement.isSelected() == false)
+						else if (line.contains("bottom first") || line.contains("bottom coded first"))
 						{
 							entrelaced = "1";
-							fieldOrder = "1";
+							if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+								fieldOrder = "1";
 						}
-			            
+						
 		                // Durée
 			            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false) {
 				    		String str = line.substring(line.indexOf(":") + 2);
@@ -244,7 +259,7 @@ public static String qtref = "";
 					             textSec.setText(formatter.format(secondes));
 					             
 					      		if (caseInAndOut.isSelected() && VideoPlayer.mediaPlayerComponentLeft != null)	
-					     			VideoPlayer.dureeTotale();
+					     			VideoPlayer.totalDuration();
 
 					             setTailleH264();
 							}
@@ -253,8 +268,8 @@ public static String qtref = "";
 			            // Détection YUVJ
 						 if (line.contains("Video:"))
 						 {							
-			
-							//Codec vidéo
+
+							 //Codec vidéo
 							String[] splitVCodec = line.substring(line.indexOf("Video:")).split(" ");							
 							videoCodec = splitVCodec[1];
 							 
@@ -286,27 +301,34 @@ public static String qtref = "";
 			                String height = split[i];
 			                String splitx[]= height.split("x");
 			                String getHeight[] =  splitx[1].split(" ");
-			                
-			                int imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
-			                int imageHeight = Integer.parseInt(splitr[0]);
+
+				            int imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
+				            int imageHeight = Integer.parseInt(splitr[0]);
 			                imageResolution = imageWidth + "x" + getHeight[0];
 			                
-			                if (caseRognage.isSelected())
+			                if (inputDeviceIsRunning && fichier.equals("Capture.current.screen"))
+			                {
+			                	imageResolution = Utils.screenWidth + "x" + Utils.screenHeigth;
+			                	imageWidth = Utils.screenWidth;
+			                	imageHeight = Utils.screenHeigth;
+			                }
+			                
+			                if (caseRognage.isSelected() || Utils.inputDeviceIsRunning)
 			                {
 			                    CropVideo.ImageWidth = imageWidth;
 			                    CropVideo.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }	
-			                if (caseRognerImage.isSelected())
+			                if (caseRognerImage.isSelected() || Utils.inputDeviceIsRunning)
 			                {
 			                    CropImage.ImageWidth = imageWidth;
 			                    CropImage.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }					                
-			                if (caseLogo.isSelected())
+			                if (caseLogo.isSelected() || Utils.inputDeviceIsRunning)
 			                {
 			                	WatermarkWindow.ImageWidth = imageWidth;
 			                	WatermarkWindow.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }
-			                if (caseAddOverlay.isSelected())
+			                if (caseAddOverlay.isSelected() || Utils.inputDeviceIsRunning)
 			                {
 			                	OverlayWindow.ImageWidth = imageWidth;
 			                	OverlayWindow.ImageHeight = Integer.parseInt(getHeight[0]);
@@ -316,7 +338,7 @@ public static String qtref = "";
 			                	SubtitlesWindow.ImageWidth = imageWidth;
 			                	SubtitlesWindow.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }
-			                if (caseColor.isSelected())
+			                if (caseColor.isSelected() || Utils.inputDeviceIsRunning)
 			                {
 			                	ColorImage.ImageWidth = imageWidth;
 			                	ColorImage.ImageHeight = Integer.parseInt(getHeight[0]);
@@ -337,8 +359,8 @@ public static String qtref = "";
 			              	
 			                /*
 			              	if (VideoPlayer.ratio < 1.76f)
-			              		VideoPlayer.ratio = 1.777777f;*/
-			              				                 
+			              		VideoPlayer.ratio = 1.777777f;*/		         
+			                
 			                // Crop Form
 			                int largeur = 0;
 			                int hauteur = 0;
@@ -409,7 +431,7 @@ public static String qtref = "";
 			        			 stereo = true;//permet de l'utiliser tel quel avec les codecs audio car il est embedded
 			        			 surround = true;
 			        		 }
-
+			        		 
 			        		 //Codec audio
 							 String[] splitACodec = line.substring(line.indexOf("Audio:")).split(" ");							
 							 audioCodec = splitACodec[1].replace(",", "");
@@ -495,7 +517,7 @@ public static String qtref = "";
 		
 		if (caseForcerEntrelacement.isSelected() == false)
 			entrelaced = null;
-		if (caseForcerDesentrelacement.isSelected() == false)
+		if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
 			fieldOrder = null;
 		
 		videoStream = false;
@@ -527,7 +549,7 @@ public static String qtref = "";
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + fichier + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning");
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + fichier + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning");
 					}	
 					
 					isRunning = true;	
@@ -552,19 +574,24 @@ public static String qtref = "";
 								|| line.contains("Invalid argument"))
 						{
 							FFMPEG.error = true;
-							//break;
 						}
 																		
-					  if (line.contains("interlaced_frame") && caseForcerEntrelacement.isSelected() == false) {
+					  if (line.contains("interlaced_frame"))
+					  {
 						  String interlace = line.substring(line.indexOf("interlaced_frame") + 17);
 						  entrelaced = interlace;
 					  }
-					  if (line.contains("top_field_first") && caseForcerDesentrelacement.isSelected() == false) {
+					  if (line.contains("top_field_first")) 
+					  {
 						  String field = line.substring(line.indexOf("top_field_first") + 16);
-						  if (field.equals("1"))
-							  fieldOrder = "0";
-						  else
-							  fieldOrder = "1";
+						  
+						  if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+						  {
+							  if (field.equals("1"))
+								  fieldOrder = "0";
+							  else
+								  fieldOrder = "1";
+						  }
 					  }
 					  
 					  if (line.contains("codec_type=video"))
@@ -626,6 +653,9 @@ public static String qtref = "";
 					
 					 if (entrelaced == null)
 					  	entrelaced = "0";
+					 
+					 if (fieldOrder == null)
+						 fieldOrder = "0";
 								
 					} catch (Exception e) {		
 						FFMPEG.error = true;
@@ -669,7 +699,7 @@ public static String qtref = "";
 					
 					//Attente de l'ouverture de la fenêtre
 					do {
-						Thread.sleep(100);
+						Thread.sleep(10);
 					} while(GOP.frame == null);
 					
 					Process process = processFFPROBE.start();
@@ -813,12 +843,13 @@ public static String qtref = "";
 					lblH264.setText(new File(liste.getElementAt(0).toString()).getName());
 					
 					//Envoi dans Data()
-			        FFPROBE.Data(liste.getElementAt(0).toString());
+					if (inputDeviceIsRunning == false)					
+						FFPROBE.Data(liste.getElementAt(0).toString());
 				}
 				
 				//Attente d'analyse
 		         do {
-						Thread.sleep(100);
+						Thread.sleep(10);
 		         } while(processData.isAlive());         
 		         
          	if (totalLength != 0)
@@ -843,7 +874,7 @@ public static String qtref = "";
 	             textSec.setText(formatter.format(secondes));
 	             
 	             if (caseInAndOut.isSelected() && VideoPlayer.mediaPlayerComponentLeft != null)	
-		     			VideoPlayer.dureeTotale();
+		     			VideoPlayer.totalDuration();
 	             
 	             setTailleH264();
 			}
