@@ -551,13 +551,12 @@ private static StringBuilder getAll;
 											
 						//Get devices Mac
 						if (cmd.contains("avfoundation") && line.contains("]")) 
-						{		
-							/*
+						{	
 							if (isAudioDevices)
 							{								
 								String s[] = line.split("\\]");
 								audioDevices.append(":" + s[2].substring(1, s[2].length()));
-							}*/
+							}
 							
 							if (line.contains("AVFoundation audio devices"))
 							{
@@ -574,6 +573,7 @@ private static StringBuilder getAll;
 								isVideoDevices = true;
 						}
 						
+						/*
 						if (cmd.contains("openal") && line.contains("]"))
 						{
 							if (isAudioDevices)
@@ -586,7 +586,7 @@ private static StringBuilder getAll;
 							{
 								isAudioDevices = true;
 							}
-						}
+						}*/
 						
 						//Get current screen index
 						if (cmd.contains("avfoundation") && line.contains("Capture screen")) 
