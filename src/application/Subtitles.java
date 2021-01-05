@@ -93,7 +93,7 @@ public class Subtitles {
 	public static JTextPane txtSubtitles;
 	private static JLabel lblHelp;
 	public static File srt;
-	private static int number = 0;
+	public static int number = 0;
 	public static long actualSubIn = 0;
 	public static long actualSubOut = 0;
 	private static int previousSub = number;
@@ -2226,7 +2226,6 @@ public class Subtitles {
 				finally {
 					subtitlesNumber();
 					setSubtitles(srt); //Permet de réarranger l'ordre des subs
-					VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().setSubTitleFile(srt);
 					isSaving = false;
 				}
 			}
@@ -2261,13 +2260,14 @@ public class Subtitles {
 		BufferedReader reader = null;
 		
 		try {
-			if (srt.exists() == false)
-			{
-				srt.createNewFile();
-				timeline.removeAll();
-				timeline.add(cursor, 0);
-			}
+				if (srt.exists() == false)
+				{
+					srt.createNewFile();
+					timeline.removeAll();
+					timeline.add(cursor, 0);
+				}
 			
+    			number = 0;
 				reader = Files.newBufferedReader(Paths.get(srt.toString()),  StandardCharsets.UTF_8);
 				
 				String line;					

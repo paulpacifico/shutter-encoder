@@ -665,8 +665,14 @@ public class VideoPlayer {
 			
     		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
     		frame.setLocation(frame.getLocation().x , dim.height/3 - frame.getHeight()/2);
-    		
-			new Subtitles(dim.width/2-500,frame.getLocation().y + frame.getHeight() + 7);
+    		    		
+    		if (Subtitles.frame == null)    		
+    			new Subtitles(dim.width/2-500,frame.getLocation().y + frame.getHeight() + 7);
+    		else
+    		{        		
+    			Subtitles.frame.setVisible(true);
+    			Subtitles.subtitlesNumber();
+    		}    			
 			
 			sliderVolume.setValue(sliderVolume.getMaximum());
 		}
