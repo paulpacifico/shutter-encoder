@@ -24,6 +24,7 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -138,6 +139,20 @@ public class RecordInputDevice {
 				}
 				else
 					comboInputAudio.setEnabled(true);
+				
+				if (comboScreenAudio.getSelectedIndex() >= 0 && System.getProperty("os.name").contains("Mac"))
+				{
+					try {
+						
+						String pathToSwitchAudioSource = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						pathToSwitchAudioSource = pathToSwitchAudioSource.substring(0,pathToSwitchAudioSource.length()-1);
+						pathToSwitchAudioSource = pathToSwitchAudioSource.substring(0,(int) (pathToSwitchAudioSource.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/SwitchAudioSource";
+					
+						ProcessBuilder switchAudioSource = new ProcessBuilder("/bin/bash", "-c" , pathToSwitchAudioSource + " -t input -s " + '"' + comboScreenAudio.getSelectedItem().toString() + '"');			
+						switchAudioSource.start();
+						
+					} catch (IOException e) {}				
+				}
 			}
 			
 		});
