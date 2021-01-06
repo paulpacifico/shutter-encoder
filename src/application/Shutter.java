@@ -2057,6 +2057,14 @@ public class Shutter {
 						{
 							FFMPEG.devices("-f dshow -list_devices true -i dummy" + '"');
 						}
+						else //Linux
+						{
+							FFMPEG.videoDevices = new StringBuilder();
+							FFMPEG.videoDevices.append(language.getProperty("noVideo"));
+							
+							FFMPEG.audioDevices = new StringBuilder();
+							FFMPEG.audioDevices.append(language.getProperty("noAudio"));
+						}
 						
 						do {
 							try {
