@@ -695,7 +695,7 @@ public class Settings {
 		
 		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
 		txtScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		txtScreenRecord.setText("30");
+		txtScreenRecord.setText("25");
 		txtScreenRecord.setColumns(10);
 		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
 		frame.getContentPane().add(txtScreenRecord);
@@ -719,10 +719,7 @@ public class Settings {
 		
 		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
 		txtInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		if (System.getProperty("os.name").contains("Windows"))
-			txtInputDevice.setText("30");
-		else
-			txtInputDevice.setText("29.97");
+		txtInputDevice.setText("25");
 		txtInputDevice.setColumns(10);
 		txtInputDevice.setBounds(txtScreenRecord.getLocation().x, lblInputDevice.getLocation().y - 4, 40, 21);
 		frame.getContentPane().add(txtInputDevice);

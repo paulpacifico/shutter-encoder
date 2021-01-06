@@ -36,9 +36,9 @@ import application.CropImage;
 import application.CropVideo;
 import application.GOP;
 import application.OverlayWindow;
+import application.RecordInputDevice;
 import application.Shutter;
 import application.SubtitlesWindow;
-import application.Utils;
 import application.VideoPlayer;
 import application.WatermarkWindow;
 
@@ -147,24 +147,24 @@ public static int gopSpace = 124;
 						
 						if (inputDeviceIsRunning && (fichier.equals("Capture.current.screen") || fichier.equals("Capture.input.device")))
 						{
-							if (fichier.equals("Capture.input.device") && Utils.inputDeviceResolution == "")
+							if (fichier.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
 							{		
-								String s[] = Utils.setInputDevices().split("-f ");
+								String s[] = RecordInputDevice.setInputDevices().split("-f ");
 								if (overlayDeviceIsRunning)
-									s = Utils.setOverlayDevice().split("-f ");
+									s = RecordInputDevice.setOverlayDevice().split("-f ");
 								
 								String id[] = s[1].split("\"");
 								String inputDevice = id[0] + '"' + id[1] + '"';
 
 								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f " + inputDevice);		
 							}
-							else if (fichier.equals("Capture.input.device") && Utils.videoDeviceIndex > 0)
+							else if (fichier.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
 							{
-								String[] deviceSize = Utils.inputDeviceResolution.split("x");
+								String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
 								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
 							}
 							else
-								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f lavfi -i nullsrc=s=" + Utils.screenWidth + "x" + Utils.screenHeigth + ":d=0" + '"');	
+								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0" + '"');	
 						}	
 						else
 							processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -i " + '"' + fichier + '"');
@@ -177,27 +177,27 @@ public static int gopSpace = 124;
 						
 						if (inputDeviceIsRunning && (fichier.equals("Capture.current.screen") || fichier.equals("Capture.input.device")))
 						{
-							if (fichier.equals("Capture.input.device") && Utils.inputDeviceResolution == "")
+							if (fichier.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
 							{
-								String s[] = Utils.setInputDevices().split("-f ");
+								String s[] = RecordInputDevice.setInputDevices().split("-f ");
 								if (overlayDeviceIsRunning)
-									s = Utils.setOverlayDevice().split("-f ");
+									s = RecordInputDevice.setOverlayDevice().split("-f ");
 								
 								String id[] = s[1].split("\"");
-								if (Utils.audioDeviceIndex > 0 && overlayDeviceIsRunning == false)
+								if (RecordInputDevice.audioDeviceIndex > 0 && overlayDeviceIsRunning == false)
 									id =  s[2].split("\"");;
 
 								String inputDevice = id[0] + '"' + id[1] + '"';
 								
 								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f " + inputDevice);
 							}
-							else if (fichier.equals("Capture.input.device") && Utils.videoDeviceIndex > 0)
+							else if (fichier.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
 							{
-								String[] deviceSize = Utils.inputDeviceResolution.split("x");
+								String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
 								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
 							}
 							else
-								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f lavfi -i nullsrc=s=" + Utils.screenWidth + "x" + Utils.screenHeigth + ":d=0");	
+								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0");	
 						}
 						else
 							processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + fichier + '"');
@@ -310,27 +310,27 @@ public static int gopSpace = 124;
 			                
 			                if (inputDeviceIsRunning && fichier.equals("Capture.current.screen"))
 			                {
-			                	imageResolution = Utils.screenWidth + "x" + Utils.screenHeigth;
-			                	imageWidth = Utils.screenWidth;
-			                	imageHeight = Utils.screenHeigth;
+			                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
+			                	imageWidth = RecordInputDevice.screenWidth;
+			                	imageHeight = RecordInputDevice.screenHeigth;
 			                }
 			                
-			                if (caseRognage.isSelected() || Utils.inputDeviceIsRunning)
+			                if (caseRognage.isSelected() || Shutter.inputDeviceIsRunning)
 			                {
 			                    CropVideo.ImageWidth = imageWidth;
 			                    CropVideo.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }	
-			                if (caseRognerImage.isSelected() || Utils.inputDeviceIsRunning)
+			                if (caseRognerImage.isSelected() || Shutter.inputDeviceIsRunning)
 			                {
 			                    CropImage.ImageWidth = imageWidth;
 			                    CropImage.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }					                
-			                if (caseLogo.isSelected() || Utils.inputDeviceIsRunning)
+			                if (caseLogo.isSelected() || Shutter.inputDeviceIsRunning)
 			                {
 			                	WatermarkWindow.ImageWidth = imageWidth;
 			                	WatermarkWindow.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }
-			                if (caseAddOverlay.isSelected() || Utils.inputDeviceIsRunning)
+			                if (caseAddOverlay.isSelected() || Shutter.inputDeviceIsRunning)
 			                {
 			                	OverlayWindow.ImageWidth = imageWidth;
 			                	OverlayWindow.ImageHeight = Integer.parseInt(getHeight[0]);
@@ -340,7 +340,7 @@ public static int gopSpace = 124;
 			                	SubtitlesWindow.ImageWidth = imageWidth;
 			                	SubtitlesWindow.ImageHeight = Integer.parseInt(getHeight[0]);
 			                }
-			                if (caseColor.isSelected() || Utils.inputDeviceIsRunning)
+			                if (caseColor.isSelected() || Shutter.inputDeviceIsRunning)
 			                {
 			                	ColorImage.ImageWidth = imageWidth;
 			                	ColorImage.ImageHeight = Integer.parseInt(getHeight[0]);

@@ -1120,7 +1120,7 @@ public class ColorImage {
 					}
 					else		 
 					{
-						if (Utils.inputDeviceIsRunning == false)
+						if (Shutter.inputDeviceIsRunning == false)
 							FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
 					}
 					do {
@@ -1756,7 +1756,7 @@ public class ColorImage {
 					else if (isRaw)
 						DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
 					else if (Shutter.inputDeviceIsRunning) //Screen capture			
-						FFMPEG.run(" " +  Utils.setInputDevices() + cmd + '"' + fileOut + '"');
+						FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
 					else
 	          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');		
 					
@@ -2284,7 +2284,7 @@ public class ColorImage {
 							else if (isRaw)
 								DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
 							else if (Shutter.inputDeviceIsRunning) //Screen capture		
-								FFMPEG.run(" " +  Utils.setInputDevices() + cmd + '"' + fileOut + '"');
+								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
 							else									
 			          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');			
 							
@@ -2357,7 +2357,7 @@ public class ColorImage {
 							if (preview.exists())
 								FFMPEG.run(" -i " + '"' + preview + '"' + cmd + '"' + fileOut + '"');
 							else								
-								FFMPEG.run(" " +  Utils.setInputDevices() + cmd + '"' + fileOut + '"');
+								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
 						}
 						else
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     

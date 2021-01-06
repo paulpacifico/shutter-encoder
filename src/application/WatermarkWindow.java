@@ -850,7 +850,7 @@ public class WatermarkWindow {
 				
 	    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
 				if (Utils.inputDeviceIsRunning)
-					Utils.setInputDevices();
+					RecordInputDevice.setInputDevices();
 				else
 				{
 					FFPROBE.Data(fichier);		
@@ -885,7 +885,7 @@ public class WatermarkWindow {
 					if (file.exists())
 						FFMPEG.run(" -i " + '"' + file + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 					else								
-						FFMPEG.run(" " +  Utils.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+						FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 				}			
 				else
 					FFMPEG.run(seek + " -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth + ":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
@@ -1021,7 +1021,7 @@ public class WatermarkWindow {
 							
 			//Logo    		
 			if (Shutter.overlayDeviceIsRunning)
-				Utils.setOverlayDevice();
+				RecordInputDevice.setOverlayDevice();
 			else
 			{
 				FFPROBE.Data(logoFile);							
@@ -1061,7 +1061,7 @@ public class WatermarkWindow {
 			}
 
 			if (Shutter.overlayDeviceIsRunning)
-				FFMPEG.run(" " + Utils.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
+				FFMPEG.run(" " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
 			else
 				FFMPEG.run(offset + " -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
 			

@@ -22,8 +22,12 @@ package application;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -43,6 +47,13 @@ public class RecordInputDevice {
 	static JComboBox<String> comboScreenAudio;
 	static JComboBox<String> comboInputVideo;
 	static JComboBox<String> comboInputAudio;
+	
+	public static Integer videoDeviceIndex = 0;
+	public static Integer audioDeviceIndex = -1;
+	public static Integer overlayAudioDeviceIndex = -1;
+	public static Integer screenWidth = 0;
+	public static Integer screenHeigth = 0;
+	public static String inputDeviceResolution = "";
 
 	public RecordInputDevice() {
 		frame = new JDialog();
@@ -51,9 +62,7 @@ public class RecordInputDevice {
 		frame.setModal(true);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.setSize(350, 210);
-		else if (System.getProperty("os.name").contains("Mac"))
-			frame.setSize(330, 165);
-		else //Linux
+		else
 			frame.setSize(330, 130);
 		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
 		
@@ -162,7 +171,7 @@ public class RecordInputDevice {
 		JLabel inputVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
 		inputVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		inputVideo.setBounds(12, screenAudio.getY() + screenAudio.getHeight() + 25, 40, 14);
-		if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
+		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(inputVideo);
 		
 		comboInputVideo = new JComboBox<String>(FFMPEG.videoDevices.toString().split(":"));
@@ -171,7 +180,7 @@ public class RecordInputDevice {
 		comboInputVideo.setEnabled(true);
 		comboInputVideo.setMaximumRowCount(20);
 		comboInputVideo.setBounds(comboScreenVideo.getX(), inputVideo.getLocation().y - 3, comboScreenVideo.getWidth(), 22);
-		if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
+		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(comboInputVideo);
 		
 		JLabel inputAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
@@ -194,8 +203,6 @@ public class RecordInputDevice {
 		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 4, 21);	
 		if (System.getProperty("os.name").contains("Windows"))
 			btnOK.setLocation(12, comboInputAudio.getY() + comboInputAudio.getHeight() + 14);	
-		else if (System.getProperty("os.name").contains("Mac"))
-			btnOK.setLocation(12, comboInputVideo.getY() + comboInputVideo.getHeight() + 14);
 		else
 			btnOK.setLocation(12, comboScreenAudio.getY() + comboScreenAudio.getHeight() + 14);	
 		frame.getContentPane().add(btnOK);
@@ -211,40 +218,40 @@ public class RecordInputDevice {
 				{
 					Shutter.liste.addElement("Capture.current.screen");
 					if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
-						Utils.videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
+						videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
 				}
 				else
 				{
 					Shutter.liste.addElement("Capture.input.device");
 					if (System.getProperty("os.name").contains("Windows"))
-						Utils.videoDeviceIndex = (comboInputVideo.getSelectedIndex() + 1);
+						videoDeviceIndex = (comboInputVideo.getSelectedIndex() + 1);
 					else
-						Utils.videoDeviceIndex = (comboInputVideo.getSelectedIndex());
+						videoDeviceIndex = (comboInputVideo.getSelectedIndex());
 				}
 
-				Utils.inputDeviceIsRunning = true;
+				Shutter.inputDeviceIsRunning = true;
 																
 				//Overlay
 				if (comboInputVideo.getSelectedIndex() > 0)
-					Utils.overlayDeviceIsRunning = true;
+					Shutter.overlayDeviceIsRunning = true;
 				
 				//Main audio
 				if (comboScreenAudio.getSelectedIndex() > 0)
-					Utils.audioDeviceIndex = comboScreenAudio.getSelectedIndex();
+					audioDeviceIndex = comboScreenAudio.getSelectedIndex();
 				else
-					Utils.audioDeviceIndex = -1;
+					audioDeviceIndex = -1;
 
 				//Second audio
 				if (comboInputAudio.getSelectedIndex() > 0)	
-					Utils.overlayAudioDeviceIndex = comboInputAudio.getSelectedIndex();
+					overlayAudioDeviceIndex = comboInputAudio.getSelectedIndex();
 				else
-					Utils.overlayAudioDeviceIndex = -1;
+					overlayAudioDeviceIndex = -1;
 				
 				//Permet d'injecter la resolution à FFPROBE
-				Utils.setInputDevices();
+				setInputDevices();
 				
 				//Important
-				Utils.inputDeviceResolution = "";
+				inputDeviceResolution = "";
 
 				//Permet d'injecter la resolution à FFPROBE
 				if (comboInputVideo.getSelectedIndex() > 0 || comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen") == false)
@@ -264,7 +271,7 @@ public class RecordInputDevice {
 				}
 				
 				//Important
-				Utils.inputDeviceResolution = FFPROBE.imageResolution;	
+				inputDeviceResolution = FFPROBE.imageResolution;	
 				if (FFPROBE.entrelaced == null)
 				  	FFPROBE.entrelaced = "0";
 				
@@ -310,4 +317,211 @@ public class RecordInputDevice {
 			
 		});
 	}
+	
+	public static String setInputDevices() {
+		
+		String videoDevice = "";
+		if (Shutter.liste.getElementAt(0).equals("Capture.input.device"))
+		{
+			String getVideoDevices[] = FFMPEG.videoDevices.toString().split(":");
+			videoDevice = getVideoDevices[videoDeviceIndex];
+		}
+		
+		String setAudio = setAudioDevice();
+				
+		String setSecondAudio = "";
+		if (videoDeviceIndex == 0 && System.getProperty("os.name").contains("Windows") && overlayAudioDeviceIndex > 0)
+		{
+			setSecondAudio = " -thread_queue_size 4096 -f dshow -i " + setOverlayAudioDevice();			
+		}
+		
+		GraphicsConfiguration config = frame.getGraphicsConfiguration();
+		GraphicsDevice myScreen = config.getDevice();
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] allScreens = env.getScreenDevices();
+		int screenIndex = -1;
+		for (int i = 0; i < allScreens.length; i++) {
+		    if (allScreens[i].equals(myScreen))
+		    {
+		    	screenIndex = i;
+		        break;
+		    }
+		}
+
+        AffineTransform transform =  allScreens[screenIndex].getDefaultConfiguration().getDefaultTransform();
+        
+		if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = Retina			
+		{
+			screenWidth = allScreens[screenIndex].getDisplayMode().getWidth() * 2;
+			screenHeigth = allScreens[screenIndex].getDisplayMode().getHeight() * 2;
+		}
+		else
+		{
+			screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
+			screenHeigth = allScreens[screenIndex].getDisplayMode().getHeight();
+		}
+		
+		Integer screenPositionX = allScreens[screenIndex].getDefaultConfiguration().getBounds().x;
+		Integer screenPositionY = allScreens[screenIndex].getDefaultConfiguration().getBounds().y;	
+		
+		if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
+		{
+	        CropVideo.ImageWidth = screenWidth;
+	        CropVideo.ImageHeight = screenHeigth;
+	        CropImage.ImageWidth = screenWidth;
+	        CropImage.ImageHeight = screenHeigth;
+	    	WatermarkWindow.ImageWidth = screenWidth;
+	    	WatermarkWindow.ImageHeight = screenHeigth;
+	    	OverlayWindow.ImageWidth = screenWidth;
+	    	OverlayWindow.ImageHeight = screenHeigth;
+	    	SubtitlesWindow.ImageWidth = screenWidth;
+	    	SubtitlesWindow.ImageHeight = screenHeigth;
+	    	ColorImage.ImageWidth = screenWidth;
+	    	ColorImage.ImageHeight = screenHeigth;
+	        	
+			FFPROBE.imageResolution = screenWidth + "x" + screenHeigth;
+			FFPROBE.entrelaced = "0";
+		}
+			
+		FFPROBE.audioOnly = false;
+		
+		if (System.getProperty("os.name").contains("Mac"))
+		{			
+			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
+			{
+				if (setAudio != "") //Audio needs to be first for sync
+					return setAudio + " -thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex - screenIndex) + '"';
+				else
+					return "-thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex - screenIndex) + '"';
+			}
+			else
+			{				
+				return setAudio + " -thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
+			}
+		}
+		else if (System.getProperty("os.name").contains("Windows"))
+		{
+			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
+			{				
+				if (setAudio != "") //Audio needs to be first for sync
+					return "-thread_queue_size 4096 -f dshow -i " + setAudio + " -thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + Settings.txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"' + setSecondAudio;
+				else
+					return "-thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + Settings.txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"';
+			}
+			else
+			{
+				if (setAudio != "" && videoDeviceIndex > 0)
+					setAudio = ":" + setAudio;
+				
+				if (videoDeviceIndex > 0)
+					return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i video=" + '"' + videoDevice + '"' + setAudio;
+				else
+					return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + setAudio;					
+			}
+		}
+		else
+			return "-thread_queue_size 4096 -f x11grab -framerate " + Settings.txtScreenRecord.getText() + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i :0.0+" + screenPositionX + "," + screenPositionY + setAudio;
+	}
+	
+	public static String setOverlayDevice() {
+		
+		String getVideoDevices[] = FFMPEG.videoDevices.toString().split(":");
+		String videoDevice = getVideoDevices[videoDeviceIndex];
+		
+		if (inputDeviceResolution != "")
+		{
+			FFPROBE.imageResolution = inputDeviceResolution;
+					
+	        String splitx[]= inputDeviceResolution.split("x");
+	
+	        int deviceWidth = Integer.parseInt(splitx[0]);
+	        int deviceHeight = Integer.parseInt(splitx[1]);
+			        
+	    	WatermarkWindow.ImageWidth = deviceWidth;
+	    	WatermarkWindow.ImageHeight = deviceHeight;
+		}		
+		
+		FFPROBE.audioOnly = false;
+		    	
+		if (System.getProperty("os.name").contains("Mac"))
+		{
+			return "-thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
+		}
+		else if (System.getProperty("os.name").contains("Windows"))
+		{
+			String setAudio = setOverlayAudioDevice();
+			
+			if (setAudio != "")
+				setAudio = ":" + setAudio;
+			
+			return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i video=" + '"' + videoDevice + '"' + setAudio;
+		}
+		else
+			return "";
+	}
+	
+	public static String setAudioDevice() {
+		
+		String setAudio = "";
+		FFPROBE.channels = 0;
+		FFPROBE.stereo = false;
+		
+		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Windows"))
+		{
+			String getAudioDevices[] = FFMPEG.audioDevices.toString().split(":");
+			
+			if (audioDeviceIndex > 0)
+			{
+				String audioDevice = getAudioDevices[audioDeviceIndex];
+				
+				if (System.getProperty("os.name").contains("Mac"))
+				{					
+					setAudio = "-thread_queue_size 4096 -f openal -sample_rate 48k -i " + '"' + audioDevice + '"';		
+				}
+				else if (System.getProperty("os.name").contains("Windows"))
+				{
+					setAudio = "audio=" + '"' + audioDevice + '"';	
+				}
+				
+				FFPROBE.channels = 1;
+				FFPROBE.stereo = true;
+			}				
+		}
+		
+		return setAudio;
+	}
+	
+	public static String setOverlayAudioDevice() {
+				
+		String setAudio = "";
+		FFPROBE.channels = 0;
+		FFPROBE.stereo = false;
+		String getAudioDevices[] = FFMPEG.audioDevices.toString().split(":");
+
+		if (overlayAudioDeviceIndex > 0)
+		{
+			String audioDevice = getAudioDevices[overlayAudioDeviceIndex];
+			
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				setAudio = "audio=" + '"' + audioDevice + '"';	
+			}
+			
+			if (audioDeviceIndex > 0)
+				FFPROBE.channels = 2;
+			else
+				FFPROBE.channels = 1;
+		}
+		else if (audioDeviceIndex > 0)
+			FFPROBE.channels = 1;			
+		
+		if (FFPROBE.channels == 1)
+			FFPROBE.stereo = true;	
+		else
+			FFPROBE.stereo = false;
+			
+		
+		return setAudio;
+	}
+	
 }

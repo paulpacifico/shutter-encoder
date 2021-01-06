@@ -1682,12 +1682,12 @@ public class Shutter {
 								audioOutput += "vstack=" + (i + 1) + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
 							}
 						} else if (FFPROBE.channels == 1) {
-							if (inputDeviceIsRunning && Utils.audioDeviceIndex > 0 && overlayDeviceIsRunning && Utils.overlayAudioDeviceIndex > 0)
+							if (inputDeviceIsRunning && RecordInputDevice.audioDeviceIndex > 0 && overlayDeviceIsRunning && RecordInputDevice.overlayAudioDeviceIndex > 0)
 							{
 								channels = "[2:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
 								audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
 							}
-							else if (inputDeviceIsRunning && overlayDeviceIsRunning && Utils.overlayAudioDeviceIndex > 0)
+							else if (inputDeviceIsRunning && overlayDeviceIsRunning && RecordInputDevice.overlayAudioDeviceIndex > 0)
 							{
 								channels = "[1:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
 								audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
@@ -1712,7 +1712,7 @@ public class Shutter {
 					if (inputDeviceIsRunning && overlayDeviceIsRunning)
 					{	     
 						
-						if (Utils.audioDeviceIndex > 0)
+						if (RecordInputDevice.audioDeviceIndex > 0)
 						{
 							videoOutput = "[2:v]scale=iw*" + ((float)  Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) +			
 			        				",lut=a=val*" + ((float) Integer.parseInt(WatermarkWindow.textOpacity.getText()) / 100) + 
@@ -1738,16 +1738,16 @@ public class Shutter {
 					
 					if (inputDeviceIsRunning)
 					{
-						if (liste.getElementAt(0).equals("Capture.current.screen") && Utils.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && liste.getElementAt(0).equals("Capture.input.device") && Utils.audioDeviceIndex > 0)
+						if (liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && liste.getElementAt(0).equals("Capture.input.device") && RecordInputDevice.audioDeviceIndex > 0)
 							cmd = cmd.replace("0:v", "1:v");	
 						
 						if (overlayDeviceIsRunning && audioOutput == "")
 							cmd = cmd.replace("-map a?", "-map " + '"' + "[v]" + '"');
 							
 						if (overlayDeviceIsRunning)
-							FFMPEG.toFFPLAY(Utils.setInputDevices() + " " + Utils.setOverlayDevice() + cmd);
+							FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + " " + RecordInputDevice.setOverlayDevice() + cmd);
 						else
-							FFMPEG.toFFPLAY(Utils.setInputDevices() + cmd);
+							FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
 					} 
 					else
 						FFMPEG.toFFPLAY(" -i " + '"' + fileList.getSelectedValue() + '"' + cmd);					
@@ -11759,7 +11759,7 @@ public class Shutter {
 				if (caseLogo.isSelected())
 				{					
 					boolean addDevice = false;
-					if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) )
+					if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && System.getProperty("os.name").contains("Windows"))
 					{
 						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("addInputDevice"),
 								language.getProperty("menuItemInputDevice"), JOptionPane.YES_NO_OPTION,

@@ -1859,7 +1859,7 @@ public class OverlayWindow {
 				
 				//Screen capture
 				if (Shutter.inputDeviceIsRunning)				
-					FFMPEG.run(" " +  Utils.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+					FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 				else
 					FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 	        	

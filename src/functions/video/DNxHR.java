@@ -33,6 +33,7 @@ import java.util.Random;
 
 import application.Ftp;
 import application.OverlayWindow;
+import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
 import application.SubtitlesWindow;
@@ -320,14 +321,14 @@ public class DNxHR extends Shutter {
 							{						
 								String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
 
-								if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && Utils.audioDeviceIndex > 0)
+								if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
 									cmd = cmd.replace("1:v", "2:v").replace("-map v", "-map 1:v").replace("0:v", "1:v");
 									
 								if (encode)
-									FFMPEG.run(" " + Utils.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
+									FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
 								else
 								{
-									FFMPEG.toFFPLAY(" " + Utils.setInputDevices() + logo + cmd + " -f matroska pipe:play |");							
+									FFMPEG.toFFPLAY(" " + RecordInputDevice.setInputDevices() + logo + cmd + " -f matroska pipe:play |");							
 									break;
 								}						
 								
@@ -528,7 +529,7 @@ public class DNxHR extends Shutter {
 			String mapping = "";
 			if (inputDeviceIsRunning)
 			{
-				if (liste.getElementAt(0).equals("Capture.current.screen") && Utils.audioDeviceIndex > 0 && Utils.overlayAudioDeviceIndex > 0)
+				if (liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
 					mapping = " -map a? -map 2?";
 				else
 					mapping = " -map a?";	
@@ -1037,7 +1038,7 @@ public class DNxHR extends Shutter {
 	
 	protected static String setLogo() {
 		if (caseLogo.isSelected() && Shutter.overlayDeviceIsRunning)
-			return " " + Utils.setOverlayDevice(); 
+			return " " + RecordInputDevice.setOverlayDevice(); 
 		else if (caseLogo.isSelected())
 			return " -i " + '"' + WatermarkWindow.logoFile + '"'; 
 		else
@@ -1383,8 +1384,8 @@ public class DNxHR extends Shutter {
 			else
 				return " -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -frames:v " + liste.getSize();
 		}
-		else if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen"))
-			return " -r " + Settings.txtScreenRecord.getText();
+		else if (inputDeviceIsRunning)
+			return " -vsync vfr";
 		
 		return "";
 	}

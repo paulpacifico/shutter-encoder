@@ -199,7 +199,7 @@ public class Console extends JFrame {
 			
 		});
 		
-		followLine = new JCheckBoxMenuItem(Shutter.language.getProperty("followLine"));		
+		followLine = new JCheckBoxMenuItem(Shutter.language.getProperty("followLine"));	
 		menu.add(clear);
 		menu.add(save);
 		menu.add(followLine);								
@@ -301,79 +301,97 @@ public class Console extends JFrame {
 		
 		scrollFFMPEG = new JScrollPane();	
 		scrollFFMPEG.getViewport().add(consoleFFMPEG);
+		
 		scrollFFPLAY = new JScrollPane();	
 		scrollFFPLAY.getViewport().add(consoleFFPLAY);
+		
 		scrollFFPROBE = new JScrollPane();	
 		scrollFFPROBE.getViewport().add(consoleFFPROBE);
+		
 		scrollBMXTRANSWRAP = new JScrollPane();	
 		scrollBMXTRANSWRAP.getViewport().add(consoleBMXTRANSWRAP);
+		
 		scrollDVDAUTHOR = new JScrollPane();	
 		scrollDVDAUTHOR.getViewport().add(consoleDVDAUTHOR);
+		
 		scrollTSMUXER = new JScrollPane();	
 		scrollTSMUXER.getViewport().add(consoleTSMUXER);
+		
 		scrollMEDIAINFO = new JScrollPane();	
 		scrollMEDIAINFO.getViewport().add(consoleMEDIAINFO);
+		
 		scrollYOUTUBEDL = new JScrollPane();	
 		scrollYOUTUBEDL.getViewport().add(consoleYOUTUBEDL);
-		scrollEXIFTOOL = new JScrollPane();	
-		scrollEXIFTOOL.getViewport().add(consoleEXIFTOOL);
-		scrollMKVMERGE = new JScrollPane();	
-		scrollMKVMERGE.getViewport().add(consoleMKVMERGE);
 		
+		scrollEXIFTOOL = new JScrollPane();	
+		scrollEXIFTOOL.getViewport().add(consoleEXIFTOOL); 
+		
+		scrollMKVMERGE = new JScrollPane();	
+		scrollMKVMERGE.getViewport().add(consoleMKVMERGE); 
+				
 		scrollFFMPEG.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
 		scrollFFPLAY.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
 		scrollFFPROBE.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
 		scrollBMXTRANSWRAP.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
 		scrollDVDAUTHOR.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });		
+		
 		scrollTSMUXER.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
 		scrollMEDIAINFO.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
 		scrollYOUTUBEDL.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });		
+		
 		scrollEXIFTOOL.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
 		scrollMKVMERGE.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
@@ -393,7 +411,6 @@ public class Console extends JFrame {
 		tabbedPane.add("YOUTUBEDL", scrollYOUTUBEDL);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
 		tabbedPane.add("MKVMERGE", scrollMKVMERGE);
-		frmConsole.getContentPane().add(tabbedPane);
-
+		frmConsole.getContentPane().add(tabbedPane);		
 	}
 }
