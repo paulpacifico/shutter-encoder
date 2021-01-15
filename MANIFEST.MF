@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: .
-Main-Class: application.Shutter
-SplashScreen-Image: contents/icon.png
