@@ -61,6 +61,8 @@ public class Utils extends Shutter {
 	public static String getTheme = null;
 	public static Color themeColor = new Color(71, 163, 236);
 	public static Color highlightColor = new Color(129, 198, 253);
+	public static boolean yesToAll = false;
+	public static boolean noToAll = false;
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -378,16 +380,38 @@ public class Utils extends Shutter {
 		}
 		else
 		{
-			int q = JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("eraseFile"), Shutter.language.getProperty("File") + " " + fileOut.getName() + " " + Shutter.language.getProperty("alreadyExist"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-			if (q == JOptionPane.NO_OPTION)
+			
+			int q = 0;
+			if (yesToAll == false && noToAll == false)
+			{				
+				Object[] options = { language.getProperty("yes"), language.getProperty("yesToAll"), language.getProperty("no"), language.getProperty("noToAll"), language.getProperty("btnCancel") };
+			
+				q = JOptionPane.showOptionDialog(frame, language.getProperty("eraseFile"),
+						Shutter.language.getProperty("File") + " " + fileOut.getName() + " " + Shutter.language.getProperty("alreadyExist"), JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.PLAIN_MESSAGE, null, options, options[2]);
+			}
+
+			if (q == 3) //No to all
+			{
+				noToAll = true;
+			}
+			
+			if (q == 1) //Yes to all
+			{
+				yesToAll = true;
+			}
+			
+			if (q == 2 || noToAll) //No
 			{
 				do {
 					fileOut = new File(path + "/" + file.replace(oldExt, surname + n + newExt));
 					n++;
 				} while (fileOut.exists());
 			}
-			else if (q == JOptionPane.CANCEL_OPTION)
+			else if (q == 4) //Cancel
+			{
 				return null;	
+			}
 		}
 			
 		return fileOut;				

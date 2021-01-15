@@ -503,6 +503,9 @@ public class Shutter {
 
 	public static void main(String[] args) {
 		
+		//Splashscreen
+		new Splash();
+		
 		//Accès à la police Montserrat pour drawtext
 		if (System.getProperty("os.name").contains("Mac"))
 		{
@@ -518,11 +521,6 @@ public class Shutter {
 			pathToFont = pathToFont.substring(0,(int) (pathToFont.lastIndexOf("/"))).replace("%20", " ");
 			pathToFont = "'" + pathToFont + "fonts/Montserrat.ttf" + "'";
 		}
-
-		new Splash();
-		Splash.g = Splash.splash.createGraphics();
-		Splash.renderSplashFrame(Splash.g, 0);
-		Splash.splash.update();
 
 		if (args.length != 0) {
 			for (int i = 0; i < args.length; i++) {
@@ -1219,8 +1217,13 @@ public class Shutter {
 			public void mouseReleased(MouseEvent e) {
 				if (accept) 
 				{
-					if (inputDeviceIsRunning == false)
+					if (inputDeviceIsRunning == false 
+					&& lblEncodageEnCours.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
+					&& lblEncodageEnCours.getText().equals(language.getProperty("processCancelled")) == false
+					&& lblEncodageEnCours.getText().equals(language.getProperty("processEnded")) == false)
+					{
 						new ReducedWindow();
+					}
 					
 					frame.setState(frame.ICONIFIED);
 				}
@@ -1285,6 +1288,7 @@ public class Shutter {
 		newInstance = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/new2.png")));
 		newInstance.setHorizontalAlignment(SwingConstants.CENTER);
 		newInstance.setBounds(help.getLocation().x - 21, 0, 21, 21);
+		newInstance.setToolTipText(language.getProperty("newInstance"));
 		topPanel.add(newInstance);
 
 		newInstance.addMouseListener(new MouseListener() {	
@@ -3089,9 +3093,6 @@ public class Shutter {
 								else 
 									Bluray.main();
 							} else if (language.getProperty("functionPicture").equals(fonction) || "JPEG".equals(fonction)) {
-								if (inputDeviceIsRunning)
-									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
-								else 
 									Picture.main(true);
 							} else if (language.getProperty("functionRewrap").equals(fonction)) {
 								if (inputDeviceIsRunning)
@@ -4629,6 +4630,13 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				if (inputDeviceIsRunning)
+				{
+					JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+					caseCreateSequence.setSelected(false);
+				}
+				
 				if (caseCreateSequence.isSelected())
 					comboInterpret.setEnabled(true);
 				else
@@ -4700,7 +4708,7 @@ public class Shutter {
 					while (FFPROBE.isRunning);
 				
 					//FFMPEGTOFFPLAY
-					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -i " + '"' + file + '"' + " -vf scale=1080:-1 -r 1 -c:v rawvideo -map v -an -f nut pipe:play |");
+					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -i " + '"' + file + '"' + " -vf scale=1080:-1 -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:play |");
 				}
 
 			}
@@ -5364,7 +5372,11 @@ public class Shutter {
 					else
 						file = liste.firstElement();
 					
-					if (caseEnableSequence.isSelected())
+					if (inputDeviceIsRunning)
+					{						
+						FFPLAY.run(RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + blend + ",scale=iw/2:ih/2" + '"');
+					}	
+					else if (caseEnableSequence.isSelected())
 					{					
 						String extension = file.substring(file.lastIndexOf("."));
 						
@@ -6475,8 +6487,9 @@ public class Shutter {
 	        Arrays.sort(data); 
 	        LUTs.clear();
 
-	        for (int i = 0 ; i < data.length ; i++) {
-	        	if (new File(data[i].toString()).isHidden() == false)
+	        for (int i = 0 ; i < data.length ; i++) 
+	        {
+	        	if (new File(data[i].toString()).isHidden() == false && new File(data[i].toString()).getName().equals("HDR-to-SDR.cube") == false)
 	        		LUTs.add(new File(data[i].toString()).getName());
 		    }
 		}
@@ -6602,7 +6615,7 @@ public class Shutter {
 				if (caseLUTs.isSelected()) {
 					
 			        for (int i = 0 ; i < data.length ; i++) { 
-			        	if (new File(data[i].toString()).isHidden() == false)
+			        	if (new File(data[i].toString()).isHidden() == false && new File(data[i].toString()).getName().equals("HDR-to-SDR.cube") == false)
 			        		LUTs.add(new File(data[i].toString()).getName());
 				    }
 					
@@ -7378,6 +7391,12 @@ public class Shutter {
 				}
 				else {
 					if (caseInAndOut.isSelected()) {
+						
+						if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString()) 
+						|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString()))
+						{
+							JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
+						}
 
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						
@@ -9147,7 +9166,11 @@ public class Shutter {
 					} else
 						file = '"' + liste.firstElement() + '"';
 					
-					if (caseEnableSequence.isSelected())
+					if (inputDeviceIsRunning)
+					{						
+						FFPLAY.run(flags + RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + smartblur + ",scale=iw/2:ih/2" + '"');
+					}					
+					else if (caseEnableSequence.isSelected())
 					{					
 						String extension = file.substring(file.lastIndexOf("."));
 						
@@ -9275,7 +9298,11 @@ public class Shutter {
 					} else
 						file = '"' + liste.firstElement() + '"';
 					
-					if (caseEnableSequence.isSelected())
+					if (inputDeviceIsRunning)
+					{						
+						FFPLAY.run(RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + hqdn3d + ",scale=iw/2:ih/2" + '"');
+					}	
+					else if (caseEnableSequence.isSelected())
 					{					
 						String extension = file.substring(file.lastIndexOf("."));
 						
@@ -9403,7 +9430,11 @@ public class Shutter {
 					} else
 						file = '"' + liste.firstElement() + '"';
 					
-					if (caseEnableSequence.isSelected())
+					if (inputDeviceIsRunning)
+					{						
+						FFPLAY.run(RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + deflicker + ",scale=iw/2:ih/2" + '"');
+					}	
+					else if (caseEnableSequence.isSelected())
 					{					
 						String extension = file.substring(file.lastIndexOf("."));
 						
@@ -9856,7 +9887,8 @@ public class Shutter {
 					else
 						file = liste.firstElement();
 					
-					FFPROBE.Data(file);
+					if (inputDeviceIsRunning == false)
+						FFPROBE.Data(file);
 					
 					do {
 						try {
@@ -9884,7 +9916,11 @@ public class Shutter {
 						audioFade = " -af " + '"' + "afade=in:d=" + audioInValue + "ms" + '"';
 
 					
-					if (caseEnableSequence.isSelected())
+					if (inputDeviceIsRunning)
+					{						
+						FFPLAY.run("-autoexit" + RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + videoFade + audioFade + " -t " + duration + "ms");
+					}	
+					else if (caseEnableSequence.isSelected())
 					{					
 						String extension = file.substring(file.lastIndexOf("."));
 						
@@ -9944,6 +9980,13 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				if (inputDeviceIsRunning)
+				{
+					JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+					caseVideoFadeOut.setSelected(false);
+				}
+				
 				if (caseVideoFadeOut.isSelected())
 				{
 					spinnerVideoFadeOut.setEnabled(true);
@@ -10040,6 +10083,13 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				if (inputDeviceIsRunning)
+				{
+					JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+					caseAudioFadeOut.setSelected(false);
+				}
+				
 				if (caseAudioFadeOut.isSelected())
 				{
 					spinnerAudioFadeOut.setEnabled(true);
@@ -10712,9 +10762,9 @@ public class Shutter {
 					else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionSubtitles")))
 					{
 						if (System.getProperty("os.name").contains("Windows"))
-							subtitlesFile = new File(Subtitles.srt.getName());
+							subtitlesFile = new File(SubtitlesTimeline.srt.getName());
 						else
-							subtitlesFile = new File(dirTemp + Subtitles.srt.getName());
+							subtitlesFile = new File(dirTemp + SubtitlesTimeline.srt.getName());
 									            
 						Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
 						
@@ -10726,13 +10776,13 @@ public class Shutter {
 						if (sub == 0)
 						{
 							subtitlesBurn = true;
-							SubtitlesWindow.subtitlesFile = Subtitles.srt.toString();				            
+							SubtitlesWindow.subtitlesFile = SubtitlesTimeline.srt.toString();				            
 				            writeSub(SubtitlesWindow.subtitlesFile, StandardCharsets.UTF_8);
 						}
 						else
 						{
 							subtitlesBurn = false;
-							subtitlesFile = new File(Subtitles.srt.toString());
+							subtitlesFile = new File(SubtitlesTimeline.srt.toString());
 
 							//On copy le .srt dans le fichier
 							Thread copySRT = new Thread(new Runnable()
@@ -10749,10 +10799,10 @@ public class Shutter {
 										File fileOut = new File(fileIn.toString().replace(extension, "_subs" + extension));
 										
 										//Envoi de la commande
-										String cmd = " -c copy -c:s mov_text -map v? -map a? -map 1:s -y ";
+										String cmd = " -c copy -c:s mov_text -map v:0? -map a? -map 1:s -y ";
 										
 										if (extension.equals(".mkv"))
-											cmd = " -c copy -c:s srt -map v? -map a? -map 1:s -y ";							
+											cmd = " -c copy -c:s srt -map v:0? -map a? -map 1:s -y ";							
 										
 										FFMPEG.run(" -i " + '"' + fileIn + '"' + " -i " + '"' + subtitlesFile + '"' + cmd + '"'  + fileOut + '"');	
 										
@@ -17598,6 +17648,8 @@ public class Shutter {
 		}
 						
 		enableAll();
+		Utils.yesToAll = false;
+		Utils.noToAll = false;
 
 		if (cancelled == true) {
 			lblEncodageEnCours.setForeground(Color.RED);

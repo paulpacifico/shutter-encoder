@@ -277,7 +277,7 @@ public class MJPEG extends Shutter {
 						String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
 
 						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
-							cmd = cmd.replace("1:v", "2:v").replace("-map v", "-map 1:v").replace("0:v", "1:v");
+							cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");
 							
 						if (encode)
 							FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
@@ -433,17 +433,17 @@ public class MJPEG extends Shutter {
 			float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
         	float value = (float) (newFPS/ FFPROBE.currentFPS);
 			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))) && (value < 0.5f || value > 2.0f))    
-	        		filterComplex = " -map v" + audio;
+	        		filterComplex = " -map v:0" + audio;
 			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
-				filterComplex = " -map v" + audio;
+				filterComplex = " -map v:0" + audio;
         	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
-        		filterComplex = audio + " -map v -map " + '"' +  "[a]" + '"';
+        		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
 			else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.surround == false)
-        		filterComplex = audio + " -map v -map " + '"' +  "[a]" + '"';
+        		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
         	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && debitAudio.getSelectedItem().toString().equals("0") == false)
-        		filterComplex = audio + " -map v -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
+        		filterComplex = audio + " -map v:0 -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
         	else
-        		filterComplex = " -map v" + audio;
+        		filterComplex = " -map v:0" + audio;
         }
         
 		//On map les sous-titres que l'on intègre        

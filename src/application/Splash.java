@@ -18,33 +18,87 @@
 ********************************************************************************************/
 
 package application;
-import java.awt.*;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+
+import javax.swing.ImageIcon;
+import javax.swing.JWindow;
 
 @SuppressWarnings("serial")
-public class Splash extends Frame {
+public class Splash extends JWindow {
 
-	public static Graphics2D g;
-	public final static SplashScreen splash = SplashScreen.getSplashScreen();
-	private static int Value = 0;
+	public static Graphics g;
+	private static int loading = 0;	
+	Image splashScreen;
 	
-	static void renderSplashFrame(Graphics2D g, int progress) {
-        g.setComposite(AlphaComposite.Clear);
-        g.fillRect(0,128,260,40);
-        g.setPaintMode();
-        g.setColor(Color.WHITE);
-        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        g.drawRoundRect(26, 128, 200, 10, 10, 10);
-        g.fillRoundRect(26, 128, progress, 10, 10, 10);
-    }
+	public Splash() {
+		
+		splashScreen = new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage();
+		
+		setBackground(new Color(0,0,0,0));
+		
+		setSize(256, 256);
+
+		setLocationRelativeTo(null);
+
+      	setVisible(true);          	
+      	
+      	if (System.getProperty("os.name").contains("Windows"))
+      		updateProgressBar();
+   }
+
+   public void paint(Graphics g) {
+      super.paint(g);
+
+      if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) //Weird stuff on Linux
+      {
+    	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+    	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
+    	  ((Graphics2D) g).setRenderingHints(qualityHints);
+      }
+      
+      g.drawImage(splashScreen, 0, 0, this);  
+      g.setColor(Color.WHITE);
+      g.drawRoundRect(26, 128, 200, 10, 10, 10);
+      g.fillRoundRect(26, 128, loading, 10, 10, 10);
+      
+      if (System.getProperty("os.name").contains("Windows") == false)
+      {
+    	  do {
+    		  g.fillRoundRect(26, 128, loading, 10, 10, 10); 
+    	  } while (Shutter.frame.isVisible() == false);
+    		  
+		  dispose();
+      }
+   }
+      
+   public static void increment() {   
+    	loading += 8;  
+		if (loading > 200) 
+			loading = 200;	
+   }
     
-    public static void increment(){    
-		if (Splash.splash.isVisible())
-		{
-    		Value += 8;  
-			if (Value > 200) 
-				Value = 200;
-			renderSplashFrame(g, Value);
-			splash.update();     
-		}
+   public void updateProgressBar() {
+    	
+    	Thread refresh = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+		    	do {
+		    		repaint();	
+		    		try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {}
+		    	} while (loading < 200);
+		    	
+		    	dispose();
+		    }
+    		
+    	});
+    	refresh.start();
     }
 }

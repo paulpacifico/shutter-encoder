@@ -36,6 +36,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import library.FFMPEG;
 import library.FFPROBE;
@@ -313,6 +314,10 @@ public class RecordInputDevice {
 				Shutter.changeFilters();
 				
 				frame.dispose();
+				
+				JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("chooseFunction"),
+						Shutter.language.getProperty("menuItemInputDevice"), JOptionPane.PLAIN_MESSAGE,
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 			
 		});

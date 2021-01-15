@@ -144,7 +144,7 @@ public class Merge extends Shutter {
 								openGOP = " -copyinkf";
 							
 							//Envoi de la commande
-							String cmd = " -timecode 00:00:00:00" + openGOP + " -video_track_timescale 90000 -c copy -map v? -map a? -map s? -y ";
+							String cmd = " -timecode 00:00:00:00" + openGOP + " -video_track_timescale 90000 -c copy -map v:0? -map a? -map s? -y ";
 							FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + sortieFichier + '"');		
 					
 							//Attente de la fin de FFMPEG

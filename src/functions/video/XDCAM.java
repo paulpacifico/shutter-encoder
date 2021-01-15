@@ -270,7 +270,7 @@ public class XDCAM extends Shutter {
 						String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
 
 						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
-							cmd = cmd.replace("1:v", "2:v").replace("-map v", "-map 1:v").replace("0:v", "1:v");
+							cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");
 							
 						if (encode)
 							FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
@@ -536,7 +536,7 @@ public class XDCAM extends Shutter {
 			else if (filterComplex != "")
 				mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
 			else
-				mapping += " -map v" + audio;
+				mapping += " -map v:0" + audio;
 			
 			//On map les sous-titres que l'on intègre        
 			if (caseSubtitles.isSelected() && subtitlesBurn == false)
@@ -575,7 +575,7 @@ public class XDCAM extends Shutter {
 						else if (filterComplex != "")
 							mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out];[0:a]" + audioFade + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
 						else
-							mapping += " -map v -filter_complex [0:a]" + audioFade + "channelsplit[a1][a2] -map [a1] -map [a2]" + audio;
+							mapping += " -map v:0 -filter_complex [0:a]" + audioFade + "channelsplit[a1][a2] -map [a1] -map [a2]" + audio;
 						m ++;
 					}
 					else
@@ -618,7 +618,7 @@ public class XDCAM extends Shutter {
 			else if (filterComplex != "")
 				mapping = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + mapping + audio;
 			else
-				mapping = " -map v" + mapping + audio;	
+				mapping = " -map v:0" + mapping + audio;	
 		}		
 		
 		//On map les sous-titres que l'on intègre        

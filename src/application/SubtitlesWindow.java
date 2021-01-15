@@ -49,6 +49,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -860,12 +861,13 @@ public class SubtitlesWindow {
 		Thread runProcess = new Thread(new Runnable()  {
 			@Override
 			public void run() {
-				DecimalFormat tc = new DecimalFormat("00");			
+				DecimalFormat tc = new DecimalFormat("00");	
+				NumberFormat toMs = new DecimalFormat("000");
 				String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
 				String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
 				String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
-				String f = String.valueOf(tc.format((int) (positionVideo.getValue() / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));
-				
+				String f = String.valueOf(toMs.format(positionVideo.getValue() % 1000));
+								
 				loadImage(h,m,s,f,analyze);
 			}
 		});
@@ -994,7 +996,7 @@ public class SubtitlesWindow {
 						containerHeight = 360;
 					}
 					
-		          	FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -i " + '"' + fichier + '"' + " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textWidth.getText() + ":" + size[1] + "+" + spinnerSubtitlesPosition.getValue() + ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboFont.getSelectedItem().toString() + ",FontSize=" + spinnerSize.getValue() + ",PrimaryColour=&H" + hex + "&" + background + "'" + '"' + " -vframes 1 -filter_complex [0:v]" + crop + pad + "[1:v]overlay=x=" + ((int) (Integer.parseInt(i[0]) - Integer.parseInt(textWidth.getText()))/2) + ",scale=" + containerWidth + ":" + containerHeight + " -an -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+		          	FFMPEG.run(" -ss "+h+":"+m+":"+s+"."+f+" -i " + '"' + fichier + '"' + " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textWidth.getText() + ":" + size[1] + "+" + spinnerSubtitlesPosition.getValue() + ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboFont.getSelectedItem().toString() + ",FontSize=" + spinnerSize.getValue() + ",PrimaryColour=&H" + hex + "&" + background + "'" + '"' + " -vframes 1 -filter_complex [0:v]" + crop + pad + "[1:v]overlay=x=" + ((int) (Integer.parseInt(i[0]) - Integer.parseInt(textWidth.getText()))/2) + ",scale=" + containerWidth + ":" + containerHeight + " -an -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 				      
 		            do
 		            {

@@ -187,18 +187,18 @@ public class AudioNormalization extends Shutter {
 						if (FFMPEG.error)
 						{
 							if (FFPROBE.stereo)
-								cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v? -map a? -map s? -y ";
+								cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 						    else if (FFPROBE.channels > 1)	
 						    {
 						    	if (FFPROBE.channels >= 4)	    		
 						    	{
 									if (audioTracks == 0)
-										cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+										cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    	else
-							    		cmd = " -filter_complex " + '"' + "[0:a:2]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a3];[0:a:3]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a4]" + '"' + " -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+							    		cmd = " -filter_complex " + '"' + "[0:a:2]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a3];[0:a:3]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a4]" + '"' + " -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 						    	}
 						    	else
-						    		cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+						    		cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy -acodec aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 						    }	
 							
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
@@ -283,22 +283,22 @@ public class AudioNormalization extends Shutter {
 				switch (comboAudioCodec.getSelectedIndex()) 
 				{
 					case 0 :
-						return " -c:a pcm_f32le -ar " + lbl48k.getText() + " -b:a 1536k -map v? -map a? -map s?";
+						return " -c:a pcm_f32le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
 					case 1 :
-						return " -c:a pcm_s32le -ar " + lbl48k.getText() + " -b:a 1536k -map v? -map a? -map s?";
+						return " -c:a pcm_s32le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
 					case 2 :
-						return " -c:a pcm_s24le -ar " + lbl48k.getText() + " -b:a 1536k -map v? -map a? -map s?";
+						return " -c:a pcm_s24le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
 					case 3 :
-						return " -c:a pcm_s16le -ar " + lbl48k.getText() + " -b:a 1536k -map v? -map a? -map s?";
+						return " -c:a pcm_s16le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
 				}
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
-				return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v? -map a? -map s?";
+				return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 			{
-				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v? -map a? -map s?";
+				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
 			{
@@ -313,24 +313,24 @@ public class AudioNormalization extends Shutter {
 		{
 			switch (ext.toLowerCase()) {
 				case ".mp4":
-					return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k -map v? -map a? -map s?";
+					return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
 				case ".wmv":
-					return " -c:a wmav2 -ar " + lbl48k.getText() + " -b:a 256k -map v? -map a? -map s?";
+					return " -c:a wmav2 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
 				case ".mpg":
-					return " -c:a mp2 -ar " + lbl48k.getText() + " -b:a 256k -map v? -map a? -map s?";
+					return " -c:a mp2 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
 				case ".ogv":
 				case ".av1":
 				case ".webm":
-					return " -c:a libopus -ar " + lbl48k.getText() + " -b:a 192k -map v? -map a? -map s?";
+					return " -c:a libopus -ar " + lbl48k.getText() + " -b:a 192k -map v:0? -map a? -map s?";
 			}
 		}
 		
 		if (FFPROBE.qantization == 24)
-			return " -c:a pcm_s24le -map v? -map a? -map s?";
+			return " -c:a pcm_s24le -map v:0? -map a? -map s?";
 		else if (FFPROBE.qantization == 32)
-			return " -c:a pcm_s32le -map v? -map a? -map s?";
+			return " -c:a pcm_s32le -map v:0? -map a? -map s?";
 		else
-			return " -c:a pcm_s16le -map v? -map a? -map s?";
+			return " -c:a pcm_s16le -map v:0? -map a? -map s?";
 	}
 	
 	private static boolean errorAnalyse (String fichier)

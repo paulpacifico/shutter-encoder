@@ -179,7 +179,7 @@ public class LosslessCut extends Shutter {
 					}
 									
 					//Envoi de la commande
-					String cmd = " -avoid_negative_ts make_zero -c:v copy -c:s copy" + audio + timecode + " -map v?" + audioMapping + " -map s? -y ";
+					String cmd = " -avoid_negative_ts make_zero -c:v copy -c:s copy" + audio + timecode + " -map v:0?" + audioMapping + " -map s? -y ";
 					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
 					
 					//Attente de la fin de FFMPEG

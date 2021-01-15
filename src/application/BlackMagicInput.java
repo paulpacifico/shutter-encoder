@@ -796,31 +796,31 @@ public class BlackMagicInput {
 			switch (comboOutput.getSelectedItem().toString())
 			{
 				case "DV PAL 4/3":
-					DECKLINK.toFFMPEG(decklink + " -aspect 4:3 -s 720x576 -c:a copy -c:v dvvideo -b:v 25000 -r 25" + interlaced + " -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -aspect 4:3 -s 720x576 -c:a copy -c:v dvvideo -b:v 25000 -r 25" + interlaced + " -map v:0? -map a? -y " + output);
 					break;
 				case "DV PAL 16/9":
-					DECKLINK.toFFMPEG(decklink + " -aspect 16:9 -s 720x576 -c:a copy -c:v dvvideo -b:v 25000 -r 25" + interlaced + " -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -aspect 16:9 -s 720x576 -c:a copy -c:v dvvideo -b:v 25000 -r 25" + interlaced + " -map v:0? -map a? -y " + output);
 					break;
 				case "DNxHD 120":
-					DECKLINK.toFFMPEG(decklink + " -s 1920x1080 -filter:v scale=1920:1080:force_original_aspect_ratio=decrease,pad=" + '"' + "1920:1080:(ow-iw)/2:(oh-ih)/2" + '"' + deinterlace + " -c:a copy -c:v dnxhd -b:v 120M -pix_fmt yuv422p" + interlaced + " -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -s 1920x1080 -filter:v scale=1920:1080:force_original_aspect_ratio=decrease,pad=" + '"' + "1920:1080:(ow-iw)/2:(oh-ih)/2" + '"' + deinterlace + " -c:a copy -c:v dnxhd -b:v 120M -pix_fmt yuv422p" + interlaced + " -map v:0? -map a? -y " + output);
 					break;
 				case "DNxHD 185":
-					DECKLINK.toFFMPEG(decklink + " -s 1920x1080 -filter:v scale=1920:1080:force_original_aspect_ratio=decrease,pad=" + '"' + "1920:1080:(ow-iw)/2:(oh-ih)/2" + '"'  + deinterlace   + " -c:a copy -c:v dnxhd -b:v 185M -pix_fmt yuv422p" + interlaced + " -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -s 1920x1080 -filter:v scale=1920:1080:force_original_aspect_ratio=decrease,pad=" + '"' + "1920:1080:(ow-iw)/2:(oh-ih)/2" + '"'  + deinterlace   + " -c:a copy -c:v dnxhd -b:v 185M -pix_fmt yuv422p" + interlaced + " -map v:0? -map a? -y " + output);
 					break;
 				case "Apple ProRes 422":
-					DECKLINK.toFFMPEG(decklink + " -c:a copy -c:v prores -profile:v 2" + deinterlace + interlaced + " -pix_fmt yuv422p10 -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -c:a copy -c:v prores -profile:v 2" + deinterlace + interlaced + " -pix_fmt yuv422p10 -map v:0? -map a? -y " + output);
 					break;
 				case "Apple ProRes 422 HQ":
-					DECKLINK.toFFMPEG(decklink + " -c:a copy -c:v prores -profile:v 3" + deinterlace + interlaced + " -pix_fmt yuv422p10 -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -c:a copy -c:v prores -profile:v 3" + deinterlace + interlaced + " -pix_fmt yuv422p10 -map v:0? -map a? -y " + output);
 					break;	
 				case "H.264 15Mb/s 320kb/s":
-					DECKLINK.toFFMPEG(decklink + " -c:v h264 -b:v 15000k -c:a aac -b:a 320k" + deinterlace + " -profile:v high -level 5.1 -pix_fmt yuv420p -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -c:v h264 -b:v 15000k -c:a aac -b:a 320k" + deinterlace + " -profile:v high -level 5.1 -pix_fmt yuv420p -map v:0? -map a? -y " + output);
 					break;
 				case "H.264 10Mb/s 256kb/s":
-					DECKLINK.toFFMPEG(decklink + " -c:v h264 -b:v 10000k -c:a aac -b:a 256k" + deinterlace + " -profile:v high -level 5.1 -pix_fmt yuv420p -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -c:v h264 -b:v 10000k -c:a aac -b:a 256k" + deinterlace + " -profile:v high -level 5.1 -pix_fmt yuv420p -map v:0? -map a? -y " + output);
 					break;
 				case "H.264 5Mb/s 128kb/s":
-					DECKLINK.toFFMPEG(decklink + " -c:v h264 -b:v 5000k -c:a aac -b:a 128k" + deinterlace + " -profile:v high -level 5.1 -pix_fmt yuv420p -map v? -map a? -y " + output);
+					DECKLINK.toFFMPEG(decklink + " -c:v h264 -b:v 5000k -c:a aac -b:a 128k" + deinterlace + " -profile:v high -level 5.1 -pix_fmt yuv420p -map v:0? -map a? -y " + output);
 					break;					
 			}
 		}

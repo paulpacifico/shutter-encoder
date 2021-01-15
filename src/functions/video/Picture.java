@@ -23,6 +23,8 @@ import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import application.Wetransfer;
 import library.DCRAW;
@@ -31,6 +33,7 @@ import library.FFMPEG;
 import library.FFPROBE;
 import library.XPDF;
 import application.Ftp;
+import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
 import application.Utils;
@@ -242,6 +245,17 @@ public class Picture extends Shutter {
 					{
 						btnStart.setEnabled(false);	
 						DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
+					}
+					else if (inputDeviceIsRunning)
+					{	
+						String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
+
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+							cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");							
+						
+						FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + '"' + fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp) + '"');						
+						
+						fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 					}
 					else
 						FFMPEG.run(FFMPEG.inPoint + frameRate + " -i " + '"' + file.toString() + '"' + logo + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"' + fileOut + '"');		

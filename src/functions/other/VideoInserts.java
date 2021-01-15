@@ -209,7 +209,7 @@ public class VideoInserts extends Shutter {
 									lblEncodageEnCours.setText(new File(s[1].replace("\"", "")).getName());								
 																
 									//On intègre le timescale à chaque plan
-									FFMPEG.run(" -i " + s[1] + " -video_track_timescale " + FFPROBE.timeBase + " -c copy -map v? -map a? -map s? -y "  + withTempFolder);	
+									FFMPEG.run(" -i " + s[1] + " -video_track_timescale " + FFPROBE.timeBase + " -c copy -map v:0? -map a? -map s? -y "  + withTempFolder);	
 									do {
 										Thread.sleep(100);
 									} while (FFMPEG.isRunning);
@@ -326,7 +326,7 @@ public class VideoInserts extends Shutter {
 					//Envoi de la commande
 					if (cancelled == false)
 					{						
-						String cmd = " -i " + master[1] + timecode + " -c:v copy -c:a copy -c:s copy -map v? -map 1:a? -map s? -y ";
+						String cmd = " -i " + master[1] + timecode + " -c:v copy -c:a copy -c:s copy -map v:0? -map 1:a? -map s? -y ";
 						FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"' + fileOut.toString() + '"');		
 						
 						//Attente de la fin de FFMPEG

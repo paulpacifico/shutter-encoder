@@ -96,7 +96,7 @@ public class SubtitlesEdit {
 				BufferedWriter writer = null;
 				
 				try {
-					writer = Files.newBufferedWriter(Paths.get(Subtitles.srt.toString()),  StandardCharsets.UTF_8);
+					writer = Files.newBufferedWriter(Paths.get(SubtitlesTimeline.srt.toString()),  StandardCharsets.UTF_8);
 					boolean isInPoint = true;
 					for (Component c : frame.getContentPane().getComponents())
 					{	
@@ -133,9 +133,9 @@ public class SubtitlesEdit {
 						writer.close();
 					} catch (IOException e1) {}
 					finally {
-						Subtitles.timeline.removeAll();
-						Subtitles.setSubtitles(Subtitles.srt);
-						VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().setSubTitleFile(Subtitles.srt);
+						SubtitlesTimeline.timeline.removeAll();
+						SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);
+						VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().setSubTitleFile(SubtitlesTimeline.srt);
 						frame.dispose();
 					}
 					
@@ -206,7 +206,7 @@ public class SubtitlesEdit {
 
 			@Override
 			public void windowClosed(WindowEvent e) {
-				Subtitles.setSubtitles(Subtitles.srt);				
+				SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);				
 			}
 
 			@Override
@@ -291,9 +291,9 @@ public class SubtitlesEdit {
 		BufferedReader reader = null;		
 		
 		try {
-			if (Subtitles.srt.exists())
+			if (SubtitlesTimeline.srt.exists())
 			{
-				reader = Files.newBufferedReader(Paths.get(Subtitles.srt.toString()),  StandardCharsets.UTF_8);
+				reader = Files.newBufferedReader(Paths.get(SubtitlesTimeline.srt.toString()),  StandardCharsets.UTF_8);
 				
 				String line;					
 				while((line = reader.readLine()) != null)

@@ -365,7 +365,7 @@ public class Renamer {
 								newName = Normalizer.normalize(newName, Normalizer.Form.NFD).replace(" ", "_").replaceAll("[^\\w\\s]+","");
 							
 							//Ajout de l'extension
-							newName += ext;
+							newName += ext.replace(txtRemplacer.getText(), txtPar.getText());
 							
 							number ++;
 							
@@ -458,6 +458,6 @@ public class Renamer {
 		lblExemple.setText(exemple + lblExemple.getText());
 		
 		//Ajout de l'extension
-		lblExemple.setText(lblExemple.getText() + ext);		
+		lblExemple.setText(lblExemple.getText() + ext.replace(txtRemplacer.getText(), txtPar.getText()));		
 	}
 }

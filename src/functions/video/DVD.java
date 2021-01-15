@@ -809,13 +809,13 @@ public class DVD extends Shutter {
         else
         {        	        	
         	if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
-        		filterComplex = audio + " -map v -map " + '"' +  "[a]" + '"';
+        		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
 			else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.surround == false)
-        		filterComplex = audio + " -map v -map " + '"' +  "[a]" + '"';
+        		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
         	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && debitAudio.getSelectedItem().toString().equals("0") == false)
-        		filterComplex = audio + " -map v -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
+        		filterComplex = audio + " -map v:0 -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
         	else
-        		filterComplex = " -map v" + audio;
+        		filterComplex = " -map v:0" + audio;
         }
         
 		//On map les sous-titres que l'on intègre        

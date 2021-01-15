@@ -1611,9 +1611,18 @@ public class OverlayWindow {
 					 File[] fontFolder =  new File("/Library/Fonts").listFiles();
 
 					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-					   if (fontFolder[i].isFile() && fontFolder[i].toString().toLowerCase().replace(" ",  "").contains(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "")))
-						   font = fontFolder[i].getAbsolutePath();	   
+					 {				 
+						if (fontFolder[i].isFile())
+						{
+							File fontPath = new File(fontFolder[i].toString());
+							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
+							
+							if (fontName[0].equals(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+							{
+								font = fontFolder[i].getAbsolutePath();	
+								break;
+							}
+					 	}
 					 }
 					 		
 					 //System Library
@@ -1623,8 +1632,17 @@ public class OverlayWindow {
 						 
 						 for (int i = 0; i < fontFolder.length; i++)
 						 {						 
-						   if (fontFolder[i].isFile() && fontFolder[i].toString().toLowerCase().replace(" ",  "").contains(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "")))
-							   font = fontFolder[i].getAbsolutePath();	   
+							 if (fontFolder[i].isFile())
+							 {
+								File fontPath = new File(fontFolder[i].toString());
+								String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
+								
+								if (fontName[0].equals(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+								{
+									font = fontFolder[i].getAbsolutePath();	
+									break;
+								}
+					 		 }	   
 						 }
 					 }
 					 
@@ -1635,10 +1653,86 @@ public class OverlayWindow {
 						 
 						 for (int i = 0; i < fontFolder.length; i++)
 						 {						 
-						   if (fontFolder[i].isFile() && fontFolder[i].toString().toLowerCase().replace(" ",  "").contains(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "")))
-							   font = fontFolder[i].getAbsolutePath();	   
+						 	if (fontFolder[i].isFile())
+							{
+						 		File fontPath = new File(fontFolder[i].toString());
+								String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
+								
+								if (fontName[0].equals(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+								{
+									font = fontFolder[i].getAbsolutePath();	
+									break;
+								}
+						 	}   
 						 }
-					 }			 		 
+					 }	
+					 
+					 
+					 //Library with contains				 
+					 if (font == "")
+					 {
+						 fontFolder =  new File("/Library/Fonts").listFiles();
+						 
+						 for (int i = 0; i < fontFolder.length; i++)
+						 {				 
+							if (fontFolder[i].isFile())
+							{
+								File fontPath = new File(fontFolder[i].toString());
+								String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
+								
+								if (fontName[0].contains(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+								{
+									font = fontFolder[i].getAbsolutePath();	
+									break;
+								}
+						 	}
+						 }
+					 }
+					 		
+					 //System Library with contains
+					 if (font == "")
+					 {
+						 fontFolder = new File("/System/Library/Fonts").listFiles();
+						 
+						 for (int i = 0; i < fontFolder.length; i++)
+						 {						 
+							 if (fontFolder[i].isFile())
+							 {
+								File fontPath = new File(fontFolder[i].toString());
+								String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
+								
+								if (fontName[0].contains(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+								{
+									font = fontFolder[i].getAbsolutePath();	
+									break;
+								}
+					 		 }	   
+						 }
+					 }
+					 
+					 //User Library	 with contains				 
+					 if (font == "")
+					 {
+						 fontFolder = new File(System.getProperty("user.home") + "/Library/Fonts").listFiles();
+						 
+						 for (int i = 0; i < fontFolder.length; i++)
+						 {						 
+						 	if (fontFolder[i].isFile())
+							{
+						 		File fontPath = new File(fontFolder[i].toString());
+								String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
+								
+								if (fontName[0].contains(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+								{
+									font = fontFolder[i].getAbsolutePath();	
+									break;
+								}
+						 	}   
+						 }
+					 }
+					 
+					 if (font == "")
+						 font = "/Library/Fonts/Arial";
 				 }
 				 else
 					 font = "font=" + OverlayWindow.comboFont.getSelectedItem().toString();

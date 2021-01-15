@@ -301,13 +301,13 @@ public class Extract extends Shutter {
 	
 	protected static String setMapping() {
 		if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
-			return " -an -map v?";
+			return " -an -map v:0?";
 		else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 			return " -vn -map a:" + audioStream + "?";
 		else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
 			return " -vn -an -map s:" + subStream + "?";
 		
-		return " -map v? -map a? -map s?";
+		return " -map v:0? -map a? -map s?";
 	}
 
 	protected static String setSortie(String sortie, File file) {				

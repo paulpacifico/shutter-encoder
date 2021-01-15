@@ -304,38 +304,31 @@ public class QTAnimation extends Shutter {
 					{
 						//Envoi de la commande
 						String cmd = opatom + frameRate + filterComplex + " -c:v qtrle" + colorspace + forceField + timecode + flags + " -y ";
-						if (caseStabilisation.isSelected())
-						{
-							String stab = " PathToFFMPEG -i pipe:stab" + cmd;
-							FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + " -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab |" + stab + output);
-						}
-						else
-						{
-							//Screen capture
-							if (inputDeviceIsRunning)
-							{						
-								String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
 
-								if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
-									cmd = cmd.replace("1:v", "2:v").replace("-map v", "-map 1:v").replace("0:v", "1:v");
-									
-								if (encode)
-									FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
-								else
-								{
-									FFMPEG.toFFPLAY(" " + RecordInputDevice.setInputDevices() + logo + cmd + " -f matroska pipe:play |");							
-									break;
-								}						
+						//Screen capture
+						if (inputDeviceIsRunning)
+						{						
+							String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
+
+							if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+								cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");
 								
-								fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
-							}
-							else if (encode) //Encodage
-								FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);	
-							else //Preview
-							{						
-								FFMPEG.toFFPLAY(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + " -f matroska pipe:play |");
+							if (encode)
+								FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
+							else
+							{
+								FFMPEG.toFFPLAY(" " + RecordInputDevice.setInputDevices() + logo + cmd + " -f matroska pipe:play |");							
 								break;
-							}
+							}						
+							
+							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
+						}
+						else if (encode) //Encodage
+							FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);	
+						else //Preview
+						{						
+							FFMPEG.toFFPLAY(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + " -f matroska pipe:play |");
+							break;
 						}
 									
 						//Attente de la fin de FFMPEG
@@ -1346,7 +1339,7 @@ public class QTAnimation extends Shutter {
         	filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
         }
         else       	        	
-        	filterComplex = " -map v" + audio;
+        	filterComplex = " -map v:0" + audio;
         
 		//On map les sous-titres que l'on intègre        
         if (caseSubtitles.isSelected() && subtitlesBurn == false)

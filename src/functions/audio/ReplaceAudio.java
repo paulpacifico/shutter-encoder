@@ -98,7 +98,7 @@ public class ReplaceAudio extends Shutter {
 				else
 				{
 					videoFile = new File(liste.getElementAt(0));
-					audioFiles = " -map v?";
+					audioFiles = " -map v:0?";
 				}				
 					String fichier = videoFile.getName();					
 					lblEncodageEnCours.setText(videoFile.getName());						
@@ -237,7 +237,7 @@ public class ReplaceAudio extends Shutter {
 				case ".ogv":
 				case ".av1":
 				case ".webm":
-					return " -c:a libopus -ar " + lbl48k.getText() + " -b:a 192k -map v? -map a? -map s?";
+					return " -c:a libopus -ar " + lbl48k.getText() + " -b:a 192k -map v:0? -map a? -map s?";
 			}
 		}
 		
