@@ -76,7 +76,7 @@ public class RecordInputDevice {
 				(Shutter.frame.getLocation().y + Shutter.frame.getHeight() / 3) - frame.getHeight() / 2);
 		
 		devices();
-				
+						
 		frame.setVisible(true);	
 	}	
 	
@@ -218,20 +218,18 @@ public class RecordInputDevice {
 				if (comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen"))
 				{
 					Shutter.liste.addElement("Capture.current.screen");
-					if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
-						videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
+					if (comboScreenVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
+						videoDeviceIndex = (comboScreenVideo.getSelectedIndex());						
 				}
 				else
 				{
 					Shutter.liste.addElement("Capture.input.device");
 					if (System.getProperty("os.name").contains("Windows"))
-						videoDeviceIndex = (comboInputVideo.getSelectedIndex() + 1);
+						videoDeviceIndex = (comboScreenVideo.getSelectedIndex());
 					else
-						videoDeviceIndex = (comboInputVideo.getSelectedIndex());
+						videoDeviceIndex = (comboScreenVideo.getSelectedIndex() - 1);
 				}
-
-				Shutter.inputDeviceIsRunning = true;
-																
+				
 				//Overlay
 				if (comboInputVideo.getSelectedIndex() > 0)
 					Shutter.overlayDeviceIsRunning = true;
@@ -252,6 +250,7 @@ public class RecordInputDevice {
 				setInputDevices();
 				
 				//Important
+				Shutter.inputDeviceIsRunning = true;
 				inputDeviceResolution = "";
 
 				//Permet d'injecter la resolution à FFPROBE
@@ -416,7 +415,7 @@ public class RecordInputDevice {
 			else
 			{
 				if (setAudio != "" && videoDeviceIndex > 0)
-					setAudio = ":" + setAudio;
+					setAudio = ":" + setAudio;	
 				
 				if (videoDeviceIndex > 0)
 					return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i video=" + '"' + videoDevice + '"' + setAudio;

@@ -112,6 +112,7 @@ public class Settings {
 	public static JRadioButton btnSetBab = new JRadioButton(Shutter.language.getProperty("btnSetBab"));
 	public static JRadioButton btnOpenGOP = new JRadioButton(Shutter.language.getProperty("btnOpenGOP"));
 	public static JRadioButton btnExtension = new JRadioButton(Shutter.language.getProperty("btnExtension"));
+	public static JRadioButton btnExclude = new JRadioButton(Shutter.language.getProperty("btnExclude"));
 	public static JRadioButton btnWaitFileComplete = new JRadioButton(Shutter.language.getProperty("btnWaitFileComplete"));
 	public static JRadioButton btnEmptyListAtEnd = new JRadioButton(Shutter.language.getProperty("btnEmptyListAtEnd"));
 	public static JRadioButton btnEndingAction = new JRadioButton(Shutter.language.getProperty("btnEndingAction"));
@@ -120,6 +121,7 @@ public class Settings {
 	public static JRadioButton btnDisableSound = new JRadioButton(Shutter.language.getProperty("btnDisableSound"));
 	public static JRadioButton btnDisableUpdate = new JRadioButton(Shutter.language.getProperty("btnDisableUpdate"));
 	public static JTextField txtExtension = new JTextField();
+	public static JTextField txtExclude = new JTextField();
 	public static JLabel lblDestination1 = new JLabel(); 
 	public static JLabel lblDestination2 = new JLabel(); 
 	public static JLabel lblDestination3 = new JLabel(); 
@@ -136,6 +138,8 @@ public class Settings {
 		btnOpenGOP.setName("btnOpenGOP");
 		btnExtension.setName("btnExtension");
 		txtExtension.setName("txtExtension");
+		btnExclude.setName("btnExclude");
+		txtExclude.setName("txtExclude");
 		btnWaitFileComplete.setName("btnWaitFileComplete");
 		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
@@ -157,7 +161,7 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(332, 725);
+		frame.setSize(332, 750);
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -247,10 +251,44 @@ public class Settings {
 		txtExtension.setColumns(10);
 		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
-		frame.getContentPane().add(txtExtension);		
+		frame.getContentPane().add(txtExtension);	
+		
+		btnExclude.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnExclude.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnExclude.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnExclude);
+		
+		btnExclude.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (btnExclude.isSelected())
+				{
+					txtExclude.setEnabled(true);
+				}
+				else
+				{
+					txtExclude.setEnabled(false);
+				}
+				
+				Utils.textFieldBackground();
+			}
+			
+		});
+				
+		if (btnExclude.isSelected())
+			txtExclude.setEnabled(true);
+		else
+			txtExclude.setEnabled(false);
+		
+		txtExclude.setColumns(10);
+		txtExclude.setEnabled(false);
+		txtExclude.setText("*.xml,*.bin,*.ind,*.ctg,*.mif,*.sif,*.cpf,*.cif,*.bdm");
+		txtExclude.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtExclude.setBounds(btnExclude.getLocation().x + btnExclude.getWidth() + 6, btnExclude.getLocation().y - 2, frame.getWidth() - (btnExclude.getLocation().x + btnExclude.getWidth()) - 32, 21);
+		frame.getContentPane().add(txtExclude);	
 		
 		btnSetBab.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnSetBab.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnSetBab.getPreferredSize().width, 16);
+		btnSetBab.setBounds(12, btnExclude.getLocation().y + btnExclude.getHeight() + 10, btnSetBab.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnSetBab);
 		
 		btnOpenGOP.setFont(new Font("FreeSans", Font.PLAIN, 12));
@@ -1072,6 +1110,12 @@ public class Settings {
 				if (accept)		
 				{
 					quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+					
+	            	if (txtThreads.getText().isEmpty() ||  txtThreads.getText() == null)
+	            		txtThreads.setText("0");
+	            		
+					Settings.saveSettings();
+					
 					Utils.changeFrameVisibility(frame, true);
 				}
 			}

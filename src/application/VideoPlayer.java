@@ -170,6 +170,7 @@ public class VideoPlayer {
     public static JButton rightPlay;
     private static JLabel lblVideo;
     
+    public static boolean PlayerHasBeenStopped = false;
     private static boolean drag;
 	public static boolean sliderInChange = false;
 	static boolean sliderOutChange = false;
@@ -614,7 +615,8 @@ public class VideoPlayer {
 			}
 
 			@Override
-			public void windowClosed(WindowEvent e) {	
+			public void windowClosed(WindowEvent e) {
+				
 			}
 
 			@Override
@@ -1538,6 +1540,15 @@ public class VideoPlayer {
 						
 					} while(mediaPlayerComponentLeft.getMediaPlayer().isPlaying() == false || FFPROBE.isRunning);
 					
+					if (PlayerHasBeenStopped == false)
+					{
+						mediaPlayerComponentLeft.getMediaPlayer().pause();
+						mediaPlayerComponentLeft.getMediaPlayer().setTime(0);
+						leftPlay.setText(Shutter.language.getProperty("btnResume"));
+					}
+					else
+						leftPlay.setText(Shutter.language.getProperty("btnPause"));
+					
 					caseInH.setEnabled(true);
 					caseInM.setEnabled(true);
 					caseInS.setEnabled(true);
@@ -1545,9 +1556,8 @@ public class VideoPlayer {
 					
 					Utils.changeFrameVisibility(frame, false);
 					
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));					
 					
-					leftPlay.setText(Shutter.language.getProperty("btnPause"));
 					sliderIn.setEnabled(true);
 					
 					sliderOut.setEnabled(true);
@@ -1645,6 +1655,8 @@ public class VideoPlayer {
 					
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 						SubtitlesTimeline.actualSubOut = 0;	
+					
+					PlayerHasBeenStopped = true;
 				}
 				
 			}

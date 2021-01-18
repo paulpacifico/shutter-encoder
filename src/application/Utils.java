@@ -292,20 +292,39 @@ public class Utils extends Shutter {
 			return;
 
 		for (File f : list) {
-			if (f.isDirectory()) {
+			if (f.isDirectory()) 
+			{
 				findFiles(f.getAbsolutePath());
-			} else {
+			} else
+			{
 				int s = f.getAbsoluteFile().toString().lastIndexOf('.');
 				String ext = f.getAbsoluteFile().toString().substring(s);
-				if (f.getAbsoluteFile().toString().substring(s).toLowerCase()
-						.equals(comboFilter.getSelectedItem().toString())
+				
+				if (f.getAbsoluteFile().toString().substring(s).toLowerCase().equals(comboFilter.getSelectedItem().toString())
 						|| comboFilter.getSelectedItem().toString().equals(language.getProperty("aucun"))
-						|| lblFilter.getText().equals(language.getProperty("lblFilter")) == false) {
-					if (ext.equals(".enc")) {
+						|| lblFilter.getText().equals(language.getProperty("lblFilter")) == false)
+				{
+					if (ext.equals(".enc")) 
+					{
 						loadSettings(new File (f.getAbsoluteFile().toString()));
 					}
-					if (f.isHidden() == false && f.getName().contains("."))
-						liste.addElement(f.getAbsoluteFile().toString());
+					else if (f.isHidden() == false && f.getName().contains("."))
+					{										
+						if (Settings.btnExclude.isSelected())
+						{		
+							boolean allowed = true;
+							for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
+							{
+								if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+									allowed = false;
+							}
+							
+							if (allowed)
+								Shutter.liste.addElement(f.getAbsoluteFile().toString());	
+						}
+						else
+							Shutter.liste.addElement(f.getAbsoluteFile().toString());
+					}
 				}
 			}
 		}
@@ -328,6 +347,21 @@ public class Utils extends Shutter {
 			{
 				if (f.isHidden() || f.isFile() == false)
 					continue;
+				else if (Settings.btnExclude.isSelected())
+				{							
+					boolean allowed = true;
+					for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
+					{
+						int s = f.toString().lastIndexOf('.');
+						String ext = f.toString().substring(s);
+						
+						if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+							allowed = false;
+					}
+					
+					if (allowed == false)
+						continue;
+				}
 
 				actualScanningFile = f;
 
@@ -385,7 +419,7 @@ public class Utils extends Shutter {
 			if (yesToAll == false && noToAll == false)
 			{				
 				Object[] options = { language.getProperty("yes"), language.getProperty("yesToAll"), language.getProperty("no"), language.getProperty("noToAll"), language.getProperty("btnCancel") };
-			
+				
 				q = JOptionPane.showOptionDialog(frame, language.getProperty("eraseFile"),
 						Shutter.language.getProperty("File") + " " + fileOut.getName() + " " + Shutter.language.getProperty("alreadyExist"), JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.PLAIN_MESSAGE, null, options, options[2]);
@@ -2236,6 +2270,11 @@ public class Utils extends Shutter {
 				Settings.txtExtension.setBackground(new Color(80,80,80));
 			else
 				Settings.txtExtension.setBackground(new Color(60,60,60));
+			
+			if (Settings.txtExclude.isEnabled())
+				Settings.txtExclude.setBackground(new Color(80,80,80));
+			else
+				Settings.txtExclude.setBackground(new Color(60,60,60));
 			
 			if (txtAudioOffset.isEnabled())
 				txtAudioOffset.setBackground(new Color(80,80,80));

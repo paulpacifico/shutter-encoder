@@ -202,7 +202,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "14.5";
+	public static String actualVersion = "14.6";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static File documents = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
@@ -218,6 +218,7 @@ public class Shutter {
 	public static String cropFinal = null; // CropImage
 	public static String finalEQ = null; // ColorImage
 	public static boolean scanIsRunning = false;
+	public static JMenuItem visualiser;
 	public static JMenuItem inputDevice;
 	public static boolean inputDeviceIsRunning = false;
 	public static boolean overlayDeviceIsRunning = false;
@@ -1548,7 +1549,7 @@ public class Shutter {
 
 		popupListe = new JPopupMenu();
 		final JMenuItem numeriser = new JMenuItem(language.getProperty("menuItemNumeriser"));
-		final JMenuItem visualiser = new JMenuItem(language.getProperty("menuItemVisualiser"));
+		visualiser = new JMenuItem(language.getProperty("menuItemVisualiser"));
 		final JMenuItem blackMagic = new JMenuItem(language.getProperty("menuItemBlackMagic"));
 
 		numeriser.setVisible(false);
@@ -5374,7 +5375,11 @@ public class Shutter {
 					
 					if (inputDeviceIsRunning)
 					{						
-						FFPLAY.run(RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + blend + ",scale=iw/2:ih/2" + '"');
+						String device[] = RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ").split("-f ");
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+							FFPLAY.run("-f " + device[2] + " -vf " + '"' + blend + ",scale=iw/2:ih/2" + '"');
+						else
+							FFPLAY.run("-f " + device[1] + " -vf " + '"' + blend + ",scale=iw/2:ih/2" + '"');
 					}	
 					else if (caseEnableSequence.isSelected())
 					{					
@@ -6568,8 +6573,35 @@ public class Shutter {
 						} else
 							file = '"' + liste.firstElement() + '"';
 	
+						if (inputDeviceIsRunning)
+						{						
+							String device[] = RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ").split("-f ");
+							if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+								FFPLAY.run("-f " + device[2] + " -vf " + '"' + lut3d + ",scale=iw/2:ih/2" + '"');
+							else
+								FFPLAY.run("-f " + device[1] + " -vf " + '"' + lut3d + ",scale=iw/2:ih/2" + '"');
+						}
+						else if (caseEnableSequence.isSelected())
+						{					
+							String extension = file.substring(file.lastIndexOf("."));
+							
+							int n = 0;
+							do {
+								n ++;				
+							} while (file.substring(file.lastIndexOf(".") - n).replace(extension, "").matches("[0-9]+") != false);	
+							
+							int nombre = (n - 1);
+							String fileOut = file.substring(0, file.lastIndexOf(".") - nombre) + "%0" + nombre + "d" + extension;	
+							
+							FFPLAY.run("-fs -start_number " + file.toString().substring(file.lastIndexOf(".") - n + 1).replace(extension, "")
+									+ " -i " + fileOut + " -vf " + '"' + "[in]split=2[v0][v1];[v0]scale=iw/2:ih/2[video1];[v1]"
+									+ lut3d + ",scale=iw/2:ih/2[video2];[video1][video2]hstack" + '"');
+						}						
+						else
+						{
 						FFPLAY.run("-i " + file + " -vf " + '"' + "[in]split=2[v0][v1];[v0]scale=iw/2:ih/2[video1];[v1]"
 								+ lut3d + ",scale=iw/2:ih/2[video2];[video1][video2]hstack" + '"');
+						}
 					}
 				}
 			}
@@ -7402,6 +7434,8 @@ public class Shutter {
 						
 						if (VideoPlayer.waveform.exists())
 							VideoPlayer.waveform.delete();
+						
+						VideoPlayer.PlayerHasBeenStopped = false;
 						
 						new VideoPlayer();														
 						
@@ -9168,8 +9202,12 @@ public class Shutter {
 					
 					if (inputDeviceIsRunning)
 					{						
-						FFPLAY.run(flags + RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + smartblur + ",scale=iw/2:ih/2" + '"');
-					}					
+						String device[] = RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ").split("-f ");
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+							FFPLAY.run(flags + " -f " + device[2] + " -vf " + '"' + smartblur + ",scale=iw/2:ih/2" + '"');
+						else
+							FFPLAY.run(flags + " -f " + device[1] + " -vf " + '"' + smartblur + ",scale=iw/2:ih/2" + '"');
+					}				
 					else if (caseEnableSequence.isSelected())
 					{					
 						String extension = file.substring(file.lastIndexOf("."));
@@ -9300,7 +9338,11 @@ public class Shutter {
 					
 					if (inputDeviceIsRunning)
 					{						
-						FFPLAY.run(RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + hqdn3d + ",scale=iw/2:ih/2" + '"');
+						String device[] = RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ").split("-f ");
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+							FFPLAY.run("-f " + device[2] + " -vf " + '"' + hqdn3d + ",scale=iw/2:ih/2" + '"');
+						else
+							FFPLAY.run("-f " + device[1] + " -vf " + '"' + hqdn3d + ",scale=iw/2:ih/2" + '"');
 					}	
 					else if (caseEnableSequence.isSelected())
 					{					
@@ -9432,7 +9474,11 @@ public class Shutter {
 					
 					if (inputDeviceIsRunning)
 					{						
-						FFPLAY.run(RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + " -vf " + '"' + deflicker + ",scale=iw/2:ih/2" + '"');
+						String device[] = RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ").split("-f ");
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+							FFPLAY.run("-f " + device[2] + " -vf " + '"' + deflicker + ",scale=iw/2:ih/2" + '"');
+						else
+							FFPLAY.run("-f " + device[1] + " -vf " + '"' + deflicker + ",scale=iw/2:ih/2" + '"');
 					}	
 					else if (caseEnableSequence.isSelected())
 					{					
@@ -9918,8 +9964,12 @@ public class Shutter {
 					
 					if (inputDeviceIsRunning)
 					{						
-						FFPLAY.run("-autoexit" + RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ") + videoFade + audioFade + " -t " + duration + "ms");
-					}	
+						String device[] = RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ").split("-f ");
+						if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+							FFPLAY.run("-autoexit " + device[2] + videoFade + audioFade + " -t " + duration + "ms");
+						else
+							FFPLAY.run("-autoexit " + device[1] + videoFade + audioFade + " -t " + duration + "ms");
+					}		
 					else if (caseEnableSequence.isSelected())
 					{					
 						String extension = file.substring(file.lastIndexOf("."));
@@ -17870,20 +17920,40 @@ class ListeFileTransferHandler extends TransferHandler {
 						}
 						else
 						{
-							if (file.isFile() && file.getName().contains(".")) {
+							if (file.isFile() && file.getName().contains("."))
+							{
 								int s = file.getCanonicalPath().toString().lastIndexOf('.');
 								String ext = file.getCanonicalFile().toString().substring(s);
-								if (ext.equals(".enc")) {
+								
+								if (ext.equals(".enc")) 
+								{
 									Utils.loadSettings(new File (file.getCanonicalPath().toString()));
-								} else if (ext.toLowerCase().equals(Shutter.comboFilter.getSelectedItem().toString())
-										|| Shutter.comboFilter.getSelectedItem().toString()
-												.equals(Shutter.language.getProperty("aucun"))
-										|| Shutter.lblFilter.getText()
-												.equals(Shutter.language.getProperty("lblFilter")) == false) {
+								} 
+								else if (ext.toLowerCase().equals(Shutter.comboFilter.getSelectedItem().toString())
+										|| Shutter.comboFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun"))
+										|| Shutter.lblFilter.getText().equals(Shutter.language.getProperty("lblFilter")) == false) 
+								{
 									if (file.isHidden() == false)
-										Shutter.liste.addElement(file.getCanonicalPath().toString());
+									{										
+										if (Settings.btnExclude.isSelected())
+										{		
+											boolean allowed = true;
+											for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
+											{
+												if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+													allowed = false;
+											}
+											
+											if (allowed)
+												Shutter.liste.addElement(file.getCanonicalPath().toString());	
+										}
+										else
+											Shutter.liste.addElement(file.getCanonicalPath().toString());
+									}
 								}
-							} else {
+							}
+							else
+							{
 								Utils.findFiles(file.getCanonicalPath().toString());
 							}
 						}
