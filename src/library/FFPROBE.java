@@ -156,7 +156,7 @@ public static int gopSpace = 124;
 								String id[] = s[1].split("\"");
 								String inputDevice = id[0] + '"' + id[1] + '"';
 
-								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f " + inputDevice);		
+								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f " + inputDevice);
 							}
 							else if (fichier.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
 							{
