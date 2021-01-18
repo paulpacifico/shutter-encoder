@@ -54,12 +54,9 @@ public class Splash extends JWindow {
    public void paint(Graphics g) {
       super.paint(g);
 
-      if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) //Weird stuff on Linux
-      {
-    	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-    	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-    	  ((Graphics2D) g).setRenderingHints(qualityHints);
-      }
+	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
+	  ((Graphics2D) g).setRenderingHints(qualityHints);
       
       g.drawImage(splashScreen, 0, 0, this);  
       g.setColor(Color.WHITE);
