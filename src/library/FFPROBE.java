@@ -37,6 +37,7 @@ import application.CropVideo;
 import application.GOP;
 import application.OverlayWindow;
 import application.RecordInputDevice;
+import application.Settings;
 import application.Shutter;
 import application.SubtitlesWindow;
 import application.VideoPlayer;
@@ -397,12 +398,23 @@ public static int gopSpace = 124;
 			                }			              
 			                
 			                // FPS
-				            if (line.contains("fps")) {
-				                String str[]= line.split("fps");
-				                currentFPS = Float.parseFloat(str[0].substring(str[0].lastIndexOf(",")).replace("s,", "").replace(", ", ""));
-				                
-				                if (currentFPS == 23.98f)
-				                	currentFPS = 23.976f;
+				            if (line.contains("fps")) 
+				            {
+				            	if (inputDeviceIsRunning)
+				            	{
+				            		if (fichier.equals("Capture.current.screen"))
+				            			currentFPS = Float.parseFloat(Settings.txtScreenRecord.getText());
+				            		else
+				            			currentFPS = Float.parseFloat(Settings.txtInputDevice.getText());
+				            	}
+				            	else
+				            	{
+					                String str[]= line.split("fps");
+					                currentFPS = Float.parseFloat(str[0].substring(str[0].lastIndexOf(",")).replace("s,", "").replace(", ", ""));
+					                
+					                if (currentFPS == 23.98f)
+					                	currentFPS = 23.976f;
+				            	}
 				            } 
 						 }
 						 
