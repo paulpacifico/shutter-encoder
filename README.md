@@ -7,7 +7,7 @@ Download required [dependencies](../master/Library/sources.txt) into "Library" f
 
 Include [fonts](../master/fonts) with JRE.
 
-I'm using [Java version 13](https://adoptopenjdk.net/releases.html?variant=openjdk13&jvmVariant=hotspot) builded using jlink:
+I'm using [Java version 13](https://adoptopenjdk.net/releases.html?variant=openjdk13&jvmVariant=hotspot) built using jlink:
 <code>--compress 0 --strip-debug --no-header-files --no-man-pages --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.security.sasl,java.xml,jdk.crypto.ec --output JRE</code>
 
 ## Official website
