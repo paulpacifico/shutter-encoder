@@ -77,9 +77,9 @@ public class Renamer {
 		frame.setResizable(false);
 		frame.setModal(true);
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			frame.setSize(511, 153);
+			frame.setSize(541, 153);
 		else
-			frame.setSize(521, 163);
+			frame.setSize(551, 163);
 		frame.setTitle(Shutter.language.getProperty("frameRenommage"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(new Color(50,50,50));				
@@ -149,7 +149,7 @@ public class Renamer {
 		txtRemplacer = new JTextField();
 		txtRemplacer.setColumns(10);
 		txtRemplacer.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtRemplacer.setBounds(84, 77, 135, 21);
+		txtRemplacer.setBounds(84, 77, 140, 21);
 		frame.getContentPane().add(txtRemplacer);;		
 				
 		lblPar = new JLabel(Shutter.language.getProperty("lblPar"));
@@ -170,14 +170,14 @@ public class Renamer {
 		frame.getContentPane().add(lblExemple);
 						
 		Renommer = new JButton(Shutter.language.getProperty("renommer"));
-		Renommer.setBounds(400, 77, 98, 21);
+		Renommer.setBounds(410, 77, 108, 21);
 		Renommer.setMargin(new Insets(0,0,0,0));
 		Renommer.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		frame.getContentPane().add(Renommer);
 		
 		btnAjouterAvant = new JRadioButton(Shutter.language.getProperty("btnAjouterAvant"));
 		btnAjouterAvant.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnAjouterAvant.setBounds(280, 12, 115, 16);
+		btnAjouterAvant.setBounds(280, 12, 130, 16);
 		frame.getContentPane().add(btnAjouterAvant);
 		
 		btnAjouterAvant.addActionListener(new ActionListener(){
@@ -197,12 +197,12 @@ public class Renamer {
 		txtAjouterAvant.setEnabled(false);
 		txtAjouterAvant.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtAjouterAvant.setColumns(10);
-		txtAjouterAvant.setBounds(390, 10, 108, 21);
+		txtAjouterAvant.setBounds(410, 10, 108, 21);
 		frame.getContentPane().add(txtAjouterAvant);
 		
 		btnAjouterApres = new JRadioButton(Shutter.language.getProperty("btnAjouterApres"));
 		btnAjouterApres.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		btnAjouterApres.setBounds(280, 34, 115, 16);
+		btnAjouterApres.setBounds(280, 34, 130, 16);
 		frame.getContentPane().add(btnAjouterApres);
 		
 		btnAjouterApres.addActionListener(new ActionListener(){
@@ -222,7 +222,7 @@ public class Renamer {
 		txtAjouterApres.setEnabled(false);
 		txtAjouterApres.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtAjouterApres.setColumns(10);
-		txtAjouterApres.setBounds(390, 32, 108, 21);
+		txtAjouterApres.setBounds(410, 32, 108, 21);
 		frame.getContentPane().add(txtAjouterApres);
 		
 		convertToLower = new JRadioButton(Shutter.language.getProperty("convertToLower"));

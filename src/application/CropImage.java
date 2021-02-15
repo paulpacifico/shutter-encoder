@@ -853,7 +853,7 @@ public class CropImage {
 		else		 
 		{
 			if (Utils.inputDeviceIsRunning == false)
-				FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
+				FFPROBE.Data(Shutter.liste.firstElement());
 		}
 		do {
 			try {

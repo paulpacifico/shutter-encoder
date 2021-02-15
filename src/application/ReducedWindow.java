@@ -138,7 +138,7 @@ public class ReducedWindow extends JDialog {
 		progressBar.setBounds(100, 24, 178, 24);
 		frame.getContentPane().add(progressBar);
 		
-		Shutter.caseRunInBackground.setBounds(100, 53, 178, 16);			
+		Shutter.caseRunInBackground.setBounds(100, 53, Shutter.caseRunInBackground.getPreferredSize().width, 16);			
 		frame.getContentPane().add(Shutter.caseRunInBackground);
 		
 				
@@ -270,7 +270,7 @@ public class ReducedWindow extends JDialog {
 					frame.setVisible(false);
 					
 					Shutter.frame.setState(Shutter.frame.NORMAL);
-					Shutter.caseRunInBackground.setBounds(6, 64, 170, 23);		
+					Shutter.caseRunInBackground.setBounds(6, 64, Shutter.caseRunInBackground.getPreferredSize().width, 23);		
 					Shutter.grpProgression.add(Shutter.caseRunInBackground);	
 				}
 			}

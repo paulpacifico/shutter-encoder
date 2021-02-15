@@ -28,13 +28,8 @@ import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -56,7 +51,6 @@ import javax.mail.internet.MimeMessage;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -64,7 +58,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.text.JTextComponent;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -246,48 +239,12 @@ public class Ftp {
 		frame.getContentPane().add(textFtp);
 		textFtp.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFtp.setColumns(10);		
-		
-		textFtp.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {				
-				//CTRL + V coller
-		        if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
-		        	PasteFromClipBoard(textFtp);
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {				
-			}
-		});
-		
+				
 		textUser.setBounds(101, 88, 154, 21);
 		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textUser.setColumns(10);
 		frame.getContentPane().add(textUser);
-		
-		textUser.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {				
-				//CTRL + V coller
-		        if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
-		        	PasteFromClipBoard(textUser);
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {				
-			}
-		});
-		
+				
 		lblUtilisateur = new JLabel(Shutter.language.getProperty("lblUser"));
 		lblUtilisateur.setBounds(10, 89, 90, 16);
 		lblUtilisateur.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -306,25 +263,7 @@ public class Ftp {
 		textPassword.setEchoChar('•');
 		textPassword.setBounds(101, 122, 154, 21);
 		frame.getContentPane().add(textPassword);
-		
-		textPassword.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {				
-				//CTRL + V coller
-		        if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
-		        	PasteFromClipBoard(textPassword);
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {				
-			}
-		});
-		
+				
 		btnOK = new JButton("OK");
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		btnOK.setBounds(101, textPassword.getX() + textPassword.getHeight() + 32, 154, 21);		
@@ -393,21 +332,6 @@ public class Ftp {
 			}
 			
 		});
-	}
-
-	private void PasteFromClipBoard(JComponent component){
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-		{
-    	   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-           Transferable clipTf = sysClip.getContents(null);
-           if (clipTf != null) {
-               if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                   try {
-                	   ((JTextComponent) component).setText((String) clipTf.getTransferData(DataFlavor.stringFlavor));
-                   } catch (Exception er) {}
-               }
-           }
-		}
 	}
 
 	public static void sendToFtp(final File fichier) {

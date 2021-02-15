@@ -202,7 +202,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "14.6";
+	public static String actualVersion = "14.7";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static File documents = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
@@ -252,6 +252,10 @@ public class Shutter {
 	private static JLabel reduce;
 	private static JLabel help;
 	private static JLabel newInstance;
+	
+	private static ImageIcon wetransferIcon;
+	private static ImageIcon mailIcon;
+	private static ImageIcon streamIcon;
 
 	public static DefaultListModel<String> liste = new DefaultListModel<String>();
 	protected static PopupMenu dropFiles;
@@ -359,6 +363,7 @@ public class Shutter {
 	protected static JRadioButton caseDecimate;
 	protected static JRadioButton caseConform;
 	protected static JRadioButton caseCreateTree;
+	protected static JRadioButton casePreserveSubs;
 	protected static JRadioButton caseCreateOPATOM;
 	protected static JRadioButton caseOPATOM;
 	protected static JRadioButton caseSubtitles;
@@ -450,6 +455,7 @@ public class Shutter {
 	protected static JPanel destination2;
 	protected static JPanel destination3;
 	protected static JPanel destinationMail;
+	protected static JPanel destinationStream;
 	protected static JPanel grpProgression;
 	protected static JPanel grpResolution;
 	protected static JPanel grpImageSequence;
@@ -501,6 +507,9 @@ public class Shutter {
 	protected JPopupMenu popupDestination;
 	protected static JTextField textMail;
 	protected static JRadioButton caseSendMail;
+	protected static JTextField textStream;
+	protected static JRadioButton caseStream;
+	protected static JRadioButton caseLoop;
 
 	public static void main(String[] args) {
 		
@@ -576,7 +585,7 @@ public class Shutter {
 							Element eElement = (Element) nNode;
 
 							if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboLanguage"))
-								getLanguage = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();							
+								getLanguage = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
 						}
 					}	
 
@@ -586,6 +595,8 @@ public class Shutter {
 							input = new FileInputStream(pathToLanguages + "fr.properties");
 						else if (getLanguage.equals("Italiano"))
 							input = new FileInputStream(pathToLanguages + "it.properties");
+						else if (getLanguage.equals("Español"))
+							input = new FileInputStream(pathToLanguages + "es.properties");
 						else
 							input = new FileInputStream(pathToLanguages + "en.properties");
 					}
@@ -600,6 +611,11 @@ public class Shutter {
 						{
 							getLanguage = "Italiano";
 							input = new FileInputStream(pathToLanguages + "it.properties");
+						}
+						else if (System.getProperty("user.language").equals("es"))
+						{
+							getLanguage = "Español";
+							input = new FileInputStream(pathToLanguages + "es.properties");
 						}
 						else
 						{
@@ -618,6 +634,11 @@ public class Shutter {
 					{
 						getLanguage = "Italiano";
 						input = new FileInputStream(pathToLanguages + "it.properties");
+					}
+					else if (System.getProperty("user.language").equals("es"))
+					{
+						getLanguage = "Español";
+						input = new FileInputStream(pathToLanguages + "es.properties");
 					}
 					else
 					{
@@ -638,6 +659,11 @@ public class Shutter {
 					getLanguage = "Italiano";
 					input = new FileInputStream(pathToLanguages + "it.properties");
 				}
+				else if (System.getProperty("user.language").equals("es"))
+				{
+					getLanguage = "Español";
+					input = new FileInputStream(pathToLanguages + "es.properties");
+				}
 				else
 				{
 					getLanguage = "English";
@@ -651,7 +677,7 @@ public class Shutter {
 	
 		Utils.loadThemes();		
 		Splash.increment();
-
+		
 		// Documents Shutter Encoder
 		if (Shutter.documents.exists() == false)
 			Shutter.documents.mkdirs();
@@ -720,7 +746,7 @@ public class Shutter {
 		Settings.txtThreads.setText("0");
 		Settings.txtImageDuration.setText("10");
 		Settings.txtBlackDetection.setText("10");
-		
+				
 		Splash.increment();
 		topPanel();
 		Splash.increment();
@@ -762,7 +788,7 @@ public class Shutter {
 		Splash.increment();
 		Reset();
 		Splash.increment();
-
+		
 		comboFonctions.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -833,9 +859,10 @@ public class Shutter {
 						|| (ke.getKeyCode() == KeyEvent.VK_S)
 						&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
 						{
-							if (btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")) && comboFonctions.getSelectedItem() != "") 
+							if ((btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")) || btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender"))) && comboFonctions.getSelectedItem() != "") 
 							{
-								if (Renamer.frame == null || Renamer.frame != null && Renamer.frame.isVisible() == false) {
+								if (Renamer.frame == null || Renamer.frame != null && Renamer.frame.isVisible() == false)
+								{
 									Utils.saveSettings(false);
 								}
 							}
@@ -4036,8 +4063,7 @@ public class Shutter {
 		lblDestination3.setToolTipText(language.getProperty("rightClick"));
 		destination3.add(lblDestination3);
 		
-		//MAIL
-		
+		//MAIL		
 		destinationMail = new JPanel();
 		destinationMail.setLayout(null);
 		destinationMail.setFont(new Font("Montserrat", Font.PLAIN, 12));
@@ -4057,7 +4083,6 @@ public class Shutter {
 				{
 					textMail.setFont(new Font("SansSerif", Font.ITALIC, 12));
 					textMail.setForeground(Color.LIGHT_GRAY);
-					textMail.setText(language.getProperty("textMail"));
 					textMail.setText(language.getProperty("textMail"));
 					textMail.setEnabled(true);	
 				}
@@ -4115,6 +4140,97 @@ public class Shutter {
 			}
 
 		});
+		
+		//Stream		
+		destinationStream = new JPanel();
+		destinationStream.setLayout(null);
+		destinationStream.setFont(new Font("Montserrat", Font.PLAIN, 12));
+				
+		caseStream = new JRadioButton(Shutter.language.getProperty("caseStream"));
+		caseStream.setName("caseStream");
+		caseStream.setSelected(false);
+		caseStream.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseStream.setBounds(6, -2, caseStream.getPreferredSize().width, 23);
+		destinationStream.add(caseStream);
+		
+		caseLoop = new JRadioButton(Shutter.language.getProperty("caseLoop"));
+		caseLoop.setName("caseLoop");
+		caseLoop.setEnabled(false);
+		caseLoop.setSelected(false);
+		caseLoop.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseLoop.setBounds(caseStream.getX() + caseStream.getWidth() + 7, -2, caseLoop.getPreferredSize().width, 23);
+		destinationStream.add(caseLoop);
+		
+		caseStream.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (caseStream.isSelected())
+				{
+					textStream.setFont(new Font("SansSerif", Font.ITALIC, 12));
+					textStream.setForeground(Color.LIGHT_GRAY);
+					textStream.setText("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx");
+					textStream.setEnabled(true);	
+					caseLoop.setEnabled(true);
+				}
+				else
+				{
+					textStream.setText("");
+					textStream.setEnabled(false);
+					caseLoop.setEnabled(false);
+				}
+				
+			}
+			
+		});
+		
+		textStream = new JTextField();
+		textStream.setName("textStream");
+		textStream.setEnabled(false);
+		textStream.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		textStream.setForeground(Color.LIGHT_GRAY);
+		textStream.setBounds(6, 23, 290, 21);
+		textStream.setColumns(1);
+		textStream.setText("");
+		destinationStream.add(textStream);
+		
+		textStream.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (textStream.getText().equals("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx")) {
+					textStream.setText("");
+					textStream.setFont(new Font("SansSerif", Font.PLAIN, 12));
+					if (Utils.getTheme.equals(Shutter.language.getProperty("darkTheme")))
+						textStream.setForeground(Color.WHITE);
+					else
+						textStream.setForeground(Color.BLACK);
+				}
+
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					textStream.setFont(new Font("SansSerif", Font.ITALIC, 12));
+					textStream.setForeground(Color.LIGHT_GRAY);
+					textStream.setText("");
+					caseStream.setSelected(false);
+					textStream.setEnabled(false);
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+
+		});
+		
+		
+		//Destinations icons
+		wetransferIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/wetransfer.png"));
+		mailIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/mail.png"));
+		streamIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/stream.png"));
 		
 		//Ajout des tabs	
 		setDestinationTabs(6);
@@ -4283,7 +4399,7 @@ public class Shutter {
 		caseRunInBackground.setName("caseRunInBackground");
 		caseRunInBackground.setEnabled(false);
 		caseRunInBackground.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseRunInBackground.setBounds(9, 64, 200, 23);
+		caseRunInBackground.setBounds(9, 64, caseRunInBackground.getPreferredSize().width, 23);
 		grpProgression.add(caseRunInBackground);
 
 		// Inactivité
@@ -6646,9 +6762,25 @@ public class Shutter {
 
 				if (caseLUTs.isSelected()) {
 					
-			        for (int i = 0 ; i < data.length ; i++) { 
-			        	if (new File(data[i].toString()).isHidden() == false && new File(data[i].toString()).getName().equals("HDR-to-SDR.cube") == false)
-			        		LUTs.add(new File(data[i].toString()).getName());
+			        for (int i = 0 ; i < data.length ; i++)
+			        { 
+			        	File lut = new File(data[i].toString());
+			        	
+			        	if (lut.isHidden() == false && new File(data[i].toString()).getName().equals("HDR-to-SDR.cube") == false)
+			        	{			        		
+			        		if (lut.getName().contains(" "))
+			        		{	
+			        			File newLutName = new File(lutsFolder + "/" + lut.getName().replace(" ", "-"));
+			        			lut.renameTo(newLutName);			
+			        			
+			        			if (newLutName.exists())
+			        				LUTs.add(newLutName.getName());
+			        			else
+			        				LUTs.add(lut.getName());
+			        		}
+			        		else
+			        			LUTs.add(lut.getName());
+			        	}
 				    }
 					
 					comboLUTs.setModel(new DefaultComboBoxModel<Object>(LUTs.toArray()));
@@ -9804,8 +9936,10 @@ public class Shutter {
 		JLabel videoInFrames = new JLabel(language.getProperty("lblFrames"));
 		if (getLanguage.equals("Italiano"))
 			videoInFrames.setText("i");
+		else if (getLanguage.equals("Español"))
+			videoInFrames.setText("fot.");
 		videoInFrames.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		videoInFrames.setBounds(spinnerVideoFadeIn.getLocation().x + spinnerVideoFadeIn.getWidth() + 4, spinnerVideoFadeIn.getY(), videoInFrames.getPreferredSize().width, 16);
+		videoInFrames.setBounds(spinnerVideoFadeIn.getLocation().x + spinnerVideoFadeIn.getWidth() + 4, spinnerVideoFadeIn.getY(), videoInFrames.getPreferredSize().width + 4, 16);
 		grpTransitions.add(videoInFrames);
 				
 		lblFadeInColor = new JLabel(language.getProperty("black"));
@@ -9815,7 +9949,7 @@ public class Shutter {
 		lblFadeInColor.setOpaque(true);
 		lblFadeInColor.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		lblFadeInColor.setSize(55, 16);
-		lblFadeInColor.setLocation(videoInFrames.getLocation().x + videoInFrames.getWidth() + 7, spinnerVideoFadeIn.getY() + 1);
+		lblFadeInColor.setLocation(videoInFrames.getLocation().x + videoInFrames.getWidth() + 3, spinnerVideoFadeIn.getY() + 1);
 		grpTransitions.add(lblFadeInColor);
 		
 		lblFadeInColor.addMouseListener(new MouseListener() {
@@ -9897,11 +10031,9 @@ public class Shutter {
 			
 		});
 				
-		JLabel audioInFrames = new JLabel(language.getProperty("lblFrames"));
-		if (getLanguage.equals("Italiano"))
-			audioInFrames.setText("i");
+		JLabel audioInFrames = new JLabel(videoInFrames.getText());
 		audioInFrames.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		audioInFrames.setBounds(spinnerAudioFadeIn.getLocation().x + spinnerAudioFadeIn.getWidth() + 4, spinnerAudioFadeIn.getY(), audioInFrames.getPreferredSize().width, 16);
+		audioInFrames.setBounds(spinnerAudioFadeIn.getLocation().x + spinnerAudioFadeIn.getWidth() + 4, spinnerAudioFadeIn.getY(), videoInFrames.getWidth(), 16);
 		grpTransitions.add(audioInFrames);
 		
 		JLabel iconFadeIn = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
@@ -10076,11 +10208,9 @@ public class Shutter {
 			
 		});
 		
-		JLabel videoOutFrames = new JLabel(language.getProperty("lblFrames"));
-		if (getLanguage.equals("Italiano"))
-			videoOutFrames.setText("i");
+		JLabel videoOutFrames = new JLabel(videoInFrames.getText());
 		videoOutFrames.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		videoOutFrames.setBounds(spinnerVideoFadeOut.getLocation().x + spinnerVideoFadeOut.getWidth() + 4, spinnerVideoFadeOut.getY(), videoOutFrames.getPreferredSize().width, 16);
+		videoOutFrames.setBounds(spinnerVideoFadeOut.getLocation().x + spinnerVideoFadeOut.getWidth() + 4, spinnerVideoFadeOut.getY(), videoInFrames.getWidth(), 16);
 		grpTransitions.add(videoOutFrames);
 		
 		lblFadeOutColor = new JLabel(language.getProperty("black"));
@@ -10090,7 +10220,7 @@ public class Shutter {
 		lblFadeOutColor.setOpaque(true);
 		lblFadeOutColor.setFont(new Font("Montserrat", Font.PLAIN, 12));
 		lblFadeOutColor.setSize(55, 16);
-		lblFadeOutColor.setLocation(videoOutFrames.getLocation().x + videoOutFrames.getWidth() + 7, spinnerVideoFadeOut.getY() + 1);
+		lblFadeOutColor.setLocation(lblFadeInColor.getX(), spinnerVideoFadeOut.getY() + 1);
 		grpTransitions.add(lblFadeOutColor);
 		
 		lblFadeOutColor.addMouseListener(new MouseListener() {
@@ -10179,11 +10309,9 @@ public class Shutter {
 			
 		});
 				
-		JLabel audioOutFrames = new JLabel(language.getProperty("lblFrames"));
-		if (getLanguage.equals("Italiano"))
-			audioOutFrames.setText("i");
+		JLabel audioOutFrames = new JLabel(videoInFrames.getText());
 		audioOutFrames.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		audioOutFrames.setBounds(spinnerAudioFadeOut.getLocation().x + spinnerAudioFadeOut.getWidth() + 4, spinnerAudioFadeOut.getY(), audioOutFrames.getPreferredSize().width, 16);
+		audioOutFrames.setBounds(spinnerAudioFadeOut.getLocation().x + spinnerAudioFadeOut.getWidth() + 4, spinnerAudioFadeOut.getY(), videoInFrames.getWidth(), 16);
 		grpTransitions.add(audioOutFrames);
 		
 		JLabel iconFadeOut = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
@@ -10680,6 +10808,11 @@ public class Shutter {
 			}	
 		});
 		
+		casePreserveSubs = new JRadioButton(language.getProperty("casePreserveSubs"));
+		casePreserveSubs.setName("casePreserveSubs");
+		casePreserveSubs.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		casePreserveSubs.setSize(casePreserveSubs.getPreferredSize().width, 23);
+				
 		caseCreateOPATOM = new JRadioButton(language.getProperty("caseCreateOPATOM"));
 		caseCreateOPATOM.setName("caseCreateOPATOM");
 		caseCreateOPATOM.setToolTipText(language.getProperty("tooltipCreateOpatom"));
@@ -14035,6 +14168,8 @@ public class Shutter {
 				caseLogo.setSelected(false);
 				if (caseCreateTree.isSelected())
 					caseCreateTree.doClick();
+				if (casePreserveSubs.isSelected())
+					casePreserveSubs.doClick();
 				if (caseCreateOPATOM.isSelected())
 					caseCreateOPATOM.doClick();
 				lblOPATOM.setText("OP-Atom");
@@ -14599,8 +14734,7 @@ public class Shutter {
 			
 			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionBab")))
 			{
-				if (grpDestination.getTabCount() < 5)
-					setDestinationTabs(6);
+				setDestinationTabs(6);
 			}
 			else
 			{			
@@ -14621,8 +14755,14 @@ public class Shutter {
 		else
 		{
 			if (((comboFonctions.getSelectedItem().toString().equals("DNxHD") || (comboFonctions.getSelectedItem().toString().equals("DNxHR"))) && caseCreateOPATOM.isSelected()) || caseCreateTree.isSelected()) //OP-Atom
+			{
 				setDestinationTabs(2);		
-			else if (grpDestination.getTabCount() < 5)
+			}
+			else if (comboFonctions.getSelectedItem().toString().equals("H.264"))
+			{
+				setDestinationTabs(7);
+			}
+			else
 				setDestinationTabs(6);
 			
 			caseOpenFolderAtEnd1.setEnabled(true);
@@ -16033,6 +16173,8 @@ public class Shutter {
 							grpAdvanced.add(lblIsConform);
 							caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 							grpAdvanced.add(caseCreateTree);
+							casePreserveSubs.setLocation(7, caseCreateTree.getLocation().y + 17);
+							grpAdvanced.add(casePreserveSubs);							
 							
 							// grpCorrections
 							caseBanding.setLocation(7, 14);
@@ -16444,6 +16586,8 @@ public class Shutter {
 							grpAdvanced.add(lblIsConform);
 							caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 							grpAdvanced.add(caseCreateTree);
+							casePreserveSubs.setLocation(7, caseCreateTree.getLocation().y + 17);
+							grpAdvanced.add(casePreserveSubs);	
 
 							// grpCorrections
 							caseBanding.setLocation(7, 14);
@@ -16703,11 +16847,14 @@ public class Shutter {
 							
 							grpResolution.add(comboResolution);
 							
-							comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "2:1", "4:1", "8:1", "16:1",
-									"4096:auto", "1920:auto", "1280:auto", "auto:480", "auto:360",
-									"4096x2160", "3840x2160", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
-									"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
-														
+							if (comboResolution.getItemCount() != 26)
+							{
+								comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "2:1", "4:1", "8:1", "16:1",
+										"4096:auto", "1920:auto", "1280:auto", "auto:480", "auto:360",
+										"4096x2160", "3840x2160", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
+										"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
+							}
+
 							// Ajout case rognage
 							caseRognerImage.setLocation(7, 47);
 							grpResolution.add(caseRognerImage);
@@ -17153,62 +17300,82 @@ public class Shutter {
 
 	private static void setDestinationTabs(int tabs) {	
 		
-		//Affichage des titres
-		Font tabFont = new Font("Montserrat", Font.PLAIN, 11);		
-		if (getLanguage.equals("English"))
-			tabFont = new Font("Montserrat", Font.PLAIN, 10);		
-		
-		JLabel output = new JLabel(language.getProperty("output"));
-		output.setFont(tabFont);
-		JLabel output1 = new JLabel(language.getProperty("output") + "1");
-		output1.setFont(tabFont);
-		JLabel output2 = new JLabel(language.getProperty("output") + "2");
-		output2.setFont(tabFont);
-		JLabel output3 = new JLabel(language.getProperty("output") + "3");
-		output3.setFont(tabFont);		
-		JLabel wetransferTab = new JLabel("WeTransfer");
-		wetransferTab.setFont(tabFont);		
-		JLabel ftpTab = new JLabel("FTP");
-		ftpTab.setFont(tabFont);		
-		JLabel mailTab = new JLabel("Mail");
-		mailTab.setFont(tabFont);
+		try {
+			//Affichage des titres
+			Font tabFont = new Font("Montserrat", Font.PLAIN, 11);		
+			if (getLanguage.equals("English"))
+				tabFont = new Font("Montserrat", Font.PLAIN, 10);		
+			
+			JLabel output = new JLabel(language.getProperty("output"));
+			output.setFont(tabFont);
+			JLabel output1 = new JLabel(language.getProperty("output") + "1");
+			output1.setFont(tabFont);
+			JLabel output2 = new JLabel(language.getProperty("output") + "2");
+			output2.setFont(tabFont);
+			JLabel output3 = new JLabel(language.getProperty("output") + "3");
+			output3.setFont(tabFont);			
+			JLabel ftpTab = new JLabel("FTP");
+			ftpTab.setFont(tabFont);		
+			JLabel wetransferTab = new JLabel(wetransferIcon);
+			wetransferTab.setFont(tabFont);	
+			JLabel mailTab = new JLabel(mailIcon);
+			mailTab.setFont(tabFont);
+			JLabel streamTab = new JLabel(streamIcon);
+			streamTab.setFont(tabFont);					
+			
+			if (tabs != grpDestination.getTabCount())
+			{
+				grpDestination.removeAll();
 				
-		if (grpDestination.getTabCount() > 1)
-		{
-			do {		
-				grpDestination.removeTabAt(1);
-			} while (grpDestination.getTabCount() > 1);
-		}
-		
-		//Ajout des titres
-		if (tabs == 1)
-		{
-			grpDestination.setTabComponentAt(0, output);
-		}
-		else if (tabs == 2)
-		{
-			grpDestination.addTab(language.getProperty("output"), destination1);
-			grpDestination.addTab("Mail", destinationMail);	
-			
-			grpDestination.setTabComponentAt(0, output);
-			grpDestination.setTabComponentAt(1, mailTab);
-		}
-		else if (tabs == 6)
-		{			
-			grpDestination.addTab(language.getProperty("output") + "1", destination1);
-			grpDestination.addTab(language.getProperty("output") + "2", destination2);
-			grpDestination.addTab(language.getProperty("output") + "3", destination3);	
-			grpDestination.addTab("WeTransfer", new JPanel());
-			grpDestination.addTab("FTP", new JPanel());
-			grpDestination.addTab("Mail", destinationMail);	
-			
-			grpDestination.setTabComponentAt(0, output1);
-			grpDestination.setTabComponentAt(1, output2);
-			grpDestination.setTabComponentAt(2, output3);
-			grpDestination.setTabComponentAt(3, wetransferTab);
-			grpDestination.setTabComponentAt(4, ftpTab);
-			grpDestination.setTabComponentAt(5, mailTab);
-		}
+				//Ajout des titres
+				if (tabs == 1)
+				{
+					grpDestination.addTab(language.getProperty("output"), null);
+				}
+				else if (tabs == 2)
+				{
+					grpDestination.addTab(language.getProperty("output"), destination1);
+					grpDestination.addTab("Mail", destinationMail);	
+					
+					grpDestination.setTabComponentAt(0, output);
+					grpDestination.setTabComponentAt(1, mailTab);
+				}
+				else if (tabs == 6)
+				{			
+					grpDestination.addTab(language.getProperty("output") + "1", destination1);
+					grpDestination.addTab(language.getProperty("output") + "2", destination2);
+					grpDestination.addTab(language.getProperty("output") + "3", destination3);	
+					grpDestination.addTab("FTP", new JPanel());
+					grpDestination.addTab("WeTransfer", new JPanel());
+					grpDestination.addTab("Mail", destinationMail);;
+					
+					grpDestination.setTabComponentAt(0, output1);
+					grpDestination.setTabComponentAt(1, output2);
+					grpDestination.setTabComponentAt(2, output3);
+					grpDestination.setTabComponentAt(3, ftpTab);
+					grpDestination.setTabComponentAt(4, wetransferTab);			
+					grpDestination.setTabComponentAt(5, mailTab);
+				}
+				else if (tabs == 7)
+				{			
+					grpDestination.addTab(language.getProperty("output") + "1", destination1);
+					grpDestination.addTab(language.getProperty("output") + "2", destination2);
+					grpDestination.addTab(language.getProperty("output") + "3", destination3);	
+					grpDestination.addTab("FTP", new JPanel());
+					grpDestination.addTab("WeTransfer", new JPanel());
+					grpDestination.addTab("Mail", destinationMail);
+					grpDestination.addTab("Stream", destinationStream);
+					
+					grpDestination.setTabComponentAt(0, output1);
+					grpDestination.setTabComponentAt(1, output2);
+					grpDestination.setTabComponentAt(2, output3);
+					grpDestination.setTabComponentAt(3, ftpTab);
+					grpDestination.setTabComponentAt(4, wetransferTab);			
+					grpDestination.setTabComponentAt(5, mailTab);
+					grpDestination.setTabComponentAt(6, streamTab);
+				}
+			}
+		} catch (Exception e) {}
 	}
 	
 	public static void disableAll() {
@@ -17240,6 +17407,10 @@ public class Shutter {
 			components[i].setEnabled(false);
 		}
 		components = destinationMail.getComponents();
+		for (int i = 0; i < components.length; i++) {
+			components[i].setEnabled(false);
+		}
+		components = destinationStream.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(false);
 		}
@@ -17328,7 +17499,7 @@ public class Shutter {
 				caseDisplay.setEnabled(false);
 				btnStart.setEnabled(true);
 				
-				if (inputDeviceIsRunning)
+				if (inputDeviceIsRunning || caseStream.isSelected())
 					btnStart.setText(language.getProperty("btnStopRecording"));
 				else
 					btnStart.setText(language.getProperty("btnPauseFunction"));
@@ -17385,6 +17556,14 @@ public class Shutter {
 			components[i].setEnabled(true);
 			if (caseSendMail.isSelected() == false)
 				textMail.setEnabled(false);						
+		}
+		components = destinationStream.getComponents();
+		for (int i = 0; i < components.length; i++) {
+			components[i].setEnabled(true);
+			if (caseStream.isSelected() == false)
+			{
+				textStream.setEnabled(false);		
+			}
 		}
 		components = grpResolution.getComponents();
 		for (int i = 0; i < components.length; i++) {

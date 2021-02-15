@@ -32,12 +32,16 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Area;
@@ -56,6 +60,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -86,6 +91,8 @@ public class ColorImage {
 	private JLabel fullscreen;
 	private JLabel reduce;
 	private static JPanel topPanel;
+	private JScrollBar scrollBar = new JScrollBar();
+	int scrollValue = 0;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameColorImage"));
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel topImage;
@@ -97,12 +104,15 @@ public class ColorImage {
 	private static JButton btnPrevious;
 	private static JButton btnNext;
 	private static JButton btnReset;
+	private static JPanel backgroundPanel;
 	public static JComboBox<String> comboRGB = new JComboBox<String>();
 	public static JSlider sliderExposure = new JSlider();
 	public static JSlider sliderContrast = new JSlider();
 	public static JSlider sliderHighlights = new JSlider();
 	public static JSlider sliderMediums = new JSlider();
-	public static JSlider sliderShadows = new JSlider();	
+	public static JSlider sliderShadows = new JSlider();
+	public static JSlider sliderBalance = new JSlider();
+	public static JSlider sliderHUE = new JSlider();
 	public static JSlider sliderRED = new JSlider();
 	public static JSlider sliderGREEN = new JSlider();
 	public static JSlider sliderBLUE = new JSlider();		
@@ -209,7 +219,7 @@ public class ColorImage {
 			}				
 			
 		});
-		
+
 		frame.addMouseListener(new MouseListener(){
 
 			@Override
@@ -298,6 +308,216 @@ public class ColorImage {
 		});
 		
 		topPanel();
+		
+		scrollBar = new JScrollBar();
+		scrollBar.setBackground(new Color(50,50,50));
+		scrollBar.setOrientation(JScrollBar.VERTICAL);
+		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
+		scrollBar.setLocation(194, topPanel.getHeight());
+		
+		scrollBar.addAdjustmentListener(new AdjustmentListener(){
+			
+			public void adjustmentValueChanged(AdjustmentEvent ae) {
+					int scrollIncrement = scrollBar.getValue() - scrollValue;
+					for (Component c : frame.getContentPane().getComponents())
+					{
+						if (c instanceof JLabel || c instanceof JSlider && c.getName() != null || c instanceof JComboBox)
+						{
+							c.setLocation(c.getLocation().x, c.getLocation().y - scrollIncrement);
+						}
+					}
+					scrollValue = scrollBar.getValue();
+		      }			
+			
+		});
+		
+		frame.getContentPane().add(scrollBar);
+		
+		frame.addMouseWheelListener(new MouseWheelListener(){
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if (scrollBar.isVisible())
+					scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
+			}
+			
+		});			
+		
+		btnPrevious = new JButton(Shutter.language.getProperty("btnPrevious"));
+		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		btnPrevious.setMargin(new Insets(0,0,0,0));
+		btnPrevious.setBounds(14, frame.getHeight() - 33, 84, 21);	
+		frame.getContentPane().add(btnPrevious);
+		
+		btnPrevious.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	      		if (Shutter.fileList.getSelectedIndex() > 0)
+	      		{     			
+	      			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
+	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() - 1);
+	      			
+					File file = new File(Shutter.dirTemp + "preview.bmp");
+					if (file.exists()) file.delete();	
+	      			
+					if (Shutter.scanIsRunning)
+					{
+						File dir = new File(Shutter.liste.firstElement());
+			        	for (File f : dir.listFiles())
+			        	{
+				        	if (f.isHidden() == false && f.isFile())
+				        	{    	    
+				        		FFPROBE.Data(f.toString());
+				        	}
+			        	}
+					}
+					else		 
+					{
+						if (Shutter.inputDeviceIsRunning == false)
+							FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
+					}
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+					
+					positionVideo.setValue(0);
+					positionVideo.setMaximum(FFPROBE.totalLength);
+					
+     				loadImage(true);
+     				
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
+     				
+     				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+     				
+     				Shutter.enableAll();
+	      		}	
+			}
+			
+		});
+		
+		btnNext = new JButton(Shutter.language.getProperty("btnNext"));
+		btnNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnNext.setMargin(new Insets(0,0,0,0));
+		btnNext.setBounds(btnPrevious.getX() + btnPrevious.getWidth() + 6, btnPrevious.getY(), 84, 21);		
+		frame.getContentPane().add(btnNext);
+		
+		btnNext.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+	      		if (Shutter.fileList.getSelectedIndex() < Shutter.liste.getSize())
+	      		{      				
+	      			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() + 1);
+	      			
+					File file = new File(Shutter.dirTemp + "preview.bmp");
+					if (file.exists()) file.delete();	
+	      			
+					if (Shutter.scanIsRunning)
+					{
+						File dir = new File(Shutter.liste.firstElement());
+			        	for (File f : dir.listFiles())
+			        	{
+				        	if (f.isHidden() == false && f.isFile())
+				        	{    	    
+				        		FFPROBE.Data(f.toString());
+				        	}
+			        	}
+					}
+					else		 
+					{
+						if (Utils.inputDeviceIsRunning == false)
+							FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
+					}
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+					
+					positionVideo.setValue(0);
+					positionVideo.setMaximum(FFPROBE.totalLength);
+					
+	      			loadImage(true);
+	      			
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
+     				
+     				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+     				
+     				Shutter.enableAll();
+	      		}
+			}
+			
+		});
+				
+		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
+		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnReset.setBounds(14, btnPrevious.getY() - 21 - 7, btnPrevious.getWidth() + btnNext.getWidth() + 6, 21);		
+		frame.getContentPane().add(btnReset);		
+		
+		btnReset.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				allR = 0;
+				allG = 0;
+				allB = 0;
+				highR = 0;
+				highG = 0;
+				highB = 0;
+				mediumR = 0;
+				mediumG = 0;
+			  	mediumB = 0;
+			  	lowR = 0;
+			  	lowG = 0;
+			  	lowB = 0;
+				balanceAll = "";
+				balanceHigh = "";
+				balanceMedium = "";
+				balanceLow = "";
+				sliderExposure.setValue(0);
+				sliderContrast.setValue(0);
+				sliderHighlights.setValue(0);
+				sliderMediums.setValue(0);
+				sliderShadows.setValue(0);
+				sliderBalance.setValue(6500);
+				sliderHUE.setValue(0);
+				sliderRED.setValue(0);
+				sliderGREEN.setValue(0);
+				sliderBLUE.setValue(0);
+				sliderVibrance.setValue(0);	
+				sliderSaturation.setValue(0);
+				sliderGrain.setValue(0);
+				sliderVignette.setValue(0);
+				sliderAngle.setValue(0);			
+					
+				//important
+				comboRGB.setSelectedIndex(0);
+				comboRotate.setSelectedIndex(0);
+				
+				//pas besoin car déjà chargé par ComboRotate
+				//loadImage(true);
+			}
+			
+		});
+		
+		backgroundPanel = new JPanel();
+		backgroundPanel.setBackground(new Color(50, 50, 50));
+		backgroundPanel.setOpaque(true);
+		backgroundPanel.setSize(194, 72);	
+		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
+		frame.getContentPane().add(backgroundPanel);
 				
 		JLabel lblExposure = new JLabel(Shutter.language.getProperty("lblExposure"));
 		lblExposure.setFont(new Font("FreeSans", Font.PLAIN, 13));
@@ -534,9 +754,103 @@ public class ColorImage {
 		
 		frame.add(sliderShadows);
 		
+		JLabel lblBalance = new JLabel(Shutter.language.getProperty("lblBalance"));
+		lblBalance.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblBalance.setBounds(12, sliderShadows.getY() + sliderShadows.getHeight() + 4, lblExposure.getSize().width, 16);		
+		frame.getContentPane().add(lblBalance);
+		
+		frame.add(lblBalance);
+		
+		sliderBalance.setName("sliderBalance");
+		sliderBalance.setMaximum(12000);
+		sliderBalance.setMinimum(1000);
+		sliderBalance.setValue(6500);		
+		sliderBalance.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderBalance.setBounds(12, lblBalance.getY() + lblBalance.getHeight(), sliderExposure.getWidth(), 22);	
+		
+		sliderBalance.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderBalance.setValue(6500);	
+					lblBalance.setText(Shutter.language.getProperty("lblBalance"));
+				}
+			}
+
+		});
+		
+		sliderBalance.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderBalance.getValue() == 6500)
+				{
+					lblBalance.setText(Shutter.language.getProperty("lblBalance"));
+				}
+				else
+				{
+					lblBalance.setText(Shutter.language.getProperty("lblBalance") + " " + sliderBalance.getValue() + "k");
+				}
+
+				loadImage(false);
+			}
+			
+		});
+		
+		frame.add(sliderBalance);
+		
+		JLabel lblHUE = new JLabel(Shutter.language.getProperty("lblHUE"));
+		lblHUE.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblHUE.setBounds(12, sliderBalance.getY() + sliderBalance.getHeight() + 4, lblExposure.getSize().width, 16);		
+		frame.getContentPane().add(lblHUE);
+		
+		frame.add(lblHUE);
+		
+		sliderHUE.setName("sliderHUE");
+		sliderHUE.setMaximum(100);
+		sliderHUE.setMinimum(-100);
+		sliderHUE.setValue(0);		
+		sliderHUE.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderHUE.setBounds(12, lblHUE.getY() + lblHUE.getHeight(), sliderExposure.getWidth(), 22);	
+		
+		sliderHUE.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderHUE.setValue(0);	
+					lblHUE.setText(Shutter.language.getProperty("lblHUE"));
+				}
+			}
+
+		});
+		
+		sliderHUE.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderHUE.getValue() == 6500)
+				{
+					lblHUE.setText(Shutter.language.getProperty("lblHUE"));
+				}
+				else
+				{
+					lblHUE.setText(Shutter.language.getProperty("lblHUE") + " " + sliderHUE.getValue());
+				}
+
+				loadImage(false);
+			}
+			
+		});
+		
+		frame.add(sliderHUE);
+		
 		JLabel lblRGB = new JLabel(Shutter.language.getProperty("lblRGB"));
 		lblRGB.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblRGB.setBounds(12, sliderShadows.getY() + sliderShadows.getHeight() + 6, lblRGB.getPreferredSize().width, 16);		
+		lblRGB.setBounds(12, sliderHUE.getY() + sliderHUE.getHeight() + 6, lblRGB.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblRGB);
 		
 		frame.add(lblRGB);
@@ -1086,176 +1400,18 @@ public class ColorImage {
 		});
 		
 		frame.add(sliderAngle);	
-						
+		
+		//IMPORTANT
+		if ((sliderAngle.getY() + sliderAngle.getHeight() + 7) - backgroundPanel.getY() >= 7)		
+		{
+			scrollBar.setMaximum((sliderAngle.getY() + sliderAngle.getHeight() + 7) - backgroundPanel.getY());
+			scrollBar.setVisible(true);
+		}
+		else
+			scrollBar.setVisible(false);
+								
 		loadImage(true);
-		
-		btnPrevious = new JButton(Shutter.language.getProperty("btnPrevious"));
-		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));	
-		btnPrevious.setMargin(new Insets(0,0,0,0));
-		btnPrevious.setBounds(14, sliderAngle.getY() + sliderAngle.getHeight() + 6, 84, 21);	
-		frame.getContentPane().add(btnPrevious);
-		
-		btnPrevious.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	      		if (Shutter.fileList.getSelectedIndex() > 0)
-	      		{     			
-	      			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
-	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() - 1);
-	      			
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();	
-	      			
-					if (Shutter.scanIsRunning)
-					{
-						File dir = new File(Shutter.liste.firstElement());
-			        	for (File f : dir.listFiles())
-			        	{
-				        	if (f.isHidden() == false && f.isFile())
-				        	{    	    
-				        		FFPROBE.Data(f.toString());
-				        	}
-			        	}
-					}
-					else		 
-					{
-						if (Shutter.inputDeviceIsRunning == false)
-							FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
-					}
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e1) {}
-					} while (FFPROBE.isRunning);
-					
-					positionVideo.setValue(0);
-					positionVideo.setMaximum(FFPROBE.totalLength);
-					
-     				loadImage(true);
-     				
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e1) {}
-					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
-     				
-     				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-     				
-     				Shutter.enableAll();
-	      		}	
-			}
-			
-		});
-		
-		btnNext = new JButton(Shutter.language.getProperty("btnNext"));
-		btnNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnNext.setMargin(new Insets(0,0,0,0));
-		btnNext.setBounds(btnPrevious.getX() + btnPrevious.getWidth() + 6, btnPrevious.getY(), 84, 21);		
-		frame.getContentPane().add(btnNext);
-		
-		btnNext.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-	      		if (Shutter.fileList.getSelectedIndex() < Shutter.liste.getSize())
-	      		{      				
-	      			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	      			Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() + 1);
-	      			
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();	
-	      			
-					if (Shutter.scanIsRunning)
-					{
-						File dir = new File(Shutter.liste.firstElement());
-			        	for (File f : dir.listFiles())
-			        	{
-				        	if (f.isHidden() == false && f.isFile())
-				        	{    	    
-				        		FFPROBE.Data(f.toString());
-				        	}
-			        	}
-					}
-					else		 
-					{
-						if (Utils.inputDeviceIsRunning == false)
-							FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
-					}
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e1) {}
-					} while (FFPROBE.isRunning);
-					
-					positionVideo.setValue(0);
-					positionVideo.setMaximum(FFPROBE.totalLength);
-					
-	      			loadImage(true);
-	      			
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e1) {}
-					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
-     				
-     				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-     				
-     				Shutter.enableAll();
-	      		}
-			}
-			
-		});
-		
-		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnReset.setBounds(14, frame.getHeight() - 33, btnPrevious.getWidth() + btnNext.getWidth() + 6, 21);		
-		frame.getContentPane().add(btnReset);		
-		
-		btnReset.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				allR = 0;
-				allG = 0;
-				allB = 0;
-				highR = 0;
-				highG = 0;
-				highB = 0;
-				mediumR = 0;
-				mediumG = 0;
-			  	mediumB = 0;
-			  	lowR = 0;
-			  	lowG = 0;
-			  	lowB = 0;
-				balanceAll = "";
-				balanceHigh = "";
-				balanceMedium = "";
-				balanceLow = "";
-				sliderExposure.setValue(0);
-				sliderContrast.setValue(0);
-				sliderHighlights.setValue(0);
-				sliderMediums.setValue(0);
-				sliderShadows.setValue(0);
-				sliderRED.setValue(0);
-				sliderGREEN.setValue(0);
-				sliderBLUE.setValue(0);
-				sliderVibrance.setValue(0);	
-				sliderSaturation.setValue(0);
-				sliderGrain.setValue(0);
-				sliderVignette.setValue(0);
-				sliderAngle.setValue(0);			
-					
-				//important
-				comboRGB.setSelectedIndex(0);
-				comboRotate.setSelectedIndex(0);
 				
-				//pas besoin car déjà chargé par ComboRotate
-				//loadImage(true);
-			}
-			
-		});
-		
 		positionVideo = new JSlider();
 		if (Shutter.scanIsRunning)
 		{
@@ -1496,6 +1652,12 @@ public class ColorImage {
 					//Shadows 
 					eq = setShadows(eq);
 					
+					//White Balance 
+					eq = setWB(eq);
+
+					//Hue
+					eq = setHUE(eq);
+					
 					//Contrast
 					eq = setContrast(eq);
 					
@@ -1714,6 +1876,12 @@ public class ColorImage {
 					
 					//Shadows 
 					eq = setShadows(eq);
+					
+					//White Balance 
+					eq = setWB(eq);
+					
+					//Hue
+					eq = setHUE(eq);
 					
 					//Contrast
 					eq = setContrast(eq);
@@ -2319,6 +2487,12 @@ public class ColorImage {
 						//Shadows 
 						eq = setShadows(eq);
 						
+						//White Balance 
+						eq = setWB(eq);
+						
+						//Hue
+						eq = setHUE(eq);
+						
 						//Contrast
 						eq = setContrast(eq);
 						
@@ -2657,6 +2831,30 @@ public class ColorImage {
 		
 		return eq;
 	}
+	
+	protected static String setWB(String eq) {
+		if (sliderBalance.getValue() != 6500)
+		{
+			if (eq != "")
+				eq += ",";
+
+			eq += "colortemperature=" + sliderBalance.getValue(); 
+		}
+		
+		return eq;
+	}
+	
+	protected static String setHUE(String eq) {
+		if (sliderHUE.getValue() != 6500)
+		{
+			if (eq != "")
+				eq += ",";
+
+			eq += "hue=h=" + sliderHUE.getValue(); 
+		}
+		
+		return eq;
+	}
 
 	protected static String setShadows(String eq) {
 		if (sliderShadows.getValue() != 0)
@@ -2672,7 +2870,7 @@ public class ColorImage {
 		
 		return eq;
 	}
-
+	
 	protected static String setMediums(String eq) {
 		if (sliderMediums.getValue() != 0)
 		{
@@ -2708,7 +2906,10 @@ public class ColorImage {
 		{
 			if (eq != "")
 				eq += ",";
+			
+			eq += "exposure=" + (float) ((float) sliderExposure.getValue() / 100) * 3; 
 						
+			/*
 			if (sliderExposure.getValue() > 0)
 			{
 				eq += "curves=master=" + "'" + "0/" + (float) sliderExposure.getValue() / 200 + " " +
@@ -2718,7 +2919,7 @@ public class ColorImage {
 			{	
 				eq += "curves=master=" + "'" + (0 - (float) sliderExposure.getValue() / 200) + "/0" + " " +
 						"1/" + (1 - (float) (0 - (float) sliderExposure.getValue() / 200)) + "'"; 
-			}
+			}*/
 		}
 		
 		return eq;
@@ -2738,6 +2939,12 @@ public class ColorImage {
 		
 		//Shadows 
 		eq = setShadows(eq);
+		
+		//White Balance 
+		eq = setWB(eq);
+		
+		//Hue
+		eq = setHUE(eq);
 		
 		//Contrast
 		eq = setContrast(eq);
@@ -2895,6 +3102,8 @@ public class ColorImage {
 		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
 		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
 		
+		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
+						
 		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 52);
@@ -2905,6 +3114,21 @@ public class ColorImage {
 		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 9, frame.getHeight() - 33, btnOriginal.getPreferredSize().width, 21);	
 		btnPreview.setBounds(btnOriginal.getX() + btnOriginal.getWidth() + 9, frame.getHeight() - 33, 120, 21);	
 		btnExportImage.setBounds(btnPreview.getX() + btnPreview.getWidth() + 9, frame.getHeight() - 33, btnExportImage.getPreferredSize().width, 21);	
-		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 9, frame.getHeight() - 33, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 25, 21); 		
+		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 9, frame.getHeight() - 33, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 25, 21); 	
+		
+		btnPrevious.setBounds(14, frame.getHeight() - 33, 84, 21);
+		btnNext.setBounds(btnPrevious.getX() + btnPrevious.getWidth() + 6, btnPrevious.getY(), 84, 21);		
+		btnReset.setBounds(14, btnPrevious.getY() - 21 - 7, btnPrevious.getWidth() + btnNext.getWidth() + 6, 21);	
+		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());
+		
+		scrollBar.setValue(0);
+		
+		if ((sliderAngle.getY() + sliderAngle.getHeight() + 7) - backgroundPanel.getY() >= 7)		
+		{
+			scrollBar.setMaximum((sliderAngle.getY() + sliderAngle.getHeight() + 7) - backgroundPanel.getY());
+			scrollBar.setVisible(true);
+		}
+		else
+			scrollBar.setVisible(false);
 	}
 }

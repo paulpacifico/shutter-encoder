@@ -414,7 +414,7 @@ import javax.swing.JScrollPane;
 		
 		JLabel lblSensibilit = new JLabel(Shutter.language.getProperty("lblSensibility"));
 		lblSensibilit.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblSensibilit.setBounds(10, 62, 64, 15);
+		lblSensibilit.setBounds(10, 62, lblSensibilit.getPreferredSize().width, 15);
 		frame.getContentPane().add(lblSensibilit);
 		
 		tolerance = new JSpinner(new SpinnerNumberModel(80, 0, 100, 10));

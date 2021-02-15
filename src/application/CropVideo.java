@@ -479,11 +479,18 @@ public class CropVideo {
 		lblPresets.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblPresets.setBounds(comboPreset.getX() - lblPresets.getPreferredSize().width - 4, 435, lblPresets.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblPresets);
-				
+						
+		lblRatio.setText(Shutter.language.getProperty("ratio") + "100.00"); //Needed for preferredSize
+		lblRatio.setName("lblRatio");
+		lblRatio.setFont(new Font("Montserrat", Font.PLAIN, 13));
+		lblRatio.setForeground(Utils.themeColor);
+		lblRatio.setBounds(170, 434, lblRatio.getPreferredSize().width, 16);		
+		frame.getContentPane().add(lblRatio);
+
 		caseManuel.setName("caseManuel");
 		caseManuel.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		caseManuel.setSelected(true);
-		caseManuel.setBounds(250, 435, caseManuel.getPreferredSize().width, 16);		
+		caseManuel.setBounds(lblRatio.getX() + lblRatio.getWidth(), 435, caseManuel.getPreferredSize().width, 16);		
 		frame.getContentPane().add(caseManuel);
 		
 		caseManuel.addActionListener(new ActionListener(){
@@ -506,12 +513,6 @@ public class CropVideo {
 			
 		});
 		
-		lblRatio.setName("lblRatio");
-		lblRatio.setFont(new Font("Montserrat", Font.PLAIN, 13));
-		lblRatio.setForeground(Utils.themeColor);
-		lblRatio.setBounds(170, 434, 88, 16);		
-		frame.getContentPane().add(lblRatio);
-
 		positionVideo = new JSlider();
 		if (Shutter.scanIsRunning)
 		{

@@ -33,11 +33,15 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
@@ -52,6 +56,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -59,8 +64,10 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
@@ -83,6 +90,7 @@ import org.w3c.dom.NodeList;
 public class Settings {
 
 	public static JFrame frame = new JFrame();
+	int scrollValue = 0;
 	private JLabel quit;
 	private JLabel reduce;
 	private JLabel help;
@@ -106,7 +114,7 @@ public class Settings {
 	private JLabel lblTheme = new JLabel(Shutter.language.getProperty("lblTheme"));
 	private JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
 	private static JPanel accentColor = new JPanel();
-	public static JComboBox<String> comboLanguage = new JComboBox<String>(new String [] {"Français", "English", "Italiano"});
+	public static JComboBox<String> comboLanguage = new JComboBox<String>(new String [] {"Français", "English", "Español", "Italiano"});
 	public static JComboBox<String> comboTheme = new JComboBox<String>(new String [] {Shutter.language.getProperty("clearTheme"), Shutter.language.getProperty("darkTheme")});
 	public static JTextField txtBlackDetection = new JTextField();
 	public static JRadioButton btnSetBab = new JRadioButton(Shutter.language.getProperty("btnSetBab"));
@@ -122,15 +130,15 @@ public class Settings {
 	public static JRadioButton btnDisableUpdate = new JRadioButton(Shutter.language.getProperty("btnDisableUpdate"));
 	public static JTextField txtExtension = new JTextField();
 	public static JTextField txtExclude = new JTextField();
-	public static JLabel lblDestination1 = new JLabel(); 
-	public static JLabel lblDestination2 = new JLabel(); 
-	public static JLabel lblDestination3 = new JLabel(); 
 	private JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1 " + Shutter.language.getProperty("toDefault"));
 	private JLabel defaultOutput2 = new JLabel(Shutter.language.getProperty("output") + "2 " + Shutter.language.getProperty("toDefault"));
 	private JLabel defaultOutput3 = new JLabel(Shutter.language.getProperty("output") + "3 " + Shutter.language.getProperty("toDefault"));
 	public static JRadioButton lastUsedOutput1 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
 	public static JRadioButton lastUsedOutput2 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
 	public static JRadioButton lastUsedOutput3 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
+	public static JLabel lblDestination1 = new JLabel(); 
+	public static JLabel lblDestination2 = new JLabel(); 
+	public static JLabel lblDestination3 = new JLabel(); 
 	public static int videoPlayerVolume = 50;
 	
 	public Settings() {
@@ -161,7 +169,7 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(332, 750);
+		frame.setSize(350, 670);
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -177,8 +185,156 @@ public class Settings {
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
-		
+				
 		topPanel();
+		
+		JScrollBar scrollBar = new JScrollBar();
+		scrollBar.setMaximum(90);
+		scrollBar.setBackground(new Color(50,50,50));
+		scrollBar.setOrientation(JScrollBar.VERTICAL);
+		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
+		scrollBar.setLocation(frame.getWidth() - scrollBar.getWidth() - 2, topPanel.getHeight());
+		
+		scrollBar.addAdjustmentListener(new AdjustmentListener(){
+			
+			public void adjustmentValueChanged(AdjustmentEvent ae) {
+					int scrollIncrement = scrollBar.getValue() - scrollValue;
+					for (Component c : frame.getContentPane().getComponents())
+					{
+						if (c instanceof JScrollBar == false)
+						{
+							if (c.getName() == null 
+							|| (c.getName().equals("backgroundPanel") == false
+								&& c.getName().equals("btnReset") == false
+								&& c.getName().equals("donate") == false
+								&& c.getName().equals("topPanel") == false))
+							{
+								c.setLocation(c.getLocation().x, c.getLocation().y - scrollIncrement);
+							}
+						}
+					}
+					scrollValue = scrollBar.getValue();
+		      }			
+			
+		});
+		
+		frame.getContentPane().add(scrollBar);
+		
+		JPanel backgroundPanel = new JPanel();
+		backgroundPanel.setName("backgroundPanel");
+		backgroundPanel.setLayout(null);
+		backgroundPanel.setBackground(new Color(50, 50, 50));
+		backgroundPanel.setOpaque(true);
+		backgroundPanel.setSize(frame.getWidth(), 50);	
+		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
+		frame.getContentPane().add(backgroundPanel);
+		
+		JButton btnReset = new JButton(Shutter.language.getProperty("btnReset"));
+		btnReset.setName("btnReset");
+		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnReset.setSize(btnReset.getPreferredSize().width + 4, 21);
+		btnReset.setLocation(backgroundPanel.getWidth() / 2 - (btnReset.getWidth() + 14), backgroundPanel.getHeight() / 2 - btnReset.getHeight() / 2);
+		backgroundPanel.add(btnReset);
+
+		btnReset.addActionListener(new ActionListener() {
+
+			@SuppressWarnings("unused")
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				int reply = JOptionPane.showConfirmDialog(frame,
+						Shutter.language.getProperty("areYouSure"),
+						Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION,
+						JOptionPane.PLAIN_MESSAGE);					
+				if (reply == JOptionPane.YES_OPTION) 
+				{	
+					if (settingsXML.exists())
+						settingsXML.delete();
+					
+					try {
+						String newShutter;
+						if (System.getProperty("os.name").contains("Windows")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
+							String[] arguments = new String[] { newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else if (System.getProperty("os.name").contains("Mac")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+							newShutter = newShutter.substring(0, newShutter.length() - 1);
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
+									"\\ ");
+							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else { //Linux	
+							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
+							Process proc = new ProcessBuilder(arguments).start();
+						}
+	
+					} catch (Exception error) {
+					}
+				
+					System.exit(0);
+				}
+				
+			}
+		
+		});
+		
+		JLabel donate;
+		if (Shutter.getLanguage.equals("Français"))
+			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
+		else
+			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_EN.png")));
+		
+		donate.setName("donate");
+		donate.setHorizontalAlignment(SwingConstants.CENTER);
+		donate.setSize(donate.getPreferredSize().width, donate.getPreferredSize().height);
+		donate.setLocation(backgroundPanel.getWidth() / 2 + 14, backgroundPanel.getHeight() / 2 - donate.getHeight() / 2);
+		backgroundPanel.add(donate);
+
+		donate.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				try {
+					if (Shutter.getLanguage.equals("Français") || Shutter.getLanguage.equals("Italiano") || Shutter.getLanguage.equals("Español"))
+						Desktop.getDesktop().browse(new URI("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=paulpacifico%40free.fr&item_name=Shutter+Encoder&currency_code=EUR"));
+					else
+						Desktop.getDesktop().browse(new URI("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=paulpacifico%40free.fr&item_name=Shutter+Encoder&currency_code=USD"));
+				} catch (IOException | URISyntaxException e) {
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+			
+		});
+					
+		frame.addMouseWheelListener(new MouseWheelListener(){
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
+			}
+			
+		});	
 		
 		frame.addMouseListener(new MouseListener() {
 
@@ -342,8 +498,336 @@ public class Settings {
 		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
 		
+		lblGpuDecoding.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblGpuDecoding.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, lblGpuDecoding.getPreferredSize().width, 16);
+		frame.getContentPane().add(lblGpuDecoding);
+		
+		comboGPU.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboGPU.setEditable(false);
+		comboGPU.setSelectedItem(Shutter.language.getProperty("aucun"));
+		comboGPU.setBounds(lblGpuDecoding.getX() + lblGpuDecoding.getWidth() + 6, lblGpuDecoding.getLocation().y - 4, comboGPU.getPreferredSize().width, 22);
+		comboGPU.setMaximumRowCount(10);
+		frame.getContentPane().add(comboGPU);
+		
+		lblScaleMode.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblScaleMode.setBounds(12, lblGpuDecoding.getLocation().y + lblGpuDecoding.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
+		frame.getContentPane().add(lblScaleMode);
+				
+		comboScale.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboScale.setEditable(false);
+		comboScale.setSelectedItem("bicubic");
+		comboScale.setBounds(lblScaleMode.getX() + lblScaleMode.getWidth() + 6, lblScaleMode.getLocation().y - 4, comboScale.getPreferredSize().width, 22);
+		comboScale.setMaximumRowCount(10);
+		frame.getContentPane().add(comboScale);
+		
+		lblScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblScreenRecord.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
+		frame.getContentPane().add(lblScreenRecord);
+		
+		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
+		txtScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtScreenRecord.setText("25");
+		txtScreenRecord.setColumns(10);
+		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
+		frame.getContentPane().add(txtScreenRecord);
+		
+		txtScreenRecord.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtScreenRecord.getText().length() >= 3)
+					txtScreenRecord.setText("");				
+			}			
+			
+		});
+		
+		lblInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
+		frame.getContentPane().add(lblInputDevice);
+		
+		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
+		txtInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtInputDevice.setText("25");
+		txtInputDevice.setColumns(10);
+		txtInputDevice.setBounds(txtScreenRecord.getLocation().x, lblInputDevice.getLocation().y - 4, 40, 21);
+		frame.getContentPane().add(txtInputDevice);
+		
+		txtInputDevice.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != '.'|| String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtInputDevice.getText().length() >= 5)
+					txtInputDevice.setText("");				
+			}			
+			
+		});
+		
+		lblThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblThreads.setBounds(12, lblInputDevice.getLocation().y + lblInputDevice.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
+		frame.getContentPane().add(lblThreads);
+		
+		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);
+		txtThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtThreads.setColumns(10);
+		txtThreads.setBounds(lblThreads.getLocation().x + lblThreads.getWidth() + 6, lblThreads.getLocation().y - 4, 36, 21);
+		frame.getContentPane().add(txtThreads);
+		
+		txtThreads.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtThreads.getText().length() >= 3)
+					txtThreads.setText("");				
+			}			
+			
+		});
+		
+		lblImageToVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblImageToVideo.setBounds(12, lblThreads.getLocation().y + lblThreads.getHeight() + 10, lblImageToVideo.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblImageToVideo);
+		
+		txtImageDuration.setHorizontalAlignment(SwingConstants.CENTER);
+		txtImageDuration.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtImageDuration.setColumns(10);
+		txtImageDuration.setBounds(lblImageToVideo.getLocation().x + lblImageToVideo.getWidth() + 6, lblImageToVideo.getLocation().y - 4, 36, 21);
+		frame.getContentPane().add(txtImageDuration);
+		
+		JLabel lblSec = new JLabel("sec");
+		lblSec.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblSec.setBounds(txtImageDuration.getLocation().x + txtImageDuration.getWidth() + 4, lblImageToVideo.getLocation().y, 34, lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblSec);
+
+		txtImageDuration.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtImageDuration.getText().length() >= 3)
+					txtImageDuration.setText("");				
+			}			
+			
+		});
+		
+		lblBlackDetection.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblBlackDetection.setBounds(12, lblImageToVideo.getLocation().y + lblImageToVideo.getHeight() + 10, lblImageToVideo.getWidth(), lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblBlackDetection);
+		
+		txtBlackDetection.setHorizontalAlignment(SwingConstants.CENTER);
+		txtBlackDetection.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtBlackDetection.setColumns(10);
+		txtBlackDetection.setBounds(txtImageDuration.getX(), lblBlackDetection.getLocation().y - 4, 36, 21);
+		frame.getContentPane().add(txtBlackDetection);
+		
+		JLabel lblFrame = new JLabel(Shutter.language.getProperty("lblFrames"));
+		lblFrame.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblFrame.setBounds(txtBlackDetection.getLocation().x + txtBlackDetection.getWidth() + 4, lblBlackDetection.getY(), lblFrame.getPreferredSize().width + 4, lblBlackDetection.getPreferredSize().height);
+		frame.getContentPane().add(lblFrame);
+
+		txtBlackDetection.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtBlackDetection.getText().length() >= 3)
+					txtBlackDetection.setText("");				
+			}			
+			
+		});
+		
+		lblTheme.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblTheme.setBounds(12, lblBlackDetection.getLocation().y + lblBlackDetection.getHeight() + 10, lblTheme.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblTheme);
+			
+		comboTheme.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboTheme.setEditable(false);
+		comboTheme.setBounds(lblTheme.getX() + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, comboTheme.getPreferredSize().width, 22);
+		comboTheme.setMaximumRowCount(10);
+		frame.getContentPane().add(comboTheme);
+		
+		comboTheme.addActionListener(new ActionListener() {
+			
+			@SuppressWarnings("unused")
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (frame.isVisible())
+				{			
+					saveSettings();
+												
+					try {
+						String newShutter;
+						if (System.getProperty("os.name").contains("Windows")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
+							String[] arguments = new String[] { newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else if (System.getProperty("os.name").contains("Mac")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+							newShutter = newShutter.substring(0, newShutter.length() - 1);
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
+									"\\ ");
+							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else { //Linux	
+							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
+							Process proc = new ProcessBuilder(arguments).start();
+						}
+	
+					} catch (Exception error) {
+					}
+				
+					System.exit(0);
+				}
+			}
+			
+		});
+		
+		lblColor.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblColor.setBounds(comboTheme.getX() + comboTheme.getWidth() + 12, lblTheme.getLocation().y, lblColor.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblColor);
+		
+		accentColor = new JPanel();
+		accentColor.setName("accentColor");
+		accentColor.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.BLACK));
+		accentColor.setBackground(Utils.themeColor);
+		accentColor.setBounds(lblColor.getLocation().x + lblColor.getWidth() + 12, lblColor.getLocation().y - 4, 41, 22);
+		frame.getContentPane().add(accentColor);
+		
+		accentColor.addMouseListener(new MouseListener(){
+
+			@SuppressWarnings("unused")
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				Utils.themeColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), new Color(71, 163, 236));
+								
+				if (Utils.themeColor != null)
+				{
+					accentColor.setBackground(Utils.themeColor);	
+					
+					saveSettings();
+					
+					try {
+						String newShutter;
+						if (System.getProperty("os.name").contains("Windows")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
+							String[] arguments = new String[] { newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else if (System.getProperty("os.name").contains("Mac")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+							newShutter = newShutter.substring(0, newShutter.length() - 1);
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
+									"\\ ");
+							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else { //Linux	
+							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
+							Process proc = new ProcessBuilder(arguments).start();
+						}
+
+					} catch (Exception error) {
+					}
+				
+					System.exit(0);
+				}
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {		
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+    		
+    	});
+		
+		lblLanguage.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblLanguage.setBounds(12, lblTheme.getLocation().y + lblTheme.getHeight() + 10, lblLanguage.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
+		frame.getContentPane().add(lblLanguage);
+			
+		comboLanguage.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboLanguage.setEditable(false);
+		
+		if (Shutter.getLanguage.equals("Français"))
+			comboLanguage.setSelectedItem("Français");
+		else if (Shutter.getLanguage.equals("English"))
+			comboLanguage.setSelectedItem("English");
+		else if (Shutter.getLanguage.equals("Italiano"))
+			comboLanguage.setSelectedItem("Italiano");
+		else if (Shutter.getLanguage.equals("Español"))
+			comboLanguage.setSelectedItem("Español");
+		
+		comboLanguage.setBounds(btnEndingAction.getX() + lblLanguage.getWidth() + 6, lblLanguage.getLocation().y - 4, comboLanguage.getPreferredSize().width, 22);
+		comboLanguage.setMaximumRowCount(10);
+		frame.getContentPane().add(comboLanguage);
+		
+		comboLanguage.addActionListener(new ActionListener() {
+			
+			@SuppressWarnings("unused")
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (frame.isVisible())
+				{
+					saveSettings();
+					
+					try {
+						String newShutter;
+						if (System.getProperty("os.name").contains("Windows")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
+							String[] arguments = new String[] { newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else if (System.getProperty("os.name").contains("Mac")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+							newShutter = newShutter.substring(0, newShutter.length() - 1);
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
+									"\\ ");
+							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else { //Linux	
+							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
+							Process proc = new ProcessBuilder(arguments).start();
+						}
+	
+					} catch (Exception error) {
+					}
+
+					System.exit(0);
+				}
+			}
+			
+		});
+					
 		defaultOutput1.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		defaultOutput1.setBounds(12,  btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 14, defaultOutput1.getPreferredSize().width, defaultOutput1.getPreferredSize().height);
+		defaultOutput1.setBounds(12,  lblLanguage.getLocation().y + lblLanguage.getHeight() + 14, defaultOutput1.getPreferredSize().width, defaultOutput1.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput1);
 
 		if (lastUsedOutput1.isSelected())
@@ -601,7 +1085,6 @@ public class Settings {
 		lblDestination3.setBounds(12, defaultOutput3.getLocation().y + defaultOutput3.getHeight() + 6, frame.getWidth() - 36, lblDestination3.getPreferredSize().height);
 		frame.getContentPane().add(lblDestination3);
 		
-
 		lblDestination3.addMouseListener(new MouseListener() {
 
 			@Override
@@ -699,380 +1182,12 @@ public class Settings {
 					lblDestination3.setForeground(Utils.themeColor);				
 			}	
 		});
-		
+				
 		// Drag & Drop
 		lblDestination1.setTransferHandler(new OutputTransferHandler1());
 		lblDestination2.setTransferHandler(new OutputTransferHandler2());
 		lblDestination3.setTransferHandler(new OutputTransferHandler3());
-		
-		lblGpuDecoding.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblGpuDecoding.setBounds(12, lblDestination3.getLocation().y + lblDestination3.getHeight() + 10, lblGpuDecoding.getPreferredSize().width, 16);
-		frame.getContentPane().add(lblGpuDecoding);
-		
-		comboGPU.setFont(new Font("FreeSans", Font.PLAIN, 10));
-		comboGPU.setEditable(false);
-		comboGPU.setSelectedItem(Shutter.language.getProperty("aucun"));
-		comboGPU.setBounds(lblGpuDecoding.getX() + lblGpuDecoding.getWidth() + 6, lblGpuDecoding.getLocation().y - 4, comboGPU.getPreferredSize().width, 22);
-		comboGPU.setMaximumRowCount(10);
-		frame.getContentPane().add(comboGPU);
-		
-		lblScaleMode.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblScaleMode.setBounds(12, lblGpuDecoding.getLocation().y + lblGpuDecoding.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
-		frame.getContentPane().add(lblScaleMode);
-				
-		comboScale.setFont(new Font("FreeSans", Font.PLAIN, 10));
-		comboScale.setEditable(false);
-		comboScale.setSelectedItem("bicubic");
-		comboScale.setBounds(lblScaleMode.getX() + lblScaleMode.getWidth() + 6, lblScaleMode.getLocation().y - 4, comboScale.getPreferredSize().width, 22);
-		comboScale.setMaximumRowCount(10);
-		frame.getContentPane().add(comboScale);
-		
-		lblScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblScreenRecord.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
-		frame.getContentPane().add(lblScreenRecord);
-		
-		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
-		txtScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		txtScreenRecord.setText("25");
-		txtScreenRecord.setColumns(10);
-		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
-		frame.getContentPane().add(txtScreenRecord);
-		
-		txtScreenRecord.addKeyListener(new KeyAdapter(){
 
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (txtScreenRecord.getText().length() >= 3)
-					txtScreenRecord.setText("");				
-			}			
-			
-		});
-		
-		lblInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
-		frame.getContentPane().add(lblInputDevice);
-		
-		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
-		txtInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		txtInputDevice.setText("25");
-		txtInputDevice.setColumns(10);
-		txtInputDevice.setBounds(txtScreenRecord.getLocation().x, lblInputDevice.getLocation().y - 4, 40, 21);
-		frame.getContentPane().add(txtInputDevice);
-		
-		txtInputDevice.addKeyListener(new KeyAdapter(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != '.'|| String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (txtInputDevice.getText().length() >= 5)
-					txtInputDevice.setText("");				
-			}			
-			
-		});
-		
-		lblThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblThreads.setBounds(12, lblInputDevice.getLocation().y + lblInputDevice.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
-		frame.getContentPane().add(lblThreads);
-		
-		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);
-		txtThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		txtThreads.setColumns(10);
-		txtThreads.setBounds(lblThreads.getLocation().x + lblThreads.getWidth() + 6, lblThreads.getLocation().y - 4, 36, 21);
-		frame.getContentPane().add(txtThreads);
-		
-		txtThreads.addKeyListener(new KeyAdapter(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (txtThreads.getText().length() >= 3)
-					txtThreads.setText("");				
-			}			
-			
-		});
-		
-		lblImageToVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblImageToVideo.setBounds(12, lblThreads.getLocation().y + lblThreads.getHeight() + 10, lblImageToVideo.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblImageToVideo);
-		
-		txtImageDuration.setHorizontalAlignment(SwingConstants.CENTER);
-		txtImageDuration.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		txtImageDuration.setColumns(10);
-		txtImageDuration.setBounds(lblImageToVideo.getLocation().x + lblImageToVideo.getWidth() + 6, lblImageToVideo.getLocation().y - 4, 36, 21);
-		frame.getContentPane().add(txtImageDuration);
-		
-		JLabel lblSec = new JLabel("sec");
-		lblSec.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblSec.setBounds(txtImageDuration.getLocation().x + txtImageDuration.getWidth() + 4, lblImageToVideo.getLocation().y, 34, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblSec);
-
-		txtImageDuration.addKeyListener(new KeyAdapter(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (txtImageDuration.getText().length() >= 3)
-					txtImageDuration.setText("");				
-			}			
-			
-		});
-		
-		lblBlackDetection.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblBlackDetection.setBounds(12, lblImageToVideo.getLocation().y + lblImageToVideo.getHeight() + 10, lblImageToVideo.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblBlackDetection);
-		
-		txtBlackDetection.setHorizontalAlignment(SwingConstants.CENTER);
-		txtBlackDetection.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		txtBlackDetection.setColumns(10);
-		txtBlackDetection.setBounds(txtImageDuration.getX(), lblBlackDetection.getLocation().y - 4, 36, 21);
-		frame.getContentPane().add(txtBlackDetection);
-		
-		JLabel lblFrame = new JLabel(Shutter.language.getProperty("lblFrames"));
-		lblFrame.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblFrame.setBounds(txtBlackDetection.getLocation().x + txtBlackDetection.getWidth() + 4, lblBlackDetection.getY(), lblFrame.getPreferredSize().width, lblBlackDetection.getPreferredSize().height);
-		frame.getContentPane().add(lblFrame);
-
-		txtBlackDetection.addKeyListener(new KeyAdapter(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (txtBlackDetection.getText().length() >= 3)
-					txtBlackDetection.setText("");				
-			}			
-			
-		});
-		
-		lblTheme.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblTheme.setBounds(12, lblBlackDetection.getLocation().y + lblBlackDetection.getHeight() + 10, lblTheme.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblTheme);
-			
-		comboTheme.setFont(new Font("FreeSans", Font.PLAIN, 10));
-		comboTheme.setEditable(false);
-		comboTheme.setBounds(lblTheme.getX() + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, comboTheme.getPreferredSize().width, 22);
-		comboTheme.setMaximumRowCount(10);
-		frame.getContentPane().add(comboTheme);
-		
-		comboTheme.addActionListener(new ActionListener() {
-			
-			@SuppressWarnings("unused")
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (frame.isVisible())
-				{			
-					saveSettings();
-												
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
-						}
-	
-					} catch (Exception error) {
-					}
-				
-					System.exit(0);
-				}
-			}
-			
-		});
-		
-		lblColor.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblColor.setBounds(comboTheme.getX() + comboTheme.getWidth() + 12, lblTheme.getLocation().y, lblColor.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblColor);
-		
-		accentColor = new JPanel();
-		accentColor.setName("accentColor");
-		accentColor.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.BLACK));
-		accentColor.setBackground(Utils.themeColor);
-		accentColor.setBounds(lblColor.getLocation().x + lblColor.getWidth() + 12, lblColor.getLocation().y - 4, 41, 22);
-		frame.getContentPane().add(accentColor);
-		
-		accentColor.addMouseListener(new MouseListener(){
-
-			@SuppressWarnings("unused")
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				Utils.themeColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), new Color(71, 163, 236));
-								
-				if (Utils.themeColor != null)
-				{
-					accentColor.setBackground(Utils.themeColor);	
-					
-					saveSettings();
-					
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
-						}
-
-					} catch (Exception error) {
-					}
-				
-					System.exit(0);
-				}
-				
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {		
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {				
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {				
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-    		
-    	});
-		
-		lblLanguage.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblLanguage.setBounds(12, lblTheme.getLocation().y + lblTheme.getHeight() + 10, lblLanguage.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblLanguage);
-			
-		comboLanguage.setFont(new Font("FreeSans", Font.PLAIN, 10));
-		comboLanguage.setEditable(false);
-		if (Shutter.getLanguage.equals("Français"))
-			comboLanguage.setSelectedItem("Français");
-		else if (Shutter.getLanguage.equals("English"))
-			comboLanguage.setSelectedItem("English");
-		else if (Shutter.getLanguage.equals("Italiano"))
-			comboLanguage.setSelectedItem("Italiano");
-		comboLanguage.setBounds(btnEndingAction.getX() + lblLanguage.getWidth() + 6, lblLanguage.getLocation().y - 4, comboLanguage.getPreferredSize().width, 22);
-		comboLanguage.setMaximumRowCount(10);
-		frame.getContentPane().add(comboLanguage);
-		
-		comboLanguage.addActionListener(new ActionListener() {
-			
-			@SuppressWarnings("unused")
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (frame.isVisible())
-				{
-					saveSettings();
-					
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
-						}
-	
-					} catch (Exception error) {
-					}
-
-					System.exit(0);
-				}
-			}
-			
-		});
-				
-		JLabel donate;
-		if (comboLanguage.getSelectedItem().equals("Français"))
-			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
-		else
-			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_EN.png")));
-		
-		donate.setHorizontalAlignment(SwingConstants.CENTER);
-		donate.setSize(donate.getPreferredSize());
-		donate.setLocation((frame.getWidth() - donate.getWidth()) / 2 - 6, lblLanguage.getLocation().y + lblLanguage.getHeight() + 14);
-		frame.getContentPane().add(donate);
-
-		donate.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				try {
-					if (comboLanguage.getSelectedItem().equals("Français"))
-						Desktop.getDesktop().browse(new URI("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=paulpacifico%40free.fr&item_name=Shutter+Encoder&currency_code=EUR"));
-					else
-						Desktop.getDesktop().browse(new URI("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=paulpacifico%40free.fr&item_name=Shutter+Encoder&currency_code=USD"));
-				} catch (IOException | URISyntaxException e) {
-				}
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-			}
-			
-		});
-		
 		readSettings();
 		
 	}
@@ -1084,7 +1199,8 @@ public class Settings {
 			
 	private void topPanel() {
 		
-		topPanel = new JPanel();		
+		topPanel = new JPanel();	
+		topPanel.setName("topPanel");
 		topPanel.setLayout(null);
 			
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
@@ -1279,8 +1395,8 @@ public class Settings {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void readSettings() {
-
+	public static void readSettings() {	
+		
 	try {
 		if (settingsXML.exists())
 		{
@@ -1293,13 +1409,15 @@ public class Settings {
 			NodeList nList = doc.getElementsByTagName("Component");
 			
 			for (int temp = 0; temp < nList.getLength(); temp++) {
+								
 				Node nNode = nList.item(temp);
 				
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
 
 					for (Component p : frame.getContentPane().getComponents())
-					{						
+					{			
+
 						if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 						{								
 							if (p instanceof JPanel)
@@ -1332,8 +1450,12 @@ public class Settings {
 								//Visible
 								((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 							}
-							else if (p instanceof JLabel)
-							{									
+							else if (p instanceof JLabel 
+									&& p.getName().equals("backgroundPanel") == false
+									&& p.getName().equals("btnReset") == false
+									&& p.getName().equals("donate") == false
+									&& p.getName().equals("topPanel") == false)
+							{			
 								//Value
 								((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																	
@@ -1341,13 +1463,14 @@ public class Settings {
 								((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 								
 								//Visible
-								((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));																			
+								((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));	
+								
 							}
 							else if (p instanceof JComboBox)
 							{
 								//Value
 								if (p.getName().equals(comboTheme.getName()))
-								{
+								{									
 									if (eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(Shutter.language.getProperty("clearTheme")))
 										((JComboBox) p).setSelectedIndex(0);
 									else if (eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(Shutter.language.getProperty("darkTheme")))	
@@ -1392,6 +1515,7 @@ public class Settings {
 	
 	@SuppressWarnings("rawtypes")
 	public static void saveSettings() {	
+					
 		try {
 			DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();

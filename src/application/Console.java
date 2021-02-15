@@ -76,7 +76,6 @@ public class Console extends JFrame {
 	private JMenuBar menuBar;
 	private final JSpinner spinner;
 	private JCheckBoxMenuItem followLine;
-	
 
 	public Console() {	
 		frmConsole = new JFrame();

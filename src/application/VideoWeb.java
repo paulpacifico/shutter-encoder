@@ -450,7 +450,7 @@ public class VideoWeb {
 		lblQualit = new JLabel(Shutter.language.getProperty("lblQualit"));
 		lblQualit.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblQualit.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblQualit.setBounds(16, 51, 45, 16);		
+		lblQualit.setBounds(16, 51, lblQualit.getPreferredSize().width, 16);		
 		grpURL.add(lblQualit);
 		
 		btnOK = new JButton("OK");
@@ -481,7 +481,7 @@ public class VideoWeb {
 					caseWAV.setSelected(false);
 					
 					if (caseAuto.isSelected())
-						comboFormats.setSelectedIndex(1);
+						comboFormats.setSelectedIndex(2);
 				}
 				else
 				{
@@ -506,7 +506,7 @@ public class VideoWeb {
 					caseMP3.setSelected(false);
 					
 					if (caseAuto.isSelected())
-						comboFormats.setSelectedIndex(1);
+						comboFormats.setSelectedIndex(2);
 				}
 				else
 				{

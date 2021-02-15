@@ -1806,21 +1806,28 @@ public class OverlayWindow {
 			@Override
 			public void keyTyped(KeyEvent e) {	
 				
-				if (changeText == null || changeText.isAlive() == false)
+				if (e.getKeyChar() == ':' || e.getKeyChar() == '\"' || e.getKeyChar() == '\'' || e.getKeyChar() == ';' || e.getKeyChar() == ',')	
 				{
-					changeText = new Thread(new Runnable() {
-						@Override
-						public void run() {
-							do {
-								try {
-									Thread.sleep(100);
-								} catch (InterruptedException e1) {}
-							} while (System.currentTimeMillis() - textTime < 500);
-							
-							sliderChange(false);
-						}
-					});
-					changeText.start();
+					e.consume();
+				}
+				else
+				{
+					if (changeText == null || changeText.isAlive() == false)
+					{
+						changeText = new Thread(new Runnable() {
+							@Override
+							public void run() {
+								do {
+									try {
+										Thread.sleep(100);
+									} catch (InterruptedException e1) {}
+								} while (System.currentTimeMillis() - textTime < 500);
+								
+								sliderChange(false);
+							}
+						});
+						changeText.start();
+					}
 				}
 			}		
 			
@@ -2393,8 +2400,6 @@ public class OverlayWindow {
 						}
 					}
 				}			
-				
-				sliderChange(false);
 				
 			} catch (Exception e) {}	
 			}					

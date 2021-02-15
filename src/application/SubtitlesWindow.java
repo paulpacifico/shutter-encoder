@@ -603,7 +603,7 @@ public class SubtitlesWindow {
 		spinnerSize = new JSpinner(new SpinnerNumberModel(18, 1, 999, 1));
 		spinnerSize.setName("spinnerSize");
 		spinnerSize.setFont(new Font("FreeSans", Font.PLAIN, 11));
-		spinnerSize.setBounds(panelColor.getLocation().x + 99, lblColor.getLocation().y - 3, 50, 22);
+		spinnerSize.setBounds(panelColor.getLocation().x + 103, lblColor.getLocation().y - 3, 50, 22);
 		frame.getContentPane().add(spinnerSize);
 		
 		spinnerSize.addChangeListener(new ChangeListener() {
@@ -703,7 +703,7 @@ public class SubtitlesWindow {
 					spinnerOpacity.setValue(100);
 				}
 				
-				changeSubtitle();				
+				//changeSubtitle();				
 				//sliderChange(false);	
 			}
 			
@@ -875,15 +875,13 @@ public class SubtitlesWindow {
 	}
 	
 	public static void loadImage(String h, String m, String s, String f, boolean analyze) {
-
+		
 		Thread thread = new Thread(new Runnable()
 		{
 			@Override
 			public void run() {
 		        try
 		        {
-					
-					
 		        	String fichier = Shutter.liste.firstElement();
 					if (Shutter.scanIsRunning)
 					{

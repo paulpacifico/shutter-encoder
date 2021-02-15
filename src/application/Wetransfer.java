@@ -27,14 +27,9 @@ import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -58,7 +53,6 @@ import javax.mail.internet.MimeMessage;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -69,7 +63,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.text.JTextComponent;
 
 import library.FFMPEG;
 
@@ -257,24 +250,6 @@ public class Wetransfer {
 		textFrom.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFrom.setColumns(10);		
 		frame.getContentPane().add(textFrom);
-		
-		textFrom.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {				
-				//CTRL + V coller
-		        if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
-		        	PasteFromClipBoard(textFrom);
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {				
-			}
-		});
 					
 		lblRecipient = new JLabel(Shutter.language.getProperty("lblRecipient"));
 		lblRecipient.setBounds(2, lblYourMail.getY() + lblYourMail.getHeight() + 17, 99, 16);
@@ -370,24 +345,6 @@ public class Wetransfer {
 		textPassword.setEchoChar('•');
 		textPassword.setBounds(101, lblMotDePasse.getY() - 1, 154, 21);
 		frame.getContentPane().add(textPassword);
-		
-		textPassword.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {				
-				//CTRL + V coller
-		        if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
-		        	PasteFromClipBoard(textPassword);
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {				
-			}
-		});
 		
 		btnOK = new JButton("OK");
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
@@ -744,20 +701,5 @@ public class Wetransfer {
 			}
 		});
 		thread.start();
-	}
-	
-	private void PasteFromClipBoard(JComponent component){
-		if (System.getProperty("os.name").contains("Mac"))
-		{
-    	   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-           Transferable clipTf = sysClip.getContents(null);
-           if (clipTf != null) {
-               if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                   try {
-                	   ((JTextComponent) component).setText((String) clipTf.getTransferData(DataFlavor.stringFlavor));
-                   } catch (Exception er) {}
-               }
-           }
-		}
 	}
 }

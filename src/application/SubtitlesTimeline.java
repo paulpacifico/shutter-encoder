@@ -1421,7 +1421,7 @@ public class SubtitlesTimeline {
 			public void mouseClicked(MouseEvent down) {				
 				if (down.getClickCount() == 2)
 				{
-					setVideoPosition((int) ((text.getX())/zoom));
+					setVideoPosition((int) ((text.getX())/zoom));					
 				}			
 				
 			}
@@ -1506,7 +1506,10 @@ public class SubtitlesTimeline {
 					setSubtitles(srt);			
 					
 					if (caseShowWaveform.isEnabled() && caseShowWaveform.isSelected())
+					{
+						VideoPlayer.addWaveform(true);
 						waveform.setVisible(true);
+					}
 				}
 			}
 
