@@ -105,7 +105,7 @@ private static StringBuilder getAll;
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
 		firstInput = true;
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd + System.lineSeparator() + System.lineSeparator());
 	    
 	    getAll = new StringBuilder();
 
@@ -151,8 +151,8 @@ private static StringBuilder getAll;
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 							
 							String pipe = "";	
-							if (cmd.contains("pipe:play"))
-							{
+							if (cmd.contains("pipe:play") || caseStream.isSelected())
+							{								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
 								String codec = "";
 								if (comboFonctions.getSelectedItem().equals("QT Animation"))
@@ -163,7 +163,7 @@ private static StringBuilder getAll;
 										aspect = ",setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
 								
 									pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';										
-									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + pipe});
+									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 							}						
 							else if (cmd.contains("pipe:stab")
 									|| comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
@@ -175,11 +175,11 @@ private static StringBuilder getAll;
 									|| caseDeflicker.isSelected() && grpCorrections.isVisible()) && caseDisplay.isSelected() == false)
 							{
 								PathToFFMPEG = "Library\\ffmpeg.exe";
-								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y")});
+								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG)});
 							}
 							else //Permet de mettre en pause FFMPEG
 							{		
-								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y"));
+								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
 								//processFFMPEG.directory(new File("E:"));
 								process = processFFMPEG.start();
 							}
@@ -204,7 +204,7 @@ private static StringBuilder getAll;
 								pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"'  + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';
 							}
 							
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG).replace("-y", "-threads " + Settings.txtThreads.getText() + " -y") + pipe);									
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);									
 							process = processFFMPEG.start();
 						}	
 							
@@ -338,17 +338,17 @@ private static StringBuilder getAll;
 						if (System.getProperty("os.name").contains("Windows"))
 						{
 							PathToFFMPEG = "Library\\ffmpeg.exe";
-							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');
+							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');
 						}
 						else
 						{
 							PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');	
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');	
 						}		
 										
-						Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" +  '"' + " -window_title " + '"' + file.getName() + '"'
+						Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" +  '"' + " -window_title " + '"' + file.getName() + '"'
 						+  System.lineSeparator() + System.lineSeparator());
 						
 						process = processFFMPEG.start();
