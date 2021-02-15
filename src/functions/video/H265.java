@@ -526,6 +526,13 @@ public class H265 extends Shutter {
         	else
         		filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
         }
+		else if (casePreserveSubs.isSelected())
+        {
+        	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        		filterComplex += " -c:s srt -map s?";
+        	else
+        		filterComplex += " -c:s mov_text -map s?";
+        }
 		
         return filterComplex;
 	}
@@ -876,7 +883,7 @@ public class H265 extends Shutter {
 		
 		return "";
 	}
-
+	
 	protected static String setSequence(File file, String extension) {
 		if (caseEnableSequence.isSelected())
 		{
@@ -1022,7 +1029,21 @@ public class H265 extends Shutter {
         	if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
 	    		profile = "main10";
         	
-        	return " -profile:v " + profile + " -level 5.1";
+        	String s[] = FFPROBE.imageResolution.split("x");
+        	if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+        		s = comboH264Taille.getSelectedItem().toString().split("x");
+        			
+            int width = Integer.parseInt(s[0]);
+            int height = Integer.parseInt(s[1]); 
+            
+            float fps = FFPROBE.currentFPS;
+            if (caseConform.isSelected())
+            	fps = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
+            
+            if (width > 1920 && height > 1080 && fps > 30.0f)
+            	return " -profile:v " + profile + " -level 5.2";
+            else
+            	return " -profile:v " + profile + " -level 5.1";
         }
 	}
 	

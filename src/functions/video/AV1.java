@@ -506,6 +506,13 @@ public class AV1 extends Shutter {
         	else
         		filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
         }
+		else if (casePreserveSubs.isSelected())
+        {
+        	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        		filterComplex += " -c:s srt -map s?";
+        	else
+        		filterComplex += " -c:s mov_text -map s?";
+        }
 		
         return filterComplex;
 	}
@@ -865,7 +872,7 @@ public class AV1 extends Shutter {
 		
 		return "";
 	}
-
+	
 	protected static String setSequence(File file, String extension) {
 		if (caseEnableSequence.isSelected())
 		{

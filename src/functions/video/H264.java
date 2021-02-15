@@ -131,7 +131,10 @@ public class H264 extends Shutter {
 					file = setSequenceName(file, extension);
 					
 					//Loop image					
-					String loop = setLoop(extension);						
+					String loop = setLoop(extension);	
+					
+					//Stream
+					String stream = setStream();
 					
 					//Subtitles
 					String subtitles = setSubtitles();
@@ -283,7 +286,17 @@ public class H264 extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 					
 					String output = '"' + fileOut.toString() + '"';
-					if (caseDisplay.isSelected())
+					
+					if (caseStream.isSelected())
+					{
+						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=flv]" + textStream.getText();
+								
+						if (caseDisplay.isSelected())
+							output += "|[f=matroska]pipe:play" + '"';
+						else
+							output += '"';
+					}
+					else if (caseDisplay.isSelected())
 						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
 					
 					//Envoi de la commande
@@ -308,10 +321,10 @@ public class H264 extends Shutter {
 						fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 					}
 					else if (encode) //Encodage
-						FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
+						FFMPEG.run(loop + stream + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
 					else //Preview
 					{						
-						FFMPEG.toFFPLAY(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + " -f matroska pipe:play |");
+						FFMPEG.toFFPLAY(loop + stream + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + " -f matroska pipe:play |");
 						break;
 					}
 										
@@ -323,7 +336,7 @@ public class H264 extends Shutter {
 					if (case2pass.isSelected())
 					{						
 						if (FFMPEG.cancelled == false)
-							FFMPEG.run(loop + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+							FFMPEG.run(loop + stream + FFMPEG.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 						
 						//Attente de la fin de FFMPEG
 						do
@@ -501,7 +514,13 @@ public class H264 extends Shutter {
         		filterComplex += map + " -c:s srt -metadata:s:s:0 language=" + loc.getISO3Language();
         	else
         		filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();      	
-    
+        }
+        else if (casePreserveSubs.isSelected())
+        {
+        	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        		filterComplex += " -c:s srt -map s?";
+        	else
+        		filterComplex += " -c:s mov_text -map s?";
         }
         
         return filterComplex;
@@ -833,7 +852,7 @@ public class H264 extends Shutter {
 		return file;
 	}
 	
-	protected static String setLoop(String extension) {
+	protected static String setLoop(String extension) {		
 		if (caseEnableSequence.isSelected() == false)
 		{
 			switch (extension)
@@ -849,6 +868,19 @@ public class H264 extends Shutter {
 					Shutter.progressBar1.setMaximum(10);
 					return " -loop 1 -t " + Settings.txtImageDuration.getText();
 			}
+		}
+		
+		return "";
+	}
+	
+	protected static String setStream() {
+		
+		if (caseStream.isSelected())
+		{
+			if (caseLoop.isSelected())						
+				return " -stream_loop -1 -re";
+			else
+				return " -re";
 		}
 		
 		return "";
@@ -995,7 +1027,21 @@ public class H264 extends Shutter {
             if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
     			profile = "high10";
             
-        	return " -profile:v " + profile + " -level 5.1";
+        	String s[] = FFPROBE.imageResolution.split("x");
+        	if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+        		s = comboH264Taille.getSelectedItem().toString().split("x");
+        			
+            int width = Integer.parseInt(s[0]);
+            int height = Integer.parseInt(s[1]); 
+            
+            float fps = FFPROBE.currentFPS;
+            if (caseConform.isSelected())
+            	fps = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
+            
+            if (width > 1920 && height > 1080 && fps > 30.0f)
+            	return " -profile:v " + profile + " -level 5.2";
+            else
+            	return " -profile:v " + profile + " -level 5.1";
         }       
 	}
 	

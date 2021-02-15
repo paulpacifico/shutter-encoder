@@ -1007,7 +1007,7 @@ public class AppleProRes extends Shutter {
 	
 	protected static String setFlags() { 
 		
-		String metadata = " -metadata:s " + '"' + "encoder=" + comboFonctions.getSelectedItem().toString() + " " + comboFilter.getSelectedItem().toString() + '"' + " -vendor apl0 -movflags write_colr -flags bitexact -chunk_duration 500K";
+		String metadata = " -metadata:s " + '"' + "encoder=" + comboFonctions.getSelectedItem().toString() + " " + comboFilter.getSelectedItem().toString() + '"' + " -vendor apl0 -movflags write_colr+write_gama -flags bitexact";
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString() + metadata;
 	}

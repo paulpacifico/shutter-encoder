@@ -254,7 +254,7 @@ public class XAVC extends Shutter {
 					}
 					
 					String output = '"' + fileOut.toString() + '"';
-					if (caseDisplay.isSelected())						
+					if (caseDisplay.isSelected())					
 						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:play" + '"';
 							
 					//Mode concat
@@ -778,7 +778,7 @@ public class XAVC extends Shutter {
 		
 		return "";
 	}
-	
+		
 	protected static String setColorspace() {
 		if (caseColorspace.isSelected())
 		{

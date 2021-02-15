@@ -254,7 +254,7 @@ public class AVC extends Shutter {
 					}
 					
 					String output = '"' + fileOut.toString() + '"';
-					if (caseDisplay.isSelected())						
+					if (caseDisplay.isSelected())					
 						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:play" + '"';
 							
 					//Mode concat

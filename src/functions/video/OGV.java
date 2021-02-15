@@ -131,7 +131,7 @@ public class OGV extends Shutter {
 					file = setSequenceName(file, extension);
 					
 					//Loop image					
-					String loop = setLoop(extension);	
+					String loop = setLoop(extension);				
 					
 					//Subtitles
 					String subtitles = setSubtitles();
@@ -457,6 +457,10 @@ public class OGV extends Shutter {
 			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
         	
         	filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
+        }
+		else if (casePreserveSubs.isSelected())
+        {
+        	filterComplex += " -c:s mov_text -map s?";
         }
         
         return filterComplex;

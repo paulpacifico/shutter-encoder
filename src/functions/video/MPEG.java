@@ -475,7 +475,11 @@ public class MPEG extends Shutter {
         	
         	filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
         }
-        
+        else if (casePreserveSubs.isSelected())
+        {
+        	filterComplex += " -c:s mov_text -map s?";
+        }
+		
         return filterComplex;
 	}
 	

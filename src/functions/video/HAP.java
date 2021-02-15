@@ -259,7 +259,7 @@ public class HAP extends Shutter {
 					}
 									
 					String output = '"' + fileOut.toString() + '"';
-					if (caseDisplay.isSelected())						
+					if (caseDisplay.isSelected())					
 						output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
 						
 					//Mode concat

@@ -514,6 +514,13 @@ public class VP9 extends Shutter {
         	else
         		filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
         }
+		else if (casePreserveSubs.isSelected())
+        {
+        	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        		filterComplex += " -c:s srt -map s?";
+        	else
+        		filterComplex += " -c:s mov_text -map s?";
+        }
         
         return filterComplex;
 	}
