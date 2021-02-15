@@ -703,7 +703,7 @@ public class SubtitlesWindow {
 					spinnerOpacity.setValue(100);
 				}
 				
-				//changeSubtitle();				
+				changeSubtitle();				
 				//sliderChange(false);	
 			}
 			
