@@ -74,7 +74,7 @@ public class Splash extends JWindow {
    }
       
    public static void increment() {   
-    	loading += 8;  
+    	loading += 9;  
 		if (loading > 200) 
 			loading = 200;	
    }

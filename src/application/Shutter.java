@@ -983,12 +983,7 @@ public class Shutter {
 						
 		new Settings();
 		Splash.increment();
-		
-		if (Settings.btnDisableUpdate.isSelected() == false)
-			Update.newVersion();
-		
-		Splash.increment();
-		
+				
 		YOUTUBEDL.update();
 		EXIFTOOL.run(""); //Permet de prélancer l'exécutable
 		
@@ -996,6 +991,9 @@ public class Shutter {
 		
 		Utils.changeFrameVisibility(frame, false);
 		topPanel.requestFocus();
+		
+		if (Settings.btnDisableUpdate.isSelected() == false)
+			Update.newVersion();
 	}
 	
 	private static class MousePosition {
