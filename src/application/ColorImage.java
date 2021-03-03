@@ -95,6 +95,7 @@ public class ColorImage {
 	int scrollValue = 0;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameColorImage"));
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+	private static String currentImage = "";
 	private JLabel topImage;
 	private JLabel bottomImage;	
 	private static JButton btnOK;
@@ -111,19 +112,21 @@ public class ColorImage {
 	public static JSlider sliderHighlights = new JSlider();
 	public static JSlider sliderMediums = new JSlider();
 	public static JSlider sliderShadows = new JSlider();
+	public static JSlider sliderWhite = new JSlider();
+	public static JSlider sliderBlack = new JSlider();
 	public static JSlider sliderBalance = new JSlider();
 	public static JSlider sliderHUE = new JSlider();
 	public static JSlider sliderRED = new JSlider();
 	public static JSlider sliderGREEN = new JSlider();
 	public static JSlider sliderBLUE = new JSlider();		
 	public static JSlider sliderVibrance = new JSlider();
+	public static JComboBox<String> comboVibrance = new JComboBox<String>();
 	public static JSlider sliderSaturation = new JSlider();
 	public static JSlider sliderGrain = new JSlider();
 	public static JSlider sliderVignette = new JSlider();
 	public static JComboBox<String> comboRotate = new JComboBox<String>();
 	public static JSlider sliderAngle = new JSlider();
 	public static JSlider positionVideo;
-	
 	
 	/*
 	 * Valeurs
@@ -149,6 +152,11 @@ public class ColorImage {
     private static String balanceHigh = "";
     private static String balanceMedium = "";
     private static String balanceLow = "";
+    public static int vibranceValue = 0;
+    public static int vibranceR = 0;
+    public static int vibranceG = 0;
+    public static int vibranceB = 0;
+    
     
  	public ColorImage() {
 		frame = new JFrame();
@@ -158,16 +166,7 @@ public class ColorImage {
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
 		frame.setSize(1200, 720);
-		frame.setResizable(false);
-		
-		/*
-		if (Functions.frame != null && Functions.frame.isVisible())
-			frame.setModal(false);	
-		else
-			frame.setModal(true);*/
-		
-		//frame.setAlwaysOnTop(true);
-		
+		frame.setResizable(false);		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
@@ -482,6 +481,10 @@ public class ColorImage {
 			  	lowR = 0;
 			  	lowG = 0;
 			  	lowB = 0;
+			  	vibranceValue = 0;
+			  	vibranceR = 0;
+			  	vibranceG = 0;
+			  	vibranceB = 0;
 				balanceAll = "";
 				balanceHigh = "";
 				balanceMedium = "";
@@ -491,6 +494,8 @@ public class ColorImage {
 				sliderHighlights.setValue(0);
 				sliderMediums.setValue(0);
 				sliderShadows.setValue(0);
+				sliderWhite.setValue(0);
+				sliderBlack.setValue(0);
 				sliderBalance.setValue(6500);
 				sliderHUE.setValue(0);
 				sliderRED.setValue(0);
@@ -504,6 +509,7 @@ public class ColorImage {
 					
 				//important
 				comboRGB.setSelectedIndex(0);
+				comboVibrance.setSelectedIndex(0);
 				comboRotate.setSelectedIndex(0);
 				
 				//pas besoin car déjà chargé par ComboRotate
@@ -613,9 +619,103 @@ public class ColorImage {
 		
 		frame.add(sliderContrast);
 		
+		JLabel lblWhite = new JLabel(Shutter.language.getProperty("lblWhite"));
+		lblWhite.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblWhite.setBounds(12, sliderContrast.getY() + sliderContrast.getHeight() + 4, lblExposure.getSize().width, 16);		
+		frame.getContentPane().add(lblWhite);
+		
+		frame.add(lblWhite);
+		
+		sliderWhite.setName("sliderWhite");
+		sliderWhite.setMaximum(100);
+		sliderWhite.setMinimum(-100);
+		sliderWhite.setValue(0);		
+		sliderWhite.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderWhite.setBounds(12, lblWhite.getY() + lblWhite.getHeight(), sliderExposure.getWidth(), 22);	
+		
+		sliderWhite.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderWhite.setValue(0);	
+					lblWhite.setText(Shutter.language.getProperty("lblWhite"));
+				}
+			}
+
+		});
+		
+		sliderWhite.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderWhite.getValue() == 0)
+				{
+					lblWhite.setText(Shutter.language.getProperty("lblWhite"));
+				}
+				else
+				{
+					lblWhite.setText(Shutter.language.getProperty("lblWhite") + " " + sliderWhite.getValue());
+				}
+
+				loadImage(false);
+			}
+			
+		});
+		
+		frame.add(sliderWhite);
+		
+		JLabel lblBlack = new JLabel(Shutter.language.getProperty("lblBlack"));
+		lblBlack.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblBlack.setBounds(12, sliderWhite.getY() + sliderWhite.getHeight() + 4, lblExposure.getSize().width, 16);		
+		frame.getContentPane().add(lblBlack);
+		
+		frame.add(lblBlack);
+		
+		sliderBlack.setName("sliderBlack");
+		sliderBlack.setMaximum(100);
+		sliderBlack.setMinimum(-100);
+		sliderBlack.setValue(0);		
+		sliderBlack.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderBlack.setBounds(12, lblBlack.getY() + lblBlack.getHeight(), sliderExposure.getWidth(), 22);	
+		
+		sliderBlack.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderBlack.setValue(0);	
+					lblBlack.setText(Shutter.language.getProperty("lblBlack"));
+				}
+			}
+
+		});
+		
+		sliderBlack.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderBlack.getValue() == 0)
+				{
+					lblBlack.setText(Shutter.language.getProperty("lblBlack"));
+				}
+				else
+				{
+					lblBlack.setText(Shutter.language.getProperty("lblBlack") + " " + sliderBlack.getValue());
+				}
+
+				loadImage(false);
+			}
+			
+		});
+		
+		frame.add(sliderBlack);
+		
 		JLabel lblHighlights = new JLabel(Shutter.language.getProperty("lblHighlights"));
 		lblHighlights.setFont(new Font("FreeSans", Font.PLAIN, 13));
-		lblHighlights.setBounds(12, sliderContrast.getY() + sliderContrast.getHeight() + 4, lblExposure.getSize().width, 16);		
+		lblHighlights.setBounds(12, sliderBlack.getY() + sliderBlack.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblHighlights);
 		
 		frame.add(lblHighlights);
@@ -753,7 +853,7 @@ public class ColorImage {
 		});
 		
 		frame.add(sliderShadows);
-		
+						
 		JLabel lblBalance = new JLabel(Shutter.language.getProperty("lblBalance"));
 		lblBalance.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblBalance.setBounds(12, sliderShadows.getY() + sliderShadows.getHeight() + 4, lblExposure.getSize().width, 16);		
@@ -832,7 +932,7 @@ public class ColorImage {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				if (sliderHUE.getValue() == 6500)
+				if (sliderHUE.getValue() == 0)
 				{
 					lblHUE.setText(Shutter.language.getProperty("lblHUE"));
 				}
@@ -861,7 +961,7 @@ public class ColorImage {
 		comboRGB.setEditable(false);
 		comboRGB.setSelectedIndex(0);
 		comboRGB.setFont(new Font("FreeSans", Font.PLAIN, 10));
-		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 7, lblRGB.getY() - 3, 80, 22);		
+		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 7, lblRGB.getY() - 3, 70, 22);		
 		frame.getContentPane().add(comboRGB);
 		
 		comboRGB.addActionListener(new ActionListener() {
@@ -1141,6 +1241,42 @@ public class ColorImage {
 		sliderVibrance.setValue(0);		
 		sliderVibrance.setFont(new Font("FreeSans", Font.PLAIN, 11));
 		sliderVibrance.setBounds(12, lblVibrance.getY() + lblVibrance.getHeight(), sliderExposure.getWidth(), 22);	
+				
+		frame.add(sliderVibrance);			
+		
+		comboVibrance.setName("comboVibrance");
+		comboVibrance.setModel(new DefaultComboBoxModel<String>(new String[] {Shutter.language.getProperty("intensity"), Shutter.language.getProperty("red"), Shutter.language.getProperty("green"), Shutter.language.getProperty("blue")}));
+		comboVibrance.setMaximumRowCount(10);
+		comboVibrance.setEditable(false);
+		comboVibrance.setSelectedIndex(0);
+		comboVibrance.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboVibrance.setBounds(scrollBar.getX() - scrollBar.getWidth() - 64, lblVibrance.getY() - 3, 70, 22);		
+		frame.getContentPane().add(comboVibrance);
+		
+		comboVibrance.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("intensity")))
+				{
+					sliderVibrance.setValue(vibranceValue);
+				}
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("red")))	
+				{
+					sliderVibrance.setValue(vibranceR);					
+				}
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("green")))		
+				{
+					sliderVibrance.setValue(vibranceG);					
+				}
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("blue")))
+				{
+					sliderVibrance.setValue(vibranceB);
+				}				
+			}
+			
+		});
 		
 		sliderVibrance.addMouseListener(new MouseAdapter() {
 
@@ -1150,8 +1286,29 @@ public class ColorImage {
 				{
 					sliderVibrance.setValue(0);	
 					lblVibrance.setText(Shutter.language.getProperty("lblVibrance"));
+				
+					if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("intensity")))
+						vibranceValue = sliderVibrance.getValue();	
+					else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("red")))	
+						vibranceR = sliderVibrance.getValue();					
+					else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("green")))		
+						vibranceG = sliderVibrance.getValue();				
+					else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
+						vibranceB = sliderVibrance.getValue();
 				}
 			}
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {				
+				if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("intensity")))
+					vibranceValue = sliderVibrance.getValue();	
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("red")))	
+					vibranceR = sliderVibrance.getValue();					
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("green")))		
+					vibranceG = sliderVibrance.getValue();				
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("blue")))
+					vibranceB = sliderVibrance.getValue();
+			}			
 
 		});
 		
@@ -1168,13 +1325,20 @@ public class ColorImage {
 					lblVibrance.setText(Shutter.language.getProperty("lblVibrance") + " " + sliderVibrance.getValue());
 				}
 				
+				if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("intensity")))
+					vibranceValue = sliderVibrance.getValue();	
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("red")))	
+					vibranceR = sliderVibrance.getValue();					
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("green")))		
+					vibranceG = sliderVibrance.getValue();				
+				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("blue")))
+					vibranceB = sliderVibrance.getValue();
+				
 				loadImage(false);
 			}
 			
 		});
-		
-		frame.add(sliderVibrance);			
-		
+				
 		JLabel lblSaturation = new JLabel(Shutter.language.getProperty("lblSaturation"));
 		lblSaturation.setFont(new Font("FreeSans", Font.PLAIN, 13));
 		lblSaturation.setBounds(12, sliderVibrance.getY() + sliderVibrance.getHeight() + 4, lblExposure.getSize().width, 16);		
@@ -1427,7 +1591,12 @@ public class ColorImage {
 		else		 
 		{
 			if (Utils.inputDeviceIsRunning == false)
-				FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
+			{
+				if (Shutter.fileList.getSelectedValue() == null)
+					Shutter.fileList.setSelectedIndex(0);
+				else
+					FFPROBE.Data(Shutter.fileList.getSelectedValue().toString());
+			}
 		}
 		do {
 			try {
@@ -1628,59 +1797,9 @@ public class ColorImage {
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
-					
-					String eq = "";	
-					
-					//LUTs
-					eq = setLuts(eq);	
-					
-					//Levels
-					eq = setLevels(eq);
-					
-					//Colormatrix
-					eq = setColormatrix(eq);		
-					
-					//Exposure
-					eq = setExposure(eq);
-					
-					//Highlights 
-					eq = setHighlights(eq);
-					
-					//Mediums 
-					eq = setMediums(eq);
-					
-					//Shadows 
-					eq = setShadows(eq);
-					
-					//White Balance 
-					eq = setWB(eq);
-
-					//Hue
-					eq = setHUE(eq);
-					
-					//Contrast
-					eq = setContrast(eq);
-					
-					//Balance
-					eq = setBalance(eq);
-					
-					//Vibrance
-					eq = setVibrance(eq);
-					
-					//Saturation
-					eq = setSaturation(eq);
-					
-					//Grain
-					eq = setGrain(eq);
-					
-					//Rotate
-					eq = setRotate(eq);
-					
-					//Vignette
-					eq = setVignette(eq);
-					
-					//FinalEQ
-					setFinalEQ();					
+										
+					//EQ
+					String eq = setEQ();					
 					
 					if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
 						eq += ",yadif=0:" + FFPROBE.fieldOrder + ":0";		
@@ -1850,62 +1969,13 @@ public class ColorImage {
 					 // Analyse des données
 					 FFPROBE.FrameData(file.toString());	
 					 do
-					 	Thread.sleep(100);						 
+					 {
+					 	Thread.sleep(100);	
+					 }
 					 while (FFPROBE.isRunning);
 					
-						
-					String eq = "";	
-					
-					//LUTs
-					eq = setLuts(eq);	
-
-					//Levels
-					eq = setLevels(eq);
-					
-					//Colormatrix
-					eq = setColormatrix(eq);	
-					
-					//Exposure
-					eq = setExposure(eq);
-					
-					//Highlights 
-					eq = setHighlights(eq);
-					
-					//Mediums 
-					eq = setMediums(eq);
-					
-					//Shadows 
-					eq = setShadows(eq);
-					
-					//White Balance 
-					eq = setWB(eq);
-					
-					//Hue
-					eq = setHUE(eq);
-					
-					//Contrast
-					eq = setContrast(eq);
-					
-					//Balance
-					eq = setBalance(eq);
-					
-					//Vibrance
-					eq = setVibrance(eq);
-					
-					//Saturation
-					eq = setSaturation(eq);
-					
-					//Grain
-					eq = setGrain(eq);
-					
-					//Rotate
-					eq = setRotate(eq);
-					
-					//Vignette
-					eq = setVignette(eq);
-					
-					//FinalEQ
-					setFinalEQ();	
+					//EQ
+					String eq = setEQ();	
 										
 					if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
 						eq += ",yadif=0:" + FFPROBE.fieldOrder + ":0";				 	
@@ -2029,6 +2099,9 @@ public class ColorImage {
 					//Suppression image temporaire
 							    		
 					File file = new File(Shutter.dirTemp + "preview.bmp");
+					if (file.exists()) file.delete();
+					
+					file = new File(Shutter.dirTemp + "color.bmp");
 					if (file.exists()) file.delete();
 									
 					Shutter.caseColor.setSelected(false);
@@ -2167,6 +2240,7 @@ public class ColorImage {
 
 			@Override
 			public void mouseClicked(MouseEvent down) {	
+				
 				if (down.getClickCount() == 2 && down.getButton() == MouseEvent.BUTTON1)
 				{
 					if (frame.getWidth() > 1200)
@@ -2199,7 +2273,7 @@ public class ColorImage {
 					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
+				}				
 			}
 
 			@Override
@@ -2212,6 +2286,27 @@ public class ColorImage {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				
+				if (Shutter.fileList.getSelectedValue() == null)
+					Shutter.fileList.setSelectedIndex(0);
+				
+				if (Shutter.liste.getSize() > 0 && Shutter.fileList.getSelectedValue().equals(currentImage) == false)
+				{					
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
+					File file = new File(Shutter.dirTemp + "preview.bmp");
+					if (file.exists()) file.delete();	
+						
+					loadImage(true);
+						
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
+						
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
+				}				
 			}
 
 			@Override
@@ -2329,6 +2424,8 @@ public class ColorImage {
 					
 					if (Shutter.fileList.getSelectedValue() == null)
 						Shutter.fileList.setSelectedIndex(0);
+					
+					currentImage = Shutter.fileList.getSelectedValue();
 		        	
 		        	File file = new File (Shutter.fileList.getSelectedValue().toString());
 		        			        						
@@ -2464,58 +2561,8 @@ public class ColorImage {
 				            fileOut = new File(Shutter.dirTemp + "color.bmp");
 						}					
 							
-						String eq = "";	
-						
-						//LUTs
-						eq = setLuts(eq);
-						
-						//Levels
-						eq = setLevels(eq);
-					
-						//Colormatrix
-						eq = setColormatrix(eq);	
-						
-						//Exposure
-						eq = setExposure(eq);
-						
-						//Highlights 
-						eq = setHighlights(eq);
-						
-						//Mediums 
-						eq = setMediums(eq);
-						
-						//Shadows 
-						eq = setShadows(eq);
-						
-						//White Balance 
-						eq = setWB(eq);
-						
-						//Hue
-						eq = setHUE(eq);
-						
-						//Contrast
-						eq = setContrast(eq);
-						
-						//Balance
-						eq = setBalance(eq);
-						
-						//Vibrance
-						eq = setVibrance(eq);
-						
-						//Saturation
-						eq = setSaturation(eq);
-						
-						//Grain
-						eq = setGrain(eq);
-						
-						//Rotate
-						eq = setRotate(eq);
-						
-						//Vignette
-						eq = setVignette(eq);
-						
-						//FinalEQ
-						setFinalEQ();	
+						//EQ
+						String eq = setEQ();
 						
 						//Histogramm
 						String histogram = setHistogram(eq);
@@ -2524,21 +2571,24 @@ public class ColorImage {
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
 							cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 17) + histogram + " -y ";
 						
-						//Screen capture
-						if (Shutter.inputDeviceIsRunning)
+						if (fileOut.getName().equals("color.bmp")) //Contourne un bug de preview
 						{
-							File preview = new File(Shutter.dirTemp + "preview.bmp");
-							if (preview.exists())
-								FFMPEG.run(" -i " + '"' + preview + '"' + cmd + '"' + fileOut + '"');
-							else								
-								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
-						}
-						else
-							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     
+							//Screen capture
+							if (Shutter.inputDeviceIsRunning)
+							{
+								File preview = new File(Shutter.dirTemp + "preview.bmp");
+								if (preview.exists())
+									FFMPEG.run(" -i " + '"' + preview + '"' + cmd + '"' + fileOut + '"');
+								else								
+									FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
+							}
+							else
+								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     
 			           
-	          			do {
-			            	Thread.sleep(100);  
-			            } while (FFMPEG.isRunning && FFMPEG.error == false);
+		          			do {
+				            	Thread.sleep(100);  
+				            } while (FFMPEG.isRunning && FFMPEG.error == false);
+						}
 	          			
 	          			Shutter.enableAll();
 
@@ -2746,12 +2796,12 @@ public class ColorImage {
 	}
 
 	protected static String setVibrance(String eq) {
-		if (sliderVibrance.getValue() != 0)
+		if (vibranceValue != 0)
 		{
 			if (eq != "")
 				eq += ",";			
 
-			eq += "vibrance=" + (float) (sliderVibrance.getValue()) / 50;
+			eq += "vibrance=" + (float) (vibranceValue) / 50 + ":rbal=" + (float) (100 + vibranceR) / 100 + ":gbal=" + (float) (100 + vibranceG) / 100 + ":bbal=" + (float) (100 + vibranceB) / 100;
 		}
 		
 		return eq;
@@ -2845,12 +2895,56 @@ public class ColorImage {
 	}
 	
 	protected static String setHUE(String eq) {
-		if (sliderHUE.getValue() != 6500)
+		if (sliderHUE.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 
 			eq += "hue=h=" + sliderHUE.getValue(); 
+		}
+		
+		return eq;
+	}
+	
+	protected static String setWhite(String eq) {
+		if (sliderWhite.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+			
+				
+			if (sliderWhite.getValue() > 0)
+			{
+				float value = 1 - (float) sliderWhite.getValue() / 200;				
+				eq += "colorlevels=rimax=" + value + ":gimax=" + value + ":bimax=" + value; 
+			}
+			else
+			{
+				float value = 1 + (float) sliderWhite.getValue() / 200;
+				eq += "colorlevels=romax=" + value + ":gomax=" + value + ":bomax=" + value; 
+			}
+		}
+		
+		return eq;
+	}
+	
+	protected static String setBlack(String eq) {
+		if (sliderBlack.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+				
+			if (sliderBlack.getValue() > 0)
+			{
+				float value = (float) sliderBlack.getValue() / 200;				
+				eq += "colorlevels=romin=" + value + ":gomin=" + value + ":bomin=" + value; 				 
+			}
+			else
+			{
+				float value = 0 - (float) sliderBlack.getValue() / 200;
+				eq += "colorlevels=rimin=" + value + ":gimin=" + value + ":bimin=" + value;
+			}
+				
 		}
 		
 		return eq;
@@ -2908,28 +3002,35 @@ public class ColorImage {
 				eq += ",";
 			
 			eq += "exposure=" + (float) ((float) sliderExposure.getValue() / 100) * 3; 
-						
-			/*
-			if (sliderExposure.getValue() > 0)
-			{
-				eq += "curves=master=" + "'" + "0/" + (float) sliderExposure.getValue() / 200 + " " +
-						(1 - (float) sliderExposure.getValue() / 200) + "/1" + "'"; 										
-			}
-			else
-			{	
-				eq += "curves=master=" + "'" + (0 - (float) sliderExposure.getValue() / 200) + "/0" + " " +
-						"1/" + (1 - (float) (0 - (float) sliderExposure.getValue() / 200)) + "'"; 
-			}*/
 		}
 		
 		return eq;
 	}
 
-	protected static void setFinalEQ() {
+	protected static String setEQ() {
+		
 		String eq = "";
+		
+		//LUTs
+		eq = setLuts(eq);	
+		
+		//Levels
+		eq = setLevels(eq);
+		
+		//Colormatrix
+		eq = setColormatrix(eq);
 		
 		//Exposure
 		eq = setExposure(eq);
+		
+		//Contrast
+		eq = setContrast(eq);
+		
+		//White
+		eq = setWhite(eq);
+
+		//Black
+		eq = setBlack(eq);
 		
 		//Highlights 
 		eq = setHighlights(eq);
@@ -2939,16 +3040,66 @@ public class ColorImage {
 		
 		//Shadows 
 		eq = setShadows(eq);
-		
+				
 		//White Balance 
 		eq = setWB(eq);
 		
 		//Hue
 		eq = setHUE(eq);
+				
+		//Balance
+		eq = setBalance(eq);
+		
+		//Vibrance
+		eq = setVibrance(eq);
+		
+		//Saturation
+		eq = setSaturation(eq);
+		
+		//Grain
+		eq = setGrain(eq);
+		
+		//Rotate
+		eq = setRotate(eq);
+		
+		//Vignette
+		eq = setVignette(eq);
+		
+		setFinalEQ();
+		
+		return eq;
+	}
+	
+	protected static void setFinalEQ() {
+		String eq = "";
+		
+		//Exposure
+		eq = setExposure(eq);
 		
 		//Contrast
 		eq = setContrast(eq);
 		
+		//White
+		eq = setWhite(eq);
+
+		//Black
+		eq = setBlack(eq);
+		
+		//Highlights 
+		eq = setHighlights(eq);
+		
+		//Mediums 
+		eq = setMediums(eq);
+		
+		//Shadows 
+		eq = setShadows(eq);
+				
+		//White Balance 
+		eq = setWB(eq);
+		
+		//Hue
+		eq = setHUE(eq);
+				
 		//Balance
 		eq = setBalance(eq);
 		
@@ -2982,13 +3133,7 @@ public class ColorImage {
 				do {
 					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
-				
-				File file = new File(Shutter.dirTemp + "color.bmp");
-				
-				do {
-					Thread.sleep(100);
-				} while (file.exists() == false);				
-				
+								
 				File fXmlFile = encFile;
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -3029,7 +3174,7 @@ public class ColorImage {
 						}
 						
 						if  (eElement.getElementsByTagName("Type").item(0).getFirstChild().getTextContent().equals("String"))
-						{
+						{							
 							if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("allR"))
 								allR = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 							else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("allG"))
@@ -3073,7 +3218,18 @@ public class ColorImage {
 								comboRGB.setSelectedIndex(3);
 								setBalance("");
 							}
-
+							
+							if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("vibranceValue"))
+								vibranceValue = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("vibranceR"))
+								vibranceR = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("vibranceG"))
+								vibranceG = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("vibranceB"))
+							{
+								vibranceB = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+								comboVibrance.setSelectedIndex(0);
+							}
 						}
 					}
 				}		
@@ -3081,6 +3237,8 @@ public class ColorImage {
 			comboRGB.setSelectedIndex(0);	
 				
 			loadImage(true);
+			
+			File file = new File(Shutter.dirTemp + "color.bmp");
 			
 			do {
 				Thread.sleep(100);

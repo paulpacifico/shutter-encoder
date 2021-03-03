@@ -1747,7 +1747,9 @@ public class VideoPlayer {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-			calculIn = true;
+				
+				calculIn = true;
+				
 				if (mediaPlayerComponentLeft.getMediaPlayer().getMediaState() != null && sliderInChange)
 				{		
 					if (sliderIn.getValue() > 0)

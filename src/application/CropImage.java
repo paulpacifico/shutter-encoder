@@ -80,7 +80,7 @@ import javax.swing.JTextField;
 public class CropImage {
 	public static JDialog frame;
 	private static JPanel overImage;
-	private static JPanel image = new JPanel();
+	private static JPanel image;
 	
 	/*
 	 * Composants
@@ -126,7 +126,7 @@ public class CropImage {
     public static JLabel px3;
     public static JLabel px4;
     
-    
+	@SuppressWarnings("serial")
 	public CropImage() {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -253,8 +253,245 @@ public class CropImage {
 		});
 		
 		topPanel();
+		
+		//Main image
+		image = new JPanel();
+		image.setLayout(null);        
+		image.setOpaque(false);
 
+		image.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {	
+				if (e.getClickCount() == 2 && !e.isConsumed())
+				{
+					selection.setBounds(image.getWidth() / 4, image.getHeight() / 4, image.getWidth() / 2, image.getHeight() / 2);
+					ancrageDroit = selection.getLocation().x + selection.getWidth();
+					ancrageBas = selection.getLocation().y + selection.getHeight();	
+					selection.repaint();
+					image.repaint();
+					checkSelection();
+				}
+ 			}
+		});
+		
+		image.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent down) {	
+				if (drag == false)
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
+ 			}
+		});
+			
+		//Selection
+		selection = new JPanel() {
+			public void paintComponent(Graphics g) {
+				g.setColor(Utils.themeColor);
+				g.fillRect(0, 0, 6, 6); //NW
+				g.fillRect(selection.getWidth() / 2 - 3,0, 6, 6); //N
+				g.fillRect(selection.getWidth() - 6, 0, 6, 6); //NE
+				g.fillRect(selection.getWidth() - 6,selection.getHeight() / 2 - 3, 6, 6); //E
+				g.fillRect(selection.getWidth() - 6,selection.getHeight() - 6, 6, 6); //SE
+				g.fillRect(selection.getWidth() / 2 - 3,selection.getHeight() -6, 6, 6); //S
+				g.fillRect(0,selection.getHeight() - 6, 6, 6); //SW
+				g.fillRect(0,selection.getHeight() / 2 -3, 6, 6); //W					
+			}
+		};
+		selection.setBorder(BorderFactory.createDashedBorder(Color.WHITE, 4, 4));	
+		
+		selection.addMouseMotionListener(new MouseMotionListener(){
+
+			@Override
+			public void mouseDragged(MouseEvent e) {		
+				
+				drag = true;
+				
+				//Position de la souris depuis le point d'appui start
+				int mouseX = MouseInfo.getPointerInfo().getLocation().x - frame.getLocation().x - startX - frameX;				
+				int mouseY = MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y - startY - frameY;
+				
+				int mouseInPictureX = MouseInfo.getPointerInfo().getLocation().x - frame.getLocation().x - frameX;
+				int mouseInPictureY = MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y - frameY;
+						
+				//Permet d'éviter d'avoir une position négative de la sélection
+				if (mouseInPictureX > -10 && mouseInPictureX < image.getWidth() + 10 && mouseInPictureY > -10 && mouseInPictureY < image.getHeight() + 10)
+				{
+					if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR))
+					{
+						selection.setLocation(mouseX, mouseY);						
+						
+						if (shift)
+							selection.setSize(2 * ancrageDroit - 2 * mouseX - selection.getWidth(), 2 * ancrageBas - 2 * mouseY - selection.getHeight());
+						else
+							selection.setSize(ancrageDroit - mouseX, ancrageBas - mouseY);
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR))
+					{
+						selection.setLocation(selection.getLocation().x, mouseY);
+						
+						if (shift)
+							selection.setSize(selection.getSize().width, 2 * ancrageBas - 2 * mouseY - selection.getHeight());
+						else
+							selection.setSize(selection.getSize().width, ancrageBas - mouseY);
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR))
+					{			
+						if (shift)
+						{						
+							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), mouseY);
+							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), 2 * ancrageBas - 2 * mouseY - selection.getHeight());
+						}
+						else
+						{
+							selection.setLocation(selection.getLocation().x, mouseY);
+							selection.setSize(e.getX(), ancrageBas - mouseY);
+						}
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR))
+					{								
+						if (shift)
+						{
+							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), selection.getLocation().y);
+							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), selection.getSize().height);
+						}
+						else
+							selection.setSize(e.getX(), selection.getSize().height);
+																
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR))
+					{
+						if (shift)						
+						{
+							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), selection.getLocation().y + (selection.getHeight() - e.getY()));
+							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), e.getY() - (selection.getHeight() - e.getY()));
+						}
+						else
+							selection.setSize(e.getX(), e.getY());
+						
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR))
+					{				
+						
+						if (shift)
+						{						
+							selection.setLocation(selection.getLocation().x, selection.getLocation().y + (selection.getHeight() - e.getY()));
+							selection.setSize(selection.getSize().width, e.getY() - (selection.getHeight() - e.getY()));
+						}
+						else
+							selection.setSize(selection.getSize().width, e.getY());
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR))
+					{
+						
+						if (shift)
+						{						
+							selection.setLocation(mouseX, selection.getLocation().y + (selection.getHeight() - e.getY()));
+							selection.setSize(2 * ancrageDroit - 2 * mouseX - selection.getWidth(), e.getY() - (selection.getHeight() - e.getY()));
+						}
+						else
+						{
+							selection.setLocation(mouseX, selection.getLocation().y);
+							selection.setSize(ancrageDroit - mouseX, e.getY());	
+						}
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR))
+					{
+						selection.setLocation(mouseX, selection.getLocation().y);	
+											
+						if (shift)
+							selection.setSize(2 * ancrageDroit - 2 * mouseX - selection.getWidth(), selection.getSize().height);
+						else
+							selection.setSize(ancrageDroit - mouseX, selection.getSize().height);
+					}
+					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
+					{
+						if (shift && ctrl)
+							selection.setLocation(mouseX, selection.getLocation().y);
+						else if (shift)
+							selection.setLocation(selection.getLocation().x, mouseY);
+						else if (ctrl)
+							selection.setLocation(mouseX, selection.getLocation().y);
+						else					
+							selection.setLocation(mouseX, mouseY);
+					}
+				}
+									
+					//Point d'ancrage
+					ancrageDroit = selection.getLocation().x + selection.getWidth();
+					ancrageBas = selection.getLocation().y + selection.getHeight();
+					
+					checkSelection();									
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				
+				if (drag == false)
+				{
+					if (e.getX() <= 10 && e.getY() <= 10)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+					else if (e.getX() <= selection.getWidth() / 2 + 5 && e.getX() >= selection.getWidth() / 2 - 5
+							&& e.getY() <= 10)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10 && e.getY() <= 10)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10
+							&& e.getY() <= selection.getHeight() / 2 + 5 && e.getY() >= selection.getHeight() / 2 - 5)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10
+							&& e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+					else if (e.getX() <= selection.getWidth() / 2 + 5 && e.getX() >= selection.getWidth() / 2 - 5
+							&& e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+					else if (e.getX() <= 10 && e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+					else if (e.getX() <= 6 && e.getY() <= selection.getHeight() / 2 + 5 && e.getY() >= selection.getHeight() / 2 - 5)
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+					else		
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+				}
+			}
+			
+		});
+		
+		selection.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {;
+				startX = e.getPoint().x;
+				startY = e.getPoint().y;
+ 			}
+			
+			@Override public void mouseReleased(MouseEvent e) {
+				
+				drag = false;
+				
+				if (selection.getLocation().x <= 0 && selection.getLocation().y <= 0) 
+					selection.setLocation(0, 0);
+				else if (selection.getLocation().x + selection.getWidth() > image.getWidth() && selection.getLocation().y <= 0)
+					selection.setLocation(image.getWidth() - selection.getWidth(), 0);
+				else if (selection.getLocation().x <= 0 && selection.getLocation().y + selection.getHeight() > image.getHeight())
+					selection.setLocation(0, image.getHeight() - selection.getHeight());
+				else if (selection.getLocation().x + selection.getWidth() > image.getWidth() && selection.getLocation().y + selection.getHeight() > image.getHeight())
+					selection.setLocation(image.getWidth() - selection.getWidth(), image.getHeight() - selection.getHeight());
+				else if (selection.getLocation().x + selection.getWidth() > image.getWidth())
+					selection.setLocation(image.getWidth() - selection.getWidth(), selection.getLocation().y);
+				else if (selection.getLocation().y + selection.getHeight() > image.getHeight())
+					selection.setLocation(selection.getLocation().x, image.getHeight() - selection.getHeight());
+				else if (selection.getLocation().x <= 0)
+					selection.setLocation(0, selection.getLocation().y);
+				else if (selection.getLocation().y <= 0)
+					selection.setLocation(selection.getLocation().x, 0);
+			}
+			
+		});		
+		
 		loadImage();
+		
+		//Important
+		selection.setBounds(image.getWidth() / 4, image.getHeight() / 4, image.getWidth() / 2, image.getHeight() / 2);	
+		ancrageDroit = selection.getLocation().x + selection.getWidth();
+		ancrageBas = selection.getLocation().y + selection.getHeight();
 						
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
@@ -573,6 +810,7 @@ public class CropImage {
 	}
 
 	protected static void checkSelection() {
+		
 		//Si la sélection est trop grande			
 		if (selection.getLocation().x < 0)
 			selection.setLocation(0, selection.getLocation().y);
@@ -580,7 +818,7 @@ public class CropImage {
 		if (selection.getLocation().y < 0)
 			selection.setLocation(selection.getLocation().x, 0);
 		
-		if (selection.getLocation().x + selection.getWidth() > image.getWidth())
+		if (selection.getLocation().x + selection.getWidth() > image.getWidth() || selection.getLocation().x + selection.getWidth() < 0)
 		{
 			if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				selection.setLocation(image.getWidth() - selection.getWidth(), selection.getLocation().y);
@@ -588,7 +826,7 @@ public class CropImage {
 				selection.setSize(image.getWidth() - selection.getLocation().x, selection.getHeight());
 		}
 		
-		if (selection.getLocation().y + selection.getHeight() > image.getHeight())
+		if (selection.getLocation().y + selection.getHeight() > image.getHeight() || selection.getLocation().y + selection.getHeight() < 0)
 		{
 			if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				selection.setLocation(selection.getLocation().x, image.getHeight() - selection.getHeight());
@@ -597,19 +835,11 @@ public class CropImage {
 		}
 		
 		if (selection.getWidth() > image.getWidth())
-			selection.setSize(image.getWidth(), selection.getHeight());	
-		/*
-		if (textWidth.getText().matches("[0-9]+") && textHeight.getText().matches("[0-9]+"))
-		{
-			if (Integer.valueOf(textWidth.getText()) == ImageWidth)
-				selection.setSize(image.getWidth(), selection.getHeight());	
-			if (Integer.valueOf(textHeight.getText()) == ImageHeight)
-				selection.setSize(selection.getWidth(), image.getHeight());	
-		}*/
+			selection.setSize(image.getWidth(), selection.getHeight());
 		
 		//Texte 
 		int borderW = selection.getWidth();
-		int borderH =  selection.getHeight();
+		int borderH = selection.getHeight();
 		
 		int outW;
 		int outH;
@@ -915,7 +1145,6 @@ public class CropImage {
 		
 		image.setSize(containerWidth, containerHeight);
 		
-		//frame.setSize(frame.getWidth(), image.getHeight() + 120);
 		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
@@ -929,240 +1158,9 @@ public class CropImage {
 		frameX = image.getLocation().x;
 		frameY = image.getLocation().y;
 		
-		image.setLayout(null);        
-		image.setOpaque(false);
-
-		selection = new JPanel() {
-			public void paintComponent(Graphics g) {
-				g.setColor(Utils.themeColor);
-				g.fillRect(0, 0, 6, 6); //NW
-				g.fillRect(selection.getWidth() / 2 - 3,0, 6, 6); //N
-				g.fillRect(selection.getWidth() - 6, 0, 6, 6); //NE
-				g.fillRect(selection.getWidth() - 6,selection.getHeight() / 2 - 3, 6, 6); //E
-				g.fillRect(selection.getWidth() - 6,selection.getHeight() - 6, 6, 6); //SE
-				g.fillRect(selection.getWidth() / 2 - 3,selection.getHeight() -6, 6, 6); //S
-				g.fillRect(0,selection.getHeight() - 6, 6, 6); //SW
-				g.fillRect(0,selection.getHeight() / 2 -3, 6, 6); //W					
-			}
-		};
-		selection.setBorder(BorderFactory.createDashedBorder(Color.WHITE, 4, 4));
-		selection.setBounds(image.getWidth() / 4, image.getHeight() / 4, image.getWidth() / 2, image.getHeight() / 2);
-		image.add(selection);
-		
 		ancrageDroit = selection.getLocation().x + selection.getWidth();
 		ancrageBas = selection.getLocation().y + selection.getHeight();
-				 							
-		selection.addMouseMotionListener(new MouseMotionListener(){
-
-			@Override
-			public void mouseDragged(MouseEvent e) {		
 				
-				drag = true;
-				
-				//Position de la souris depuis le point d'appui start
-				int mouseX = MouseInfo.getPointerInfo().getLocation().x - frame.getLocation().x - startX - frameX;				
-				int mouseY = MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y - startY - frameY;
-				
-				int mouseInPictureX = MouseInfo.getPointerInfo().getLocation().x - frame.getLocation().x - frameX;
-				int mouseInPictureY = MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y - frameY;
-						
-				//Permet d'éviter d'avoir une position négative de la sélection
-				if (mouseInPictureX > -10 && mouseInPictureX < image.getWidth() + 10 && mouseInPictureY > -10 && mouseInPictureY < image.getHeight() + 10)
-				{
-					if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR))
-					{
-						selection.setLocation(mouseX, mouseY);						
-						
-						if (shift)
-							selection.setSize(2 * ancrageDroit - 2 * mouseX - selection.getWidth(), 2 * ancrageBas - 2 * mouseY - selection.getHeight());
-						else
-							selection.setSize(ancrageDroit - mouseX, ancrageBas - mouseY);
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR))
-					{
-						selection.setLocation(selection.getLocation().x, mouseY);
-						
-						if (shift)
-							selection.setSize(selection.getSize().width, 2 * ancrageBas - 2 * mouseY - selection.getHeight());
-						else
-							selection.setSize(selection.getSize().width, ancrageBas - mouseY);
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR))
-					{			
-						if (shift)
-						{						
-							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), mouseY);
-							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), 2 * ancrageBas - 2 * mouseY - selection.getHeight());
-						}
-						else
-						{
-							selection.setLocation(selection.getLocation().x, mouseY);
-							selection.setSize(e.getX(), ancrageBas - mouseY);
-						}
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR))
-					{								
-						if (shift)
-						{
-							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), selection.getLocation().y);
-							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), selection.getSize().height);
-						}
-						else
-							selection.setSize(e.getX(), selection.getSize().height);
-																
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR))
-					{
-						if (shift)						
-						{
-							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), selection.getLocation().y + (selection.getHeight() - e.getY()));
-							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), e.getY() - (selection.getHeight() - e.getY()));
-						}
-						else
-							selection.setSize(e.getX(), e.getY());
-						
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR))
-					{				
-						
-						if (shift)
-						{						
-							selection.setLocation(selection.getLocation().x, selection.getLocation().y + (selection.getHeight() - e.getY()));
-							selection.setSize(selection.getSize().width, e.getY() - (selection.getHeight() - e.getY()));
-						}
-						else
-							selection.setSize(selection.getSize().width, e.getY());
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR))
-					{
-						
-						if (shift)
-						{						
-							selection.setLocation(mouseX, selection.getLocation().y + (selection.getHeight() - e.getY()));
-							selection.setSize(2 * ancrageDroit - 2 * mouseX - selection.getWidth(), e.getY() - (selection.getHeight() - e.getY()));
-						}
-						else
-						{
-							selection.setLocation(mouseX, selection.getLocation().y);
-							selection.setSize(ancrageDroit - mouseX, e.getY());	
-						}
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR))
-					{
-						selection.setLocation(mouseX, selection.getLocation().y);	
-											
-						if (shift)
-							selection.setSize(2 * ancrageDroit - 2 * mouseX - selection.getWidth(), selection.getSize().height);
-						else
-							selection.setSize(ancrageDroit - mouseX, selection.getSize().height);
-					}
-					else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
-					{
-						if (shift && ctrl)
-							selection.setLocation(mouseX, selection.getLocation().y);
-						else if (shift)
-							selection.setLocation(selection.getLocation().x, mouseY);
-						else if (ctrl)
-							selection.setLocation(mouseX, selection.getLocation().y);
-						else					
-							selection.setLocation(mouseX, mouseY);
-					}
-				}
-									
-					//Point d'ancrage
-					ancrageDroit = selection.getLocation().x + selection.getWidth();
-					ancrageBas = selection.getLocation().y + selection.getHeight();
-					
-					checkSelection();									
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				
-				if (drag == false)
-				{
-					if (e.getX() <= 10 && e.getY() <= 10)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() / 2 + 5 && e.getX() >= selection.getWidth() / 2 - 5
-							&& e.getY() <= 10)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10 && e.getY() <= 10)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10
-							&& e.getY() <= selection.getHeight() / 2 + 5 && e.getY() >= selection.getHeight() / 2 - 5)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10
-							&& e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() / 2 + 5 && e.getX() >= selection.getWidth() / 2 - 5
-							&& e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-					else if (e.getX() <= 10 && e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
-					else if (e.getX() <= 6 && e.getY() <= selection.getHeight() / 2 + 5 && e.getY() >= selection.getHeight() / 2 - 5)
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
-					else		
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-				}
-			}
-			
-		});
-		
-		selection.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {;
-				startX = e.getPoint().x;
-				startY = e.getPoint().y;
- 			}
-			
-			@Override public void mouseReleased(MouseEvent e) {
-				
-				drag = false;
-				
-				if (selection.getLocation().x <= 0 && selection.getLocation().y <= 0) 
-					selection.setLocation(0, 0);
-				else if (selection.getLocation().x + selection.getWidth() > image.getWidth() && selection.getLocation().y <= 0)
-					selection.setLocation(image.getWidth() - selection.getWidth(), 0);
-				else if (selection.getLocation().x <= 0 && selection.getLocation().y + selection.getHeight() > image.getHeight())
-					selection.setLocation(0, image.getHeight() - selection.getHeight());
-				else if (selection.getLocation().x + selection.getWidth() > image.getWidth() && selection.getLocation().y + selection.getHeight() > image.getHeight())
-					selection.setLocation(image.getWidth() - selection.getWidth(), image.getHeight() - selection.getHeight());
-				else if (selection.getLocation().x + selection.getWidth() > image.getWidth())
-					selection.setLocation(image.getWidth() - selection.getWidth(), selection.getLocation().y);
-				else if (selection.getLocation().y + selection.getHeight() > image.getHeight())
-					selection.setLocation(selection.getLocation().x, image.getHeight() - selection.getHeight());
-				else if (selection.getLocation().x <= 0)
-					selection.setLocation(0, selection.getLocation().y);
-				else if (selection.getLocation().y <= 0)
-					selection.setLocation(selection.getLocation().x, 0);
-			}
-			
-		});		
-		
-		image.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {	
-				if (e.getClickCount() == 2 && !e.isConsumed())
-				{
-					selection.setBounds(image.getWidth() / 4, image.getHeight() / 4, image.getWidth() / 2, image.getHeight() / 2);
-					ancrageDroit = selection.getLocation().x + selection.getWidth();
-					ancrageBas = selection.getLocation().y + selection.getHeight();	
-					selection.repaint();
-					image.repaint();
-					checkSelection();
-				}
- 			}
-		});
-		
-		image.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent down) {	
-				if (drag == false)
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
- 			}
-		});
-
 		if (overImage == null)
 		{
 			overImage = new JPanel() {
@@ -1184,6 +1182,8 @@ public class CropImage {
 		overImage.setBounds(image.getBounds());
 		overImage.setLayout(null);    
 			
+		image.add(selection);
+		
 		frame.getContentPane().add(overImage);
 		frame.getContentPane().add(image);
 		

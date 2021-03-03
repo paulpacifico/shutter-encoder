@@ -1116,6 +1116,85 @@ public class Utils extends Shutter {
 	
 					color.appendChild(componentlowB);
 					
+					//vibranceValue
+					Element componentvibranceValue = document.createElement("Component");
+					
+					//Type
+					Element cTypevibranceValue = document.createElement("Type");
+					cTypevibranceValue.appendChild(document.createTextNode("String"));
+					componentvibranceValue.appendChild(cTypevibranceValue);
+	
+					//Name
+					Element cNamevibranceValue = document.createElement("Name");
+					cNamevibranceValue.appendChild(document.createTextNode("vibranceValue"));
+					componentvibranceValue.appendChild(cNamevibranceValue);
+					
+					//Value
+					Element cValuevibranceValue = document.createElement("Value");
+					cValuevibranceValue.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceValue)));
+					componentvibranceValue.appendChild(cValuevibranceValue);
+	
+					color.appendChild(componentvibranceValue);
+					
+					//vibranceR
+					Element componentvibranceR = document.createElement("Component");
+					
+					//Type
+					Element cTypevibranceR = document.createElement("Type");
+					cTypevibranceR.appendChild(document.createTextNode("String"));
+					componentvibranceR.appendChild(cTypevibranceR);
+	
+					//Name
+					Element cNamevibranceR = document.createElement("Name");
+					cNamevibranceR.appendChild(document.createTextNode("vibranceR"));
+					componentvibranceR.appendChild(cNamevibranceR);
+					
+					//Value
+					Element cValuevibranceR = document.createElement("Value");
+					cValuevibranceR.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceR)));
+					componentvibranceR.appendChild(cValuevibranceR);
+	
+					color.appendChild(componentvibranceR);
+					
+					//vibranceG
+					Element componentvibranceG = document.createElement("Component");
+					
+					//Type
+					Element cTypevibranceG = document.createElement("Type");
+					cTypevibranceG.appendChild(document.createTextNode("String"));
+					componentvibranceG.appendChild(cTypevibranceG);
+	
+					//Name
+					Element cNamevibranceG = document.createElement("Name");
+					cNamevibranceG.appendChild(document.createTextNode("vibranceG"));
+					componentvibranceG.appendChild(cNamevibranceG);
+					
+					//Value
+					Element cValuevibranceG = document.createElement("Value");
+					cValuevibranceG.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceG)));
+					componentvibranceG.appendChild(cValuevibranceG);
+	
+					color.appendChild(componentvibranceG);
+					
+					//vibranceB
+					Element componentvibranceB = document.createElement("Component");
+					
+					//Type
+					Element cTypevibranceB = document.createElement("Type");
+					cTypevibranceB.appendChild(document.createTextNode("String"));
+					componentvibranceB.appendChild(cTypevibranceB);
+	
+					//Name
+					Element cNamevibranceB = document.createElement("Name");
+					cNamevibranceB.appendChild(document.createTextNode("vibranceB"));
+					componentvibranceB.appendChild(cNamevibranceB);
+					
+					//Value
+					Element cValuevibranceB = document.createElement("Value");
+					cValuevibranceB.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceB)));
+					componentvibranceB.appendChild(cValuevibranceB);
+	
+					color.appendChild(componentvibranceB);
 					
 				root.appendChild(color);
 				}

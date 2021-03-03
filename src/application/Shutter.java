@@ -202,7 +202,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "14.7";
+	public static String actualVersion = "14.8";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static File documents = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
@@ -334,6 +334,7 @@ public class Shutter {
 	protected static JLabel lblSplit;
 	protected static JLabel lblMix;
 	protected static JRadioButton caseInAndOut;
+	protected static JRadioButton caseOpenGop;
 	protected static JRadioButton caseForcerProgressif;
 	protected static JRadioButton caseForcerEntrelacement;
 	protected static JRadioButton caseForcerInversion;
@@ -745,7 +746,6 @@ public class Shutter {
 		//Settings
 		Settings.txtThreads.setText("0");
 		Settings.txtImageDuration.setText("10");
-		Settings.txtBlackDetection.setText("10");
 				
 		Splash.increment();
 		topPanel();
@@ -2046,8 +2046,9 @@ public class Shutter {
 				if (Informations.infoTabbedPane.getTabCount() == 0)
 					Utils.changeFrameVisibility(Informations.frame, false);
 
-				for (String item : fileList.getSelectedValuesList()) {
-					MEDIAINFO.run("--Output=HTML " + '"' + item + '"', item);
+				for (String item : fileList.getSelectedValuesList()) 
+				{
+					MEDIAINFO.run("--Output=HTML " + '"' + item + '"', item);					
 				}
 			}
 		});
@@ -4778,7 +4779,7 @@ public class Shutter {
 		comboInterpret.setLocation(lblInterpretation.getX() + lblInterpretation.getWidth() + 4, lblInterpretation.getLocation().y);
 		grpResolution.add(comboInterpret);
 		
-		lblIsInterpret = new JLabel("i/s");
+		lblIsInterpret = new JLabel(Shutter.language.getProperty("fps"));
 		lblIsInterpret.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblIsInterpret.setSize(20, 16);
 		lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
@@ -5392,9 +5393,9 @@ public class Shutter {
 		caseSequenceFPS.setBounds(caseEnableSequence.getLocation().x + caseEnableSequence.getWidth() + 4, caseEnableSequence.getLocation().y + 3, 56, 16);
 		grpImageSequence.add(caseSequenceFPS);
 
-		JLabel lblSequenceFPS = new JLabel("i/s");
+		JLabel lblSequenceFPS = new JLabel(Shutter.language.getProperty("fps"));
 		lblSequenceFPS.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		lblSequenceFPS.setBounds(caseSequenceFPS.getLocation().x + caseSequenceFPS.getWidth() + 4, caseSequenceFPS.getLocation().y, 13, 16);
+		lblSequenceFPS.setBounds(caseSequenceFPS.getLocation().x + caseSequenceFPS.getWidth() + 4, caseSequenceFPS.getLocation().y, lblSequenceFPS.getPreferredSize().width, 16);
 		grpImageSequence.add(lblSequenceFPS);
 
 		caseEnableSequence.addActionListener(new ActionListener() {
@@ -8039,7 +8040,7 @@ public class Shutter {
 			}
 		});
 			
-		lblOffsetFPS = new JLabel("i/s");
+		lblOffsetFPS = new JLabel(Shutter.language.getProperty("fps"));
 		lblOffsetFPS.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblOffsetFPS.setBounds(txtAudioOffset.getLocation().x + txtAudioOffset.getWidth() + 3, caseAudioOffset.getLocation().y + 4, lblOffsetFPS.getPreferredSize().width, 16);
 		grpSetAudio.add(lblOffsetFPS);
@@ -9068,7 +9069,7 @@ public class Shutter {
 			}
 		});
 		
-		lblAudioIs = new JLabel("i/s");
+		lblAudioIs = new JLabel(Shutter.language.getProperty("fps"));
 		lblAudioIs.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblAudioIs.setSize(lblAudioIs.getPreferredSize().width, 16);
 		lblAudioIs.setLocation(comboAudioOut.getLocation().x + comboAudioOut.getWidth() + 7, caseConvertAudioFramerate.getLocation().y + 3);
@@ -10636,6 +10637,11 @@ public class Shutter {
 
 		});
 
+		caseOpenGop = new JRadioButton(Shutter.language.getProperty("btnOpenGOP"));
+		caseOpenGop.setName("caseOpenGop");
+		caseOpenGop.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseOpenGop.setSize(caseOpenGop.getPreferredSize().width, 23);
+		
 		caseForcerProgressif = new JRadioButton(language.getProperty("caseForcerProgressif"));
 		caseForcerProgressif.setName("caseForcerProgressif");
 		caseForcerProgressif.setToolTipText(language.getProperty("tooltipProgressif"));
@@ -10683,7 +10689,7 @@ public class Shutter {
 
 		comboForcerDesentrelacement = new JComboBox<String>();
 		comboForcerDesentrelacement.setName("comboForcerDesentrelacement");
-		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "detelecine"}));
+		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "detelecine"}));
 		comboForcerDesentrelacement.setSelectedIndex(0);
 		comboForcerDesentrelacement.setFont(new Font("FreeSans", Font.PLAIN, 10));
 		comboForcerDesentrelacement.setEditable(false);
@@ -11355,7 +11361,7 @@ public class Shutter {
 		comboFPS.setEditable(true);
 		comboFPS.setSize(50, 16);
 		
-		lblIsConform = new JLabel("i/s");
+		lblIsConform = new JLabel(Shutter.language.getProperty("fps"));
 		lblIsConform.setFont(new Font("FreeSans", Font.PLAIN, 12));
 		lblIsConform.setSize(20, 16);
 
@@ -14142,6 +14148,7 @@ public class Shutter {
 					}
 				}
 				
+				caseOpenGop.setSelected(false);
 				caseLimiter.setSelected(false);
 				caseForceOutput.setSelected(false);
 				caseFastStart.setSelected(false);
@@ -14578,8 +14585,10 @@ public class Shutter {
 
 	// Modifications de l'affichage
 	public static void changeFunction(final boolean anim) {		
+		
 		String fonction = comboFonctions.getSelectedItem().toString();
 		if (language.getProperty("functionCut").equals(fonction) || language.getProperty("functionRewrap").equals(fonction) 
+				|| language.getProperty("functionBab").equals(fonction)
 				|| language.getProperty("functionReplaceAudio").equals(fonction)
 				|| "WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction)
 				|| "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction)
@@ -14595,8 +14604,7 @@ public class Shutter {
 				|| language.getProperty("functionNormalization").equals(fonction)) {
 			changeFrameSize(true);
 			changeSections(anim);
-		} else if (language.getProperty("functionBab").equals(fonction)
-				|| language.getProperty("functionExtract").equals(fonction)
+		} else if (language.getProperty("functionExtract").equals(fonction)
 				|| language.getProperty("functionConform").equals(fonction)
 				|| language.getProperty("functionInsert").equals(fonction)
 				|| "CD RIP".equals(fonction)
@@ -15138,6 +15146,30 @@ public class Shutter {
 								comboAudio8.setSelectedIndex(7);
 							}
 							
+							
+						} else if (language.getProperty("functionBab").equals(fonction)) {							
+							grpImageSequence.setVisible(false);
+							grpImageFilter.setVisible(false);
+							grpLUTs.setVisible(false);
+							grpResolution.setVisible(false);
+							grpH264.setVisible(false);
+							grpSetTimecode.setVisible(false);
+							grpOverlay.setVisible(false);
+							grpSetAudio.setVisible(false);
+							grpAudio.setVisible(false);
+							grpInAndOut.setVisible(false);
+							grpCorrections.setVisible(false);
+							grpTransitions.setVisible(false);
+							grpAdvanced.setVisible(true);
+							grpAdvanced.setLocation(334, 59);
+							btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
+							
+							grpAdvanced.removeAll();
+
+							// grpAdvanced
+							caseOpenGop.setLocation(7, 14);													
+							grpAdvanced.add(caseOpenGop);	
+							
 						} else if (language.getProperty("functionReplaceAudio").equals(fonction) || language.getProperty("functionNormalization").equals(fonction)) {
 							if (language.getProperty("functionReplaceAudio").equals(fonction))
 								addToList.setText(language.getProperty("fileVideoAndAudio"));
@@ -15487,11 +15519,11 @@ public class Shutter {
 							}
 
 							// grpCorrections
-							/*caseLimiter.setLocation(7, 14);
-							grpCorrections.add(caseLimiter);*/	
 							caseBanding.setLocation(7, 14);
 							grpCorrections.add(caseBanding);
-							caseDetails.setLocation(7, caseBanding.getLocation().y + 17);
+							caseLimiter.setLocation(7, caseBanding.getLocation().y + 17);
+							grpCorrections.add(caseLimiter);
+							caseDetails.setLocation(7, caseLimiter.getLocation().y + 17);
 							grpCorrections.add(caseDetails);
 							iconTVDetails.setLocation(289, caseDetails.getLocation().y + 2);
 							grpCorrections.add(iconTVDetails);
@@ -15774,13 +15806,13 @@ public class Shutter {
 							// grpCorrections
 							caseStabilisation.setLocation(7, 14);
 							grpCorrections.add(caseStabilisation);
-							/*caseLimiter.setLocation(7, caseStabilisation.getLocation().y + 17);
-							grpCorrections.add(caseLimiter);*/
 							caseDeflicker.setLocation(7, caseStabilisation.getLocation().y + 17);
 							grpCorrections.add(caseDeflicker);
 							caseBanding.setLocation(7, caseDeflicker.getLocation().y + 17);
 							grpCorrections.add(caseBanding);
-							caseDetails.setLocation(7, caseBanding.getLocation().y + 17);
+							caseLimiter.setLocation(7, caseBanding.getLocation().y + 17);
+							grpCorrections.add(caseLimiter);
+							caseDetails.setLocation(7, caseLimiter.getLocation().y + 17);
 							grpCorrections.add(caseDetails);
 							iconTVDetails.setLocation(289, caseDetails.getLocation().y + 2);
 							grpCorrections.add(iconTVDetails);
@@ -16217,8 +16249,18 @@ public class Shutter {
 							else
 							{
 								lblVBR.setVisible(false);
+								case2pass.setEnabled(true);								
+								
+								if (lblVBR.getText().equals("CQ")) //Si la fonction ne prend pas en charge CQ
+								{
+									debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "2500", "2000", "1500", "1000", "500" }));
+									debitVideo.setSelectedIndex(8);
+									lblDbitVido.setText(language.getProperty("lblDbitVido"));
+									lblKbsH264.setVisible(true);
+									h264lines.setVisible(true);
+									FFPROBE.CalculH264();
+								}
 								lblVBR.setText("VBR");
-								case2pass.setEnabled(true);
 							}
 							
 							if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")))
@@ -16407,38 +16449,6 @@ public class Shutter {
 								caseQMax.setEnabled(false);
 							else
 								caseQMax.setEnabled(true);
-							
-							/*
-							//VBR CBR
-							lblVBR.setVisible(true);
-							if (lblVBR.getText().equals("CQ"))
-							{
-								taille.setText("-");
-								String[] values = new String[53];
-								values[0] = language.getProperty("lblBest");
-								for (int i = 1 ; i < 52 ; i++)
-								{
-									values[i] = String.valueOf(i);
-								}			
-								values[52] = language.getProperty("lblWorst");			
-								
-								if (lblDbitVido.getText().equals(language.getProperty("lblDbitVido")))
-								{		 
-									debitVideo.setModel(new DefaultComboBoxModel<String>(values));
-									debitVideo.setSelectedIndex(23);
-								}
-								lblDbitVido.setText(language.getProperty("lblValue"));
-								lblKbsH264.setVisible(false);
-								h264lines.setVisible(false);
-							}
-							else if (lblDbitVido.getText().equals(language.getProperty("lblValue")))
-							{
-								debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "2500", "2000", "1500", "1000", "500" }));
-								debitVideo.setSelectedIndex(8);
-								lblDbitVido.setText(language.getProperty("lblDbitVido"));
-								lblKbsH264.setVisible(true);
-								h264lines.setVisible(true);
-							}*/
 							
 							// Ajout case rognage
 							caseRognerImage.setLocation(7,
@@ -17021,7 +17031,7 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionConform"))) {
 				
 				lblFilter.setText(Shutter.language.getProperty("lblTo"));
-				final String filtres[] = {"23,976 i/s", "24 i/s", "25 i/s", "29,97 i/s", "30 i/s", "48 i/s", "50 i/s", "59,94 i/s", "60 i/s" };				
+				final String filtres[] = {"23,976 " + Shutter.language.getProperty("fps"), "24 " + Shutter.language.getProperty("fps"), "25 " + Shutter.language.getProperty("fps"), "29,97 " + Shutter.language.getProperty("fps"), "30 " + Shutter.language.getProperty("fps"), "48 " + Shutter.language.getProperty("fps"), "50 " + Shutter.language.getProperty("fps"), "59,94 " + Shutter.language.getProperty("fps"), "60 " + Shutter.language.getProperty("fps") };				
 				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
 				comboFilter.setModel(model);
 				comboFilter.setSelectedIndex(2);
@@ -17050,6 +17060,16 @@ public class Shutter {
 				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
 				comboFilter.setModel(model);
 				comboFilter.setSelectedIndex(0);
+				
+			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionBlackDetection"))) {
+
+				lblFilter.setText(Shutter.language.getProperty("levels"));
+				String filtres[] = { "16-235", "0-255" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("DV PAL")) {
 
@@ -17200,7 +17220,7 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")) {
 
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String filtres[] = { "Low", "Medium", "High", "Film Scan", "Film Scan 2", "Film Scan 3"};
+				String filtres[] = { "Low", "Medium", "High", "Film Scan", "Film Scan 2", "Film Scan 3", "Film Scan 3+"};
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -17253,7 +17273,7 @@ public class Shutter {
 				}
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))) {
 				lblFilter.setText("Ext." + language.getProperty("colon"));
-				String filtres[] = { ".png", ".tif", ".tga", ".dpx", ".bmp", ".ico", ".webp" };
+				String filtres[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".bmp", ".ico", ".webp" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);

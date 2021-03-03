@@ -225,9 +225,9 @@ public class Update {
 	        	catch (Exception er){}
 	        	
 			    Document doc = Jsoup.connect("https://www.shutterencoder.com").get();
-			      for (Element file : doc.select("a")) {
-			    	  			    	
-			    	if (System.getProperty("os.name").contains("Windows")) //Version PC
+			      for (Element file : doc.select("a"))
+			      {			    	  			    	
+			    	if (System.getProperty("os.name").contains("Windows")) //PC
 	            	{
 	            		try {
 		            		if (file.attr("href").contains("Shutter Encoder (PC Version"))
@@ -243,13 +243,32 @@ public class Update {
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {	    									
 			    							runProcess(file.attr("href"));	
-		    							 	new Update();
-		    						 }	  						
+		    							 	new Update();		    							 	
+		    						 }	
+		    						 break;
+		            			}
+			            	}
+		            		else if (file.attr("href").contains("Windows 64bits.exe"))
+			            	{
+		            			String s[] = file.attr("href").split(" ");
+		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
+		            			
+		            			//Vérification d'une nouvelle mise à jour
+		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			{
+			            				
+		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		    						 if (q == JOptionPane.YES_OPTION)
+		    						 {	    									
+			    							runProcess(file.attr("href"));	
+		    							 	new Update();		    							 	
+		    						 }	  		
+		    						 break;
 		            			}
 			            	}
 	            		} catch (Exception e) {}
 	            	}			    	
-			    	else if (System.getProperty("os.name").contains("Mac")) //Version MAC
+			    	else if (System.getProperty("os.name").contains("Mac")) //MAC
 	            	{
 	            		try {
 		            		if (file.attr("href").contains("Shutter Encoder (MAC Version"))
@@ -264,13 +283,31 @@ public class Update {
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {
 		    								runProcess(file.attr("href"));	   
-		    							 	new Update();
-		    						 }	  						
+		    							 	new Update();		    							 	
+		    						 }	  	
+		    						 break;
+		            			}
+		            		}
+		            		else if (file.attr("href").contains("Mac 64bits.zip"))
+		            		{
+		            			String s[] = file.attr("href").split(" ");
+		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
+		            			
+		            			//Vérification d'une nouvelle mise à jour
+		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			{
+		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		    						 if (q == JOptionPane.YES_OPTION)
+		    						 {
+		    								runProcess(file.attr("href"));	   
+		    							 	new Update();		    							 	
+		    						 }	  
+		    						 break;
 		            			}
 		            		}
 	            		} catch (Exception e) {}
 	            	}
-	            	else //Version Linux
+	            	else //Linux
 	            	{
 	            		try {
 		            		if (file.attr("href").contains("Shutter Encoder (Linux Version"))
@@ -284,8 +321,43 @@ public class Update {
 		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {
-		    							 Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/en/#downloads"));
+		    							 Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/en/#downloads"));		    							 
 		    						 }	  						
+		    						 break;
+		            			}
+		            		}		            			            		
+		            		else if (file.attr("href").contains("Linux 64bits.deb") && new File("/usr/lib/Shutter Encoder").exists()) //DEB package installed
+		            		{
+		            			String s[] = file.attr("href").split(" ");
+		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
+		            			
+		            			//Vérification d'une nouvelle mise à jour
+		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			{
+		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		    						 if (q == JOptionPane.YES_OPTION)
+		    						 {
+		    								runProcess(file.attr("href"));	   
+		    							 	new Update();		    							 	
+		    						 }	  			
+		    						 break;
+		            			}
+		            		}		            	
+		            		else if (file.attr("href").contains("Linux 64bits.AppImage"))
+		            		{
+		            			String s[] = file.attr("href").split(" ");
+		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
+		            			
+		            			//Vérification d'une nouvelle mise à jour
+		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			{
+		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		    						 if (q == JOptionPane.YES_OPTION)
+		    						 {
+		    								runProcess(file.attr("href"));	   
+		    							 	new Update();		    							 	
+		    						 }	  				
+		    						 break;
 		            			}
 		            		}
 	            		} catch (Exception e) {}
