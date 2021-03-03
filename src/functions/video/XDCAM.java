@@ -1185,13 +1185,13 @@ public class XDCAM extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 
 			if (FFPROBE.imageDepth == 8)
-				filterComplex = "limiter=16:235";
+				filterComplex += "limiter=16:235";
 			else if (FFPROBE.imageDepth == 10)
-				filterComplex = "limiter=64:940";
+				filterComplex += "limiter=64:940";
 			else if (FFPROBE.imageDepth == 12)
-				filterComplex = "limiter=256:3760";
+				filterComplex += "limiter=256:3760";
 			else if (FFPROBE.imageDepth == 16)
-				filterComplex = "limiter=4096:60160";
+				filterComplex += "limiter=4096:60160";
 		}	
 		return filterComplex;
 	}

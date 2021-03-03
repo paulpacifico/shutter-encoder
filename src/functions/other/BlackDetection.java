@@ -117,13 +117,19 @@ public class BlackDetection extends Shutter {
 					
 					//InOut		
 					FFMPEG.fonctionInOut();
+
+					System.out.println(comboFilter.getSelectedIndex());
+					
+					String levels = "0.1";
+					if (comboFilter.getSelectedIndex() == 1)
+						levels = "0.0";
 					
 					//Envoi de la commande
 					String cmd;
 					if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-						cmd =  " -an -vf blackdetect=d=0.0:pix_th=.1 -f null -";					
+						cmd =  " -an -vf blackdetect=d=0.0:pix_th=" + levels + " -f null -";					
 					else
-						cmd =  " -an -vf blackdetect=d=0.0:pix_th=.1 -f null -" + '"';	
+						cmd =  " -an -vf blackdetect=d=0.0:pix_th=" + levels + " -f null -" + '"';	
 					
 					FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);		
 					

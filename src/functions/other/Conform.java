@@ -144,7 +144,7 @@ public class Conform extends Shutter {
 					//Envoi de la commande			    		
 					File tempMKV = new File(sortie + "/" + fichier.replace(extension, "_Conform.mkv"));
 
-					String cmd = " --default-duration 0:" + comboFilter.getSelectedItem().toString().replace(" i/s", "").replace(",", ".") + "fps -A -S -T -M -B --fix-bitstream-timing-information 0 ";
+					String cmd = " --default-duration 0:" + comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".") + "fps -A -S -T -M -B --fix-bitstream-timing-information 0 ";
 					MKVMERGE.run(cmd + '"' + file.toString() + '"' + " -o " + '"'  + tempMKV + '"');	
 					
 					//Attente de la fin de FFMPEG
@@ -189,7 +189,7 @@ public class Conform extends Shutter {
 	private static String setAudio() {
 		
     	float AudioFPSIn = FFPROBE.currentFPS;
-    	float AudioFPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" i/s", "").replace(",", ".")));
+    	float AudioFPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".")));
     	float value = (float) (AudioFPSOut / AudioFPSIn);
     	if (value < 0.5f || value > 2.0f)
     		return " -an";

@@ -140,7 +140,7 @@ public class Merge extends Shutter {
 							File fileOut = new File(sortieFichier);							
 							
 							String openGOP = "";
-							if (Settings.btnOpenGOP.isSelected())
+							if (Shutter.caseOpenGop.isSelected())
 								openGOP = " -copyinkf";
 							
 							//Envoi de la commande

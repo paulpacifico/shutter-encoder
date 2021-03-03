@@ -883,6 +883,8 @@ public class CineForm extends Shutter {
 				return " -c:v cfhd -quality film2 -pix_fmt " + yuv;
 			case "Film Scan 3" :
 				return " -c:v cfhd -quality film3 -pix_fmt " + yuv;
+			case "Film Scan 3+" :
+				return " -c:v cfhd -quality film3+ -pix_fmt " + yuv;
 		}
 		
 		return " -c:v cfhd -quality film1 -pix_fmt " + yuv;
@@ -1246,13 +1248,13 @@ public class CineForm extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 
 			if (FFPROBE.imageDepth == 8)
-				filterComplex = "limiter=16:235";
+				filterComplex += "limiter=16:235";
 			else if (FFPROBE.imageDepth == 10)
-				filterComplex = "limiter=64:940";
+				filterComplex += "limiter=64:940";
 			else if (FFPROBE.imageDepth == 12)
-				filterComplex = "limiter=256:3760";
+				filterComplex += "limiter=256:3760";
 			else if (FFPROBE.imageDepth == 16)
-				filterComplex = "limiter=4096:60160";
+				filterComplex += "limiter=4096:60160";
 		}	
 		return filterComplex;
 	}
