@@ -49,14 +49,6 @@ public static Thread runProcess;
 			public void run() {
 				Informations.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				try {
-	
-					//Analyse
-					FFPROBE.Data(fichier);
-					
-					do
-					{
-						Thread.sleep(100);
-					} while (FFPROBE.isRunning);
 					
 					String PathToMEDIAINFO;
 					ProcessBuilder processMEDIAINFO;
@@ -83,63 +75,45 @@ public static Thread runProcess;
 			        StringBuilder infoData = new StringBuilder();
 
 			       int stopMediaInfo = 0; //Seul moyen de tout récupérer et stopper le flux à la fois
-			        while (stopMediaInfo < 300)
-			        	{
+			       while (stopMediaInfo < 300)
+			       {
 			        	
-			        	stopMediaInfo++;
-			        	infoData.append(br.readLine());
-			        	infoData.append(System.lineSeparator());
-			        	
-					    };
+			    	   stopMediaInfo++;
+			    	   infoData.append(br.readLine());
+			    	   infoData.append(System.lineSeparator());
 			        
-					if (stopMediaInfo >= 300)
-						process.destroy();
+			       };
+			        
+			       if (stopMediaInfo >= 300)
+			    	   process.destroy();
 					    
-					process.waitFor();
+			       process.waitFor();
    
-					String StrTotal = "";
+			       String StrTotal = "";
 					
-		            int x = infoData.indexOf("<head>");
-		            x = infoData.indexOf("<head>", x + 1);
-		            x = infoData.indexOf("<head>", x + 1);
-		            
-		            StrTotal = infoData.substring(infoData.indexOf("<head>") + (x + 3));
-		            StringBuilder FinalXML = new StringBuilder();
-		            String lines[] = StrTotal.split(System.lineSeparator());
-		            
-		            int i = 0;
-		            
-		           for (String line : lines)
-		           {
-		                if (i >= 1)
-		                {
-		                    i ++;
-		                    if (i == 4)
-		                        FinalXML.append(System.lineSeparator() + "<tr>" + System.lineSeparator() + "<td><i>Luminance level :</i></td>" + System.lineSeparator() + "<td colspan=" + '"' + "3" + '"' + ">" + FFPROBE.lumaLevel + "</td>" + System.lineSeparator() + "</tr>");
-		                }
-		                if (line.contains("Color space :"))
-		                    i ++;
-		                
-		                FinalXML.append(line);
-		                FinalXML.append(System.lineSeparator());
-		           }			        
+			       int x = infoData.indexOf("<head>");
+			       x = infoData.indexOf("<head>", x + 1);
+			       x = infoData.indexOf("<head>", x + 1);
+					
+			       StrTotal = infoData.substring(infoData.indexOf("<head>") + (x + 3));
+      
 									
 		           //Ajout de la Tab	           	
 		           Informations.addTabControl();		           
 		           
 		           String informationsFrameSize = String.valueOf((int) Informations.frame.getSize().width - 320);
 		           String htmlSize = "";
-		           for (String line : FinalXML.toString().split(System.lineSeparator()))
-		        	   {
-		        	   		if (line.contains("td width"))
-		        	   			{
-		        	   				String s[] = line.split("\"");
-		        	   				htmlSize = s[1];
-		        	   			}
-		        	   			
-		        	   }
+		           for (String line : StrTotal.toString().split(System.lineSeparator()))
+	        	   {
+	        	   		if (line.contains("td width"))
+	        	   			{
+	        	   				String s[] = line.split("\"");
+	        	   				htmlSize = s[1];
+	        	   			}
+	        	   			
+	        	   }
 		           
-		           	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + FinalXML.toString().replace(htmlSize, informationsFrameSize));
+		           	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + StrTotal.toString().replace(htmlSize, informationsFrameSize));
 		           	content.setBackground(new Color(245,245,245));
 		           	content.setForeground(Color.BLACK);
 		           	content.setOpaque(true);

@@ -992,7 +992,7 @@ private static StringBuilder getAll;
 			
 			if (comboFonctions.getSelectedItem().toString().equals("functionConform"))
 			{
-				float newFPS = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" i/s", "").replace(",", ".")));		
+				float newFPS = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".")));		
 				dureeTotale = (int) (dureeTotale * (FFPROBE.currentFPS / newFPS ));
 			}
 						
@@ -1299,45 +1299,38 @@ private static StringBuilder getAll;
 	    	 	
 	    	 	for (String blackLine : getAll.toString().split(System.lineSeparator()))
 	    	 	{
-	    	 		if (blackLine.contains("blackdetect"))
+	    	 		if (blackLine.contains("blackdetect") && blackLine.contains("black_start:0") == false)
 	    	 		{
 	    	 			String blackdetect = blackLine.substring(blackLine.indexOf("black_start"));
 	    	 			String d[] = blackdetect.split(":");
-	    	 			
-	    	 			float duration = Float.parseFloat(d[3]);
-	    	 			float maxDuration = (float) Integer.parseInt(Settings.txtBlackDetection.getText())/FFPROBE.currentFPS;
-	    	 			
-	    	 			//On limite la durée du noir (en secondes)
-	    	 			if (duration <= maxDuration)
-	    	 			{					    	 				
-	    	 				String blackstart = d[1].replace(" black_end", "");
-	    	 				String bsDuree[] = blackstart.split("\\.");
-	    	 					    	 				
-	    	 				int secondes = Integer.valueOf(bsDuree[0]);
-	    	 				int images = 0;
+	    	 						    	 				
+    	 				String blackstart = d[1].replace(" black_end", "");
+    	 				String bsDuree[] = blackstart.split("\\.");
+    	 					    	 				
+    	 				int secondes = Integer.valueOf(bsDuree[0]);
+    	 				int images = 0;
 
-			    			NumberFormat formatter = new DecimalFormat("00");
-			    			String tcBlackFrame = (formatter.format(secondes / 3600)) 
-			    					+ ":" + (formatter.format((secondes / 60) % 60))
-			    					+ ":" + (formatter.format(secondes % 60)); 	
-			    			
-			    			switch (bsDuree[1].length())
-			    			{
-			    				case 1:
-			    					images = Integer.valueOf(bsDuree[1]) * 100;
-			    					break;
-			    				case 2:
-			    					images = Integer.valueOf(bsDuree[1]) * 10;
-			    					break;
-			    				case 3:
-			    					images = Integer.valueOf(bsDuree[1]);	
-			    					break;
-			    			}
-			    			
-			    			tcBlackFrame += ":" + formatter.format((int) (images / (1000 / FFPROBE.currentFPS)));
-			    			
-	    	 				blackFrame.append(tcBlackFrame + System.lineSeparator());
-	    	 			}
+		    			NumberFormat formatter = new DecimalFormat("00");
+		    			String tcBlackFrame = (formatter.format(secondes / 3600)) 
+		    					+ ":" + (formatter.format((secondes / 60) % 60))
+		    					+ ":" + (formatter.format(secondes % 60)); 	
+		    			
+		    			switch (bsDuree[1].length())
+		    			{
+		    				case 1:
+		    					images = Integer.valueOf(bsDuree[1]) * 100;
+		    					break;
+		    				case 2:
+		    					images = Integer.valueOf(bsDuree[1]) * 10;
+		    					break;
+		    				case 3:
+		    					images = Integer.valueOf(bsDuree[1]);	
+		    					break;
+		    			}
+		    			
+		    			tcBlackFrame += ":" + formatter.format((int) (images / (1000 / FFPROBE.currentFPS)));
+		    			
+    	 				blackFrame.append(tcBlackFrame + System.lineSeparator());
 	    	 		}
 	    	 	}
 	     }
