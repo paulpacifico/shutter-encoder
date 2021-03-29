@@ -72,49 +72,14 @@ public class Bluray extends Shutter {
 		            }
 		            else if (Settings.btnWaitFileComplete.isSelected())
 		            {
-						progressBar1.setIndeterminate(true);
-						lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-						lblEncodageEnCours.setText(file.getName());
-						tempsRestant.setVisible(false);
-						btnStart.setEnabled(false);
-						btnCancel.setEnabled(true);
-						comboFonctions.setEnabled(false);
-						
-						long fileSize = 0;
-						do {
-							fileSize = file.length();
-							try {
-								Thread.sleep(3000);
-							} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
-						} while (fileSize != file.length() && cancelled == false);
-
-						// pour Windows
-						while (file.renameTo(file) == false && cancelled == false) {
-							if (file.exists() == false) // Dans le cas où on annule la copie en cours
-								break;
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e) {
-							}
-						}
-						
-						if (cancelled)
-						{
-							progressBar1.setIndeterminate(false);
-							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
-							btnStart.setEnabled(true);
-							btnCancel.setEnabled(false);
-							comboFonctions.setEnabled(true);
+						if (Utils.waitFileCompleted(file) == false)
 							break;
-						}
-						
-						progressBar1.setIndeterminate(false);
-						btnCancel.setEnabled(false);
 		            }
-		           //SCANNING
+					//SCANNING
 		            
 					try{
 					String fichier = file.getName();
+					final String extension =  fichier.substring(fichier.lastIndexOf("."));
 					lblEncodageEnCours.setText(fichier);
 					
 					// Analyse des données
@@ -161,7 +126,7 @@ public class Bluray extends Shutter {
 					filterComplex = setWatermark(filterComplex);
 					
 	            	//Timecode
-					filterComplex = showTimecode(filterComplex, fichier);
+					filterComplex = showTimecode(filterComplex, fichier.replace(extension, ""));
 					
 			    	//Rognage
 			        filterComplex = setCrop(filterComplex);
@@ -186,9 +151,7 @@ public class Bluray extends Shutter {
 					
 					//Dossier de sortie
 					String sortie = setSortie("", file);
-					
-					final String extension =  fichier.substring(fichier.lastIndexOf("."));
-					
+										
 					//Création du répertoire pour les fichiers composants le bluray
 					File blurayFolder = new File(sortie + "/" + fichier.replace(extension, ""));
 					blurayFolder.mkdir();
@@ -468,7 +431,7 @@ public class Bluray extends Shutter {
 				if (SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
 					background = ",BorderStyle=4,BackColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&,Outline=0";
 				else
-					background = ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
+					background = ",Outline=" + SubtitlesWindow.outline + ",OutlineColour=&H" + SubtitlesWindow.alpha + SubtitlesWindow.hex2 + "&";
 	    		
 				//Bold
 				if (SubtitlesWindow.btnG.getForeground() != Color.BLACK)

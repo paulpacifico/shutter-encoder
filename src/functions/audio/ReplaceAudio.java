@@ -29,6 +29,7 @@ import application.Ftp;
 import application.Settings;
 import application.Shutter;
 import application.Utils;
+import application.VideoPlayer;
 import application.Wetransfer;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -70,7 +71,7 @@ public class ReplaceAudio extends Shutter {
 					
 					float offset = 0;
 					
-					if (caseAudioOffset.isSelected())
+					if (caseAudioOffset.isSelected() || caseInAndOut.isSelected())
 					{
 						FFPROBE.Data(videoFile.toString());
 						
@@ -81,7 +82,10 @@ public class ReplaceAudio extends Shutter {
 							}
 						} while (FFPROBE.isRunning);
 						
-						offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;
+						if (caseAudioOffset.isSelected())
+							offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
+						else
+							offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 						
 						audioFiles = " -itsoffset " + offset + audioFiles;
 					}
@@ -101,7 +105,10 @@ public class ReplaceAudio extends Shutter {
 					audioFiles = " -map v:0?";
 				}				
 					String fichier = videoFile.getName();					
-					lblEncodageEnCours.setText(videoFile.getName());						
+					lblEncodageEnCours.setText(videoFile.getName());			
+					
+					//InOut	
+					FFMPEG.fonctionInOut();	
 					
 					//Dossier de sortie
 					String sortie = setSortie("", videoFile);	
@@ -128,11 +135,11 @@ public class ReplaceAudio extends Shutter {
 										
 					//Envoi de la commande					
 					String cmd = shortest + " -c:v copy -c:s copy" + audio + " -map s? -y ";
-					FFMPEG.run(" -i " + '"' + videoFile.toString() + '"' + audioFiles + cmd + '"'  + fileOut + '"');		
+					FFMPEG.run(" -i " + '"' + videoFile.toString() + '"' + audioFiles + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
 							
 					//Attente de la fin de FFMPEG
 					do
-							Thread.sleep(100);
+						Thread.sleep(100);
 					while(FFMPEG.runProcess.isAlive());
 					
 					
@@ -163,6 +170,11 @@ public class ReplaceAudio extends Shutter {
 			{
 				if (caseAudioOffset.isSelected())
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(i)  + '"';
+				else if (caseInAndOut.isSelected())
+				{
+					offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+					audioFiles += " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(i)  + '"';
+				}
 				else
 					audioFiles += " -i " + '"' + liste.getElementAt(i)  + '"';
 			}

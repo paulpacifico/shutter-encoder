@@ -19,7 +19,6 @@
 
 package functions.other;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FileDialog;
 import java.io.File;
@@ -77,43 +76,8 @@ public class Merge extends Shutter {
 					            {
 									File file = new File(liste.getElementAt(i));
 									
-									progressBar1.setIndeterminate(true);
-									lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-									lblEncodageEnCours.setText(file.getName());
-									btnStart.setEnabled(false);
-									btnCancel.setEnabled(true);
-									comboFonctions.setEnabled(false);
-									
-									long fileSize = 0;
-									do {
-										fileSize = file.length();
-										try {
-											Thread.sleep(3000);
-										} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
-									} while (fileSize != file.length() && cancelled == false);
-
-									// pour Windows
-									while (file.renameTo(file) == false && cancelled == false) {
-										if (file.exists() == false) // Dans le cas où on annule la copie en cours
-											break;
-										try {
-											Thread.sleep(100);
-										} catch (InterruptedException e) {
-										}
-									}
-									
-									if (cancelled)
-									{
-										progressBar1.setIndeterminate(false);
-										lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
-										btnStart.setEnabled(true);
-										btnCancel.setEnabled(false);
-										comboFonctions.setEnabled(true);
+									if (Utils.waitFileCompleted(file) == false)
 										break;
-									}
-									
-									progressBar1.setIndeterminate(false);
-									btnCancel.setEnabled(false);
 					            }
 								//Scanning
 								
