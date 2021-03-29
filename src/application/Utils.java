@@ -8,8 +8,10 @@ import java.awt.Insets;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
@@ -83,6 +85,132 @@ public class Utils extends Shutter {
 		}
 
 	}
+
+	public static void setLanguage() {
+		// Langue
+		InputStream input;
+		try {
+			String pathToLanguages = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			if (System.getProperty("os.name").contains("Windows"))
+				pathToLanguages = pathToLanguages.substring(1, pathToLanguages.length() - 1);
+			else
+				pathToLanguages = pathToLanguages.substring(0, pathToLanguages.length() - 1);
+
+			pathToLanguages = pathToLanguages.substring(0, (int) (pathToLanguages.lastIndexOf("/"))).replace("%20", " ")
+					+ "/Languages/";
+
+			// Library/Preferences sur Mac
+			try {
+				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				{
+					if (new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder").exists())
+						Shutter.documents = new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder");
+					else if (new File("/Library/Preferences/Shutter Encoder").exists())
+						Shutter.documents = new File("/Library/Preferences/Shutter Encoder");
+				}
+			} catch (Exception e) {}
+			
+			// Dossier Temporaire Linux
+			if (System.getProperty("os.name").contains("Linux"))
+			{
+				dirTemp += "/";
+			}
+			
+			if (new File(Shutter.documents + "/settings.xml").exists())
+			{				
+				try {
+					File fXmlFile = new File(Shutter.documents + "/settings.xml");
+					DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+					Document doc = dBuilder.parse(fXmlFile);
+					doc.getDocumentElement().normalize();
+				
+					NodeList nList = doc.getElementsByTagName("Component");
+					
+					for (int temp = 0; temp < nList.getLength(); temp++) {
+						Node nNode = nList.item(temp);
+						
+						if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+							Element eElement = (Element) nNode;
+
+							if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboLanguage"))
+								getLanguage = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
+						}
+					}	
+
+					if (getLanguage != null && getLanguage != "")
+					{
+						if (getLanguage.equals("Français"))
+						{
+							input = new FileInputStream(pathToLanguages + "fr.properties");
+						}
+						else if (getLanguage.equals("Italiano"))
+						{
+							input = new FileInputStream(pathToLanguages + "it.properties");
+						}
+						else if (getLanguage.equals("Español"))
+						{
+							input = new FileInputStream(pathToLanguages + "es.properties");
+						}
+						else if (getLanguage.equals("Chinese"))
+						{
+							input = new FileInputStream(pathToLanguages + "cn.properties");
+						}
+						else
+							input = new FileInputStream(pathToLanguages + "en.properties");
+					}
+					else
+					{
+						input = defaultLanguage(pathToLanguages);
+					}
+					
+				} 
+				catch (Exception e) 
+				{
+					input = defaultLanguage(pathToLanguages);
+				}
+			}
+			else
+			{
+				input = defaultLanguage(pathToLanguages);
+			}
+			
+			if (getLanguage.equals("Chinese")) //use system default
+			{
+				Shutter.montserratFont = "";
+				Shutter.freeSansFont = "";
+			}
+						
+			language.load(input);	
+			input.close();
+			
+		} catch (IOException ex) {}	
+	}
+	
+	private static FileInputStream defaultLanguage(String pathToLanguages) throws FileNotFoundException {
+		
+		if (System.getProperty("user.language").equals("fr"))
+		{
+			getLanguage = "Français";
+			return new FileInputStream(pathToLanguages + "fr.properties");
+		}
+		else if (System.getProperty("user.language").equals("it"))
+		{
+			getLanguage = "Italiano";
+			return new FileInputStream(pathToLanguages + "it.properties");
+		}
+		else if (System.getProperty("user.language").equals("es"))
+		{
+			getLanguage = "Español";
+			return new FileInputStream(pathToLanguages + "es.properties");
+		}
+		else
+		{
+			getLanguage = "English";
+			return new FileInputStream(pathToLanguages + "en.properties");
+		}
+		
+	}
 	
 	public static void sendMail(final String fichier) {
 		if (caseSendMail.isSelected()) {
@@ -91,7 +219,7 @@ public class Utils extends Shutter {
 				public void run() {
 					sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "";
+					final String password = "***ENCRYPTED***";
 
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
@@ -330,7 +458,7 @@ public class Utils extends Shutter {
 		}
 		lblFichiers.setText(filesNumber());
 	}
-
+	
 	public static File scanFolder(String folder) {
 		progressBar1.setIndeterminate(true);
 		lblEncodageEnCours.setText(language.getProperty("waitingFiles"));
@@ -368,23 +496,7 @@ public class Utils extends Shutter {
 				// Lorque un fichier est entrain d'être copié
 				progressBar1.setIndeterminate(true);
 				
-				long fileSize = 0;		
-				do {
-					fileSize = f.length();
-					try {
-						Thread.sleep(3000); // Permet d'attendre la nouvelle valeur de la copie
-					} catch (InterruptedException e) {}
-				} while (fileSize != f.length());
-
-				// pour Windows
-				while (f.renameTo(f) == false) {
-					if (f.exists() == false) // Dans le cas où on annule la copie en cours
-						break;
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-					}
-				}
+				waitFileCompleted(f);
 
 				if (actualScanningFile != null)
 					return actualScanningFile;
@@ -399,6 +511,63 @@ public class Utils extends Shutter {
 		return null;
 	}
 
+	public static boolean waitFileCompleted(File f) {
+		
+		progressBar1.setIndeterminate(true);
+		lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
+		lblEncodageEnCours.setText(f.getName());
+		tempsRestant.setVisible(false);
+		btnStart.setEnabled(false);
+		btnCancel.setEnabled(true);
+		comboFonctions.setEnabled(false);
+		
+		long fileSize = 0;
+		do {
+			fileSize = f.length();
+			try {
+				
+				Thread.sleep(1000);
+				
+				if (fileSize == f.length())
+				{
+					for (int count = 0 ; count < 8 ; count ++)
+					{
+						Thread.sleep(1000);
+
+						if (fileSize != f.length())
+							break;
+					}
+				}
+				
+			} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
+		} while (fileSize != f.length() && cancelled == false);
+
+		// Windows
+		while (f.renameTo(f) == false && cancelled == false) {
+			if (f.exists() == false) // Dans le cas où on annule la copie en cours
+				break;
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+		
+		if (cancelled)
+		{
+			progressBar1.setIndeterminate(false);
+			lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
+			btnStart.setEnabled(true);
+			btnCancel.setEnabled(false);
+			comboFonctions.setEnabled(true);
+			return false;
+		}
+		
+		progressBar1.setIndeterminate(false);
+		btnCancel.setEnabled(false);
+		
+		return true;
+	}
+	
 	public static File fileReplacement(String path, String file, String oldExt, String surname, String newExt) {
 		
 		int n = 1;
@@ -2407,4 +2576,5 @@ public class Utils extends Shutter {
 			
 		}		
 	}
+
 }

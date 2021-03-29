@@ -76,10 +76,10 @@ public class Ftp {
 	private JLabel quit;
 	private JPanel topPanel;
 	private JLabel topImage;	
-	private static JTextField textFtp = new JTextField();
+	public static JTextField textFtp = new JTextField();
 	private JLabel lblFtp;
 	private JLabel lblUtilisateur;
-	private static JTextField textUser = new JTextField();
+	public static JTextField textUser = new JTextField();
 	private JLabel lblMotDePasse;
 	private static JPasswordField textPassword = new JPasswordField();
 	public static JButton btnOK; //Si le bouton est disable alors la connexion est établie
@@ -232,15 +232,17 @@ public class Ftp {
 		lblFtp = new JLabel(Shutter.language.getProperty("lblFtp"));
 		lblFtp.setBounds(10, 56, 90, 16);
 		lblFtp.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblFtp.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblFtp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblFtp);		
 
 		textFtp.setBounds(101, 55, 154, 21);
+		textFtp.setName("textFtp");
 		frame.getContentPane().add(textFtp);
 		textFtp.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFtp.setColumns(10);		
 				
 		textUser.setBounds(101, 88, 154, 21);
+		textUser.setName("textUser");
 		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textUser.setColumns(10);
 		frame.getContentPane().add(textUser);
@@ -248,7 +250,7 @@ public class Ftp {
 		lblUtilisateur = new JLabel(Shutter.language.getProperty("lblUser"));
 		lblUtilisateur.setBounds(10, 89, 90, 16);
 		lblUtilisateur.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblUtilisateur.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblUtilisateur.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblUtilisateur);		
 			
 		lblMotDePasse = new JLabel(Shutter.language.getProperty("lblPassword"));
@@ -256,7 +258,7 @@ public class Ftp {
 		lblMotDePasse.setBounds(8, 123, 92, 16);
 		frame.getContentPane().add(lblMotDePasse);
 		
-		lblMotDePasse.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblMotDePasse.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		
 		textPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPassword.setColumns(10);
@@ -265,7 +267,7 @@ public class Ftp {
 		frame.getContentPane().add(textPassword);
 				
 		btnOK = new JButton("OK");
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(101, textPassword.getX() + textPassword.getHeight() + 32, 154, 21);		
 		frame.getContentPane().add(btnOK);
 		
@@ -314,7 +316,7 @@ public class Ftp {
 		});
 		
 		btnReset = new JButton("Reset");
-		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnReset.setBounds(12, textPassword.getX() + textPassword.getHeight() + 32, 82, 21);		
 		frame.getContentPane().add(btnReset);	
 		
@@ -426,7 +428,7 @@ public class Ftp {
 			public void run() {
 				Shutter.sendMailIsRunning = true;
 				final String username = "info@shutterencoder.com";
-				final String password = "";
+				final String password = "***ENCRYPTED***";
 
 				Properties props = new Properties();
 				props.put("mail.smtp.auth", "true");

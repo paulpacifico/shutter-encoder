@@ -46,7 +46,7 @@ public class SubtitlesHelp {
 		lblHelp.setForeground(Color.WHITE);
 		lblHelp.setHighlighter(null);
 		lblHelp.setEditable(false);
-		lblHelp.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblHelp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		lblHelp.setBounds(10, 12, 420, 290);
     	frame.getContentPane().add(lblHelp);	
 		

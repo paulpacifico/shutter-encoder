@@ -77,7 +77,6 @@ import javax.swing.JScrollPane;
 	private JLabel bottomImage;
 	private static JLabel lblFlecheBas;
 	private static JButton btnEDL;
-	private static JButton btnExport;
 	public static JLabel lblEdit;
 	public static JTable table;
 	public static DefaultTableModel tableRow;
@@ -130,9 +129,8 @@ import javax.swing.JScrollPane;
 			        frame.setSize(frame.getSize().width, e.getY() + 10);	
 			        scrollPane.setSize(scrollPane.getSize().width, frame.getSize().height - 160);
 			    	lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);		
-					btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 4, 186, 21);
-					btnExport.setBounds(204, 89 + scrollPane.getHeight() + 4, 186, 21);
-					lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 32, 245, 15);
+					btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
+					lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 31, 245, 15);
 		       	}	
 			}
 
@@ -382,12 +380,12 @@ import javax.swing.JScrollPane;
 		frame.getContentPane().add(scrollPane);
 		
 		JLabel lblPourcentage = new JLabel("%");
-		lblPourcentage.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblPourcentage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblPourcentage.setBounds(143, 63, 11, 15);
 		frame.getContentPane().add(lblPourcentage);
 			
 		btnAnalyse = new JButton(Shutter.language.getProperty("btnAnalyse"));
-		btnAnalyse.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnAnalyse.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnAnalyse.setBounds(164, 59, 223, 21);
 		frame.getContentPane().add(btnAnalyse);
 		
@@ -398,7 +396,6 @@ import javax.swing.JScrollPane;
 				tolerance.setEnabled(false);
 				btnAnalyse.setEnabled(false);
 				btnEDL.setEnabled(false);
-				btnExport.setEnabled(false);
 				lblEdit.setVisible(false);
 				if (sortieDossier != null && sortieDossier.exists())
 					deleteDirectory(sortieDossier);
@@ -413,7 +410,7 @@ import javax.swing.JScrollPane;
 		});
 		
 		JLabel lblSensibilit = new JLabel(Shutter.language.getProperty("lblSensibility"));
-		lblSensibilit.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblSensibilit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblSensibilit.setBounds(10, 62, lblSensibilit.getPreferredSize().width, 15);
 		frame.getContentPane().add(lblSensibilit);
 		
@@ -423,16 +420,16 @@ import javax.swing.JScrollPane;
 		
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font("FreeSans", Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		lblFlecheBas.setVisible(true);		
 		frame.getContentPane().add(lblFlecheBas);
 		
 		btnEDL = new JButton(Shutter.language.getProperty("btnEDL"));
-		btnEDL.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnEDL.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnEDL.setEnabled(false);
-		btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 4, 186, 21);
+		btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
 		frame.getContentPane().add(btnEDL);
 		
 		btnEDL.addActionListener(new ActionListener(){
@@ -581,158 +578,11 @@ import javax.swing.JScrollPane;
 			}			
 		});
 		
-		btnExport = new JButton(Shutter.language.getProperty("btnExport"));
-		btnExport.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnExport.setBounds(204, 89 + scrollPane.getHeight() + 4, 186, 21);
-		btnExport.setEnabled(false);
-		frame.getContentPane().add(btnExport);
-		
-		btnExport.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			    
-		    	frame.setVisible(false);
-		    	
-				final FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseFileName"), FileDialog.SAVE);
-				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-					dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
-				else
-					dialog.setDirectory(System.getProperty("user.home") + "\\Desktop");
-				dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
-				dialog.setAlwaysOnTop(true);
-				dialog.setVisible(true);
-			    				
-			    frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			    
-		    	frame.setVisible(true);
-		    	
-				frame.toFront();
-			    
-			    if (dialog.getFile() != null)
-			    {
-			    	final File sortieFolder = new File(dialog.getDirectory() + dialog.getFile());
-			    	sortieFolder.mkdir();
-												
-			    	Thread runProcess = new Thread(new Runnable()  {
-					@Override
-					public void run() {
-						
-						isRunning = true;
-						
-				    	for (int i = 0 ; i < tableRow.getRowCount(); i++)
-						{
-			    		try {
-			    			
-			    		//Si c'est le premier lancement
-			    		if (i == 0)
-			    		{
-			    			//On cache la fenêtre 
-			    			Utils.changeFrameVisibility(frame, true);
-			    			
-			    			//On choisit la fonction
-	    			    	Shutter.comboFonctions.setSelectedItem(Shutter.language.getProperty("functionCut"));
-
-							Shutter.caseChangeFolder1.setSelected(true);
-							Shutter.caseOpenFolderAtEnd1.setSelected(false);
-							Shutter.lblDestination1.setText(sortieFolder.toString());
-							Shutter.caseInAndOut.doClick();								
-							
-							do {
-								Thread.sleep(100);
-							} while (VideoPlayer.frame.isVisible() == false);
-							VideoPlayer.frame.setVisible(false);
-							
-							//On démarre le lecteur puis on fait pause
-							do {
-								Thread.sleep(100);
-							} while (VideoPlayer.leftPlay.getText().equals(Shutter.language.getProperty("btnPause")) == false);
-							
-							VideoPlayer.leftPlay.doClick();	
-			    		}
-							
-							String timecodeStart = String.valueOf(tableRow.getValueAt(i, 2));
-							String tcStart[] = timecodeStart.split(":");
-							int tcStartToMS = (int) (Integer.valueOf(tcStart[0]) * 3600000 + Integer.valueOf(tcStart[1]) * 60000 + Integer.valueOf(tcStart[2]) * 1000 + Integer.valueOf(tcStart[3]) * (1000 / FFPROBE.currentFPS));
-							
-							//On définit le point d'entrée
-							VideoPlayer.sliderIn.setValue(tcStartToMS);
-							VideoPlayer.caseInH.setText(tcStart[0]);
-							VideoPlayer.caseInM.setText(tcStart[1]);
-							VideoPlayer.caseInS.setText(tcStart[2]);
-							VideoPlayer.caseInF.setText(tcStart[3]);
-
-							//Si c'est le dernier fichier pas de tc de fin
-							if (i < tableRow.getRowCount() - 1)
-							{
-								String timecodeEnd = String.valueOf(tableRow.getValueAt(i + 1, 2));
-								String tcEnd[] = timecodeEnd.split(":");								
-								int tcEndToMS = (int) (Integer.valueOf(tcEnd[0]) * 3600000 + Integer.valueOf(tcEnd[1]) * 60000 + Integer.valueOf(tcEnd[2]) * 1000 + Integer.valueOf(tcEnd[3]) * (1000 / FFPROBE.currentFPS));
-								
-								//On définit le point sortie
-								VideoPlayer.sliderOut.setValue(tcEndToMS);								
-								VideoPlayer.caseOutH.setText(tcEnd[0]);
-								VideoPlayer.caseOutM.setText(tcEnd[1]);
-								VideoPlayer.caseOutS.setText(tcEnd[2]);
-								VideoPlayer.caseOutF.setText(tcEnd[3]);
-		
-								VideoPlayer.totalDuration();
-							}
-							else
-								VideoPlayer.sliderOut.setValue(VideoPlayer.sliderOut.getMaximum());		
-							
-							
-							//On démarre la fonction
-							Shutter.btnStart.doClick();
-							
-							//On attend que le processus se lance
-							do {
-								Thread.sleep(100);
-							} while (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")));		
-							
-							//On attend que le fichier soit terminé
-							do {
-								Thread.sleep(100);
-							} while (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")) == false);							
-														
-			    			} catch (Exception e){}
-			    		
-						} //End for
-				    	
-				    	isRunning = false;
-
-				    	//On remet la fonction Détection de coupe
-    	                for(int comboItem = 0 ; comboItem < Shutter.comboFonctions.getModel().getSize() ; comboItem ++) {
-    	                    Object element = Shutter.comboFonctions.getModel().getElementAt(comboItem);
-    	                    if (element.toString().equals(Shutter.language.getProperty("functionSceneDetection")))
-    	                    {
-    			    			Shutter.comboFonctions.setSelectedIndex(comboItem);
-    	                    	break;
-    	                    }
-    	                }
-    	                
-		    			//On réouvre la fenêtre 
-		    			Utils.changeFrameVisibility(frame, false);
-				    	
-				    	//On ferme le lecteur une fois terminé
-				    	Shutter.caseInAndOut.setSelected(false);
-						if (VideoPlayer.mediaPlayerComponentLeft != null)
-							VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().stop();
-						if (VideoPlayer.mediaPlayerComponentRight != null)
-							VideoPlayer.mediaPlayerComponentRight.getMediaPlayer().stop();
-						VideoPlayer.frame.getContentPane().removeAll();			
-					}
-			    	}); runProcess.start();					
-				}
-			}
-			
-		});
-		
 		lblEdit = new JLabel(Shutter.language.getProperty("lblEdit"));
 		lblEdit.setForeground(Utils.themeColor);
 		lblEdit.setHorizontalAlignment(SwingConstants.CENTER);
-		lblEdit.setFont(new Font("Montserrat", Font.PLAIN, 13));
-		lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 32, 245, 15);
+		lblEdit.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
+		lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 31, 245, 15);
 		lblEdit.setVisible(false);
 		frame.getContentPane().add(lblEdit);
 									
@@ -967,7 +817,6 @@ import javax.swing.JScrollPane;
 		tolerance.setEnabled(true);
 		btnAnalyse.setEnabled(true);
 		btnEDL.setEnabled(true);
-		btnExport.setEnabled(true);
 		lblEdit.setVisible(true);
 
 	}

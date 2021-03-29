@@ -101,7 +101,7 @@ public class BlackMagicOutput {
 	private void load(){				
 		caseHD = new JRadioButton(Shutter.language.getProperty("caseHD"));
 		caseHD.setSelected(true);
-		caseHD.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseHD.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseHD.setBounds(6, 38, caseHD.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseHD);
 		
@@ -117,7 +117,7 @@ public class BlackMagicOutput {
 		});
 		
 		btnPrevious = new JButton("<");
-		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnPrevious.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnPrevious.setBounds(8, 8, 26, 21);
 		frame.getContentPane().add(btnPrevious);				
 		
@@ -137,12 +137,12 @@ public class BlackMagicOutput {
 		});
 		
 		btnLire = new JButton(Shutter.language.getProperty("btnLire"));
-		btnLire.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnLire.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnLire.setBounds(12 + 32, 8, 461 - 64, 21);
 		frame.getContentPane().add(btnLire);
 		
 		btnNext = new JButton(">");
-		btnNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnNext.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnNext.setBounds(btnLire.getX() + btnLire.getWidth() + 8, 8, 26, 21);
 		frame.getContentPane().add(btnNext);
 		
@@ -164,13 +164,13 @@ public class BlackMagicOutput {
 		caseForceInterlace = new JRadioButton(Shutter.language.getProperty("caseForcerEntrelacement"));
 		caseForceInterlace.setSelected(false);
 		caseForceInterlace.setBounds(170, 38, caseForceInterlace.getPreferredSize().width + 20, 23);
-		caseForceInterlace.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseForceInterlace.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		frame.getContentPane().add(caseForceInterlace);
 		
 		caseAfficherLeTimecode = new JRadioButton(Shutter.language.getProperty("caseAfficherLeTimecode"));
 		caseAfficherLeTimecode.setSelected(true);
 		caseAfficherLeTimecode.setBounds(338, 38, caseAfficherLeTimecode.getPreferredSize().width + 20, 23);
-		caseAfficherLeTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseAfficherLeTimecode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		frame.getContentPane().add(caseAfficherLeTimecode);
 		
 		slider = new JSlider();
@@ -181,7 +181,7 @@ public class BlackMagicOutput {
 		
 		lblTimecode = new JLabel("00:00:00:00");
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTimecode.setFont(new Font("FreeSans", Font.PLAIN, 30));
+		lblTimecode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 30));
 		lblTimecode.setForeground(Color.RED);
 		lblTimecode.setBounds(6, 91, 461, 24);
 		frame.getContentPane().add(lblTimecode);
@@ -349,7 +349,7 @@ public class BlackMagicOutput {
 				
 				String videoFilter = "";
 				if (caseAfficherLeTimecode.isSelected())		
-					videoFilter = " -vf " + '"' + "drawtext=fontfile=" + Shutter.pathToFont.replace("Montserrat", "FreeSans") + ":timecode='"+h+"\\:"+m+"\\:"+s+"\\:"+f+"':r=" + FFPROBE.currentFPS + ":x=(w-tw)*0.5:y=(lh*0.5):fontcolor=white:fontsize=(" + FFPROBE.imageResolution.substring(FFPROBE.imageResolution.lastIndexOf("x") + 1) + "*0.0422):box=1:boxcolor=0x00000099" + '"';		
+					videoFilter = " -vf " + '"' + "drawtext=fontfile=" + Shutter.pathToFont.replace(Shutter.montserratFont, Shutter.freeSansFont) + ":timecode='"+h+"\\:"+m+"\\:"+s+"\\:"+f+"':r=" + FFPROBE.currentFPS + ":x=(w-tw)*0.5:y=(lh*0.5):fontcolor=white:fontsize=(" + FFPROBE.imageResolution.substring(FFPROBE.imageResolution.lastIndexOf("x") + 1) + "*0.0422):box=1:boxcolor=0x00000099" + '"';		
 						
 				String format = "";
 				if (caseHD.isSelected())

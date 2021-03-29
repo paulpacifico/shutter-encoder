@@ -94,7 +94,7 @@ public class Renamer {
 		fichier = new File(fullName).getName().replace(ext, "");
 		
 		btnLimit = new JRadioButton(Shutter.language.getProperty("btnLimit"));
-		btnLimit.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnLimit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnLimit.setBounds(7, 12, 211, 16);
 		frame.getContentPane().add(btnLimit);
 		
@@ -112,13 +112,13 @@ public class Renamer {
 		});
 		
 		spinnerLimit = new JSpinner(new SpinnerNumberModel(fichier.length(), 1, fichier.length(), 1));
-		spinnerLimit.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		spinnerLimit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		spinnerLimit.setEnabled(false);
 		spinnerLimit.setBounds(226, 10, 46, 20);
 		frame.getContentPane().add(spinnerLimit);
 		
 		btnIncrementer = new JRadioButton(Shutter.language.getProperty("btnIncrementer"));
-		btnIncrementer.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnIncrementer.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnIncrementer.setBounds(7, 34, btnIncrementer.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnIncrementer);
 		
@@ -136,13 +136,13 @@ public class Renamer {
 		});
 		
 		spinnerIncrementer = new JSpinner(new SpinnerNumberModel(0, 0, 99999999, 1));
-		spinnerIncrementer.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		spinnerIncrementer.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		spinnerIncrementer.setEnabled(false);
 		spinnerIncrementer.setBounds(166, 33, 106, 20);
 		frame.getContentPane().add(spinnerIncrementer);
 		
 		lblRemplacer = new JLabel(Shutter.language.getProperty("lblRemplacer"));
-		lblRemplacer.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblRemplacer.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblRemplacer.setBounds(12, 80, 70, 14);
 		frame.getContentPane().add(lblRemplacer);
 		
@@ -153,7 +153,7 @@ public class Renamer {
 		frame.getContentPane().add(txtRemplacer);;		
 				
 		lblPar = new JLabel(Shutter.language.getProperty("lblPar"));
-		lblPar.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblPar.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblPar.setBounds(226, 80, 29, 14);
 		frame.getContentPane().add(lblPar);
 		
@@ -172,11 +172,11 @@ public class Renamer {
 		Renommer = new JButton(Shutter.language.getProperty("renommer"));
 		Renommer.setBounds(410, 77, 108, 21);
 		Renommer.setMargin(new Insets(0,0,0,0));
-		Renommer.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		Renommer.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(Renommer);
 		
 		btnAjouterAvant = new JRadioButton(Shutter.language.getProperty("btnAjouterAvant"));
-		btnAjouterAvant.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnAjouterAvant.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnAjouterAvant.setBounds(280, 12, 130, 16);
 		frame.getContentPane().add(btnAjouterAvant);
 		
@@ -201,7 +201,7 @@ public class Renamer {
 		frame.getContentPane().add(txtAjouterAvant);
 		
 		btnAjouterApres = new JRadioButton(Shutter.language.getProperty("btnAjouterApres"));
-		btnAjouterApres.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnAjouterApres.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnAjouterApres.setBounds(280, 34, 130, 16);
 		frame.getContentPane().add(btnAjouterApres);
 		
@@ -226,7 +226,7 @@ public class Renamer {
 		frame.getContentPane().add(txtAjouterApres);
 		
 		convertToLower = new JRadioButton(Shutter.language.getProperty("convertToLower"));
-		convertToLower.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		convertToLower.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		convertToLower.setBounds(7, 57, convertToLower.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToLower);
 		
@@ -243,7 +243,7 @@ public class Renamer {
 		});
 		
 		convertToUpper = new JRadioButton(Shutter.language.getProperty("convertToUpper"));
-		convertToUpper.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		convertToUpper.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		convertToUpper.setBounds(convertToLower.getWidth() + convertToLower.getLocation().x + 7, 57, convertToUpper.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToUpper);
 		
@@ -260,7 +260,7 @@ public class Renamer {
 		});
 		
 		removeSpecialCharacters = new JRadioButton(Shutter.language.getProperty("removeSpecialCharacters"));
-		removeSpecialCharacters.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		removeSpecialCharacters.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		removeSpecialCharacters.setBounds(convertToUpper.getWidth() + convertToUpper.getLocation().x + 7, 57, removeSpecialCharacters.getPreferredSize().width, 16);
 		frame.getContentPane().add(removeSpecialCharacters);
 		

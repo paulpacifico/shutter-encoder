@@ -80,7 +80,7 @@ public class SubtitlesEdit {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
 						
-		btnAppliquer.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnAppliquer.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 			btnAppliquer.setBounds(frame.getWidth() / 2 - 2, frame.getHeight() - 52, frame.getWidth() / 2 - 2, 21);
 		else
@@ -145,7 +145,7 @@ public class SubtitlesEdit {
 			
 		});
 		
-		btnCancel.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		btnCancel.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 			btnCancel.setBounds(3, frame.getHeight() - 52, frame.getWidth() / 2 - 2, 21);		
 		else
@@ -260,7 +260,7 @@ public class SubtitlesEdit {
 		in.setText(subIn);
 		in.setBorder(BorderFactory.createLineBorder(new Color(255,255,255,50)));
 		in.setForeground(Utils.themeColor);
-		in.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		in.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		in.setBounds(82, textPosition - 2, 90, 25);	
 		in.setBackground(new Color(50,50,50));
 		in.setHorizontalAlignment(SwingConstants.CENTER);
@@ -272,7 +272,7 @@ public class SubtitlesEdit {
 		out.setText(subOut);
 		out.setBorder(BorderFactory.createLineBorder(new Color(255,255,255,50)));
 		out.setForeground(Utils.themeColor);
-		out.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		out.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		out.setBounds(82, textPosition + 24, 90, 25);	
 		out.setBackground(new Color(50,50,50));
 		out.setHorizontalAlignment(SwingConstants.CENTER);
@@ -281,7 +281,7 @@ public class SubtitlesEdit {
 	
 	private static JLabel addNumber(int number){
 		JLabel nb = new JLabel(String.valueOf(number));
-		nb.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		nb.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		nb.setHorizontalAlignment(SwingConstants.CENTER);
 		nb.setBounds(9, textPosition + 16, 61, 16);
 	    return nb;

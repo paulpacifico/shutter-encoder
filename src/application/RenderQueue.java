@@ -135,7 +135,7 @@ import library.XPDF;
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals("DVD RIP") == false
+							&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false
 							&& Shutter.comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionVideoLevels")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionNormalization")) == false
@@ -458,7 +458,7 @@ import library.XPDF;
 						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals("DVD RIP") == false
+								&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false
 								&& Shutter.comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionVideoLevels")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionNormalization")) == false
@@ -707,7 +707,7 @@ import library.XPDF;
 		frame.getContentPane().add(zebra);
 		
 		btnStartRender = new JButton(Shutter.language.getProperty("btnStartRender"));
-		btnStartRender.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnStartRender.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnStartRender.setEnabled(false);
 		btnStartRender.setBounds(11, 319, 577, 21);
 		frame.getContentPane().add(btnStartRender);

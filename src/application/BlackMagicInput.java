@@ -126,7 +126,7 @@ public class BlackMagicInput {
 				
 		Label lblInput = new Label(Shutter.language.getProperty("lblInput"));
 		lblInput.setAlignment(Label.RIGHT);
-		lblInput.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblInput.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblInput.setForeground(Color.WHITE);
 		lblInput.setBackground(new Color(50,50,50));
 		lblInput.setBounds(10, 9, 46, 22);
@@ -136,20 +136,20 @@ public class BlackMagicInput {
 		comboInput.setBounds(62, 9, 374, 22);	
 		comboInput.setModel(new DefaultComboBoxModel(DECKLINK.formatsList.toArray()));
 		comboInput.setSelectedItem(null);
-		comboInput.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		comboInput.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		comboInput.setEditable(false);
 		frame.getContentPane().add(comboInput);
 		
 		Label lblOutput = new Label(Shutter.language.getProperty("lblOutput"));
 		lblOutput.setAlignment(Label.RIGHT);
-		lblOutput.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblOutput.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblOutput.setForeground(Color.WHITE);
 		lblOutput.setBackground(new Color(50, 50, 50));
 		lblOutput.setBounds(10, 37, 46, 22);
 		frame.getContentPane().add(lblOutput);
 		
 		comboOutput = new JComboBox<String[]>();
-		comboOutput.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		comboOutput.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		comboOutput.setEditable(false);
 		comboOutput.setBounds(62, 37, comboInput.getWidth(), 22);
 		frame.getContentPane().add(comboOutput);
@@ -188,7 +188,7 @@ public class BlackMagicInput {
 		});
 		
 		JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1" + Shutter.language.getProperty("colon"));
-		defaultOutput1.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		defaultOutput1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		defaultOutput1.setBounds(10,  comboOutput.getLocation().y + comboOutput.getHeight() + 6, defaultOutput1.getPreferredSize().width + 4, defaultOutput1.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput1);
 		
@@ -300,7 +300,7 @@ public class BlackMagicInput {
 		});
 		
 		JLabel defaultOutput2 = new JLabel(Shutter.language.getProperty("output") + "2" + Shutter.language.getProperty("colon"));
-		defaultOutput2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		defaultOutput2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		defaultOutput2.setBounds(10,  defaultOutput1.getLocation().y + defaultOutput1.getHeight() + 6, defaultOutput2.getPreferredSize().width + 4, defaultOutput2.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput2);
 		
@@ -412,7 +412,7 @@ public class BlackMagicInput {
 		});
 		
 		JLabel defaultOutput3 = new JLabel(Shutter.language.getProperty("output") + "3" + Shutter.language.getProperty("colon"));
-		defaultOutput3.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		defaultOutput3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		defaultOutput3.setBounds(10,  defaultOutput2.getLocation().y + defaultOutput2.getHeight() + 6, defaultOutput3.getPreferredSize().width + 4, defaultOutput3.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput3);
 		
@@ -533,12 +533,12 @@ public class BlackMagicInput {
         });
 							
 		caseDeinterlace = new JRadioButton(Shutter.language.getProperty("caseDeinterlace"));
-		caseDeinterlace.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseDeinterlace.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseDeinterlace.setBounds(10, defaultOutput3.getY() + defaultOutput3.getHeight() + 6, 157, 23);
 		frame.getContentPane().add(caseDeinterlace);
 		
 		caseStopAt = new JRadioButton(Shutter.language.getProperty("caseStopAt"));
-		caseStopAt.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseStopAt.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseStopAt.setBounds(169, caseDeinterlace.getY(), 169, 23);
 		frame.getContentPane().add(caseStopAt);
 		
@@ -565,7 +565,7 @@ public class BlackMagicInput {
 		TC1 = new JTextField("00");
 		TC1.setBounds(336, caseStopAt.getY() + 1, 32, 21);
 		TC1.setHorizontalAlignment(SwingConstants.CENTER);
-		TC1.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		TC1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		TC1.setColumns(10);
 		TC1.setEnabled(false);
 		frame.getContentPane().add(TC1);
@@ -573,7 +573,7 @@ public class BlackMagicInput {
 		TC2 = new JTextField("00");
 		TC2.setBounds(370, caseStopAt.getY() + 1, 32, 21);
 		TC2.setHorizontalAlignment(SwingConstants.CENTER);
-		TC2.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		TC2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		TC2.setColumns(10);
 		TC2.setEnabled(false);
 		frame.getContentPane().add(TC2);
@@ -581,7 +581,7 @@ public class BlackMagicInput {
 		TC3 = new JTextField("00");
 		TC3.setBounds(404, caseStopAt.getY() + 1, 32, 21);
 		TC3.setHorizontalAlignment(SwingConstants.CENTER);
-		TC3.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		TC3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		TC3.setColumns(10);
 		TC3.setEnabled(false);
 		frame.getContentPane().add(TC3);
@@ -648,7 +648,7 @@ public class BlackMagicInput {
 		});
 
 		btnRecord = new JButton(Shutter.language.getProperty("btnRecord"));
-		btnRecord.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnRecord.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnRecord.setBounds(12, caseStopAt.getY() + caseStopAt.getHeight() + 6, 423, 21);
 		frame.getContentPane().add(btnRecord);
 		
@@ -709,7 +709,7 @@ public class BlackMagicInput {
 		
 		lblTimecode = new JLabel("00:00:00");
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTimecode.setFont(new Font("FreeSans", Font.PLAIN, 30));
+		lblTimecode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 30));
 		lblTimecode.setForeground(Color.RED);
 		lblTimecode.setBounds(10, btnRecord.getY() + btnRecord.getHeight() + 18, 422, 24);
 		frame.getContentPane().add(lblTimecode);

@@ -343,7 +343,7 @@ public class ColorImage {
 		});			
 		
 		btnPrevious = new JButton(Shutter.language.getProperty("btnPrevious"));
-		btnPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));	
+		btnPrevious.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
 		btnPrevious.setMargin(new Insets(0,0,0,0));
 		btnPrevious.setBounds(14, frame.getHeight() - 33, 84, 21);	
 		frame.getContentPane().add(btnPrevious);
@@ -402,7 +402,7 @@ public class ColorImage {
 		});
 		
 		btnNext = new JButton(Shutter.language.getProperty("btnNext"));
-		btnNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnNext.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnNext.setMargin(new Insets(0,0,0,0));
 		btnNext.setBounds(btnPrevious.getX() + btnPrevious.getWidth() + 6, btnPrevious.getY(), 84, 21);		
 		frame.getContentPane().add(btnNext);
@@ -461,7 +461,7 @@ public class ColorImage {
 		});
 				
 		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnReset.setBounds(14, btnPrevious.getY() - 21 - 7, btnPrevious.getWidth() + btnNext.getWidth() + 6, 21);		
 		frame.getContentPane().add(btnReset);		
 		
@@ -526,7 +526,7 @@ public class ColorImage {
 		frame.getContentPane().add(backgroundPanel);
 				
 		JLabel lblExposure = new JLabel(Shutter.language.getProperty("lblExposure"));
-		lblExposure.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblExposure.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblExposure.setBounds(12, 62, 180, 16);		
 		frame.getContentPane().add(lblExposure);
 
@@ -536,7 +536,7 @@ public class ColorImage {
 		sliderExposure.setMaximum(100);
 		sliderExposure.setMinimum(-100);
 		sliderExposure.setValue(0);		
-		sliderExposure.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderExposure.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderExposure.setBounds(12, lblExposure.getY() + lblExposure.getHeight(), 180, 22);	
 		
 		sliderExposure.addMouseListener(new MouseAdapter() {
@@ -573,7 +573,7 @@ public class ColorImage {
 		frame.add(sliderExposure);
 				
 		JLabel lblContrast = new JLabel(Shutter.language.getProperty("lblContrast"));
-		lblContrast.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblContrast.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblContrast.setBounds(12, sliderExposure.getY() + sliderExposure.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblContrast);
 		
@@ -583,7 +583,7 @@ public class ColorImage {
 		sliderContrast.setMaximum(100);
 		sliderContrast.setMinimum(-100);
 		sliderContrast.setValue(0);		
-		sliderContrast.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderContrast.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderContrast.setBounds(12, lblContrast.getY() + lblContrast.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderContrast.addMouseListener(new MouseAdapter() {
@@ -620,7 +620,7 @@ public class ColorImage {
 		frame.add(sliderContrast);
 		
 		JLabel lblWhite = new JLabel(Shutter.language.getProperty("lblWhite"));
-		lblWhite.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblWhite.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblWhite.setBounds(12, sliderContrast.getY() + sliderContrast.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblWhite);
 		
@@ -630,7 +630,7 @@ public class ColorImage {
 		sliderWhite.setMaximum(100);
 		sliderWhite.setMinimum(-100);
 		sliderWhite.setValue(0);		
-		sliderWhite.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderWhite.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderWhite.setBounds(12, lblWhite.getY() + lblWhite.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderWhite.addMouseListener(new MouseAdapter() {
@@ -667,7 +667,7 @@ public class ColorImage {
 		frame.add(sliderWhite);
 		
 		JLabel lblBlack = new JLabel(Shutter.language.getProperty("lblBlack"));
-		lblBlack.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblBlack.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblBlack.setBounds(12, sliderWhite.getY() + sliderWhite.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblBlack);
 		
@@ -677,7 +677,7 @@ public class ColorImage {
 		sliderBlack.setMaximum(100);
 		sliderBlack.setMinimum(-100);
 		sliderBlack.setValue(0);		
-		sliderBlack.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderBlack.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderBlack.setBounds(12, lblBlack.getY() + lblBlack.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderBlack.addMouseListener(new MouseAdapter() {
@@ -714,7 +714,7 @@ public class ColorImage {
 		frame.add(sliderBlack);
 		
 		JLabel lblHighlights = new JLabel(Shutter.language.getProperty("lblHighlights"));
-		lblHighlights.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblHighlights.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblHighlights.setBounds(12, sliderBlack.getY() + sliderBlack.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblHighlights);
 		
@@ -724,7 +724,7 @@ public class ColorImage {
 		sliderHighlights.setMaximum(100);
 		sliderHighlights.setMinimum(-100);
 		sliderHighlights.setValue(0);		
-		sliderHighlights.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderHighlights.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderHighlights.setBounds(12, lblHighlights.getY() + lblHighlights.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderHighlights.addMouseListener(new MouseAdapter() {
@@ -761,7 +761,7 @@ public class ColorImage {
 		frame.add(sliderHighlights);
 		
 		JLabel lblMediums = new JLabel(Shutter.language.getProperty("lblMediums"));
-		lblMediums.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblMediums.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblMediums.setBounds(12, sliderHighlights.getY() + sliderHighlights.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblMediums);
 		
@@ -771,7 +771,7 @@ public class ColorImage {
 		sliderMediums.setMaximum(100);
 		sliderMediums.setMinimum(-100);
 		sliderMediums.setValue(0);		
-		sliderMediums.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderMediums.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderMediums.setBounds(12, lblMediums.getY() + lblMediums.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderMediums.addMouseListener(new MouseAdapter() {
@@ -808,7 +808,7 @@ public class ColorImage {
 		frame.add(sliderMediums);
 		
 		JLabel lblShadows = new JLabel(Shutter.language.getProperty("lblShadows"));
-		lblShadows.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblShadows.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblShadows.setBounds(12, sliderMediums.getY() + sliderMediums.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblShadows);
 		
@@ -818,7 +818,7 @@ public class ColorImage {
 		sliderShadows.setMaximum(100);
 		sliderShadows.setMinimum(-100);
 		sliderShadows.setValue(0);		
-		sliderShadows.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderShadows.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderShadows.setBounds(12, lblShadows.getY() + lblShadows.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderShadows.addMouseListener(new MouseAdapter() {
@@ -855,7 +855,7 @@ public class ColorImage {
 		frame.add(sliderShadows);
 						
 		JLabel lblBalance = new JLabel(Shutter.language.getProperty("lblBalance"));
-		lblBalance.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblBalance.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblBalance.setBounds(12, sliderShadows.getY() + sliderShadows.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblBalance);
 		
@@ -865,7 +865,7 @@ public class ColorImage {
 		sliderBalance.setMaximum(12000);
 		sliderBalance.setMinimum(1000);
 		sliderBalance.setValue(6500);		
-		sliderBalance.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderBalance.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderBalance.setBounds(12, lblBalance.getY() + lblBalance.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderBalance.addMouseListener(new MouseAdapter() {
@@ -902,7 +902,7 @@ public class ColorImage {
 		frame.add(sliderBalance);
 		
 		JLabel lblHUE = new JLabel(Shutter.language.getProperty("lblHUE"));
-		lblHUE.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblHUE.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblHUE.setBounds(12, sliderBalance.getY() + sliderBalance.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblHUE);
 		
@@ -912,7 +912,7 @@ public class ColorImage {
 		sliderHUE.setMaximum(100);
 		sliderHUE.setMinimum(-100);
 		sliderHUE.setValue(0);		
-		sliderHUE.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderHUE.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderHUE.setBounds(12, lblHUE.getY() + lblHUE.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderHUE.addMouseListener(new MouseAdapter() {
@@ -949,7 +949,7 @@ public class ColorImage {
 		frame.add(sliderHUE);
 		
 		JLabel lblRGB = new JLabel(Shutter.language.getProperty("lblRGB"));
-		lblRGB.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblRGB.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblRGB.setBounds(12, sliderHUE.getY() + sliderHUE.getHeight() + 6, lblRGB.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblRGB);
 		
@@ -960,7 +960,7 @@ public class ColorImage {
 		comboRGB.setMaximumRowCount(10);
 		comboRGB.setEditable(false);
 		comboRGB.setSelectedIndex(0);
-		comboRGB.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboRGB.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 7, lblRGB.getY() - 3, 70, 22);		
 		frame.getContentPane().add(comboRGB);
 		
@@ -998,7 +998,7 @@ public class ColorImage {
 		});
 		
 		JLabel lblR = new JLabel(Shutter.language.getProperty("lblRED"));
-		lblR.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblR.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblR.setBounds(12, comboRGB.getY() + comboRGB.getHeight() + 3, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblR);
 		
@@ -1008,7 +1008,7 @@ public class ColorImage {
 		sliderRED.setMaximum(100);
 		sliderRED.setMinimum(-100);
 		sliderRED.setValue(0);		
-		sliderRED.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderRED.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderRED.setBounds(12, lblR.getY() + lblR.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderRED.addMouseListener(new MouseAdapter() {
@@ -1075,7 +1075,7 @@ public class ColorImage {
 		frame.add(sliderRED);
 		
 		JLabel lblG = new JLabel(Shutter.language.getProperty("lblGREEN"));
-		lblG.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblG.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblG.setBounds(12, sliderRED.getY() + sliderRED.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblG);
 		
@@ -1085,7 +1085,7 @@ public class ColorImage {
 		sliderGREEN.setMaximum(100);
 		sliderGREEN.setMinimum(-100);
 		sliderGREEN.setValue(0);		
-		sliderGREEN.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderGREEN.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderGREEN.setBounds(12, lblG.getY() + lblG.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderGREEN.addMouseListener(new MouseAdapter() {
@@ -1152,7 +1152,7 @@ public class ColorImage {
 		frame.add(sliderGREEN);
 		
 		JLabel lblB = new JLabel(Shutter.language.getProperty("lblBLUE"));
-		lblB.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblB.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblB.setBounds(12, sliderGREEN.getY() + sliderGREEN.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblB);
 		
@@ -1162,7 +1162,7 @@ public class ColorImage {
 		sliderBLUE.setMaximum(100);
 		sliderBLUE.setMinimum(-100);
 		sliderBLUE.setValue(0);		
-		sliderBLUE.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderBLUE.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderBLUE.setBounds(12, lblB.getY() + lblB.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderBLUE.addMouseListener(new MouseAdapter() {
@@ -1229,7 +1229,7 @@ public class ColorImage {
 		frame.add(sliderBLUE);
 		
 		JLabel lblVibrance = new JLabel(Shutter.language.getProperty("lblVibrance"));
-		lblVibrance.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblVibrance.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblVibrance.setBounds(12, sliderBLUE.getY() + sliderBLUE.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblVibrance);
 		
@@ -1239,7 +1239,7 @@ public class ColorImage {
 		sliderVibrance.setMaximum(100);
 		sliderVibrance.setMinimum(-100);
 		sliderVibrance.setValue(0);		
-		sliderVibrance.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderVibrance.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderVibrance.setBounds(12, lblVibrance.getY() + lblVibrance.getHeight(), sliderExposure.getWidth(), 22);	
 				
 		frame.add(sliderVibrance);			
@@ -1249,7 +1249,7 @@ public class ColorImage {
 		comboVibrance.setMaximumRowCount(10);
 		comboVibrance.setEditable(false);
 		comboVibrance.setSelectedIndex(0);
-		comboVibrance.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboVibrance.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboVibrance.setBounds(scrollBar.getX() - scrollBar.getWidth() - 64, lblVibrance.getY() - 3, 70, 22);		
 		frame.getContentPane().add(comboVibrance);
 		
@@ -1340,7 +1340,7 @@ public class ColorImage {
 		});
 				
 		JLabel lblSaturation = new JLabel(Shutter.language.getProperty("lblSaturation"));
-		lblSaturation.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblSaturation.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblSaturation.setBounds(12, sliderVibrance.getY() + sliderVibrance.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblSaturation);
 		
@@ -1350,7 +1350,7 @@ public class ColorImage {
 		sliderSaturation.setMaximum(100);
 		sliderSaturation.setMinimum(-100);
 		sliderSaturation.setValue(0);		
-		sliderSaturation.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderSaturation.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderSaturation.setBounds(12, lblSaturation.getY() + lblSaturation.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderSaturation.addMouseListener(new MouseAdapter() {
@@ -1387,7 +1387,7 @@ public class ColorImage {
 		frame.add(sliderSaturation);
 			
 		JLabel lblGrain = new JLabel(Shutter.language.getProperty("lblGrain"));
-		lblGrain.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblGrain.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblGrain.setBounds(12, sliderSaturation.getY() + sliderSaturation.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblGrain);
 		
@@ -1397,7 +1397,7 @@ public class ColorImage {
 		sliderGrain.setMaximum(100);
 		sliderGrain.setMinimum(-100);
 		sliderGrain.setValue(0);		
-		sliderGrain.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderGrain.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderGrain.setBounds(12, lblGrain.getY() + lblGrain.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderGrain.addMouseListener(new MouseAdapter() {
@@ -1434,7 +1434,7 @@ public class ColorImage {
 		frame.add(sliderGrain);	
 				
 		JLabel lblVignette = new JLabel(Shutter.language.getProperty("lblVignette"));
-		lblVignette.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblVignette.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblVignette.setBounds(12, sliderGrain.getY() + sliderGrain.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblVignette);
 		
@@ -1444,7 +1444,7 @@ public class ColorImage {
 		sliderVignette.setMaximum(100);
 		sliderVignette.setMinimum(-100);
 		sliderVignette.setValue(0);		
-		sliderVignette.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderVignette.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderVignette.setBounds(12, lblVignette.getY() + lblVignette.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderVignette.addMouseListener(new MouseAdapter() {
@@ -1481,7 +1481,7 @@ public class ColorImage {
 		frame.add(sliderVignette);		
 		
 		JLabel lblRotate = new JLabel(Shutter.language.getProperty("caseRotate"));
-		lblRotate.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblRotate.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblRotate.setBounds(12, sliderVignette.getY() + sliderVignette.getHeight() + 6, lblRotate.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblRotate);
 		
@@ -1491,7 +1491,7 @@ public class ColorImage {
 		comboRotate.setName("comboRotate");
 		comboRotate.setModel(new DefaultComboBoxModel<String>(new String[] { Shutter.language.getProperty("aucun"), "90", "-90", "180" }));
 		comboRotate.setSelectedIndex(0);
-		comboRotate.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboRotate.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboRotate.setEditable(false);
 		comboRotate.setBounds(lblRotate.getX() + lblRotate.getWidth() + 7, lblRotate.getY() - 3, 80, 22);
 		comboRotate.setMaximumRowCount(20);
@@ -1521,7 +1521,7 @@ public class ColorImage {
 		});
 		
 		JLabel lblAngle = new JLabel(Shutter.language.getProperty("caseAngle"));
-		lblAngle.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblAngle.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblAngle.setBounds(12, comboRotate.getY() + comboRotate.getHeight() + 3, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblAngle);
 		
@@ -1529,7 +1529,7 @@ public class ColorImage {
 		sliderAngle.setMaximum(100);
 		sliderAngle.setMinimum(-100);
 		sliderAngle.setValue(0);		
-		sliderAngle.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		sliderAngle.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		sliderAngle.setBounds(12, lblAngle.getY() + lblAngle.getHeight(), sliderExposure.getWidth(), 22);	
 		
 		sliderAngle.addMouseListener(new MouseAdapter() {
@@ -1611,7 +1611,7 @@ public class ColorImage {
 		
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		positionVideo.setBounds(212, frame.getHeight() - 33, sliderExposure.getWidth(), 22);	
 		frame.getContentPane().add(positionVideo); 
 		
@@ -1638,7 +1638,7 @@ public class ColorImage {
 		});
 		
 		btnOriginal = new JButton("Original");
-		btnOriginal.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOriginal.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOriginal.setMargin(new Insets(0,0,0,0));
 		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 9, frame.getHeight() - 33, btnOriginal.getPreferredSize().width, 21);		
 		frame.getContentPane().add(btnOriginal); 
@@ -1713,7 +1713,7 @@ public class ColorImage {
 		});
 		
 		btnPreview = new JButton(Shutter.language.getProperty("preview"));
-		btnPreview.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnPreview.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnPreview.setMargin(new Insets(0,0,0,0));
 		btnPreview.setBounds(btnOriginal.getX() + btnOriginal.getWidth() + 9, frame.getHeight() - 33, 120, 21);		
 		frame.getContentPane().add(btnPreview); 
@@ -1857,7 +1857,7 @@ public class ColorImage {
 		});
 		
 		btnExportImage = new JButton(Shutter.language.getProperty("btnExportImage"));
-		btnExportImage.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnExportImage.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnExportImage.setBounds(btnPreview.getX() + btnPreview.getWidth() + 9, frame.getHeight() - 33, btnExportImage.getPreferredSize().width, 21);		
 		frame.getContentPane().add(btnExportImage); 
 		
@@ -2026,7 +2026,7 @@ public class ColorImage {
 		});
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(btnExportImage.getX() + btnExportImage.getWidth() + 9, frame.getHeight() - 33, frame.getWidth() - (btnExportImage.getX() + btnExportImage.getWidth()) - 25, 21);		
 		frame.getContentPane().add(btnOK);
 		

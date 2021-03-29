@@ -117,7 +117,7 @@ public class ReducedWindow extends JDialog {
 		pourcentage.setHorizontalAlignment(SwingConstants.RIGHT);
 		pourcentage.setBounds(29, 36, 33, 16);
 		pourcentage.setVisible(false);
-		pourcentage.setFont(new Font("Montserrat", Font.PLAIN, 13));
+		pourcentage.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
 		pourcentage.setBackground(new Color(0,0,0));
 		panel.add(pourcentage);
 		
@@ -146,7 +146,7 @@ public class ReducedWindow extends JDialog {
 		lblTempsRestant.setVisible(false);
 		lblTempsRestant.setHorizontalAlignment(SwingConstants.LEFT);
 		lblTempsRestant.setForeground(Utils.themeColor);
-		lblTempsRestant.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblTempsRestant.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		lblTempsRestant.setBounds(100, 72, 178, 16);		
 		frame.getContentPane().add(lblTempsRestant);
 				

@@ -106,7 +106,7 @@ public class Settings {
 	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
 	private JLabel lblGpuDecoding = new JLabel(Shutter.language.getProperty("lblGpuDecoding"));
-	public static JComboBox<String> comboGPU;
+	public static JComboBox<String> comboGPU = new JComboBox<String>(new String[] {"auto", Shutter.language.getProperty("aucun")} );
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});
 	private JLabel lblLanguage = new JLabel(Shutter.language.getProperty("lblLanguage"));
@@ -226,7 +226,7 @@ public class Settings {
 		
 		JButton btnReset = new JButton(Shutter.language.getProperty("btnReset"));
 		btnReset.setName("btnReset");
-		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnReset.setSize(btnReset.getPreferredSize().width + 4, 21);
 		btnReset.setLocation(backgroundPanel.getWidth() / 2 - (btnReset.getWidth() + 14), backgroundPanel.getHeight() / 2 - btnReset.getHeight() / 2);
 		backgroundPanel.add(btnReset);
@@ -368,11 +368,11 @@ public class Settings {
             }
         });
 		
-		btnWaitFileComplete.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnWaitFileComplete.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnWaitFileComplete.setBounds(12, 56, btnWaitFileComplete.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnWaitFileComplete);
 		
-		btnExtension.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnExtension.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnExtension.setBounds(12, btnWaitFileComplete.getLocation().y + btnWaitFileComplete.getHeight() + 10, btnExtension.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnExtension);
 		
@@ -404,7 +404,7 @@ public class Settings {
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExtension);	
 		
-		btnExclude.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnExclude.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnExclude.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnExclude.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnExclude);
 		
@@ -438,27 +438,27 @@ public class Settings {
 		txtExclude.setBounds(btnExclude.getLocation().x + btnExclude.getWidth() + 6, btnExclude.getLocation().y - 2, frame.getWidth() - (btnExclude.getLocation().x + btnExclude.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExclude);	
 		
-		btnSetBab.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnSetBab.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnSetBab.setBounds(12, btnExclude.getLocation().y + btnExclude.getHeight() + 10, btnSetBab.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnSetBab);
 		
-		btnDisableAnimations.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnDisableAnimations.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnDisableAnimations.setBounds(12, btnSetBab.getLocation().y + btnSetBab.getHeight() + 10, btnDisableAnimations.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableAnimations);
 		
-		btnDisableSound.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnDisableSound.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnDisableSound.setBounds(12, btnDisableAnimations.getLocation().y + btnDisableAnimations.getHeight() + 10, btnDisableSound.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableSound);
 
-		btnDisableUpdate.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnDisableUpdate.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnDisableUpdate.setBounds(12, btnDisableSound.getLocation().y + btnDisableSound.getHeight() + 10, btnDisableUpdate.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableUpdate);
 		
-		btnEmptyListAtEnd.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnEmptyListAtEnd.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnEmptyListAtEnd.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnEmptyListAtEnd.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEmptyListAtEnd);
 		
-		btnEndingAction.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		btnEndingAction.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnEndingAction.setBounds(12, btnEmptyListAtEnd.getLocation().y + btnEmptyListAtEnd.getHeight() + 10, btnEndingAction.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEndingAction);
 		
@@ -481,7 +481,7 @@ public class Settings {
 					Shutter.language.getProperty("lblActionShutdown")
 					}));
 			comboAction.setSelectedIndex(1);	
-			comboAction.setFont(new Font("FreeSans", Font.PLAIN, 10));
+			comboAction.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 			comboAction.setEditable(false);
 			comboAction.setBounds(btnEndingAction.getX() + btnEndingAction.getWidth() + 6, btnEndingAction.getLocation().y - 4,  frame.getWidth() - (btnEndingAction.getLocation().x + btnEndingAction.getWidth()) - 32, 22);
 			comboAction.setMaximumRowCount(10);
@@ -489,34 +489,34 @@ public class Settings {
 		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
 		
-		lblGpuDecoding.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblGpuDecoding.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblGpuDecoding.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, lblGpuDecoding.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblGpuDecoding);
 		
-		comboGPU.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboGPU.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboGPU.setEditable(false);
 		comboGPU.setSelectedItem(Shutter.language.getProperty("aucun"));
 		comboGPU.setBounds(lblGpuDecoding.getX() + lblGpuDecoding.getWidth() + 6, lblGpuDecoding.getLocation().y - 4, comboGPU.getPreferredSize().width, 22);
 		comboGPU.setMaximumRowCount(10);
 		frame.getContentPane().add(comboGPU);
 		
-		lblScaleMode.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblScaleMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblScaleMode.setBounds(12, lblGpuDecoding.getLocation().y + lblGpuDecoding.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblScaleMode);
 				
-		comboScale.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboScale.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboScale.setEditable(false);
 		comboScale.setSelectedItem("bicubic");
 		comboScale.setBounds(lblScaleMode.getX() + lblScaleMode.getWidth() + 6, lblScaleMode.getLocation().y - 4, comboScale.getPreferredSize().width, 22);
 		comboScale.setMaximumRowCount(10);
 		frame.getContentPane().add(comboScale);
 		
-		lblScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblScreenRecord.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
 		frame.getContentPane().add(lblScreenRecord);
 		
 		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
-		txtScreenRecord.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		txtScreenRecord.setText("25");
 		txtScreenRecord.setColumns(10);
 		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
@@ -535,12 +535,12 @@ public class Settings {
 			
 		});
 		
-		lblInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
 		frame.getContentPane().add(lblInputDevice);
 		
 		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
-		txtInputDevice.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		txtInputDevice.setText("25");
 		txtInputDevice.setColumns(10);
 		txtInputDevice.setBounds(txtScreenRecord.getLocation().x, lblInputDevice.getLocation().y - 4, 40, 21);
@@ -559,12 +559,12 @@ public class Settings {
 			
 		});
 		
-		lblThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblThreads.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblThreads.setBounds(12, lblInputDevice.getLocation().y + lblInputDevice.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
 		frame.getContentPane().add(lblThreads);
 		
 		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);
-		txtThreads.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtThreads.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		txtThreads.setColumns(10);
 		txtThreads.setBounds(lblThreads.getLocation().x + lblThreads.getWidth() + 6, lblThreads.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtThreads);
@@ -582,18 +582,18 @@ public class Settings {
 			
 		});
 		
-		lblImageToVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblImageToVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblImageToVideo.setBounds(12, lblThreads.getLocation().y + lblThreads.getHeight() + 10, lblImageToVideo.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblImageToVideo);
 		
 		txtImageDuration.setHorizontalAlignment(SwingConstants.CENTER);
-		txtImageDuration.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		txtImageDuration.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		txtImageDuration.setColumns(10);
 		txtImageDuration.setBounds(lblImageToVideo.getLocation().x + lblImageToVideo.getWidth() + 6, lblImageToVideo.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtImageDuration);
 		
 		JLabel lblSec = new JLabel("sec");
-		lblSec.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblSec.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblSec.setBounds(txtImageDuration.getLocation().x + txtImageDuration.getWidth() + 4, lblImageToVideo.getLocation().y, 34, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblSec);
 
@@ -610,11 +610,11 @@ public class Settings {
 			
 		});		
 		
-		lblTheme.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblTheme.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblTheme.setBounds(12, lblSec.getLocation().y + lblSec.getHeight() + 10, lblTheme.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblTheme);
 			
-		comboTheme.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboTheme.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboTheme.setEditable(false);
 		comboTheme.setBounds(lblTheme.getX() + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, comboTheme.getPreferredSize().width, 22);
 		comboTheme.setMaximumRowCount(10);
@@ -659,7 +659,7 @@ public class Settings {
 			
 		});
 		
-		lblColor.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblColor.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblColor.setBounds(comboTheme.getX() + comboTheme.getWidth() + 12, lblTheme.getLocation().y, lblColor.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblColor);
 		
@@ -730,11 +730,11 @@ public class Settings {
     		
     	});
 		
-		lblLanguage.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblLanguage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblLanguage.setBounds(12, lblTheme.getLocation().y + lblTheme.getHeight() + 10, lblLanguage.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblLanguage);
 			
-		comboLanguage.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboLanguage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboLanguage.setEditable(false);
 		
 		if (Shutter.getLanguage.equals("Français"))
@@ -745,6 +745,8 @@ public class Settings {
 			comboLanguage.setSelectedItem("Italiano");
 		else if (Shutter.getLanguage.equals("Español"))
 			comboLanguage.setSelectedItem("Español");
+		else if (Shutter.getLanguage.equals("Chinese"))
+			comboLanguage.setSelectedItem("Chinese");
 		
 		comboLanguage.setBounds(btnEndingAction.getX() + lblLanguage.getWidth() + 6, lblLanguage.getLocation().y - 4, comboLanguage.getPreferredSize().width, 22);
 		comboLanguage.setMaximumRowCount(10);
@@ -789,7 +791,7 @@ public class Settings {
 			
 		});
 					
-		defaultOutput1.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		defaultOutput1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		defaultOutput1.setBounds(12,  lblLanguage.getLocation().y + lblLanguage.getHeight() + 14, defaultOutput1.getPreferredSize().width, defaultOutput1.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput1);
 
@@ -901,7 +903,7 @@ public class Settings {
 			}
 		});
 			
-		lastUsedOutput1.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lastUsedOutput1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lastUsedOutput1.setBounds(defaultOutput1.getX() + defaultOutput1.getWidth() + 10, defaultOutput1.getLocation().y, lastUsedOutput1.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput1);
 		
@@ -916,7 +918,7 @@ public class Settings {
 			}	
 		});
 		
-		defaultOutput2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		defaultOutput2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		defaultOutput2.setBounds(12,  lblDestination1.getLocation().y + lblDestination1.getHeight() + 10, defaultOutput2.getPreferredSize().width, defaultOutput2.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput2);
 		
@@ -1020,7 +1022,7 @@ public class Settings {
 			}
 		});
 		
-		lastUsedOutput2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lastUsedOutput2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lastUsedOutput2.setBounds(defaultOutput2.getX() + defaultOutput2.getWidth() + 10, defaultOutput2.getLocation().y, lastUsedOutput2.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput2);
 		
@@ -1035,7 +1037,7 @@ public class Settings {
 			}	
 		});
 		
-		defaultOutput3.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		defaultOutput3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		defaultOutput3.setBounds(12,  lblDestination2.getLocation().y + lblDestination2.getHeight() + 10, defaultOutput3.getPreferredSize().width, defaultOutput3.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput3);
 		
@@ -1139,7 +1141,7 @@ public class Settings {
 			}
 		});
 		
-		lastUsedOutput3.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lastUsedOutput3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lastUsedOutput3.setBounds(defaultOutput3.getX() + defaultOutput3.getWidth() + 10, defaultOutput3.getLocation().y, lastUsedOutput3.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput3);
 		
@@ -1159,7 +1161,7 @@ public class Settings {
 		lblDestination2.setTransferHandler(new OutputTransferHandler2());
 		lblDestination3.setTransferHandler(new OutputTransferHandler3());
 
-		readSettings();
+		loadSettings();
 		
 	}
 
@@ -1366,7 +1368,7 @@ public class Settings {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void readSettings() {	
+	public static void loadSettings() {	
 		
 	try {
 		if (settingsXML.exists())
@@ -1482,18 +1484,91 @@ public class Settings {
 						}
 					}
 					
+					//Open folder at end
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseOpenFolderAtEnd1"))
+					{
+						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+							Shutter.caseOpenFolderAtEnd1.setSelected(true);
+						else
+							Shutter.caseOpenFolderAtEnd1.setSelected(false);
+					}
+					
+					//Change folder
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseChangeFolder1"))
+					{
+						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == false
+							&& lblDestination1.getText().equals(System.getProperty("user.home") + "/Desktop") == false
+							&& lblDestination1.getText().equals(System.getProperty("user.home") + "\\Desktop") == false)
+						{
+							Shutter.caseChangeFolder1.doClick();
+						}
+					}
+										
 					//Volume video player
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderVolume"))
 					{
 						videoPlayerVolume = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 					}
+					
+					//FTP
+					if (eElement.getParentNode().getNodeName().equals("Ftp"))
+					{		
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textFtp"))
+						{
+							Ftp.textFtp.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textUser"))
+						{
+							Ftp.textUser.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+					}
+					else if (eElement.getParentNode().getNodeName().equals("Wetransfer")) //Wetransfer
+					{
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textFrom"))
+						{
+							Wetransfer.textFrom.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textTo"))
+						{
+							Wetransfer.textTo.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePlus"))
+						{
+							//Value
+							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
+							{
+								Wetransfer.casePlus.doClick();
+							}
+							
+							//State
+							Wetransfer.casePlus.setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+						}
+						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textUser"))
+						{
+							Wetransfer.textUser.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+					}
+					
+					//CaseSendMail
+					if (eElement.getParentNode().getNodeName().equals("caseSendMail"))
+					{
+						//Value
+						Shutter.textMail.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}
+					
+					//CaseStream
+					if (eElement.getParentNode().getNodeName().equals("caseStream"))
+					{
+						//Value
+						Shutter.textStream.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}
 				}
 			}		
 		}							
-	} catch (Exception e) {}					
+	} catch (Exception e) {}		
 }
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes" })
 	public static void saveSettings() {	
 					
 		try {
@@ -1674,22 +1749,64 @@ public class Settings {
 				}
 			}
 			
-			//Volume video player
+			//Open folder at end
 			//Component
 			Element component = document.createElement("Component");
 			
 			//Type
 			Element cType = document.createElement("Type");
-			cType.appendChild(document.createTextNode("JSlider"));
+			cType.appendChild(document.createTextNode("JRadioButton"));
 			component.appendChild(cType);
 			
 			//Name
-			Element cName = document.createElement("Name");			
-			cName.appendChild(document.createTextNode("sliderVolume"));
+			Element cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode(Shutter.caseOpenFolderAtEnd1.getName()));
 			component.appendChild(cName);
 			
 			//Value
 			Element cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseOpenFolderAtEnd1.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//Change folder
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JRadioButton"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode(Shutter.caseChangeFolder1.getName()));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseChangeFolder1.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//Volume video player
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JSlider"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("sliderVolume"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
 			if (VideoPlayer.sliderVolume != null)
 				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.sliderVolume.getValue())));
 			else
@@ -1698,6 +1815,218 @@ public class Settings {
 			
 			root.appendChild(component);
 			
+			//FTP
+			Element ftp = document.createElement("Ftp");
+			
+			if (Ftp.textFtp.getText().length() > 0)
+			{
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textFtp"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");				
+				cValue.appendChild(document.createTextNode(Ftp.textFtp.getText().toString()));
+				component.appendChild(cValue);
+					
+				ftp.appendChild(component);
+			}
+			
+			if (Ftp.textUser.getText().length() > 0)
+			{
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textUser"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(Ftp.textUser.getText().toString()));
+				component.appendChild(cValue);
+					
+				ftp.appendChild(component);		
+			}
+			
+			if (Ftp.textFtp.getText().length() > 0 || Ftp.textUser.getText().length() > 0)
+				root.appendChild(ftp);
+			
+			//Wetransfer
+			Element wetransfer = document.createElement("Wetransfer");
+			
+			if (Wetransfer.textFrom.getText().length() > 0)
+			{
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textFrom"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(Wetransfer.textFrom.getText().toString()));
+				component.appendChild(cValue);
+							
+				wetransfer.appendChild(component);
+			}
+			
+			if (Wetransfer.textTo.getText().length() > 0)
+			{
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textTo"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(Wetransfer.textTo.getText().toString()));
+				component.appendChild(cValue);
+							
+				wetransfer.appendChild(component);
+			}
+			
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JRadioButton"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode("casePlus"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(Wetransfer.casePlus.isSelected())));
+			component.appendChild(cValue);
+			
+			//State
+			Element cState = document.createElement("Enable");
+			cState.appendChild(document.createTextNode(String.valueOf(Wetransfer.casePlus.isEnabled())));
+			component.appendChild(cState);	
+			
+			wetransfer.appendChild(component);
+			
+			if (Wetransfer.textUser.getText().length() > 0)
+			{
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textUser"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(Wetransfer.textUser.getText().toString()));
+				component.appendChild(cValue);
+							
+				wetransfer.appendChild(component);
+			}
+			
+			if (Wetransfer.textFrom.getText().length() > 0
+			|| Wetransfer.textTo.getText().length() > 0
+			|| Wetransfer.textUser.getText().length() > 0)
+			{
+				root.appendChild(wetransfer);
+			}
+			
+			//CaseSendMail	
+			if (Shutter.textMail.getText().length() > 0 && Shutter.textMail.getText().equals(Shutter.language.getProperty("textMail")) == false)
+			{
+				Element sendMail = document.createElement("caseSendMail");
+				
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textMail"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(Shutter.textMail.getText().toString()));
+				component.appendChild(cValue);
+							
+				sendMail.appendChild(component);
+				
+				root.appendChild(sendMail);
+			}
+			
+			//caseStream	
+			if (Shutter.textStream.getText().length() > 0 && Shutter.textStream.getText().equals("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx") == false)
+			{
+				Element stream = document.createElement("caseStream");
+				
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textStream"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(Shutter.textStream.getText().toString()));
+				component.appendChild(cValue);
+							
+				stream.appendChild(component);
+				
+				root.appendChild(stream);
+			}
+						
 			// creation du fichier XML
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();
@@ -1708,7 +2037,9 @@ public class Settings {
 
 			transformer.transform(domSource, streamResult);
 			
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}				
 }
 

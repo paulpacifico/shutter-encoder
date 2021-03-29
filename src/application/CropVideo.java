@@ -365,7 +365,7 @@ public class CropVideo {
 
 	private void boutons()	{
 		btnOK = new JButton("OK");
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(537, 433, 113, 21);		
 		frame.getContentPane().add(btnOK);
 		
@@ -417,7 +417,7 @@ public class CropVideo {
 		comboPreset.setEnabled(false);
 		comboPreset.setEditable(true);
 		comboPreset.setSelectedIndex(-1);
-		comboPreset.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		comboPreset.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		comboPreset.setBounds(465, 433, 63, 22);		
 		frame.getContentPane().add(comboPreset);
 		
@@ -476,19 +476,19 @@ public class CropVideo {
 		});
 		
 		lblPresets = new JLabel(Shutter.language.getProperty("lblPresets"));
-		lblPresets.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblPresets.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblPresets.setBounds(comboPreset.getX() - lblPresets.getPreferredSize().width - 4, 435, lblPresets.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblPresets);
 						
 		lblRatio.setText(Shutter.language.getProperty("ratio") + "100.00"); //Needed for preferredSize
 		lblRatio.setName("lblRatio");
-		lblRatio.setFont(new Font("Montserrat", Font.PLAIN, 13));
+		lblRatio.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
 		lblRatio.setForeground(Utils.themeColor);
 		lblRatio.setBounds(170, 434, lblRatio.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblRatio);
 
 		caseManuel.setName("caseManuel");
-		caseManuel.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseManuel.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseManuel.setSelected(true);
 		caseManuel.setBounds(lblRatio.getX() + lblRatio.getWidth(), 435, caseManuel.getPreferredSize().width, 16);		
 		frame.getContentPane().add(caseManuel);
@@ -538,7 +538,7 @@ public class CropVideo {
 		
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		positionVideo.setBounds(12, 432, 146, 22);	
 		
 		//Contournement d'un bug

@@ -100,13 +100,13 @@ public class Help {
 		
 		JLabel lblFonctions = new JLabel(Shutter.language.getProperty("lblFonctions"));
 		lblFonctions.setForeground(Color.WHITE);
-		lblFonctions.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblFonctions.setBounds(6, 11, lblFonctions.getPreferredSize().width, 15);
 		frame.getContentPane().add(lblFonctions);
 						
 		comboFonctions = new JComboBox<String[]>();		
 		comboFonctions.setModel(Shutter.comboFonctions.getModel());
-		comboFonctions.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		comboFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		comboFonctions.setEditable(true);
 		comboFonctions.setMaximumRowCount(Toolkit.getDefaultToolkit().getScreenSize().height / 33);
 		comboFonctions.setBounds(133, 8, 168, 22);
@@ -119,20 +119,20 @@ public class Help {
 			comboFonctions.setEnabled(true);
 		
 		btnDoc = new JButton(Shutter.language.getProperty("btnDoc"));
-		btnDoc.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnDoc.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnDoc.setMargin(new Insets(0,0,0,0));
 		btnDoc.setBounds(310, 9, 143, 21);
 		frame.getContentPane().add(btnDoc);
 		
 		btnVideoDePresentation = new JButton(Shutter.language.getProperty("btnVideoDePresentation"));
-		btnVideoDePresentation.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnVideoDePresentation.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnVideoDePresentation.setMargin(new Insets(0,0,0,0));
 		btnVideoDePresentation.setBounds(btnDoc.getX() + btnDoc.getWidth() + 6, 9, 156, 21);
 		frame.getContentPane().add(btnVideoDePresentation);
 		
 		
 		txtFonctions = new JTextPane();
-		txtFonctions.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		txtFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		txtFonctions.setLocation(10, 38);
 		txtFonctions.setForeground(Color.WHITE);
 		txtFonctions.setSize(572, txtFonctions.getPreferredSize().height);

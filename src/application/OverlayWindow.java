@@ -646,7 +646,7 @@ public class OverlayWindow {
 		
 		JLabel lblFont = new JLabel(Shutter.language.getProperty("lblFont"));
 		lblFont.setAlignmentX(SwingConstants.RIGHT);
-		lblFont.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblFont.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblFont.setBounds(12, frame.getHeight() - 124, lblFont.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblFont);
 		
@@ -719,7 +719,7 @@ public class OverlayWindow {
 		
 		JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
 		lblColor.setAlignmentX(SwingConstants.RIGHT);
-		lblColor.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblColor.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblColor.setBounds(comboFont.getX() + comboFont.getWidth() + 7, lblFont.getY(), lblColor.getPreferredSize().width + 4, 16);
 		frame.getContentPane().add(lblColor);
 		
@@ -765,7 +765,7 @@ public class OverlayWindow {
 		lblBackground.setBackground(new Color(80, 80, 80));
 		lblBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblBackground.setOpaque(true);
-		lblBackground.setFont(new Font("Montserrat", Font.PLAIN, 11));
+		lblBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
 		lblBackground.setBounds(panelColor.getLocation().x + panelColor.getWidth() + 11, lblColor.getLocation().y, 70, 16);
 		frame.getContentPane().add(lblBackground);
 		
@@ -817,7 +817,7 @@ public class OverlayWindow {
 				
 		JLabel lblColor2 = new JLabel(Shutter.language.getProperty("lblColor"));
 		lblColor2.setAlignmentX(SwingConstants.RIGHT);
-		lblColor2.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblColor2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblColor2.setBounds(lblBackground.getLocation().x + lblBackground.getWidth() + 11, lblFont.getY(), lblColor2.getPreferredSize().width + 4, 16);
 		frame.getContentPane().add(lblColor2);
 		
@@ -859,7 +859,7 @@ public class OverlayWindow {
     	});
 				
 		caseAddTimecode.setName("caseAddTimecode");				
-		caseAddTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseAddTimecode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseAddTimecode.setSize(caseAddTimecode.getPreferredSize().width, 23);
 		caseAddTimecode.setLocation(12, frame.getHeight() - 102);
 		frame.add(caseAddTimecode);
@@ -894,7 +894,7 @@ public class OverlayWindow {
 		lblTimecode.setBackground(new Color(80, 80, 80));
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimecode.setOpaque(true);
-		lblTimecode.setFont(new Font("Montserrat", Font.PLAIN, 11));
+		lblTimecode.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
 		lblTimecode.setBounds(caseAddTimecode.getLocation().x + caseAddTimecode.getWidth() + 2, caseAddTimecode.getLocation().y + 3, 70, 16);
 		frame.add(lblTimecode);
 		
@@ -932,7 +932,7 @@ public class OverlayWindow {
 		TC1.setEnabled(false);
 		TC1.setText("00");
 		TC1.setHorizontalAlignment(SwingConstants.CENTER);
-		TC1.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		TC1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		TC1.setColumns(10);
 		TC1.setBounds(lblTimecode.getX() + lblTimecode.getWidth() + 7, caseAddTimecode.getY(), 32, 21);
 		frame.add(TC1);
@@ -941,7 +941,7 @@ public class OverlayWindow {
 		TC2.setEnabled(false);
 		TC2.setText("00");
 		TC2.setHorizontalAlignment(SwingConstants.CENTER);
-		TC2.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		TC2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		TC2.setColumns(10);
 		TC2.setBounds(TC1.getX() + 36, TC1.getY(), 32, 21);
 		frame.add(TC2);
@@ -950,7 +950,7 @@ public class OverlayWindow {
 		TC3.setEnabled(false);
 		TC3.setText("00");
 		TC3.setHorizontalAlignment(SwingConstants.CENTER);
-		TC3.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		TC3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		TC3.setColumns(10);
 		TC3.setBounds(TC2.getX() + 36, TC1.getY(), 32, 21);
 		frame.add(TC3);
@@ -959,7 +959,7 @@ public class OverlayWindow {
 		TC4.setEnabled(false);
 		TC4.setText("00");
 		TC4.setHorizontalAlignment(SwingConstants.CENTER);
-		TC4.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		TC4.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		TC4.setColumns(10);
 		TC4.setBounds(TC3.getX() + 36, TC1.getY(), 32, 21);
 		frame.add(TC4);
@@ -1049,7 +1049,7 @@ public class OverlayWindow {
 		});
 				
 		caseShowTimecode.setName("caseShowTimecode");
-		caseShowTimecode.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseShowTimecode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseShowTimecode.setEnabled(true);
 		caseShowTimecode.setSize(caseShowTimecode.getPreferredSize().width, 23);
 		caseShowTimecode.setLocation(caseAddTimecode.getX(), caseAddTimecode.getY() + caseAddTimecode.getHeight());
@@ -1099,7 +1099,7 @@ public class OverlayWindow {
 		
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		positionVideo.setLocation(panelColor2.getX() + panelColor2.getWidth() + 6, panelColor2.getY());
 		positionVideo.setSize(frame.getWidth() - positionVideo.getX() - 12, 22);	
 		
@@ -1123,14 +1123,14 @@ public class OverlayWindow {
 		});
 		
 		JLabel lblSizeTC = new JLabel(Shutter.language.getProperty("lblSize"));
-		lblSizeTC.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblSizeTC.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblSizeTC.setAlignmentX(SwingConstants.RIGHT);
 		lblSizeTC.setBounds(12,  caseShowTimecode.getY() + caseShowTimecode.getHeight() + 11, lblSizeTC.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblSizeTC);
 		
 		spinnerSizeTC = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeTC.setName("spinnerSizeTC");
-		spinnerSizeTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		spinnerSizeTC.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		spinnerSizeTC.setBounds(lblSizeTC.getLocation().x + lblSizeTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, 54, 22);
 		frame.getContentPane().add(spinnerSizeTC);
 		
@@ -1144,14 +1144,14 @@ public class OverlayWindow {
 		});
 		
 		JLabel lblOpacityTC = new JLabel(Shutter.language.getProperty("lblOpacity"));
-		lblOpacityTC.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblOpacityTC.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblOpacityTC.setAlignmentX(SwingConstants.RIGHT);
 		lblOpacityTC.setBounds(spinnerSizeTC.getLocation().x + spinnerSizeTC.getWidth() + 11, lblSizeTC.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblOpacityTC);
 
 		spinnerOpacityTC = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
 		spinnerOpacityTC.setName("spinnerOpacityTC");
-		spinnerOpacityTC.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		spinnerOpacityTC.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		spinnerOpacityTC.setBounds(lblOpacityTC.getLocation().x + lblOpacityTC.getWidth() + 11, lblSizeTC.getLocation().y - 3, spinnerSizeTC.getWidth(), 22);
 		frame.getContentPane().add(spinnerOpacityTC);
 		
@@ -1166,7 +1166,7 @@ public class OverlayWindow {
 		
 		JLabel posX = new JLabel(Shutter.language.getProperty("pX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
-		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posX.setForeground(Utils.themeColor);
 		posX.setAlignmentX(SwingConstants.RIGHT);
 		posX.setBounds(lblSizeTC.getX(), lblSizeTC.getY() + lblSizeTC.getHeight() + 6, lblOpacityTC.getPreferredSize().width + 2, 16);
@@ -1176,7 +1176,7 @@ public class OverlayWindow {
 		textTcPosX.setName("textTcPosX");
 		textTcPosX.setBounds(spinnerSizeTC.getLocation().x, posX.getLocation().y, spinnerSizeTC.getWidth(), 16);
 		textTcPosX.setHorizontalAlignment(SwingConstants.RIGHT);
-		textTcPosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textTcPosX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		frame.getContentPane().add(textTcPosX);
 		
 		textTcPosX.addKeyListener(new KeyListener(){
@@ -1248,7 +1248,7 @@ public class OverlayWindow {
 		});	
 		
 		JLabel posY = new JLabel(Shutter.language.getProperty("pY"));
-		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posY.setForeground(Utils.themeColor);
 		posY.setAlignmentX(SwingConstants.RIGHT);
 		posY.setBounds(lblOpacityTC.getX(), posX.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);
@@ -1258,7 +1258,7 @@ public class OverlayWindow {
 		textTcPosY.setName("textTcPosY");
 		textTcPosY.setBounds(spinnerOpacityTC.getLocation().x, posY.getLocation().y, spinnerOpacityTC.getWidth(), 16);
 		textTcPosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textTcPosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textTcPosY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		frame.getContentPane().add(textTcPosY);
 		
 		textTcPosY.addKeyListener(new KeyListener(){
@@ -1333,7 +1333,7 @@ public class OverlayWindow {
 		textNamePosY.setName("textNamePosY");
 		textNamePosY.setBounds(frame.getWidth() - spinnerOpacityTC.getWidth() - 13, posY.getLocation().y, spinnerOpacityTC.getWidth(), 16);
 		textNamePosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textNamePosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textNamePosY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		frame.getContentPane().add(textNamePosY);
 		
 		textNamePosY.addKeyListener(new KeyListener(){
@@ -1405,7 +1405,7 @@ public class OverlayWindow {
 		});	
 					
 		JLabel posY2 = new JLabel(Shutter.language.getProperty("pY"));
-		posY2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posY2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posY2.setForeground(Utils.themeColor);
 		posY2.setAlignmentX(SwingConstants.RIGHT);
 		posY2.setBounds(textNamePosY.getX() - lblOpacityTC.getPreferredSize().width - 11, posY.getLocation().y, lblOpacityTC.getPreferredSize().width, 16);
@@ -1413,7 +1413,7 @@ public class OverlayWindow {
 		
 		spinnerOpacityName = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
 		spinnerOpacityName.setName("spinnerOpacityName");
-		spinnerOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		spinnerOpacityName.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		spinnerOpacityName.setBounds(textNamePosY.getX(), spinnerOpacityTC.getLocation().y, spinnerOpacityTC.getWidth(), 22);
 		frame.getContentPane().add(spinnerOpacityName);
 		
@@ -1450,14 +1450,14 @@ public class OverlayWindow {
 		});
 		
 		JLabel lblOpacityName = new JLabel(Shutter.language.getProperty("lblOpacity"));
-		lblOpacityName.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblOpacityName.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblOpacityName.setAlignmentX(SwingConstants.RIGHT);
 		lblOpacityName.setBounds(spinnerOpacityName.getLocation().x - lblOpacityTC.getPreferredSize().width - 11, lblOpacityTC.getLocation().y, lblOpacityName.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblOpacityName);
 				
 		spinnerSizeName = new JSpinner(new SpinnerNumberModel(Math.round((float) 27 * imageRatio ), 1, 999, Math.round(imageRatio)));
 		spinnerSizeName.setName("spinnerSizeName");
-		spinnerSizeName.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		spinnerSizeName.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		spinnerSizeName.setBounds(lblOpacityName.getLocation().x - spinnerSizeTC.getWidth() - 15, lblOpacityTC.getLocation().y - 3, spinnerSizeTC.getWidth(), 22);
 		frame.getContentPane().add(spinnerSizeName);
 		
@@ -1472,7 +1472,7 @@ public class OverlayWindow {
 		});
 		
 		JLabel lblSizeName = new JLabel(Shutter.language.getProperty("lblSize"));
-		lblSizeName.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblSizeName.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblSizeName.setAlignmentX(SwingConstants.RIGHT);
 		lblSizeName.setBounds(spinnerSizeName.getX() - lblSizeTC.getWidth() - 11, lblSizeTC.getY(), lblSizeName.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblSizeName);
@@ -1481,7 +1481,7 @@ public class OverlayWindow {
 		textNamePosX.setName("textNamePosX");
 		textNamePosX.setBounds(posY2.getLocation().x - textNamePosY.getWidth() - 15, posY2.getLocation().y, textNamePosY.getWidth(), 16);
 		textNamePosX.setHorizontalAlignment(SwingConstants.RIGHT);
-		textNamePosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textNamePosX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		frame.getContentPane().add(textNamePosX);
 		
 		textNamePosX.addKeyListener(new KeyListener(){
@@ -1554,14 +1554,14 @@ public class OverlayWindow {
 		
 		JLabel posX2 = new JLabel(Shutter.language.getProperty("pX"));
 		posX2.setHorizontalAlignment(SwingConstants.LEFT);
-		posX2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posX2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posX2.setForeground(Utils.themeColor);
 		posX2.setAlignmentX(SwingConstants.RIGHT);
 		posX2.setBounds(lblSizeName.getX(), posX.getY(), posX.getPreferredSize().width, 16);
 		frame.getContentPane().add(posX2);
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(textTcPosY.getX() + textTcPosY.getWidth() + 9, textTcPosY.getY() - 4, frame.getWidth() - (textTcPosY.getX() + textTcPosY.getWidth()) - (frame.getWidth() - posX2.getX()) - 18, 21);		
 		frame.getContentPane().add(btnOK);
 		
@@ -1742,7 +1742,7 @@ public class OverlayWindow {
 		});
 	
 		caseShowFileName.setName("caseShowFileName");
-		caseShowFileName.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseShowFileName.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseShowFileName.setSize(caseShowFileName.getPreferredSize().width, 23);
 		caseShowFileName.setLocation(lblSizeName.getX(), caseShowTimecode.getY());
 		frame.add(caseShowFileName);
@@ -1763,7 +1763,7 @@ public class OverlayWindow {
 		});
 		
 		caseShowText.setName("caseShowText");
-		caseShowText.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseShowText.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseShowText.setSize(caseShowText.getPreferredSize().width + 4, 23);
 		caseShowText.setLocation(caseShowFileName.getX(), caseAddTimecode.getY());
 		frame.add(caseShowText);
@@ -1837,7 +1837,7 @@ public class OverlayWindow {
 		changePositions.setBackground(new Color(80, 80, 80));
 		changePositions.setOpaque(true);
 		changePositions.setHorizontalAlignment(JLabel.CENTER);
-		changePositions.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		changePositions.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		changePositions.setSize(changePositions.getPreferredSize());
 		changePositions.setLocation((btnOK.getX() + btnOK.getWidth()/2) - changePositions.getWidth()/2, btnOK.getY() - changePositions.getHeight() - 14);
 		changePositions.addMouseListener(new MouseListener() {
@@ -2012,7 +2012,8 @@ public class OverlayWindow {
 						
 			fileName.removeAll();
 			
-			JLabel addText = new JLabel(new File(fichier).getName());
+			String ext = fichier.substring(fichier.lastIndexOf("."));
+			JLabel addText = new JLabel(new File(fichier).getName().replace(ext, ""));
 			
 			if (caseShowText.isSelected() && text.getText().isEmpty() == false)
 				addText.setText(text.getText());

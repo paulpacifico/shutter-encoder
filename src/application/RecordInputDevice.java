@@ -19,15 +19,21 @@
 
 package application;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -37,6 +43,8 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import library.FFMPEG;
 import library.FFPROBE;
@@ -83,7 +91,7 @@ public class RecordInputDevice {
 	private static void devices()
 	{
 		JLabel screenVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
-		screenVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		screenVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		screenVideo.setBounds(12, 12, 40, 14);
 		frame.getContentPane().add(screenVideo);		
 						
@@ -94,16 +102,16 @@ public class RecordInputDevice {
 			firstInput[i] = videoDevice.replace(Shutter.language.getProperty("noVideo"), "Capture.current.screen");
 			i++;
 		}
-		
+			
 		comboScreenVideo = new JComboBox<String>(firstInput);	
-		comboScreenVideo.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboScreenVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboScreenVideo.setEditable(false);
 		comboScreenVideo.setMaximumRowCount(20);
 		comboScreenVideo.setLocation(screenVideo.getX() + screenVideo.getWidth() + 4, screenVideo.getLocation().y - 3);
 		if (System.getProperty("os.name").contains("Windows"))
-			comboScreenVideo.setSize(frame.getWidth() - screenVideo.getX() - screenVideo.getWidth() - 32, 22);
+			comboScreenVideo.setSize(frame.getWidth() - screenVideo.getX() - screenVideo.getWidth() - 52, 22);
 		else
-			comboScreenVideo.setSize(frame.getWidth() - screenVideo.getX() - screenVideo.getWidth() - 22, 22);
+			comboScreenVideo.setSize(frame.getWidth() - screenVideo.getX() - screenVideo.getWidth() - 42, 22);
 		frame.getContentPane().add(comboScreenVideo);
 		
 		comboScreenVideo.addActionListener(new ActionListener() {
@@ -129,12 +137,12 @@ public class RecordInputDevice {
 		});
 		
 		JLabel screenAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
-		screenAudio.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		screenAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		screenAudio.setBounds(12, screenVideo.getY() + screenVideo.getHeight() + 14, 40, 14);
 		frame.getContentPane().add(screenAudio);
 		
 		comboScreenAudio = new JComboBox<String>(FFMPEG.audioDevices.toString().split(":"));
-		comboScreenAudio.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboScreenAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboScreenAudio.setEditable(false);
 		comboScreenAudio.setMaximumRowCount(20);
 		comboScreenAudio.setBounds(comboScreenVideo.getX(), screenAudio.getLocation().y - 3, comboScreenVideo.getWidth(), 22);
@@ -169,14 +177,132 @@ public class RecordInputDevice {
 			
 		});
 		
+		JLabel iconScreenPreview = new JLabel(new ImageIcon(Shutter.class.getClassLoader().getResource("contents/preview2.png")));
+		iconScreenPreview.setHorizontalAlignment(SwingConstants.CENTER);
+		iconScreenPreview.setBounds(comboScreenVideo.getX() + comboScreenVideo.getWidth() + 8, comboScreenVideo.getLocation().y + 2, 16, 16);
+		iconScreenPreview.setToolTipText(Shutter.language.getProperty("preview"));
+		frame.getContentPane().add(iconScreenPreview);
+		
+		iconScreenPreview.addMouseListener(new MouseListener() {
+
+			public void mouseClicked(MouseEvent e) {
+
+					String channels = "";
+					String videoOutput = "";
+					String audioOutput = "";
+					
+					Shutter.liste.removeAllElements();
+					
+					if (comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen"))
+					{
+						Shutter.liste.addElement("Capture.current.screen");
+						if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
+							videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
+					}
+					else
+					{
+						Shutter.liste.addElement("Capture.input.device");
+						if (System.getProperty("os.name").contains("Windows"))
+							videoDeviceIndex = (comboScreenVideo.getSelectedIndex());
+						else
+							videoDeviceIndex = (comboScreenVideo.getSelectedIndex() - 1);
+					}	
+					
+					//Main audio
+					if (comboScreenAudio.getSelectedIndex() > 0)
+						audioDeviceIndex = comboScreenAudio.getSelectedIndex();
+					else
+						audioDeviceIndex = -1;
+					
+					//Permet d'injecter la resolution à FFPROBE
+					setInputDevices();
+					
+					if (comboScreenAudio.getSelectedIndex() > 0) 
+					{
+						channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+						audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+					}
+	
+					// On ajoute la vidéo
+					videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
+					
+					if (FFPROBE.channels == 0 || Shutter.liste.getElementAt(0).equals("Capture.input.device") && System.getProperty("os.name").contains("Windows")) {
+						videoOutput = "scale=1080:-1" + '"';
+						audioOutput = "";
+					}
+										
+					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
+							+ " -c:v rawvideo -map a? -f nut pipe:play |";
+
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
+					if (Shutter.liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && Shutter.liste.getElementAt(0).equals("Capture.input.device") && RecordInputDevice.audioDeviceIndex > 0)
+						cmd = cmd.replace("0:v", "1:v");					
+														
+					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
+					
+					if (FFMPEG.isRunning) {
+						do {
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e1) {}
+						} while (FFMPEG.isRunning && FFMPEG.error == false);
+					}
+					
+					Shutter.liste.removeAllElements();
+					
+					Shutter.enableAll();
+					Shutter.progressBar1.setValue(0);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				iconScreenPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				iconScreenPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+			
+		});
+		
+		@SuppressWarnings("serial")
+		JPanel screenLines = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.setColor(Color.LIGHT_GRAY);
+				float dash[] = { 5.0f };
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f));
+				g2.draw(new Line2D.Float(14, 0, 14, 20));
+				g2.draw(new Line2D.Float(1, 18, 14, 18));
+			}
+		};
+		screenLines.setBackground(new Color(50, 50, 50));
+		screenLines.setBounds(comboScreenVideo.getX() + comboScreenVideo.getWidth() + 2, iconScreenPreview.getY() + iconScreenPreview.getHeight() + 2, 30, 30);
+		frame.getContentPane().add(screenLines);
+		
 		JLabel inputVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
-		inputVideo.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		inputVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		inputVideo.setBounds(12, screenAudio.getY() + screenAudio.getHeight() + 25, 40, 14);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(inputVideo);
 		
 		comboInputVideo = new JComboBox<String>(FFMPEG.videoDevices.toString().split(":"));
-		comboInputVideo.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboInputVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboInputVideo.setEditable(false);
 		comboInputVideo.setEnabled(true);
 		comboInputVideo.setMaximumRowCount(20);
@@ -185,13 +311,13 @@ public class RecordInputDevice {
 			frame.getContentPane().add(comboInputVideo);
 		
 		JLabel inputAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
-		inputAudio.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		inputAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		inputAudio.setBounds(12, inputVideo.getY() + inputVideo.getHeight() + 14, 40, 14);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(inputAudio);
 		
 		comboInputAudio = new JComboBox<String>(FFMPEG.audioDevices.toString().split(":"));
-		comboInputAudio.setFont(new Font("FreeSans", Font.PLAIN, 10));
+		comboInputAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboInputAudio.setEditable(false);
 		comboInputAudio.setEnabled(false);
 		comboInputAudio.setMaximumRowCount(20);
@@ -199,9 +325,126 @@ public class RecordInputDevice {
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(comboInputAudio);
 		
+		JLabel iconDevicePreview = new JLabel(new ImageIcon(Shutter.class.getClassLoader().getResource("contents/preview2.png")));
+		iconDevicePreview.setHorizontalAlignment(SwingConstants.CENTER);
+		iconDevicePreview.setBounds(comboInputVideo.getX() + comboInputVideo.getWidth() + 8, comboInputVideo.getLocation().y + 2, 16, 16);
+		iconDevicePreview.setToolTipText(Shutter.language.getProperty("preview"));
+		
+		if (System.getProperty("os.name").contains("Windows"))
+			frame.getContentPane().add(iconDevicePreview);
+		
+		iconDevicePreview.addMouseListener(new MouseListener() {
+
+			public void mouseClicked(MouseEvent e) {
+
+				if (comboInputVideo.getSelectedIndex() > 0 || comboInputAudio.getSelectedIndex() > 0)
+				{
+					String channels = "";
+					String videoOutput = "";
+					String audioOutput = "";
+					
+					Shutter.liste.removeAllElements();
+					
+					Shutter.liste.addElement("Capture.input.device");
+					videoDeviceIndex = comboInputVideo.getSelectedIndex();
+					
+					//Second audio
+					if (comboInputAudio.getSelectedIndex() > 0)	
+						overlayAudioDeviceIndex = comboInputAudio.getSelectedIndex();
+					else
+						overlayAudioDeviceIndex = -1;
+					
+					//Permet d'injecter la resolution à FFPROBE
+					setOverlayDevice();
+							
+					//Audio only
+					if (comboInputVideo.getSelectedIndex() == 0 && comboInputAudio.getSelectedIndex() > 0) 
+					{
+						audioOutput = "[0:a:0]showvolume=f=0.001:b=4:w=720:h=12[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+					}
+					else
+					{
+						channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+						audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+
+						// On ajoute la vidéo
+						videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
+						
+						if (FFPROBE.channels == 0 || Shutter.liste.getElementAt(0).equals("Capture.input.device")) {
+							videoOutput = "scale=1080:-1" + '"';
+							audioOutput = "";
+						}
+					} 	
+										
+					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
+							+ " -c:v rawvideo -map a? -f nut pipe:play |";
+
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));				
+										
+					if (comboInputVideo.getSelectedIndex() == 0 && comboInputAudio.getSelectedIndex() > 0) 
+						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice().replace("video=" + '"' + "No video" + '"' + ":", "") + cmd);
+					else
+						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
+					
+					if (FFMPEG.isRunning) {
+						do {
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e1) {}
+						} while (FFMPEG.isRunning && FFMPEG.error == false);
+					}
+					
+					Shutter.liste.removeAllElements();
+					
+					Shutter.enableAll();
+					Shutter.progressBar1.setValue(0);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				iconDevicePreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				iconDevicePreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+			
+		});
+		
+		@SuppressWarnings("serial")
+		JPanel devicesLines = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.setColor(Color.LIGHT_GRAY);
+				float dash[] = { 5.0f };
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f));
+				g2.draw(new Line2D.Float(14, 0, 14, 20));
+				g2.draw(new Line2D.Float(1, 18, 14, 18));
+			}
+		};
+		devicesLines.setBackground(new Color(50, 50, 50));
+		devicesLines.setBounds(comboInputVideo.getX() + comboInputVideo.getWidth() + 2, iconDevicePreview.getY() + iconDevicePreview.getHeight() + 2, 30, 30);
+		if (System.getProperty("os.name").contains("Windows"))
+			frame.getContentPane().add(devicesLines);
+		
 		JButton btnOK = new JButton("OK");
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 4, 21);	
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 24, 21);	
 		if (System.getProperty("os.name").contains("Windows"))
 			btnOK.setLocation(12, comboInputAudio.getY() + comboInputAudio.getHeight() + 14);	
 		else
@@ -218,8 +461,8 @@ public class RecordInputDevice {
 				if (comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen"))
 				{
 					Shutter.liste.addElement("Capture.current.screen");
-					if (comboScreenVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
-						videoDeviceIndex = (comboScreenVideo.getSelectedIndex());						
+					if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
+						videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
 				}
 				else
 				{
@@ -394,9 +637,9 @@ public class RecordInputDevice {
 			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
 			{
 				if (setAudio != "") //Audio needs to be first for sync
-					return setAudio + " -thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex - screenIndex) + '"';
+					return setAudio + " -thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
 				else
-					return "-thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex - screenIndex) + '"';
+					return "-thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
 			}
 			else
 			{				

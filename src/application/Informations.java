@@ -87,7 +87,7 @@ import library.MEDIAINFO;
 		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);		
 				
 		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
-		lblWait.setFont(new Font("FreeSans", Font.PLAIN, 20));
+		lblWait.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
 		lblWait.setSize(lblWait.getPreferredSize().width, 40);
 		lblWait.setLocation(frame.getSize().width / 2 - lblWait.getSize().width / 2, frame.getSize().height / 2);
 		lblWait.setVisible(true);
@@ -95,7 +95,7 @@ import library.MEDIAINFO;
 		
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font("FreeSans", Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		lblFlecheBas.setVisible(false);

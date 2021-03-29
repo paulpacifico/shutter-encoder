@@ -118,6 +118,7 @@ public class WatermarkWindow {
 	};
 
 	public WatermarkWindow() {		
+				
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -171,7 +172,7 @@ public class WatermarkWindow {
 		});
 		
 		caseSafeArea = new JRadioButton(Shutter.language.getProperty("caseSafeArea"));
-		caseSafeArea.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseSafeArea.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseSafeArea.setBounds(12, 448, caseSafeArea.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseSafeArea);
 		
@@ -254,7 +255,7 @@ public class WatermarkWindow {
        	logoLocY = logo.getLocation().y;
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(172, 450, 476, 21);		
 		frame.getContentPane().add(btnOK);
 		
@@ -480,7 +481,7 @@ public class WatermarkWindow {
 		
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
-		positionVideo.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		positionVideo.setBounds(12, btnOK.getLocation().y - 24, 146, 22);	
 		
 		//Contournement d'un bug
@@ -528,7 +529,7 @@ public class WatermarkWindow {
 		
 		JLabel posX = new JLabel(Shutter.language.getProperty("posX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
-		posX.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posX.setForeground(Utils.themeColor);
 		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 				
@@ -536,10 +537,10 @@ public class WatermarkWindow {
 		textPosX.setName("textPosX");
 		textPosX.setBounds(posX.getLocation().x + posX.getWidth() + 2, posX.getLocation().y, 34, 16);
 		textPosX.setHorizontalAlignment(SwingConstants.RIGHT);
-		textPosX.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textPosX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
 		JLabel px1 = new JLabel("px");
-		px1.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		px1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px1.setForeground(Utils.themeColor);
 		px1.setBounds(textPosX.getLocation().x + textPosX.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
@@ -612,7 +613,7 @@ public class WatermarkWindow {
 		});	
 				
 		JLabel posY = new JLabel(Shutter.language.getProperty("posY"));
-		posY.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		posY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posY.setForeground(Utils.themeColor);
 		posY.setBounds(px1.getLocation().x + 22, posX.getLocation().y, posY.getPreferredSize().width, 16);
 
@@ -620,7 +621,7 @@ public class WatermarkWindow {
 		textPosY.setName("textPosY");
 		textPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posY.getLocation().y, 34, 16);
 		textPosY.setHorizontalAlignment(SwingConstants.RIGHT);
-		textPosY.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textPosY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
 		textPosY.addKeyListener(new KeyListener(){
 
@@ -716,12 +717,12 @@ public class WatermarkWindow {
 		
 		
 		JLabel px2 = new JLabel("px");
-		px2.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		px2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px2.setForeground(Utils.themeColor);
 		px2.setBounds(textPosY.getLocation().x + textPosY.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		JLabel size = new JLabel(Shutter.language.getProperty("lblSize"));
-		size.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		size.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		size.setForeground(Utils.themeColor);
 		size.setBounds(px2.getLocation().x + 42, posX.getLocation().y, size.getPreferredSize().width, 16);
 		
@@ -729,7 +730,7 @@ public class WatermarkWindow {
 		textSize.setName("textSize");
 		textSize.setBounds(size.getLocation().x + size.getWidth() + 2, size.getLocation().y, 34, 16);
 		textSize.setHorizontalAlignment(SwingConstants.RIGHT);
-		textSize.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
 		textSize.addKeyListener(new KeyListener(){
 
@@ -757,13 +758,13 @@ public class WatermarkWindow {
 		});
 		
 		JLabel px3 = new JLabel("%");
-		px3.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		px3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px3.setForeground(Utils.themeColor);
 		px3.setBounds(textSize.getLocation().x + textSize.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
 		JLabel opacity = new JLabel(Shutter.language.getProperty("lblOpacity"));
 		opacity.setHorizontalAlignment(SwingConstants.RIGHT);
-		opacity.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		opacity.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		opacity.setForeground(Utils.themeColor);
 		opacity.setBounds(btnOK.getLocation().x + btnOK.getWidth() - 104, posX.getLocation().y, opacity.getPreferredSize().width, 16);
 		
@@ -771,7 +772,7 @@ public class WatermarkWindow {
 		textOpacity.setName("textOpacity");
 		textOpacity.setBounds(opacity.getLocation().x + opacity.getWidth() + 2, opacity.getLocation().y, 34, 16);
 		textOpacity.setHorizontalAlignment(SwingConstants.RIGHT);
-		textOpacity.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		textOpacity.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
 		textOpacity.addKeyListener(new KeyListener(){
 
@@ -804,7 +805,7 @@ public class WatermarkWindow {
 		});
 		
 		JLabel px4 = new JLabel("%");
-		px4.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		px4.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px4.setForeground(Utils.themeColor);
 		px4.setBounds(textOpacity.getLocation().x + textOpacity.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
 		
@@ -881,7 +882,7 @@ public class WatermarkWindow {
 
 				//Screen capture
 				if (Shutter.inputDeviceIsRunning)
-				{					
+				{										
 					if (file.exists())
 						FFMPEG.run(" -i " + '"' + file + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
 					else								
@@ -988,7 +989,8 @@ public class WatermarkWindow {
 				}
 					    		
 	    		image.add(newImage); 
-	    		image.repaint();    	
+	    		image.repaint(); 
+	    		
 	    		
 	    		//Logo 
 	    		if (logo && size == -1) //Premier chargement
@@ -1059,7 +1061,7 @@ public class WatermarkWindow {
 				String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));			
 				offset = " -ss "+h+":"+m+":"+s+".0";
 			}
-
+			
 			if (Shutter.overlayDeviceIsRunning)
 				FFMPEG.run(" " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
 			else

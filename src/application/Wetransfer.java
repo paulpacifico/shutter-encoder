@@ -80,15 +80,15 @@ public class Wetransfer {
 	private JLabel quit;
 	private JPanel topPanel;
 	private JLabel topImage;	
-	private static JTextField textTo = new JTextField();
+	public static JTextField textTo = new JTextField();
 	private static JTextArea textMessage = new JTextArea();
 	private JLabel lblYourMail;
 	private JLabel lblRecipient;
 	private JLabel lblMessage;
-	private static JTextField textFrom = new JTextField();
-	private static JRadioButton casePlus = new JRadioButton(Shutter.language.getProperty("casePlus"));
+	public static JTextField textFrom = new JTextField();
+	public static JRadioButton casePlus = new JRadioButton(Shutter.language.getProperty("casePlus"));
 	private JLabel lblUser;
-	private static JTextField textUser = new JTextField();
+	public static JTextField textUser = new JTextField();
 	private JLabel lblMotDePasse;
 	private static JPasswordField textPassword = new JPasswordField();
 	public static JButton btnOK; //Si le bouton est disable alors la connexion est établie
@@ -243,10 +243,11 @@ public class Wetransfer {
 		lblYourMail = new JLabel(Shutter.language.getProperty("lblYourMail"));
 		lblYourMail.setBounds(7, 56, 94, 16);
 		lblYourMail.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblYourMail.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblYourMail.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblYourMail);		
 
 		textFrom.setBounds(101, lblYourMail.getY() - 1, 154, 21);
+		textFrom.setName("textFrom");
 		textFrom.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFrom.setColumns(10);		
 		frame.getContentPane().add(textFrom);
@@ -254,10 +255,11 @@ public class Wetransfer {
 		lblRecipient = new JLabel(Shutter.language.getProperty("lblRecipient"));
 		lblRecipient.setBounds(2, lblYourMail.getY() + lblYourMail.getHeight() + 17, 99, 16);
 		lblRecipient.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblRecipient.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblRecipient.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblRecipient);		
 				
 		textTo.setBounds(textFrom.getX(), lblRecipient.getY() - 1, 154, 21);
+		textTo.setName("textTo");
 		textTo.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textTo.setColumns(10);
 		frame.getContentPane().add(textTo);		
@@ -265,7 +267,7 @@ public class Wetransfer {
 		lblMessage = new JLabel(Shutter.language.getProperty("lblMessage"));
 		lblMessage.setBounds(2, lblRecipient.getY() + lblRecipient.getHeight() + 17, 99, 16);
 		lblMessage.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblMessage.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblMessage.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblMessage);
 		
 		textMessage.setBounds(textTo.getX(), lblMessage.getY() - 1, 154, 83);
@@ -279,7 +281,8 @@ public class Wetransfer {
 		scrollBar.setViewportView(textMessage);
 		frame.getContentPane().add(scrollBar);
 		
-		casePlus.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		casePlus.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		casePlus.setName("casePlus");
 		casePlus.setBounds(10, scrollBar.getY() + scrollBar.getHeight() + 7, casePlus.getPreferredSize().width, 23);
 		frame.getContentPane().add(casePlus);
 		
@@ -313,10 +316,11 @@ public class Wetransfer {
 			lblUser.setEnabled(true);
 		else
 			lblUser.setEnabled(false);
-		lblUser.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblUser.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblUser);		
 		
 		textUser.setBounds(textFrom.getX(), lblUser.getY() - 1, 154, 21);
+		textUser.setName("textUser");
 		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		if (casePlus.isSelected())
 			textUser.setEnabled(true);
@@ -334,7 +338,7 @@ public class Wetransfer {
 		lblMotDePasse.setBounds(8, lblUser.getY() + lblUser.getHeight() + 17, 92, 16);
 		frame.getContentPane().add(lblMotDePasse);
 		
-		lblMotDePasse.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblMotDePasse.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		
 		textPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		if (casePlus.isSelected())
@@ -347,7 +351,7 @@ public class Wetransfer {
 		frame.getContentPane().add(textPassword);
 		
 		btnOK = new JButton("OK");
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(101, lblMotDePasse.getY() + lblMotDePasse.getHeight() + 19, 154, 21);		
 		frame.getContentPane().add(btnOK);
 		
@@ -384,7 +388,7 @@ public class Wetransfer {
 		});
 		
 		btnReset = new JButton("Reset");
-		btnReset.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnReset.setBounds(12, btnOK.getY(), 82, 21);		
 		frame.getContentPane().add(btnReset);	
 		
@@ -487,128 +491,132 @@ public class Wetransfer {
 			if (btnOK.isEnabled() == false && Shutter.cancelled == false && uploadFileList.length() != 0)
 			{		
 						
-					FFMPEG.disableAll();
-					Shutter.btnStart.setEnabled(false);
-					Shutter.btnCancel.setEnabled(true);
+				FFMPEG.disableAll();
+				Shutter.btnStart.setEnabled(false);
+				Shutter.btnCancel.setEnabled(true);
+				
+				wetransferAdress = "";
+				Shutter.cancelled = false;
+				error = false;				
+				isRunning = true;
+				
+				Shutter.progressBar1.setValue(0);
+		        Shutter.progressBar1.setMaximum(100);		
+		        
+			    Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
+		        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingFile") + " WeTransfer");
+								        
+				try {
+					String PathToWTCLIENT;
+					ProcessBuilder processWTCLIENT;
 					
-					wetransferAdress = "";
-					Shutter.cancelled = false;
-					error = false;				
-					isRunning = true;
+					String cmd;
+					if (casePlus.isSelected())
+					{
+						cmd = " upload" + uploadFileList.toString()
+							+ " --from=" + textFrom.getText() 
+							+ " --to=" + textTo.getText().replace(" ", ",")
+							+ " --message=" + '"' + textMessage.getText() + System.lineSeparator() + System.lineSeparator() + Shutter.language.getProperty("sentFrom") + '"';
+					}
+					else
+						cmd = " upload" + uploadFileList.toString();
 					
-					Shutter.progressBar1.setValue(0);
-			        Shutter.progressBar1.setMaximum(100);		
-			        
-				    Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-			        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingFile") + " WeTransfer");
-									        
-					try {
-						String PathToWTCLIENT;
-						ProcessBuilder processWTCLIENT;
-						
-						String cmd;
-						if (casePlus.isSelected())
-						{
-							cmd = " upload" + uploadFileList.toString()
-								+ " --from=" + textFrom.getText() 
-								+ " --to=" + textTo.getText().replace(" ", ",")
-								+ " --message=" + '"' + textMessage.getText() + System.lineSeparator() + System.lineSeparator() + Shutter.language.getProperty("sentFrom") + '"';
-						}
-						else
-							cmd = " upload" + uploadFileList.toString();
-						
-						Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
-						
-						if (System.getProperty("os.name").contains("Windows"))
-						{
-							PathToWTCLIENT = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToWTCLIENT = PathToWTCLIENT.substring(1,PathToWTCLIENT.length()-1);
-							PathToWTCLIENT = '"' + PathToWTCLIENT.substring(0,(int) (PathToWTCLIENT.lastIndexOf("/"))).replace("%20", " ")  + "/Library/wtclient.exe" + '"';
-							processWTCLIENT = new ProcessBuilder(PathToWTCLIENT + " " + cmd);
-						}
-						else
-						{
-							PathToWTCLIENT = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToWTCLIENT = PathToWTCLIENT.substring(0,PathToWTCLIENT.length()-1);
-							PathToWTCLIENT = PathToWTCLIENT.substring(0,(int) (PathToWTCLIENT.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/wtclient";
-							processWTCLIENT = new ProcessBuilder("/bin/bash", "-c" , PathToWTCLIENT + " " + cmd);
-						}
+					Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+					
+					if (System.getProperty("os.name").contains("Windows"))
+					{
+						PathToWTCLIENT = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToWTCLIENT = PathToWTCLIENT.substring(1,PathToWTCLIENT.length()-1);
+						PathToWTCLIENT = '"' + PathToWTCLIENT.substring(0,(int) (PathToWTCLIENT.lastIndexOf("/"))).replace("%20", " ")  + "/Library/wtclient.exe" + '"';
+						processWTCLIENT = new ProcessBuilder(PathToWTCLIENT + " " + cmd);
+					}
+					else
+					{
+						PathToWTCLIENT = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToWTCLIENT = PathToWTCLIENT.substring(0,PathToWTCLIENT.length()-1);
+						PathToWTCLIENT = PathToWTCLIENT.substring(0,(int) (PathToWTCLIENT.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/wtclient";
+						processWTCLIENT = new ProcessBuilder("/bin/bash", "-c" , PathToWTCLIENT + " " + cmd);
+					}
+											
+					process = processWTCLIENT.start();
+					
+					String url;
+			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
+			        BufferedReader br = new BufferedReader(isr);		
 												
-						process = processWTCLIENT.start();
-						
-						String url;
-				        InputStreamReader isr = new InputStreamReader(process.getInputStream());
-				        BufferedReader br = new BufferedReader(isr);		
+					String line;
+					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));							
+
+					//Analyse des données	
+					while ((line = input.readLine()) != null) {	
 													
-						String line;
-						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));							
-
-						//Analyse des données	
-						while ((line = input.readLine()) != null) {	
-														
-							Console.consoleFFMPEG.append(line + System.lineSeparator());							
-							
-							if (line.contains("%"))
-							{
-								String s[] = line.split("%");
-								String s2[] = s[0].split(" ");
-								String s3[] = s2[(s2.length - 1)].split("\\.");
-								Shutter.progressBar1.setValue(Integer.parseInt(s3[0]));
-							}
-														
-							if (line.contains("ERROR"))
-								error = true;
-						    
-						}//While		
+						Console.consoleFFMPEG.append(line + System.lineSeparator());							
 						
-						//Récupération de l'adresse http
-						while ((url = br.readLine()) != null) {							
-							
-							Console.consoleFFMPEG.append(url + System.lineSeparator());	
-
-							if (url.contains("http"))
-							{								
-								wetransferAdress = url.substring(url.lastIndexOf(" ") + 1);								
-								Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(wetransferAdress), null);
-							}
+						if (line.contains("%"))
+						{
+							String s[] = line.split("%");
+							String s2[] = s[0].split(" ");
+							String s3[] = s2[(s2.length - 1)].split("\\.");
+							Shutter.progressBar1.setValue(Integer.parseInt(s3[0]));
 						}
-						
-						process.waitFor();	
-						
-						if (casePlus.isSelected() == false && Shutter.cancelled == false)
-							sendMailForWT(error);
-												
-						} catch (IOException | InterruptedException e) {
+													
+						if (line.contains("ERROR"))
 							error = true;
-						} finally {
-							isRunning = false;
-							
-							FFMPEG.enableAll();
-							uploadFileList.setLength(0);
-							
-							if (error == false)
-						    {
-					        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTSuccessful"));
-								Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
-						    }
-						    else
-						    {
-								Shutter.lblEncodageEnCours.setForeground(Color.RED);
-					        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTFailed"));
-								Shutter.progressBar1.setValue(0);
-						    }
-								
-							if (Shutter.cancelled)
-							{
-						    	Shutter.lblEncodageEnCours.setForeground(Color.RED);
-					        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTCancelled"));
-								Shutter.progressBar1.setValue(0);
-							}
+					    
+					}//While		
+					
+					//Récupération de l'adresse http
+					while ((url = br.readLine()) != null) {							
+						
+						Console.consoleFFMPEG.append(url + System.lineSeparator());	
+
+						if (url.contains("http"))
+						{								
+							wetransferAdress = url.substring(url.lastIndexOf(" ") + 1);								
+							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(wetransferAdress), null);
 						}
+					}
+					
+					process.waitFor();	
+					
+					if (casePlus.isSelected() == false && Shutter.cancelled == false)
+						sendMailForWT(error);
+											
+					} catch (IOException | InterruptedException e) {
+						error = true;
+					} finally {
+						isRunning = false;
+						
+						FFMPEG.enableAll();
+						uploadFileList.setLength(0);
+						
+						if (error == false)
+					    {
+				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTSuccessful"));
+							Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
+					    }
+					    else
+					    {
+							Shutter.lblEncodageEnCours.setForeground(Color.RED);
+				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTFailed"));
+							Shutter.progressBar1.setValue(0);
+					    }
+							
+						if (Shutter.cancelled)
+						{
+					    	Shutter.lblEncodageEnCours.setForeground(Color.RED);
+				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTCancelled"));
+							Shutter.progressBar1.setValue(0);
+						}
+					}
 								
-					}					              
+				}	
+				else
+				{
+					uploadFileList.setLength(0);
+				}
 			}
-		}//BtnOK
+		}
 	
 	public static void sendMailForWT(boolean error) {
 	
@@ -640,7 +648,7 @@ public class Wetransfer {
 				{					
 					Shutter.sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "";
+					final String password = "***ENCRYPTED***";
 	
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");

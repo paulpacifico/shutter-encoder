@@ -46,6 +46,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -80,6 +81,7 @@ public class Functions {
 	private JLabel topImage;
 	private JLabel quit;
 	private JLabel reduce;
+	private JLabel newInstance;
 	private boolean drag;
 	public static JLabel lblFlecheBas;
 	
@@ -89,7 +91,7 @@ public class Functions {
 	public Functions() {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setSize(333,270);
+		frame.setSize(333,333);
 		frame.setBackground(new Color(50,50,50));
 		frame.setTitle(Shutter.language.getProperty("frameFonctions"));
 		frame.setForeground(Color.WHITE);
@@ -183,14 +185,14 @@ public class Functions {
 			lblSave = new JLabel(Shutter.language.getProperty("lblSavePC"));
 				
 		lblSave.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSave.setFont(new Font("FreeSans", Font.PLAIN, 16));
+		lblSave.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 16));
 		lblSave.setBounds(10, 112, 313, 45);
 		lblSave.setVisible(false);
 		frame.getContentPane().add(lblSave);
 		
 		lblDrop = new JLabel(Shutter.language.getProperty("lblDrop"));
 		lblDrop.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDrop.setFont(new Font("FreeSans", Font.PLAIN, 16));
+		lblDrop.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 16));
 		lblDrop.setBounds(10, 136, 313, 45);
 		lblDrop.setVisible(false);
 		frame.getContentPane().add(lblDrop);
@@ -217,10 +219,10 @@ public class Functions {
 		};
 		listeDeFonctions.setForeground(Color.BLACK);
 		listeDeFonctions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listeDeFonctions.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		listeDeFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		listeDeFonctions.setCellRenderer(new FonctionsRenderer());
 		listeDeFonctions.setFixedCellHeight(17);
-		listeDeFonctions.setBounds(0, 52, 333, 198);
+		listeDeFonctions.setBounds(0, 52, 333, 261);
 		
 		listeDeFonctions.setTransferHandler(new FonctionsTransferHandler());   	
 		
@@ -228,7 +230,7 @@ public class Functions {
 		scrollPane.getViewport().add(listeDeFonctions);
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
-		scrollPane.setBounds(0,52,333,198);
+		scrollPane.setBounds(0, 52, 333, 261);
 		
 		frame.getContentPane().add(scrollPane);
 		
@@ -258,8 +260,13 @@ public class Functions {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				Utils.saveSettings(true);
+				int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("areYouSure"), Shutter.language.getProperty("menuItemUpdate"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);					
+				
+				if (reply == JOptionPane.YES_OPTION)
+				{
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					Utils.saveSettings(true);
+				}
 			}
 			
 		});
@@ -268,7 +275,9 @@ public class Functions {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (liste.getSize() > 0 && listeDeFonctions.getSelectedIndices().length == 1)
+				int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("areYouSure"), Shutter.language.getProperty("menuItemDelete"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);					
+				
+				if (liste.getSize() > 0 && listeDeFonctions.getSelectedIndices().length == 1 && reply == JOptionPane.YES_OPTION)
 				{
 					if (liste.getSize() == 1)
 					{
@@ -313,24 +322,14 @@ public class Functions {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON3)
+				if (e.getButton() == MouseEvent.BUTTON3 && listeDeFonctions.getSelectedIndices().length > 0)
 				{	
 					popupListe.show(listeDeFonctions, e.getX() - 30, e.getY());
 					
-					if (listeDeFonctions.getSelectedIndices().length > 0)
-		        	{
-						load.setVisible(true);
-						update.setVisible(true);
-						delete.setVisible(true);
-						openFolder.setVisible(true);
-		        	}
-					else
-					{
-						load.setVisible(false);
-						update.setVisible(false);
-						delete.setVisible(false);
-						openFolder.setVisible(true);
-					}
+					load.setVisible(true);
+					update.setVisible(true);
+					delete.setVisible(true);
+					openFolder.setVisible(true);
 					
 				}
 				else
@@ -364,7 +363,7 @@ public class Functions {
 
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font("FreeSans", Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		
@@ -467,13 +466,12 @@ public class Functions {
 				
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-	
+		topPanel.setBounds(0, 0, 333, 52);
 	
 		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
 		quit.setBounds(frame.getSize().width - 24,0,21, 21);
 		topPanel.add(quit);
-		topPanel.setBounds(0, 0, 1000, 53);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -527,8 +525,7 @@ public class Functions {
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
 		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
 		topPanel.add(reduce);
-		topPanel.setBounds(0, 0, 852, 53);
-			
+		
 		reduce.addMouseListener(new MouseListener(){
 			
 			private boolean accept = false;
@@ -565,9 +562,54 @@ public class Functions {
 			
 			
 		});
-		
-		topPanel.setBounds(0, 0, 333, 52);
-			
+				
+		newInstance = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/new2.png")));
+		newInstance.setHorizontalAlignment(SwingConstants.CENTER);
+		newInstance.setBounds(reduce.getLocation().x - 21, 0, 21, 21);
+		newInstance.setToolTipText(Shutter.language.getProperty("btnSave"));
+		topPanel.add(newInstance);
+
+		newInstance.addMouseListener(new MouseListener() {	
+
+			private boolean accept = false;
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new3.png"))));
+				accept = true;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (accept) 
+				{
+					if ((Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")) || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender"))) && Shutter.comboFonctions.getSelectedItem() != "") 
+					{
+						if (Renamer.frame == null || Renamer.frame != null && Renamer.frame.isVisible() == false)
+						{
+							Utils.saveSettings(false);
+						}
+					}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new.png"))));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new2.png"))));
+				accept = false;
+			}
+
+		});
+				
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFonctions"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
@@ -581,7 +623,6 @@ public class Functions {
 		topImage.setBounds(title.getBounds());
 		
 		topPanel.add(topImage);		
-		topPanel.setBounds(0, 0, 1000, 53);
 		frame.getContentPane().add(topPanel);
 		
 		topImage.addMouseListener(new MouseListener() {

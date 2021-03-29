@@ -144,7 +144,8 @@ public class VideoPlayer {
 	public static JSlider sliderOut;
 	
 	private JButton btnCaptureIn;
-	private JButton btnPreview;
+	private JLabel btnPreview;
+	private JButton btnApply;
 	public static JButton leftPrevious;
 	public static JButton leftNext;
 	private JButton rightPrevious;
@@ -255,7 +256,7 @@ public class VideoPlayer {
 		
 		//Ces deux boutons définissent la postion des autres objets par la suite ils doivent donc être appelés en amont
     	btnCaptureIn = new JButton(Shutter.language.getProperty("btnCaptureIn"));
-    	btnCaptureIn.setFont(new Font("Montserrat", Font.PLAIN, 12));
+    	btnCaptureIn.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
     	btnCaptureIn.setMargin(new Insets(0,0,0,0));
 		btnCaptureIn.setBounds(8, topPanel.getSize().height + 10, 130, 21);		
 		frame.getContentPane().add(btnCaptureIn);
@@ -339,115 +340,26 @@ public class VideoPlayer {
 			}        			
 		});
 		
-		btnPreview = new JButton(Shutter.language.getProperty("preview"));
-		btnPreview.setFont(new Font("Montserrat", Font.PLAIN, 12));
-		btnPreview.setMargin(new Insets(0,0,0,0));
-		btnPreview.setBounds(frame.getSize().width - 6 - 130 - 4, topPanel.getSize().height + 10, 130, 21);		
-		frame.getContentPane().add(btnPreview);
+		btnApply = new JButton(Shutter.language.getProperty("btnApply"));
+		btnApply.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnApply.setMargin(new Insets(0,0,0,0));
+		btnApply.setBounds(frame.getSize().width - 6 - 130 - 4, topPanel.getSize().height + 10, 130, 21);		
+		frame.getContentPane().add(btnApply);
 		
-		btnPreview.addActionListener(new ActionListener(){
+		btnApply.addActionListener(new ActionListener() {
+
 			@Override
-			public void actionPerformed(ActionEvent e) {	
+			public void actionPerformed(ActionEvent arg0) {
 				
-				try {
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					FFMPEG.fonctionInOut();
-					
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {
-						}
-					} while (FFPROBE.isRunning);
-
-					String channels = "";
-					String videoOutput = "";
-					String audioOutput = "";
-					if (FFPROBE.audioOnly) {
-						if (FFPROBE.channels > 1) {
-							int i;
-							for (i = 0; i < FFPROBE.channels; i++) {
-								channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=720:h=12[a" + i + "];";
-								audioOutput += "[a" + i + "]";
-							}
-							audioOutput = channels + audioOutput + "vstack=" + i + "[volume]" + '"' + " -map " + '"'
-									+ "[volume]" + '"';
-
-						} else if (FFPROBE.channels <= 1)
-							audioOutput = "[0:a:0]showvolume=f=0.001:b=4:w=720:h=12[volume]" + '"' + " -map " + '"'
-									+ "[volume]" + '"';
-					} else {
-						if (FFPROBE.channels > 1) {
-							int i;
-							for (i = 0; i < FFPROBE.channels; i++) {
-								channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=1080:h=12[a" + i + "];";
-								audioOutput += "[a" + i + "]";
-							}
-							audioOutput += "vstack=" + (i + 1) + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
-						} else if (FFPROBE.channels == 1) {
-							channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
-							audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
-						}
-
-						// On ajoute la vidéo
-						videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
-
-						if (FFPROBE.channels == 0) {
-							videoOutput = "scale=1080:-1" + '"';
-							audioOutput = "";
-						}
-
-					}
-					
-					//Fichier
-					File fichier = new File(videoPath);
-					
-					final String extension =  videoPath.substring(videoPath.lastIndexOf("."));
-					String sortie = new File(videoPath).getParent();
-					
-					//Mode concat
-					String concat = "";
-					if (comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
-					{
-						concat = FFMPEG.setConcat(fichier, sortie);			
-						fichier = new File(sortie.replace("\\", "/") + "/" + fichier.getName().replace(extension, ".txt"));
-					}
-
-					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput + " -c:v rawvideo -map a? -f nut pipe:play |";
-
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));						
-					FFMPEG.toFFPLAY(FFMPEG.inPoint + concat + " -i " + '"' + fichier + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);
-
-					if (FFMPEG.isRunning) {
-						do {
-							if (FFMPEG.error) {
-								JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("cantReadFile"),
-										Shutter.language.getProperty("menuItemVisualiser"), JOptionPane.PLAIN_MESSAGE,
-										JOptionPane.ERROR_MESSAGE);
-								break;
-							}
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e1) {
-							}
-						} while (FFMPEG.isRunning || FFMPEG.error);
-					}
-					
-					//Mode concat
-					if (comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
-					{		
-						File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.getName().replace(extension, ".txt"));			
-						listeBAB.delete();
-					}
-
-					if (FFMPEG.isRunning)
-						FFMPEG.process.destroy();
-
-					Shutter.enableAll();
-					Shutter.progressBar1.setValue(0);
-									
-				} catch (InterruptedException e1) {}
-			}        			
+				if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+	    		{
+					Shutter.caseInAndOut.setSelected(false);
+	    			SubtitlesTimeline.frame.dispose();
+	    		}
+				else
+					Utils.changeFrameVisibility(frame, true);
+			}			
+			
 		});
 		        		
   		lblVideo = new JLabel();    
@@ -455,9 +367,8 @@ public class VideoPlayer {
 		lblVideo.setFont(new Font("SansSerif", Font.BOLD, 13));
 		lblVideo.setForeground(Utils.themeColor);
 		lblVideo.setHorizontalAlignment(SwingConstants.CENTER);
-		lblVideo.setBounds(btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6, topPanel.getSize().height + 12, frame.getSize().width - (btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6 + btnPreview.getSize().width + 12), 16);        		
+		lblVideo.setBounds(btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6, topPanel.getSize().height + 12, frame.getSize().width - (btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6 + btnApply.getSize().width + 12), 16);        		
 		frame.getContentPane().add(lblVideo);
-		
 		
 		setMedia();	
 		
@@ -480,7 +391,7 @@ public class VideoPlayer {
 		
 		lblDuree = new JLabel();
 		lblDuree.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDuree.setFont(new Font("Montserrat", Font.PLAIN, 13));
+		lblDuree.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
 		lblDuree.setForeground(Utils.themeColor);
 		lblDuree.setBounds(0, frame.getSize().height - 16 - 12, frame.getWidth(), 16);   		
 		frame.getContentPane().add(lblDuree);
@@ -536,7 +447,7 @@ public class VideoPlayer {
 						
 						sliderIn.setVisible(true);
 						
-						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 							sliderOut.setVisible(true);
 					}
 															
@@ -835,7 +746,7 @@ public class VideoPlayer {
 						} catch (InterruptedException e) {}
 					} while (frame.isVisible() == false);
 					
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
 					{
 						grpOut.setVisible(false);
 						sliderOut.setVisible(false);
@@ -1152,7 +1063,7 @@ public class VideoPlayer {
 							{
 								waveformLeft.setVisible(true);
 								
-								if (FFPROBE.audioOnly == false || FFPROBE.audioOnly && sliderOut.getValue() != sliderOut.getMaximum())
+								if ((FFPROBE.audioOnly == false || FFPROBE.audioOnly && sliderOut.getValue() != sliderOut.getMaximum()) && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 									waveformRight.setVisible(true);
 								else
 									waveformRight.setVisible(false);
@@ -1198,54 +1109,66 @@ public class VideoPlayer {
                 g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                     
                 //On sépare les lignes
-                String text[] = SubtitlesTimeline.txtSubtitles.getText().replace("<i>", "").replace("</i>", "").replace("<b>", "").replace("</b>", "").split("\\r?\\n");
-                   
+                String text[] = SubtitlesTimeline.txtSubtitles.getText().split("\\r?\\n");                   
                 
-                if (SubtitlesTimeline.txtSubtitles.getText().contains("<i>") && SubtitlesTimeline.txtSubtitles.getText().contains("<b>"))
+                if (text[0].contains("i>") && text[0].contains("b>"))
                 	g2.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(height/16))); 
-                else if (SubtitlesTimeline.txtSubtitles.getText().contains("<i>"))
+                else if (text[0].contains("i>"))
                 	g2.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(height/16))); 
-                else if (SubtitlesTimeline.txtSubtitles.getText().contains("<b>"))
+                else if (text[0].contains("b>"))
                 	g2.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(height/16))); 
                 else
                 	g2.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(height/16))); 
-                	
+                
+                String firstLine = text[0].replace("<i>", "").replace("</i>", "").replace("<b>", "").replace("</b>", "");
+                                	
                 FontMetrics metrics = g.getFontMetrics(g2.getFont());
                 
-                int x = videoSurfaceLeft.getX() + (videoSurfaceLeft.getWidth() - metrics.stringWidth(text[0])) / 2;                                	
+                int x = videoSurfaceLeft.getX() + (videoSurfaceLeft.getWidth() - metrics.stringWidth(firstLine)) / 2;                                	
                 int y = height - (int) (height/24);
                 
                 if (text.length > 1 && text[1].length() > 0)
                 {                                	                	
                 	y = height - (int) (height/9.5);                	
                 	g2.setColor(Color.BLACK);
-                	g2.drawString(text[0], ShiftWest(x, 1), ShiftNorth(y, 1));
-                	g2.drawString(text[0], ShiftWest(x, 1), ShiftSouth(y, 1));
-                	g2.drawString(text[0], ShiftEast(x, 1), ShiftNorth(y, 1));
-                	g2.drawString(text[0], ShiftEast(x, 1), ShiftSouth(y, 1));
+                	g2.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
+                	g2.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
+                	g2.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
+                	g2.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
                 	g2.setColor(Color.WHITE);
-                	g2.drawString(text[0], x, y);
+                	g2.drawString(firstLine, x, y);
+                	
+                	if (text[1].contains("i>") && text[1].contains("b>"))
+                    	g2.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(height/16))); 
+                    else if (text[1].contains("i>"))
+                    	g2.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(height/16))); 
+                    else if (text[1].contains("b>"))
+                    	g2.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(height/16))); 
+                    else
+                    	g2.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(height/16))); 
+                	
+                    String secondLine = text[1].replace("<i>", "").replace("</i>", "").replace("<b>", "").replace("</b>", "");
 	 	            
-	 	            x = videoSurfaceLeft.getX() + (videoSurfaceLeft.getWidth() - metrics.stringWidth(text[1])) / 2;
+	 	            x = videoSurfaceLeft.getX() + (videoSurfaceLeft.getWidth() - metrics.stringWidth(secondLine)) / 2;
 	 	            y = height - (int) (height/24);
                 	
                 	g2.setColor(Color.BLACK);
-                	g2.drawString(text[1], ShiftWest(x, 1), ShiftNorth(y, 1));
-                	g2.drawString(text[1], ShiftWest(x, 1), ShiftSouth(y, 1));
-                	g2.drawString(text[1], ShiftEast(x, 1), ShiftNorth(y, 1));
-                	g2.drawString(text[1], ShiftEast(x, 1), ShiftSouth(y, 1));
+                	g2.drawString(secondLine, ShiftWest(x, 1), ShiftNorth(y, 1));
+                	g2.drawString(secondLine, ShiftWest(x, 1), ShiftSouth(y, 1));
+                	g2.drawString(secondLine, ShiftEast(x, 1), ShiftNorth(y, 1));
+                	g2.drawString(secondLine, ShiftEast(x, 1), ShiftSouth(y, 1));
                 	g2.setColor(Color.WHITE);
-                	g2.drawString(text[1], x, y);
+                	g2.drawString(secondLine, x, y);
                 }
-                else if (text[0].length() > 0)
+                else if (firstLine.length() > 0)
                 {
                 	g2.setColor(Color.BLACK);
-                	g2.drawString(text[0], ShiftWest(x, 1), ShiftNorth(y, 1));
-                	g2.drawString(text[0], ShiftWest(x, 1), ShiftSouth(y, 1));
-                	g2.drawString(text[0], ShiftEast(x, 1), ShiftNorth(y, 1));
-                	g2.drawString(text[0], ShiftEast(x, 1), ShiftSouth(y, 1));
+                	g2.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
+                	g2.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
+                	g2.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
+                	g2.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
                 	g2.setColor(Color.WHITE);
-                	g2.drawString(text[0], x, y);
+                	g2.drawString(firstLine, x, y);
                 }                           		     
             }
          }
@@ -1303,7 +1226,7 @@ public class VideoPlayer {
 
     private void buttons() {		    	
 		rightPrevious = new JButton("<");
-		rightPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		rightPrevious.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		rightPrevious.setBounds(playerRight.getLocation().x + playerRight.getSize().width / 2 - 21 - 4, playerRight.getLocation().y + playerRight.getSize().height + 10, 22, 21);		
 		rightPrevious.setVisible(false);
 		frame.getContentPane().add(rightPrevious);
@@ -1330,7 +1253,7 @@ public class VideoPlayer {
 		});
 		
 		rightNext = new JButton(">");
-		rightNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		rightNext.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		rightNext.setBounds(playerRight.getLocation().x + playerRight.getSize().width / 2 + 4, rightPrevious.getLocation().y, 22, 21);	
 		rightNext.setVisible(false);
 		frame.getContentPane().add(rightNext);
@@ -1357,7 +1280,7 @@ public class VideoPlayer {
 		});
 		
 		rightPlay = new JButton(Shutter.language.getProperty("btnPlay"));
-		rightPlay.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		rightPlay.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		rightPlay.setMargin(new Insets(0,0,0,0));
 		rightPlay.setBounds(rightPrevious.getLocation().x - 80 - 4, rightPrevious.getLocation().y, 80, 21);		
 		rightPlay.setVisible(false);
@@ -1383,7 +1306,7 @@ public class VideoPlayer {
 		});
 		
 		rightStop = new JButton(Shutter.language.getProperty("btnCancel"));
-		rightStop.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		rightStop.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		rightStop.setMargin(new Insets(0,0,0,0));
 		rightStop.setBounds(rightNext.getLocation().x + rightNext.getSize().width + 4, rightNext.getLocation().y, 80, 21);	
 		rightStop.setVisible(false);
@@ -1443,7 +1366,7 @@ public class VideoPlayer {
 		});
  	
 		leftPrevious = new JButton("<");
-		leftPrevious.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		leftPrevious.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		leftPrevious.setEnabled(false);
 		leftPrevious.setBounds(playerLeft.getLocation().x + playerLeft.getSize().width / 2 - 21 - 4, playerLeft.getLocation().y + playerLeft.getSize().height + 10, 22, 21);		
 		frame.getContentPane().add(leftPrevious);
@@ -1471,7 +1394,7 @@ public class VideoPlayer {
 		});
 		
 		leftNext = new JButton(">");
-		leftNext.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		leftNext.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		leftNext.setEnabled(false);
 		leftNext.setBounds(playerLeft.getLocation().x + playerLeft.getSize().width / 2 + 4, leftPrevious.getLocation().y, 22, 21);		
 		frame.getContentPane().add(leftNext);
@@ -1500,7 +1423,7 @@ public class VideoPlayer {
 		});
 		
 		leftPlay = new JButton(Shutter.language.getProperty("btnPlay"));
-		leftPlay.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		leftPlay.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		leftPlay.setMargin(new Insets(0,0,0,0));
 		leftPlay.setBounds(leftPrevious.getLocation().x - 80 - 4, leftPrevious.getLocation().y, 80, 21);				
 		frame.getContentPane().add(leftPlay);
@@ -1595,7 +1518,7 @@ public class VideoPlayer {
 		});
 		
 		leftStop = new JButton(Shutter.language.getProperty("btnStop"));
-		leftStop.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		leftStop.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		leftStop.setMargin(new Insets(0,0,0,0));
 		leftStop.setBounds(leftNext.getLocation().x + leftNext.getSize().width + 4, leftNext.getLocation().y, 80, 21);		
 		frame.getContentPane().add(leftStop);		
@@ -1890,7 +1813,7 @@ public class VideoPlayer {
 								{
 									if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && waveformRight != null)
 									{										
-										if (FFPROBE.audioOnly == false || FFPROBE.audioOnly && sliderOut.getValue() != sliderOut.getMaximum())
+										if ((FFPROBE.audioOnly == false || FFPROBE.audioOnly && sliderOut.getValue() != sliderOut.getMaximum()) && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 											waveformRight.setVisible(true);
 										else
 											waveformRight.setVisible(false);
@@ -2012,7 +1935,7 @@ public class VideoPlayer {
 		});
 		
 		lblVolume = new JLabel(Shutter.language.getProperty("volume") + " ");
-		lblVolume.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblVolume.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblVolume.setBounds(sliderVolume.getLocation().x - 61, sliderIn.getLocation().y - 30, 61, 16);		
 		frame.getContentPane().add(lblVolume);
 				
@@ -2172,7 +2095,7 @@ public class VideoPlayer {
 					
 					sliderIn.setVisible(true);
 					
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 						sliderOut.setVisible(true);
 				}
 
@@ -2295,7 +2218,7 @@ public class VideoPlayer {
 						
 						sliderIn.setVisible(true);
 						
-						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 							sliderOut.setVisible(true);
 					}
 
@@ -2560,7 +2483,7 @@ public class VideoPlayer {
 		});
 		
 		//Audio seulement
-		if (FFPROBE.hasAudio || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+		if (FFPROBE.hasAudio || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 		{
 			Thread addWaveform = new Thread(new Runnable() {
 				public void run() {		
@@ -2605,6 +2528,10 @@ public class VideoPlayer {
 								waveformLeft.setVisible(false);
 								waveformRight.setVisible(false);
 							}
+							else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
+							{
+								waveformRight.setVisible(false);
+							}								
 							
 							if (sliderOut.getValue() == sliderOut.getMaximum())
 								panelWaveformRight.setBounds(waveformRight.getSize().width - 2, 0, 2, waveformRight.getSize().height);
@@ -2637,7 +2564,7 @@ public class VideoPlayer {
 	private void grpIn(){
 		grpIn = new JPanel();
 		grpIn.setLayout(null);
-		grpIn.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("grpIn") + " ", 0, 0, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE));
+		grpIn.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("grpIn") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpIn.setBackground(new Color(50, 50, 50));
 		grpIn.setBounds(6, frame.getSize().height - 147, 156, 52);
 		frame.getContentPane().add(grpIn);
@@ -2646,7 +2573,7 @@ public class VideoPlayer {
 		caseInH.setName("caseInH");
 		caseInH.setText("00");
 		caseInH.setHorizontalAlignment(SwingConstants.CENTER);
-		caseInH.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseInH.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseInH.setColumns(10);
 		caseInH.setBounds(6, 17, 36, 26);
 		grpIn.add(caseInH);
@@ -2655,7 +2582,7 @@ public class VideoPlayer {
 		caseInM.setName("caseInM");
 		caseInM.setText("00");
 		caseInM.setHorizontalAlignment(SwingConstants.CENTER);
-		caseInM.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseInM.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseInM.setColumns(10);
 		caseInM.setBounds(42, 17, 36, 26);
 		grpIn.add(caseInM);
@@ -2664,7 +2591,7 @@ public class VideoPlayer {
 		caseInS.setName("caseInS");
 		caseInS.setText("00");
 		caseInS.setHorizontalAlignment(SwingConstants.CENTER);
-		caseInS.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseInS.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseInS.setColumns(10);
 		caseInS.setBounds(78, 17, 36, 26);
 		grpIn.add(caseInS);
@@ -2673,33 +2600,166 @@ public class VideoPlayer {
 		caseInF.setName("caseInF");
 		caseInF.setText("00");
 		caseInF.setHorizontalAlignment(SwingConstants.CENTER);
-		caseInF.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseInF.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseInF.setColumns(10);
 		caseInF.setBounds(114, 17, 36, 26);
 		grpIn.add(caseInF);
 		
 		casePlaySound = new JRadioButton(Shutter.language.getProperty("casePlaySound"));
-		casePlaySound.setBounds(14, grpIn.getLocation().y - 36, 195, 23);	
-		casePlaySound.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		casePlaySound.setBounds(6, grpIn.getLocation().y - 36, 195, 23);	
+		casePlaySound.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		casePlaySound.setSelected(false);
 		frame.getContentPane().add(casePlaySound);
 		
 		caseTcInterne = new JRadioButton(Shutter.language.getProperty("caseTcInterne"));
 		caseTcInterne.setEnabled(false);
-		caseTcInterne.setFont(new Font("FreeSans", Font.PLAIN, 12));
-		caseTcInterne.setBounds(14, frame.getHeight() - 31, 195, 23);
-		if (FFPROBE.audioOnly || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+		caseTcInterne.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseTcInterne.setBounds(6, frame.getHeight() - 31, 195, 23);
+		if (FFPROBE.audioOnly || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
 			caseTcInterne.setVisible(false);
 		else
 			caseTcInterne.setVisible(true);
-		frame.getContentPane().add(caseTcInterne);				
+		frame.getContentPane().add(caseTcInterne);	
+		
+		btnPreview = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		btnPreview.setHorizontalAlignment(SwingConstants.CENTER);
+		btnPreview.setBounds(frame.getSize().width - 30, frame.getSize().height - 26, 16, 16);
+		btnPreview.setToolTipText(Shutter.language.getProperty("preview"));
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
+			frame.getContentPane().add(btnPreview);
+		
+		btnPreview.addMouseListener(new MouseListener(){
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {	
+				
+				try {
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					FFMPEG.fonctionInOut();
+					
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {
+						}
+					} while (FFPROBE.isRunning);
+
+					String channels = "";
+					String videoOutput = "";
+					String audioOutput = "";
+					if (FFPROBE.audioOnly) {
+						if (FFPROBE.channels > 1) {
+							int i;
+							for (i = 0; i < FFPROBE.channels; i++) {
+								channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=720:h=12[a" + i + "];";
+								audioOutput += "[a" + i + "]";
+							}
+							audioOutput = channels + audioOutput + "vstack=" + i + "[volume]" + '"' + " -map " + '"'
+									+ "[volume]" + '"';
+
+						} else if (FFPROBE.channels <= 1)
+							audioOutput = "[0:a:0]showvolume=f=0.001:b=4:w=720:h=12[volume]" + '"' + " -map " + '"'
+									+ "[volume]" + '"';
+					} else {
+						if (FFPROBE.channels > 1) {
+							int i;
+							for (i = 0; i < FFPROBE.channels; i++) {
+								channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=1080:h=12[a" + i + "];";
+								audioOutput += "[a" + i + "]";
+							}
+							audioOutput += "vstack=" + (i + 1) + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+						} else if (FFPROBE.channels == 1) {
+							channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+							audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
+						}
+
+						// On ajoute la vidéo
+						videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
+
+						if (FFPROBE.channels == 0) {
+							videoOutput = "scale=1080:-1" + '"';
+							audioOutput = "";
+						}
+
+					}
+					
+					//Fichier
+					File fichier = new File(videoPath);
+					
+					final String extension =  videoPath.substring(videoPath.lastIndexOf("."));
+					String sortie = new File(videoPath).getParent();
+					
+					//Mode concat
+					String concat = "";
+					if (comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+					{
+						concat = FFMPEG.setConcat(fichier, sortie);			
+						fichier = new File(sortie.replace("\\", "/") + "/" + fichier.getName().replace(extension, ".txt"));
+					}
+
+					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput + " -c:v rawvideo -map a? -f nut pipe:play |";
+
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));						
+					FFMPEG.toFFPLAY(FFMPEG.inPoint + concat + " -i " + '"' + fichier + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);
+
+					if (FFMPEG.isRunning) {
+						do {
+							if (FFMPEG.error) {
+								JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("cantReadFile"),
+										Shutter.language.getProperty("menuItemVisualiser"), JOptionPane.PLAIN_MESSAGE,
+										JOptionPane.ERROR_MESSAGE);
+								break;
+							}
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e1) {
+							}
+						} while (FFMPEG.isRunning || FFMPEG.error);
+					}
+					
+					//Mode concat
+					if (comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+					{		
+						File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.getName().replace(extension, ".txt"));			
+						listeBAB.delete();
+					}
+
+					if (FFMPEG.isRunning)
+						FFMPEG.process.destroy();
+
+					Shutter.enableAll();
+					Shutter.progressBar1.setValue(0);
+									
+				} catch (InterruptedException e1) {}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}        			
+		});
 		
 		comboMode.setName("comboMode");
-		comboMode.setFont(new Font("FreeSans", Font.PLAIN, 11));
+		comboMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		comboMode.setMaximumRowCount(20);
 		comboMode.setSize(76, 22);
-		comboMode.setLocation(frame.getWidth() - comboMode.getWidth() - 12, frame.getSize().height - 16 - 12 - 1);
-		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+		comboMode.setLocation(btnPreview.getX() - 76 - 5, frame.getSize().height - 16 - 12 - 1);
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			frame.getContentPane().add(comboMode);
 		
 		comboMode.addActionListener(new ActionListener()
@@ -2720,11 +2780,11 @@ public class VideoPlayer {
 		
 		lblMode = new JLabel(Shutter.language.getProperty("mode"));
 		lblMode.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblMode.setFont(new Font("FreeSans", Font.PLAIN, 13));
+		lblMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);
-		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			frame.getContentPane().add(lblMode);
-				
+						
 		caseTcInterne.addActionListener(new ActionListener()
 		{
 			@Override
@@ -3078,7 +3138,7 @@ public class VideoPlayer {
 	private void grpOut(){
 		grpOut = new JPanel();
 		grpOut.setLayout(null);
-		grpOut.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("grpOut") + " ", 0, 0, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE));
+		grpOut.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("grpOut") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpOut.setBackground(new Color(50, 50, 50));
 		grpOut.setBounds(6, frame.getSize().height - 86, 156, 52);
 		frame.getContentPane().add(grpOut);
@@ -3088,7 +3148,7 @@ public class VideoPlayer {
 		caseOutH.setText("00");
 		caseOutH.setEnabled(false);
 		caseOutH.setHorizontalAlignment(SwingConstants.CENTER);
-		caseOutH.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseOutH.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseOutH.setColumns(10);
 		caseOutH.setBounds(6, 17, 36, 26);
 		grpOut.add(caseOutH);
@@ -3098,7 +3158,7 @@ public class VideoPlayer {
 		caseOutM.setText("00");
 		caseOutM.setEnabled(false);
 		caseOutM.setHorizontalAlignment(SwingConstants.CENTER);
-		caseOutM.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseOutM.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseOutM.setColumns(10);
 		caseOutM.setBounds(42, 17, 36, 26);
 		grpOut.add(caseOutM);
@@ -3108,7 +3168,7 @@ public class VideoPlayer {
 		caseOutS.setText("00");
 		caseOutS.setEnabled(false);
 		caseOutS.setHorizontalAlignment(SwingConstants.CENTER);
-		caseOutS.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseOutS.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseOutS.setColumns(10);
 		caseOutS.setBounds(78, 17, 36, 26);
 		grpOut.add(caseOutS);
@@ -3118,7 +3178,7 @@ public class VideoPlayer {
 		caseOutF.setText("00");
 		caseOutF.setEnabled(false);
 		caseOutF.setHorizontalAlignment(SwingConstants.CENTER);
-		caseOutF.setFont(new Font("FreeSans", Font.PLAIN, 14));
+		caseOutF.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
 		caseOutF.setColumns(10);
 		caseOutF.setBounds(114, 17, 36, 26);
 		grpOut.add(caseOutF);
@@ -3426,15 +3486,16 @@ public class VideoPlayer {
 		
 		//Boutons		
 		btnCaptureIn.setBounds(8, topPanel.getSize().height + 10, 130, 21);		
-		btnPreview.setBounds(frame.getSize().width - 6 - 130 - 4, topPanel.getSize().height + 10, 130, 21);		
-		lblVideo.setBounds(btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6, topPanel.getSize().height + 12, frame.getSize().width - (btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6 + btnPreview.getSize().width + 12), 16);     		
+		btnApply.setBounds(frame.getSize().width - 6 - 130 - 4, topPanel.getSize().height + 10, 130, 21);		
+		btnPreview.setBounds(frame.getSize().width - 30, frame.getSize().height - 26, 16, 16);
+		lblVideo.setBounds(btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6, topPanel.getSize().height + 12, frame.getSize().width - (btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6 + btnApply.getSize().width + 12), 16);     		
 		
 		//Groupes boxes
 		grpIn.setBounds(6, frame.getSize().height - 147, 156, 52);
 		grpOut.setBounds(6, frame.getSize().height - 86, 156, 52);
-		casePlaySound.setBounds(14, grpIn.getLocation().y - 36, 195, 23);
-		caseTcInterne.setBounds(14, frame.getHeight() - 31, 195, 23);		
-		comboMode.setLocation(frame.getWidth() - comboMode.getWidth() - 12, frame.getSize().height - 16 - 12 - 1);
+		casePlaySound.setBounds(6, grpIn.getLocation().y - 36, 195, 23);
+		caseTcInterne.setBounds(6, frame.getHeight() - 31, 195, 23);		
+		comboMode.setLocation(btnPreview.getX() - 76 - 5, frame.getSize().height - 16 - 12 - 1);
 		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);
 		
 		//Sliders

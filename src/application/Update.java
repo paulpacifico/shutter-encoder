@@ -66,7 +66,7 @@ public class Update {
 			
 	private Update() {
 		frame = new JDialog();
-		frame.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		frame.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.setResizable(false);
 		frame.setModal(false);
 		frame.setAlwaysOnTop(true);
@@ -164,7 +164,7 @@ public class Update {
 		progressBar.setBounds(6, 29, 334, 23);		
 		topPanel.add(progressBar);
 		
-		lblNewVersion.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		lblNewVersion.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		lblNewVersion.setBounds(6, 11, 295, 16);		
 		topPanel.add(lblNewVersion);
 		
@@ -248,7 +248,7 @@ public class Update {
 		    						 break;
 		            			}
 			            	}
-		            		else if (file.attr("href").contains("Windows 64bits.exe"))
+		            		else if (file.attr("href").contains("Windows 64bits."))
 			            	{
 		            			String s[] = file.attr("href").split(" ");
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
@@ -288,7 +288,7 @@ public class Update {
 		    						 break;
 		            			}
 		            		}
-		            		else if (file.attr("href").contains("Mac 64bits.zip"))
+		            		else if (file.attr("href").contains("Mac 64bits."))
 		            		{
 		            			String s[] = file.attr("href").split(" ");
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
@@ -375,6 +375,8 @@ public class Update {
 			//Téléchargement
 			HTTPDownload("https://www.shutterencoder.com/" + newVersion, System.getProperty("user.home") + "/Desktop/" + newVersion);
 	
+			File app = new File(System.getProperty("user.home") + "/Desktop/" + newVersion);
+			
 			if (cancelled == false)
 			{
 				int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("installNewVersion"), Shutter.language.getProperty("downloadEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -384,6 +386,12 @@ public class Update {
 					try {
 						Desktop.getDesktop().open(new File(System.getProperty("user.home") + "/Desktop/" + newVersion) );
 					} catch (IOException e) {}
+					
+					if (System.getProperty("os.name").contains("Mac") && app.exists())
+					{
+						JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("newVersionOnDesktop") , Shutter.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
+					}
+					
 					System.exit(0);
 				}	
 				else
@@ -394,8 +402,9 @@ public class Update {
 			else
 			{
 				JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadStopped"), Shutter.language.getProperty("downloadCancelled"), JOptionPane.ERROR_MESSAGE);
-				File toDelete = new File(System.getProperty("user.home") + "/Desktop/" + newVersion);
-				toDelete.delete();
+				
+				if (app.exists())
+					app.delete();
 			}
  
 		}

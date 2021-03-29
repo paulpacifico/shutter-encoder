@@ -289,11 +289,11 @@ public class VideoWeb {
 		grpURL.setLocation(6, 56);
 		grpURL.setSize(408, 185);
 		grpURL.setBackground(new Color(50,50,50));
-		grpURL.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font("Montserrat", Font.PLAIN, 12), Color.WHITE));
+		grpURL.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		
 		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblURL.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblURL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblURL.setBounds(26, 25, 35, 16);			
 		grpURL.add(lblURL);
 		
@@ -365,7 +365,7 @@ public class VideoWeb {
 								
 		caseAuto = new JRadioButton("Auto");
 		caseAuto.setSelected(true);
-		caseAuto.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseAuto.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseAuto.setBounds(66, 52, caseAuto.getPreferredSize().width, 16);	
 		caseAuto.setEnabled(false);
 		grpURL.add(caseAuto);
@@ -449,12 +449,12 @@ public class VideoWeb {
 		
 		lblQualit = new JLabel(Shutter.language.getProperty("lblQualit"));
 		lblQualit.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblQualit.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		lblQualit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblQualit.setBounds(16, 51, lblQualit.getPreferredSize().width, 16);		
 		grpURL.add(lblQualit);
 		
 		btnOK = new JButton("OK");
-		btnOK.setFont(new Font("Montserrat", Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(343, 22, 53, 21);		
 		btnOK.setEnabled(false);
 		grpURL.add(btnOK);
@@ -468,7 +468,7 @@ public class VideoWeb {
 		});
 		
 		caseMP3 = new JRadioButton(Shutter.language.getProperty("caseMP3"));
-		caseMP3.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseMP3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseMP3.setBounds(121, 52, 127, 16);		
 		grpURL.add(caseMP3);
 		
@@ -493,7 +493,7 @@ public class VideoWeb {
 		});
 		
 		caseWAV = new JRadioButton(Shutter.language.getProperty("caseWAV"));
-		caseWAV.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseWAV.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseWAV.setBounds(248, 52, 127, 16);		
 		grpURL.add(caseWAV);
 		
@@ -520,7 +520,7 @@ public class VideoWeb {
 		frame.getContentPane().add(grpURL);			
 		
 		caseVideoPass = new JRadioButton(Shutter.language.getProperty("caseVideoPass"));
-		caseVideoPass.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseVideoPass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseVideoPass.setBounds(66, 123, caseVideoPass.getPreferredSize().width, 16);			
 		grpURL.add(caseVideoPass);
 			
@@ -547,7 +547,7 @@ public class VideoWeb {
 		grpURL.add(textVideoPass);
 		
 		caseUser = new JRadioButton(Shutter.language.getProperty("caseUser"));
-		caseUser.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		caseUser.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseUser.setBounds(66, 79, caseUser.getPreferredSize().width, 16);
 		grpURL.add(caseUser);
 		
@@ -575,7 +575,7 @@ public class VideoWeb {
 		grpURL.add(textUser);
 				
 		casePass = new JRadioButton(Shutter.language.getProperty("casePass"));
-		casePass.setFont(new Font("FreeSans", Font.PLAIN, 12));
+		casePass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		casePass.setBounds(66, 101, casePass.getPreferredSize().width, 16);
 		grpURL.add(casePass);
 		
