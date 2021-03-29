@@ -19,7 +19,6 @@
 
 package library;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FileDialog;
 import java.awt.Image;
@@ -63,6 +62,7 @@ import functions.video.DVD;
 import application.OverlayWindow;
 import application.Settings;
 import application.Shutter;
+import application.Utils;
 
 public class FFMPEG extends Shutter {
 	
@@ -82,7 +82,7 @@ public static String inPoint = "";
 public static String outPoint = "";
 public static String postInPoint = "";	
 private static boolean firstInput = true;
-public static int firstScreenIndex = 0;
+public static int firstScreenIndex = -1;
 public static StringBuilder videoDevices;
 public static StringBuilder audioDevices;
 
@@ -101,6 +101,8 @@ private static StringBuilder getAll;
 			
 		time = 0;
 		fps = 0;
+		
+		firstScreenIndex = -1;
 
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
@@ -589,7 +591,7 @@ private static StringBuilder getAll;
 						}*/
 						
 						//Get current screen index
-						if (cmd.contains("avfoundation") && line.contains("Capture screen")) 
+						if (cmd.contains("avfoundation") && line.contains("Capture screen") && firstScreenIndex == -1) 
 						{
 							String s[] = line.split("\\[");
 							String s2[] = s[2].split("\\]");
@@ -823,44 +825,8 @@ private static StringBuilder getAll;
 	            {
 					File file = new File(liste.getElementAt(i));
 					
-					progressBar1.setIndeterminate(true);
-					lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-					lblEncodageEnCours.setText(file.getName());
-					tempsRestant.setVisible(false);
-					btnStart.setEnabled(false);
-					btnCancel.setEnabled(true);
-					comboFonctions.setEnabled(false);
-					
-					long fileSize = 0;
-					do {
-						fileSize = file.length();
-						try {
-							Thread.sleep(3000);
-						} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
-					} while (fileSize != file.length() && cancelled == false);
-
-					// pour Windows
-					while (file.renameTo(file) == false && cancelled == false) {
-						if (file.exists() == false) // Dans le cas où on annule la copie en cours
-							break;
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-						}
-					}
-					
-					if (cancelled)
-					{
-						progressBar1.setIndeterminate(false);
-						lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
-						btnStart.setEnabled(true);
-						btnCancel.setEnabled(false);
-						comboFonctions.setEnabled(true);
+					if (Utils.waitFileCompleted(file) == false)
 						break;
-					}
-					
-					progressBar1.setIndeterminate(false);
-					btnCancel.setEnabled(false);
 	            }
 				//Scanning
 				
