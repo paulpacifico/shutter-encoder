@@ -386,12 +386,7 @@ public class Update {
 					try {
 						Desktop.getDesktop().open(new File(System.getProperty("user.home") + "/Desktop/" + newVersion) );
 					} catch (IOException e) {}
-					
-					if (System.getProperty("os.name").contains("Mac") && app.exists())
-					{
-						JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("newVersionOnDesktop") , Shutter.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
-					}
-					
+										
 					System.exit(0);
 				}	
 				else
