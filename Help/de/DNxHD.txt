@@ -1,0 +1,1 @@
+U kunt bestanden in OP-Atom formaat genereren om direct in AVID af te spelen door bestanden in de AvidMediaFiles/MXF/1 structuur te laten vallen.

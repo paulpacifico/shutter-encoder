@@ -1,0 +1,3 @@
+Maak een bestand klaar om te branden naar DVD formaat in direct lezen zonder menu.
+De bitrate wordt automatisch aangepast voor een DVD van 4,7 GB.
+Wanneer de bitrate laag is, of gelijk aan 6000k, zal automatisch twee passages codering worden gegenereerd voor een betere rendering.

@@ -1,0 +1,1 @@
+Deze functie maakt geen compressie.
