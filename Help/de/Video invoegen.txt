@@ -1,3 +1,0 @@
-Voeg het hoofdbestand en uw video-invoegingen toe aan de bestandslijst en start vervolgens de functie om automatisch uw video-invoegingen te maken.
-Het algoritme is gebaseerd op de tijdcode van uw plannen, dus ze moeten allemaal naar dezelfde tijdlijn verwijzen.
-Het geluid van het hoofdbestand wordt gebruikt, gebruik de functie "Audio vervangen" om uw audio hoofdbestand te wijzigen.

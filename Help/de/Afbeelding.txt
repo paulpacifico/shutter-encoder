@@ -1,1 +1,0 @@
-Ondersteunt foto's in RAW formaat en PDF bestanden.

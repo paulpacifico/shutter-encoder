@@ -1,2 +1,0 @@
-Analyseer een video om de versnijdingen te herstellen en exporteer ze in EDL of exporteer elk plan zonder compressie.
-In het analysevenster kunt u de tijdcode kopieren.
