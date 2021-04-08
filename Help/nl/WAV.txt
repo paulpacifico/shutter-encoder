@@ -1,0 +1,1 @@
+Als de bron standaard 4 kanalen gebruikt, worden alleen de eerste twee gebruikt, kanaal 1 links, kanaal 2 rechts.

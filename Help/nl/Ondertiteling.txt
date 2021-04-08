@@ -1,0 +1,1 @@
+Voeg een videobestand toe aan de lijst en start dan de functie om een .srt bestand te maken met dezelfde naam als het videobestand en op dezelfde locatie, en voeg dan ondertitels toe.
