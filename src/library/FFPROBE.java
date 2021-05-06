@@ -210,6 +210,8 @@ public static int gopSpace = 124;
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 					
+					Console.consoleFFPROBE.append(System.lineSeparator());
+					
 					while ((line = input.readLine()) != null) {
 						//// Analyse des données	
 						
@@ -574,10 +576,12 @@ public static int gopSpace = 124;
 			        			        
 			        String line;
 			        			        
+			        Console.consoleFFPROBE.append(System.lineSeparator());
+			        
 					//Analyse des données	
 			        while ((line = br.readLine()) != null) {		
 			        	
-						Console.consoleFFPROBE.append(line + System.lineSeparator() );	
+						Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
 						//Erreurs
 						if (line.contains("Invalid data found when processing input") 
@@ -728,7 +732,7 @@ public static int gopSpace = 124;
 					do {
 						line = br.readLine();
 						
-						Console.consoleFFPROBE.append(line + System.lineSeparator() );
+						Console.consoleFFPROBE.append(line + System.lineSeparator());
 					
 						 if (line == null || intra == 2 || i > 10000 || gopCount > 500)
 						 {

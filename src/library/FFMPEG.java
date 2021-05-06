@@ -101,8 +101,6 @@ private static StringBuilder getAll;
 			
 		time = 0;
 		fps = 0;
-		
-		firstScreenIndex = -1;
 
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
@@ -167,7 +165,7 @@ private static StringBuilder getAll;
 									pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';										
 									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 							}						
-							else if (cmd.contains("pipe:stab")
+							else if (cmd.contains("pipe:stab") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 									|| comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
 									(caseForcerDAR.isSelected() && grpAdvanced.isVisible()
 									|| caseAddOverlay.isSelected() && grpOverlay.isVisible() 

@@ -91,9 +91,7 @@ public static String format = "";
 			        					
 					do {
 						lineOutput = br.readLine();		
-												
-						System.out.println(lineOutput);
-						
+																		
 					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());
 		                
 					    if (lineOutput != null)
