@@ -1,0 +1,1 @@
+RAW formatindaki fotograflari ve PDF dosyalarini destekler.

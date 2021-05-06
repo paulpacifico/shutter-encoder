@@ -1,0 +1,1 @@
+AAC formatinin avantaji, birden fazla ses kanali içerebilmesidir.

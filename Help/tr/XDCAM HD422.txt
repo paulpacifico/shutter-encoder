@@ -1,0 +1,2 @@
+Bazi ses kanallarini kullanabilir veya sessiz ses parçalari ekleyebilirsiniz.
+Yalnizca bir stereo ses kanali varsa, 1 ve 2'de iki mono kanala ayrilacaktir.

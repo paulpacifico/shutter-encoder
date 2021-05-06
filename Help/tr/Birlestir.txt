@@ -1,0 +1,1 @@
+Dosya listesi sirasina göre ayni codec bilesenine sahip video veya ses dosyalarini yapistirmaniza olanak tanir.

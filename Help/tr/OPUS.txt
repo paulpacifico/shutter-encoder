@@ -1,0 +1,1 @@
+OPUS formatinin avantaji, birden fazla ses kanali içerebilmesidir.

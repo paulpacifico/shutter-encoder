@@ -1,0 +1,2 @@
+De eerste waarde "I:" is uw luidheidswaarde in LUFS.
+Sla uw analyse op en herstel de korte termijn waarden boven -16 LUFS.

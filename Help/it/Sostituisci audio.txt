@@ -1,0 +1,2 @@
+Se l'elenco contiene diversi file audio, questi verranno aggiunti al video nell'ordine dell'elenco.
+Questa funzione non effettua una compressione del video o dell'audio.

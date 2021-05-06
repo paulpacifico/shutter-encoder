@@ -1,0 +1,1 @@
+Dosyanizin oynatma hizini video sikistirmasi olmadan degistirmenize olanak saglar.
