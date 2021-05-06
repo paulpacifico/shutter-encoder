@@ -1,2 +1,0 @@
-Puoi usare alcuni dei canali audio o aggiungere tracce audio silenziose.
-Se esiste un solo canale audio stereo, verrà separato in due canali mono 1 e 2.

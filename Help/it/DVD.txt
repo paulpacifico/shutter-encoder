@@ -1,3 +1,0 @@
-Crea un file pronto per essere masterizzato in formato DVD senza menu.
-Il bitrate si regola automaticamente per un DVD da 4,7 GB.
-Quando il bitrate è 6000K o inferiore, verrà effettuata automaticamente la codifica a due passaggi per un rendering migliore.

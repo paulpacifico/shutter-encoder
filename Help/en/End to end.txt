@@ -1,1 +1,0 @@
-Allows you to paste the video or audio files of the same codec in the order of the file list.

@@ -1,3 +1,0 @@
-Het wordt aanbevolen om het bestand na deze stap opnieuw te scannen.
-Deze functie maakt geen audiocompressie en vermindert of verhoogt alleen het audioniveau.
-Als de bron 4 kanalen gebruikt, worden alleen de eerste twee gebruikt voor de analyse.

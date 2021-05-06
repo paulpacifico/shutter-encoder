@@ -1,2 +1,0 @@
-Bir menü olmadan dogrudan okumada Blu-ray formatina yazmaya hazir bir dosya olusturun.
-Bit hizi, 25GB Blu-ray için otomatik olarak ayarlanir.

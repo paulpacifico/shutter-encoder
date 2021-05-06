@@ -1,2 +1,0 @@
-The first value "I:" is your loudness value in LUFS.
-Save your analysis and recover the short-term values above -16 LUFS.

@@ -1,1 +1,0 @@
-The advantage of the AAC format is that it can contain multiple audio channels.

@@ -1,1 +1,0 @@
-You can generate files in OP-Atom format to be played directly in AVID by dropping files in the AvidMediaFiles/MXF/1 structure.

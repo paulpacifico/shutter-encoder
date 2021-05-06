@@ -1,3 +1,0 @@
-Ana dosyayi ve video eklerinizi dosya listesine ekleyin ve ardindan video eklerinizi otomatik olarak olusturmak için islevi baslatin.
-Algoritma, planlarinizin zaman kodunu temel alir, bu nedenle hepsi ayni zaman çizelgesine basvurmalidir.
-Ana dosyanin sesi kullanilir, ses yöneticinizi degistirmek için 'Sesi degistir' islevini kullanin.

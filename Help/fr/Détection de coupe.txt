@@ -1,2 +1,0 @@
-Analysez une vidéo pour récupérer les coupes et ainsi les exporter en EDL ou exportez chaque plan sans compression.
-Vous pouvez dans la fenêtre d'analyse copier le timecode.

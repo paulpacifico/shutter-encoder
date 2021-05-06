@@ -1,3 +1,0 @@
-Il est recommandé d'analyser de nouveau le fichier après cette étape.
-Cette fonction ne crée pas de compression audio et effectue seulement une diminution ou augmentation du niveau audio.
-Si la source utilise 4 canaux, seul les deux premiers seront utilisés pour l'analyse.

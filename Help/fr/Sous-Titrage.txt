@@ -1,1 +1,0 @@
-Ajoutez un fichier vidéo dans la liste puis démarrez la fonction pour créer un fichier .srt du même nom que le fichier vidéo et au même emplacement, puis ajoutez des sous-titres.

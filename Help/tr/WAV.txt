@@ -1,1 +1,0 @@
-AB Varsayilan olarak, kaynak 4 kanal kullaniyorsa, yalnizca ilk ikisi kullanilacaktir, kanal 1 sol, kanal 2 sag.

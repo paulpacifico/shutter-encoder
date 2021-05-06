@@ -1,2 +1,0 @@
-Maak een bestand klaar om te branden naar Blu-ray formaat in direct lezen zonder menu.
-De bitrate wordt automatisch aangepast voor een Blu-ray van 25 GB.

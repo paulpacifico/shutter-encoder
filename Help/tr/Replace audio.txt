@@ -1,2 +1,0 @@
-Liste birkaç ses dosyasi içeriyorsa, bunlar listeye göre videoya eklenir.
-Bu islev, video veya ses sikistirmasi olusturmaz.

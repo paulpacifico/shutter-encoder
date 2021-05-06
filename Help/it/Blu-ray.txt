@@ -1,2 +1,0 @@
-Crea un file pronto per essere masterizzato in formato Blu-ray senza menu.
-Il bitrate si regola automaticamente per un Blu-ray da 25 GB.

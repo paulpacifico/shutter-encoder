@@ -1,1 +1,0 @@
-Vous pouvez générer des fichiers au format OP-Atom pour être lus directement dans AVID en déposant les fichiers dans la structure AvidMediaFiles/MXF/1.

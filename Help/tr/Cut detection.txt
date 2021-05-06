@@ -1,2 +1,0 @@
-Kesikleri kurtarmak için bir videoyu analiz edin ve bunlari EDL'de disa aktarin veya her plani sikistirma olmadan disa aktarin.
-Analiz penceresinde zaman kodunu kopyalayabilirsiniz.

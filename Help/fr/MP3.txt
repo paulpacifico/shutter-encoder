@@ -1,1 +1,0 @@
-Si la source utilise 4 canaux, seul les deux premiers seront utilisés, le canal 1 à gauche, le canal 2 à droite.

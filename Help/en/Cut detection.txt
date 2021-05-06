@@ -1,2 +1,0 @@
-Analyze a video to recover the cuts and export them in EDL or export each plan without compression.
-In the analysis window, you can copy the timecode.

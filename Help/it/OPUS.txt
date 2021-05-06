@@ -1,1 +1,0 @@
-Il vantaggio del formato OPUS è che può contenere più canali audio.

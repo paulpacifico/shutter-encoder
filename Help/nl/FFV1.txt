@@ -1,1 +1,0 @@
-De videostream wordt verliesvrij gecomprimeerd.

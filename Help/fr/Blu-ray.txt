@@ -1,2 +1,0 @@
-Créez un fichier prêt à graver au format Blu-ray en lecture directe sans menu.
-Le débit s'adapte automatiquement pour un Blu-ray de 25Go.

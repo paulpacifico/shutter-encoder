@@ -1,2 +1,0 @@
-Als de lijst verschillende audiobestanden bevat, worden ze aan de video toegevoegd in de volgorde van de lijst.
-Deze functie maakt geen video- of audiocompressie.
