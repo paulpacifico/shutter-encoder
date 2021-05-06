@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import application.Ftp;
 import application.Settings;
@@ -110,10 +111,16 @@ public class Rewrap extends Shutter {
 	            	//Timecode
 					String timecode = setTimecode();
 					
+					//Subtitles
+					String subtitles = setSubtitles();
+					
+					//mapSubtitles
+					String mapSubtitles = setMapSubtitles();
+					
 					//Si le fichier existe
 					File fileOut = new File(sortieFichier);				
 									
-					if(fileOut.exists())
+					if (fileOut.exists())
 					{						
 						fileOut = Utils.fileReplacement(sortie, fichier, extension, "_", newExtension);
 						if (fileOut == null)
@@ -121,8 +128,8 @@ public class Rewrap extends Shutter {
 					}
 									
 					//Envoi de la commande
-					String cmd = " -avoid_negative_ts make_zero -c:v copy -c:s copy" + audio + timecode + " -map v:0?" + audioMapping + " -map s? -y ";
-					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
+					String cmd = " -avoid_negative_ts make_zero -c:v copy -c:s copy" + audio + timecode + " -map v:0?" + audioMapping + mapSubtitles + " -y ";
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
 					
 					//Attente de la fin de FFMPEG
 					do
@@ -245,6 +252,32 @@ public class Rewrap extends Shutter {
 			return " -timecode " + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + ":" + TCset4.getText();
 	
 		return "";
+	}
+	
+	protected static String setSubtitles() {
+		
+		if (caseSubtitles.isSelected())
+    	{			
+    		return FFMPEG.inPoint + " -i " + '"' +  subtitlesFile.toString() + '"';
+    	}
+		
+		return "";
+	}
+	
+	protected static String setMapSubtitles() {
+		
+		if (caseSubtitles.isSelected())
+		{
+        	String[] languages = Locale.getISOLanguages();			
+			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
+			        	
+        	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        		return " -map 1:s -c:s srt -metadata:s:s:0 language=" + loc.getISO3Language();
+        	else
+        		return " -map 1:s -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();      	
+		}
+		
+		return " -map s?";
 	}
 
 	protected static String setSortie(String sortie, File file) {				
