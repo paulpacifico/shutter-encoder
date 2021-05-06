@@ -350,9 +350,33 @@ public class Wetransfer {
 		textPassword.setBounds(101, lblMotDePasse.getY() - 1, 154, 21);
 		frame.getContentPane().add(textPassword);
 		
-		btnOK = new JButton("OK");
+		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
+		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnReset.setBounds(12, lblMotDePasse.getY() + lblMotDePasse.getHeight() + 19, frame.getWidth() / 2 - 12, 21);		
+		frame.getContentPane().add(btnReset);	
+		
+		btnReset.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textFrom.setEnabled(true);
+				textFrom.setText(null);
+				textTo.setEnabled(true);
+				textTo.setText(null);
+				textMessage.setEnabled(true);
+				textMessage.setText(null);
+				textUser.setText(null);
+				textUser.setEnabled(false);
+				casePlus.setSelected(false);
+				textPassword.setText(null);
+				textPassword.setEnabled(false);
+			}
+			
+		});
+		
+		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnOK.setBounds(101, lblMotDePasse.getY() + lblMotDePasse.getHeight() + 19, 154, 21);		
+		btnOK.setBounds(btnReset.getX() + btnReset.getWidth() + 4, lblMotDePasse.getY() + lblMotDePasse.getHeight() + 19, frame.getWidth() / 2 - 12 - 4, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -383,30 +407,6 @@ public class Wetransfer {
 					Utils.changeDialogVisibility(frame, true);
 				}
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-			
-		});
-		
-		btnReset = new JButton("Reset");
-		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnReset.setBounds(12, btnOK.getY(), 82, 21);		
-		frame.getContentPane().add(btnReset);	
-		
-		btnReset.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				textFrom.setEnabled(true);
-				textFrom.setText(null);
-				textTo.setEnabled(true);
-				textTo.setText(null);
-				textMessage.setEnabled(true);
-				textMessage.setText(null);
-				textUser.setText(null);
-				textUser.setEnabled(false);
-				casePlus.setSelected(false);
-				textPassword.setText(null);
-				textPassword.setEnabled(false);
 			}
 			
 		});
@@ -648,7 +648,7 @@ public class Wetransfer {
 				{					
 					Shutter.sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "***ENCRYPTED***";
+					final String password = "";
 	
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");

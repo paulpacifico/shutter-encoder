@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Locale;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -60,6 +61,7 @@ import library.FFMPEG;;
 
 public class Utils extends Shutter {
 	
+	static String pathToLanguages;
 	public static String getTheme = null;
 	public static Color themeColor = new Color(71, 163, 236);
 	public static Color highlightColor = new Color(129, 198, 253);
@@ -88,9 +90,9 @@ public class Utils extends Shutter {
 
 	public static void setLanguage() {
 		// Langue
-		InputStream input;
+		InputStream input = null;
 		try {
-			String pathToLanguages = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			pathToLanguages = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			if (System.getProperty("os.name").contains("Windows"))
 				pathToLanguages = pathToLanguages.substring(1, pathToLanguages.length() - 1);
 			else
@@ -139,25 +141,53 @@ public class Utils extends Shutter {
 					}	
 
 					if (getLanguage != null && getLanguage != "")
-					{
-						if (getLanguage.equals("Français"))
-						{
-							input = new FileInputStream(pathToLanguages + "fr.properties");
+					{						
+						for (String local : Locale.getISOLanguages())
+						{							
+							String language = new Locale(local).getDisplayLanguage();
+
+							//With Country
+							if (getLanguage.contains("("))
+							{
+								String c[] = getLanguage.replace("(", "").replace(")", "").split(" ");
+								
+								if (language.equals(c[0]))
+								{
+									for (String countries : Locale.getISOCountries())
+									{				
+										String country = new Locale(local, countries).getDisplayCountry();
+																				
+										if (country.equals(c[1]))
+										{															
+											String loadLanguage = pathToLanguages + local + "_" + countries + ".properties";
+																						
+											if (new File(loadLanguage).exists())
+											{									
+												input = new FileInputStream(loadLanguage);
+												break;
+											}
+										}
+									}									
+															
+								}								
+							}
+							else //Language only
+							{
+								if (language.equals(getLanguage))
+								{
+									String loadLanguage = pathToLanguages + local + ".properties";
+									
+									if (new File(loadLanguage).exists())
+									{									
+										input = new FileInputStream(loadLanguage);
+										break;
+									}									
+								}
+							}
 						}
-						else if (getLanguage.equals("Italiano"))
-						{
-							input = new FileInputStream(pathToLanguages + "it.properties");
-						}
-						else if (getLanguage.equals("Español"))
-						{
-							input = new FileInputStream(pathToLanguages + "es.properties");
-						}
-						else if (getLanguage.equals("Chinese"))
-						{
-							input = new FileInputStream(pathToLanguages + "cn.properties");
-						}
-						else
-							input = new FileInputStream(pathToLanguages + "en.properties");
+						
+						if (input == null)
+							input = defaultLanguage(pathToLanguages);				
 					}
 					else
 					{
@@ -175,41 +205,41 @@ public class Utils extends Shutter {
 				input = defaultLanguage(pathToLanguages);
 			}
 			
-			if (getLanguage.equals("Chinese")) //use system default
+			if (getLanguage.equals("Chinese")) //use system default font
 			{
 				Shutter.montserratFont = "";
 				Shutter.freeSansFont = "";
 			}
 						
 			language.load(input);	
-			input.close();
+			input.close();														
 			
 		} catch (IOException ex) {}	
 	}
 	
 	private static FileInputStream defaultLanguage(String pathToLanguages) throws FileNotFoundException {
+							
+		String loadLanguage = pathToLanguages + System.getProperty("user.language") + ".properties";		
 		
-		if (System.getProperty("user.language").equals("fr"))
+		//Multiple countries
+		if (System.getProperty("user.language").equals("pt") || System.getProperty("user.language").equals("zh"))
+			loadLanguage = pathToLanguages + System.getProperty("user.language") + "_" + System.getProperty("user.country") + ".properties";
+
+		if (new File(loadLanguage).exists())
 		{
-			getLanguage = "Français";
-			return new FileInputStream(pathToLanguages + "fr.properties");
-		}
-		else if (System.getProperty("user.language").equals("it"))
-		{
-			getLanguage = "Italiano";
-			return new FileInputStream(pathToLanguages + "it.properties");
-		}
-		else if (System.getProperty("user.language").equals("es"))
-		{
-			getLanguage = "Español";
-			return new FileInputStream(pathToLanguages + "es.properties");
+			getLanguage = new Locale(System.getProperty("user.language")).getDisplayLanguage();
+			
+			//Multiple countries
+			if (System.getProperty("user.language").equals("pt") || System.getProperty("user.language").equals("zh"))
+				getLanguage = new Locale(System.getProperty("user.language")).getDisplayLanguage() + " (" + new Locale(System.getProperty("user.language"), System.getProperty("user.country")).getDisplayCountry() + ")";
+						
+			return new FileInputStream(loadLanguage);
 		}
 		else
 		{
 			getLanguage = "English";
 			return new FileInputStream(pathToLanguages + "en.properties");
-		}
-		
+		}		
 	}
 	
 	public static void sendMail(final String fichier) {
@@ -219,7 +249,7 @@ public class Utils extends Shutter {
 				public void run() {
 					sendMailIsRunning = true;
 					final String username = "info@shutterencoder.com";
-					final String password = "***ENCRYPTED***";
+					final String password = "";
 
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
@@ -437,7 +467,20 @@ public class Utils extends Shutter {
 						loadSettings(new File (f.getAbsoluteFile().toString()));
 					}
 					else if (f.isHidden() == false && f.getName().contains("."))
-					{										
+					{			
+						if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
+						{
+							Object[] options = { Shutter.language.getProperty("btnAdd"), Shutter.language.getProperty("btnNext"), Shutter.language.getProperty("btnCancel") };
+							
+							int q = JOptionPane.showOptionDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
+									JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+						
+							if (q == 1) //Next
+								continue;
+							else if (q == 2) //Cancel
+								break;
+						}
+						
 						if (Settings.btnExclude.isSelected())
 						{		
 							boolean allowed = true;
@@ -448,10 +491,18 @@ public class Utils extends Shutter {
 							}
 							
 							if (allowed)
+							{
 								Shutter.liste.addElement(f.getAbsoluteFile().toString());	
+								Shutter.addToList.setVisible(false);
+								Shutter.lblFichiers.setText(Utils.filesNumber());
+							}
 						}
 						else
+						{
 							Shutter.liste.addElement(f.getAbsoluteFile().toString());
+							Shutter.addToList.setVisible(false);
+							Shutter.lblFichiers.setText(Utils.filesNumber());
+						}
 					}
 				}
 			}

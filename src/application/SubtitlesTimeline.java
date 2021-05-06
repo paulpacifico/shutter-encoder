@@ -1124,7 +1124,7 @@ public class SubtitlesTimeline {
 		JPanel timelineBackround = new JPanel();
 		timelineBackround.setBackground(new Color(50,50,50));
 		timelineBackround.setLayout(null);
-		timelineBackround.setBorder(BorderFactory.createTitledBorder(new MatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY), "Timeline ", TitledBorder.CENTER, TitledBorder.TOP, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
+		timelineBackround.setBorder(BorderFactory.createTitledBorder(new MatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY), Shutter.language.getProperty("lblTimeline") + " ", TitledBorder.CENTER, TitledBorder.TOP, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		timelineBackround.setBounds(0, 80, frame.getWidth(), frame.getContentPane().getHeight() - 97);
 		frame.getContentPane().add(timelineBackround);
 		

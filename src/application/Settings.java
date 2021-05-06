@@ -50,8 +50,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -113,7 +115,7 @@ public class Settings {
 	private JLabel lblTheme = new JLabel(Shutter.language.getProperty("lblTheme"));
 	private JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
 	private static JPanel accentColor = new JPanel();
-	public static JComboBox<String> comboLanguage = new JComboBox<String>(new String [] {"Français", "English", "Español", "Italiano"});
+	public static JComboBox<String> comboLanguage = new JComboBox<String>();
 	public static JComboBox<String> comboTheme = new JComboBox<String>(new String [] {Shutter.language.getProperty("clearTheme"), Shutter.language.getProperty("darkTheme")});
 	public static JRadioButton btnSetBab = new JRadioButton(Shutter.language.getProperty("btnSetBab"));
 	public static JRadioButton btnExtension = new JRadioButton(Shutter.language.getProperty("btnExtension"));
@@ -164,7 +166,7 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(350, 670);
+		frame.setSize(360, 670);
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -294,7 +296,7 @@ public class Settings {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-					if (Shutter.getLanguage.equals("Français") || Shutter.getLanguage.equals("Italiano") || Shutter.getLanguage.equals("Español"))
+					if (Shutter.getLanguage.equals("French") || Shutter.getLanguage.equals("Italian") || Shutter.getLanguage.equals("Spanish"))
 						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=EUR"));
 					else
 						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=USD"));
@@ -543,7 +545,7 @@ public class Settings {
 		txtInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		txtInputDevice.setText("25");
 		txtInputDevice.setColumns(10);
-		txtInputDevice.setBounds(txtScreenRecord.getLocation().x, lblInputDevice.getLocation().y - 4, 40, 21);
+		txtInputDevice.setBounds(lblInputDevice.getLocation().x + lblInputDevice.getWidth() + 6, lblInputDevice.getLocation().y - 4, 40, 21);
 		frame.getContentPane().add(txtInputDevice);
 		
 		txtInputDevice.addKeyListener(new KeyAdapter(){
@@ -736,18 +738,44 @@ public class Settings {
 			
 		comboLanguage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboLanguage.setEditable(false);
+
+		//load languages
+		String[] data = new String[new File(Utils.pathToLanguages).listFiles().length]; 
 		
-		if (Shutter.getLanguage.equals("Français"))
-			comboLanguage.setSelectedItem("Français");
-		else if (Shutter.getLanguage.equals("English"))
-			comboLanguage.setSelectedItem("English");
-		else if (Shutter.getLanguage.equals("Italiano"))
-			comboLanguage.setSelectedItem("Italiano");
-		else if (Shutter.getLanguage.equals("Español"))
-			comboLanguage.setSelectedItem("Español");
-		else if (Shutter.getLanguage.equals("Chinese"))
-			comboLanguage.setSelectedItem("Chinese");
+		int d = 0;
+		for (File f : new File(Utils.pathToLanguages).listFiles())
+		{
+			if (f.isHidden() == false)
+			{
+				String l[] = f.getName().split("\\.");
+				
+				String language = new Locale(l[0]).getDisplayLanguage();
+				String country = "";
+				
+				//Country
+				if (l[0].contains("_"))
+				{				
+					String c[] = l[0].split("_");
+					language = new Locale(c[0]).getDisplayLanguage();
+					country = " (" + new Locale(c[0], c[1]).getDisplayCountry() + ")";
+				}
+				
+				data[d] = (language + country);				
+				d++;
+			}
+		}
 		
+		//Sort
+		Arrays.sort(data);
+		
+		//Add to comboLanguage
+		for (int i = 0 ; i < data.length ; i++) 
+        {
+        	comboLanguage.addItem(data[i].toString());
+	    }
+		
+		//Set comboItem
+		comboLanguage.setSelectedItem(Shutter.getLanguage);
 		comboLanguage.setBounds(btnEndingAction.getX() + lblLanguage.getWidth() + 6, lblLanguage.getLocation().y - 4, comboLanguage.getPreferredSize().width, 22);
 		comboLanguage.setMaximumRowCount(10);
 		frame.getContentPane().add(comboLanguage);

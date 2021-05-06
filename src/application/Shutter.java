@@ -67,6 +67,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -192,7 +193,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "14.9";
+	public static String actualVersion = "15.0";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String montserratFont = "Montserrat";
@@ -546,7 +547,7 @@ public class Shutter {
 	}
 
 	public Shutter() {
-			
+					
 		frame.getContentPane().setBackground(new Color(50, 50, 50));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
@@ -1032,7 +1033,8 @@ public class Shutter {
 						if (subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("srt")
 						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("vtt")
 						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("ssa")
-						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("ass"))
+						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("ass")
+						|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("scc"))
 							subs.delete();
 					}	
 					
@@ -2389,9 +2391,32 @@ public class Shutter {
 						if (System.getProperty("os.name").contains("Windows") && file.toString().substring(0, 2).equals("\\\\"))
 							file = Utils.UNCPath(file);
 						
-						liste.addElement(file.getAbsolutePath());
+						if (file.getAbsolutePath().toString().contains("\"") || file.getAbsolutePath().toString().contains("\'") || file.getName().contains("/") || file.getName().contains("\\"))
+						{
+							Object[] options = { Shutter.language.getProperty("btnAdd"), Shutter.language.getProperty("btnNext"), Shutter.language.getProperty("btnCancel") };
+							
+							int q = JOptionPane.showOptionDialog(Shutter.frame, file.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
+									JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+												
+							if (q == 0) //OK
+							{
+								liste.addElement(file.getAbsolutePath());
+								addToList.setVisible(false);
+								lblFichiers.setText(Utils.filesNumber());
+							}
+							else if (q == 1) //Next
+								continue;
+							else if (q == 2) //Cancel
+								break;
+						}
+						else
+						{
+							liste.addElement(file.getAbsolutePath());
+							addToList.setVisible(false);
+							lblFichiers.setText(Utils.filesNumber());
+						}
 					}
-					lblFichiers.setText(Utils.filesNumber());
+
 					changeFilters();
 
 					switch (comboFonctions.getSelectedItem().toString()) {
@@ -2413,7 +2438,6 @@ public class Shutter {
 					VideoPlayer.setMedia();
 					
 					defaultFolder = dialog.getParent().toString();
-					addToList.setVisible(false);
 				}
 
 			}
@@ -6664,7 +6688,7 @@ public class Shutter {
 		grpSetTimecode = new JPanel();
 		grpSetTimecode.setLayout(null);
 		grpSetTimecode.setVisible(false);
-		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1), "Timecode" + " ",
+		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1), language.getProperty("grpTimecode") + " ",
 				0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpSetTimecode.setBackground(new Color(50, 50, 50));
 		grpSetTimecode.setBounds(334, 258, 312, 17);
@@ -6702,8 +6726,14 @@ public class Shutter {
 										else
 											i ++;
 
-										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) 
-												|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
+										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))) 
+										{
+											grpSetTimecode.setSize(312, i);
+											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
+											grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
+										}
+										else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
 										{
 											grpSetTimecode.setSize(312, i);
 											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
@@ -6791,17 +6821,18 @@ public class Shutter {
 										else
 											i --;
 										
-										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
-												|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
+										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))) 
+										{
+											grpSetTimecode.setSize(312, i);
+											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
+											grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
+										}
+										else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
 										{
 											grpSetTimecode.setSize(312, i);
 											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
 											btnReset.setLocation(336, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
-										}
-										else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut")))
-										{
-											grpSetTimecode.setSize(312, i);
-											btnReset.setLocation(336, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
 										}
 										else
 										{
@@ -7416,6 +7447,42 @@ public class Shutter {
 					caseInAndOut.setSelected(false);
 				}
 				
+				if (System.getProperty("os.name").contains("Mac") && System.getProperty("os.arch").equals("aarch64")) //Mac ARM
+				{
+			 		boolean downloadVLC = false;
+			 		
+					if (new File("/Applications/VLC.app").exists() == false)
+					{
+						downloadVLC = true;	
+					}
+					else //Not ARM version of VLC
+					{
+						try {
+							Process proc = Runtime.getRuntime().exec("file /Applications/VLC.app/Contents/MacOS/VLC");
+
+					        BufferedReader reader =  new BufferedReader(new InputStreamReader(proc.getInputStream()));
+					        
+					        if (reader.readLine().contains("x86_64"))
+					        	downloadVLC = true;
+						
+						} catch (IOException e1) {}
+					}
+					
+					if (downloadVLC)
+					{
+						caseInAndOut.setSelected(false);
+						
+						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("vlcInstallation"), Shutter.language.getProperty("vlc"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);		
+						
+						if (reply == JOptionPane.YES_OPTION) 
+						{			
+							try {
+								Desktop.getDesktop().browse(new URI("https://get.videolan.org/vlc/3.0.12.1/macosx/vlc-3.0.12.1-arm64.dmg"));
+							} catch (IOException | URISyntaxException e1) {}		
+						}
+					}
+				}
+				
 				if (liste.getSize() == 0 && VideoPlayer.frame != null && VideoPlayer.frame.isVisible() == false)
 				{
 					caseInAndOut.setSelected(false);
@@ -7562,8 +7629,13 @@ public class Shutter {
 											else
 												i ++;
 	
-											if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
-													|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
+											if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))) 
+											{
+												grpSetAudio.setSize(312, i);
+												grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
+											}
+											else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
 											{
 												grpSetAudio.setSize(312, i);
 												btnReset.setLocation(336, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
@@ -7682,8 +7754,13 @@ public class Shutter {
 											else
 												i --;
 											
-											if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
-													|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
+											if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))) 
+											{
+												grpSetAudio.setSize(312, i);
+												grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
+											}
+											else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
 											{
 												grpSetAudio.setSize(312, i);
 												btnReset.setLocation(336, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
@@ -8942,7 +9019,9 @@ public class Shutter {
 		lblAudioIs.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblAudioIs.setSize(lblAudioIs.getPreferredSize().width, 16);
 		lblAudioIs.setLocation(comboAudioOut.getLocation().x + comboAudioOut.getWidth() + 7, caseConvertAudioFramerate.getLocation().y + 3);
-		grpAudio.add(lblAudioIs);
+		
+		if (getLanguage.equals("Dutch") == false)		
+			grpAudio.add(lblAudioIs);
 	}
 
 	private void grpCorrections() {
@@ -9781,7 +9860,10 @@ public class Shutter {
 		spinnerVideoFadeIn.setName("spinnerVideoFadeIn");
 		spinnerVideoFadeIn.setEnabled(false);
 		spinnerVideoFadeIn.setFont(new Font(freeSansFont, Font.PLAIN, 11));
-		spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 12, caseVideoFadeIn.getLocation().y + 3, 41, 16);
+		if (getLanguage.equals("English"))
+			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 12, caseVideoFadeIn.getLocation().y + 3, 41, 16);
+		else
+			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 6, caseVideoFadeIn.getLocation().y + 3, 41, 16);
 		grpTransitions.add(spinnerVideoFadeIn);
 		
 		spinnerVideoFadeIn.addKeyListener(new KeyListener() {
@@ -9802,12 +9884,13 @@ public class Shutter {
 		});
 				
 		JLabel videoInFrames = new JLabel(language.getProperty("lblFrames"));
-		if (getLanguage.equals("Italiano"))
-			videoInFrames.setText("i");
-		else if (getLanguage.equals("Español"))
-			videoInFrames.setText("fot.");
 		videoInFrames.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		videoInFrames.setBounds(spinnerVideoFadeIn.getLocation().x + spinnerVideoFadeIn.getWidth() + 4, spinnerVideoFadeIn.getY(), videoInFrames.getPreferredSize().width + 4, 16);
+		if (videoInFrames.getWidth() > 44)
+		{
+			videoInFrames.setText(videoInFrames.getText().substring(0, 1));
+			videoInFrames.setSize(videoInFrames.getPreferredSize().width + 4, 16);
+		}
 		grpTransitions.add(videoInFrames);
 				
 		lblFadeInColor = new JLabel(language.getProperty("black"));
@@ -10946,10 +11029,15 @@ public class Shutter {
 							dialog.setDirectory(video.getParent() + "/");
 							dialog.setFile(video.getName().replace(ext, ".ssa"));
 						}
+						else if (new File (video.toString().replace(ext, ".scc")).exists())
+						{
+							dialog.setDirectory(video.getParent() + "/");
+							dialog.setFile(video.getName().replace(ext, ".scc"));
+						}
 						else
 						{
 							dialog.setDirectory(new File(liste.elementAt(0).toString()).getParent());
-							dialog.setFile("*.srt;*.vtt;*.ass;*.ssa");
+							dialog.setFile("*.srt;*.vtt;*.ass;*.ssa;*.scc");
 							dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
 							dialog.setAlwaysOnTop(true);
 							dialog.setMultipleMode(false);
@@ -10959,7 +11047,7 @@ public class Shutter {
 						if (dialog.getFile() != null) 
 						{
 							String input = dialog.getFile().substring(dialog.getFile().lastIndexOf("."));
-							if (input.equals(".srt") || input.equals(".vtt") || input.equals(".ssa") || input.equals(".ass"))
+							if (input.equals(".srt") || input.equals(".vtt") || input.equals(".ssa") || input.equals(".ass") || input.equals(".scc"))
 							{
 								if (System.getProperty("os.name").contains("Windows"))
 									subtitlesFile = new File(dialog.getFile());
@@ -10968,56 +11056,91 @@ public class Shutter {
 								
 								if (input.equals(".srt") || input.equals(".vtt"))
 								{
-									Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
-									
-									int sub = JOptionPane.showOptionDialog(frame, language.getProperty("chooseSubsIntegration"), language.getProperty("caseSubtitles"),
-											JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-										    options,
-										    options[0]);
-										
-									if (sub == 0) //Burn
-									{
-										subtitlesBurn = true;							
-																
-										//Conversion du .vtt en .srt
-										if (input.equals(".vtt"))
-										{	
-											subtitlesFile = new File(subtitlesFile.toString().replace(".vtt", ".srt"));
-											
-											FFMPEG.run(" -i " + '"' + dialog.getDirectory() + dialog.getFile().toString() + '"' + " -y " + '"' + subtitlesFile.toString().replace(".srt", "_vtt.srt") + '"');
-											
-											//Attente de la fin de FFMPEG
-											do
-											{
-												try {
-													Thread.sleep(100);
-												} catch (InterruptedException e) {}
-											}
-											while(FFMPEG.runProcess.isAlive());
-											
-											enableAll();
-											
-											SubtitlesWindow.subtitlesFile = subtitlesFile.toString().replace(".srt", "_vtt.srt");
-										}
-										else											
-											SubtitlesWindow.subtitlesFile = dialog.getDirectory() + dialog.getFile().toString();			
-										
-										writeSub(SubtitlesWindow.subtitlesFile, StandardCharsets.UTF_8);										
-									}
-									else
+									if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())) 
 									{
 										comboSubtitles.setVisible(true);
 										subtitlesBurn = false;
 										subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
 									}
+									else
+									{
+										Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
+										
+										int sub = JOptionPane.showOptionDialog(frame, language.getProperty("chooseSubsIntegration"), language.getProperty("caseSubtitles"),
+												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+											    options,
+											    options[0]);
+											
+										if (sub == 0) //Burn
+										{
+											subtitlesBurn = true;							
+																	
+											//Conversion du .vtt en .srt
+											if (input.equals(".vtt"))
+											{	
+												subtitlesFile = new File(subtitlesFile.toString().replace(".vtt", ".srt"));
+												
+												FFMPEG.run(" -i " + '"' + dialog.getDirectory() + dialog.getFile().toString() + '"' + " -y " + '"' + subtitlesFile.toString().replace(".srt", "_vtt.srt") + '"');
+												
+												//Attente de la fin de FFMPEG
+												do
+												{
+													try {
+														Thread.sleep(100);
+													} catch (InterruptedException e) {}
+												}
+												while(FFMPEG.runProcess.isAlive());
+												
+												enableAll();
+												
+												SubtitlesWindow.subtitlesFile = subtitlesFile.toString().replace(".srt", "_vtt.srt");
+											}
+											else											
+												SubtitlesWindow.subtitlesFile = dialog.getDirectory() + dialog.getFile().toString();			
+											
+											writeSub(SubtitlesWindow.subtitlesFile, StandardCharsets.UTF_8);										
+										}
+										else
+										{
+											comboSubtitles.setVisible(true);
+											subtitlesBurn = false;
+											subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
+										}
+									}
 								}
-								else //SSA or ASS
+								else //SSA or ASS or SCC
 								{
-									subtitlesBurn = true;
 									
-									try {
-										FileUtils.copyFile(new File(dialog.getDirectory() + dialog.getFile().toString()), subtitlesFile);
-									} catch (IOException e) {}
+									if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())) 
+									{
+										comboSubtitles.setVisible(true);
+										subtitlesBurn = false;
+										subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
+									}
+									else
+									{
+										Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
+										
+										int sub = JOptionPane.showOptionDialog(frame, language.getProperty("chooseSubsIntegration"), language.getProperty("caseSubtitles"),
+												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+											    options,
+											    options[0]);
+											
+										if (sub == 0) //Burn
+										{
+											subtitlesBurn = true;
+											
+											try {
+												FileUtils.copyFile(new File(dialog.getDirectory() + dialog.getFile().toString()), subtitlesFile);
+											} catch (IOException e) {}
+										}
+										else
+										{
+											comboSubtitles.setVisible(true);
+											subtitlesBurn = false;
+											subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
+										}
+									}
 								}
 							}
 							else 
@@ -11245,7 +11368,7 @@ public class Shutter {
 
 		lblToConform = new JLabel(language.getProperty("at") + language.getProperty("colon"));
 		lblToConform.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblToConform.setSize(16, 16);
+		lblToConform.setSize(lblToConform.getPreferredSize().width, 16);
 
 		comboFPS = new JComboBox<String>();
 		comboFPS.setName("comboFPS");
@@ -11440,7 +11563,7 @@ public class Shutter {
 									graphicsAccel.add("OSX VideoToolbox");
 							}
 						}
-						
+
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 						if (graphicsAccel.isEmpty())
@@ -11752,7 +11875,7 @@ public class Shutter {
 		caseForceTune = new JRadioButton(language.getProperty("caseForceTune"));
 		caseForceTune.setName("caseForceTune");
 		caseForceTune.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseForceTune.setSize(caseForceTune.getPreferredSize().width, 23);
+		caseForceTune.setSize(caseForceTune.getPreferredSize().width + 4, 23);
 		
 		caseForceTune.addActionListener(new ActionListener() {
 
@@ -13262,7 +13385,7 @@ public class Shutter {
 				}
 				else if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);						
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);
@@ -14969,8 +15092,24 @@ public class Shutter {
 							grpAudio.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
-							grpAdvanced.setVisible(false);
-							btnReset.setLocation(btnReset.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);	
+							
+							if (language.getProperty("functionRewrap").equals(fonction))	
+							{
+								grpAdvanced.removeAll();
+								
+								grpAdvanced.setVisible(true);
+								grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+								caseSubtitles.setLocation(7, 16);
+								grpAdvanced.add(caseSubtitles);
+								comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
+								grpAdvanced.add(comboSubtitles);								
+								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
+							}
+							else
+							{
+								grpAdvanced.setVisible(false);
+								btnReset.setLocation(btnReset.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);	
+							}
 							
 							//grpSetAudio
 							grpSetAudio.removeAll();
@@ -15394,7 +15533,7 @@ public class Shutter {
 							grpAdvanced.add(comboConform);								
 							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
 							grpAdvanced.add(lblToConform);							
-							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 1, caseConform.getLocation().y + 4);
+							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
 							lblIsConform.setLocation(comboFPS.getX() + comboFPS.getWidth() + 4, comboFPS.getLocation().y);
 							grpAdvanced.add(lblIsConform);
@@ -15665,7 +15804,7 @@ public class Shutter {
 							grpAdvanced.add(comboConform);							
 							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
 							grpAdvanced.add(lblToConform);							
-							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 1, caseConform.getLocation().y + 4);
+							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
 							lblIsConform.setLocation(comboFPS.getX() + comboFPS.getWidth() + 4, comboFPS.getLocation().y);
 							grpAdvanced.add(lblIsConform);
@@ -15875,9 +16014,9 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);
-							if (comboAudioCodec.getItemCount() != 4 || comboAudioCodec.getSelectedItem().toString().equals("OPUS") || comboAudioCodec.getSelectedItem().toString().equals("OGG"))
+							if (comboAudioCodec.getItemCount() != 5 || comboAudioCodec.getSelectedItem().toString().equals("OGG"))
 							{
-								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(0);
 								caseChangeAudioCodec.setSelected(true);
 								comboAudioCodec.setEnabled(true);
@@ -16106,7 +16245,7 @@ public class Shutter {
 							grpAdvanced.add(comboConform);							
 							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
 							grpAdvanced.add(lblToConform);							
-							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 1, caseConform.getLocation().y + 4);
+							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
 							lblIsConform.setLocation(comboFPS.getX() + comboFPS.getWidth() + 4, comboFPS.getLocation().y);
 							grpAdvanced.add(lblIsConform);
@@ -16116,7 +16255,9 @@ public class Shutter {
 							grpAdvanced.add(casePreserveSubs);							
 							
 							// grpCorrections
-							caseBanding.setLocation(7, 14);
+							caseStabilisation.setLocation(7, 14);
+							grpCorrections.add(caseStabilisation);
+							caseBanding.setLocation(7, caseStabilisation.getLocation().y + 17);
 							grpCorrections.add(caseBanding);
 							caseDetails.setLocation(7, caseBanding.getLocation().y + 17);
 							grpCorrections.add(caseDetails);
@@ -16497,7 +16638,7 @@ public class Shutter {
 							grpAdvanced.add(comboConform);							
 							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
 							grpAdvanced.add(lblToConform);							
-							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 1, caseConform.getLocation().y + 4);
+							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
 							lblIsConform.setLocation(comboFPS.getX() + comboFPS.getWidth() + 4, comboFPS.getLocation().y);
 							grpAdvanced.add(lblIsConform);
@@ -16507,7 +16648,9 @@ public class Shutter {
 							grpAdvanced.add(casePreserveSubs);	
 
 							// grpCorrections
-							caseBanding.setLocation(7, 14);
+							caseStabilisation.setLocation(7, 14);
+							grpCorrections.add(caseStabilisation);
+							caseBanding.setLocation(7, caseStabilisation.getLocation().y + 17);
 							grpCorrections.add(caseBanding);
 							caseDetails.setLocation(7, caseBanding.getLocation().y + 17);
 							grpCorrections.add(caseDetails);
@@ -17250,6 +17393,19 @@ public class Shutter {
 			JLabel streamTab = new JLabel(streamIcon);
 			streamTab.setFont(tabFont);					
 			
+			boolean addWetransfer = true;
+			
+			String PathToWTCLIENT = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			PathToWTCLIENT = PathToWTCLIENT.substring(0,PathToWTCLIENT.length()-1);
+			PathToWTCLIENT = PathToWTCLIENT.substring(0,(int) (PathToWTCLIENT.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/wtclient";
+			
+			if (System.getProperty("os.name").contains("Mac") && new File (PathToWTCLIENT).exists() == false)
+			{
+				addWetransfer = false;
+				if (tabs > 2)
+					tabs = tabs - 1;
+			}
+				
 			if (tabs != grpDestination.getTabCount())
 			{
 				grpDestination.removeAll();
@@ -17267,29 +17423,43 @@ public class Shutter {
 					grpDestination.setTabComponentAt(0, output);
 					grpDestination.setTabComponentAt(1, mailTab);
 				}
-				else if (tabs == 6)
+				else if (addWetransfer && tabs == 6 || addWetransfer == false && tabs == 5)
 				{			
 					grpDestination.addTab(language.getProperty("output") + "1", destination1);
 					grpDestination.addTab(language.getProperty("output") + "2", destination2);
 					grpDestination.addTab(language.getProperty("output") + "3", destination3);	
 					grpDestination.addTab("FTP", new JPanel());
-					grpDestination.addTab("WeTransfer", new JPanel());
+					
+					if (addWetransfer)
+						grpDestination.addTab("WeTransfer", new JPanel());
+					
 					grpDestination.addTab("Mail", destinationMail);;
 					
 					grpDestination.setTabComponentAt(0, output1);
 					grpDestination.setTabComponentAt(1, output2);
 					grpDestination.setTabComponentAt(2, output3);
 					grpDestination.setTabComponentAt(3, ftpTab);
-					grpDestination.setTabComponentAt(4, wetransferTab);			
-					grpDestination.setTabComponentAt(5, mailTab);
+					
+					if (addWetransfer)
+					{	
+						grpDestination.setTabComponentAt(4, wetransferTab);			
+						grpDestination.setTabComponentAt(5, mailTab);
+					}
+					else
+					{
+						grpDestination.setTabComponentAt(4, mailTab);
+					}
 				}
-				else if (tabs == 7)
+				else if (addWetransfer && tabs == 7 || addWetransfer == false && tabs == 6)
 				{			
 					grpDestination.addTab(language.getProperty("output") + "1", destination1);
 					grpDestination.addTab(language.getProperty("output") + "2", destination2);
 					grpDestination.addTab(language.getProperty("output") + "3", destination3);	
 					grpDestination.addTab("FTP", new JPanel());
-					grpDestination.addTab("WeTransfer", new JPanel());
+					
+					if (addWetransfer)
+						grpDestination.addTab("WeTransfer", new JPanel());
+					
 					grpDestination.addTab("Mail", destinationMail);
 					grpDestination.addTab("Stream", destinationStream);
 					
@@ -17297,9 +17467,18 @@ public class Shutter {
 					grpDestination.setTabComponentAt(1, output2);
 					grpDestination.setTabComponentAt(2, output3);
 					grpDestination.setTabComponentAt(3, ftpTab);
-					grpDestination.setTabComponentAt(4, wetransferTab);			
-					grpDestination.setTabComponentAt(5, mailTab);
-					grpDestination.setTabComponentAt(6, streamTab);
+					
+					if (addWetransfer)
+					{		
+						grpDestination.setTabComponentAt(4, wetransferTab);			
+						grpDestination.setTabComponentAt(5, mailTab);
+						grpDestination.setTabComponentAt(6, streamTab);
+					}
+					else
+					{
+						grpDestination.setTabComponentAt(4, mailTab);
+						grpDestination.setTabComponentAt(5, streamTab);
+					}
 				}
 			}
 		} catch (Exception e) {}
@@ -17925,6 +18104,8 @@ class FilesCellRenderer extends JLabel implements ListCellRenderer {
 		ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/liste.png"));
 		setIcon(imageIcon);
 
+		setToolTipText(value.toString());
+		
 		setFont(new Font("SansSerif", Font.PLAIN, 12));
 		setForeground(Color.BLACK);
 		
@@ -18012,6 +18193,7 @@ class ListeFileTransferHandler extends TransferHandler {
 								Shutter.liste.addElement(file + "\\");
 									
 							Shutter.addToList.setVisible(false);
+							Shutter.lblFichiers.setText(Utils.filesNumber());
 							
 							if (file != null) {
 								if (Shutter.caseChangeFolder1.isSelected()) {
@@ -18040,7 +18222,21 @@ class ListeFileTransferHandler extends TransferHandler {
 										|| Shutter.lblFilter.getText().equals(Shutter.language.getProperty("lblFilter")) == false) 
 								{
 									if (file.isHidden() == false)
-									{										
+									{			
+										
+										if (file.getCanonicalPath().toString().contains("\"") || file.getCanonicalPath().toString().contains("\'") || file.getName().contains("/") || file.getName().contains("\\"))
+										{
+											Object[] options = { Shutter.language.getProperty("btnAdd"), Shutter.language.getProperty("btnNext"), Shutter.language.getProperty("btnCancel") };
+											
+											int q = JOptionPane.showOptionDialog(Shutter.frame, file.getCanonicalPath().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
+													JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+										
+											if (q == 1) //Next
+												continue;
+											else if (q == 2) //Cancel
+												break;
+										}
+																				
 										if (Settings.btnExclude.isSelected())
 										{		
 											boolean allowed = true;
@@ -18051,10 +18247,18 @@ class ListeFileTransferHandler extends TransferHandler {
 											}
 											
 											if (allowed)
+											{
 												Shutter.liste.addElement(file.getCanonicalPath().toString());	
+												Shutter.addToList.setVisible(false);
+												Shutter.lblFichiers.setText(Utils.filesNumber());
+											}
 										}
 										else
+										{
 											Shutter.liste.addElement(file.getCanonicalPath().toString());
+											Shutter.addToList.setVisible(false);
+											Shutter.lblFichiers.setText(Utils.filesNumber());
+										}
 									}
 								}
 							}
@@ -18063,10 +18267,6 @@ class ListeFileTransferHandler extends TransferHandler {
 								Utils.findFiles(file.getCanonicalPath().toString());
 							}
 						}
-
-						Shutter.addToList.setVisible(false);
-						Shutter.lblFichiers.setText(Utils.filesNumber());
-
 					}
 
 					switch (Shutter.comboFonctions.getSelectedItem().toString()) {

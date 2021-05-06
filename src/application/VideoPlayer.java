@@ -102,6 +102,7 @@ import library.FFMPEG;
 import library.FFPLAY;
 import library.FFPROBE;
 import uk.co.caprica.vlcj.component.DirectMediaPlayerComponent;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
@@ -211,12 +212,17 @@ public class VideoPlayer {
 		showInfoMessage = true;
 		
 		//Récupération du dossier de VLC
-		//new NativeDiscovery().discover();
+
 		String NATIVE_LIBRARY_SEARCH_PATH;
 		
 		if (System.getProperty("os.name").contains("Windows"))
 		{
-			NATIVE_LIBRARY_SEARCH_PATH = "Library/vlc/";			
+			NATIVE_LIBRARY_SEARCH_PATH = "Library/vlc/";	
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), NATIVE_LIBRARY_SEARCH_PATH);
+		}
+		else if (System.getProperty("os.name").contains("Mac") && System.getProperty("os.arch").equals("aarch64")) //Mac ARM
+		{
+			new NativeDiscovery().discover();	
 		}
 		else
 		{			
@@ -225,9 +231,8 @@ public class VideoPlayer {
 			NATIVE_LIBRARY_SEARCH_PATH = NATIVE_LIBRARY_SEARCH_PATH.substring(0,(int) (NATIVE_LIBRARY_SEARCH_PATH.lastIndexOf("/"))).replace("%20", " ")  + "/Library/vlc/lib";
 
 			uk.co.caprica.vlcj.binding.LibC.INSTANCE.setenv("VLC_PLUGIN_PATH", NATIVE_LIBRARY_SEARCH_PATH.replace("lib", "plugins"), 1);
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), NATIVE_LIBRARY_SEARCH_PATH);
 		}
-		
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), NATIVE_LIBRARY_SEARCH_PATH);
   
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	
@@ -1104,6 +1109,11 @@ public class VideoPlayer {
             if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
             {
             	SubtitlesTimeline.refreshData();
+            	
+            	//Enlève les autosubs de VLC
+        		try {
+        			mediaPlayerComponentLeft.getMediaPlayer().setSpu(mediaPlayerComponentLeft.getMediaPlayer().getSpuDescriptions().get(0).id());
+        		} catch (Exception er) {}    
 
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);

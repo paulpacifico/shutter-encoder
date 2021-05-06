@@ -95,8 +95,8 @@ public class CropVideo {
     public static int ImageWidth;
     public static int ImageHeight;
 
-    public static int containerWidth =  640;	
-    public static int containerHeight = 360;
+    public static int containerWidth =  854;	
+    public static int containerHeight = 480;
 	
 	public CropVideo() {	
 		frame = new JDialog();
@@ -105,8 +105,7 @@ public class CropVideo {
 		frame.setTitle(Shutter.language.getProperty("frameCropVideo"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(665, 465);
-		//frame.setSize(665, 500);
+		frame.setSize(878, 578);
 		frame.setResizable(false);
 		
 		if (Functions.frame != null && Functions.frame.isVisible())
@@ -216,7 +215,7 @@ public class CropVideo {
 		topPanel.add(topImage);
 		topPanel.setBounds(0, 0, 1000, 52);
 		frame.getContentPane().add(topPanel);
-		image.setBounds(12, 58, 640, 360);
+		image.setBounds(12, 58, 854, 480);
 		
 		frame.getContentPane().add(image);
 		
@@ -269,25 +268,25 @@ public class CropVideo {
 		haut = new JPanel();
 		haut.setBackground(Color.BLACK);
 		haut.setForeground(Color.BLACK);
-		haut.setBounds(0, 0, 640, 0);
+		haut.setBounds(0, 0, 854, 0);
 		image.add(haut);
 		
 		bas = new JPanel();
 		bas.setForeground(Color.BLACK);
 		bas.setBackground(Color.BLACK);
-		bas.setBounds(0, 360, 640, 0);
+		bas.setBounds(0, 480, 854, 0);
 		image.add(bas);
 		
 		gauche = new JPanel();
 		gauche.setBackground(Color.BLACK);
 		gauche.setForeground(Color.BLACK);
-		gauche.setBounds(0, 0, 0, 360);
+		gauche.setBounds(0, 0, 0, 480);
 		image.add(gauche);
 		
 		droit = new JPanel();
 		droit.setBackground(Color.BLACK);
 		droit.setForeground(Color.BLACK);
-		droit.setBounds(640, 0, 0, 360);
+		droit.setBounds(854, 0, 0, 480);
 		image.add(droit);
 		
 		MouseListener mouseListener =  new MouseListener(){
@@ -364,9 +363,9 @@ public class CropVideo {
 	}
 
 	private void boutons()	{
-		btnOK = new JButton("OK");
+		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnOK.setBounds(537, 433, 113, 21);		
+		btnOK.setBounds(frame.getWidth() - 200 - 12, frame.getHeight() - 31, 200, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -418,7 +417,7 @@ public class CropVideo {
 		comboPreset.setEditable(true);
 		comboPreset.setSelectedIndex(-1);
 		comboPreset.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		comboPreset.setBounds(465, 433, 63, 22);		
+		comboPreset.setBounds(btnOK.getX() - 63 - 12, btnOK.getY(), 63, 22);		
 		frame.getContentPane().add(comboPreset);
 		
 		comboPreset.addActionListener(new ActionListener(){
@@ -447,8 +446,8 @@ public class CropVideo {
 			
 				        	droit.setLocation(largeur + (image.getSize().width - (2 * gauche.getSize().width)), droit.getLocation().y);
 				        	
-				    		haut.setBounds(0, 0, 640, 0);
-				    		bas.setBounds(0, 360, 640, 0);		
+				    		haut.setBounds(0, 0, 854, 0);
+				    		bas.setBounds(0, 480, 854, 0);		
 				    	}
 						else
 						{
@@ -460,8 +459,8 @@ public class CropVideo {
 			
 				        	bas.setLocation(bas.getLocation().x, hauteur + (image.getSize().height - (2 * haut.getSize().height)));
 				        	
-				    		gauche.setBounds(0, 0, 0, 360);
-				    		droit.setBounds(640, 0, 0, 360);
+				    		gauche.setBounds(0, 0, 0, 480);
+				    		droit.setBounds(854, 0, 0, 480);
 						}		        	
 		            
 			        	lblRatio.setText(Shutter.language.getProperty("ratio") + " " + comboPreset.getSelectedItem().toString());
@@ -477,20 +476,14 @@ public class CropVideo {
 		
 		lblPresets = new JLabel(Shutter.language.getProperty("lblPresets"));
 		lblPresets.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblPresets.setBounds(comboPreset.getX() - lblPresets.getPreferredSize().width - 4, 435, lblPresets.getPreferredSize().width, 16);		
+		lblPresets.setBounds(comboPreset.getX() - lblPresets.getPreferredSize().width - 4, btnOK.getY() + 2, lblPresets.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblPresets);
 						
-		lblRatio.setText(Shutter.language.getProperty("ratio") + "100.00"); //Needed for preferredSize
-		lblRatio.setName("lblRatio");
-		lblRatio.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
-		lblRatio.setForeground(Utils.themeColor);
-		lblRatio.setBounds(170, 434, lblRatio.getPreferredSize().width, 16);		
-		frame.getContentPane().add(lblRatio);
-
 		caseManuel.setName("caseManuel");
 		caseManuel.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseManuel.setSelected(true);
-		caseManuel.setBounds(lblRatio.getX() + lblRatio.getWidth(), 435, caseManuel.getPreferredSize().width, 16);		
+		caseManuel.setSize(caseManuel.getPreferredSize().width, 16);
+		caseManuel.setLocation(lblPresets.getX() - caseManuel.getWidth() - 12, lblPresets.getY());		
 		frame.getContentPane().add(caseManuel);
 		
 		caseManuel.addActionListener(new ActionListener(){
@@ -501,8 +494,8 @@ public class CropVideo {
 				{
 					comboPreset.setEnabled(false);
 					comboPreset.setSelectedItem("");
-		    		gauche.setBounds(0, 0, 0, 360);
-		    		droit.setBounds(640, 0, 0, 360);
+		    		gauche.setBounds(0, 0, 0, 480);
+		    		droit.setBounds(854, 0, 0, 480);
 				}
 				else
 				{
@@ -512,7 +505,7 @@ public class CropVideo {
 			}
 			
 		});
-		
+				
 		positionVideo = new JSlider();
 		if (Shutter.scanIsRunning)
 		{
@@ -539,7 +532,15 @@ public class CropVideo {
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		positionVideo.setBounds(12, 432, 146, 22);	
+		positionVideo.setBounds(12, frame.getHeight() - 32, 260, 22);	
+		
+		lblRatio.setText(Shutter.language.getProperty("ratio") + "100.00"); //Needed for preferredSize
+		lblRatio.setName("lblRatio");
+		lblRatio.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
+		lblRatio.setForeground(Utils.themeColor);
+		lblRatio.setSize(lblRatio.getPreferredSize().width, 16);
+		lblRatio.setLocation(positionVideo.getX() + positionVideo.getWidth() + 12, lblPresets.getY() - 1);		
+		frame.getContentPane().add(lblRatio);
 		
 		//Contournement d'un bug
 		Component[] components = frame.getContentPane().getComponents();		    
@@ -607,15 +608,15 @@ public class CropVideo {
 			} while (FFPROBE.isRunning);
 							
 			//Ratio Widescreen
-			if ((float) ImageWidth/ImageHeight >= (float) 640/360)
+			if ((float) ImageWidth/ImageHeight >= (float) 854/480)
 			{
-				containerHeight = (int) Math.floor((float) 640 / ((float) ImageWidth / ImageHeight));
-				containerWidth = 640;
+				containerHeight = (int) Math.floor((float) 854 / ((float) ImageWidth / ImageHeight));
+				containerWidth = 854;
 			}
 			else
 			{
-				containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 360);	
-				containerHeight = 360;
+				containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 480);	
+				containerHeight = 480;
 			}
 			
 			//Screen capture
@@ -647,7 +648,7 @@ public class CropVideo {
 			newImage.setLocation(0, 0);	
 			newImage.setSize(containerWidth,containerHeight);
 			
-			image.setLocation(12 + ((640 - containerWidth) / 2), 58 + (int) ((float)(360 - containerHeight) / 2));
+			image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
 			image.setSize(newImage.getSize());	
 			
     		//Contourne un bug
@@ -801,8 +802,8 @@ public class CropVideo {
 	
 		        	bas.setLocation(bas.getLocation().x, hauteur + (image.getSize().height - (2 * haut.getSize().height)));
 		        	
-		    		gauche.setBounds(0, 0, 0, 360);
-		    		droit.setBounds(640, 0, 0, 360);
+		    		gauche.setBounds(0, 0, 0, 480);
+		    		droit.setBounds(854, 0, 0, 480);
 				}
 				
 			} catch (Exception e) {}	

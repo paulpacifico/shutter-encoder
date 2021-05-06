@@ -31,10 +31,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.RoundRectangle2D;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
@@ -271,40 +273,77 @@ public class Update {
 			    	else if (System.getProperty("os.name").contains("Mac")) //MAC
 	            	{
 	            		try {
-		            		if (file.attr("href").contains("Shutter Encoder (MAC Version"))
-		            		{
-		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
-		            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
-		            			
-		            			//Vérification d'une nouvelle mise à jour
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
-		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
-		    						 if (q == JOptionPane.YES_OPTION)
-		    						 {
-		    								runProcess(file.attr("href"));	   
-		    							 	new Update();		    							 	
-		    						 }	  	
-		    						 break;
-		            			}
-		            		}
-		            		else if (file.attr("href").contains("Mac 64bits."))
-		            		{
-		            			String s[] = file.attr("href").split(" ");
-		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
-		            			
-		            			//Vérification d'une nouvelle mise à jour
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
-		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
-		    						 if (q == JOptionPane.YES_OPTION)
-		    						 {
-		    								runProcess(file.attr("href"));	   
-		    							 	new Update();		    							 	
-		    						 }	  
-		    						 break;
-		            			}
-		            		}
+	            			String arch = "amd64";
+	            			
+	            			//Checking java amd or arm version
+	            			try {
+	            				Process proc = Runtime.getRuntime().exec("file JRE/Contents/Home/bin/java");	           				
+
+	            		        BufferedReader reader =  new BufferedReader(new InputStreamReader(proc.getInputStream()));	           		       
+
+	            		        String s[] = reader.readLine().split(" ");	           		       
+
+	            		        arch = s[s.length - 1];           		       
+
+	            			} catch (Exception e) {}	           			
+
+	            			if (arch.equals("amd64")) //AMD64
+	            			{	            			
+			            		if (file.attr("href").contains("Shutter Encoder (MAC Version"))
+			            		{
+			            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
+			            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
+			            			
+			            			//Vérification d'une nouvelle mise à jour
+			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+			            			{
+			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			    						 if (q == JOptionPane.YES_OPTION)
+			    						 {
+			    								runProcess(file.attr("href"));	   
+			    							 	new Update();		    							 	
+			    						 }	  	
+			    						 break;
+			            			}
+			            		}
+			            		else if (file.attr("href").contains("Mac 64bits."))
+			            		{
+			            			String s[] = file.attr("href").split(" ");
+			            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
+			            			
+			            			//Vérification d'une nouvelle mise à jour
+			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+			            			{
+			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			    						 if (q == JOptionPane.YES_OPTION)
+			    						 {
+			    								runProcess(file.attr("href"));	   
+			    							 	new Update();		    							 	
+			    						 }	  
+			    						 break;
+			            			}
+			            		}
+	            			}
+	            			else //ARM64 Apple Silicon
+	            			{
+	            				if (file.attr("href").contains("Apple Silicon."))
+			            		{
+			            			String s[] = file.attr("href").split(" ");
+			            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
+			            			
+			            			//Vérification d'une nouvelle mise à jour
+			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+			            			{
+			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			    						 if (q == JOptionPane.YES_OPTION)
+			    						 {
+			    								runProcess(file.attr("href"));	   
+			    							 	new Update();		    							 	
+			    						 }	  
+			    						 break;
+			            			}
+			            		}
+	            			}
 	            		} catch (Exception e) {}
 	            	}
 	            	else //Linux

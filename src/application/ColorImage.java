@@ -1637,7 +1637,7 @@ public class ColorImage {
 			
 		});
 		
-		btnOriginal = new JButton("Original");
+		btnOriginal = new JButton(Shutter.language.getProperty("btnOriginal"));
 		btnOriginal.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOriginal.setMargin(new Insets(0,0,0,0));
 		btnOriginal.setBounds(positionVideo.getX() + positionVideo.getWidth() + 9, frame.getHeight() - 33, btnOriginal.getPreferredSize().width, 21);		

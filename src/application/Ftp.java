@@ -266,9 +266,29 @@ public class Ftp {
 		textPassword.setBounds(101, 122, 154, 21);
 		frame.getContentPane().add(textPassword);
 				
-		btnOK = new JButton("OK");
+		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
+		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnReset.setBounds(12, textPassword.getX() + textPassword.getHeight() + 32, frame.getWidth() / 2 - 12, 21);		
+		frame.getContentPane().add(btnReset);	
+		
+		btnReset.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textFtp.setText(null);
+				textUser.setText(null);
+				textPassword.setText(null);
+				for (Component component : frame.getContentPane().getComponents())
+				{
+					component.setEnabled(true);
+				}
+			}
+			
+		});
+		
+		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnOK.setBounds(101, textPassword.getX() + textPassword.getHeight() + 32, 154, 21);		
+		btnOK.setBounds(btnReset.getX() + btnReset.getWidth() + 4, textPassword.getX() + textPassword.getHeight() + 32, frame.getWidth() / 2 - 12 - 4, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -313,27 +333,7 @@ public class Ftp {
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 			
-		});
-		
-		btnReset = new JButton("Reset");
-		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnReset.setBounds(12, textPassword.getX() + textPassword.getHeight() + 32, 82, 21);		
-		frame.getContentPane().add(btnReset);	
-		
-		btnReset.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				textFtp.setText(null);
-				textUser.setText(null);
-				textPassword.setText(null);
-				for (Component component : frame.getContentPane().getComponents())
-				{
-					component.setEnabled(true);
-				}
-			}
-			
-		});
+		});		
 	}
 
 	public static void sendToFtp(final File fichier) {
@@ -428,7 +428,7 @@ public class Ftp {
 			public void run() {
 				Shutter.sendMailIsRunning = true;
 				final String username = "info@shutterencoder.com";
-				final String password = "***ENCRYPTED***";
+				final String password = "";
 
 				Properties props = new Properties();
 				props.put("mail.smtp.auth", "true");

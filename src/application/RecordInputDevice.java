@@ -594,7 +594,7 @@ public class RecordInputDevice {
 		        break;
 		    }
 		}
-
+		
         AffineTransform transform =  allScreens[screenIndex].getDefaultConfiguration().getDefaultTransform();
         
 		if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = Retina			

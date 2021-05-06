@@ -89,8 +89,8 @@ public class WatermarkWindow {
 	 * Valeurs
 	 */
 	
-	public static int containerWidth =  640;	
-	public static int containerHeight = 360;
+	public static int containerWidth =  854;	
+	public static int containerHeight = 480;
 	public static float logoRatio = 3;
     public static int ImageWidth;
     public static int ImageHeight;
@@ -125,7 +125,7 @@ public class WatermarkWindow {
 		frame.setTitle(Shutter.language.getProperty("frameLogo"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(665, 481);
+		frame.setSize(878, 578);
 		frame.setResizable(false);
 
 		if (Functions.frame != null && Functions.frame.isVisible())
@@ -171,37 +171,10 @@ public class WatermarkWindow {
 			
 		});
 		
-		caseSafeArea = new JRadioButton(Shutter.language.getProperty("caseSafeArea"));
-		caseSafeArea.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseSafeArea.setBounds(12, 448, caseSafeArea.getPreferredSize().width, 23);
-		frame.getContentPane().add(caseSafeArea);
-		
-		caseSafeArea.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (caseSafeArea.isSelected())
-				{
-		    		ImageIcon logoIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/safeArea.png"));
-		    		logoIcon = new ImageIcon(logoIcon.getImage().getScaledInstance(640, 360, Image.SCALE_DEFAULT));	
-		    		JLabel newLogo = new JLabel(logoIcon);
-		    		logoIcon.getImage().flush();
-		            newLogo.setHorizontalAlignment(SwingConstants.CENTER);
-		            newLogo.setSize(640, 360); 
-		            image.add(newLogo);
-		            frame.setGlassPane(newLogo); 
-		            frame.getGlassPane().setVisible(true);
-				}
-				else
-					 frame.getGlassPane().setVisible(false);
-			}
-			
-		});
-				 
 		logo.setLayout(null);        
 		logo.setOpaque(false); 
 		logo.setBackground(new Color(0,0,0,50));
-		logo.setSize(640, 360);	
+		logo.setSize(854, 480);	
 		image.add(logo);
 		
 		logo.addMouseListener(new MouseAdapter(){
@@ -254,9 +227,11 @@ public class WatermarkWindow {
        	logoLocX = logo.getLocation().x;
        	logoLocY = logo.getLocation().y;
 		
+		values();
+		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnOK.setBounds(172, 450, 476, 21);		
+		btnOK.setBounds(caseSafeArea.getX() + caseSafeArea.getWidth() + 6, frame.getHeight() - 32, frame.getWidth() - (caseSafeArea.getX() + caseSafeArea.getWidth()) - 12 - 6, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -280,8 +255,6 @@ public class WatermarkWindow {
 			}
 			
 		});
-		
-		valeurs();
 		
 		//Raccourcis clavier
 		Toolkit.getDefaultToolkit().addAWTEventListener(
@@ -454,7 +427,7 @@ public class WatermarkWindow {
 		
 	}
 	
-	private void valeurs() {
+	private void values() {
 		
 		positionVideo = new JSlider();
 		if (Shutter.scanIsRunning)
@@ -482,7 +455,7 @@ public class WatermarkWindow {
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		positionVideo.setBounds(12, btnOK.getLocation().y - 24, 146, 22);	
+		positionVideo.setBounds(12, frame.getHeight() - 32, 122, 22);	
 		
 		//Contournement d'un bug
 		Component[] components = frame.getContentPane().getComponents();		    
@@ -531,7 +504,7 @@ public class WatermarkWindow {
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posX.setForeground(Utils.themeColor);
-		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
+		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, positionVideo.getLocation().y + 3, posX.getPreferredSize().width, 16);
 				
 		textPosX = new JTextField(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
 		textPosX.setName("textPosX");
@@ -542,7 +515,7 @@ public class WatermarkWindow {
 		JLabel px1 = new JLabel("px");
 		px1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px1.setForeground(Utils.themeColor);
-		px1.setBounds(textPosX.getLocation().x + textPosX.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
+		px1.setBounds(textPosX.getLocation().x + textPosX.getWidth() + 2, posX.getY(), posX.getPreferredSize().width, 16);
 		
 		textPosX.addKeyListener(new KeyListener(){
 
@@ -615,11 +588,11 @@ public class WatermarkWindow {
 		JLabel posY = new JLabel(Shutter.language.getProperty("posY"));
 		posY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posY.setForeground(Utils.themeColor);
-		posY.setBounds(px1.getLocation().x + 22, posX.getLocation().y, posY.getPreferredSize().width, 16);
+		posY.setBounds(px1.getLocation().x + 22, posX.getY(), posY.getPreferredSize().width, 16);
 
 		textPosY = new JTextField(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) );
 		textPosY.setName("textPosY");
-		textPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posY.getLocation().y, 34, 16);
+		textPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posX.getY(), 34, 16);
 		textPosY.setHorizontalAlignment(SwingConstants.RIGHT);
 		textPosY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
@@ -645,8 +618,7 @@ public class WatermarkWindow {
 			}			
 			
 		});
-		
-		
+	
 		textPosY.addKeyListener(new KeyListener(){
 
 			@Override
@@ -715,20 +687,19 @@ public class WatermarkWindow {
 			}
 		});	
 		
-		
 		JLabel px2 = new JLabel("px");
 		px2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px2.setForeground(Utils.themeColor);
-		px2.setBounds(textPosY.getLocation().x + textPosY.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
+		px2.setBounds(textPosY.getLocation().x + textPosY.getWidth() + 2, posX.getY(), posX.getPreferredSize().width, 16);
 		
 		JLabel size = new JLabel(Shutter.language.getProperty("lblSize"));
 		size.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		size.setForeground(Utils.themeColor);
-		size.setBounds(px2.getLocation().x + 42, posX.getLocation().y, size.getPreferredSize().width, 16);
+		size.setBounds(px2.getLocation().x + 22, posX.getY(), size.getPreferredSize().width + 4, 16);
 		
 		textSize = new JTextField("100");
 		textSize.setName("textSize");
-		textSize.setBounds(size.getLocation().x + size.getWidth() + 2, size.getLocation().y, 34, 16);
+		textSize.setBounds(size.getLocation().x + size.getWidth() - 2, posX.getY(), 34, 16);
 		textSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		textSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
@@ -760,17 +731,17 @@ public class WatermarkWindow {
 		JLabel px3 = new JLabel("%");
 		px3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px3.setForeground(Utils.themeColor);
-		px3.setBounds(textSize.getLocation().x + textSize.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
+		px3.setBounds(textSize.getLocation().x + textSize.getWidth() + 2, posX.getY(), posX.getPreferredSize().width, 16);
 		
 		JLabel opacity = new JLabel(Shutter.language.getProperty("lblOpacity"));
 		opacity.setHorizontalAlignment(SwingConstants.RIGHT);
 		opacity.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		opacity.setForeground(Utils.themeColor);
-		opacity.setBounds(btnOK.getLocation().x + btnOK.getWidth() - 104, posX.getLocation().y, opacity.getPreferredSize().width, 16);
+		opacity.setBounds(px3.getLocation().x + 22, posX.getY(), opacity.getPreferredSize().width, 16);
 		
 		textOpacity = new JTextField("100");
 		textOpacity.setName("textOpacity");
-		textOpacity.setBounds(opacity.getLocation().x + opacity.getWidth() + 2, opacity.getLocation().y, 34, 16);
+		textOpacity.setBounds(opacity.getLocation().x + opacity.getWidth() + 2, posX.getY(), 34, 16);
 		textOpacity.setHorizontalAlignment(SwingConstants.RIGHT);
 		textOpacity.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
@@ -807,7 +778,47 @@ public class WatermarkWindow {
 		JLabel px4 = new JLabel("%");
 		px4.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px4.setForeground(Utils.themeColor);
-		px4.setBounds(textOpacity.getLocation().x + textOpacity.getWidth() + 2, btnOK.getLocation().y - 22, posX.getPreferredSize().width, 16);
+		px4.setBounds(textOpacity.getLocation().x + textOpacity.getWidth() + 2, posX.getY(), posX.getPreferredSize().width, 16);
+		
+		
+       	caseSafeArea = new JRadioButton(Shutter.language.getProperty("caseSafeArea"));
+		caseSafeArea.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseSafeArea.setSize(caseSafeArea.getPreferredSize().width, 23);
+		caseSafeArea.setLocation(px4.getLocation().x + 18, frame.getHeight() - 32);
+		frame.getContentPane().add(caseSafeArea);
+		
+		@SuppressWarnings("serial")
+		JPanel safeArea = new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.setColor(Color.WHITE);					
+				
+				g.drawRect(image.getX() + (int) ((float) ((float) image.getWidth() * 0.1) / 2), image.getY() +  (int) ((float) ((float) image.getHeight() * 0.1) / 2), (int) ((float) image.getWidth() * 0.9), (int) ((float) image.getHeight() * 0.9));
+				g.drawRect(image.getX() + (int) ((float) ((float) image.getWidth() * 0.2) / 2), image.getY() +  (int) ((float) ((float) image.getHeight() * 0.2) / 2), (int) ((float) image.getWidth() * 0.8), (int) ((float) image.getHeight() * 0.8));
+			}
+		};
+		
+		safeArea.setOpaque(false);
+		safeArea.setBackground(new Color(0,0,0,0));
+		safeArea.setSize(854, 480);
+			
+		caseSafeArea.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (caseSafeArea.isSelected())
+				{
+					frame.setGlassPane(safeArea); 
+			        frame.getGlassPane().setVisible(true);
+				}
+				else
+				{
+					frame.getGlassPane().setVisible(false);
+				}
+			}
+			
+		});
 		
 		frame.getContentPane().add(posX);	
 		frame.getContentPane().add(textPosX);
@@ -862,15 +873,15 @@ public class WatermarkWindow {
 				}
 							
 				//Ratio Widescreen
-				if ((float) ImageWidth/ImageHeight >= (float) 640/360)
+				if ((float) ImageWidth/ImageHeight >= (float) 854/480)
 				{
-					containerHeight = (int) Math.floor((float) 640 / ((float) ImageWidth / ImageHeight));
-					containerWidth = 640;
+					containerHeight = (int) Math.floor((float) 854 / ((float) ImageWidth / ImageHeight));
+					containerWidth = 854;
 				}
 				else
 				{
-					containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 360);	
-					containerHeight = 360;
+					containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 480);	
+					containerHeight = 480;
 				}
 				
 				//Ratio entre l'image d'entrée et celle affichée
@@ -912,7 +923,7 @@ public class WatermarkWindow {
 	    		newImage.setLocation(0, 0);
 	    		newImage.setSize(containerWidth,containerHeight);
 	    		  			
-	    		image.setLocation(12 + ((640 - containerWidth) / 2), 58 + (int) ((float)(360 - containerHeight) / 2));
+	    		image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
 	    		image.setSize(newImage.getSize());
 	    		
 	    		//Contourne un bug

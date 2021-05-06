@@ -26,6 +26,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -90,13 +91,22 @@ public class Help {
 		else
 			pathToFonctions = pathToFonctions.substring(0,pathToFonctions.length()-1);
 		
-		if (Shutter.getLanguage.equals("Français"))
-			pathToFonctions = pathToFonctions.substring(0,(int) (pathToFonctions.lastIndexOf("/"))).replace("%20", " ")  + "/Help/fr";
-		else if (Shutter.getLanguage.equals("Italiano"))
-			pathToFonctions = pathToFonctions.substring(0,(int) (pathToFonctions.lastIndexOf("/"))).replace("%20", " ")  + "/Help/it";
-		else
-			pathToFonctions = pathToFonctions.substring(0,(int) (pathToFonctions.lastIndexOf("/"))).replace("%20", " ")  + "/Help/en";	
+		for (String local : Locale.getISOLanguages())
+		{
+			String language = new Locale(local).getDisplayLanguage();
 
+			if (language.equals(Utils.getLanguage))
+			{
+				String loadLanguage =  pathToFonctions.substring(0,(int) (pathToFonctions.lastIndexOf("/"))).replace("%20", " ")  + "/Help/" + local;
+				
+				if (new File(loadLanguage).exists())								
+					pathToFonctions = loadLanguage;
+				else
+					pathToFonctions = pathToFonctions.substring(0,(int) (pathToFonctions.lastIndexOf("/"))).replace("%20", " ")  + "/Help/en";
+				
+				break;				
+			}
+		}	
 		
 		JLabel lblFonctions = new JLabel(Shutter.language.getProperty("lblFonctions"));
 		lblFonctions.setForeground(Color.WHITE);

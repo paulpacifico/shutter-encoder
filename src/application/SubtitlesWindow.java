@@ -99,8 +99,8 @@ public class SubtitlesWindow {
     public static int ImageHeight;
     public static int finalWidth;
     public static int finalHeight;
-    public static int containerWidth =  640;
-    public static int containerHeight = 360;
+    public static int containerWidth =  854;
+    public static int containerHeight = 480;
 	private static JPanel panelColor = new JPanel();
 	private static JLabel lblOutline = new JLabel();
 	private static JPanel panelColor2 = new JPanel();
@@ -129,7 +129,7 @@ public class SubtitlesWindow {
 		frame.setTitle(Shutter.language.getProperty("frameAddSubtitles"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(665, 500);
+		frame.setSize(878, 615);
 		frame.setResizable(false);
 
 		if (Functions.frame != null && Functions.frame.isVisible())
@@ -156,7 +156,7 @@ public class SubtitlesWindow {
 		
 		
 		topPanel();
-		boutons();
+		buttons();
 		
 		image.setLayout(null);        
 		image.setOpaque(false);
@@ -246,7 +246,7 @@ public class SubtitlesWindow {
 		topPanel.setBounds(0, 0, 1000, 52);
 		frame.getContentPane().add(topPanel);
 		
-		image.setBounds(12, 58, 640, 360);		
+		image.setBounds(12, 58, 854, 480);		
 		frame.getContentPane().add(image);
 		
 		topImage.addMouseListener(new MouseListener() {
@@ -290,12 +290,12 @@ public class SubtitlesWindow {
 		
 	}
 
-	private void boutons()	{
+	private void buttons()	{
 		
 		JLabel lblFont = new JLabel(Shutter.language.getProperty("lblFont"));
 		lblFont.setAlignmentX(SwingConstants.RIGHT);
 		lblFont.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblFont.setBounds(12, 435, lblFont.getPreferredSize().width, 16);
+		lblFont.setBounds(12, frame.getHeight() - 65, lblFont.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblFont);
 		
 		String Fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -306,7 +306,7 @@ public class SubtitlesWindow {
 		comboFont.setFont(new Font("Arial", Font.PLAIN, 11));
 		comboFont.setRenderer(new ComboRenderer(comboFont));
 		comboFont.setEditable(true);
-		comboFont.setBounds(65, 431, 120, 22);
+		comboFont.setBounds(lblFont.getX() + lblFont.getWidth() + 7, lblFont.getY() - 4, 120, 22);
 		frame.getContentPane().add(comboFont);
 		
 		comboFont.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() 
@@ -369,7 +369,7 @@ public class SubtitlesWindow {
     	btnG.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
     	btnG.setForeground(Color.BLACK);
     	btnG.setName("btnG");
-    	btnG.setBounds(comboFont.getLocation().x + comboFont.getWidth() + 4, 431, 22, 22);    	
+    	btnG.setBounds(comboFont.getLocation().x + comboFont.getWidth() + 4, comboFont.getY(), 22, 22);    	
     	frame.getContentPane().add(btnG);
     	
     	btnG.addActionListener(new ActionListener(){
@@ -390,7 +390,7 @@ public class SubtitlesWindow {
     	btnI.setFont(new Font("Courier New", Font.ITALIC, 13));
     	btnI.setForeground(Color.BLACK);
     	btnI.setName("btnI");
-    	btnI.setBounds(btnG.getLocation().x + btnG.getWidth() + 2, 431, 22, 22);    	
+    	btnI.setBounds(btnG.getLocation().x + btnG.getWidth() + 2, comboFont.getY(), 22, 22);    	
     	frame.getContentPane().add(btnI);
     	
     	btnI.addActionListener(new ActionListener(){
@@ -410,7 +410,7 @@ public class SubtitlesWindow {
 		JLabel lblSubtitlesPosition = new JLabel(Shutter.language.getProperty("lblSubtitlesPosition"));
 		lblSubtitlesPosition.setAlignmentX(SwingConstants.RIGHT);
 		lblSubtitlesPosition.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblSubtitlesPosition.setBounds(btnI.getLocation().x + btnI.getWidth() + 6, 434, lblSubtitlesPosition.getPreferredSize().width, 16);
+		lblSubtitlesPosition.setBounds(btnI.getLocation().x + btnI.getWidth() + 6, comboFont.getY() + 3, lblSubtitlesPosition.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblSubtitlesPosition);
 		
 		spinnerSubtitlesPosition.setName("spinnerSubtitlesPosition");
@@ -441,7 +441,7 @@ public class SubtitlesWindow {
 		JLabel lblWidth = new JLabel(Shutter.language.getProperty("lblWidth"));
 		lblWidth.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblWidth.setAlignmentX(SwingConstants.RIGHT);
-		lblWidth.setBounds(spinnerSubtitlesPosition.getLocation().x + spinnerSubtitlesPosition.getWidth() + 9, 434, lblWidth.getPreferredSize().width, 16);
+		lblWidth.setBounds(spinnerSubtitlesPosition.getLocation().x + spinnerSubtitlesPosition.getWidth() + 9, comboFont.getY() + 3, lblWidth.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblWidth);
 
 		textWidth.setText(String.valueOf(ImageWidth));
@@ -520,7 +520,7 @@ public class SubtitlesWindow {
 		JLabel lblsubtitleNumber = new JLabel(Shutter.language.getProperty("lblsubtitleNumber"));
 		lblsubtitleNumber.setAlignmentX(SwingConstants.RIGHT);
 		lblsubtitleNumber.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblsubtitleNumber.setBounds(textWidth.getLocation().x + textWidth.getWidth() + 9, 434, lblsubtitleNumber.getPreferredSize().width, 16);
+		lblsubtitleNumber.setBounds(textWidth.getLocation().x + textWidth.getWidth() + 9, comboFont.getY() + 3, lblsubtitleNumber.getPreferredSize().width + 4, 16);
 		frame.getContentPane().add(lblsubtitleNumber);
 		
 		spinnerSubtitle.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
@@ -556,14 +556,14 @@ public class SubtitlesWindow {
 		JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
 		lblColor.setAlignmentX(SwingConstants.RIGHT);
 		lblColor.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblColor.setBounds(12, 470, lblColor.getPreferredSize().width + 4, 16);
+		lblColor.setBounds(12, comboFont.getY() + 38, lblColor.getPreferredSize().width + 4, 16);
 		frame.getContentPane().add(lblColor);
 		
 		panelColor = new JPanel();
 		panelColor.setName("panelColor");
 		panelColor.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.BLACK));
 		panelColor.setBackground(Color.WHITE);
-		panelColor.setBounds(lblColor.getLocation().x + 62, lblColor.getLocation().y - 7, 41, 29);
+		panelColor.setBounds(lblColor.getLocation().x + lblColor.getWidth() + 7, lblColor.getLocation().y - 7, 41, 29);
 		frame.getContentPane().add(panelColor);
 		
 		panelColor.addMouseListener(new MouseListener(){
@@ -599,82 +599,16 @@ public class SubtitlesWindow {
 		JLabel lblSize = new JLabel(Shutter.language.getProperty("lblSize"));
 		lblSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
 		lblSize.setAlignmentX(SwingConstants.RIGHT);
-		lblSize.setBounds(lblColor.getLocation().x + 113, lblColor.getLocation().y, lblSize.getPreferredSize().width, 16);		
+		lblSize.setBounds(panelColor.getLocation().x + panelColor.getWidth() + 7, lblColor.getLocation().y, lblSize.getPreferredSize().width, 16);		
 		frame.getContentPane().add(lblSize);
 		
 		spinnerSize = new JSpinner(new SpinnerNumberModel(18, 1, 999, 1));
 		spinnerSize.setName("spinnerSize");
 		spinnerSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		spinnerSize.setBounds(panelColor.getLocation().x + 103, lblColor.getLocation().y - 3, 50, 22);
+		spinnerSize.setBounds(lblSize.getLocation().x + lblSize.getWidth() + 7, lblColor.getLocation().y - 3, 50, 22);
 		frame.getContentPane().add(spinnerSize);
 		
 		spinnerSize.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				sliderChange(false);				
-			}
-			
-		});
-		
-		JLabel lblColor2 = new JLabel(Shutter.language.getProperty("lblColor"));
-		lblColor2.setAlignmentX(SwingConstants.RIGHT);
-		lblColor2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblColor2.setBounds(spinnerSize.getLocation().x + spinnerSize.getWidth() + 92, 470, lblColor2.getPreferredSize().width + 4, 16);
-		frame.getContentPane().add(lblColor2);
-		
-		panelColor2 = new JPanel();
-		panelColor2.setName("panelColor2");
-		panelColor2.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.BLACK));
-		panelColor2.setBackground(Color.BLACK);
-		panelColor2.setBounds(lblColor2.getLocation().x + 62, lblColor2.getLocation().y - 7, 41, 29);
-		frame.getContentPane().add(panelColor2);
-		
-		panelColor2.addMouseListener(new MouseListener(){
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				backgroundColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), Color.WHITE);
-				if (backgroundColor != null)
-				{
-					panelColor2.setBackground(backgroundColor);	
-					sliderChange(false);
-				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {		
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {				
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {				
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-    		
-    	});
-			
-		lblOutline = new JLabel(Shutter.language.getProperty("lblOpacity"));
-		lblOutline.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblOutline.setName("lblOutline");
-		lblOutline.setAlignmentX(SwingConstants.RIGHT);
-		lblOutline.setBounds(lblColor2.getLocation().x + 113, lblColor2.getLocation().y, lblOutline.getPreferredSize().width, 16);		
-		lblOutline.setText(Shutter.language.getProperty("lblSize"));
-		frame.getContentPane().add(lblOutline);
-		
-		spinnerOutline = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
-		spinnerOutline.setName("spinnerOpacity");
-		spinnerOutline.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		spinnerOutline.setBounds(lblOutline.getLocation().x + lblOutline.getWidth() + 11, lblColor2.getLocation().y - 3, 50, 22);
-		frame.getContentPane().add(spinnerOutline);
-		
-		spinnerOutline.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -689,7 +623,7 @@ public class SubtitlesWindow {
 		lblBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblBackground.setOpaque(true);
 		lblBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
-		lblBackground.setBounds(spinnerSize.getLocation().x + spinnerSize.getWidth() + 11, spinnerSize.getLocation().y + 3, 70, 16);
+		lblBackground.setBounds(spinnerSize.getLocation().x + spinnerSize.getWidth() + 7, spinnerSize.getLocation().y + 3, 80, 16);
 		frame.getContentPane().add(lblBackground);
 		
 		lblBackground.addMouseListener(new MouseListener() {
@@ -733,10 +667,76 @@ public class SubtitlesWindow {
 			}
 			
 		});
+				
+		JLabel lblColor2 = new JLabel(Shutter.language.getProperty("lblColor"));
+		lblColor2.setAlignmentX(SwingConstants.RIGHT);
+		lblColor2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblColor2.setBounds(lblBackground.getLocation().x + lblBackground.getWidth() + 7, lblColor.getY(), lblColor2.getPreferredSize().width + 4, 16);
+		frame.getContentPane().add(lblColor2);
 		
-		btnOK = new JButton("OK");
+		panelColor2 = new JPanel();
+		panelColor2.setName("panelColor2");
+		panelColor2.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.BLACK));
+		panelColor2.setBackground(Color.BLACK);
+		panelColor2.setBounds(lblColor2.getLocation().x + lblColor2.getWidth() + 7, lblColor2.getLocation().y - 7, 41, 29);
+		frame.getContentPane().add(panelColor2);
+		
+		panelColor2.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				backgroundColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), Color.WHITE);
+				if (backgroundColor != null)
+				{
+					panelColor2.setBackground(backgroundColor);	
+					sliderChange(false);
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {		
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+    		
+    	});
+			
+		lblOutline = new JLabel(Shutter.language.getProperty("lblOpacity"));
+		lblOutline.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblOutline.setName("lblOutline");
+		lblOutline.setAlignmentX(SwingConstants.RIGHT);
+		lblOutline.setBounds(panelColor2.getLocation().x + panelColor2.getWidth() + 7, lblColor2.getLocation().y, lblOutline.getPreferredSize().width, 16);		
+		lblOutline.setText(Shutter.language.getProperty("lblSize"));
+		frame.getContentPane().add(lblOutline);
+		
+		spinnerOutline = new JSpinner(new SpinnerNumberModel(50, 0, 100, 1));
+		spinnerOutline.setName("spinnerOpacity");
+		spinnerOutline.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		spinnerOutline.setBounds(lblOutline.getLocation().x + lblOutline.getWidth() + 7, lblColor2.getLocation().y - 3, 50, 22);
+		frame.getContentPane().add(spinnerOutline);
+		
+		spinnerOutline.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				sliderChange(false);				
+			}
+			
+		});
+		
+		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnOK.setBounds(spinnerOutline.getLocation().x + spinnerOutline.getWidth() + 13, 468, frame.getWidth() - (spinnerOutline.getLocation().x + spinnerOutline.getWidth() + 7) - 20, 21);		
+		btnOK.setBounds(spinnerOutline.getLocation().x + spinnerOutline.getWidth() + 13, lblColor2.getY() - 3, frame.getWidth() - (spinnerOutline.getLocation().x + spinnerOutline.getWidth() + 7) - 20, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){
@@ -1000,15 +1000,15 @@ public class SubtitlesWindow {
 		        		textWidth.setText(i[0]);	
 		        			        			        	
 					//Ratio Widescreen
-					if ((float) ImageWidth/ImageHeight >= (float) 640/360)
+					if ((float) ImageWidth/ImageHeight >= (float) 854/480)
 					{
-						containerHeight = (int) Math.floor((float) 640 / ((float) ImageWidth / ImageHeight));
-						containerWidth = 640;
+						containerHeight = (int) Math.floor((float) 854 / ((float) ImageWidth / ImageHeight));
+						containerWidth = 854;
 					}
 					else
 					{
-						containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 360);	
-						containerHeight = 360;
+						containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 480);	
+						containerHeight = 480;
 					}
 					
 		          	FFMPEG.run(" -ss "+h+":"+m+":"+s+"."+f+" -i " + '"' + fichier + '"' + " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textWidth.getText() + ":" + size[1] + "+" + spinnerSubtitlesPosition.getValue() + ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboFont.getSelectedItem().toString() + ",FontSize=" + spinnerSize.getValue() + ",PrimaryColour=&H" + hex + "&" + background + "'" + '"' + " -vframes 1 -filter_complex [0:v]" + crop + pad + "[1:v]overlay=x=" + ((int) (Integer.parseInt(i[0]) - Integer.parseInt(textWidth.getText()))/2) + ",scale=" + containerWidth + ":" + containerHeight + " -an -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
@@ -1031,7 +1031,7 @@ public class SubtitlesWindow {
 		            imageIcon.getImage().flush();
 		    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
 						    		
-		    		image.setLocation(12 + ((640 - containerWidth) / 2), 58 + (int) ((float)(360 - containerHeight) / 2));
+		    		image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
 		    		image.setSize(containerWidth,containerHeight);
 		    		
 		    		//Contourne un bug

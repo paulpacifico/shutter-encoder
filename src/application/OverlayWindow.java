@@ -90,7 +90,7 @@ import library.FFPROBE;
 public class OverlayWindow {
 	public static JDialog frame;
 	private static JPanel image = new JPanel();
-	private static JLabel changePositions = new JLabel("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>");	
+	private static JLabel changePositions = new JLabel("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>");	
 	private static JPanel timecode;
 	private static JPanel fileName;
 	
@@ -110,8 +110,8 @@ public class OverlayWindow {
     public static int finalWidth;
     public static int finalHeight;
 
-    public static int containerWidth =  640;	
-    public static int containerHeight = 360;
+    public static int containerWidth =  854;	
+    public static int containerHeight = 480;
     
 	public static String hexTc = "ff";
 	public static String hexAlphaTc = "ff";
@@ -169,7 +169,7 @@ public class OverlayWindow {
 		frame.setTitle(Shutter.language.getProperty("grpOverlay"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(665, 550);
+		frame.setSize(878, 674);
 		frame.setResizable(false);
 		
 		if (Functions.frame != null && Functions.frame.isVisible())
@@ -195,7 +195,7 @@ public class OverlayWindow {
 					
 		topPanel();
 				
-		boutons();
+		buttons();
 		
 		image.setLayout(null); 
 		image.setOpaque(false); 
@@ -294,7 +294,7 @@ public class OverlayWindow {
 		topPanel.setBounds(0, 0, 1000, 52);
 		frame.getContentPane().add(topPanel);
 		
-		image.setBounds(12, 58, 640, 360);		
+		image.setBounds(12, 58, 854, 480);		
 		frame.getContentPane().add(image);
 		
 		topImage.addMouseListener(new MouseListener() {
@@ -339,7 +339,7 @@ public class OverlayWindow {
 	}
 	
 	@SuppressWarnings("serial")
-	private void boutons() {	
+	private void buttons() {	
 		
 		timecode = new JPanel() {
 			 @Override
@@ -468,7 +468,7 @@ public class OverlayWindow {
 			public void mouseReleased(MouseEvent e) {	
 				if (e.getClickCount() == 2 && !e.isConsumed())
 				{
-					if (changePositions.getText().equals("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
+					if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
 					{
 						tcLocX = (int) Math.round(image.getWidth()/2 - timecode.getWidth()/2);
 						tcLocY = timecode.getHeight();	
@@ -600,7 +600,7 @@ public class OverlayWindow {
 			public void mouseReleased(MouseEvent e) {			
 				if (e.getClickCount() == 2 && !e.isConsumed())
 				{
-					if (changePositions.getText().equals("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
+					if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
 					{
 						fileLocX = (int) Math.round(image.getWidth()/2 - fileName.getWidth()/2);
 						fileLocY = containerHeight - fileName.getHeight() * 2;
@@ -766,7 +766,7 @@ public class OverlayWindow {
 		lblBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblBackground.setOpaque(true);
 		lblBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
-		lblBackground.setBounds(panelColor.getLocation().x + panelColor.getWidth() + 11, lblColor.getLocation().y, 70, 16);
+		lblBackground.setBounds(panelColor.getLocation().x + panelColor.getWidth() + 11, lblColor.getLocation().y, 80, 16);
 		frame.getContentPane().add(lblBackground);
 		
 		lblBackground.addMouseListener(new MouseListener() {
@@ -1070,7 +1070,13 @@ public class OverlayWindow {
 			}
 
 		});
-						
+					
+		JLabel lblVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
+		lblVideo.setAlignmentX(SwingConstants.RIGHT);
+		lblVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblVideo.setBounds(panelColor2.getLocation().x + panelColor2.getWidth() + 11, lblFont.getY(), lblVideo.getPreferredSize().width + 4, 16);
+		frame.getContentPane().add(lblVideo);
+		
 		positionVideo = new JSlider();
 		if (Shutter.scanIsRunning)
 		{
@@ -1100,7 +1106,7 @@ public class OverlayWindow {
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		positionVideo.setLocation(panelColor2.getX() + panelColor2.getWidth() + 6, panelColor2.getY());
+		positionVideo.setLocation(lblVideo.getX() + lblVideo.getWidth() + 6, lblVideo.getY() - 3);
 		positionVideo.setSize(frame.getWidth() - positionVideo.getX() - 12, 22);	
 		
 		//Contournement d'un bug
@@ -1838,19 +1844,19 @@ public class OverlayWindow {
 		changePositions.setOpaque(true);
 		changePositions.setHorizontalAlignment(JLabel.CENTER);
 		changePositions.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		changePositions.setSize(changePositions.getPreferredSize());
-		changePositions.setLocation((btnOK.getX() + btnOK.getWidth()/2) - changePositions.getWidth()/2, btnOK.getY() - changePositions.getHeight() - 14);
+		changePositions.setSize(changePositions.getPreferredSize().width + 8, changePositions.getPreferredSize().height);
+		changePositions.setLocation((btnOK.getX() + btnOK.getWidth()/2) - changePositions.getWidth()/2, btnOK.getY() - changePositions.getHeight() - 24);
 		changePositions.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (changePositions.getText().equals("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>")) {
-					changePositions.setText("<html>&nbsp;&nbsp;&nbsp;&nbsp;Text<br>Timecode</html>");
+				if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>")) {
+					changePositions.setText("<html>&nbsp;&nbsp;&nbsp;&nbsp;Text<br>" + Shutter.language.getProperty("grpTimecode") + "</html>");
 					
 					fileName.setLocation(image.getWidth()/2 - fileName.getWidth()/2, fileName.getHeight());	
 					timecode.setLocation(image.getWidth() / 2 - timecode.getWidth()/2, containerHeight - timecode.getHeight() * 2);	
 				} else {
-					changePositions.setText("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>");
+					changePositions.setText("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>");
 					
 					timecode.setLocation(image.getWidth()/2 - timecode.getWidth()/2, timecode.getHeight());	
 					fileName.setLocation(image.getWidth() / 2 - fileName.getWidth()/2, containerHeight - fileName.getHeight() * 2);	
@@ -1947,15 +1953,15 @@ public class OverlayWindow {
 				}
 								
 				//Ratio Widescreen
-				if ((float) ImageWidth/ImageHeight >= (float) 640/360)
+				if ((float) ImageWidth/ImageHeight >= (float) 854/480)
 				{
-					containerHeight = (int) Math.floor((float) 640 / ((float) ImageWidth / ImageHeight));
-					containerWidth = 640;
+					containerHeight = (int) Math.floor((float) 854 / ((float) ImageWidth / ImageHeight));
+					containerWidth = 854;
 				}
 				else
 				{
-					containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 360);	
-					containerHeight = 360;
+					containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 480);	
+					containerHeight = 480;
 				}
 				
 				//Screen capture
@@ -2047,7 +2053,7 @@ public class OverlayWindow {
 			}
 			else
 			{
-				if (changePositions.getText().equals("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
+				if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
 					fileName.setLocation(image.getWidth() / 2 - fileName.getWidth()/2, containerHeight - fileName.getHeight() * 2);	
 				else
 					fileName.setLocation(image.getWidth()/2 - fileName.getWidth()/2, fileName.getHeight());	
@@ -2138,7 +2144,7 @@ public class OverlayWindow {
 			}
 			else
 			{
-				if (changePositions.getText().equals("<html>Timecode<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
+				if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
 					timecode.setLocation(image.getWidth()/2 - timecode.getWidth()/2, timecode.getHeight());	
 				else
 					timecode.setLocation(image.getWidth() / 2 - timecode.getWidth()/2, containerHeight - timecode.getHeight() * 2);						
@@ -2147,7 +2153,7 @@ public class OverlayWindow {
 				textTcPosY.setText("0");  
 			}		
 					
-			image.setLocation(12 + ((640 - containerWidth) / 2), 58 + (int) ((float)(360 - containerHeight) / 2));
+			image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
 			image.setSize(newImage.getSize());	
 			
     		//Contourne un bug
