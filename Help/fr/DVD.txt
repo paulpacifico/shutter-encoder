@@ -1,0 +1,3 @@
+Créez un fichier prêt à graver au format DVD en lecture directe sans menu.
+Le débit s'adapte automatiquement pour un DVD de 4.7Go.
+Lorsque le débit est inf. ou égale à 6000k, deux passages seront automatiquement générés pour un meilleur rendu.

@@ -1,0 +1,1 @@
+Vous permet de coller bout à bout les fichiers vidéos ou audios d'un même codec dans l'ordre de la liste des fichiers.

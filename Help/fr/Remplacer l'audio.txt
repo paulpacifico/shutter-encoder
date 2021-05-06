@@ -1,0 +1,2 @@
+Si la liste comporte plusieurs fichiers audio ils seront ajoutés à la vidéo dans l'ordre de la liste.
+Cette fonction ne crée pas de compression vidéo ni audio.

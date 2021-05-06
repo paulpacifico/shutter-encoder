@@ -1,0 +1,1 @@
+Prise en charge des photos au format RAW et des fichiers PDF.
