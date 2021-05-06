@@ -44,6 +44,7 @@ public class MPEG extends Shutter {
 	
 	private static int complete;
 	private static String cmd;
+	private static File vidstab = null;
 	
 	public static void main(boolean encode) {
 		
@@ -88,6 +89,14 @@ public class MPEG extends Shutter {
 
 					//InOut	
 					FFMPEG.fonctionInOut();	
+					
+					//Dossier de sortie
+					String sortie = setSortie("", file);
+					
+					//Mode concat
+					String concat = FFMPEG.setConcat(file, sortie);					
+					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 					
 					//Séquence d'images
 					String sequence = setSequence(file, extension);
@@ -135,6 +144,9 @@ public class MPEG extends Shutter {
 					
 					//Color
 					filterComplex = setColor(filterComplex);
+
+					//Stabilisation
+					filterComplex = setStabilisation(vidstab, filterComplex, file, fichier, concat);
 					
 					//Decimate
 					filterComplex = setDecimate(filterComplex);
@@ -189,7 +201,7 @@ public class MPEG extends Shutter {
 			                    
 	            	//Audio
 					String audio = setAudio(filterComplex);	
-					
+
 					//Fade-in Fade-out
 					filterComplex = setFade(filterComplex);
 					
@@ -201,9 +213,6 @@ public class MPEG extends Shutter {
 					
 			       	//Preset
 			        String preset = setPreset();
-					
-					//Dossier de sortie
-					String sortie = setSortie("", file);
 																							
 					//Fichier de sortie
 					String nomExtension;
@@ -235,12 +244,7 @@ public class MPEG extends Shutter {
 					String output = '"' + fileOut.toString() + '"';
 					if (caseDisplay.isSelected())
 						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
-							
-					//Mode concat
-					String concat = FFMPEG.setConcat(file, sortie);					
-					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
-						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
-							
+
 					//Envoi de la commande
 					cmd = frameRate + resolution + colorspace + pass + filterComplex + " -vcodec" + codec + preset + bitrate + interlace + gamma + flags + " -y ";
 					
@@ -1083,6 +1087,44 @@ public class MPEG extends Shutter {
 				filterComplex = finalEQ;	
 		}
 
+		return filterComplex;
+	}
+
+	protected static String setStabilisation(File vidstab, String filterComplex, File file, String fichier, String concat) throws InterruptedException {
+		
+		if (caseStabilisation.isSelected())
+		{
+			if (System.getProperty("os.name").contains("Windows"))
+				vidstab = new File("vidstab.trf");
+			else
+			{
+						    		
+				vidstab = new File(Shutter.dirTemp + "vidstab.trf");
+			}		
+			
+			lblEncodageEnCours.setText(Shutter.language.getProperty("analyzeOf") + " " + fichier);
+			
+			//Analyse du fichier
+			String cmd;
+			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab | PathToFFMPEG -i pipe:stab -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";					
+			else
+				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab | PathToFFMPEG -i pipe:stab -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -" + '"';	
+			
+			FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);		
+			
+			//Attente de la fin de FFMPEG
+			do
+				Thread.sleep(100);
+			while(FFMPEG.runProcess.isAlive());						
+			
+			if (filterComplex != "")
+				filterComplex += ",vidstabtransform=input=" + vidstab.toString();
+			else
+				filterComplex = "vidstabtransform=input=" + vidstab.toString();
+			
+			lblEncodageEnCours.setText(fichier);
+		}
 		return filterComplex;
 	}
 

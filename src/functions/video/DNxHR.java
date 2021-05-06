@@ -311,6 +311,10 @@ public class DNxHR extends Shutter {
 							//lblEncodageEnCours.setText(Shutter.language.getProperty("createOpatomFiles"));
 							
 							String key = getRandomHexString().toUpperCase();
+							
+							if (Settings.btnExtension.isSelected())
+								key = Settings.txtExtension.getText();
+							
 							fileOut.renameTo(new File(sortie + "/" + fichier.replace(extension, key + "_v1.mxf")));				
 							
 							/*							
@@ -1343,6 +1347,12 @@ public class DNxHR extends Shutter {
 		}
 		else if (inputDeviceIsRunning)
 			return " -vsync vfr";
+		else if (FFPROBE.currentFPS == 59.94f)
+			return " -r 60000/1001";
+		else if (FFPROBE.currentFPS == 29.97f)
+			return " -r 30000/1001";
+		else if (FFPROBE.currentFPS == 23.976f)
+			return " -r 24000/1001";
 		
 		return "";
 	}

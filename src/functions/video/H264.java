@@ -44,6 +44,7 @@ public class H264 extends Shutter {
 		
 	private static int complete;
 	private static String cmd;	
+	private static File vidstab = null;
 	
 	public static void main(boolean encode) {
 		
@@ -88,6 +89,14 @@ public class H264 extends Shutter {
 					
 					//InOut	
 					FFMPEG.fonctionInOut();	
+					
+					//Dossier de sortie
+					String sortie = setSortie("", file);
+					
+					//Mode concat
+					String concat = FFMPEG.setConcat(file, sortie);					
+					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 					
 					//Séquence d'images
 					String sequence = setSequence(file, extension);
@@ -151,6 +160,9 @@ public class H264 extends Shutter {
 					//Color
 					filterComplex = setColor(filterComplex);
 					
+					//Stabilisation
+					filterComplex = setStabilisation(vidstab, filterComplex, file, fichier, concat);
+					
 					//Decimate
 					filterComplex = setDecimate(filterComplex);
 					
@@ -204,7 +216,7 @@ public class H264 extends Shutter {
 			        
 	            	//Audio
 					String audio = setAudio(filterComplex);	
-					
+
 					//Fade-in Fade-out
 					filterComplex = setFade(filterComplex);
 					
@@ -213,10 +225,7 @@ public class H264 extends Shutter {
 		            
 			       	//Preset
 			        String preset = setPreset();
-			        					
-					//Dossier de sortie
-					String sortie = setSortie("", file);			
-																		
+							
 					//Fichier de sortie
 					String nomExtension;
 					if ((OverlayWindow.caseAddTimecode.isSelected() || OverlayWindow.caseShowTimecode.isSelected()) && caseAddOverlay.isSelected())
@@ -243,12 +252,7 @@ public class H264 extends Shutter {
 						if (fileOut == null)
 							continue;						
 					}		
-					
-					//Mode concat
-					String concat = FFMPEG.setConcat(file, sortie);					
-					if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
-						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
-					
+										
 					String output = '"' + fileOut.toString() + '"';
 					
 					if (caseStream.isSelected())
@@ -578,6 +582,8 @@ public class H264 extends Shutter {
 			String audioCodec = "aac";
 			if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 				audioCodec = "ac3";
+			else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
+				audioCodec = "libopus";	
 			
 			String newAudio = "";
 			
@@ -1020,7 +1026,7 @@ public class H264 extends Shutter {
 	}
 	
 	protected static String setBitrate() {
-        if (lblVBR.getText().equals("CQ"))
+		if (lblVBR.getText().equals("CQ"))
         {
         	if (System.getProperty("os.name").contains("Mac"))
         		return " -crf " + debitVideo.getSelectedItem().toString();
@@ -1240,6 +1246,44 @@ public class H264 extends Shutter {
 				filterComplex = finalEQ;	
 		}
 
+		return filterComplex;
+	}
+	
+	protected static String setStabilisation(File vidstab, String filterComplex, File file, String fichier, String concat) throws InterruptedException {
+		
+		if (caseStabilisation.isSelected())
+		{
+			if (System.getProperty("os.name").contains("Windows"))
+				vidstab = new File("vidstab.trf");
+			else
+			{
+						    		
+				vidstab = new File(Shutter.dirTemp + "vidstab.trf");
+			}		
+			
+			lblEncodageEnCours.setText(Shutter.language.getProperty("analyzeOf") + " " + fichier);
+			
+			//Analyse du fichier
+			String cmd;
+			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab | PathToFFMPEG -i pipe:stab -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";					
+			else
+				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab | PathToFFMPEG -i pipe:stab -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -" + '"';	
+			
+			FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);		
+			
+			//Attente de la fin de FFMPEG
+			do
+				Thread.sleep(100);
+			while(FFMPEG.runProcess.isAlive());						
+			
+			if (filterComplex != "")
+				filterComplex += ",vidstabtransform=input=" + vidstab.toString();
+			else
+				filterComplex = "vidstabtransform=input=" + vidstab.toString();
+			
+			lblEncodageEnCours.setText(fichier);
+		}
 		return filterComplex;
 	}
 	

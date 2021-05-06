@@ -322,6 +322,10 @@ public class DNxHD extends Shutter {
 							lblEncodageEnCours.setText(Shutter.language.getProperty("createOpatomFiles"));
 							
 							String key = getRandomHexString().toUpperCase();
+							
+							if (Settings.btnExtension.isSelected())
+								key = Settings.txtExtension.getText();
+							
 							BMXTRANSWRAP.run("-t avid -p -o " + '"' + sortie + "/" + fichier.replace(extension, key) + '"' + " --clip " + '"' + fichier.replace(extension, "") + '"' + " --tape " + '"' + fichier + '"' + " " + '"' + fileOut.toString() + '"');
 						
 							//Attente de la fin de BMXTRANSWRAP
@@ -1033,9 +1037,10 @@ public class DNxHD extends Shutter {
 		return filterComplex;
 	}
 	
-	protected static String setFlags() { 
+	protected static String setFlags() { 		
+		String flags = " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 		
-		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+		return flags;
 	}
 	
 	protected static String setDenoiser(String filterComplex) {
@@ -1462,6 +1467,12 @@ public class DNxHD extends Shutter {
 		}
 		else if (inputDeviceIsRunning)
 			return " -vsync vfr";
+		else if (FFPROBE.currentFPS == 59.94f)
+			return " -r 60000/1001";
+		else if (FFPROBE.currentFPS == 29.97f)
+			return " -r 30000/1001";
+		else if (FFPROBE.currentFPS == 23.976f)
+			return " -r 24000/1001";
 		
 		return "";
 	}

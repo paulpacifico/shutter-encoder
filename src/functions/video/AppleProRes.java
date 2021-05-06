@@ -318,6 +318,10 @@ public class AppleProRes extends Shutter {
 							lblEncodageEnCours.setText(Shutter.language.getProperty("createOpatomFiles"));
 							
 							String key = getRandomHexString().toUpperCase();
+							
+							if (Settings.btnExtension.isSelected())
+								key = Settings.txtExtension.getText();
+							
 							BMXTRANSWRAP.run("-t avid -p -o " + '"' + sortie + "/" + fichier.replace(extension, key) + '"' + " --clip " + '"' + fichier.replace(extension, "") + '"' + " --tape " + '"' + fichier + '"' + " " + '"' + fileOut.toString() + '"');
 						
 							//Attente de la fin de BMXTRANSWRAP
