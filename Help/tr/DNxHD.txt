@@ -1,0 +1,1 @@
+Dosyalari AvidMediaFiles / MXF / 1 yapisina birakarak dogrudan AVID'de oynatilmak üzere OP-Atom formatinda dosyalar olusturabilirsiniz.

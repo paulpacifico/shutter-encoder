@@ -1,0 +1,3 @@
+Menü olmadan, dogrudan okumada DVD formatina yazmaya hazir bir dosya olusturun.
+Bit hizi, 4,7 GB DVD için otomatik olarak ayarlanir.
+Bit hizi düsük veya 6000k'ye esit oldugunda, daha iyi isleme için otomatik olarak iki geçisli kodlama olusturulur.

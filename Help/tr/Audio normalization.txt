@@ -1,0 +1,3 @@
+Bu adimdan sonra dosyanin yeniden taranmasi önerilir.
+Bu islev, ses sikistirmasi olusturmaz ve yalnizca ses seviyesini azaltir veya artirir.
+Kaynak 4 kanal kullaniyorsa, analiz için yalnizca ilk ikisi kullanilacaktir.

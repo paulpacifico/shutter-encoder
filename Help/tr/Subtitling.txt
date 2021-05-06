@@ -1,0 +1,1 @@
+Listeye bir video dosyasi ekleyin ve ardindan video dosyasiyla ayni ada sahip ve ayni konumda bir .srt dosyasi olusturma islevini baslatin ve ardindan altyazilari ekleyin.
