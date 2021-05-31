@@ -655,7 +655,7 @@ public class Picture extends Shutter {
 			return " -q:v " + q;
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".webp"))
-			return " -quality 100";
+			return " -quality " + comboImageQuality.getSelectedItem().toString().replace("%", "");
 		else
 			return " -q:v 0";
 	}

@@ -148,6 +148,9 @@ public class H264 extends Shutter {
 					//MotionBlur
 					filterComplex = setMotionBlur(filterComplex);
 					
+					//Stabilisation
+					filterComplex = setStabilisation(vidstab, filterComplex, file, fichier, concat);
+					
 					//LUTs
 					filterComplex = setLUT(filterComplex);
 						
@@ -158,10 +161,7 @@ public class H264 extends Shutter {
 					filterComplex = setColormatrix(filterComplex);	
 					
 					//Color
-					filterComplex = setColor(filterComplex);
-					
-					//Stabilisation
-					filterComplex = setStabilisation(vidstab, filterComplex, file, fichier, concat);
+					filterComplex = setColor(filterComplex);					
 					
 					//Decimate
 					filterComplex = setDecimate(filterComplex);
@@ -207,6 +207,9 @@ public class H264 extends Shutter {
 					
 					//Rotate
 					filterComplex = setRotate(filterComplex);
+					
+					//DAR
+					filterComplex = setDAR(filterComplex);
 					
 					//Padding
 					filterComplex = setPad(filterComplex);
@@ -822,6 +825,16 @@ public class H264 extends Shutter {
 		return file;
 	}
 	
+	protected static String setDAR(String filterComplex) {
+		if (caseForcerDAR.isSelected())
+		{
+			if (filterComplex != "") filterComplex += ",";
+				filterComplex += "setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
+		}
+    	
+    	return filterComplex;
+	}
+	
 	protected static String setLoop(String extension) {		
 		if (caseEnableSequence.isSelected() == false)
 		{
@@ -994,7 +1007,7 @@ public class H264 extends Shutter {
         else
         {
         	String profile = "high";
-            if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
+            if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits") && caseAccel.isSelected() == false)
     			profile = "high10";
             
         	String s[] = FFPROBE.imageResolution.split("x");

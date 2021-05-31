@@ -130,6 +130,9 @@ public class MJPEG extends Shutter {
 					//MotionBlur
 					filterComplex = setMotionBlur(filterComplex);
 					
+					//Stabilisation
+					filterComplex = setStabilisation(vidstab, filterComplex, file, fichier, concat);
+					
 					//LUTs
 					filterComplex = setLUT(filterComplex);
 						
@@ -141,10 +144,7 @@ public class MJPEG extends Shutter {
 					
 					//Color
 					filterComplex = setColor(filterComplex);
-					
-					//Stabilisation
-					filterComplex = setStabilisation(vidstab, filterComplex, file, fichier, concat);
-					
+										
 					//Decimate
 					filterComplex = setDecimate(filterComplex);
 					
@@ -189,6 +189,9 @@ public class MJPEG extends Shutter {
 					
 					//Rotate
 					filterComplex = setRotate(filterComplex);
+					
+					//DAR
+					filterComplex = setDAR(filterComplex);
 					
 					//Padding
 					filterComplex = setPad(filterComplex);
@@ -735,6 +738,16 @@ public class MJPEG extends Shutter {
 			file = new File(file.toString().substring(0, file.toString().lastIndexOf(".") - nombre) + "%0" + nombre + "d" + extension);				
 		}
 		return file;
+	}
+	
+	protected static String setDAR(String filterComplex) {
+		if (caseForcerDAR.isSelected())
+		{
+			if (filterComplex != "") filterComplex += ",";
+				filterComplex += "setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
+		}
+    	
+    	return filterComplex;
 	}
 	
 	protected static String setLoop(String extension) {

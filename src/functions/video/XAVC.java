@@ -41,6 +41,7 @@ import application.SubtitlesWindow;
 import application.Utils;
 import application.Wetransfer;
 import library.BMXTRANSWRAP;
+import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 
@@ -601,6 +602,14 @@ public class XAVC extends Shutter {
 	}
 
 	protected static boolean analyse(File file) throws InterruptedException {
+
+		if (caseGenerateFromDate.isSelected())
+		{
+			EXIFTOOL.run(file.toString());	
+			do
+				Thread.sleep(100);						 
+			while (EXIFTOOL.isRunning);
+		}
 		
 		if (inputDeviceIsRunning == false) //Already analyzed
 		{
@@ -1155,7 +1164,13 @@ public class XAVC extends Shutter {
 	}
 	
 	protected static String setTimecode() {
-		if (caseSetTimecode.isSelected())
+		
+		if (caseGenerateFromDate.isSelected())
+		{
+			String s[] = EXIFTOOL.creationHours.split(":");
+			return " -timecode " + s[0] + ":" + s[1] + ":" + s[2] + ":00";
+		}		
+		else if (caseSetTimecode.isSelected())
 			return " -timecode " + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + ":" + TCset4.getText();
 		else if (FFPROBE.timecode1 != "")
 			return " -timecode " + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + ":" + FFPROBE.timecode4;
