@@ -118,7 +118,6 @@ public class VideoPlayer {
 	public static JFrame frame = new JFrame();
 	JLabel title = new JLabel(Shutter.language.getProperty("frameLecteurVideo"));
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-	private boolean isFullScreen = false;
 	
 	private JLabel quit;
 	private JLabel fullscreen;
@@ -220,7 +219,7 @@ public class VideoPlayer {
 			NATIVE_LIBRARY_SEARCH_PATH = "Library/vlc/";	
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), NATIVE_LIBRARY_SEARCH_PATH);
 		}
-		else if (System.getProperty("os.name").contains("Mac") && System.getProperty("os.arch").equals("aarch64")) //Mac ARM
+		else if (System.getProperty("os.name").contains("Mac") && System.getProperty("os.arch").equals("aarch64")) // Mac arm64
 		{
 			new NativeDiscovery().discover();	
 		}
@@ -411,8 +410,8 @@ public class VideoPlayer {
 			public void mouseDragged(MouseEvent e) {
 				if (frame.getSize().width >= 636 &&  frame.getSize().height >= 619 && e.getX() >= 636 && e.getY() >= 619 && drag)
 				{
-					frame.setExtendedState(JFrame.NORMAL);
-			        frame.setSize(e.getX() + 20, e.getY() + 20);	
+					frame.setSize(e.getX() + 20, e.getY() + 20);
+					
 					resizeAll();        					
 				}
 			}
@@ -481,7 +480,6 @@ public class VideoPlayer {
 				{				
 					if (frame.getSize().width < 646 &&  frame.getSize().height < 629)
 					{
-						frame.setExtendedState(JFrame.NORMAL);
 						frame.setSize(646, 629);	   
 					}
 					
@@ -500,10 +498,10 @@ public class VideoPlayer {
 					}       				
 				}
 
-				resizeAll();
-				setVideoPlayersTimeOnResize();
-							
 				drag = false;
+				
+				resizeAll();
+				setVideoPlayersTimeOnResize();					
 								
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
@@ -540,14 +538,7 @@ public class VideoPlayer {
 			}
 
 			@Override
-			public void windowDeiconified(WindowEvent e) {						
-				if (isFullScreen) {
-					frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e1) {}   		
-				}
-				
+			public void windowDeiconified(WindowEvent e) {										
 				frame.toFront();
 				
 			}
@@ -659,6 +650,8 @@ public class VideoPlayer {
  		});
 		
 		leftPlay.doClick();	
+		
+		resizeAll();
 	}
 			
     public static void setMedia() {
@@ -2058,25 +2051,37 @@ public class VideoPlayer {
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {			
-				if (accept && frame.getExtendedState() == JFrame.NORMAL) {
-					isFullScreen = true;
-					frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e1) {}   		
+			public void mouseReleased(MouseEvent e) {		
+				
+				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+				int taskBarHeight = screenSize.height - winSize.height;
+        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        		
+				if (accept && frame.getHeight() < screenSize.height - taskBarHeight)
+				{					
+					if (videoSurfaceLeft.getHeight() > videoSurfaceLeft.getWidth())
+					{
+						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
+					}
+					else
+					{
+						int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - taskBarHeight - btnCaptureIn.getHeight() - leftPlay.getHeight() - sliderIn.getHeight() * 2 - lblDuree.getHeight() - 40) * ((float) (videoSurfaceLeft.getWidth() * 2) / videoSurfaceLeft.getHeight()));
+						if (setWidth <= screenSize.width)
+							frame.setSize(setWidth, screenSize.height - taskBarHeight); 
+						else
+							frame.setSize(screenSize.width, screenSize.height - taskBarHeight);						
+							
+						frame.setLocation(dim.width/2-frame.getSize().width/2,0); 	
+					}						
 				}
 				else if (accept)
 				{
-					isFullScreen = false;
-					frame.setExtendedState(JFrame.NORMAL);
 	        		frame.setSize(646, 629);
-	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException e1) {}
-					
 				}
 				
 				if (mediaPlayerComponentLeft != null)
@@ -2184,22 +2189,35 @@ public class VideoPlayer {
 			public void mouseClicked(MouseEvent down) {
 				if (down.getClickCount() == 2)
 				{
-					if (frame.getExtendedState() == JFrame.NORMAL) {
-						frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}   		
+					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+					Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+					int taskBarHeight = screenSize.height - winSize.height;
+	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	        		
+					if (frame.getHeight() < screenSize.height - taskBarHeight)
+					{						
+						if (videoSurfaceLeft.getHeight() > videoSurfaceLeft.getWidth())
+						{
+							frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
+						}
+						else
+						{
+							int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - taskBarHeight - btnCaptureIn.getHeight() - leftPlay.getHeight() - sliderIn.getHeight() * 2 - lblDuree.getHeight() - 40) * ((float) (videoSurfaceLeft.getWidth() * 2) / videoSurfaceLeft.getHeight()));
+							if (setWidth <= screenSize.width)
+								frame.setSize(setWidth, screenSize.height - taskBarHeight); 
+							else
+								frame.setSize(screenSize.width, screenSize.height - taskBarHeight);						
+								
+							frame.setLocation(dim.width/2-frame.getSize().width/2,0); 	
+						}						
 					}
 					else
 					{
-						frame.setExtendedState(JFrame.NORMAL);
 		        		frame.setSize(646, 629);
-		        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
-						
 					}
 					
 					if (mediaPlayerComponentLeft != null)
@@ -2294,8 +2312,15 @@ public class VideoPlayer {
 	}
 
 	private void players() {		
+		
 		float largeurMax = (float) frame.getSize().width / frame.getSize().height;
 		final int largeur = (int) ((float) frame.getSize().width / largeurMax);
+		
+		Integer canvasOffset = topPanel.getSize().height + 10 + 21; // Default btnCaptureIn Y position
+		if (ratio < 1.77f)
+			canvasOffset = topPanel.getSize().height + 10;
+		
+		Integer canvasHeight = frame.getSize().height - 147 - 13 - canvasOffset; // Default grpIn Y position
 		
 		playerLeft = new JPanel();
 		playerLeft.setLayout(null);
@@ -2305,7 +2330,7 @@ public class VideoPlayer {
 			playerLeft.setSize((int) ((float) (frame.getHeight() - 269 - 12) * ratio), frame.getHeight() - 269 - 12);	
 		else
 			playerLeft.setSize(largeur - 12, (int) ((float) (largeur - 12) / ratio));			
-		playerLeft.setLocation((int) (float) (frame.getSize().width - playerLeft.getSize().width) / 2, (int) (frame.getSize().height / 2 - (float) playerLeft.getSize().height / 1.55));	
+		playerLeft.setLocation((int) (float) (frame.getSize().width - playerLeft.getSize().width) / 2, canvasOffset + (canvasHeight - playerLeft.getHeight()) / 2);	
 		
 		frame.getContentPane().add(playerLeft);
 				
@@ -3515,10 +3540,17 @@ public class VideoPlayer {
 		lblVolume.setBounds(sliderVolume.getLocation().x - 61, sliderIn.getLocation().y - 30, 61, 16);	
 		
 		//Lecteurs 
+		float largeurMax = (float) frame.getSize().width / frame.getSize().height;
+		int largeur = (int) ((float) frame.getSize().width / largeurMax);
+		
+		Integer canvasOffset = btnCaptureIn.getY() + btnCaptureIn.getHeight();
+		if (ratio < 1.77f)
+			canvasOffset = btnCaptureIn.getY();
+		
+		Integer canvasHeight = casePlaySound.getY() - canvasOffset;
+		
 		if (sliderOut.getValue() == sliderOut.getMaximum())
-		{
-			float largeurMax = (float) frame.getSize().width / frame.getSize().height;
-			int largeur = (int) ((float) frame.getSize().width / largeurMax);
+		{						
 			if (ratio < 1.77f)
 			{
 				playerLeft.setSize((int) ((float) (frame.getHeight() - 269 - 12) * ratio), frame.getHeight() - 269 - 12);	
@@ -3527,20 +3559,21 @@ public class VideoPlayer {
 			else
 			{
 				playerLeft.setSize(largeur - 12, (int) ((float) (largeur - 12) / ratio));			
-				playerLeft.setLocation((int) (float) (frame.getSize().width - playerLeft.getSize().width) / 2, (int) (frame.getSize().height / 2 - (float) playerLeft.getSize().height / 1.55));	
+				playerLeft.setLocation((int) (float) (frame.getSize().width - playerLeft.getSize().width) / 2, canvasOffset + (canvasHeight - playerLeft.getHeight()) / 2);	
 			}
 		}
 		else
 		{
-			float largeurMax = (float) frame.getSize().width / frame.getSize().height;
-			int positionY = (int) ((float) frame.getSize().height / (2.5 + largeurMax));
 			if (ratio < 1.77f)
 			{
 				playerLeft.setSize((int) ((float) (frame.getHeight() - 269 - 12) * ratio), frame.getHeight() - 269 - 12);	
 				playerLeft.setLocation(frame.getSize().width / 2 - playerLeft.getWidth(), playerLeft.getY());	
 			}
 			else
-				playerLeft.setBounds(6, positionY, frame.getSize().width / 2 - 6, (int) ((float) (frame.getSize().width / 2 - 6) / ratio));	
+			{				
+				playerLeft.setSize(frame.getSize().width / 2 - 6, (int) ((float) (frame.getSize().width / 2 - 6) / ratio));	
+				playerLeft.setLocation(6, canvasOffset + (canvasHeight - playerLeft.getHeight()) / 2);	
+			}
 		}
 		
 		playerRight.setBounds(playerLeft.getLocation().x + playerLeft.getSize().width, playerLeft.getLocation().y, playerLeft.getSize().width, playerLeft.getSize().height);

@@ -2142,18 +2142,33 @@ public class ColorImage {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
+				
 				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 				Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 				int taskBarHeight = screenSize.height - winSize.height;
-				
-				if (accept && frame.getWidth() < screenSize.width) {
-					frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 		
+        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        		
+				if (accept && frame.getHeight() < screenSize.height - taskBarHeight)
+				{
+					if (ImageHeight > ImageWidth)
+					{
+						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
+					}
+					else
+					{
+						int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - 22 - 17 - taskBarHeight) * ((float) ImageWidth / ImageHeight)) + backgroundPanel.getWidth();
+						if (setWidth <= screenSize.width)
+							frame.setSize(setWidth, screenSize.height - taskBarHeight); 
+						else
+							frame.setSize(screenSize.width, screenSize.height - taskBarHeight);						
+							
+						frame.setLocation(dim.width/2-frame.getSize().width/2,0); 	
+					}						
 				}
 				else if (accept)
 				{
-	        		frame.setSize(1200, 720);
-	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);						
+					frame.setSize(1200, 720);
+	        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);					
 				}
 
 				resizeAll();
@@ -2243,20 +2258,34 @@ public class ColorImage {
 				
 				if (down.getClickCount() == 2 && down.getButton() == MouseEvent.BUTTON1)
 				{
-					if (frame.getWidth() > 1200)
+					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+					Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+					int taskBarHeight = screenSize.height - winSize.height;
+	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	        		
+					if (frame.getHeight() < screenSize.height - taskBarHeight)
 					{
-						frame.setSize(1200, 720);
-		        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
+						if (ImageHeight > ImageWidth)
+						{
+							frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
+						}
+						else
+						{
+							int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - 22 - 17 - taskBarHeight) * ((float) ImageWidth / ImageHeight)) + backgroundPanel.getWidth();
+							if (setWidth <= screenSize.width)
+								frame.setSize(setWidth, screenSize.height - taskBarHeight); 
+							else
+								frame.setSize(screenSize.width, screenSize.height - taskBarHeight);						
+								
+							frame.setLocation(dim.width/2-frame.getSize().width/2,0); 	
+						}						
 					}
 					else
 					{
-						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-						Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-						int taskBarHeight = screenSize.height - winSize.height;
-						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight);					
+						frame.setSize(1200, 720);
+		        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);					
 					}
-					
+										
 					resizeAll();		
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

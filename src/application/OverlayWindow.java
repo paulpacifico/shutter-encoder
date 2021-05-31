@@ -1652,6 +1652,27 @@ public class OverlayWindow {
 						 }
 					 }
 					 
+					//Supplemental Library
+					if (font == "" && new File("/System/Library/Fonts/Supplemental").exists())
+					{
+						 fontFolder = new File("/System/Library/Fonts/Supplemental").listFiles();
+						 
+						 for (int i = 0; i < fontFolder.length; i++)
+						 {						 
+							 if (fontFolder[i].isFile())
+							 {
+								File fontPath = new File(fontFolder[i].toString());
+								String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
+								
+								if (fontName[0].equals(OverlayWindow.comboFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+								{
+									font = fontFolder[i].getAbsolutePath();	
+									break;
+								}
+					 		 }	   
+						 }
+					 }
+					 
 					 //User Library					 
 					 if (font == "")
 					 {

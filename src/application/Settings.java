@@ -89,6 +89,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import library.FFMPEG;
+
 public class Settings {
 
 	public static JFrame frame = new JFrame();
@@ -623,39 +625,25 @@ public class Settings {
 		frame.getContentPane().add(comboTheme);
 		
 		comboTheme.addActionListener(new ActionListener() {
-			
-			@SuppressWarnings("unused")
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (frame.isVisible())
 				{			
 					saveSettings();
-												
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
+					
+					if (FFMPEG.isRunning)
+						Shutter.btnCancel.doClick();
+					
+					if (FFMPEG.isRunning == false)
+					{
+						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("restart"), Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
+						
+						if (reply == JOptionPane.YES_OPTION) 
+						{													
+							Utils.restartApp();
 						}
-	
-					} catch (Exception error) {
 					}
-				
-					System.exit(0);
 				}
 			}
 			
@@ -674,7 +662,6 @@ public class Settings {
 		
 		accentColor.addMouseListener(new MouseListener(){
 
-			@SuppressWarnings("unused")
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Utils.themeColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), new Color(71, 163, 236));
@@ -685,31 +672,18 @@ public class Settings {
 					
 					saveSettings();
 					
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
+					if (FFMPEG.isRunning)
+						Shutter.btnCancel.doClick();
+					
+					if (FFMPEG.isRunning == false)
+					{
+						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("restart"), Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
+						
+						if (reply == JOptionPane.YES_OPTION) 
+						{													
+							Utils.restartApp();
 						}
-
-					} catch (Exception error) {
 					}
-				
-					System.exit(0);
 				}
 				
 			}
@@ -782,38 +756,24 @@ public class Settings {
 		
 		comboLanguage.addActionListener(new ActionListener() {
 			
-			@SuppressWarnings("unused")
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				if (frame.isVisible())
 				{
 					saveSettings();
 					
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
+					if (FFMPEG.isRunning)
+						Shutter.btnCancel.doClick();
+					
+					if (FFMPEG.isRunning == false)
+					{
+						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("restart"), Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
+						
+						if (reply == JOptionPane.YES_OPTION) 
+						{													
+							Utils.restartApp();
 						}
-	
-					} catch (Exception error) {
 					}
-
-					System.exit(0);
 				}
 			}
 			
