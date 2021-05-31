@@ -93,7 +93,7 @@ public class WAV extends Shutter {
 						sortieFichier =  sortie + "/" + fichier.replace(extension, ".wav");
 					
 		           	//Audio
-					String audio = setAudio("");						
+					String audio = setAudio("") + "-write_bext 1 ";						
 		           	
 					//InOut		
 					FFMPEG.fonctionInOut();
