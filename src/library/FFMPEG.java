@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -59,7 +60,6 @@ import application.RenderQueue;
 import application.Functions;
 import application.VideoPlayer;
 import functions.video.DVD;
-import application.OverlayWindow;
 import application.Settings;
 import application.Shutter;
 import application.Utils;
@@ -80,7 +80,6 @@ public static StringBuilder blackFrame;
 public static StringBuilder mediaOfflineFrame;
 public static String inPoint = "";
 public static String outPoint = "";
-public static String postInPoint = "";	
 private static boolean firstInput = true;
 public static int firstScreenIndex = -1;
 public static StringBuilder videoDevices;
@@ -114,7 +113,7 @@ private static StringBuilder getAll;
 			if (cmd.contains("-pass 2") == false)
 					saveToXML(cmd);
 		}
-		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("preview.bmp") == false && cmd.contains("logo.png") == false)
+		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false)
 		{
 			//On récupère le nom précédent
 			if (lblEncodageEnCours.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")))
@@ -134,7 +133,7 @@ private static StringBuilder getAll;
 		else
 		{
 			isRunning = true;
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false)
 				disableAll();
 			
 			runProcess = new Thread(new Runnable()  {
@@ -151,7 +150,7 @@ private static StringBuilder getAll;
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 							
 							String pipe = "";	
-							if (cmd.contains("pipe:play") || caseStream.isSelected())
+							if ((cmd.contains("pipe:play") || caseStream.isSelected()) && cmd.contains("image2pipe") == false)
 							{								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
 								String codec = "";
@@ -165,7 +164,7 @@ private static StringBuilder getAll;
 									pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';										
 									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 							}						
-							else if (cmd.contains("pipe:stab") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
+							else if (cmd.contains("pipe:stab") || cmd.contains("image2pipe") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 									|| comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
 									(caseForcerDAR.isSelected() && grpAdvanced.isVisible()
 									|| caseAddOverlay.isSelected() && grpOverlay.isVisible() 
@@ -555,7 +554,11 @@ private static StringBuilder getAll;
 							if (isAudioDevices)
 							{								
 								String s[] = line.split("\\]");
-								audioDevices.append(":" + s[2].substring(1, s[2].length()));
+								
+								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.UTF_8);
+								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
+								
+								audioDevices.append(":" + utf8EncodedString);
 							}
 							
 							if (line.contains("AVFoundation audio devices"))
@@ -566,7 +569,11 @@ private static StringBuilder getAll;
 							if (isVideoDevices && line.contains("Capture screen") == false && isAudioDevices == false)
 							{						
 								String s[] = line.split("\\]");
-								videoDevices.append(":" + s[2].substring(1, s[2].length()));
+								
+								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.UTF_8);
+								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
+								
+								videoDevices.append(":" + utf8EncodedString);
 							}
 							
 							if (line.contains("AVFoundation video devices"))
@@ -604,7 +611,11 @@ private static StringBuilder getAll;
 							else if (isAudioDevices && line.contains("\"") && line.contains("Alternative name") == false)
 							{
 								String s[] = line.split("\"");
-								audioDevices.append(":" + s[1]);
+								
+								byte[] bytes = s[1].getBytes(StandardCharsets.UTF_8);
+								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
+								
+								audioDevices.append(":" + utf8EncodedString);
 							}
 							
 							if (line.contains("DirectShow video devices"))
@@ -612,7 +623,11 @@ private static StringBuilder getAll;
 							else if (isVideoDevices && line.contains("\"") && line.contains("Alternative name") == false && isAudioDevices == false)
 							{
 								String s[] = line.split("\"");
-								videoDevices.append(":" + s[1]);
+								
+								byte[] bytes = s[1].getBytes(StandardCharsets.UTF_8);
+								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
+								
+								videoDevices.append(":" + utf8EncodedString);
 							}
 						}
 
@@ -783,7 +798,6 @@ private static StringBuilder getAll;
 				writer.println("inpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
 				
 				FFMPEG.inPoint = "";
-				FFMPEG.postInPoint = "";
 				FFMPEG.outPoint = "";			
 				
 				writer.close();
@@ -856,75 +870,48 @@ private static StringBuilder getAll;
 	public static void fonctionInOut() throws InterruptedException {
 		
 		if (caseInAndOut.isSelected())
-		{	
+		{		
+			//On supprime l'offset
+			if (VideoPlayer.caseTcInterne.isSelected())
+				VideoPlayer.caseTcInterne.doClick();
+	
+			int h = Integer.parseInt(VideoPlayer.caseInH.getText());
+			int m = Integer.parseInt(VideoPlayer.caseInM.getText());
+			int s = Integer.parseInt(VideoPlayer.caseInS.getText());
+			int f = (int) (Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));	
 			
-		//On supprime l'offset
-		if (VideoPlayer.caseTcInterne.isSelected())
-			VideoPlayer.caseTcInterne.doClick();
-
-		int h = Integer.parseInt(VideoPlayer.caseInH.getText());
-		int m = Integer.parseInt(VideoPlayer.caseInM.getText());
-		int s = Integer.parseInt(VideoPlayer.caseInS.getText());
-		int f = (int) (Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));	
-		
-		NumberFormat formatter = new DecimalFormat("00");
-		NumberFormat formatFrame = new DecimalFormat("000");
-			
-	        if (VideoPlayer.sliderIn.getValue() > VideoPlayer.sliderIn.getMinimum() 
-	        	&& Shutter.comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut")) == false
-	        	&& Shutter.comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) == false)
-	        {
-	          if (h > 0 && m == 0 && s < 10)
-	          	{
-	        	  	h -= 1;
-	             	m = 59;
-	             	s = 50 + Integer.parseInt(VideoPlayer.caseInS.getText());
-	             	postInPoint = " -ss 00:00:10.000";
-	             	FFPROBE.timecode3 = String.valueOf(Integer.parseInt(OverlayWindow.TC3.getText()) - 10);
-	          	}
-	          else if (m > 0 && s < 10)
-	          	{
-	        	  	m -= 1;
-	             	s = 50 + Integer.parseInt(VideoPlayer.caseInS.getText());
-	             	postInPoint = " -ss 00:00:10.000";
-	             	FFPROBE.timecode3 = String.valueOf(Integer.parseInt(OverlayWindow.TC3.getText()) - 10);
-	          	}
-	          else if (s < 10)
-	          	{
-	    			postInPoint = " -ss " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f);
-	          	}
-	          else if (s >= 10)
-	            {
-	            	s -= 10;
-	            	postInPoint = " -ss 00:00:10.000";
-	            	FFPROBE.timecode3 = String.valueOf(Integer.parseInt(OverlayWindow.TC3.getText()) - 10);
-	            }
-	        }
-	        else
-	        	postInPoint = "";
-	        
-	        if (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) > 10000
-        		|| Shutter.comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
-	        	|| Shutter.comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
-	        {
-	        	inPoint = " -ss " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f);
-	        }
-	        else
-	        	inPoint = "";
-
-	        if (VideoPlayer.sliderOut.getValue() != VideoPlayer.sliderOut.getMaximum())
-	        	outPoint = " -t " + formatter.format(VideoPlayer.dureeHeures) + ":" + formatter.format(VideoPlayer.dureeMinutes) + ":" + formatter.format(VideoPlayer.dureeSecondes) + "." + formatFrame.format(VideoPlayer.dureeImages * 1000 / FFPROBE.currentFPS);
-	        else
-	        	outPoint = "";
+			NumberFormat formatter = new DecimalFormat("00");
+			NumberFormat formatFrame = new DecimalFormat("000");
+				
+			if (VideoPlayer.sliderIn.getValue() > 0)
+	        {		        
+				inPoint = " -ss " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f);
+		    }
+		    else
+		        inPoint = "";
+	
+		        if (VideoPlayer.sliderOut.getValue() != VideoPlayer.sliderOut.getMaximum())
+		        {
+		        	if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG"))
+		        	{
+			        	String frames[] = VideoPlayer.lblDuree.getText().split(" ");
+			    		float outputFPS = FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
+			    		
+			    		outPoint = " -vframes " + Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
+		        	}
+		        	else
+		        		outPoint = " -t " + formatter.format(VideoPlayer.dureeHeures) + ":" + formatter.format(VideoPlayer.dureeMinutes) + ":" + formatter.format(VideoPlayer.dureeSecondes) + "." + formatFrame.format((int) (VideoPlayer.dureeImages * (1000 / FFPROBE.currentFPS)));
+		        }
+		        else
+		        	outPoint = "";
 		}
 		else
 		{
-			postInPoint = "";
 			inPoint = "";
 			outPoint = "";
 		}
 	}
-	
+
 	public static void Progression(String line, final boolean pass2) {				
 									
 		if (line.contains("Input #1"))

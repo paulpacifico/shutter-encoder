@@ -76,6 +76,7 @@ public static String timecode1 = "";
 public static String timecode2 = "";
 public static String timecode3 = "";
 public static String timecode4 = "";
+public static int audioSampleRate = 48000;
 public static boolean stereo = true;	
 public static boolean surround = false;
 public static int channels;	
@@ -104,6 +105,7 @@ public static int gopSpace = 124;
 		totalLength = 0;
 		qantization = 16;
  		subtitleStreams = 0;
+ 		audioSampleRate = 48000;
  		audioStreams = 0;
 		if (calcul == false) //pour ne pas réactive audioOnly lors de l'analyse calculH264
 			audioOnly = true;
@@ -263,7 +265,7 @@ public static int gopSpace = 124;
 					             textMin.setText(formatter.format(minutes));
 					             textSec.setText(formatter.format(secondes));
 					             
-					      		if (caseInAndOut.isSelected() && VideoPlayer.mediaPlayerComponentLeft != null)	
+					      		if (caseInAndOut.isSelected() && VideoPlayer.playerLeftVideo != null)	
 					     			VideoPlayer.totalDuration();
 
 					             setTailleH264();
@@ -431,6 +433,17 @@ public static int gopSpace = 124;
 			        			 qantization = 32;
 			        			 
 			        		 channels ++;
+			        		 
+			        		 if (line.contains("Hz"))
+			        		 {
+			        			 String s[] = line.split(",");
+			        			 
+			        			 int i = 0;
+			        			 do {			        						 
+			        				 i++;
+			        			 } while (s[i].contains("Hz") == false);
+			        			 audioSampleRate = Integer.parseInt(s[i].replace(" ", "").replace("Hz", ""));
+			        		 }
 			        		 
 			        		 if (line.contains("2 channels") || line.contains("stereo"))
 			        		 {
@@ -891,7 +904,7 @@ public static int gopSpace = 124;
 	             textMin.setText(formatter.format(minutes));
 	             textSec.setText(formatter.format(secondes));
 	             
-	             if (caseInAndOut.isSelected() && VideoPlayer.mediaPlayerComponentLeft != null)	
+	             if (caseInAndOut.isSelected() && VideoPlayer.playerLeftVideo != null)	
 		     			VideoPlayer.totalDuration();
 	             
 	             setTailleH264();
