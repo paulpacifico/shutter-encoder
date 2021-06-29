@@ -674,6 +674,11 @@ public class Utils extends Shutter {
 			}
 			else if (q == 4) //Cancel
 			{
+				if (caseChangeFolder1.isSelected() == false)
+				{
+					lblDestination1.setText(language.getProperty("sameAsSource"));
+				}
+				
 				return null;	
 			}
 		}
@@ -2265,23 +2270,10 @@ public class Utils extends Shutter {
 			if (lblPad.getText().equals(language.getProperty("lblPad")))
 			{
 				lblPad.setText(language.getProperty("lblPad"));
-				lblPadLeft.setBackground(Color.black);
-				lblPadLeft.setVisible(true);
-				lblPadRight.setBackground(Color.black);
-				lblPadRight.setVisible(true);
-			}
-			else if (lblPad.getText().equals(language.getProperty("lblStretch")))
-			{
-				lblPadLeft.setVisible(false);
-				lblPadRight.setVisible(false);												
 			}
 			else
 			{
 				lblPad.setText(language.getProperty("lblCrop"));
-				lblPadLeft.setBackground(new Color(50,50,50));
-				lblPadLeft.setVisible(true);
-				lblPadRight.setBackground(new Color(50,50,50));
-				lblPadRight.setVisible(true);
 			}
 				
 		} catch (Exception e) {}

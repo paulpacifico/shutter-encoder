@@ -838,7 +838,7 @@ import library.XPDF;
 		}
 		
 		//Erreurs
-		if (FFMPEG.error || fileOut.length() == 0)
+		if (FFMPEG.error || fileOut.length() == 0 && Shutter.caseCreateSequence.isSelected() == false)
 		{
 			FFMPEG.errorList.append(Shutter.language.getProperty("file") + " N°" + (item + 1) + " - " +fichier);
 		    FFMPEG.errorList.append(System.lineSeparator());

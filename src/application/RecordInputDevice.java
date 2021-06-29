@@ -530,7 +530,7 @@ public class RecordInputDevice {
 					if (WatermarkWindow.frame == null)
 						new WatermarkWindow();
 					else {
-						WatermarkWindow.loadImage("0", "0", "0", true, -1, true);
+						WatermarkWindow.loadImage("0", "0", "0", true, -1);
 						Utils.changeDialogVisibility(WatermarkWindow.frame, false);
 					}
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

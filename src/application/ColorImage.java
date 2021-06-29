@@ -46,7 +46,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
@@ -1658,56 +1660,21 @@ public class ColorImage {
 		            ImageIcon imageIcon = new ImageIcon(imageBMP);
 		    		JLabel newImage = new JLabel(imageIcon);
 		            imageIcon.getImage().flush();
-		    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
-		            if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-		            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 17));  
-		            else
-		            	newImage.setBounds(0, 0, (frame.getWidth() - 48 - sliderExposure.getWidth()),  (int) Math.floor((float) (frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight / ImageWidth)); 
 		            
-		    		//Contourne un bug
-		            imageIcon = new ImageIcon(imageBMP);
-		    		newImage = new JLabel(imageIcon);
-		    		newImage.setSize(image.getSize());
+		    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
+		    		newImage.setBounds(0, 0, image.getWidth(), image.getHeight());  
 		    		
 		    		image.add(newImage);
 		    		image.repaint();
 		    		frame.getContentPane().repaint();
+		    		
 				} catch (Exception e1) {}
 	    		
 			}
 			
 			public void mouseReleased(MouseEvent e) {
 	    		
-				File file = new File(Shutter.dirTemp + "color.bmp");  
-
-				if (file.exists())
-				{
-					try {
-			           	image.removeAll();  
-			           	
-			           	//On charge l'image après la création du fichier pour avoir le bon ratio
-			    		image();	
-						
-						Image imageBMP = ImageIO.read(file);
-			            ImageIcon imageIcon = new ImageIcon(imageBMP);
-			    		JLabel newImage = new JLabel(imageIcon);
-			            imageIcon.getImage().flush();
-			    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
-			            if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-			            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 17));  
-			            else
-			            	newImage.setBounds(0, 0, (frame.getWidth() - 48 - sliderExposure.getWidth()),  (int) Math.floor((float) (frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight / ImageWidth)); 
-			            
-			    		//Contourne un bug
-			            imageIcon = new ImageIcon(imageBMP);
-			    		newImage = new JLabel(imageIcon);
-			    		newImage.setSize(image.getSize());
-			    		
-			    		image.add(newImage);
-			    		image.repaint();
-			    		frame.getContentPane().repaint();
-					} catch (Exception e1) {}
-				}
+				loadImage(false);
 			}
 			
 		});
@@ -1821,7 +1788,7 @@ public class ColorImage {
 					else if (Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG"))
 					{
 						String cmd = filter + '"' + " -an -c:v mjpeg" + compression + " -vframes 1 -f nut pipe:play |";
-						FFMPEG.toFFPLAY(FFMPEG.inPoint + " -i " + '"' + file + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);
+						FFMPEG.toFFPLAY(FFMPEG.inPoint + " -i " + '"' + file + '"' + FFMPEG.outPoint + cmd);
 					}
 					else
 						FFPLAY.run(FFMPEG.inPoint + " -fs -i " + '"' + file + '"' + filter + '"');
@@ -1836,7 +1803,10 @@ public class ColorImage {
 						Thread.sleep(100);
 					} while((FFMPEG.isRunning && FFMPEG.error == false) || (FFPLAY.isRunning && FFPLAY.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));	
 									
-					
+						            	
+				} catch (InterruptedException e1) {}				
+				finally
+				{				
 					FFMPEG.enableAll();
 					Shutter.caseRunInBackground.setEnabled(false);	
 					Shutter.caseRunInBackground.setSelected(false);
@@ -1844,9 +1814,7 @@ public class ColorImage {
 					Shutter.tempsRestant.setVisible(false);
 					Shutter.progressBar1.setValue(0);
 	            	frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	            	
-				} catch (InterruptedException e1) {
-				} finally {					
+					
 					Utils.changeFrameVisibility(frame, false);
 					if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
@@ -1996,12 +1964,16 @@ public class ColorImage {
 					else if (Shutter.inputDeviceIsRunning) //Screen capture			
 						FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
 					else
-	          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');		
+	          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');		
 					
 					do{
 						Thread.sleep(100);
 					} while(FFMPEG.isRunning);
 					
+
+				} catch (InterruptedException e1) {}
+		        finally 
+		        {
 					FFMPEG.enableAll();
 					Shutter.caseRunInBackground.setEnabled(false);	
 					Shutter.caseRunInBackground.setSelected(false);
@@ -2009,10 +1981,7 @@ public class ColorImage {
 					Shutter.tempsRestant.setVisible(false);
 					Shutter.progressBar1.setValue(0);
 	            	frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				} catch (InterruptedException e1) {					
-				}
-		        finally 
-		        {
+		        	
 		    		if (display)
 		    			Shutter.caseDisplay.setSelected(true);
 		        }
@@ -2043,9 +2012,6 @@ public class ColorImage {
 	            //Suppression image temporaire	    		
 				File file = new File(Shutter.dirTemp + "preview.bmp");
 				if (file.exists()) file.delete();				
-				
-				file = new File(Shutter.dirTemp + "color.bmp");
-				if (file.exists()) file.delete();	
 			}
 			
 		});
@@ -2099,9 +2065,6 @@ public class ColorImage {
 					//Suppression image temporaire
 							    		
 					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();
-					
-					file = new File(Shutter.dirTemp + "color.bmp");
 					if (file.exists()) file.delete();
 									
 					Shutter.caseColor.setSelected(false);
@@ -2474,16 +2437,8 @@ public class ColorImage {
 					String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
 					boolean isRaw = false;
 		    		
-					File fileOut = new File(Shutter.dirTemp + "preview.bmp");
-					if (fileOut.exists())
-					{
-						file = fileOut;
-						fileOut = new File(Shutter.dirTemp + "color.bmp");
-						
-						if (fileOut.exists())
-							fileOut.delete();	
-					}
-					else
+					File preview = new File(Shutter.dirTemp + "preview.bmp");
+					if (preview.exists() == false)
 					{
 						//Erreur FFPROBE avec les fichiers RAW
 						switch (extension.toLowerCase()) { 
@@ -2546,7 +2501,7 @@ public class ColorImage {
 		        	                    	        						
 						Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 					}
-						
+					
 						//InOut	
 						FFMPEG.fonctionInOut();
 						
@@ -2574,20 +2529,17 @@ public class ColorImage {
 						if (new File(Shutter.dirTemp + "preview.bmp").exists() == false)
 						{											   		
 							if (extension.toLowerCase().equals(".pdf"))
-								XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
+								XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
 							else if (isRaw)
-								DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
+								DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
 							else if (Shutter.inputDeviceIsRunning) //Screen capture		
-								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
+								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
 							else									
-			          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');			
+			          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');			
 							
 				            do {
 				            	Thread.sleep(100);  
 				            } while((FFMPEG.isRunning && FFMPEG.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));
-				            
-				            file = fileOut;
-				            fileOut = new File(Shutter.dirTemp + "color.bmp");
 						}					
 							
 						//EQ
@@ -2596,67 +2548,65 @@ public class ColorImage {
 						//Histogramm
 						String histogram = setHistogram(eq);
 						
-						cmd = " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + histogram + " -y ";	
+						cmd = " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + histogram;	
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-							cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 17) + histogram + " -y ";
+							cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 17) + histogram;							
 						
-						if (fileOut.getName().equals("color.bmp")) //Contourne un bug de preview
+						//Screen capture
+						if (Shutter.inputDeviceIsRunning && preview.exists() == false)
 						{
-							//Screen capture
-							if (Shutter.inputDeviceIsRunning)
-							{
-								File preview = new File(Shutter.dirTemp + "preview.bmp");
-								if (preview.exists())
-									FFMPEG.run(" -i " + '"' + preview + '"' + cmd + '"' + fileOut + '"');
-								else								
-									FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
-							}
-							else
-								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							     
-			           
-		          			do {
-				            	Thread.sleep(100);  
-				            } while (FFMPEG.isRunning && FFMPEG.error == false);
-						}
-	          			
-	          			Shutter.enableAll();
+							FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
+						}				
+						else
+							FFMPEG.run(" -v quiet -i " + '"' + preview + '"' + cmd +  " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-");
 
-			            if (fileOut.exists())
+						do {
+	    					Thread.sleep(10);
+	    				} while (FFMPEG.process.isAlive() == false);
+
+						InputStream videoInput = FFMPEG.process.getInputStream();			
+						
+						InputStream is = new BufferedInputStream(videoInput);
+						Image imageBMP = ImageIO.read(is);
+
+	          			if (FFMPEG.error == false && imageBMP != null)
 			            {
 				           	image.removeAll();  
 				           	
 				           	//On charge l'image après la création du fichier pour avoir le bon ratio
 				    		image();	            	    		
 				    		
-				    		Image imageBMP = ImageIO.read(fileOut);
 				            ImageIcon imageIcon = new ImageIcon(imageBMP);
 				    		JLabel newImage = new JLabel(imageIcon);
 				            imageIcon.getImage().flush();
+				            
 				    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
 				            if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
 				            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 17));  
 				            else
 				            	newImage.setBounds(0, 0, (frame.getWidth() - 48 - sliderExposure.getWidth()),  (int) Math.floor((float) (frame.getWidth() - 48 - sliderExposure.getWidth()) * ImageHeight / ImageWidth)); 
-				            
-				    		//Contourne un bug
-				            imageIcon = new ImageIcon(imageBMP);
-				    		newImage = new JLabel(imageIcon);
-				    		newImage.setSize(image.getSize());
 				    		
 				    		image.add(newImage);
 				    		image.repaint();
-				    		frame.getContentPane().repaint();
+							frame.getContentPane().repaint();
 				    		
 							Shutter.tempsRestant.setVisible(false);
 				            Shutter.progressBar1.setValue(0);	      
 			            }
 			        }
 				    catch (Exception e)
-				    {					
+				    {				
+				    	e.printStackTrace();
 			 	        JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 				    }
 			        finally 
 			        {
+			        	Shutter.enableAll();
+	          			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+	        				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+	        			else
+	        				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+	          			
 			    		if (display)
 			    			Shutter.caseDisplay.setSelected(true);
 			        }
@@ -3265,13 +3215,11 @@ public class ColorImage {
 				
 			comboRGB.setSelectedIndex(0);	
 				
-			loadImage(true);
-			
-			File file = new File(Shutter.dirTemp + "color.bmp");
-			
 			do {
-				Thread.sleep(100);
-			} while (file.exists() == false || FFMPEG.isRunning || FFPROBE.isRunning);
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e1) {}
+			} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 			
 			Shutter.enableAll();
 			

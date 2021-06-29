@@ -42,9 +42,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -201,11 +203,7 @@ public class SubtitlesWindow {
 			@Override
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
-				{
-					//Suppression image temporaire							    		
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();
-					
+				{					
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);
 		            Shutter.caseSubtitles.setSelected(false);
@@ -359,7 +357,7 @@ public class SubtitlesWindow {
 
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
-				comboFont.setFont(new Font(comboFont.getSelectedItem().toString(), Font.PLAIN, 11));
+				comboFont.setFont(new Font(comboFont.getSelectedItem().toString(), Font.PLAIN, 11));				
 				sliderChange(false);				
 			}
 			
@@ -744,10 +742,6 @@ public class SubtitlesWindow {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 	            
-				//Suppression image temporaire						    		
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				if (file.exists()) file.delete();
-				
 				try {
 		            BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(subtitlesFile.toString()),  StandardCharsets.UTF_8);
 		            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(Shutter.subtitlesFile.toString()),  StandardCharsets.UTF_8);
@@ -865,20 +859,18 @@ public class SubtitlesWindow {
 	}
 	
 	public static void sliderChange(boolean analyze) {
-		Thread runProcess = new Thread(new Runnable()  {
-			@Override
-			public void run() {
-				DecimalFormat tc = new DecimalFormat("00");	
-				NumberFormat toMs = new DecimalFormat("000");
-				String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
-				String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
-				String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
-				String f = String.valueOf(toMs.format(positionVideo.getValue() % 1000));
-								
-				loadImage(h,m,s,f,analyze);
-			}
-		});
-		runProcess.start();	
+		
+		if (FFMPEG.isRunning == false)
+		{
+			DecimalFormat tc = new DecimalFormat("00");	
+			NumberFormat toMs = new DecimalFormat("000");
+			String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
+			String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
+			String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
+			String f = String.valueOf(toMs.format(positionVideo.getValue() % 1000));
+							
+			loadImage(h,m,s,f,analyze);
+		}
 	}
 	
 	public static void loadImage(String h, String m, String s, String f, boolean analyze) {
@@ -902,9 +894,6 @@ public class SubtitlesWindow {
 			            	}
 			            }
 					}		        		
-	
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();
 					
 					Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 	
@@ -1009,79 +998,83 @@ public class SubtitlesWindow {
 					{
 						containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 480);	
 						containerHeight = 480;
-					}
+					}					
 					
-		          	FFMPEG.run(" -ss "+h+":"+m+":"+s+"."+f+" -i " + '"' + fichier + '"' + " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textWidth.getText() + ":" + size[1] + "+" + spinnerSubtitlesPosition.getValue() + ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboFont.getSelectedItem().toString() + ",FontSize=" + spinnerSize.getValue() + ",PrimaryColour=&H" + hex + "&" + background + "'" + '"' + " -vframes 1 -filter_complex [0:v]" + crop + pad + "[1:v]overlay=x=" + ((int) (Integer.parseInt(i[0]) - Integer.parseInt(textWidth.getText()))/2) + ",scale=" + containerWidth + ":" + containerHeight + " -an -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
-				      
-		            do
-		            {
-		            	Thread.sleep(100);  
-		            } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
-	     
+					//Envoi de la commande
+		          	FFMPEG.run(" -ss "+h+":"+m+":"+s+"."+f+" -v quiet -i " + '"' + fichier + '"' + " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textWidth.getText() + ":" + size[1] + "+" + spinnerSubtitlesPosition.getValue() + ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboFont.getSelectedItem().toString() + ",FontSize=" + spinnerSize.getValue() + ",PrimaryColour=&H" + hex + "&" + background + "'" + '"' + " -vframes 1 -filter_complex " + '"' + "[0:v]" + crop + pad + "[1:v]overlay=x=" + ((int) (Integer.parseInt(i[0]) - Integer.parseInt(textWidth.getText()))/2) + ",scale=" + containerWidth + ":" + containerHeight + '"' + " -an -c:v bmp -sws_flags bilinear -f image2pipe pipe:-"); 
+		          	
 		            frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		            
-		           	if (FFMPEG.error)
-		      	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
-		           	
-		           	image.removeAll();  
-		           	
-		    		Image imageBMP = ImageIO.read(new File(Shutter.dirTemp + "preview.bmp"));
-		            ImageIcon imageIcon = new ImageIcon(imageBMP);
-		    		JLabel newImage = new JLabel(imageIcon);
-		            imageIcon.getImage().flush();
-		    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
-						    		
-		    		image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
-		    		image.setSize(containerWidth,containerHeight);
-		    		
-		    		//Contourne un bug
-		            imageIcon = new ImageIcon(imageBMP);
-		    		newImage = new JLabel(imageIcon);
-		    		newImage.setSize(containerWidth,containerHeight);
-		    							
-		    		//Border
-		    		JPanel borderWidth = new JPanel();
-
-		    		int outputHeight = Integer.parseInt(i[1]);
-		    		
-    				if (infRatio)
-    				{
-    		        	String out[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
-    		        	outputHeight = Integer.parseInt(out[1]);
-    				}
-    		
-		    		borderWidth.setSize((int) ((float) Integer.parseInt(textWidth.getText()) / ( (float) outputHeight / newImage.getHeight())),
-		    		(int) (newImage.getHeight() + (float) Integer.parseInt(spinnerSubtitlesPosition.getValue().toString()) / ( (float) outputHeight / newImage.getHeight())) );
-
-		    		borderWidth.setLocation(newImage.getX() + (newImage.getWidth() - borderWidth.getWidth()) / 2, newImage.getY());
-		        	
-		    		borderWidth.setBorder(BorderFactory.createDashedBorder(Color.WHITE, 4, 4));	
-		    		borderWidth.setOpaque(true);
-		    		borderWidth.setBackground(new Color(0,0,0,0));	
-		    		
-		    		image.add(borderWidth);
-		    		
-		    		image.add(newImage);
-		    		image.repaint(); 
-		    		
-		    		if (frame.isVisible() ==  false)
-		    			Utils.changeDialogVisibility(frame, false);
+		            do {
+						Thread.sleep(10);
+					} while (FFMPEG.process.isAlive() == false);
+							            
+					InputStream videoInput = FFMPEG.process.getInputStream();
+		 
+					InputStream is = new BufferedInputStream(videoInput);
+					Image imageBMP = ImageIO.read(is);
+		            
+		            if (FFMPEG.error == false)
+		            {		            
+			           	image.removeAll();  
+			           	
+			           	ImageIcon imageIcon = new ImageIcon(imageBMP);
+			    		JLabel newImage = new JLabel(imageIcon);
+			            imageIcon.getImage().flush();	
+			            
+			    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
+			    		newImage.setBounds(0, 0, containerWidth, containerHeight);
+							    		
+			    		image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
+			    		image.setSize(containerWidth,containerHeight);
+			    							
+			    		//Border
+			    		JPanel borderWidth = new JPanel();
 	
-					Shutter.tempsRestant.setVisible(false);
-		            Shutter.progressBar1.setValue(0);
-			        }
-				    catch (Exception e)
-				    {
-			 	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
-				    }
-			        finally {
-			        	Shutter.tempsRestant.setVisible(false);
-			        	Shutter.enableAll();         
-		            	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
-		    				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
-		    			else
-		    				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
-			        }
+			    		int outputHeight = Integer.parseInt(i[1]);
+			    		
+	    				if (infRatio)
+	    				{
+	    		        	String out[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
+	    		        	outputHeight = Integer.parseInt(out[1]);
+	    				}
+	    		
+			    		borderWidth.setSize((int) ((float) Integer.parseInt(textWidth.getText()) / ( (float) outputHeight / newImage.getHeight())),
+			    		(int) (newImage.getHeight() + (float) Integer.parseInt(spinnerSubtitlesPosition.getValue().toString()) / ( (float) outputHeight / newImage.getHeight())) );
+	
+			    		borderWidth.setLocation(newImage.getX() + (newImage.getWidth() - borderWidth.getWidth()) / 2, newImage.getY());
+			        	
+			    		borderWidth.setBorder(BorderFactory.createDashedBorder(Color.WHITE, 4, 4));	
+			    		borderWidth.setOpaque(true);
+			    		borderWidth.setBackground(new Color(0,0,0,0));	
+			    		
+			    		image.add(borderWidth);
+			    		
+			    		image.add(newImage);
+			    		image.repaint(); 
+			    		frame.getContentPane().repaint();
+			    		
+			    		if (frame.isVisible() ==  false)
+			    			Utils.changeDialogVisibility(frame, false);
+		
+						Shutter.tempsRestant.setVisible(false);
+			            Shutter.progressBar1.setValue(0);
+		            }
+		        } 
+		        catch (Exception e)
+			    {
+		        	e.printStackTrace();
+		 	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+			    }
+		        finally {
+		        	
+		        	Shutter.tempsRestant.setVisible(false);
+		        	Shutter.enableAll();         
+	            	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+	    				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+	    			else
+	    				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+		        }
 				
 			}
 		});
@@ -1100,10 +1093,7 @@ public class SubtitlesWindow {
 				do {
 					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
-				
-				
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-								
+						
 				File fXmlFile = encFile;
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -1126,7 +1116,7 @@ public class SubtitlesWindow {
 								{
 									do {
 										Thread.sleep(100);
-									} while (file.exists() == false);
+									} while (FFMPEG.isRunning);
 									
 									//Value
 									String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
@@ -1145,7 +1135,7 @@ public class SubtitlesWindow {
 								{
 									do {
 										Thread.sleep(100);
-									} while (file.exists() == false);
+									} while (FFMPEG.isRunning);
 									
 									//Value
 									String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
@@ -1160,7 +1150,7 @@ public class SubtitlesWindow {
 								{
 									do {
 										Thread.sleep(100);
-									} while (file.exists() == false);
+									} while (FFMPEG.isRunning);
 									
 									//Value
 									((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
@@ -1176,7 +1166,7 @@ public class SubtitlesWindow {
 								{
 									do {
 										Thread.sleep(100);
-									} while (file.exists() == false);
+									} while (FFMPEG.isRunning);
 									
 									//Value
 									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
@@ -1192,7 +1182,7 @@ public class SubtitlesWindow {
 								{
 									do {
 										Thread.sleep(100);
-									} while (file.exists() == false);
+									} while (FFMPEG.isRunning);
 									
 									//Value
 									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
@@ -1207,7 +1197,7 @@ public class SubtitlesWindow {
 								{
 									do {
 										Thread.sleep(100);
-									} while (file.exists() == false);
+									} while (FFMPEG.isRunning);
 									
 									//Value
 									((JSpinner) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));

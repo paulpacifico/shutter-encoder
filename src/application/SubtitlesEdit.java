@@ -135,7 +135,6 @@ public class SubtitlesEdit {
 					finally {
 						SubtitlesTimeline.timeline.removeAll();
 						SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);
-						VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().setSubTitleFile(SubtitlesTimeline.srt);
 						frame.dispose();
 					}
 					

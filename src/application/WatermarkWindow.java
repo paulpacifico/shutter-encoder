@@ -44,7 +44,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
@@ -100,7 +102,7 @@ public class WatermarkWindow {
     private int logoPosY = 0;
     private static int logoLocX = 0;
     private static int logoLocY = 0;
-	private static JSlider positionVideo;
+	public static JSlider positionVideo;
 	public static JTextField textPosX;
 	public static JTextField textPosY;
     public static JTextField textSize;
@@ -161,11 +163,11 @@ public class WatermarkWindow {
 			public void mousePressed(MouseEvent e) {
 				if (e.getClickCount() == 2 && !e.isConsumed())
 				{
-					logo.setLocation((int) (image.getWidth() / 2 - logo.getWidth() / 2), (int) (image.getHeight() / 2 - logo.getHeight() / 2));	
+					logo.setLocation((int) Math.floor(image.getWidth() / 2 - logo.getWidth() / 2), (int) Math.floor(image.getHeight() / 2 - logo.getHeight() / 2));	
 					logoLocX =  logo.getLocation().x;
 					logoLocY = logo.getLocation().y;
-					textPosX.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
-					textPosY.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) );  
+					textPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * logoRatio) ) ) );
+					textPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * logoRatio) ) ) );  
 				}
 			}
 			
@@ -183,9 +185,9 @@ public class WatermarkWindow {
 			public void mousePressed(MouseEvent e) {
 				if (e.getClickCount() == 2 && !e.isConsumed())
 				{
-					logo.setLocation((int) (image.getWidth() / 2 - logo.getWidth() / 2), (int) (image.getHeight() / 2 - logo.getHeight() / 2));	
-					textPosX.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
-					textPosY.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) );  
+					logo.setLocation((int) Math.floor(image.getWidth() / 2 - logo.getWidth() / 2), (int) Math.floor(image.getHeight() / 2 - logo.getHeight() / 2));	
+					textPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * logoRatio) ) ) );
+					textPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * logoRatio) ) ) );  
 				}
 				else
 		     	{
@@ -210,8 +212,8 @@ public class WatermarkWindow {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				logo.setLocation(MouseInfo.getPointerInfo().getLocation().x - logoPosX + logoLocX, MouseInfo.getPointerInfo().getLocation().y - logoPosY + logoLocY);		
-				textPosX.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
-				textPosY.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) );  
+				textPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * logoRatio) ) ) );
+				textPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * logoRatio) ) ) );  
 			}
 
 			@Override
@@ -220,10 +222,10 @@ public class WatermarkWindow {
 			
 		});
 		
-		loadImage("0","0","0",true, -1, true);
+		loadImage("0","0","0",true, -1);
 		
 		//On charge la position du logo après sa mise en place dans l'image
-		logo.setLocation((int) (image.getWidth() / 2 - logo.getWidth() / 2), (int) (image.getHeight() / 2 - logo.getHeight() / 2));
+		logo.setLocation((int) Math.floor(image.getWidth() / 2 - logo.getWidth() / 2), (int) Math.floor(image.getHeight() / 2 - logo.getHeight() / 2));
        	logoLocX = logo.getLocation().x;
        	logoLocY = logo.getLocation().y;
 		
@@ -244,14 +246,6 @@ public class WatermarkWindow {
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
 	            Utils.changeDialogVisibility(frame, true);
-	            
-	            //Suppression image temporaire
-						    		
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				if (file.exists()) file.delete();
-				
-				File file2 = new File(Shutter.dirTemp + "logo.png");
-				if (file2.exists()) file2.delete();  
 			}
 			
 		});
@@ -267,28 +261,28 @@ public class WatermarkWindow {
 			  				{
 			  					case KeyEvent.VK_UP:
 			  						textPosY.setText(String.valueOf(Integer.parseInt(textPosY.getText()) - 1)); 
-			  						logo.setLocation(logo.getLocation().x, (int) (Integer.parseInt(textPosY.getText()) / logoRatio));
+			  						logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.parseInt(textPosY.getText()) / logoRatio));
 								break;
 			  					
 			  					case KeyEvent.VK_DOWN:
 									textPosY.setText(String.valueOf(Integer.parseInt(textPosY.getText()) + 1)); 
-				  					logo.setLocation(logo.getLocation().x, (int) (Integer.parseInt(textPosY.getText()) / logoRatio));
+				  					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.parseInt(textPosY.getText()) / logoRatio));
 								break;
 			  					
 								case KeyEvent.VK_LEFT:
 									textPosX.setText(String.valueOf(Integer.parseInt(textPosX.getText()) - 1)); 
-				  					logo.setLocation((int) (Integer.parseInt(textPosX.getText()) / logoRatio), logo.getLocation().y);
+				  					logo.setLocation((int) Math.floor(Integer.parseInt(textPosX.getText()) / logoRatio), logo.getLocation().y);
 								break;
 			  					
 			  					case KeyEvent.VK_RIGHT:
 									textPosX.setText(String.valueOf(Integer.parseInt(textPosX.getText()) + 1)); 
-				  					logo.setLocation((int) (Integer.parseInt(textPosX.getText()) / logoRatio), logo.getLocation().y);
+				  					logo.setLocation((int) Math.floor(Integer.parseInt(textPosX.getText()) / logoRatio), logo.getLocation().y);
 								break;
 			  					
 			  					case KeyEvent.VK_ESCAPE:
-			  						logo.setLocation((int) (image.getWidth() / 2 - logo.getWidth() / 2), (int) (image.getHeight() / 2 - logo.getHeight() / 2));	
-			  						textPosX.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
-			  						textPosY.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) ); 
+			  						logo.setLocation((int) Math.floor(image.getWidth() / 2 - logo.getWidth() / 2), (int) Math.floor(image.getHeight() / 2 - logo.getHeight() / 2));	
+			  						textPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * logoRatio) ) ) );
+			  						textPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * logoRatio) ) ) ); 
 								break;
 			  				}			  													              
 			        	}	    
@@ -343,15 +337,6 @@ public class WatermarkWindow {
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);		            
 		            Utils.changeDialogVisibility(frame, true);
-		            
-					//Suppression images temporaires
-							    		
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();
-					
-					File file2 = new File(Shutter.dirTemp + "logo.png");
-					if (file2.exists()) file2.delete();    
-
 					Shutter.caseLogo.setSelected(false);
 				}
 			}
@@ -490,9 +475,9 @@ public class WatermarkWindow {
 							
 							//Si le fichier est une vidéo on recharge le logo
 							if (FFPROBE.totalLength > 40)
-								loadImage(h,m,s, true, Integer.parseInt(textSize.getText()), true);
+								loadImage(h,m,s, true, Integer.parseInt(textSize.getText()));
 							else
-								loadImage(h,m,s, false, -1, true);
+								loadImage(h,m,s, false, -1);
 						}
 					});
 					runProcess.start();					
@@ -506,7 +491,7 @@ public class WatermarkWindow {
 		posX.setForeground(Utils.themeColor);
 		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, positionVideo.getLocation().y + 3, posX.getPreferredSize().width, 16);
 				
-		textPosX = new JTextField(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
+		textPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * logoRatio) ) ) );
 		textPosX.setName("textPosX");
 		textPosX.setBounds(posX.getLocation().x + posX.getWidth() + 2, posX.getLocation().y, 34, 16);
 		textPosX.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -526,7 +511,7 @@ public class WatermarkWindow {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (textPosX.getText().length() > 0)
-					logo.setLocation((int) (Integer.valueOf(textPosX.getText()) / logoRatio), logo.getLocation().y);
+					logo.setLocation((int) Math.floor(Integer.valueOf(textPosX.getText()) / logoRatio), logo.getLocation().y);
 			}
 
 			@Override
@@ -590,7 +575,7 @@ public class WatermarkWindow {
 		posY.setForeground(Utils.themeColor);
 		posY.setBounds(px1.getLocation().x + 22, posX.getY(), posY.getPreferredSize().width, 16);
 
-		textPosY = new JTextField(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) );
+		textPosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * logoRatio) ) ) );
 		textPosY.setName("textPosY");
 		textPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posX.getY(), 34, 16);
 		textPosY.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -605,7 +590,7 @@ public class WatermarkWindow {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if (textPosY.getText().length() > 0)
-					logo.setLocation(logo.getLocation().x, (int) (Integer.valueOf(textPosY.getText()) / logoRatio));
+					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.valueOf(textPosY.getText()) / logoRatio));
 			}
 
 			@Override
@@ -703,6 +688,35 @@ public class WatermarkWindow {
 		textSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		textSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
+		textSize.addMouseListener(new MouseListener(){
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				textSize.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {	
+				textSize.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				textSize.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				MouseLogoPosition.mouseX = e.getX();
+				MouseLogoPosition.offsetX = Integer.parseInt(textSize.getText());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+		});
+		
 		textSize.addKeyListener(new KeyListener(){
 
 			@Override
@@ -711,7 +725,7 @@ public class WatermarkWindow {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textSize.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
+				if (textSize.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR) && textSize.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{	
 					loadLogo(Integer.parseInt(textSize.getText()));					
 				}
@@ -727,6 +741,22 @@ public class WatermarkWindow {
 			}			
 			
 		});
+		
+		textSize.addMouseMotionListener(new MouseMotionListener(){
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if (textSize.getText().length() > 0)
+				{	
+					textSize.setText(String.valueOf(MouseLogoPosition.offsetX + (e.getX() - MouseLogoPosition.mouseX)));
+					loadLogo(Integer.parseInt(textSize.getText()));					
+				}
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {		
+			}
+		});	
 		
 		JLabel px3 = new JLabel("%");
 		px3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -745,6 +775,35 @@ public class WatermarkWindow {
 		textOpacity.setHorizontalAlignment(SwingConstants.RIGHT);
 		textOpacity.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
+		textOpacity.addMouseListener(new MouseListener(){
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				textOpacity.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {	
+				textOpacity.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				textOpacity.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				MouseLogoPosition.mouseX = e.getX();
+				MouseLogoPosition.offsetX = Integer.parseInt(textOpacity.getText());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			
+		});
+		
 		textOpacity.addKeyListener(new KeyListener(){
 
 			@Override
@@ -754,13 +813,18 @@ public class WatermarkWindow {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textOpacity.getText().length() > 0)
+				if (textSize.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR) && textOpacity.getText().length() > 0)
 				{
-					if (Integer.valueOf(textOpacity.getText()) >= 100)
+					if (Integer.valueOf(textOpacity.getText()) > 100)
 					{
 						textOpacity.setText("100");
-						logo.repaint();
-					}
+					}	
+					else if (Integer.valueOf(textOpacity.getText()) < 1)
+					{
+						textOpacity.setText("1");
+					}		
+					
+					logo.repaint();
 				}
 			}
 
@@ -774,6 +838,34 @@ public class WatermarkWindow {
 			}			
 			
 		});
+		
+		textOpacity.addMouseMotionListener(new MouseMotionListener(){
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if (textOpacity.getText().length() > 0)
+				{
+					int value = MouseLogoPosition.offsetX + (e.getX() - MouseLogoPosition.mouseX);
+					
+					if (value > 100)
+					{
+						textOpacity.setText("100");						
+					}
+					else if (value < 1)
+					{
+						textOpacity.setText("1");
+					}	
+					else
+						textOpacity.setText(String.valueOf(value));
+					
+					logo.repaint();
+				}
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {		
+			}
+		});	
 		
 		JLabel px4 = new JLabel("%");
 		px4.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -834,7 +926,7 @@ public class WatermarkWindow {
 		frame.getContentPane().add(px4);
 }
 	
-	public static void loadImage(String h, String m, String s, boolean logo, int size,  boolean loadImage) {
+	public static void loadImage(String h, String m, String s, boolean logo, int size) {
        
 		try
         {
@@ -851,104 +943,99 @@ public class WatermarkWindow {
 	            	}
 	            }
 			}
-        	
-        	if (loadImage)
-        	{
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				if (file.exists() && Shutter.inputDeviceIsRunning == false)
-					file.delete();
+		
+			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
+			
+    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
+			if (Utils.inputDeviceIsRunning)
+				RecordInputDevice.setInputDevices();
+			else
+			{
+				FFPROBE.Data(fichier);		
 				
-				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
-				
-	    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
-				if (Utils.inputDeviceIsRunning)
-					RecordInputDevice.setInputDevices();
-				else
-				{
-					FFPROBE.Data(fichier);		
-					
-					do {
-						Thread.sleep(100);
-					} while (FFPROBE.isRunning);
-				}
-							
-				//Ratio Widescreen
-				if ((float) ImageWidth/ImageHeight >= (float) 854/480)
-				{
-					containerHeight = (int) Math.floor((float) 854 / ((float) ImageWidth / ImageHeight));
-					containerWidth = 854;
-				}
-				else
-				{
-					containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 480);	
-					containerHeight = 480;
-				}
-				
-				//Ratio entre l'image d'entrée et celle affichée
-				logoRatio = (float) ImageHeight / containerHeight;				
-				
-				String seek = " ";				
-				if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG") == false)
-					seek = " -ss "+h+":"+m+":"+s+".0";
+				do {
+					Thread.sleep(100);
+				} while (FFPROBE.isRunning);
+			}
+						
+			//Ratio Widescreen
+			if ((float) ImageWidth/ImageHeight >= (float) 854/480)
+			{
+				containerHeight = (int) Math.floor((float) 854 / ((float) ImageWidth / ImageHeight));
+				containerWidth = 854;
+			}
+			else
+			{
+				containerWidth = (int) Math.floor((float) ((float) ImageWidth / ImageHeight) * 480);	
+				containerHeight = 480;
+			}
+			
+			//Ratio entre l'image d'entrée et celle affichée
+			logoRatio = (float) ImageHeight / containerHeight;				
+			
+			String seek = " ";				
+			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG") == false)
+				seek = " -ss "+h+":"+m+":"+s+".0";
 
-				//Screen capture
-				if (Shutter.inputDeviceIsRunning)
-				{										
-					if (file.exists())
-						FFMPEG.run(" -i " + '"' + file + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
-					else								
-						FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
-				}			
-				else
-					FFMPEG.run(seek + " -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth + ":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
+			//Envoi de la commande
+			String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+			
+			if (Shutter.inputDeviceIsRunning) //Screen capture			
+			{
+				FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
+			}
+			else					
+			{					
+      			FFMPEG.run(seek + " -v quiet -i " + '"' + fichier + '"' + cmd);
+     		}	
+			
+			do {
+				Thread.sleep(10);
+			} while (FFMPEG.process.isAlive() == false);
 
-		        do
-		        {
-		        	Thread.sleep(100);  
-		        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
-	            
-        	}		
+			InputStream videoInput = FFMPEG.process.getInputStream();
+ 
+			InputStream is = new BufferedInputStream(videoInput);
+			Image imageBMP = ImageIO.read(is);	
         	
+        	if (FFMPEG.error == false)
+            {	
         		image.removeAll();  
         		image.add(WatermarkWindow.logo);
         		
 	           	//Video
-        		Image imageBMP = ImageIO.read(new File(Shutter.dirTemp + "preview.bmp"));
-                ImageIcon imageIcon = new ImageIcon(imageBMP);
+        		ImageIcon imageIcon = new ImageIcon(imageBMP);
 	    		JLabel newImage = new JLabel(imageIcon);
-	    		//Important
-	    		if (loadImage)
-	    			imageIcon.getImage().flush();
-	    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
-	    		newImage.setLocation(0, 0);
-	    		newImage.setSize(containerWidth,containerHeight);
+	            imageIcon.getImage().flush();	
+
+	            newImage.setHorizontalAlignment(SwingConstants.CENTER);
+	    		newImage.setBounds(0, 0, containerWidth, containerHeight);
 	    		  			
-	    		image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
+	    		image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) Math.floor((float)(480 - containerHeight) / 2));
 	    		image.setSize(newImage.getSize());
 	    		
-	    		//Contourne un bug
-	            imageIcon = new ImageIcon(imageBMP);
-	    		newImage = new JLabel(imageIcon);
-	    		newImage.setSize(containerWidth,containerHeight);
-	    		
 	    		//Rognage
+	    		Color c = new Color(50,50,50);
+	    		if (Shutter.lblPad.getText().equals(Shutter.language.getProperty("lblPad")))
+	    			c = Color.BLACK;
+	    		
 				JPanel topBorder = new JPanel();
-				topBorder.setBackground(Color.BLACK);
+				topBorder.setBackground(c);
 				topBorder.setVisible(false);
 				topBorder.setOpaque(true);	
 				
 				JPanel bottomBorder = new JPanel();
-				bottomBorder.setBackground(Color.BLACK);
+				bottomBorder.setBackground(c);
 				bottomBorder.setVisible(false);		
 				bottomBorder.setOpaque(true);					
 				
 				JPanel leftBorder = new JPanel();
-				leftBorder.setBackground(Color.BLACK);
+				leftBorder.setBackground(c);
 				leftBorder.setVisible(false);
 				leftBorder.setOpaque(true);	
 				
 				JPanel rightBorder = new JPanel();
-				rightBorder.setBackground(Color.BLACK);
+				rightBorder.setBackground(c);
 				rightBorder.setVisible(false);
 				rightBorder.setOpaque(true);	
 				
@@ -1001,7 +1088,7 @@ public class WatermarkWindow {
 					    		
 	    		image.add(newImage); 
 	    		image.repaint(); 
-	    		
+				frame.getContentPane().repaint();	    		
 	    		
 	    		//Logo 
 	    		if (logo && size == -1) //Premier chargement
@@ -1015,12 +1102,14 @@ public class WatermarkWindow {
 				
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
+            }
         }
 	    catch (Exception e)
 	    {
  	       	JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	    }
         finally {
+        	
         	Shutter.enableAll();   
         	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
@@ -1045,21 +1134,17 @@ public class WatermarkWindow {
 					} catch (InterruptedException e) {}
 				} while (FFPROBE.isRunning);
 			}
-				
-			File logoTemp = new File(Shutter.dirTemp + "logo.png");
 							
-			int logoFinalSizeWidth = (int) ((float) ImageWidth / logoRatio);		
-			int logoFinalSizeHeight = (int) ((float) ImageHeight / logoRatio);
+			int logoFinalSizeWidth = (int) Math.floor((float) ImageWidth / logoRatio);		
+			int logoFinalSizeHeight = (int) Math.floor((float) ImageHeight / logoRatio);
 	
 			//Permet de s'adapter à la taille
-			logoFinalSizeWidth = (int) ((float) logoFinalSizeWidth * ((double) size / 100));
-			logoFinalSizeHeight = (int) ((float) logoFinalSizeHeight * ((double) size / 100));
+			logoFinalSizeWidth = (int) Math.floor((float) logoFinalSizeWidth * ((double) size / 100));
+			logoFinalSizeHeight = (int) Math.floor((float) logoFinalSizeHeight * ((double) size / 100));
 			
 			//Permet de conserver la position
-			int newPosX = (int) ((logo.getWidth() - logoFinalSizeWidth) / 2);
-			int newPosY = (int) ((logo.getHeight() - logoFinalSizeHeight) / 2);
-			if (logoTemp.exists())
-				logoTemp.delete();
+			int newPosX = (int) Math.floor((logo.getWidth() - logoFinalSizeWidth) / 2);
+			int newPosY = (int) Math.floor((logo.getHeight() - logoFinalSizeHeight) / 2);
 			
 			//Si le fichier est une vidéo
 			String offset = "";			
@@ -1074,50 +1159,51 @@ public class WatermarkWindow {
 			}
 			
 			if (Shutter.overlayDeviceIsRunning)
-				FFMPEG.run(" " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
+				FFMPEG.run(" -v quiet " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bilinear -f image2pipe pipe:-");
 			else
-				FFMPEG.run(offset + " -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -y " + '"' + Shutter.dirTemp + "logo.png" + '"');
+				FFMPEG.run(offset + " -v quiet -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bilinear -f image2pipe pipe:-");
 			
 			do {
-	        	Thread.sleep(100);  
-	        } while (logoTemp.exists() == false && FFMPEG.error == false);		
+				Thread.sleep(10);
+			} while (FFMPEG.process.isAlive() == false);
 			
-	       	if (FFMPEG.error)
-	  	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadLogo"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+			InputStream videoInput = FFMPEG.process.getInputStream();
+ 
+			InputStream is = new BufferedInputStream(videoInput);
+			Image logoPNG = ImageIO.read(is);
 			
-            logo.removeAll();   
-            
-    		ImageIcon logoIcon = new ImageIcon(Shutter.dirTemp + "logo.png");
-    		JLabel newLogo = new JLabel(logoIcon);
-    		//Important
-    		logoIcon.getImage().flush();
-            newLogo.setHorizontalAlignment(SwingConstants.CENTER);
-            newLogo.setLocation(0, 0);
-            
-            logo.setLocation(logo.getLocation().x + newPosX, logo.getLocation().y + newPosY);
-            logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);   			
-            
-    		//Contourne un bug
-            logoIcon = new ImageIcon(Shutter.dirTemp + "logo.png");
-            newLogo = new JLabel(logoIcon);
-            newLogo.setSize(logoFinalSizeWidth,logoFinalSizeHeight);
-            
-            //On enregistre la position
-			logoLocX = logo.getLocation().x;
-			logoLocY = logo.getLocation().y;			
-			
-			logo.add(newLogo); 
-            logo.repaint();
-            
-			textPosX.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().x * logoRatio) ) ) );
-			textPosY.setText(String.valueOf(Integer.valueOf((int) (logo.getLocation().y * logoRatio) ) ) ); 
-                        
-			Shutter.tempsRestant.setVisible(false);
-            Shutter.progressBar1.setValue(0);
-            
+	       	if (FFMPEG.error == false)	  	       
+	       	{
+	            logo.removeAll();   
+	                        	            
+	            ImageIcon logoIcon = new ImageIcon(logoPNG);
+	    		JLabel newLogo = new JLabel(logoIcon);
+	    		logoIcon.getImage().flush();
+	            newLogo.setHorizontalAlignment(SwingConstants.CENTER);
+	            newLogo.setBounds(0, 0, logoFinalSizeWidth,logoFinalSizeHeight);
+	            
+	            logo.setLocation(logo.getLocation().x + newPosX, logo.getLocation().y + newPosY);
+	            logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);
+	            
+	            //On enregistre la position
+				logoLocX = logo.getLocation().x;
+				logoLocY = logo.getLocation().y;			
+				
+				logo.add(newLogo); 
+	            logo.repaint();
+	            frame.getContentPane().repaint();
+
+				Shutter.tempsRestant.setVisible(false);
+	            Shutter.progressBar1.setValue(0);
+	       	}            
            	       	
-		} catch (Exception e) {
-		} finally {
+		} catch (Exception e) 
+		{
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadLogo"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+		} 
+		finally {
+			
         	Shutter.enableAll();  
         	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
@@ -1138,13 +1224,6 @@ public class WatermarkWindow {
 				do {
 					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
-				
-				
-				File file = new File(Shutter.dirTemp + "logo.png");
-				
-				do {
-					Thread.sleep(100);
-				} while (file.exists() == false);	
 				
 				int posX = 0;
 				int posY = 0;
@@ -1169,10 +1248,6 @@ public class WatermarkWindow {
 							{								
 								if (p instanceof JTextField)
 								{											
-									do {
-										Thread.sleep(100);
-									} while (file.exists() == false);
-																		
 									//Value
 									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																		
@@ -1192,16 +1267,12 @@ public class WatermarkWindow {
 									if (p.getName().equals("textOpacity") && textOpacity.getText().length() > 0)
 									{										
 										loadLogo(Integer.parseInt(textSize.getText()));		
-										
-										do {
-											Thread.sleep(100);
-										} while (file.exists() == false);
-										
+
 										//Position des éléments après l'opacity et size
 										textPosX.setText(String.valueOf(posX));
 										textPosY.setText(String.valueOf(posY));										
-										logo.setLocation((int) (posX / logoRatio), logo.getLocation().y);
-										logo.setLocation(logo.getLocation().x, (int) (posY / logoRatio));
+										logo.setLocation((int) Math.floor(posX / logoRatio), logo.getLocation().y);
+										logo.setLocation(logo.getLocation().x, (int) Math.floor(posY / logoRatio));
 									}
 								}
 							}

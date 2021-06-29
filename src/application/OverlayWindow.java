@@ -49,7 +49,9 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -93,6 +95,7 @@ public class OverlayWindow {
 	private static JLabel changePositions = new JLabel("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>");	
 	private static JPanel timecode;
 	private static JPanel fileName;
+	private static Image imageBMP = null;
 	
 	/*
 	 * Composants
@@ -159,8 +162,6 @@ public class OverlayWindow {
 	public static String hex = "FFFFFF";
 	public static String hex2 = "000000";
 	public static String alpha = "7F";
-	//private Integer screenDPI = java.awt.Toolkit.getDefaultToolkit().getScreenResolution();
-	//private Float DPIfactor = (float) screenDPI / 96;
 	
 	public OverlayWindow() {		
 		frame = new JDialog();
@@ -254,12 +255,6 @@ public class OverlayWindow {
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);		            
 		            Utils.changeDialogVisibility(frame, true);
-		            
-					//Suppression images temporaires
-							    		
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();
-
 					Shutter.caseAddOverlay.setSelected(false);
 				}
 			}
@@ -1579,12 +1574,7 @@ public class OverlayWindow {
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
 	            Utils.changeDialogVisibility(frame, true);
-	            
-	            //Suppression image temporaire
-						    		
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				if (file.exists()) file.delete();
-				
+		    						
 				if (lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
 				{	
 					hexTc = Integer.toHexString((int) (float) ((int) spinnerOpacityTC.getValue() * 255) / 100);
@@ -1948,10 +1938,7 @@ public class OverlayWindow {
 			}
         	
         	if (loadImage)
-        	{
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				if (file.exists()) file.delete();
-				
+        	{				
 				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder") + " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());		
 					
 	    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
@@ -1985,290 +1972,301 @@ public class OverlayWindow {
 					containerHeight = 480;
 				}
 				
-				//Screen capture
-				if (Shutter.inputDeviceIsRunning)				
-					FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
-				else
-					FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -i " + '"' + fichier + '"' + " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -y " + '"' + Shutter.dirTemp + "preview.bmp" + '"');
-	        	
-		        do
-		        {
-		        	Thread.sleep(100);  
-		        } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
-		        
+				//Envoi de la commande
+				String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+				
+				if (Shutter.inputDeviceIsRunning) //Screen capture			
+				{
+					FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
+				}
+				else					
+				{					
+	      			FFMPEG.run(" -ss "+h+":"+m+":"+s+".0 -v quiet -i " + '"' + fichier + '"' + cmd);
+	     		}
+				
+	        	do {
+					Thread.sleep(10);
+				} while (FFMPEG.process.isAlive() == false);
+				
+				InputStream videoInput = FFMPEG.process.getInputStream();
+	 
+				InputStream is = new BufferedInputStream(videoInput);
+				imageBMP = ImageIO.read(is);
+				
         	}
-        	
-	        image.removeAll();  	        
-	        
-	       	//Video
-    		Image imageBMP = ImageIO.read(new File(Shutter.dirTemp + "preview.bmp"));
-            ImageIcon imageIcon = new ImageIcon(imageBMP);
-			JLabel newImage = new JLabel(imageIcon);
-			//Important
-			if (loadImage)
-				imageIcon.getImage().flush();
-			newImage.setHorizontalAlignment(SwingConstants.CENTER);
-			newImage.setLocation(0, 0);			
-			newImage.setSize(containerWidth,containerHeight);
-			
-			String sp[] = FFPROBE.imageResolution.split("x");
-			imageRatio = (float) Integer.parseInt(sp[0])/containerWidth;
-			
-			//Permet de s'adapter à la taille
-			int tcPreviousSizeWidth = timecode.getWidth();
-			int tcPreviousSizeHeight = timecode.getHeight();
-			int namePreviousSizeWidth = fileName.getWidth();
-			int namePreviousSizeHeight = fileName.getHeight();
-			
-			//Couleurs	
-			if (fontColor != null)
-			{
-				 String c = Integer.toHexString(fontColor.getRGB()).substring(2);
-				 hex = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
-			}
-			else
-				fontColor = new Color(255,255,255);
-						
-			if (backgroundColor != null)
-			{
-				 String c = Integer.toHexString(backgroundColor.getRGB()).substring(2);
-				 hex2 = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
-			}	
-			else
-				backgroundColor = new Color(0,0,0);
-						
-			fileName.removeAll();
-			
-			String ext = fichier.substring(fichier.lastIndexOf("."));
-			JLabel addText = new JLabel(new File(fichier).getName().replace(ext, ""));
-			
-			if (caseShowText.isSelected() && text.getText().isEmpty() == false)
-				addText.setText(text.getText());
-			
-			fileName.add(addText);
-			
-			addText.setAlignmentX(SwingConstants.CENTER);
-			addText.setAlignmentY(SwingConstants.TOP);
-			addText.setFont(new Font(comboFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(spinnerSizeName.getValue().toString()) / imageRatio)));
-						
-			fileName.setSize(addText.getPreferredSize().width, addText.getPreferredSize().height);
-			
-			fileLocX = fileName.getLocation().x;
-			fileLocY = fileName.getLocation().y;
-			if (caseShowFileName.isSelected() || caseShowText.isSelected())
-			{				
-				image.add(fileName);
-				
-				//Permet de conserver la position
-				int newPosX = (int) Math.round(fileName.getWidth() - namePreviousSizeWidth) / 2;
-				int newPosY = (int) Math.round(fileName.getHeight() - namePreviousSizeHeight) / 2;
-				
-				fileName.setLocation(fileName.getLocation().x - newPosX, fileName.getLocation().y - newPosY);
+        	        	      	
+        	if (FFMPEG.error == false && imageBMP != null)
+            {
+		        image.removeAll();  	        
+		        
+		       	//Video
+		        ImageIcon imageIcon = new ImageIcon(imageBMP);
+	    		JLabel newImage = new JLabel(imageIcon);
+	            imageIcon.getImage().flush();	
 	            
-	            //On enregistre la position
+	    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
+	    		newImage.setBounds(0, 0, containerWidth, containerHeight);
+				
+				String sp[] = FFPROBE.imageResolution.split("x");
+				imageRatio = (float) Integer.parseInt(sp[0])/containerWidth;
+				
+				//Permet de s'adapter à la taille
+				int tcPreviousSizeWidth = timecode.getWidth();
+				int tcPreviousSizeHeight = timecode.getHeight();
+				int namePreviousSizeWidth = fileName.getWidth();
+				int namePreviousSizeHeight = fileName.getHeight();
+				
+				//Couleurs	
+				if (fontColor != null)
+				{
+					 String c = Integer.toHexString(fontColor.getRGB()).substring(2);
+					 hex = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
+				}
+				else
+					fontColor = new Color(255,255,255);
+							
+				if (backgroundColor != null)
+				{
+					 String c = Integer.toHexString(backgroundColor.getRGB()).substring(2);
+					 hex2 = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
+				}	
+				else
+					backgroundColor = new Color(0,0,0);
+							
+				fileName.removeAll();
+				
+				String ext = fichier.substring(fichier.lastIndexOf("."));
+				JLabel addText = new JLabel(new File(fichier).getName().replace(ext, ""));
+				
+				if (caseShowText.isSelected() && text.getText().isEmpty() == false)
+					addText.setText(text.getText());
+				
+				fileName.add(addText);
+				
+				addText.setAlignmentX(SwingConstants.CENTER);
+				addText.setAlignmentY(SwingConstants.TOP);
+				addText.setFont(new Font(comboFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(spinnerSizeName.getValue().toString()) / imageRatio)));
+							
+				fileName.setSize(addText.getPreferredSize().width, addText.getPreferredSize().height);
+				
 				fileLocX = fileName.getLocation().x;
 				fileLocY = fileName.getLocation().y;
-				
-				textNamePosX.setText(String.valueOf((int) Math.round(fileName.getLocation().x * imageRatio)));
-				textNamePosY.setText(String.valueOf((int) Math.round(fileName.getLocation().y * imageRatio)));  
-			}
-			else
-			{
-				if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
-					fileName.setLocation(image.getWidth() / 2 - fileName.getWidth()/2, containerHeight - fileName.getHeight() * 2);	
+				if (caseShowFileName.isSelected() || caseShowText.isSelected())
+				{				
+					image.add(fileName);
+					
+					//Permet de conserver la position
+					int newPosX = (int) Math.round(fileName.getWidth() - namePreviousSizeWidth) / 2;
+					int newPosY = (int) Math.round(fileName.getHeight() - namePreviousSizeHeight) / 2;
+					
+					fileName.setLocation(fileName.getLocation().x - newPosX, fileName.getLocation().y - newPosY);
+		            
+		            //On enregistre la position
+					fileLocX = fileName.getLocation().x;
+					fileLocY = fileName.getLocation().y;
+					
+					textNamePosX.setText(String.valueOf((int) Math.round(fileName.getLocation().x * imageRatio)));
+					textNamePosY.setText(String.valueOf((int) Math.round(fileName.getLocation().y * imageRatio)));  
+				}
 				else
-					fileName.setLocation(image.getWidth()/2 - fileName.getWidth()/2, fileName.getHeight());	
-				
-				textNamePosX.setText("0");
-				textNamePosY.setText("0");  
-			}			
-			
-			timecode.removeAll();			
-			
-			JLabel addTimecode = new JLabel("00:00:00:00");
-						
-			timecode.add(addTimecode);
-			
-			addTimecode.setAlignmentX(SwingConstants.CENTER);
-			addTimecode.setAlignmentY(SwingConstants.TOP);
-			addTimecode.setFont(new Font(comboFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(spinnerSizeTC.getValue().toString()) / imageRatio)));
-						
-			timecode.setSize(addTimecode.getPreferredSize().width, addTimecode.getPreferredSize().height);
-			
-			tcLocX = timecode.getLocation().x;
-			tcLocY = timecode.getLocation().y;
-			if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
-			{				
-				if (FFPROBE.isRunning) //Contourne un bug incompréhensible
 				{
-					do {
-						Thread.sleep(100);
-					} while (FFPROBE.isRunning);
-				}
+					if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
+						fileName.setLocation(image.getWidth() / 2 - fileName.getWidth()/2, containerHeight - fileName.getHeight() * 2);	
+					else
+						fileName.setLocation(image.getWidth()/2 - fileName.getWidth()/2, fileName.getHeight());	
+					
+					textNamePosX.setText("0");
+					textNamePosY.setText("0");  
+				}			
 				
-				long tcH = 0;				
-				long tcM = 0;
-				long tcS = 0;
-				long tcI = 0;
+				timecode.removeAll();			
 				
-				if (caseAddTimecode.isSelected() && TC1.getText().isEmpty() == false && TC2.getText().isEmpty() == false && TC3.getText().isEmpty() == false && TC4.getText().isEmpty() == false)
-				{
-					tcH = Integer.valueOf(TC1.getText());
-					tcM = Integer.valueOf(TC2.getText());
-					tcS = Integer.valueOf(TC3.getText());
-					tcI = Integer.valueOf(TC4.getText());
-				}
-				else if (caseShowTimecode.isSelected())
-				{
-					tcH = Integer.valueOf(FFPROBE.timecode1);
-					tcM = Integer.valueOf(FFPROBE.timecode2);
-					tcS = Integer.valueOf(FFPROBE.timecode3);
-					tcI = Integer.valueOf(FFPROBE.timecode4);
-				}
+				JLabel addTimecode = new JLabel("00:00:00:00");
+							
+				timecode.add(addTimecode);
 				
-				tcH = tcH * 3600000;
-				tcM = tcM * 60000;
-				tcS = tcS * 1000;
+				addTimecode.setAlignmentX(SwingConstants.CENTER);
+				addTimecode.setAlignmentY(SwingConstants.TOP);
+				addTimecode.setFont(new Font(comboFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(spinnerSizeTC.getValue().toString()) / imageRatio)));
+							
+				timecode.setSize(addTimecode.getPreferredSize().width, addTimecode.getPreferredSize().height);
 				
-				long offset =  positionVideo.getValue() + tcH + tcM + tcS;
-				NumberFormat formatter = new DecimalFormat("00");
-		        String heures = (formatter.format((offset/1000) / 3600));
-		        String minutes = (formatter.format( ((offset/1000) / 60) % 60) );
-		        String secondes = (formatter.format((offset/1000) % 60));				        
-		        String images = (formatter.format(tcI));							
-		        
-		        if (caseAddTimecode.isSelected() && lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
-		        {
-		        	addTimecode.setText(String.format("%.0f",
-		        	Integer.parseInt(heures) * 3600 * FFPROBE.currentFPS +
-		        	Integer.parseInt(minutes) * 60 * FFPROBE.currentFPS +
-		        	Integer.parseInt(secondes) * FFPROBE.currentFPS +
-		        	Integer.parseInt(images)));
-		        }
-		        else
-		        	addTimecode.setText(heures+":"+minutes+":"+secondes+":"+images);	
-				
-				image.add(timecode);
-				
-				//Permet de conserver la position
-				int newPosX = (int) Math.round(timecode.getWidth() - tcPreviousSizeWidth) / 2;
-				int newPosY = (int) Math.round(timecode.getHeight() - tcPreviousSizeHeight) / 2;
-
-				timecode.setLocation(timecode.getLocation().x - newPosX, timecode.getLocation().y - newPosY);
-	            
-	            //On enregistre la position
 				tcLocX = timecode.getLocation().x;
 				tcLocY = timecode.getLocation().y;
-				
-				textTcPosX.setText(String.valueOf((int) Math.round(timecode.getLocation().x * imageRatio)));
-				textTcPosY.setText(String.valueOf((int) Math.round(timecode.getLocation().y * imageRatio)));  
-			}
-			else
-			{
-				if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
-					timecode.setLocation(image.getWidth()/2 - timecode.getWidth()/2, timecode.getHeight());	
-				else
-					timecode.setLocation(image.getWidth() / 2 - timecode.getWidth()/2, containerHeight - timecode.getHeight() * 2);						
-				
-				textTcPosX.setText("0");
-				textTcPosY.setText("0");  
-			}		
+				if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
+				{				
+					if (FFPROBE.isRunning) //Contourne un bug incompréhensible
+					{
+						do {
+							Thread.sleep(100);
+						} while (FFPROBE.isRunning);
+					}
 					
-			image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
-			image.setSize(newImage.getSize());	
-			
-    		//Contourne un bug
-            imageIcon = new ImageIcon(imageBMP);
-    		newImage = new JLabel(imageIcon);
-    		newImage.setSize(containerWidth,containerHeight);
-			
-    		//Rognage
-			JPanel topBorder = new JPanel();
-			topBorder.setBackground(Color.BLACK);
-			topBorder.setVisible(false);
-			topBorder.setOpaque(true);	
-			
-			JPanel bottomBorder = new JPanel();
-			bottomBorder.setBackground(Color.BLACK);
-			bottomBorder.setVisible(false);		
-			bottomBorder.setOpaque(true);					
-			
-			JPanel leftBorder = new JPanel();
-			leftBorder.setBackground(Color.BLACK);
-			leftBorder.setVisible(false);
-			leftBorder.setOpaque(true);	
-			
-			JPanel rightBorder = new JPanel();
-			rightBorder.setBackground(Color.BLACK);
-			rightBorder.setVisible(false);
-			rightBorder.setOpaque(true);	
-			
-			if (Shutter.caseRognage.isSelected())
-			{						
-				String i[] = FFPROBE.imageResolution.split("x");
-				String original = String.valueOf((float) Integer.parseInt(i[0]) / Integer.parseInt(i[1]));
-				
-				String o[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
-				String output = String.valueOf((float) Integer.parseInt(o[0]) / Integer.parseInt(o[1]));
-
-				if (original.length() > 4)
-					original = original.substring(0,4);					
-				
-				//On affiche les côtés
-				if (Float.parseFloat(output) < Float.parseFloat(original))
-				{
-					int crop = Integer.parseInt(o[0]); 
-		        	
-					int borderWidth = (int) Math.floor(((float) containerWidth - ((float) newImage.getHeight() / ((float) ImageHeight / crop))) / 2);
+					long tcH = 0;				
+					long tcM = 0;
+					long tcS = 0;
+					long tcI = 0;
 					
-					leftBorder.setSize(borderWidth, newImage.getHeight());
-					rightBorder.setSize(borderWidth, newImage.getHeight());
-					rightBorder.setLocation(containerWidth - rightBorder.getWidth(), 0);
-
-		    		leftBorder.setVisible(true);
-		    		rightBorder.setVisible(true);	
-		    		
-					newImage.add(leftBorder);
-					newImage.add(rightBorder);	
-		    	}
+					if (caseAddTimecode.isSelected() && TC1.getText().isEmpty() == false && TC2.getText().isEmpty() == false && TC3.getText().isEmpty() == false && TC4.getText().isEmpty() == false)
+					{
+						tcH = Integer.valueOf(TC1.getText());
+						tcM = Integer.valueOf(TC2.getText());
+						tcS = Integer.valueOf(TC3.getText());
+						tcI = Integer.valueOf(TC4.getText());
+					}
+					else if (caseShowTimecode.isSelected())
+					{
+						tcH = Integer.valueOf(FFPROBE.timecode1);
+						tcM = Integer.valueOf(FFPROBE.timecode2);
+						tcS = Integer.valueOf(FFPROBE.timecode3);
+						tcI = Integer.valueOf(FFPROBE.timecode4);
+					}
+					
+					tcH = tcH * 3600000;
+					tcM = tcM * 60000;
+					tcS = tcS * 1000;
+					
+					long offset =  positionVideo.getValue() + tcH + tcM + tcS;
+					NumberFormat formatter = new DecimalFormat("00");
+			        String heures = (formatter.format((offset/1000) / 3600));
+			        String minutes = (formatter.format( ((offset/1000) / 60) % 60) );
+			        String secondes = (formatter.format((offset/1000) % 60));				        
+			        String images = (formatter.format(tcI));							
+			        
+			        if (caseAddTimecode.isSelected() && lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
+			        {
+			        	addTimecode.setText(String.format("%.0f",
+			        	Integer.parseInt(heures) * 3600 * FFPROBE.currentFPS +
+			        	Integer.parseInt(minutes) * 60 * FFPROBE.currentFPS +
+			        	Integer.parseInt(secondes) * FFPROBE.currentFPS +
+			        	Integer.parseInt(images)));
+			        }
+			        else
+			        	addTimecode.setText(heures+":"+minutes+":"+secondes+":"+images);	
+					
+					image.add(timecode);
+					
+					//Permet de conserver la position
+					int newPosX = (int) Math.round(timecode.getWidth() - tcPreviousSizeWidth) / 2;
+					int newPosY = (int) Math.round(timecode.getHeight() - tcPreviousSizeHeight) / 2;
+	
+					timecode.setLocation(timecode.getLocation().x - newPosX, timecode.getLocation().y - newPosY);
+		            
+		            //On enregistre la position
+					tcLocX = timecode.getLocation().x;
+					tcLocY = timecode.getLocation().y;
+					
+					textTcPosX.setText(String.valueOf((int) Math.round(timecode.getLocation().x * imageRatio)));
+					textTcPosY.setText(String.valueOf((int) Math.round(timecode.getLocation().y * imageRatio)));  
+				}
 				else
 				{
-		    		int crop = Integer.parseInt(o[1]); 
+					if (changePositions.getText().equals("<html>" + Shutter.language.getProperty("grpTimecode") + "<br>&nbsp;&nbsp;&nbsp;&nbsp;Text</html>"))
+						timecode.setLocation(image.getWidth()/2 - timecode.getWidth()/2, timecode.getHeight());	
+					else
+						timecode.setLocation(image.getWidth() / 2 - timecode.getWidth()/2, containerHeight - timecode.getHeight() * 2);						
 					
-					int borderHeight = (int) Math.floor(((float) containerHeight - ((float) newImage.getWidth() / ((float) ImageWidth / crop))) / 2);
-									
-					topBorder.setSize(newImage.getWidth(), borderHeight);
-					bottomBorder.setSize(newImage.getWidth(), borderHeight);
-					bottomBorder.setLocation(0, containerHeight - bottomBorder.getHeight());
-		    		
-		    		topBorder.setVisible(true);
-					bottomBorder.setVisible(true);	
-					
-					newImage.add(topBorder);
-					newImage.add(bottomBorder);	
-				}		        	
+					textTcPosX.setText("0");
+					textTcPosY.setText("0");  
+				}		
+						
+				image.setLocation(12 + ((854 - containerWidth) / 2), 58 + (int) ((float)(480 - containerHeight) / 2));
+				image.setSize(newImage.getSize());	
 				
-			}
-				    		
-    		image.add(newImage); 
-    		image.repaint();    	
-			
-			fileName.repaint();
-			timecode.repaint();
-									
-    		if (frame.isVisible() == false)
-    		{
-    			Utils.changeDialogVisibility(frame, false);
-    		}
-
-			Shutter.tempsRestant.setVisible(false);
-	        Shutter.progressBar1.setValue(0);
+	    		//Rognage
+				Color c = new Color(50,50,50);
+	    		if (Shutter.lblPad.getText().equals(Shutter.language.getProperty("lblPad")))
+	    			c = Color.BLACK;
+	    		
+				JPanel topBorder = new JPanel();
+				topBorder.setBackground(c);
+				topBorder.setVisible(false);
+				topBorder.setOpaque(true);	
+				
+				JPanel bottomBorder = new JPanel();
+				bottomBorder.setBackground(c);
+				bottomBorder.setVisible(false);		
+				bottomBorder.setOpaque(true);					
+				
+				JPanel leftBorder = new JPanel();
+				leftBorder.setBackground(c);
+				leftBorder.setVisible(false);
+				leftBorder.setOpaque(true);	
+				
+				JPanel rightBorder = new JPanel();
+				rightBorder.setBackground(c);
+				rightBorder.setVisible(false);
+				rightBorder.setOpaque(true);	
+				
+				if (Shutter.caseRognage.isSelected())
+				{						
+					String i[] = FFPROBE.imageResolution.split("x");
+					String original = String.valueOf((float) Integer.parseInt(i[0]) / Integer.parseInt(i[1]));
+					
+					String o[] = Shutter.comboH264Taille.getSelectedItem().toString().split("x");
+					String output = String.valueOf((float) Integer.parseInt(o[0]) / Integer.parseInt(o[1]));
+	
+					if (original.length() > 4)
+						original = original.substring(0,4);					
+					
+					//On affiche les côtés
+					if (Float.parseFloat(output) < Float.parseFloat(original))
+					{
+						int crop = Integer.parseInt(o[0]); 
+			        	
+						int borderWidth = (int) Math.floor(((float) containerWidth - ((float) newImage.getHeight() / ((float) ImageHeight / crop))) / 2);
+						
+						leftBorder.setSize(borderWidth, newImage.getHeight());
+						rightBorder.setSize(borderWidth, newImage.getHeight());
+						rightBorder.setLocation(containerWidth - rightBorder.getWidth(), 0);
+	
+			    		leftBorder.setVisible(true);
+			    		rightBorder.setVisible(true);	
+			    		
+						newImage.add(leftBorder);
+						newImage.add(rightBorder);	
+			    	}
+					else
+					{
+			    		int crop = Integer.parseInt(o[1]); 
+						
+						int borderHeight = (int) Math.floor(((float) containerHeight - ((float) newImage.getWidth() / ((float) ImageWidth / crop))) / 2);
+										
+						topBorder.setSize(newImage.getWidth(), borderHeight);
+						bottomBorder.setSize(newImage.getWidth(), borderHeight);
+						bottomBorder.setLocation(0, containerHeight - bottomBorder.getHeight());
+			    		
+			    		topBorder.setVisible(true);
+						bottomBorder.setVisible(true);	
+						
+						newImage.add(topBorder);
+						newImage.add(bottomBorder);	
+					}		        	
+					
+				}
+					    		
+	    		image.add(newImage); 
+	    		image.repaint();    
+	    		frame.getContentPane().repaint();
+				
+				fileName.repaint();
+				timecode.repaint();
+										
+	    		if (frame.isVisible() == false)
+	    		{
+	    			Utils.changeDialogVisibility(frame, false);
+	    		}
+	
+				Shutter.tempsRestant.setVisible(false);
+		        Shutter.progressBar1.setValue(0);
+            }
         }
 	    catch (Exception e)
 	    {
  	       	JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	    }
         finally {
+        	
         	Shutter.enableAll();        
         	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
@@ -2290,9 +2288,6 @@ public class OverlayWindow {
 					Thread.sleep(100);
 				} while (OverlayWindow.frame == null && OverlayWindow.frame.isVisible() == false);
 				
-				
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				
 				File fXmlFile = encFile;
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -2300,6 +2295,9 @@ public class OverlayWindow {
 				doc.getDocumentElement().normalize();
 			
 				NodeList nList = doc.getElementsByTagName("Component");
+				
+				//Contourne un bug
+				String namePosY = "";
 				
 				for (int temp = 0; temp < nList.getLength(); temp++) {
 					Node nNode = nList.item(temp);
@@ -2312,11 +2310,7 @@ public class OverlayWindow {
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{
 								if (p instanceof JPanel)
-								{
-									do {
-										Thread.sleep(100);
-									} while (file.exists() == false);
-									
+								{									
 									//Value
 									String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
 									String s2[] = s[1].split(",");
@@ -2331,7 +2325,7 @@ public class OverlayWindow {
 								}
 								
 								if (p instanceof JRadioButton)
-								{
+								{									
 									//Value
 									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 									{
@@ -2351,11 +2345,7 @@ public class OverlayWindow {
 									((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}
 								else if (p instanceof JLabel)
-								{
-									do {
-										Thread.sleep(100);
-									} while (file.exists() == false);
-									
+								{									
 									//Value
 									((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																		
@@ -2366,11 +2356,7 @@ public class OverlayWindow {
 									((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));																			
 								}
 								else if (p instanceof JComboBox)
-								{
-									do {
-										Thread.sleep(100);
-									} while (file.exists() == false);
-									
+								{									
 									//Value
 									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																		
@@ -2382,11 +2368,7 @@ public class OverlayWindow {
 									
 								}
 								else if (p instanceof JTextField)
-								{											
-									do {
-										Thread.sleep(100);
-									} while (file.exists() == false);
-									
+								{				
 									//Value
 									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																		
@@ -2397,24 +2379,23 @@ public class OverlayWindow {
 									((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 									
 									//Position des éléments
-									if (p.getName().equals("textNamePosX") && textNamePosX.getText().length() > 0)
+									if (p.getName().equals("textNamePosX"))
 										fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);	
 									
-									if (p.getName().equals("textNamePosY") && textNamePosY.getText().length() > 0)
+									if (p.getName().equals("textNamePosY"))
+									{
+										namePosY = textNamePosY.getText();
 										fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+									}
 									
-									if (p.getName().equals("textTcPosY") && textTcPosY.getText().length() > 0)
+									if (p.getName().equals("textTcPosY"))
 										timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
 									
-									if (p.getName().equals("textTcPosX") && textTcPosX.getText().length() > 0)
+									if (p.getName().equals("textTcPosX"))
 										timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
 								}
 								else if (p instanceof JSpinner)
-								{									
-									do {
-										Thread.sleep(100);
-									} while (file.exists() == false);
-									
+								{											
 									//Value
 									((JSpinner) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 																		
@@ -2424,6 +2405,13 @@ public class OverlayWindow {
 									//Visible
 									((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}
+							}
+							
+							//Contourne un bug
+							if (namePosY != "")
+							{
+								textNamePosY.setText(namePosY);
+								fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
 							}
 						}
 					}

@@ -41,7 +41,9 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
@@ -80,7 +82,7 @@ import javax.swing.JTextField;
 public class CropImage {
 	public static JDialog frame;
 	private static JPanel overImage;
-	private static JPanel image;
+	private static JPanel image = new JPanel();
 	
 	/*
 	 * Composants
@@ -223,16 +225,16 @@ public class CropImage {
 					
 					loadImage();	
 					
-					int value = (int) Math.floor((float) (Integer.valueOf(textPosX.getText()) * image.getHeight()) / ImageHeight);	
+					int value = (int) Math.round((float) (Integer.valueOf(textPosX.getText()) * image.getHeight()) / ImageHeight);	
 					selection.setLocation(value, selection.getLocation().y);	
 
-					value = (int) Math.floor((float) (Integer.valueOf(textPosY.getText()) * image.getWidth()) / ImageWidth);	
+					value = (int) Math.round((float) (Integer.valueOf(textPosY.getText()) * image.getWidth()) / ImageWidth);	
 					selection.setLocation(selection.getLocation().x, value);
 				
-					value = (int) Math.floor((float)  (Integer.valueOf(textWidth.getText()) * image.getHeight()) / ImageHeight);
+					value = (int) Math.round((float)  (Integer.valueOf(textWidth.getText()) * image.getHeight()) / ImageHeight);
 					selection.setSize(value, selection.getHeight());
 
-					value = (int) Math.floor((float) (Integer.valueOf(textHeight.getText()) * image.getWidth()) / ImageWidth);
+					value = (int) Math.round((float) (Integer.valueOf(textHeight.getText()) * image.getWidth()) / ImageWidth);
 					selection.setSize(selection.getWidth(), value);
 				}
 				
@@ -254,11 +256,6 @@ public class CropImage {
 		
 		topPanel();
 		
-		//Main image
-		image = new JPanel();
-		image.setLayout(null);        
-		image.setOpaque(false);
-
 		image.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {	
@@ -284,7 +281,7 @@ public class CropImage {
 			
 		//Selection
 		selection = new JPanel() {
-			public void paintComponent(Graphics g) {
+			public void paintComponent(Graphics g) {/*
 				g.setColor(Utils.themeColor);
 				g.fillRect(0, 0, 6, 6); //NW
 				g.fillRect(selection.getWidth() / 2 - 3,0, 6, 6); //N
@@ -293,10 +290,10 @@ public class CropImage {
 				g.fillRect(selection.getWidth() - 6,selection.getHeight() - 6, 6, 6); //SE
 				g.fillRect(selection.getWidth() / 2 - 3,selection.getHeight() -6, 6, 6); //S
 				g.fillRect(0,selection.getHeight() - 6, 6, 6); //SW
-				g.fillRect(0,selection.getHeight() / 2 -3, 6, 6); //W					
+				g.fillRect(0,selection.getHeight() / 2 -3, 6, 6); //W	*/				
 			}
 		};
-		selection.setBorder(BorderFactory.createDashedBorder(Color.WHITE, 4, 4));	
+		selection.setBorder(BorderFactory.createDashedBorder(Utils.themeColor, 4, 4));
 		
 		selection.addMouseMotionListener(new MouseMotionListener(){
 
@@ -428,25 +425,37 @@ public class CropImage {
 				if (drag == false)
 				{
 					if (e.getX() <= 10 && e.getY() <= 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() / 2 + 5 && e.getX() >= selection.getWidth() / 2 - 5
-							&& e.getY() <= 10)
+					}
+					else if (e.getX() <= selection.getWidth() - 10 && e.getY() <= 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+					}
 					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10 && e.getY() <= 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10
-							&& e.getY() <= selection.getHeight() / 2 + 5 && e.getY() >= selection.getHeight() / 2 - 5)
+					}
+					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10 && e.getY() >= 10 && e.getY() <= selection.getHeight() - 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10
-							&& e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+					}
+					else if (e.getX() <= selection.getWidth() && e.getX() >= selection.getWidth() - 10 && e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
-					else if (e.getX() <= selection.getWidth() / 2 + 5 && e.getX() >= selection.getWidth() / 2 - 5
-							&& e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+					}
+					else if (e.getX() <= selection.getWidth() - 10 && e.getX() >= 10 && e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+					}
 					else if (e.getX() <= 10 && e.getY() <= selection.getHeight() && e.getY() >= selection.getHeight() - 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
-					else if (e.getX() <= 6 && e.getY() <= selection.getHeight() / 2 + 5 && e.getY() >= selection.getHeight() / 2 - 5)
+					}
+					else if (e.getX() <= 10 && e.getY() >= 10 && e.getY() <= selection.getHeight() - 10)
+					{
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+					}
 					else		
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 				}
@@ -462,7 +471,8 @@ public class CropImage {
 				startY = e.getPoint().y;
  			}
 			
-			@Override public void mouseReleased(MouseEvent e) {
+			@Override 
+			public void mouseReleased(MouseEvent e) {
 				
 				drag = false;
 				
@@ -482,6 +492,9 @@ public class CropImage {
 					selection.setLocation(0, selection.getLocation().y);
 				else if (selection.getLocation().y <= 0)
 					selection.setLocation(selection.getLocation().x, 0);
+				
+				selection.repaint();
+				image.repaint();
 			}
 			
 		});		
@@ -507,12 +520,7 @@ public class CropImage {
 				        
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
-	            Utils.changeDialogVisibility(frame, true);
-	            
-	            //Suppression image temporaire
-						    		
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				if (file.exists()) file.delete();				
+	            Utils.changeDialogVisibility(frame, true);			
 			}
 			
 		});
@@ -615,13 +623,7 @@ public class CropImage {
 					Shutter.tempsRestant.setVisible(false);
 		            Shutter.progressBar1.setValue(0);		            
 		            Utils.changeDialogVisibility(frame, true);
-		            Shutter.cropFinal = null;
-		            
-					//Suppression image temporaire
-							    		
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();
-									
+		            Shutter.cropFinal = null;									
 					Shutter.caseRognerImage.setSelected(false);
 				}
 			}
@@ -667,7 +669,7 @@ public class CropImage {
         		
 				if (accept && frame.getHeight() < screenSize.height - taskBarHeight)
 				{
-					if (ImageHeight > ImageWidth)
+					if (ImageHeight >= ImageWidth)
 					{
 						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
 					}
@@ -727,7 +729,7 @@ public class CropImage {
 	        		
 					if (frame.getHeight() < screenSize.height - taskBarHeight)
 					{
-						if (ImageHeight > ImageWidth)
+						if (ImageHeight >= ImageWidth)
 						{
 							frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
 						}
@@ -837,26 +839,14 @@ public class CropImage {
 		if (selection.getWidth() > image.getWidth())
 			selection.setSize(image.getWidth(), selection.getHeight());
 		
-		//Texte 
-		int borderW = selection.getWidth();
-		int borderH = selection.getHeight();
-		
-		int outW;
-		int outH;
-		
-		if (ImageHeight > ImageWidth)
-		{
-			outW = (int) Math.round((float) ImageWidth / ((float) finalWidth / borderW));				
-			outH = (int) Math.round((float) ImageHeight / ((float) (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) / borderH));
-		}
-		else
-		{
-			outW =  (int) Math.round((float) ImageWidth / ((float) (frame.getWidth() - 24) / borderW));				
-			outH =  (int) Math.round((float) ImageHeight / ((float) finalHeight / borderH));
-		}
-		
-		int Px =  (int) Math.round((float) ImageWidth / ((float) image.getSize().width / (selection.getLocation().x)));						
-		int Py =  (int) Math.round((float) ImageHeight / ((float) image.getSize().height / selection.getLocation().y));
+		float ratioW = (float) ImageWidth / image.getWidth();
+		float ratioH = (float) ImageHeight / image.getHeight();
+				
+		int outW = (int) Math.round(selection.getWidth() * ratioW);
+		int outH = (int) Math.round(selection.getHeight() * ratioH);
+				
+		int Px = (int) Math.round(selection.getLocation().x * ratioW);
+		int Py = (int) Math.round(selection.getLocation().y * ratioH);
 					
 		if (textWidth.getText().matches("[0-9]+") && textHeight.getText().matches("[0-9]+"))
 		{
@@ -912,7 +902,7 @@ public class CropImage {
 			public void keyReleased(KeyEvent e) {
 				if (textPosX.getText().length() > 0)
 				{
-					int value = (int) Math.floor((float) (Integer.valueOf(textPosX.getText()) * image.getHeight()) / ImageHeight);	
+					int value = (int) Math.round((float) (Integer.valueOf(textPosX.getText()) * image.getHeight()) / ImageHeight);	
 					selection.setLocation(value, selection.getLocation().y);
 				}
 			}
@@ -949,7 +939,7 @@ public class CropImage {
 			public void keyReleased(KeyEvent e) {
 				if (textPosY.getText().length() > 0)
 				{
-					int value = (int) Math.floor((float) (Integer.valueOf(textPosY.getText()) * image.getWidth()) / ImageWidth);	
+					int value = (int) Math.round((float) (Integer.valueOf(textPosY.getText()) * image.getWidth()) / ImageWidth);	
 					selection.setLocation(selection.getLocation().x, value);
 				}
 			}
@@ -991,7 +981,7 @@ public class CropImage {
 			public void keyReleased(KeyEvent e) {
 				if (textWidth.getText().length() > 0)
 				{
-					int value = (int) Math.floor((float)  (Integer.valueOf(textWidth.getText()) * image.getHeight()) / ImageHeight);
+					int value = (int) Math.round((float)  (Integer.valueOf(textWidth.getText()) * image.getHeight()) / ImageHeight);
 					selection.setSize(value, selection.getHeight());
 				}
 			}
@@ -1034,7 +1024,7 @@ public class CropImage {
 			public void keyReleased(KeyEvent e) {
 				if (textHeight.getText().length() > 0)
 				{
-					int value = (int) Math.floor((float) (Integer.valueOf(textHeight.getText()) * image.getWidth()) / ImageWidth);
+					int value = (int) Math.round((float) (Integer.valueOf(textHeight.getText()) * image.getWidth()) / ImageWidth);
 					selection.setSize(selection.getWidth(), value);
 				}
 			}
@@ -1107,18 +1097,9 @@ public class CropImage {
 			@Override
 			public void mouseReleased(MouseEvent e) {								
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					
-					File file = new File(Shutter.dirTemp + "preview.bmp");
-					if (file.exists()) file.delete();	
-						
+											
 					loadImage();
-						
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e1) {}
-					} while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
-						
+
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
 			}
 			
@@ -1132,14 +1113,14 @@ public class CropImage {
 		
 		final int containerWidth;
 		final int containerHeight;
-		if (ImageHeight > ImageWidth)
+		if (ImageHeight >= ImageWidth)
 		{
-			containerHeight = (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17);
-			containerWidth =  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth / ImageHeight);
+			containerHeight = (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17 - 14);
+			containerWidth =  (int) Math.round((float) (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth / ImageHeight);
 		}
 		else
 		{
-			containerHeight =  (int) Math.floor((float) (frame.getWidth() - 24) * ImageHeight / ImageWidth);
+			containerHeight =  (int) Math.round((float) (frame.getWidth() - 24) * ImageHeight / ImageWidth);
 			containerWidth = (frame.getWidth() - 24);	
 		}
 		
@@ -1150,10 +1131,10 @@ public class CropImage {
         shape1.add(shape2);
 		frame.setShape(shape1);
 		
-		if (ImageHeight > ImageWidth)
-			image.setLocation((int) Math.floor((float) (frame.getWidth() - containerWidth) / 2) + 10, 62);
+		if (ImageHeight >= ImageWidth)
+			image.setLocation((int) Math.round((float) (frame.getWidth() - containerWidth) / 2) + 10, 62);
 		else
-			image.setLocation(12,  (int) Math.floor((float) (frame.getHeight() - containerHeight) / 2));
+			image.setLocation(12,  (int) Math.round((float) (frame.getHeight() - containerHeight) / 2));
 		
 		frameX = image.getLocation().x;
 		frameY = image.getLocation().y;
@@ -1182,6 +1163,9 @@ public class CropImage {
 		overImage.setBounds(image.getBounds());
 		overImage.setLayout(null);    
 			
+		image.setLayout(null);        
+		image.setOpaque(false);
+		
 		image.add(selection);
 		
 		frame.getContentPane().add(overImage);
@@ -1259,14 +1243,10 @@ public class CropImage {
 			}			
 
         	
-        		finalWidth = (int) Math.floor(((frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth) / ImageHeight);
+        		finalWidth = (int) Math.round(((frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth) / ImageHeight);
         			        	
-        		finalHeight = (int) Math.floor(((frame.getWidth() - 24) * ImageHeight) / ImageWidth);
-        	                   	        		
-	    		
-				File fileOut = new File(Shutter.dirTemp + "preview.bmp");
-				if (fileOut.exists()) fileOut.delete();
-				
+        		finalHeight = (int) Math.round(((frame.getWidth() - 24) * ImageHeight) / ImageWidth);
+        	                   	        						
 				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 				
 				//InOut		
@@ -1284,63 +1264,90 @@ public class CropImage {
 				}
 				
 				//Envoi de la commande
-				String cmd;
-				if (ImageHeight > ImageWidth)
-					cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) + " -y ";
-				else
-					cmd = " -vframes 1 -an -s " + (frame.getWidth() - 24) + "x" + finalHeight + " -y ";
+				String cmd = " -vframes 1 -an -s " + (frame.getWidth() - 24) + "x" + finalHeight + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+				
+				if (ImageHeight >= ImageWidth)
+					cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
 					
+					
+	    		InputStream videoInput = null;
+				
 				if (extension.toLowerCase().equals(".pdf"))
-					XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
+				{
+					FFMPEG.error = false; //Contourne un bug
+					
+					XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -v quiet -i -" + cmd);
+					
+					do {
+						Thread.sleep(10);
+					} while (XPDF.process.isAlive() == false);
+					
+					videoInput = XPDF.process.getInputStream();					
+				}
 				else if (isRaw)
-					DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
+				{
+					DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -v quiet -i -" + cmd);
+					
+					do {
+						Thread.sleep(10);
+					} while (DCRAW.process.isAlive() == false);
+					
+					videoInput = DCRAW.process.getInputStream();
+				}
 				else if (Shutter.inputDeviceIsRunning) //Screen capture			
-					FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
+				{
+					FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
+					
+					do {
+						Thread.sleep(10);
+					} while (FFMPEG.process.isAlive() == false);
+					
+					videoInput = FFMPEG.process.getInputStream();
+				}
 				else					
-          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + cmd + '"' + fileOut + '"');
-					         	            
-	            do
-	            {
-	            	Thread.sleep(100);  
-	            } while (new File(Shutter.dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false);
-
-	           	if (FFMPEG.error)
-	      	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);	           	
-	           		       
-	           	image.removeAll();  
-	           	
-	           	//On charge l'image après la création du fichier pour avoir le bon ratio
-	    		image();	         
-	    		
-	    		Image imageBMP = ImageIO.read(new File(Shutter.dirTemp + "preview.bmp"));
-	            ImageIcon imageIcon = new ImageIcon(imageBMP);
-	    		JLabel newImage = new JLabel(imageIcon);
-	            imageIcon.getImage().flush();
-	    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
-	            if (ImageHeight > ImageWidth)
-	            	newImage.setBounds(0, 0,  (int) Math.floor((float) (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth / ImageHeight), (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17));  
-	            else
-	            	newImage.setBounds(0, 0, (frame.getWidth() - 24),  (int) Math.floor((float) (frame.getWidth() - 24) * ImageHeight / ImageWidth)); 
-	            
-	    		//Contourne un bug
-	            imageIcon = new ImageIcon(imageBMP);
-	    		newImage = new JLabel(imageIcon);
-	    		newImage.setSize(image.getSize());
-	    		
-	    		image.add(newImage);
-	    		image.repaint();
-	    		selection.repaint();
-	    		frame.getContentPane().repaint();
-	    		
-				Shutter.tempsRestant.setVisible(false);
-	            Shutter.progressBar1.setValue(0);	   
-	            
-	            if (btnOK != null) 
-	            	checkSelection();
+				{					
+          			FFMPEG.run(FFMPEG.inPoint + " -v quiet -i " + '"' + file.toString() + '"' + cmd);
+          			
+    				do {
+    					Thread.sleep(10);
+    				} while (FFMPEG.process.isAlive() == false);
+    				
+    				videoInput = FFMPEG.process.getInputStream();
+				}						
+											
+				InputStream is = new BufferedInputStream(videoInput);
+				Image imageBMP = ImageIO.read(is);
+				
+				if (FFMPEG.error == false && DCRAW.error == false && XPDF.error == false && imageBMP != null)
+	            {						
+		           	image.removeAll();  
+		           	
+		           	//On charge l'image après la création du fichier pour avoir le bon ratio
+		    		image();	 
+					
+		            ImageIcon imageIcon = new ImageIcon(imageBMP);
+		    		JLabel newImage = new JLabel(imageIcon);
+		            imageIcon.getImage().flush();	
+		            
+		    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
+		    		newImage.setBounds(0, 0, image.getWidth(), image.getHeight());  
+		    		
+		    		image.add(newImage);
+		    		image.repaint();
+		    		selection.repaint();
+		    		frame.getContentPane().repaint();
+		    		
+					Shutter.tempsRestant.setVisible(false);
+		            Shutter.progressBar1.setValue(0);	   
+		            
+		            if (btnOK != null) 
+		            	checkSelection();
+	            }
         }
 	    catch (Exception e)
 	    {
- 	       JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+	    	e.printStackTrace();
+ 	       	JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	    }
         finally {
         	Shutter.enableAll();     
@@ -1362,13 +1369,7 @@ public class CropImage {
 				do {
 					Thread.sleep(100);
 				} while (frame == null && frame.isVisible() == false);
-				
-				
-				File file = new File(Shutter.dirTemp + "preview.bmp");
-				
-				do {
-					Thread.sleep(100);
-				} while (file.exists() == false);				
+							
 				
 				File fXmlFile = encFile;
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -1389,11 +1390,7 @@ public class CropImage {
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{								
 								if (p instanceof JTextField)
-								{											
-									do {
-										Thread.sleep(100);
-									} while (file.exists() == false);
-									
+								{										
 									//Value
 									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																		
@@ -1406,25 +1403,25 @@ public class CropImage {
 									//Position des éléments
 									if (p.getName().equals("textPosX") && textPosX.getText().length() > 0)
 									{
-										int value = (int) Math.floor((float) (Integer.valueOf(textPosX.getText()) * image.getHeight()) / ImageHeight);	
+										int value = (int) Math.round((float) (Integer.valueOf(textPosX.getText()) * image.getHeight()) / ImageHeight);	
 										selection.setLocation(value, selection.getLocation().y);	
 									}
 									
 									if (p.getName().equals("textPosY") && textPosY.getText().length() > 0)
 									{
-										int value = (int) Math.floor((float) (Integer.valueOf(textPosY.getText()) * image.getWidth()) / ImageWidth);	
+										int value = (int) Math.round((float) (Integer.valueOf(textPosY.getText()) * image.getWidth()) / ImageWidth);	
 										selection.setLocation(selection.getLocation().x, value);
 									}
 									
 									if (p.getName().equals("textWidth") && textWidth.getText().length() > 0)
 									{
-										int value = (int) Math.floor((float)  (Integer.valueOf(textWidth.getText()) * image.getHeight()) / ImageHeight);
+										int value = (int) Math.round((float)  (Integer.valueOf(textWidth.getText()) * image.getHeight()) / ImageHeight);
 										selection.setSize(value, selection.getHeight());
 									}
 									
 									if (p.getName().equals("textHeight") && textHeight.getText().length() > 0)
 									{
-										int value = (int) Math.floor((float) (Integer.valueOf(textHeight.getText()) * image.getWidth()) / ImageWidth);
+										int value = (int) Math.round((float) (Integer.valueOf(textHeight.getText()) * image.getWidth()) / ImageWidth);
 										selection.setSize(selection.getWidth(), value);
 									}
 								}

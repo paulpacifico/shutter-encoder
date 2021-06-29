@@ -725,7 +725,7 @@ class FonctionsRenderer extends DefaultListCellRenderer {
           int index, boolean isSelected, boolean cellHasFocus) {
       super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);   
 	      ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png"));
-	      ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(15, 15 , Image.SCALE_DEFAULT));		
+	      ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(15, 15 , Image.SCALE_SMOOTH));		
 	      setIcon(icon);
 	      setFont(new Font("SansSerif", Font.PLAIN, 12));
 	      setForeground(Color.BLACK);

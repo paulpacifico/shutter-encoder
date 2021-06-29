@@ -118,6 +118,7 @@ public class SubtitlesTimeline {
 	private static boolean shift = false;
 	private static boolean controlRight = false;
 	private static boolean txtSubtitlesHasFocus = false;
+	private static boolean mouseSrolling = false;
 		
 	public static JButton btnAjouter;	
 	public static JButton btnSupprimer;	
@@ -165,10 +166,13 @@ public class SubtitlesTimeline {
 			public void windowClosed(WindowEvent arg0) {				
 
 			Utils.changeFrameVisibility(VideoPlayer.frame, true);
-			if (VideoPlayer.mediaPlayerComponentLeft != null)
-				VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().stop();
-			if (VideoPlayer.mediaPlayerComponentRight != null)
-				VideoPlayer.mediaPlayerComponentRight.getMediaPlayer().stop();
+			
+			if (VideoPlayer.playerLeftVideo != null)
+				VideoPlayer.playerLeftStop();
+			
+			if (VideoPlayer.playerRightVideo != null)
+				VideoPlayer.playerRightStop();
+			
 			VideoPlayer.frame.getContentPane().removeAll();
 			Shutter.caseInAndOut.setSelected(false);
 			
@@ -994,12 +998,12 @@ public class SubtitlesTimeline {
 	
 					if (e.getKeyCode() == KeyEvent.VK_J)
 					{
-						setVideoPosition((int) (VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().getTime() - ((1000 /FFPROBE.currentFPS) * 10)));
+						setVideoPosition((int) (VideoPlayer.playerLeftGetTime() - ((1000 /FFPROBE.currentFPS) * 10)));
 	  				}
 						
 					if (e.getKeyCode() == KeyEvent.VK_L)
 					{
-						setVideoPosition((int) (VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().getTime() + ((1000 /FFPROBE.currentFPS) * 10)));
+						setVideoPosition((int) (VideoPlayer.playerLeftGetTime() + ((1000 /FFPROBE.currentFPS) * 10)));
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -1033,7 +1037,9 @@ public class SubtitlesTimeline {
 					shift = false;	
 				
 				if (e.getKeyCode() == KeyEvent.VK_ALT)
-					controlRight = false;				
+					controlRight = false;		
+				
+				VideoPlayer.playerLeft.repaint();
 			}
 
 			@Override
@@ -1092,16 +1098,35 @@ public class SubtitlesTimeline {
 					setSubtitles(srt);	
 				}
 				else
-				{
-					enableTimelineScroll = true;
-					enableAutoScroll = false;
-					if (zoom < 0.1)
-						timelineScrollBar.setValue(timelineScrollBar.getValue() + e.getWheelRotation() * 10);
-					else
-						timelineScrollBar.setValue(timelineScrollBar.getValue() + e.getWheelRotation() * 100);	
-					enableTimelineScroll = false;
-					enableAutoScroll = true;
-				}								
+				{			
+					if (mouseSrolling == false)
+					{
+						mouseSrolling = true;
+						
+						Thread t = new Thread(new Runnable() {
+	
+							@Override
+							public void run() {
+																
+								if (VideoPlayer.frameLeft != null)
+								{
+									int newValue = timelineScrollBar.getValue() + e.getWheelRotation() * 100;
+									if (zoom < 0.1)
+										newValue = timelineScrollBar.getValue() + e.getWheelRotation() * 10;
+									
+									enableTimelineScroll = true;
+									enableAutoScroll = false;
+									timelineScrollBar.setValue(newValue);	
+									enableTimelineScroll = false;
+									enableAutoScroll = true;	
+								}
+								
+								mouseSrolling = false;
+							}						
+						});		
+						t.start();
+					}
+				}							
 			}			
 		};
 		
@@ -1319,17 +1344,14 @@ public class SubtitlesTimeline {
 		{	
 			if (enableAutoScroll)
 			{	
-				if (VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().isPlaying() == false)
-				{
-					int posX = VideoPlayer.sliderIn.getValue();
-					cursor.setLocation((int) (setTime(posX)*zoom), cursor.getY());
-				}
+				int posX = VideoPlayer.sliderIn.getValue();
+				cursor.setLocation((int) (setTime(posX)*zoom), cursor.getY());
 			}
 			
 			//Permet d'afficher le sub en cours dès que timeIn change
 			if (txtSubtitles.hasFocus() == false)
 			{				
-				timeIn = VideoPlayer.timeIn;
+				timeIn = (long) VideoPlayer.playerLeftTime;
 				txtSubtitles.setText("");
 				btnSupprimer.setEnabled(false);
 				for (Component c : timeline.getComponents())
@@ -2256,14 +2278,17 @@ public class SubtitlesTimeline {
 					subtitlesNumber();
 					setSubtitles(srt); //Permet de réarranger l'ordre des subs
 					isSaving = false;
+					VideoPlayer.playerLeft.repaint();
 				}
 			}
 		}
 	}
 
 	private static void setVideoPosition(int time) {
-		VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().setTime(time);						
+		
+		VideoPlayer.playerLeftSetTime(time);						
 		VideoPlayer.sliderIn.setValue(time);
+		
 		if (VideoPlayer.panelWaveformLeft != null)
 			VideoPlayer.panelWaveformLeft.setLocation((VideoPlayer.waveformLeft.getSize().width * VideoPlayer.sliderIn.getValue()) / VideoPlayer.sliderIn.getMaximum() ,0);			
 		VideoPlayer.getTimeInPoint(time);

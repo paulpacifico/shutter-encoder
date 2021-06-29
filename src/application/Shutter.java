@@ -70,7 +70,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -196,7 +195,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "15.1";
+	public static String actualVersion = "15.2";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String montserratFont = "Montserrat";
@@ -414,8 +413,6 @@ public class Shutter {
 	protected static JLabel lblAudio8;
 	protected static JLabel lblAudioMapping;
 	protected static JLabel lblPad;
-	protected static JLabel lblPadLeft;
-	protected static JLabel lblPadRight;
 	protected static JComboBox<String> comboDAR;
 	protected static JLabel lblNiveaux;
 	protected static JLabel lblOPATOM;
@@ -3513,11 +3510,22 @@ public class Shutter {
 						if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))
 								|| comboFonctions.getSelectedItem().toString().equals("DVD Rip")
 								|| comboFonctions.getSelectedItem().toString().equals("CD RIP")
-								|| inputDeviceIsRunning) {
-							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-								lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
+								|| inputDeviceIsRunning)
+						{
+							if (System.getProperty("os.name").contains("Windows"))
+							{
+								if (Settings.lblDestination1.getText() != "" && new File(Settings.lblDestination1.getText()).exists())
+									lblDestination1.setText(Settings.lblDestination1.getText());
+								else
+									lblDestination1.setText(System.getProperty("user.home") + "\\Desktop");
+							}
 							else
-								lblDestination1.setText(System.getProperty("user.home") + "\\Desktop");
+							{
+								if (Settings.lblDestination1.getText() != "" && new File(Settings.lblDestination1.getText()).exists())
+									lblDestination1.setText(Settings.lblDestination1.getText());
+								else
+									lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
+							}
 						} else
 							lblDestination1.setText(language.getProperty("sameAsSource"));
 					}
@@ -4500,17 +4508,10 @@ public class Shutter {
 				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
 				{
 					lblPad.setVisible(false);
-					lblPadLeft.setVisible(false);
-					lblPadRight.setVisible(false);
 				}
 				else
 				{
-					lblPad.setText(language.getProperty("lblPad"));
-					lblPadLeft.setBackground(Color.black);
-					lblPadLeft.setVisible(true);
-					lblPadRight.setBackground(Color.black);
-					lblPadRight.setVisible(true);
-					
+					lblPad.setText(language.getProperty("lblPad"));					
 					lblPad.setVisible(true);
 				}	
 				
@@ -4529,10 +4530,6 @@ public class Shutter {
 				{
 					lblPad.setVisible(true);
 					lblPad.setText(language.getProperty("lblPad"));
-					lblPadLeft.setBackground(Color.black);
-					lblPadLeft.setVisible(true);
-					lblPadRight.setBackground(Color.black);
-					lblPadRight.setVisible(true);
 				}
 				
 				char caracter = e.getKeyChar();
@@ -5054,7 +5051,7 @@ public class Shutter {
 							try {
 								FFMPEG.fonctionInOut();
 								
-								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + filter + compression + " -vframes 1 " + '"' + fileOut + '"');							
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + filter + compression + " -vframes 1 " + '"' + fileOut + '"');							
 								
 								do
 									try {
@@ -5085,7 +5082,7 @@ public class Shutter {
 						else if (comboFonctions.getSelectedItem().toString().equals("JPEG"))
 						{
 							String cmd = filter + " -an -c:v mjpeg" + compression + " -vframes 1 -f nut pipe:play |";
-							FFMPEG.toFFPLAY(FFMPEG.inPoint + " -i " + '"' + file + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);
+							FFMPEG.toFFPLAY(FFMPEG.inPoint + " -i " + '"' + file + '"' + FFMPEG.outPoint + cmd);
 						}
 						else
 							FFPLAY.run(" -i " + '"' + file + '"' + filter);
@@ -7536,42 +7533,6 @@ public class Shutter {
 					caseInAndOut.setSelected(false);
 				}				
 				
-				if (System.getProperty("os.name").contains("Mac") && System.getProperty("os.arch").equals("aarch64")) //Mac ARM
-				{
-			 		boolean downloadVLC = false;
-			 		
-					if (new File("/Applications/VLC.app").exists() == false)
-					{
-						downloadVLC = true;	
-					}
-					else //Not ARM version of VLC
-					{
-						try {
-							Process proc = Runtime.getRuntime().exec("file /Applications/VLC.app/Contents/MacOS/VLC");
-
-					        BufferedReader reader =  new BufferedReader(new InputStreamReader(proc.getInputStream()));
-					        
-					        if (reader.readLine().contains("x86_64"))
-					        	downloadVLC = true;
-						
-						} catch (IOException e1) {}
-					}
-					
-					if (downloadVLC)
-					{
-						caseInAndOut.setSelected(false);
-						
-						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("vlcInstallation"), Shutter.language.getProperty("vlc"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);		
-						
-						if (reply == JOptionPane.YES_OPTION) 
-						{			
-							try {
-								Desktop.getDesktop().browse(new URI("https://get.videolan.org/vlc/3.0.12.1/macosx/vlc-3.0.12.1-arm64.dmg"));
-							} catch (IOException | URISyntaxException e1) {}		
-						}
-					}
-				}
-				
 				if (liste.getSize() == 0 && VideoPlayer.frame != null && VideoPlayer.frame.isVisible() == false)
 				{
 					caseInAndOut.setSelected(false);
@@ -7591,16 +7552,19 @@ public class Shutter {
 						if (VideoPlayer.waveform.exists())
 							VideoPlayer.waveform.delete();
 						
-						VideoPlayer.PlayerHasBeenStopped = false;
+						VideoPlayer.playerHasBeenStopped = false;
 						
 						new VideoPlayer();														
 						
 					} else {
 						Utils.changeFrameVisibility(VideoPlayer.frame, true);
-						if (VideoPlayer.mediaPlayerComponentLeft != null)
-							VideoPlayer.mediaPlayerComponentLeft.getMediaPlayer().stop();
-						if (VideoPlayer.mediaPlayerComponentRight != null)
-							VideoPlayer.mediaPlayerComponentRight.getMediaPlayer().stop();
+						
+						if (VideoPlayer.playerLeftVideo != null)
+							VideoPlayer.playerLeftStop();
+						
+						if (VideoPlayer.playerRightVideo != null)
+							VideoPlayer.playerRightStop();
+						
 						VideoPlayer.frame.getContentPane().removeAll();
 
 						switch (Shutter.comboFonctions.getSelectedItem().toString()) {
@@ -11674,7 +11638,7 @@ public class Shutter {
 							case2pass.setSelected(false);
 							case2pass.setEnabled(false);
 							
-							if (lblVBR.getText().equals("CBR") || lblVBR.getText().equals("CQ") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+							if (lblVBR.getText().equals("CBR") || lblVBR.getText().equals("CQ") && comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.arch").equals("amd64"))
 							{								
 								lblVBR.setText("VBR");
 								debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "2500", "2000", "1500", "1000", "500" }));
@@ -12152,7 +12116,8 @@ public class Shutter {
 							if (WatermarkWindow.frame == null)
 								new WatermarkWindow();
 							else {
-								WatermarkWindow.loadImage("0", "0", "0", true, -1, true);
+								WatermarkWindow.positionVideo.setValue(0);
+								WatermarkWindow.loadImage("0", "0", "0", true, -1);
 								Utils.changeDialogVisibility(WatermarkWindow.frame, false);
 							}
 							
@@ -12473,7 +12438,8 @@ public class Shutter {
 					}
 				}
 				
-				if (caseRognage.isSelected()) {
+				if (caseRognage.isSelected())
+				{
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					try {
 						frame.setOpacity(0.5f);
@@ -12485,106 +12451,71 @@ public class Shutter {
 						CropVideo.loadImage("00","00","00");
 						Utils.changeDialogVisibility(CropVideo.frame, false);
 					}
-					
-					if (Functions.frame != null && Functions.frame.isVisible())
-					{
-						Thread t = new Thread (new Runnable() {
+							
+					Thread t = new Thread (new Runnable() {
 
-							@Override
-							public void run() {
-								do {
-									try {
-										Thread.sleep(100);
-									} catch (InterruptedException er) {}
-								} while (CropVideo.frame.isVisible());
+						@Override
+						public void run() {
 								
-								//Largeur
-					        	String i[] = FFPROBE.imageResolution.split("x");
+							do {
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException er) {}
+							} while (CropVideo.frame.isVisible());
+
+					
+							frame.setOpacity(1.0f);
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));						
+		
+							//Largeur
+				        	String i[] = FFPROBE.imageResolution.split("x");
+							
+							comboH264Taille.removeAllItems();
+				        	
+							if (ratioFinal == 0)
+								caseRognage.setSelected(false);
+							else if (ratioFinal < (float) Integer.parseInt(i[0]) / Integer.parseInt(i[1]))
+							{
+								Integer cropValue = (int) (Math.floor(Integer.parseInt(i[1]) * ratioFinal));
+																
+								if (cropValue % 2 == 0)
+									comboH264Taille.addItem(cropValue + "x" + i[1]);
+								else
+									comboH264Taille.addItem((cropValue + 1) + "x" + i[1]);
 								
-								if (ratioFinal == 0)
-									caseRognage.setSelected(false);
-								else if (ratioFinal < (float) Integer.parseInt(i[0]) / Integer.parseInt(i[1])) {
-									comboH264Taille.removeAllItems();
-									comboH264Taille.addItem(Math.round(Integer.parseInt(i[1]) * ratioFinal) + "x" + i[1]);
-									comboH264Taille.addItem(Math.round(1536 * ratioFinal) + "x1536");
-									comboH264Taille.addItem(Math.round(1200 * ratioFinal) + "x1200");
-									comboH264Taille.addItem(Math.round(768 * ratioFinal) + "x768");
-									comboH264Taille.addItem(Math.round(600 * ratioFinal) + "x600");
-									comboH264Taille.addItem("720x576");
-									comboH264Taille.addItem(Math.round(480 * ratioFinal) + "x480");
-									comboH264Taille.addItem(Math.round(360 * ratioFinal) + "x360");
-									comboH264Taille.addItem(Math.round(180 * ratioFinal) + "x180");
-									comboH264Taille.setSelectedIndex(0);
-									comboH264Taille.setEnabled(true);
-								} else {
-									comboH264Taille.removeAllItems();
-									comboH264Taille.addItem("4096x" + Math.round(4096 / ratioFinal));
-									comboH264Taille.addItem("3840x" + Math.round(3840 / ratioFinal));
-									comboH264Taille.addItem("1920x" + Math.round(1920 / ratioFinal));
-									comboH264Taille.addItem("1280x" + Math.round(1280 / ratioFinal));
-									comboH264Taille.addItem("854x" + Math.round(854 / ratioFinal));
-									comboH264Taille.addItem("640x" + Math.round(640 / ratioFinal));
-									comboH264Taille.addItem("320x" + Math.round(320 / ratioFinal));
-									comboH264Taille.setSelectedIndex(2);
-									comboH264Taille.setEnabled(true);
-								}
+								comboH264Taille.addItem((int) (Math.floor(2160 * ratioFinal) + (Math.floor(2160 * ratioFinal) % 2)) + "x2160");
+								comboH264Taille.addItem((int) (Math.floor(1080 * ratioFinal) + (Math.floor(1080 * ratioFinal) % 2)) + "x1080");
+								comboH264Taille.addItem((int) (Math.floor(720 * ratioFinal) + (Math.floor(720 * ratioFinal) % 2)) + "x720");
+								comboH264Taille.addItem("720x576");
+								comboH264Taille.addItem((int) (Math.floor(480 * ratioFinal) + (Math.floor(480 * ratioFinal) % 2)) + "x480");
+								comboH264Taille.addItem((int) (Math.floor(360 * ratioFinal) + (Math.floor(360 * ratioFinal) % 2)) + "x360");
+								comboH264Taille.addItem((int) (Math.floor(180 * ratioFinal) + (Math.floor(180 * ratioFinal) % 2)) + "x180");
+							} 
+							else 
+							{
+								Integer cropValue = (int) (Math.floor(Integer.parseInt(i[0]) / ratioFinal));
 								
-								frame.setOpacity(1.0f);
-								frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+								if (cropValue % 2 == 0)
+									comboH264Taille.addItem(i[0] + "x" + cropValue);
+								else
+									comboH264Taille.addItem(i[0] + "x" + (cropValue + 1));								
+								
+								comboH264Taille.addItem("4096x" + (int) (Math.floor(4096 / ratioFinal) + (Math.floor(4096 / ratioFinal)) % 2));
+								comboH264Taille.addItem("3840x" + (int) (Math.floor(3840 / ratioFinal) + (Math.floor(3840 / ratioFinal)) % 2));
+								comboH264Taille.addItem("1920x" + (int) (Math.floor(1920 / ratioFinal) + (Math.floor(1920 / ratioFinal)) % 2));
+								comboH264Taille.addItem("1280x" + (int) (Math.floor(1280 / ratioFinal) + (Math.floor(1280 / ratioFinal)) % 2));
+								comboH264Taille.addItem("854x" + (int) (Math.floor(854 / ratioFinal) + (Math.floor(854 / ratioFinal)) % 2));
+								comboH264Taille.addItem("640x" + (int) (Math.floor(640 / ratioFinal) + (Math.floor(640 / ratioFinal)) % 2));
+								comboH264Taille.addItem("320x" + (int) (Math.floor(320 / ratioFinal) + (Math.floor(320 / ratioFinal)) % 2));
 							}
 							
-						});
-						t.start();
-					}
-					else 
-					{						
-						frame.setOpacity(1.0f);
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));						
-	
-						//Largeur
-			        	String i[] = FFPROBE.imageResolution.split("x");
-						
-						if (ratioFinal == 0)
-							caseRognage.setSelected(false);
-						else if (ratioFinal < (float) Integer.parseInt(i[0]) / Integer.parseInt(i[1])) {
-							comboH264Taille.removeAllItems();
-							comboH264Taille.addItem(Math.round(Integer.parseInt(i[1]) * ratioFinal) + "x" + i[1]);
-							if (Math.round(2160 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem(Math.round(2160 * ratioFinal) + "x2160");
-							if (Math.round(1080 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem(Math.round(1080 * ratioFinal) + "x1080");
-							if (Math.round(720 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem(Math.round(720 * ratioFinal) + "x720");
-							if (Math.round(480 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem(Math.round(480 * ratioFinal) + "x480");
-							if (Math.round(360 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem(Math.round(360 * ratioFinal) + "x360");
-							if (Math.round(180 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem(Math.round(180 * ratioFinal) + "x180");
-							comboH264Taille.setSelectedIndex(0);
-							comboH264Taille.setEnabled(true);
-						} else {
-							comboH264Taille.removeAllItems();
-							comboH264Taille.addItem(i[0] + "x" + Math.round(Integer.parseInt(i[0]) / ratioFinal));
-							if (Math.round(4096 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem("4096x" + Math.round(4096 / ratioFinal));
-							if (Math.round(3840 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem("3840x" + Math.round(3840 / ratioFinal));
-							if (Math.round(1920 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem("1920x" + Math.round(1920 / ratioFinal));
-							if (Math.round(1280 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem("1280x" + Math.round(1280 / ratioFinal));
-							if (Math.round(854 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem("854x" + Math.round(854 / ratioFinal));
-							if (Math.round(640 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem("640x" + Math.round(640 / ratioFinal));
-							if (Math.round(320 * ratioFinal) % 2 == 0)
-								comboH264Taille.addItem("320x" + Math.round(320 / ratioFinal));
-							comboH264Taille.setSelectedIndex(0);
 							comboH264Taille.setEnabled(true);
 						}
-					}
-				} else {
+					});
+					t.start();
+				} 
+				else
+				{
 					comboH264Taille.removeAllItems();
 					comboH264Taille.addItem(language.getProperty("source"));
 					comboH264Taille.addItem("4096x2160");
@@ -12657,10 +12588,6 @@ public class Shutter {
 			public void keyTyped(KeyEvent e) {
 				lblPad.setVisible(true);
 				lblPad.setText(language.getProperty("lblPad"));
-				lblPadLeft.setBackground(Color.black);
-				lblPadLeft.setVisible(true);
-				lblPadRight.setBackground(Color.black);
-				lblPadRight.setVisible(true);
 				
 				char caracter = e.getKeyChar();
 				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != 'x'
@@ -12678,7 +12605,24 @@ public class Shutter {
 
 		});
 
-		lblPad = new JLabel(language.getProperty("lblPad"));
+		lblPad = new JLabel() {			
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				
+				if (lblPad.getText().equals(Shutter.language.getProperty("lblPad")) || lblPad.getText().equals(Shutter.language.getProperty("lblCrop")))
+				{
+					if (lblPad.getText().equals(Shutter.language.getProperty("lblPad")))
+						g.setColor(Color.BLACK);
+					else
+						g.setColor(new Color(50,50,50));
+					
+					g.fillRect(0, 0, 8, 16);
+					g.fillRect((65 - 8), 0, (65 - 8), 16);
+				}
+			}
+		};
+		lblPad.setText(language.getProperty("lblPad"));
 		lblPad.setName("lblPad");
 		lblPad.setBackground(new Color(80, 80, 80));
 		lblPad.setHorizontalAlignment(SwingConstants.CENTER);
@@ -12687,21 +12631,7 @@ public class Shutter {
 		lblPad.setFont(new Font(montserratFont, Font.PLAIN, 11));
 		lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 36, comboH264Taille.getLocation().y + 3, 65, 16);
 		grpH264.add(lblPad);
-		
-		lblPadLeft = new JLabel();
-		lblPadLeft.setName("lblPadLeft");
-		lblPadLeft.setBackground(Color.black);
-		lblPadLeft.setOpaque(true);
-		lblPadLeft.setBounds(0, 0, 8, 16);
-		lblPad.add(lblPadLeft);
-		
-		lblPadRight = new JLabel();
-		lblPadRight.setName("lblPadRight");
-		lblPadRight.setBackground(Color.black);
-		lblPadRight.setOpaque(true);
-		lblPadRight.setBounds(57, 0, 8, 16);
-		lblPad.add(lblPadRight);
-		
+				
 		lblPad.addMouseListener(new MouseListener() {
 
 			@Override
@@ -12715,18 +12645,10 @@ public class Shutter {
 						if (lblPad.getText().equals(language.getProperty("lblPad")))
 						{
 							lblPad.setText(language.getProperty("lblCrop"));
-							lblPadLeft.setBackground(new Color(50,50,50));
-							lblPadLeft.setVisible(true);
-							lblPadRight.setBackground(new Color(50,50,50));
-							lblPadRight.setVisible(true);
 						}
 						else
 						{
 							lblPad.setText(language.getProperty("lblPad"));
-							lblPadLeft.setBackground(Color.black);
-							lblPadLeft.setVisible(true);
-							lblPadRight.setBackground(Color.black);
-							lblPadRight.setVisible(true);
 						}
 					}
 					else
@@ -12734,16 +12656,10 @@ public class Shutter {
 						if (lblPad.getText().equals(language.getProperty("lblPad")))
 						{
 							lblPad.setText(language.getProperty("lblStretch"));
-							lblPadLeft.setVisible(false);
-							lblPadRight.setVisible(false);
 						}
 						else if (lblPad.getText().equals(language.getProperty("lblStretch")))
 						{
 							lblPad.setText(language.getProperty("lblPad"));
-							lblPadLeft.setBackground(Color.black);
-							lblPadLeft.setVisible(true);
-							lblPadRight.setBackground(Color.black);
-							lblPadRight.setVisible(true);
 						}
 					}
 				}
@@ -12752,24 +12668,14 @@ public class Shutter {
 					if (lblPad.getText().equals(language.getProperty("lblPad")))
 					{
 						lblPad.setText(language.getProperty("lblStretch"));
-						lblPadLeft.setVisible(false);
-						lblPadRight.setVisible(false);
 					}
 					else if (lblPad.getText().equals(language.getProperty("lblStretch")))
 					{
 						lblPad.setText(language.getProperty("lblCrop"));
-						lblPadLeft.setBackground(new Color(50,50,50));
-						lblPadLeft.setVisible(true);
-						lblPadRight.setBackground(new Color(50,50,50));
-						lblPadRight.setVisible(true);
 					}
 					else
 					{
 						lblPad.setText(language.getProperty("lblPad"));
-						lblPadLeft.setBackground(Color.black);
-						lblPadLeft.setVisible(true);
-						lblPadRight.setBackground(Color.black);
-						lblPadRight.setVisible(true);
 					}
 				}
 			}
@@ -12803,26 +12709,16 @@ public class Shutter {
 				if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")))
 				{
 					lblPad.setVisible(false);
-					lblPadLeft.setVisible(false);
-					lblPadRight.setVisible(false);
 				}
 				else
 				{
 					if (caseRognage.isSelected())
 					{
-						lblPad.setText(language.getProperty("lblCrop"));
-						lblPadLeft.setBackground(new Color(50,50,50));
-						lblPadLeft.setVisible(true);
-						lblPadRight.setBackground(new Color(50,50,50));
-						lblPadRight.setVisible(true);
+						lblPad.setText(CropVideo.lblPad.getText());
 					}
 					else						
 					{
 						lblPad.setText(language.getProperty("lblPad"));
-						lblPadLeft.setBackground(Color.black);
-						lblPadLeft.setVisible(true);
-						lblPadRight.setBackground(Color.black);
-						lblPadRight.setVisible(true);
 					}
 					
 					lblPad.setVisible(true);
@@ -12963,7 +12859,7 @@ public class Shutter {
 					lblVBR.setText("CBR");
 				}
 				else if (lblVBR.getText().equals("CBR")
-						|| lblVBR.getText().equals("VBR") && caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox") == false && comboFonctions.getSelectedItem().toString().contains("H.26")
+						|| lblVBR.getText().equals("VBR") && caseAccel.isSelected() && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") == false || System.getProperty("os.arch").equals("aarch64")) && comboFonctions.getSelectedItem().toString().contains("H.26")
 						|| (comboFonctions.getSelectedItem().toString().contains("H.26") == false && (comboFonctions.getSelectedItem().toString().equals("VP9") || comboFonctions.getSelectedItem().toString().equals("AV1")) && lblVBR.getText().equals("VBR")))
 				{
 					lblVBR.setText("CQ");
@@ -14201,13 +14097,6 @@ public class Shutter {
 						|| comboFonctions.getSelectedItem().toString().equals("FFV1"))
 				{
 						lblPad.setVisible(true);
-						if (lblPad.getText().equals(language.getProperty("lblPad")))
-						{
-							lblPadLeft.setBackground(Color.black);
-							lblPadLeft.setVisible(true);
-							lblPadRight.setBackground(Color.black);
-							lblPadRight.setVisible(true);
-						}
 				}
 						
 				
@@ -14246,13 +14135,6 @@ public class Shutter {
 				else
 				{
 					lblPad.setVisible(true);
-					if (lblPad.getText().equals(language.getProperty("lblPad")))
-					{
-						lblPadLeft.setBackground(Color.black);
-						lblPadLeft.setVisible(true);
-						lblPadRight.setBackground(Color.black);
-						lblPadRight.setVisible(true);
-					}
 				}
 				
 				caseOpenGop.setSelected(false);
@@ -14821,10 +14703,22 @@ public class Shutter {
 				|| comboFonctions.getSelectedItem().toString().equals("CD RIP")
 				|| inputDeviceIsRunning) {
 			if (caseChangeFolder1.isSelected() == false) {
-				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-					lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
+				
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					if (Settings.lblDestination1.getText() != "" && new File(Settings.lblDestination1.getText()).exists())
+						lblDestination1.setText(Settings.lblDestination1.getText());
+					else
+						lblDestination1.setText(System.getProperty("user.home") + "\\Desktop");
+				}
 				else
-					lblDestination1.setText(System.getProperty("user.home") + "\\Desktop");
+				{
+					if (Settings.lblDestination1.getText() != "" && new File(Settings.lblDestination1.getText()).exists())
+						lblDestination1.setText(Settings.lblDestination1.getText());
+					else
+						lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
+				}
+				
 			}			
 		} else {
 			if (caseChangeFolder1.isSelected() == false)
@@ -15499,13 +15393,6 @@ public class Shutter {
 							else
 							{
 								lblPad.setVisible(true);
-								if (lblPad.getText().equals(language.getProperty("lblPad")))
-								{
-									lblPadLeft.setBackground(Color.black);
-									lblPadLeft.setVisible(true);
-									lblPadRight.setBackground(Color.black);
-									lblPadRight.setVisible(true);
-								}
 							}
 							
 							grpResolution.add(comboResolution);
@@ -15720,13 +15607,6 @@ public class Shutter {
 							else
 							{
 								lblPad.setVisible(true);
-								if (lblPad.getText().equals(language.getProperty("lblPad")))
-								{
-									lblPadLeft.setBackground(Color.black);
-									lblPadLeft.setVisible(true);
-									lblPadRight.setBackground(Color.black);
-									lblPadRight.setVisible(true);
-								}
 							}
 							
 							grpResolution.add(comboResolution);
@@ -16072,13 +15952,6 @@ public class Shutter {
 							else
 							{
 								lblPad.setVisible(true);
-								if (lblPad.getText().equals(language.getProperty("lblPad")))
-								{
-									lblPadLeft.setBackground(Color.black);
-									lblPadLeft.setVisible(true);
-									lblPadRight.setBackground(Color.black);
-									lblPadRight.setVisible(true);
-								}
 							}
 							lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 5, comboH264Taille.getLocation().y + 3, 65, 16);
 							grpH264.add(lblPad);
@@ -16220,30 +16093,6 @@ public class Shutter {
 								FFPROBE.CalculH264();
 							// Qualité Max
 							caseQMax.setEnabled(true);
-							
-							/*
-							//VBR CBR
-							lblVBR.setVisible(true);
-							if (lblVBR.getText().equals("CQ"))
-							{
-								taille.setText("-");
-								String[] values = new String[53];
-								values[0] = language.getProperty("lblBest");
-								for (int i = 1 ; i < 52 ; i++)
-								{
-									values[i] = String.valueOf(i);
-								}			
-								values[52] = language.getProperty("lblWorst");	
-
-								if (lblDbitVido.getText().equals(language.getProperty("lblDbitVido")))
-								{		 
-									debitVideo.setModel(new DefaultComboBoxModel<String>(values));
-									debitVideo.setSelectedIndex(23);
-								}
-								lblDbitVido.setText(language.getProperty("lblValue"));
-								lblKbsH264.setVisible(false);
-								h264lines.setVisible(false);
-							}*/
 							
 							// Ajout case rognage
 							caseRognerImage.setLocation(7,
@@ -16404,13 +16253,6 @@ public class Shutter {
 							else
 							{
 								lblPad.setVisible(true);
-								if (lblPad.getText().equals(language.getProperty("lblPad")))
-								{
-									lblPadLeft.setBackground(Color.black);
-									lblPadLeft.setVisible(true);
-									lblPadRight.setBackground(Color.black);
-									lblPadRight.setVisible(true);
-								}
 							}
 							lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 7, comboH264Taille.getLocation().y + 3, 65, 16);
 							grpH264.add(lblPad);
@@ -16810,13 +16652,6 @@ public class Shutter {
 								else
 								{
 									lblPad.setVisible(true);
-									if (lblPad.getText().equals(language.getProperty("lblPad")))
-									{
-										lblPadLeft.setBackground(Color.black);
-										lblPadLeft.setVisible(true);
-										lblPadRight.setBackground(Color.black);
-										lblPadRight.setVisible(true);
-									}
 								}
 								lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 36, comboH264Taille.getLocation().y + 3, 65, 16);
 								grpH264.add(lblPad);
