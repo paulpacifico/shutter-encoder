@@ -95,7 +95,7 @@ public class OfflineDetection extends Shutter {
 					else
 						cmd =  " -i " + '"' + Shutter.dirTemp + "offline.png" + '"' + " -lavfi " + '"' + "[0:v]scale=1920x1080[source];[1:v]scale=1920x1080[reference];[source][reference]psnr=" + stats_file + '"' + " -an -f null -" + '"';	
 					
-					FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);		
+					FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd);		
 					
 					//Attente de la fin de FFMPEG
 					do

@@ -129,7 +129,7 @@ public class Rewrap extends Shutter {
 									
 					//Envoi de la commande
 					String cmd = " -avoid_negative_ts make_zero -c:v copy -c:s copy" + audio + timecode + " -map v:0?" + audioMapping + mapSubtitles + " -y ";
-					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
 					
 					//Attente de la fin de FFMPEG
 					do
@@ -140,7 +140,7 @@ public class Rewrap extends Shutter {
 					{
 						//Envoi de la commande
 						cmd = " -avoid_negative_ts make_zero -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + " -y ";
-						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
+						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');		
 						
 						//Attente de la fin de FFMPEG
 						do
