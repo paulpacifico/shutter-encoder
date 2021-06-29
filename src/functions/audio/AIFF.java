@@ -128,7 +128,7 @@ public class AIFF extends Shutter {
 							if (lblSplit.getText().equals(language.getProperty("mono")))
 							{								
 								String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -vn -y ";
-								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd
 								+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_FL.aif") + '"'
 								+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_FR.aif") + '"'
 								+ " -map " + '"' + "[FC]" + '"' + " " + '"'  + fileOut.toString().replace(".aif", "_FC.aif") + '"'
@@ -139,7 +139,7 @@ public class AIFF extends Shutter {
 							else if (lblSplit.getText().equals(language.getProperty("stereo")))
 							{		
 								String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -vn -y ";
-								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
+								FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
 							}
 						}
 						else 
@@ -149,18 +149,18 @@ public class AIFF extends Shutter {
 					{
 						String cmd = " " + audio + "-vn -y ";
 						FFMPEG.run(FFMPEG.inPoint + concat +
-								" -i " + '"' + liste.getElementAt(0) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
-								" -i " + '"' + liste.getElementAt(1) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
-								" -i " + '"' + liste.getElementAt(2) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
-								" -i " + '"' + liste.getElementAt(3) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
-								" -i " + '"' + liste.getElementAt(4) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
-								" -i " + '"' + liste.getElementAt(5) + '"' + FFMPEG.postInPoint + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(0) + '"' + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(1) + '"' + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(2) + '"' + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(3) + '"' + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(4) + '"' + FFMPEG.outPoint +
+								" -i " + '"' + liste.getElementAt(5) + '"' + FFMPEG.outPoint +
 								cmd + '"'  + fileOut + '"');
 					}
 					else
 					{
 						String cmd = " " + audio + "-vn -y ";
-						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
+						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');
 					}	
 					
 					//Attente de la fin de FFMPEG
@@ -392,7 +392,7 @@ public class AIFF extends Shutter {
 				}
 				
 				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFilter + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -acodec pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be -vn" + yesno;
-				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
 					Thread.sleep(100);
@@ -428,7 +428,7 @@ public class AIFF extends Shutter {
 					audioFilter = audioFilter.replaceFirst(",", " -filter_complex ");
 				
 				String cmd = audioFilter + " -map a:" + (i - 1) + " -acodec pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be -vn" + yesno;
-				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
 					Thread.sleep(100);
@@ -460,7 +460,7 @@ public class AIFF extends Shutter {
 				}
 				
 				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -acodec pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be -vn" + yesno;
-				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
 					Thread.sleep(100);

@@ -90,7 +90,7 @@ public class LoudnessTruePeak extends Shutter {
 					else
 						cmd =  " -vn" + audio + " -f null -" + '"';	
 					
-					FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd);		
+					FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd);		
 					
 					//Attente de la fin de FFMPEG
 					do
