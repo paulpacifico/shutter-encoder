@@ -176,7 +176,7 @@ public class DVD extends Shutter {
 									
 					//Envoi de la commande
 					String cmd = pass + " " + filterComplex + " -aspect 16:9 -target pal-dvd -b:v " + bitrate + "k -f dvd" + interlace + flags + " -y ";
-					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);			
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.outPoint + cmd + output);			
 				
 					//Attente de la fin de FFMPEG
 					do
@@ -184,7 +184,7 @@ public class DVD extends Shutter {
 					while(FFMPEG.runProcess.isAlive());
 					
 					if (FFMPEG.cancelled == false && pass != "")
-						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+						FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 					
 					//Attente de la fin de FFMPEG
 					do

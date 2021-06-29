@@ -120,7 +120,7 @@ public class DVPAL extends Shutter {
 					//Envoi de la commande
 					String cmd = " -aspect " + comboFilter.getSelectedItem().toString().replace("/", ":") + filterComplex + flags + " -c:a pcm_s16le -map v:0 -map a? -ar 48000 -s 720x576 -vcodec dvvideo -b:v 25000 -r 25 -y ";
 					
-					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);		
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + output);		
 					
 					//Attente de la fin de FFMPEG
 					do

@@ -221,7 +221,7 @@ public class Picture extends Shutter {
 						fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 					}
 					else
-						FFMPEG.run(FFMPEG.inPoint + frameRate + " -i " + '"' + file.toString() + '"' + logo + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + '"' + fileOut + '"');		
+						FFMPEG.run(FFMPEG.inPoint + frameRate + " -i " + '"' + file.toString() + '"' + logo + FFMPEG.outPoint + cmd + '"' + fileOut + '"');		
 					
 					//Attente de la fin de FFMPEG
 					if (isRaw)
@@ -534,20 +534,20 @@ public class Picture extends Shutter {
 	
 	protected static String setDisplay(String filterComplex, String fichier) {
 		
-      	if (caseShowDate.isSelected())
+		if (caseShowDate.isSelected())
       	{
       		if (filterComplex != "")
-      			filterComplex += ",drawtext=fontfile=" + Shutter.pathToFont + ":text='" + EXIFTOOL.exifDate.replace(":", "-") + "':r=" + FFPROBE.currentFPS + ":" + '"' + "x=(w-tw)*0.5:y=h-(2*lh)" + '"' + ":fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
+      			filterComplex += ",drawtext=fontfile=" + Shutter.pathToFont + ":text='" + EXIFTOOL.exifDate.replace(":", "-") + "':r=" + FFPROBE.currentFPS + ":'x=(w-tw)*0.5:y=h-(2*lh)':fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
       		else
-      			filterComplex = "drawtext=fontfile=" + Shutter.pathToFont + ":text='" + EXIFTOOL.exifDate.replace(":", "-") + "':r=" + FFPROBE.currentFPS + ":" + '"' + "x=(w-tw)*0.5:y=h-(2*lh)" + '"' + ":fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
+      			filterComplex = "drawtext=fontfile=" + Shutter.pathToFont + ":text='" + EXIFTOOL.exifDate.replace(":", "-") + "':r=" + FFPROBE.currentFPS + ":'x=(w-tw)*0.5:y=h-(2*lh)':fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
       	}
       	
 	   	if (caseShowFileName.isSelected())
 	   	{
       		if (filterComplex != "") 
-      			filterComplex += ",drawtext=fontfile=" + Shutter.pathToFont + ":text='" + fichier + "':r=" + FFPROBE.currentFPS + ":" + '"' + "x=(w-tw)*0.5:y=lh" + '"' + ":fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
+      			filterComplex += ",drawtext=fontfile=" + Shutter.pathToFont + ":text='" + fichier + "':r=" + FFPROBE.currentFPS + ":'x=(w-tw)*0.5:y=lh':fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
       		else
-      			filterComplex = "drawtext=fontfile=" + Shutter.pathToFont + ":text='" + fichier + "':r=" + FFPROBE.currentFPS + ":" + '"' + "x=(w-tw)*0.5:y=lh" + '"' + ":fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
+      			filterComplex = "drawtext=fontfile=" + Shutter.pathToFont + ":text='" + fichier + "':r=" + FFPROBE.currentFPS + ":'x=(w-tw)*0.5:y=lh':fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
       	}
 	   
 		return filterComplex;

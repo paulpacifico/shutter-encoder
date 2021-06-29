@@ -187,7 +187,7 @@ public class Bluray extends Shutter {
 									
 					//Envoi de la commande
 					String cmd = pass + filterComplex + codec + resolution + preset + " -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + bitrate + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709 -r " + FFPROBE.currentFPS + flags + " -y ";
-					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd + output);			
+					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.outPoint + cmd + output);			
 
 					//Attente de la fin de FFMPEG
 					do
@@ -197,7 +197,7 @@ public class Bluray extends Shutter {
 					if (case2pass.isSelected())
 					{						
 						if (FFMPEG.cancelled == false)
-							FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.postInPoint + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+							FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 						
 						//Attente de la fin de FFMPEG
 						do
