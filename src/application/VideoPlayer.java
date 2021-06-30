@@ -1687,7 +1687,8 @@ public class VideoPlayer {
 																
 								} while (leftFrameIsComplete == false);					
 								
-								getTimeInPoint(playerLeftTime - inputFramerateMS);
+								if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+									getTimeInPoint(playerLeftTime - inputFramerateMS);
 							}	
 							
 							i = 0;
