@@ -1498,6 +1498,8 @@ public class VideoPlayer {
 										rightFrameIsComplete = true;
 									
 								} while (rightFrameIsComplete == false);
+								
+								getTimeOutPoint(playerRightTime - inputFramerateMS);
 							}			
 							
 							i = 0;
@@ -1681,7 +1683,9 @@ public class VideoPlayer {
 									if (System.currentTimeMillis() - time > 1000)
 										leftFrameIsComplete = true;
 																
-								} while (leftFrameIsComplete == false);							
+								} while (leftFrameIsComplete == false);					
+								
+								getTimeInPoint(playerLeftTime - inputFramerateMS);
 							}	
 							
 							i = 0;
