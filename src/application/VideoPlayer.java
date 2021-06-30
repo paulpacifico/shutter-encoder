@@ -1560,6 +1560,8 @@ public class VideoPlayer {
 				}
 				else if (rightPlay.getText().equals(Shutter.language.getProperty("btnResume")) && playerRightTime < (FFPROBE.totalLength - inputFramerateMS*2))
 				{
+					frameRightControl = false;
+					
 					playerRightStop();
 					do {
 						try {
@@ -1765,7 +1767,9 @@ public class VideoPlayer {
 					leftPlay.setText(Shutter.language.getProperty("btnResume"));				
 				}
 				else if (leftPlay.getText().equals(Shutter.language.getProperty("btnResume")))
-				{					
+				{				
+					frameLeftControl = false;
+					
 					playerLeftStop();
 					do {
 						try {
