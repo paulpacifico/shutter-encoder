@@ -115,6 +115,9 @@ public class Bluray extends Shutter {
 	            	
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 	            	filterComplex = setDenoiser(filterComplex);
@@ -186,7 +189,7 @@ public class Bluray extends Shutter {
 					}
 									
 					//Envoi de la commande
-					String cmd = pass + filterComplex + codec + resolution + preset + " -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + bitrate + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709 -r " + FFPROBE.currentFPS + flags + " -y ";
+					String cmd = pass + filterComplex + codec + resolution + preset + " -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + bitrate + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709 -r " + FFPROBE.currentFPS + flags + metadatas + " -y ";
 					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.outPoint + cmd + output);			
 
 					//Attente de la fin de FFMPEG
@@ -273,6 +276,11 @@ public class Bluray extends Shutter {
 	protected static String setFlags() {
    
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setResolution() {		
@@ -579,21 +587,21 @@ public class Bluray extends Shutter {
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
 		{
     		String mapping = "";
-    		if (comboAudio1.getSelectedIndex() != 8)
+    		if (comboAudio1.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-			if (comboAudio2.getSelectedIndex() != 8)
+			if (comboAudio2.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-			if (comboAudio3.getSelectedIndex() != 8)
+			if (comboAudio3.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-			if (comboAudio4.getSelectedIndex() != 8)
+			if (comboAudio4.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-			if (comboAudio5.getSelectedIndex() != 8)
+			if (comboAudio5.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-			if (comboAudio6.getSelectedIndex() != 8)
+			if (comboAudio6.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-			if (comboAudio7.getSelectedIndex() != 8)
+			if (comboAudio7.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-			if (comboAudio8.getSelectedIndex() != 8)
+			if (comboAudio8.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			
 			return " -c:a copy" + mapping;
@@ -727,7 +735,7 @@ public class Bluray extends Shutter {
 				    else
 				    	audio += " -filter_complex " + '"';	
 					
-		    		if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    		if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 						audio += "[0:a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 					else
 		    		{
@@ -764,7 +772,7 @@ public class Bluray extends Shutter {
 		    		 else
 				    	audio += " -filter_complex " + '"';	
 				    
-		    		 if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    		 if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 		    		 else
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k"; 
@@ -772,21 +780,21 @@ public class Bluray extends Shutter {
 		    	 else
 		    	 {
 		    		String mapping = "";
-		    		if (comboAudio1.getSelectedIndex() != 8)
+		    		if (comboAudio1.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-					if (comboAudio2.getSelectedIndex() != 8)
+					if (comboAudio2.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-					if (comboAudio3.getSelectedIndex() != 8)
+					if (comboAudio3.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-					if (comboAudio4.getSelectedIndex() != 8)
+					if (comboAudio4.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-					if (comboAudio5.getSelectedIndex() != 8)
+					if (comboAudio5.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-					if (comboAudio6.getSelectedIndex() != 8)
+					if (comboAudio6.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-					if (comboAudio7.getSelectedIndex() != 8)
+					if (comboAudio7.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-					if (comboAudio8.getSelectedIndex() != 8)
+					if (comboAudio8.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 					
 		    		if (newAudio != "") newAudio = " -filter:a " + '"' + newAudio + '"';

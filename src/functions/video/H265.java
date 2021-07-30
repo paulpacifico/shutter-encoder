@@ -159,7 +159,10 @@ public class H265 extends Shutter {
 					filterComplex = setColormatrix(filterComplex);	
 					
 					//Color
-					filterComplex = setColor(filterComplex);					
+					filterComplex = setColor(filterComplex);	
+					
+					//Deflicker
+					filterComplex= setDeflicker(filterComplex);
 										
 					//Decimate
 					filterComplex = setDecimate(filterComplex);
@@ -181,6 +184,9 @@ public class H265 extends Shutter {
 					
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 		    		filterComplex = setDenoiser(filterComplex);
@@ -259,7 +265,7 @@ public class H265 extends Shutter {
 						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
 
 					//Envoi de la commande	
-					cmd = frameRate + resolution + colorspace + pass + filterComplex + codec + preset + profile + tune + gop + bitrate + gamma + options + flags + " -y ";
+					cmd = frameRate + resolution + colorspace + pass + filterComplex + codec + preset + profile + tune + gop + bitrate + gamma + options + flags + metadatas + " -y ";
 				
 					//Screen capture
 					if (inputDeviceIsRunning)
@@ -569,21 +575,21 @@ public class H265 extends Shutter {
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
 		{
     		String mapping = "";
-    		if (comboAudio1.getSelectedIndex() != 8)
+    		if (comboAudio1.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-			if (comboAudio2.getSelectedIndex() != 8)
+			if (comboAudio2.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-			if (comboAudio3.getSelectedIndex() != 8)
+			if (comboAudio3.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-			if (comboAudio4.getSelectedIndex() != 8)
+			if (comboAudio4.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-			if (comboAudio5.getSelectedIndex() != 8)
+			if (comboAudio5.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-			if (comboAudio6.getSelectedIndex() != 8)
+			if (comboAudio6.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-			if (comboAudio7.getSelectedIndex() != 8)
+			if (comboAudio7.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-			if (comboAudio8.getSelectedIndex() != 8)
+			if (comboAudio8.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			
 			return " -c:a copy" + mapping;
@@ -598,6 +604,14 @@ public class H265 extends Shutter {
 				audioCodec = "ac3";
 			else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
 				audioCodec = "libopus";	
+			else if (comboAudioCodec.getSelectedItem().toString().equals("PCM 16Bits"))
+				audioCodec = "pcm_s16le";
+			else if (comboAudioCodec.getSelectedItem().toString().equals("PCM 24Bits"))
+				audioCodec = "pcm_s24le";
+			else if (comboAudioCodec.getSelectedItem().toString().equals("PCM 32Bits"))
+				audioCodec = "pcm_s32le";
+			else if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+				audioCodec = "flac";
 			
 			String newAudio = "";
 			
@@ -721,7 +735,7 @@ public class H265 extends Shutter {
 				    else
 				    	audio += " -filter_complex " + '"';	
 					
-					if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+					if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 						audio += "[0:a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 					else
 		    		{
@@ -755,7 +769,7 @@ public class H265 extends Shutter {
 				    	}
 					    else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
 					    {
-					    	if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+					    	if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 				    			 audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a][" + String.valueOf(comboAudio2.getSelectedIndex()).replace("1","2") + ":a]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 				    		 else
 				    			 audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
@@ -783,7 +797,7 @@ public class H265 extends Shutter {
 		    		 else
 				    	audio += " -filter_complex " + '"';	
 				    
-		    		 if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    		 if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 		    		 else
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k"; 
@@ -791,21 +805,21 @@ public class H265 extends Shutter {
 		    	 else
 		    	 {
 		    		String mapping = "";
-		    		if (comboAudio1.getSelectedIndex() != 8)
+		    		if (comboAudio1.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-					if (comboAudio2.getSelectedIndex() != 8)
+					if (comboAudio2.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-					if (comboAudio3.getSelectedIndex() != 8)
+					if (comboAudio3.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-					if (comboAudio4.getSelectedIndex() != 8)
+					if (comboAudio4.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-					if (comboAudio5.getSelectedIndex() != 8)
+					if (comboAudio5.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-					if (comboAudio6.getSelectedIndex() != 8)
+					if (comboAudio6.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-					if (comboAudio7.getSelectedIndex() != 8)
+					if (comboAudio7.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-					if (comboAudio8.getSelectedIndex() != 8)
+					if (comboAudio8.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 					
 		    		if (newAudio != "") newAudio = " -filter:a " + '"' + newAudio + '"';
@@ -967,7 +981,7 @@ public class H265 extends Shutter {
 	protected static String setGamma() {
 		String yuv = "yuv";
 		
-        if (FFPROBE.lumaLevel == "0-255" && caseForceOutput.isSelected()  == false || caseForceOutput.isSelected() && lblNiveaux.getText().equals("0-255"))
+        if (caseForceOutput.isSelected() && lblNiveaux.getText().equals("0-255"))
         {
         	yuv += "j";
         }		
@@ -1043,20 +1057,17 @@ public class H265 extends Shutter {
 	protected static String setBitrate() {
 		if (lblVBR.getText().equals("CQ"))
         {
-        	if (System.getProperty("os.name").contains("Mac"))
-        		return " -q:v " + (31 - (int) Math.ceil((Integer.parseInt(debitVideo.getSelectedItem().toString()) * 31) / 51));
-        	else
-        	{
-        		String gpu = "";
-    			if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-    				gpu = " -cq " + debitVideo.getSelectedItem().toString();
-    			else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
-    				gpu = " -global_quality " + debitVideo.getSelectedItem().toString();
-    			else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
-    				gpu = " -qp_i " + debitVideo.getSelectedItem().toString() + " -qp_p " + debitVideo.getSelectedItem().toString() + " -qp_b " + debitVideo.getSelectedItem().toString();        			
-        		
-        		return " -crf " + debitVideo.getSelectedItem().toString() + gpu;
-        	}
+			String gpu = "";
+			if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+				gpu = " -cq " + debitVideo.getSelectedItem().toString();
+			else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+				gpu = " -global_quality " + debitVideo.getSelectedItem().toString();
+			else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+				gpu = " -qp_i " + debitVideo.getSelectedItem().toString() + " -qp_p " + debitVideo.getSelectedItem().toString() + " -qp_b " + debitVideo.getSelectedItem().toString(); 
+			else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+				gpu = " -q:v " + (31 - (int) Math.ceil((Integer.parseInt(debitVideo.getSelectedItem().toString()) * 31) / 51));
+    		
+    		return " -crf " + debitVideo.getSelectedItem().toString() + gpu;
         }
         else
         	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
@@ -1313,6 +1324,17 @@ public class H265 extends Shutter {
 		return filterComplex;
 	}
 
+	protected static String setDeflicker(String filterComplex) {
+		if (caseDeflicker.isSelected())
+		{
+			if (filterComplex != "")
+				filterComplex += ",split[a][b];[b]setpts=PTS-STARTPTS+" + (1 / FFPROBE.currentFPS) + "/TB,format=rgba,colorchannelmixer=aa=0.5[deflicker];[a][deflicker]overlay=shortest=1";
+			else
+				filterComplex = "split[a][b];[b]setpts=PTS-STARTPTS+" + (1 / FFPROBE.currentFPS) + "/TB,format=rgba,colorchannelmixer=aa=0.5[deflicker];[a][deflicker]overlay=shortest=1";		
+		}
+		return filterComplex;
+	}
+	
 	protected static String setDeband(String filterComplex) {
 		
 		if (caseBanding.isSelected())
@@ -1351,7 +1373,15 @@ public class H265 extends Shutter {
 		if (caseDecimate.isSelected())		
 			flags += " -vsync vfr";	
 		
+		if (comboAudioCodec.getSelectedItem().toString().contains("FLAC"))
+			flags += " -strict -2";
+		
 		return flags;
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDenoiser(String videoFilter) {

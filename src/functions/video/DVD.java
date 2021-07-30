@@ -125,6 +125,9 @@ public class DVD extends Shutter {
 	            	
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 	            	filterComplex = setDenoiser(filterComplex);
@@ -175,7 +178,7 @@ public class DVD extends Shutter {
 					}
 									
 					//Envoi de la commande
-					String cmd = pass + " " + filterComplex + " -aspect 16:9 -target pal-dvd -b:v " + bitrate + "k -f dvd" + interlace + flags + " -y ";
+					String cmd = pass + " " + filterComplex + " -aspect 16:9 -target pal-dvd -b:v " + bitrate + "k -f dvd" + interlace + flags + metadatas + " -y ";
 					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + FFMPEG.outPoint + cmd + output);			
 				
 					//Attente de la fin de FFMPEG
@@ -281,6 +284,11 @@ public class DVD extends Shutter {
 	protected static String setFlags() {
 		   
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDeband(String filterComplex) {
@@ -463,21 +471,21 @@ public class DVD extends Shutter {
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
 		{
     		String mapping = "";
-    		if (comboAudio1.getSelectedIndex() != 8)
+    		if (comboAudio1.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-			if (comboAudio2.getSelectedIndex() != 8)
+			if (comboAudio2.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-			if (comboAudio3.getSelectedIndex() != 8)
+			if (comboAudio3.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-			if (comboAudio4.getSelectedIndex() != 8)
+			if (comboAudio4.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-			if (comboAudio5.getSelectedIndex() != 8)
+			if (comboAudio5.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-			if (comboAudio6.getSelectedIndex() != 8)
+			if (comboAudio6.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-			if (comboAudio7.getSelectedIndex() != 8)
+			if (comboAudio7.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-			if (comboAudio8.getSelectedIndex() != 8)
+			if (comboAudio8.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			
 			return " -c:a copy" + mapping;
@@ -611,7 +619,7 @@ public class DVD extends Shutter {
 				    else
 				    	audio += " -filter_complex " + '"';	
 					
-		    		if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    		if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 						audio += "[0:a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a 320k";
 					else
 		    		{
@@ -648,7 +656,7 @@ public class DVD extends Shutter {
 		    		 else
 				    	audio += " -filter_complex " + '"';	
 				    
-		    		 if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    		 if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a 320k";
 		    		 else
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a 320k"; 
@@ -656,21 +664,21 @@ public class DVD extends Shutter {
 		    	 else
 		    	 {
 		    		String mapping = "";
-		    		if (comboAudio1.getSelectedIndex() != 8)
+		    		if (comboAudio1.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-					if (comboAudio2.getSelectedIndex() != 8)
+					if (comboAudio2.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-					if (comboAudio3.getSelectedIndex() != 8)
+					if (comboAudio3.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-					if (comboAudio4.getSelectedIndex() != 8)
+					if (comboAudio4.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-					if (comboAudio5.getSelectedIndex() != 8)
+					if (comboAudio5.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-					if (comboAudio6.getSelectedIndex() != 8)
+					if (comboAudio6.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-					if (comboAudio7.getSelectedIndex() != 8)
+					if (comboAudio7.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-					if (comboAudio8.getSelectedIndex() != 8)
+					if (comboAudio8.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 					
 		    		if (newAudio != "") newAudio = " -filter:a " + '"' + newAudio + '"';

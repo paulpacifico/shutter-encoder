@@ -84,6 +84,9 @@ public class DVPAL extends Shutter {
 					
 					//Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 					 					 			            
 					//Dossier de sortie
 					String sortie = setSortie("", file);
@@ -118,7 +121,7 @@ public class DVPAL extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 								
 					//Envoi de la commande
-					String cmd = " -aspect " + comboFilter.getSelectedItem().toString().replace("/", ":") + filterComplex + flags + " -c:a pcm_s16le -map v:0 -map a? -ar 48000 -s 720x576 -vcodec dvvideo -b:v 25000 -r 25 -y ";
+					String cmd = " -aspect " + comboFilter.getSelectedItem().toString().replace("/", ":") + filterComplex + flags + metadatas + " -c:a pcm_s16le -map v:0 -map a? -ar 48000 -s 720x576 -vcodec dvvideo -b:v 25000 -r 25 -y ";
 					
 					FFMPEG.run(FFMPEG.inPoint + concat + " -i " + '"' + file.toString() + '"' + FFMPEG.outPoint + cmd + output);		
 					
@@ -211,6 +214,11 @@ public class DVPAL extends Shutter {
 	protected static String setFlags() { 
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static boolean analyse(File file) throws InterruptedException {

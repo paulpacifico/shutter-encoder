@@ -240,6 +240,9 @@ public class AppleProRes extends Shutter {
 					
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 		    		
 		    		//OPATOM
 		    		String opatom = setOPATOM(audio);
@@ -280,7 +283,7 @@ public class AppleProRes extends Shutter {
 					if (cancelled == false && FFMPEG.error == false)
 					{
 						//Envoi de la commande
-						String cmd = opatom + frameRate + filterComplex + codec + colorspace + forceField + timecode + flags + " -y ";	
+						String cmd = opatom + frameRate + filterComplex + codec + colorspace + forceField + timecode + flags + metadatas + " -y ";	
 						
 						//Screen capture
 						if (inputDeviceIsRunning)
@@ -524,21 +527,21 @@ public class AppleProRes extends Shutter {
 			}
 			else
 			{
-				if (comboAudio1.getSelectedIndex() != 8)
+				if (comboAudio1.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-				if (comboAudio2.getSelectedIndex() != 8)
+				if (comboAudio2.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-				if (comboAudio3.getSelectedIndex() != 8)
+				if (comboAudio3.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-				if (comboAudio4.getSelectedIndex() != 8)
+				if (comboAudio4.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-				if (comboAudio5.getSelectedIndex() != 8)
+				if (comboAudio5.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-				if (comboAudio6.getSelectedIndex() != 8)
+				if (comboAudio6.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-				if (comboAudio7.getSelectedIndex() != 8)
+				if (comboAudio7.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-				if (comboAudio8.getSelectedIndex() != 8)
+				if (comboAudio8.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			}
 			
@@ -990,6 +993,11 @@ public class AppleProRes extends Shutter {
 		String metadata = " -metadata:s " + '"' + "encoder=" + comboFonctions.getSelectedItem().toString() + " " + comboFilter.getSelectedItem().toString() + '"' + " -vendor apl0 -movflags write_colr+write_gama -flags bitexact";
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString() + metadata;
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDenoiser(String filterComplex) {

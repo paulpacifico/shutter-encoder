@@ -137,6 +137,9 @@ public class AVC extends Shutter {
 					
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 		    		filterComplex = setDenoiser(filterComplex);
@@ -228,7 +231,7 @@ public class AVC extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 							
 					//Envoi de la commande
-					String cmd = silentTrack + frameRate + colorspace + filterComplex + " -shortest -c:v libx264 -coder 0 -g 1 -b:v 100M -tune psnr -preset veryslow -vsync 1 -color_range 2 -avcintra-class 100 -me_method hex -subq 5 -cmp chroma -pix_fmt yuv422p10le -f mxf" + forceField + timecode + flags + " -y ";	
+					String cmd = silentTrack + frameRate + colorspace + filterComplex + " -shortest -c:v libx264 -coder 0 -g 1 -b:v 100M -tune psnr -preset veryslow -vsync 1 -color_range 2 -avcintra-class 100 -me_method hex -subq 5 -cmp chroma -pix_fmt yuv422p10le -f mxf" + forceField + timecode + flags + metadatas + " -y ";	
 					
 					//Screen capture
 					if (inputDeviceIsRunning)
@@ -327,14 +330,14 @@ public class AVC extends Shutter {
 	protected static String setAudio() {
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			return " -an";
 		}
@@ -486,14 +489,14 @@ public class AVC extends Shutter {
 		String audioFade = setAudioFade();
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
@@ -515,7 +518,7 @@ public class AVC extends Shutter {
 			{
 				if (c instanceof JComboBox)
 				{
-					if (((JComboBox) c).getSelectedIndex() != 8)
+					if (((JComboBox) c).getSelectedIndex() != 16)
 						channels ++;
 				}
 			}
@@ -998,6 +1001,11 @@ public class AVC extends Shutter {
 	protected static String setFlags() { 
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDenoiser(String videoFilter) {

@@ -133,10 +133,13 @@ public class XDCAM extends Shutter {
 					filterComplex = setDeband(filterComplex);
 						   
 					//Détails
-	            	filterComplex = setDetails(filterComplex);				
+	            	filterComplex = setDetails(filterComplex);		
 					
 		            //Flags
 		    		String flags = setFlags();
+		    		
+		    		//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 		    		filterComplex = setDenoiser(filterComplex);
@@ -170,6 +173,9 @@ public class XDCAM extends Shutter {
 			        			        
 					//Interlace50p
 					filterComplex = setInterlace50p(filterComplex);	
+					
+	            	//ForceTFF
+	            	filterComplex = setForceTFF(filterComplex);	
 					
 					//Overlay
 					filterComplex = setOverlay(filterComplex);		        
@@ -227,7 +233,7 @@ public class XDCAM extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 							
 					//Envoi de la commande
-					String cmd = silentTrack + " -shortest -map_metadata -1" +  frameRate + colorspace + filterComplex + " -g 12 -vcodec mpeg2video -pix_fmt yuv422p -color_range 1 -non_linear_quant 1 -dc 10 -intra_vlc 1 -q:v 2 -qmin 2 -qmax 12 -lmin " + '"' + "1*QP2LAMBDA" + '"' + " -rc_max_vbv_use 1 -rc_min_vbv_use 1 -b:v 50000000 -minrate 50000000 -maxrate 50000000 -bufsize 17825792 -rc_init_occupancy 17825792 -sc_threshold 1000000000 -bf 2" + forceField + timecode + flags + " -y ";
+					String cmd = silentTrack + " -shortest -map_metadata -1" +  frameRate + colorspace + filterComplex + " -g 12 -vcodec mpeg2video -pix_fmt yuv422p -color_range 1 -non_linear_quant 1 -dc 10 -intra_vlc 1 -q:v 2 -qmin 2 -qmax 12 -lmin " + '"' + "1*QP2LAMBDA" + '"' + " -rc_max_vbv_use 1 -rc_min_vbv_use 1 -b:v 50000000 -minrate 50000000 -maxrate 50000000 -bufsize 17825792 -rc_init_occupancy 17825792 -sc_threshold 1000000000 -bf 2" + forceField + timecode + flags + metadatas + " -y ";
 
 					//Screen capture
 					if (inputDeviceIsRunning)
@@ -326,14 +332,14 @@ public class XDCAM extends Shutter {
 	protected static String setAudio() {
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			return " -an";
 		}
@@ -487,14 +493,14 @@ public class XDCAM extends Shutter {
 		String audioFade = setAudioFade();
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
@@ -516,7 +522,7 @@ public class XDCAM extends Shutter {
 			{
 				if (c instanceof JComboBox)
 				{
-					if (((JComboBox) c).getSelectedIndex() != 8)
+					if (((JComboBox) c).getSelectedIndex() != 16)
 						channels ++;
 				}
 			}
@@ -996,9 +1002,25 @@ public class XDCAM extends Shutter {
 		return videoFilter;
 	}
 	
+	protected static String setForceTFF(String filterComplex) {
+		
+		if (caseForcerEntrelacement.isSelected())
+		{
+			if (filterComplex != "") filterComplex += ",";
+				filterComplex += "setfield=tff";
+		}
+		
+		return filterComplex;		
+	}
+	
 	protected static String setFlags() { 
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDenoiser(String videoFilter) {

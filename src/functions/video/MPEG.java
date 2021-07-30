@@ -146,7 +146,10 @@ public class MPEG extends Shutter {
 					filterComplex = setColormatrix(filterComplex);	
 					
 					//Color
-					filterComplex = setColor(filterComplex);					
+					filterComplex = setColor(filterComplex);	
+					
+					//Deflicker
+					filterComplex= setDeflicker(filterComplex);
 					
 					//Decimate
 					filterComplex = setDecimate(filterComplex);
@@ -168,6 +171,9 @@ public class MPEG extends Shutter {
 					
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 		    		filterComplex = setDenoiser(filterComplex);
@@ -249,7 +255,7 @@ public class MPEG extends Shutter {
 						output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
 
 					//Envoi de la commande
-					cmd = frameRate + resolution + colorspace + pass + filterComplex + " -vcodec" + codec + preset + bitrate + interlace + gamma + flags + " -y ";
+					cmd = frameRate + resolution + colorspace + pass + filterComplex + " -vcodec" + codec + preset + bitrate + interlace + gamma + flags + metadatas + " -y ";
 					
 					//Screen capture
 					if (inputDeviceIsRunning)
@@ -502,21 +508,21 @@ public class MPEG extends Shutter {
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
 		{
     		String mapping = "";
-    		if (comboAudio1.getSelectedIndex() != 8)
+    		if (comboAudio1.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-			if (comboAudio2.getSelectedIndex() != 8)
+			if (comboAudio2.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-			if (comboAudio3.getSelectedIndex() != 8)
+			if (comboAudio3.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-			if (comboAudio4.getSelectedIndex() != 8)
+			if (comboAudio4.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-			if (comboAudio5.getSelectedIndex() != 8)
+			if (comboAudio5.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-			if (comboAudio6.getSelectedIndex() != 8)
+			if (comboAudio6.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-			if (comboAudio7.getSelectedIndex() != 8)
+			if (comboAudio7.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-			if (comboAudio8.getSelectedIndex() != 8)
+			if (comboAudio8.getSelectedIndex() != 16)
 				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			
 			return " -c:a copy" + mapping;
@@ -650,7 +656,7 @@ public class MPEG extends Shutter {
 				    else
 				    	audio += " -filter_complex " + '"';	
 					
-		    		if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    		if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 						audio += "[0:a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 					else
 		    		{
@@ -684,7 +690,7 @@ public class MPEG extends Shutter {
 				    	}
 					    else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
 					    {
-					    	if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+					    	if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 				    			 audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a][" + String.valueOf(comboAudio2.getSelectedIndex()).replace("1","2") + ":a]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 				    		 else
 				    			 audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
@@ -712,7 +718,7 @@ public class MPEG extends Shutter {
 		    		 else
 				    	audio += " -filter_complex " + '"';	
 				    
-		    		 if (comboAudio1.getSelectedIndex() != 8 && comboAudio2.getSelectedIndex() != 8) //Mixdown des pistes en mono
+		    		 if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k";
 		    		 else
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "]anull" + newAudio + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + " -b:a " + debitAudio.getSelectedItem().toString() + "k"; 
@@ -720,21 +726,21 @@ public class MPEG extends Shutter {
 		    	 else
 		    	 {
 		    		String mapping = "";
-		    		if (comboAudio1.getSelectedIndex() != 8)
+		    		if (comboAudio1.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-					if (comboAudio2.getSelectedIndex() != 8)
+					if (comboAudio2.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-					if (comboAudio3.getSelectedIndex() != 8)
+					if (comboAudio3.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-					if (comboAudio4.getSelectedIndex() != 8)
+					if (comboAudio4.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-					if (comboAudio5.getSelectedIndex() != 8)
+					if (comboAudio5.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-					if (comboAudio6.getSelectedIndex() != 8)
+					if (comboAudio6.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-					if (comboAudio7.getSelectedIndex() != 8)
+					if (comboAudio7.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-					if (comboAudio8.getSelectedIndex() != 8)
+					if (comboAudio8.getSelectedIndex() != 16)
 						mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 					
 		    		if (newAudio != "") newAudio = " -filter:a " + '"' + newAudio + '"';
@@ -1140,6 +1146,17 @@ public class MPEG extends Shutter {
 		}
 		return filterComplex;
 	}
+	
+	protected static String setDeflicker(String filterComplex) {
+		if (caseDeflicker.isSelected())
+		{
+			if (filterComplex != "")
+				filterComplex += ",split[a][b];[b]setpts=PTS-STARTPTS+" + (1 / FFPROBE.currentFPS) + "/TB,format=rgba,colorchannelmixer=aa=0.5[deflicker];[a][deflicker]overlay=shortest=1";
+			else
+				filterComplex = "split[a][b];[b]setpts=PTS-STARTPTS+" + (1 / FFPROBE.currentFPS) + "/TB,format=rgba,colorchannelmixer=aa=0.5[deflicker];[a][deflicker]overlay=shortest=1";		
+		}
+		return filterComplex;
+	}
 
 	protected static String setDeband(String filterComplex) {
 		
@@ -1175,6 +1192,11 @@ public class MPEG extends Shutter {
 			flags += " -vsync vfr";	
 		
 		return flags;
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDenoiser(String videoFilter) {

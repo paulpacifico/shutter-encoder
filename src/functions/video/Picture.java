@@ -490,7 +490,7 @@ public class Picture extends Shutter {
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 	}
-	
+		
 	protected static String setRotate(String filter) {
 		String rotate = "";
 		if (caseRotate.isSelected()) {

@@ -137,6 +137,9 @@ public class XAVC extends Shutter {
 					
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 		    		filterComplex = setDenoiser(filterComplex);
@@ -228,7 +231,7 @@ public class XAVC extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 							
 					//Envoi de la commande
-					String cmd = silentTrack + frameRate + colorspace + filterComplex + " -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le -f mxf" + forceField + timecode + flags + " -y ";
+					String cmd = silentTrack + frameRate + colorspace + filterComplex + " -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le -f mxf" + forceField + timecode + flags + metadatas + " -y ";
 					
 					//Screen capture
 					if (inputDeviceIsRunning)
@@ -327,14 +330,14 @@ public class XAVC extends Shutter {
 	protected static String setAudio() {
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			return " -an";
 		}
@@ -486,14 +489,14 @@ public class XAVC extends Shutter {
 		String audioFade = setAudioFade();
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
@@ -515,7 +518,7 @@ public class XAVC extends Shutter {
 			{
 				if (c instanceof JComboBox)
 				{
-					if (((JComboBox) c).getSelectedIndex() != 8)
+					if (((JComboBox) c).getSelectedIndex() != 16)
 						channels ++;
 				}
 			}
@@ -993,6 +996,11 @@ public class XAVC extends Shutter {
 	protected static String setFlags() { 
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDenoiser(String videoFilter) {

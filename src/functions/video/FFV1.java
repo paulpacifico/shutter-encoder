@@ -133,6 +133,9 @@ public class FFV1 extends Shutter {
 					
 		            //Flags
 		    		String flags = setFlags();
+					
+					//Metadatas
+		    		String metadatas = setMetadatas();
 	            	
 					//Bruit
 		    		filterComplex = setDenoiser(filterComplex);
@@ -225,7 +228,7 @@ public class FFV1 extends Shutter {
 						file = new File(sortie.replace("\\", "/") + "/" + fichier.replace(extension, ".txt"));
 								
 					//Envoi de la commande
-					String cmd =  frameRate + colorspace + filterComplex + " -c:v ffv1 -level 3 " + forceField + timecode + flags + " -y ";
+					String cmd =  frameRate + colorspace + filterComplex + " -c:v ffv1 -level 3 " + forceField + timecode + flags + metadatas + " -y ";
 					
 					//Screen capture
 					if (inputDeviceIsRunning)
@@ -311,14 +314,14 @@ public class FFV1 extends Shutter {
 	protected static String setAudio() {
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			return " -an";
 		}
@@ -469,14 +472,14 @@ public class FFV1 extends Shutter {
 		String audioFade = setAudioFade();
 		
 		//Pas d'audio
-		if (comboAudio1.getSelectedIndex() == 8
-			&& comboAudio2.getSelectedIndex() == 8
-			&& comboAudio3.getSelectedIndex() == 8
-			&& comboAudio4.getSelectedIndex() == 8
-			&& comboAudio5.getSelectedIndex() == 8
-			&& comboAudio6.getSelectedIndex() == 8
-			&& comboAudio7.getSelectedIndex() == 8
-			&& comboAudio8.getSelectedIndex() == 8)
+		if (comboAudio1.getSelectedIndex() == 16
+			&& comboAudio2.getSelectedIndex() == 16
+			&& comboAudio3.getSelectedIndex() == 16
+			&& comboAudio4.getSelectedIndex() == 16
+			&& comboAudio5.getSelectedIndex() == 16
+			&& comboAudio6.getSelectedIndex() == 16
+			&& comboAudio7.getSelectedIndex() == 16
+			&& comboAudio8.getSelectedIndex() == 16)
 		{
 			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
@@ -511,21 +514,21 @@ public class FFV1 extends Shutter {
 			}
 			else
 			{
-				if (comboAudio1.getSelectedIndex() != 8)
+				if (comboAudio1.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-				if (comboAudio2.getSelectedIndex() != 8)
+				if (comboAudio2.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-				if (comboAudio3.getSelectedIndex() != 8)
+				if (comboAudio3.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-				if (comboAudio4.getSelectedIndex() != 8)
+				if (comboAudio4.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-				if (comboAudio5.getSelectedIndex() != 8)
+				if (comboAudio5.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-				if (comboAudio6.getSelectedIndex() != 8)
+				if (comboAudio6.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-				if (comboAudio7.getSelectedIndex() != 8)
+				if (comboAudio7.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-				if (comboAudio8.getSelectedIndex() != 8)
+				if (comboAudio8.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			}
 		}			
@@ -948,6 +951,11 @@ public class FFV1 extends Shutter {
 	protected static String setFlags() { 
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+	}
+	
+	protected static String setMetadatas() { 
+				
+		return " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 	}
 	
 	protected static String setDenoiser(String videoFilter) {
