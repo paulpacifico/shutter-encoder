@@ -61,7 +61,7 @@ public static int audioStreams = 0;
 public static int totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
-public static float currentFPS = 25.0f; //Utilisé pour lire l'audio avec vlc
+public static float currentFPS = 25.0f; //Utilisé pour lire l'audio avec le lecteur vidéo
 public static String entrelaced;
 public static String fieldOrder;
 private static boolean videoStream = false;
@@ -85,6 +85,7 @@ public static String videoCodec;
 public static String audioCodec;
 public static String audioBitrate;
 public static String timeBase = "";
+public static String creationTime = "";
 public static float HDRmin = 0;
 public static float HDRmax = 0;
 
@@ -109,6 +110,7 @@ public static int gopSpace = 124;
  		audioStreams = 0;
 		if (calcul == false) //pour ne pas réactive audioOnly lors de l'analyse calculH264
 			audioOnly = true;
+		creationTime = "";
 		lumaLevel = "unavailable";
 		videoCodec = null;
 		audioCodec = null;
@@ -280,7 +282,7 @@ public static int gopSpace = 124;
 							String[] splitVCodec = line.substring(line.indexOf("Video:")).split(" ");							
 							videoCodec = splitVCodec[1];
 							 
-							//Création de la waveform pour VLC
+							//Création de la waveform pour le lecteur vidéo
 				            audioOnly = false;
 							 
 							// Niveaux					 
@@ -288,7 +290,7 @@ public static int gopSpace = 124;
 			                   lumaLevel = "16-235";
 			                else if (line.contains("(pc)"))
 			                   lumaLevel = "0-255";
-			                
+			                			                
 			                // Lecture
 						 	String ligne = line;
 			                ligne = line.substring(ligne.indexOf("Video:"));
@@ -525,6 +527,14 @@ public static int gopSpace = 124;
 				            	}
 			            	}
 			            }
+
+		                // Creation time
+		                if (line.contains("creation_time") && creationTime.equals(""))
+		                {
+		                	//Example   : 2021-05-20T09:55:22.000000Z
+		                	String s[] =  line.substring(line.indexOf(":") + 1).replace(" ", "").replace("T", " ").split("\\.");
+		                	creationTime = s[0];
+		                }
 			            
 				}//While			
 				process.waitFor();		
@@ -926,21 +936,21 @@ public static int gopSpace = 124;
 		int multi = 0;
 		if (lblAudioMapping.getText().equals("Multi"))
 		{
-			if (comboAudio1.getSelectedIndex() != 8)
+			if (comboAudio1.getSelectedIndex() != 16)
 				multi += 1;
-			if (comboAudio2.getSelectedIndex() != 8)
+			if (comboAudio2.getSelectedIndex() != 16)
 				multi += 1;
-			if (comboAudio3.getSelectedIndex() != 8)
+			if (comboAudio3.getSelectedIndex() != 16)
 				multi += 1;
-			if (comboAudio4.getSelectedIndex() != 8)
+			if (comboAudio4.getSelectedIndex() != 16)
 				multi += 1;
-			if (comboAudio5.getSelectedIndex() != 8)
+			if (comboAudio5.getSelectedIndex() != 16)
 				multi += 1;
-			if (comboAudio6.getSelectedIndex() != 8)
+			if (comboAudio6.getSelectedIndex() != 16)
 				multi += 1;
-			if (comboAudio7.getSelectedIndex() != 8)
+			if (comboAudio7.getSelectedIndex() != 16)
 				multi += 1;
-			if (comboAudio8.getSelectedIndex() != 8)
+			if (comboAudio8.getSelectedIndex() != 16)
 				multi += 1;
 		}
 		else
