@@ -195,7 +195,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "15.2";
+	public static String actualVersion = "15.3";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String montserratFont = "Montserrat";
@@ -837,7 +837,7 @@ public class Shutter {
 				
 		do {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e1) {}
 		} while (FFMPEG.runProcess.isAlive());
 						
@@ -1361,7 +1361,7 @@ public class Shutter {
 			DECKLINK.run("-f decklink -list_devices 1 -i dummy");
 			do {
 				try {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} catch (InterruptedException e1) {
 				}
 			} while (DECKLINK.isRunning);
@@ -1437,7 +1437,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -1566,7 +1566,7 @@ public class Shutter {
 								break;
 							}
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFMPEG.isRunning && FFMPEG.error == false);
@@ -1625,7 +1625,7 @@ public class Shutter {
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
@@ -1664,7 +1664,7 @@ public class Shutter {
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning == true);
@@ -1874,7 +1874,7 @@ public class Shutter {
 						
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e) {}
 						} while (FFMPEG.isRunning);
 						
@@ -2411,7 +2411,7 @@ public class Shutter {
 
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {
 								}
 							} while (FFMPEG.runProcess.isAlive());
@@ -2989,7 +2989,7 @@ public class Shutter {
 
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException e1) {
 									}
 								} while (FFMPEG.runProcess.isAlive());
@@ -4608,7 +4608,7 @@ public class Shutter {
 						}
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -4632,7 +4632,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException er) {}
 								} while (CropImage.frame.isVisible());
 								
@@ -4778,7 +4778,7 @@ public class Shutter {
 					FFPROBE.Data(file.toString());	
 					do
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					while (FFPROBE.isRunning);
 				
@@ -4910,7 +4910,7 @@ public class Shutter {
 							 XPDF.toFFPROBE(file.toString());	
 							 do
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							 while (XPDF.isRunning);
 						}
@@ -4919,7 +4919,7 @@ public class Shutter {
 							 EXIFTOOL.run(file.toString());	
 							 do
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							 while (EXIFTOOL.isRunning);
 						}
@@ -4930,7 +4930,7 @@ public class Shutter {
 							
 							do
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							while (FFPROBE.isRunning);
 						}
@@ -5055,7 +5055,7 @@ public class Shutter {
 								
 								do
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException e1) {}
 								while(FFMPEG.runProcess.isAlive());
 								
@@ -5096,7 +5096,7 @@ public class Shutter {
 					public void run() {	
 						try {
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning == false);	
 							
 							enableAll();
@@ -5104,7 +5104,7 @@ public class Shutter {
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning);	
 						} catch (InterruptedException e1) {}	
 					}
@@ -6161,7 +6161,7 @@ public class Shutter {
 						}
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -6177,7 +6177,7 @@ public class Shutter {
 						
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (new File(dirTemp + "preview.bmp").exists() == false && FFMPEG.error == false && DCRAW.error == false && XPDF.error == false);
 						
@@ -6192,7 +6192,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException er) {}
 								} while (ColorImage.frame.isVisible());
 								
@@ -7454,7 +7454,7 @@ public class Shutter {
 							}
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException e1) {}
 							} while (FFPROBE.isRunning);
 							
@@ -7474,7 +7474,7 @@ public class Shutter {
 							public void run() {
 								do {
 									try {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} catch (InterruptedException er) {}
 								} while (OverlayWindow.frame.isVisible());
 								
@@ -7553,6 +7553,14 @@ public class Shutter {
 							VideoPlayer.waveform.delete();
 						
 						VideoPlayer.playerHasBeenStopped = false;
+						
+						FFPROBE.Data(liste.firstElement());
+						
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e1) {}
+						} while (FFPROBE.isRunning);
 						
 						new VideoPlayer();														
 						
@@ -7935,7 +7943,7 @@ public class Shutter {
 					comboAudioBitrate.setEnabled(false);
 				}
 				
-				if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
+				if (comboAudioCodec.getSelectedItem().toString().contains("PCM") || comboAudioCodec.getSelectedItem().toString().contains("FLAC"))
 				{
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] {"1536"}));
 					comboAudioBitrate.setSelectedIndex(0);
@@ -8077,7 +8085,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -8088,7 +8096,7 @@ public class Shutter {
 							
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {
 						}
 					} while (FFPROBE.isRunning);
@@ -8127,7 +8135,7 @@ public class Shutter {
 								break;
 							}
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {
 							}
 						} while (FFMPEG.isRunning && FFMPEG.error == false);
@@ -8482,15 +8490,16 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
+				
+				if (comboAudioCodec.getSelectedItem().toString().contains("PCM") || comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
 				{
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] {"1536"}));
 					comboAudioBitrate.setSelectedIndex(0);
-					if (comboFonctions.getSelectedItem().toString().equals("MJPEG"))
+					if (comboFonctions.getSelectedItem().toString().equals("MJPEG") || comboFonctions.getSelectedItem().toString().contains("H.26"))
 					{
 						debitAudio.setModel(comboAudioBitrate.getModel());
 						debitAudio.setSelectedIndex(0);
-					}
+					}			
 				}
 				else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 				{
@@ -8527,6 +8536,12 @@ public class Shutter {
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);				
 				}
+				
+				if (comboFonctions.getSelectedItem().toString().contains("H.26"))
+				{
+					if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
+						comboFilter.setSelectedIndex(1);
+				}
 			}
 			
 		});
@@ -8539,7 +8554,7 @@ public class Shutter {
 		
 		comboAudio1 = new JComboBox<String>();
 		comboAudio1.setName("comboAudio1");
-		comboAudio1.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio1.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio1.setSelectedIndex(0);
 		comboAudio1.setMaximumRowCount(20);
 		comboAudio1.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -8552,15 +8567,15 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudio1.getSelectedIndex() == 8)
+				if (comboAudio1.getSelectedIndex() == 16)
 				{
-					comboAudio2.setSelectedIndex(8);
-					comboAudio3.setSelectedIndex(8);
-					comboAudio4.setSelectedIndex(8);
-					comboAudio5.setSelectedIndex(8);
-					comboAudio6.setSelectedIndex(8);
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio2.setSelectedIndex(16);
+					comboAudio3.setSelectedIndex(16);
+					comboAudio4.setSelectedIndex(16);
+					comboAudio5.setSelectedIndex(16);
+					comboAudio6.setSelectedIndex(16);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -8580,7 +8595,7 @@ public class Shutter {
 		
 		comboAudio2 = new JComboBox<String>();
 		comboAudio2.setName("comboAudio2");
-		comboAudio2.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio2.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio2.setSelectedIndex(1);
 		comboAudio2.setMaximumRowCount(20);
 		comboAudio2.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -8593,14 +8608,14 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudio2.getSelectedIndex() == 8)
+				if (comboAudio2.getSelectedIndex() == 16)
 				{
-					comboAudio3.setSelectedIndex(8);
-					comboAudio4.setSelectedIndex(8);
-					comboAudio5.setSelectedIndex(8);
-					comboAudio6.setSelectedIndex(8);
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio3.setSelectedIndex(16);
+					comboAudio4.setSelectedIndex(16);
+					comboAudio5.setSelectedIndex(16);
+					comboAudio6.setSelectedIndex(16);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -8620,7 +8635,7 @@ public class Shutter {
 		
 		comboAudio3 = new JComboBox<String>();
 		comboAudio3.setName("comboAudio3");
-		comboAudio3.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio3.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio3.setSelectedIndex(2);
 		comboAudio3.setMaximumRowCount(20);
 		comboAudio3.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -8633,13 +8648,13 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudio3.getSelectedIndex() == 8)
+				if (comboAudio3.getSelectedIndex() == 16)
 				{
-					comboAudio4.setSelectedIndex(8);
-					comboAudio5.setSelectedIndex(8);
-					comboAudio6.setSelectedIndex(8);
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio4.setSelectedIndex(16);
+					comboAudio5.setSelectedIndex(16);
+					comboAudio6.setSelectedIndex(16);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -8659,7 +8674,7 @@ public class Shutter {
 		
 		comboAudio4 = new JComboBox<String>();
 		comboAudio4.setName("comboAudio4");
-		comboAudio4.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio4.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio4.setSelectedIndex(3);
 		comboAudio4.setMaximumRowCount(20);
 		comboAudio4.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -8672,12 +8687,12 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudio4.getSelectedIndex() == 8)
+				if (comboAudio4.getSelectedIndex() == 16)
 				{
-					comboAudio5.setSelectedIndex(8);
-					comboAudio6.setSelectedIndex(8);
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio5.setSelectedIndex(16);
+					comboAudio6.setSelectedIndex(16);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -8697,7 +8712,7 @@ public class Shutter {
 		
 		comboAudio5 = new JComboBox<String>();
 		comboAudio5.setName("comboAudio5");
-		comboAudio5.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio5.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio5.setSelectedIndex(4);
 		comboAudio5.setMaximumRowCount(20);
 		comboAudio5.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -8710,11 +8725,11 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudio5.getSelectedIndex() == 8)
+				if (comboAudio5.getSelectedIndex() == 16)
 				{
-					comboAudio6.setSelectedIndex(8);
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio6.setSelectedIndex(16);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -8734,7 +8749,7 @@ public class Shutter {
 		
 		comboAudio6 = new JComboBox<String>();
 		comboAudio6.setName("comboAudio6");
-		comboAudio6.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio6.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio6.setSelectedIndex(5);
 		comboAudio6.setMaximumRowCount(20);
 		comboAudio6.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -8747,10 +8762,10 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudio6.getSelectedIndex() == 8)
+				if (comboAudio6.getSelectedIndex() == 16)
 				{
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -8770,7 +8785,7 @@ public class Shutter {
 		
 		comboAudio7 = new JComboBox<String>();
 		comboAudio7.setName("comboAudio7");
-		comboAudio7.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio7.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio7.setSelectedIndex(6);
 		comboAudio7.setMaximumRowCount(20);
 		comboAudio7.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -8783,9 +8798,9 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (comboAudio7.getSelectedIndex() == 8)
+				if (comboAudio7.getSelectedIndex() == 16)
 				{
-					comboAudio8.setSelectedIndex(8);
+					comboAudio8.setSelectedIndex(16);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -8805,7 +8820,7 @@ public class Shutter {
 		
 		comboAudio8 = new JComboBox<String>();
 		comboAudio8.setName("comboAudio8");
-		comboAudio8.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", language.getProperty("noAudio")}));
+		comboAudio8.setModel(new DefaultComboBoxModel<String>(new String[] { "Audio 1", "Audio 2", "Audio 3", "Audio 4", "Audio 5", "Audio 6", "Audio 7", "Audio 8", "Audio 9", "Audio 10", "Audio 11", "Audio 12", "Audio 13", "Audio 14", "Audio 15", "Audio 16", language.getProperty("noAudio")}));
 		comboAudio8.setSelectedIndex(7);
 		comboAudio8.setMaximumRowCount(20);
 		comboAudio8.setFont(new Font(freeSansFont, Font.PLAIN, 10));
@@ -10074,7 +10089,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 
@@ -10351,7 +10366,7 @@ public class Shutter {
 					
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 
@@ -10651,7 +10666,7 @@ public class Shutter {
 		caseForcerProgressif.setName("caseForcerProgressif");
 		caseForcerProgressif.setToolTipText(language.getProperty("tooltipProgressif"));
 		caseForcerProgressif.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseForcerProgressif.setSize(141, 23);
+		caseForcerProgressif.setSize(caseForcerProgressif.getPreferredSize().width + 4, 23);
 
 		caseForcerEntrelacement = new JRadioButton(language.getProperty("caseForcerEntrelacement"));
 		caseForcerEntrelacement.setName("caseForcerEntrelacement");
@@ -11003,7 +11018,7 @@ public class Shutter {
 										
 										//Attente de la fin de FFMPEG
 										do {
-											Thread.sleep(100);
+											Thread.sleep(10);
 										} while(FFMPEG.runProcess.isAlive());
 										
 										//Erreurs
@@ -11139,7 +11154,7 @@ public class Shutter {
 												do
 												{
 													try {
-														Thread.sleep(100);
+														Thread.sleep(10);
 													} catch (InterruptedException e) {}
 												}
 												while(FFMPEG.runProcess.isAlive());
@@ -11315,7 +11330,7 @@ public class Shutter {
 						}
 						do {
 							try {
-								Thread.sleep(100);
+								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 						} while (FFPROBE.isRunning);
 						
@@ -11518,7 +11533,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11528,7 +11543,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -s 640x360 -f null -");
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11546,7 +11561,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11554,7 +11569,7 @@ public class Shutter {
 		
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_qsv -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11562,7 +11577,7 @@ public class Shutter {
 								
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_amf -s 640x360 -f null -" + '"');
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11572,7 +11587,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -s 640x360 -f null -");
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11580,7 +11595,7 @@ public class Shutter {
 										
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_vaapi -s 640x360 -f null -");
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)
@@ -11590,7 +11605,7 @@ public class Shutter {
 								{
 									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_v4l2m2m -s 640x360 -f null -");
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (FFMPEG.runProcess.isAlive());
 			
 									if (FFMPEG.error == false)
@@ -11598,7 +11613,7 @@ public class Shutter {
 									
 									FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_omx -s 640x360 -f null -");
 									do {
-										Thread.sleep(100);
+										Thread.sleep(10);
 									} while (FFMPEG.runProcess.isAlive());
 			
 									if (FFMPEG.error == false)
@@ -11609,7 +11624,7 @@ public class Shutter {
 							{
 								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_videotoolbox -s 640x360 -f null -");
 								do {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
 		
 								if (FFMPEG.error == false)								
@@ -12040,10 +12055,10 @@ public class Shutter {
 					comboAudio2.setSelectedIndex(1);
 					comboAudio3.setSelectedIndex(2);
 					comboAudio4.setSelectedIndex(3);				
-					comboAudio5.setSelectedIndex(8);
-					comboAudio6.setSelectedIndex(8);
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio5.setSelectedIndex(16);
+					comboAudio6.setSelectedIndex(16);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 					
 					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422"))
 					{
@@ -12129,7 +12144,7 @@ public class Shutter {
 									public void run() {
 										do {
 											try {
-												Thread.sleep(100);
+												Thread.sleep(10);
 											} catch (InterruptedException er) {}
 										} while (WatermarkWindow.frame.isVisible());
 										
@@ -12459,7 +12474,7 @@ public class Shutter {
 								
 							do {
 								try {
-									Thread.sleep(100);
+									Thread.sleep(10);
 								} catch (InterruptedException er) {}
 							} while (CropVideo.frame.isVisible());
 
@@ -12618,7 +12633,7 @@ public class Shutter {
 						g.setColor(new Color(50,50,50));
 					
 					g.fillRect(0, 0, 8, 16);
-					g.fillRect((65 - 8), 0, (65 - 8), 16);
+					g.fillRect((70 - 8), 0, (70 - 8), 16);
 				}
 			}
 		};
@@ -12629,7 +12644,7 @@ public class Shutter {
 		lblPad.setOpaque(true);
 		lblPad.setVisible(false);
 		lblPad.setFont(new Font(montserratFont, Font.PLAIN, 11));
-		lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 36, comboH264Taille.getLocation().y + 3, 65, 16);
+		lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 36, comboH264Taille.getLocation().y + 3, 70, 16);
 		grpH264.add(lblPad);
 				
 		lblPad.addMouseListener(new MouseListener() {
@@ -12781,7 +12796,7 @@ public class Shutter {
 					public void run() {	
 						try {
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning == false);	
 							
 							enableAll();
@@ -12789,7 +12804,7 @@ public class Shutter {
 							lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
 							
 							do {								
-								Thread.sleep(100);								
+								Thread.sleep(10);								
 							} while (FFMPEG.isRunning);	
 						} catch (InterruptedException e1) {}
 												
@@ -13212,10 +13227,10 @@ public class Shutter {
 				comboAudio4.setSelectedIndex(3);				
 				if (comboFonctions.getSelectedItem().equals("XDCAM HD422") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100") || comboFonctions.getSelectedItem().toString().equals("XAVC"))
 				{
-					comboAudio5.setSelectedIndex(8);
-					comboAudio6.setSelectedIndex(8);
-					comboAudio7.setSelectedIndex(8);
-					comboAudio8.setSelectedIndex(8);
+					comboAudio5.setSelectedIndex(16);
+					comboAudio6.setSelectedIndex(16);
+					comboAudio7.setSelectedIndex(16);
+					comboAudio8.setSelectedIndex(16);
 				}
 				else
 				{
@@ -13369,7 +13384,7 @@ public class Shutter {
 				}
 				else if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);						
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);
@@ -15096,7 +15111,7 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);							
-							if (comboAudioCodec.getItemCount() != 9)
+							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
 							{
 								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(3);
@@ -15148,10 +15163,10 @@ public class Shutter {
 								&& comboAudio2.getSelectedIndex() == 1
 								&& comboAudio3.getSelectedIndex() == 2
 								&& comboAudio4.getSelectedIndex() == 3
-								&& comboAudio5.getSelectedIndex() == 8
-								&& comboAudio6.getSelectedIndex() == 8
-								&& comboAudio7.getSelectedIndex() == 8
-								&& comboAudio8.getSelectedIndex() == 8)
+								&& comboAudio5.getSelectedIndex() == 16
+								&& comboAudio6.getSelectedIndex() == 16
+								&& comboAudio7.getSelectedIndex() == 16
+								&& comboAudio8.getSelectedIndex() == 16)
 							{
 								comboAudio1.setSelectedIndex(0);
 								comboAudio2.setSelectedIndex(1);
@@ -15226,7 +15241,7 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);
-							if (comboAudioCodec.getItemCount() != 9)
+							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
 							{
 								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(3);
@@ -15352,19 +15367,19 @@ public class Shutter {
 								&& comboAudio7.getSelectedIndex() == 6
 								&& comboAudio8.getSelectedIndex() == 7 && fonction.equals("HAP") == false && fonction.equals("FFV1") == false && caseAS10.isSelected() == false)
 							{
-								comboAudio5.setSelectedIndex(8);
-								comboAudio6.setSelectedIndex(8);
-								comboAudio7.setSelectedIndex(8);
-								comboAudio8.setSelectedIndex(8);
+								comboAudio5.setSelectedIndex(16);
+								comboAudio6.setSelectedIndex(16);
+								comboAudio7.setSelectedIndex(16);
+								comboAudio8.setSelectedIndex(16);
 							}
 							else if (comboAudio1.getSelectedIndex() == 0
 									&& comboAudio2.getSelectedIndex() == 1
 									&& comboAudio3.getSelectedIndex() == 2
 									&& comboAudio4.getSelectedIndex() == 3
-									&& comboAudio5.getSelectedIndex() == 8
-									&& comboAudio6.getSelectedIndex() == 8
-									&& comboAudio7.getSelectedIndex() == 8
-									&& comboAudio8.getSelectedIndex() == 8 && (fonction.equals("HAP") || fonction.equals("FFV1") || caseAS10.isSelected()))
+									&& comboAudio5.getSelectedIndex() == 16
+									&& comboAudio6.getSelectedIndex() == 16
+									&& comboAudio7.getSelectedIndex() == 16
+									&& comboAudio8.getSelectedIndex() == 16 && (fonction.equals("HAP") || fonction.equals("FFV1") || caseAS10.isSelected()))
 							{
 								comboAudio1.setSelectedIndex(0);
 								comboAudio2.setSelectedIndex(1);
@@ -15385,7 +15400,7 @@ public class Shutter {
 							grpResolution.add(lblTaille);
 							grpResolution.add(iconTVResolution);
 							
-							lblPad.setBounds(comboResolution.getLocation().x + comboResolution.getWidth() + 5, comboResolution.getLocation().y + 3, 65, 16);
+							lblPad.setBounds(comboResolution.getLocation().x + comboResolution.getWidth() + 5, comboResolution.getLocation().y + 3, 70, 16);
 							grpResolution.add(lblPad);
 							
 							if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
@@ -15439,10 +15454,10 @@ public class Shutter {
 							grpImageSequence.setVisible(false);
 							grpImageFilter.setVisible(false);
 							grpH264.setVisible(false);
-							grpSetTimecode.setVisible(true);
-							grpSetTimecode.setLocation(grpSetTimecode.getX(), grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);
 							grpInAndOut.setVisible(true);
 							grpInAndOut.setLocation(grpInAndOut.getX(), grpResolution.getSize().height + grpResolution.getLocation().y + 6);
+							grpSetTimecode.setVisible(true);
+							grpSetTimecode.setLocation(grpSetTimecode.getX(), grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);							
 							grpAudio.setVisible(false);
 							grpSetAudio.setVisible(true);
 							if (fonction.equals("HAP") == false && fonction.equals("FFV1") == false)
@@ -15599,7 +15614,7 @@ public class Shutter {
 							grpResolution.add(lblTaille);
 							grpResolution.add(iconTVResolution);
 							
-							lblPad.setBounds(comboResolution.getLocation().x + comboResolution.getWidth() + 5, comboResolution.getLocation().y + 3, 65, 16);
+							lblPad.setBounds(comboResolution.getLocation().x + comboResolution.getWidth() + 5, comboResolution.getLocation().y + 3, 70, 16);
 							grpResolution.add(lblPad);
 
 							if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
@@ -15718,10 +15733,10 @@ public class Shutter {
 								&& comboAudio2.getSelectedIndex() == 1
 								&& comboAudio3.getSelectedIndex() == 2
 								&& comboAudio4.getSelectedIndex() == 3
-								&& comboAudio5.getSelectedIndex() == 8
-								&& comboAudio6.getSelectedIndex() == 8
-								&& comboAudio7.getSelectedIndex() == 8
-								&& comboAudio8.getSelectedIndex() == 8)
+								&& comboAudio5.getSelectedIndex() == 16
+								&& comboAudio6.getSelectedIndex() == 16
+								&& comboAudio7.getSelectedIndex() == 16
+								&& comboAudio8.getSelectedIndex() == 16)
 							{
 								comboAudio1.setSelectedIndex(0);
 								comboAudio2.setSelectedIndex(1);
@@ -15857,6 +15872,10 @@ public class Shutter {
 								
 								if (lblVBR.getText().equals("CQ"))
 								{
+									taille.setText("-");
+									lblDbitVido.setText(language.getProperty("lblValue"));
+									lblKbsH264.setVisible(false);
+									h264lines.setVisible(false);					
 									case2pass.setSelected(false);
 									case2pass.setEnabled(false);
 								}
@@ -15953,7 +15972,7 @@ public class Shutter {
 							{
 								lblPad.setVisible(true);
 							}
-							lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 5, comboH264Taille.getLocation().y + 3, 65, 16);
+							lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 5, comboH264Taille.getLocation().y + 3, 70, 16);
 							grpH264.add(lblPad);
 
 							grpSetTimecode.setVisible(false);
@@ -15967,9 +15986,9 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);
-							if (comboAudioCodec.getItemCount() != 5 || comboAudioCodec.getSelectedItem().toString().equals("OGG"))
+							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("AAC") == false)
 							{
-								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(0);
 								caseChangeAudioCodec.setSelected(true);
 								comboAudioCodec.setEnabled(true);
@@ -16025,10 +16044,10 @@ public class Shutter {
 								&& comboAudio2.getSelectedIndex() == 1
 								&& comboAudio3.getSelectedIndex() == 2
 								&& comboAudio4.getSelectedIndex() == 3
-								&& comboAudio5.getSelectedIndex() == 8
-								&& comboAudio6.getSelectedIndex() == 8
-								&& comboAudio7.getSelectedIndex() == 8
-								&& comboAudio8.getSelectedIndex() == 8)
+								&& comboAudio5.getSelectedIndex() == 16
+								&& comboAudio6.getSelectedIndex() == 16
+								&& comboAudio7.getSelectedIndex() == 16
+								&& comboAudio8.getSelectedIndex() == 16)
 							{
 								comboAudio1.setSelectedIndex(0);
 								comboAudio2.setSelectedIndex(1);
@@ -16192,7 +16211,9 @@ public class Shutter {
 							// grpCorrections
 							caseStabilisation.setLocation(7, 14);
 							grpCorrections.add(caseStabilisation);
-							caseBanding.setLocation(7, caseStabilisation.getLocation().y + 17);
+							caseDeflicker.setLocation(7, caseStabilisation.getLocation().y + 17);
+							grpCorrections.add(caseDeflicker);
+							caseBanding.setLocation(7, caseDeflicker.getLocation().y + 17);
 							grpCorrections.add(caseBanding);
 							caseDetails.setLocation(7, caseBanding.getLocation().y + 17);
 							grpCorrections.add(caseDetails);
@@ -16227,6 +16248,10 @@ public class Shutter {
 								
 								if (lblVBR.getText().equals("CQ"))
 								{
+									taille.setText("-");
+									lblDbitVido.setText(language.getProperty("lblValue"));
+									lblKbsH264.setVisible(false);
+									h264lines.setVisible(false);					
 									case2pass.setSelected(false);
 									case2pass.setEnabled(false);
 								}
@@ -16254,7 +16279,7 @@ public class Shutter {
 							{
 								lblPad.setVisible(true);
 							}
-							lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 7, comboH264Taille.getLocation().y + 3, 65, 16);
+							lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 7, comboH264Taille.getLocation().y + 3, 70, 16);
 							grpH264.add(lblPad);
 							grpSetTimecode.setVisible(false);
 							
@@ -16356,10 +16381,10 @@ public class Shutter {
 								&& comboAudio2.getSelectedIndex() == 1
 								&& comboAudio3.getSelectedIndex() == 2
 								&& comboAudio4.getSelectedIndex() == 3
-								&& comboAudio5.getSelectedIndex() == 8
-								&& comboAudio6.getSelectedIndex() == 8
-								&& comboAudio7.getSelectedIndex() == 8
-								&& comboAudio8.getSelectedIndex() == 8)
+								&& comboAudio5.getSelectedIndex() == 16
+								&& comboAudio6.getSelectedIndex() == 16
+								&& comboAudio7.getSelectedIndex() == 16
+								&& comboAudio8.getSelectedIndex() == 16)
 							{
 								comboAudio1.setSelectedIndex(0);
 								comboAudio2.setSelectedIndex(1);
@@ -16584,7 +16609,9 @@ public class Shutter {
 							// grpCorrections
 							caseStabilisation.setLocation(7, 14);
 							grpCorrections.add(caseStabilisation);
-							caseBanding.setLocation(7, caseStabilisation.getLocation().y + 17);
+							caseDeflicker.setLocation(7, caseStabilisation.getLocation().y + 17);
+							grpCorrections.add(caseDeflicker);
+							caseBanding.setLocation(7, caseDeflicker.getLocation().y + 17);
 							grpCorrections.add(caseBanding);
 							caseDetails.setLocation(7, caseBanding.getLocation().y + 17);
 							grpCorrections.add(caseDetails);
@@ -16653,7 +16680,7 @@ public class Shutter {
 								{
 									lblPad.setVisible(true);
 								}
-								lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 36, comboH264Taille.getLocation().y + 3, 65, 16);
+								lblPad.setBounds(comboH264Taille.getLocation().x + comboH264Taille.getWidth() + 36, comboH264Taille.getLocation().y + 3, 70, 16);
 								grpH264.add(lblPad);
 
 								grpInAndOut.setVisible(true);
@@ -16738,10 +16765,10 @@ public class Shutter {
 								&& comboAudio2.getSelectedIndex() == 1
 								&& comboAudio3.getSelectedIndex() == 2
 								&& comboAudio4.getSelectedIndex() == 3
-								&& comboAudio5.getSelectedIndex() == 8
-								&& comboAudio6.getSelectedIndex() == 8
-								&& comboAudio7.getSelectedIndex() == 8
-								&& comboAudio8.getSelectedIndex() == 8)
+								&& comboAudio5.getSelectedIndex() == 16
+								&& comboAudio6.getSelectedIndex() == 16
+								&& comboAudio7.getSelectedIndex() == 16
+								&& comboAudio8.getSelectedIndex() == 16)
 							{
 								comboAudio1.setSelectedIndex(0);
 								comboAudio2.setSelectedIndex(1);

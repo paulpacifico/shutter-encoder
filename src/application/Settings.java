@@ -141,6 +141,7 @@ public class Settings {
 	public static JLabel lblDestination2 = new JLabel(); 
 	public static JLabel lblDestination3 = new JLabel(); 
 	public static int videoPlayerVolume = 50;
+	public static boolean videoPlayerCasePlaySound = true;
 	
 	public Settings() {
 		//Pour la sauvegarde	
@@ -1498,6 +1499,12 @@ public class Settings {
 						videoPlayerVolume = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 					}
 					
+					//casePlaySound video player
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePlaySound"))
+					{
+						videoPlayerCasePlaySound = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}
+					
 					//FTP
 					if (eElement.getParentNode().getNodeName().equals("Ftp"))
 					{		
@@ -1800,6 +1807,30 @@ public class Settings {
 			else
 				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerVolume)));
 			component.appendChild(cValue);	
+			
+			root.appendChild(component);
+			
+			//casePlaySound video player
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JRadioButton"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("casePlaySound"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			if (VideoPlayer.casePlaySound != null)
+				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.casePlaySound.isSelected())));
+			else
+				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCasePlaySound)));
+			component.appendChild(cValue);
 			
 			root.appendChild(component);
 			

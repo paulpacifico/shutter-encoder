@@ -1973,10 +1973,17 @@ public class OverlayWindow {
 				}
 				
 				//Envoi de la commande
-				String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+				String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
 				
+				boolean isVisible = false;
 				if (Shutter.inputDeviceIsRunning) //Screen capture			
 				{
+					if (frame.isVisible())
+					{
+						frame.setVisible(false);
+						isVisible = true;
+					}
+					
 					FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
 				}
 				else					
@@ -1985,8 +1992,11 @@ public class OverlayWindow {
 	     		}
 				
 	        	do {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} while (FFMPEG.process.isAlive() == false);
+	        	
+	        	if (isVisible)
+	        		frame.setVisible(true);
 				
 				InputStream videoInput = FFMPEG.process.getInputStream();
 	 

@@ -1264,10 +1264,10 @@ public class CropImage {
 				}
 				
 				//Envoi de la commande
-				String cmd = " -vframes 1 -an -s " + (frame.getWidth() - 24) + "x" + finalHeight + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+				String cmd = " -vframes 1 -an -s " + (frame.getWidth() - 24) + "x" + finalHeight + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
 				
 				if (ImageHeight >= ImageWidth)
-					cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+					cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
 					
 					
 	    		InputStream videoInput = null;
@@ -1296,11 +1296,21 @@ public class CropImage {
 				}
 				else if (Shutter.inputDeviceIsRunning) //Screen capture			
 				{
+					boolean isVisible = false;
+					if (frame.isVisible())
+					{
+						frame.setVisible(false);
+						isVisible = true;
+					}
+					
 					FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
 					
 					do {
-						Thread.sleep(10);
+						Thread.sleep(100);
 					} while (FFMPEG.process.isAlive() == false);
+					
+					if (isVisible)
+						frame.setVisible(true);
 					
 					videoInput = FFMPEG.process.getInputStream();
 				}
@@ -1309,7 +1319,7 @@ public class CropImage {
           			FFMPEG.run(FFMPEG.inPoint + " -v quiet -i " + '"' + file.toString() + '"' + cmd);
           			
     				do {
-    					Thread.sleep(10);
+    					Thread.sleep(100);
     				} while (FFMPEG.process.isAlive() == false);
     				
     				videoInput = FFMPEG.process.getInputStream();

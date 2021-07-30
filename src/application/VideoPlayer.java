@@ -49,6 +49,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -123,7 +124,7 @@ public class VideoPlayer {
 	public static JButton leftNext;
 	private JButton rightPrevious;
 	private JButton rightNext;
-	private static JRadioButton casePlaySound;
+	public static JRadioButton casePlaySound;
 	public static JRadioButton caseTcInterne;
 
 	public static String videoPath = null;
@@ -138,7 +139,7 @@ public class VideoPlayer {
     public static float playerLeftTime = 0;
     public static Image frameLeft;
     public static boolean leftFrameIsComplete = false;
-    public static boolean playerLeftInputFPS = true;
+    public static boolean playerLeftPlayVideo = true;
     public static int playerLeftSleep = (int) inputFramerateMS;
 	
 	public static JPanel playerRight;
@@ -148,7 +149,7 @@ public class VideoPlayer {
     public static float playerRightTime = 0;
     public static Image frameRight;
     public static boolean rightFrameIsComplete = false;
-    public static boolean playerRightInputFPS = true;
+    public static boolean playerRightPlayVideo = true;
     public static int playerRightSleep = (int) inputFramerateMS;
     
     public static JButton leftStop;
@@ -259,9 +260,9 @@ public class VideoPlayer {
 					
 					// Analyse des données
 					FFPROBE.FrameData(file.toString());	
-					 do
-					 	Thread.sleep(10);						 
-					 while (FFPROBE.isRunning);
+					do
+						Thread.sleep(10);						 
+					while (FFPROBE.isRunning);
 					
 					String filter = "";	
 					if (FFPROBE.entrelaced.equals("1"))
@@ -599,7 +600,7 @@ public class VideoPlayer {
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe" + '"';	
 				
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder(PathToFFMPEG + setVideoCommand(inputTime, playerLeft.getWidth(), playerLeft.getHeight(), playerLeftInputFPS));
+				ProcessBuilder pbv = new ProcessBuilder(PathToFFMPEG + setVideoCommand(inputTime, playerLeft.getWidth(), playerLeft.getHeight(), playerLeftPlayVideo));
 				playerLeftVideo = pbv.start();	
 				
 				//AUDIO STREAM
@@ -612,7 +613,7 @@ public class VideoPlayer {
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
 				
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setVideoCommand(inputTime, playerLeft.getWidth(), playerLeft.getHeight(), playerLeftInputFPS));
+				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setVideoCommand(inputTime, playerLeft.getWidth(), playerLeft.getHeight(), playerLeftPlayVideo));
 				playerLeftVideo = pbv.start();	
 				
 				//AUDIO STREAM
@@ -621,7 +622,8 @@ public class VideoPlayer {
 			}			
 				
 			InputStream video = playerLeftVideo.getInputStream();				
-						
+			BufferedInputStream videoInputStream = new BufferedInputStream(video);
+					
 			InputStream audio = playerLeftAudio.getInputStream();							
 		    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audio);		    
 		    AudioFormat audioFormat = audioInputStream.getFormat();
@@ -640,7 +642,9 @@ public class VideoPlayer {
 					byte bytes[] = new byte[(int) (FFPROBE.audioSampleRate*4/inputFramerate)];
 		            int bytesRead = 0;
 
-					do {							
+					do {	
+						
+						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
 						
 						if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 						{							
@@ -658,7 +662,7 @@ public class VideoPlayer {
 				        		line.write(bytes, 0, bytesRead);
 												    
 				        		//Read 1 video frame
-								frameLeft = ImageIO.read(video);
+								frameLeft = ImageIO.read(videoInputStream);
 								playerLeftRepaint();
 					
 								playerLeftTime += inputFramerateMS;
@@ -669,7 +673,23 @@ public class VideoPlayer {
 							finally {
 								
 								if (frameLeftControl)
+								{
 									leftPlay.setText(Shutter.language.getProperty("btnResume"));	
+								}
+								else if (playerLeftPlayVideo)
+								{
+					            	long delay = startTime - System.nanoTime();
+					                
+					            	if (delay > 0)
+					            	{		            		
+						            	long time = System.nanoTime();
+						            	do {
+							            	try {
+												Thread.sleep(0);
+											} catch (InterruptedException e) {}
+						            	} while (System.nanoTime() - time < delay);			            	
+					                }
+								}								
 								
 								leftFrameIsComplete = true;						
 							}
@@ -688,7 +708,10 @@ public class VideoPlayer {
 					
 					try {
 						video.close();
-					} catch (IOException e) {}					
+					} catch (IOException e) {}		
+					try {
+						videoInputStream.close();
+					} catch (IOException e) {}
 					try {
 						audio.close();
 					} catch (IOException e) {}
@@ -758,7 +781,7 @@ public class VideoPlayer {
 		if (time < 0.0f)
 			time = 0;
 		
-		playerLeftInputFPS = false;
+		playerLeftPlayVideo = false;
 		
 		if (frameLeft != null)
 		{
@@ -771,7 +794,7 @@ public class VideoPlayer {
 					} catch (InterruptedException e) {}
 				} while (playerLeftThread.isAlive());
 								
-				playerLeftInputFPS = true;
+				playerLeftPlayVideo = true;
 				playerLeft(time);	
 				leftPlay.setText(Shutter.language.getProperty("btnPause"));
 			}
@@ -802,7 +825,7 @@ public class VideoPlayer {
 		}
 		
 		frameLeftControl = false;
-		playerLeftInputFPS = true;				
+		playerLeftPlayVideo = true;				
 	}
 	
 	public static float playerLeftGetTime() {
@@ -812,7 +835,7 @@ public class VideoPlayer {
 	public static void playerLeftFreeze() {
 		
 		frameLeftControl = true;
-		playerLeftInputFPS = false;
+		playerLeftPlayVideo = false;
 		
 		if (playerLeftVideo == null || playerLeftVideo.isAlive() == false)		
 		{
@@ -833,7 +856,7 @@ public class VideoPlayer {
 		}
 		
 		frameLeftControl = false;	
-		playerLeftInputFPS = true;
+		playerLeftPlayVideo = true;
 	}
 	
 	//Player right
@@ -849,7 +872,7 @@ public class VideoPlayer {
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe" + '"';	
 				
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder(PathToFFMPEG + setVideoCommand(inputTime, playerRight.getWidth(), playerRight.getHeight(), playerRightInputFPS));
+				ProcessBuilder pbv = new ProcessBuilder(PathToFFMPEG + setVideoCommand(inputTime, playerRight.getWidth(), playerRight.getHeight(), playerRightPlayVideo));
 				playerRightVideo = pbv.start();	
 				
 				//AUDIO STREAM
@@ -862,7 +885,7 @@ public class VideoPlayer {
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
 				
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setVideoCommand(inputTime, playerRight.getWidth(), playerRight.getHeight(), playerRightInputFPS));
+				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setVideoCommand(inputTime, playerRight.getWidth(), playerRight.getHeight(), playerRightPlayVideo));
 				playerRightVideo = pbv.start();	
 				
 				//AUDIO STREAM
@@ -871,6 +894,7 @@ public class VideoPlayer {
 			}	
 									
 			InputStream video = playerRightVideo.getInputStream();				
+			BufferedInputStream videoInputStream = new BufferedInputStream(video);
 						
 			InputStream audio = playerRightAudio.getInputStream();							
 		    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audio);	         
@@ -892,6 +916,8 @@ public class VideoPlayer {
 		            					
 					do {
 						
+						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
+						
 						if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 						{
 							try {	
@@ -908,7 +934,7 @@ public class VideoPlayer {
 				        		line.write(bytes, 0, bytesRead);								
 					        	
 				        		//Read 1 video frame				        		
-								frameRight = ImageIO.read(video);
+								frameRight = ImageIO.read(videoInputStream);
 								playerRightRepaint();
 					
 								playerRightTime += inputFramerateMS;
@@ -919,7 +945,23 @@ public class VideoPlayer {
 							finally {	
 								
 								if (frameRightControl)
+								{
 									rightPlay.setText(Shutter.language.getProperty("btnResume"));	
+								}
+								else if (playerRightPlayVideo)
+								{
+					            	long delay = startTime - System.nanoTime();
+					                
+					            	if (delay > 0 && playerRightPlayVideo)
+					            	{		            		
+						            	long time = System.nanoTime();
+						            	do {
+							            	try {
+												Thread.sleep(0);
+											} catch (InterruptedException e) {}
+						            	} while (System.nanoTime() - time < delay);			            	
+					                }
+								}
 								
 								rightFrameIsComplete = true;
 							}
@@ -938,6 +980,9 @@ public class VideoPlayer {
 					
 					try {
 						video.close();
+					} catch (IOException e) {}
+					try {
+						videoInputStream.close();
 					} catch (IOException e) {}
 					try {
 						audio.close();
@@ -1008,7 +1053,7 @@ public class VideoPlayer {
 	
 	public static void playerRightSetTime(float time) {
 		
-		playerRightInputFPS = false;
+		playerRightPlayVideo = false;
 				
 		if (frameRight != null && time < (FFPROBE.totalLength - inputFramerateMS*2))
 		{
@@ -1021,7 +1066,7 @@ public class VideoPlayer {
 					} catch (InterruptedException e) {}
 				} while (playerRightThread.isAlive());
 								
-				playerRightInputFPS = true;
+				playerRightPlayVideo = true;
 				playerRight(time);	
 				rightPlay.setText(Shutter.language.getProperty("btnPause"));
 			}
@@ -1052,7 +1097,7 @@ public class VideoPlayer {
 		}
 		
 		frameRightControl = false;
-		playerRightInputFPS = true;
+		playerRightPlayVideo = true;
 	}
 	
 	public static float playerRightGetTime() {
@@ -1062,7 +1107,7 @@ public class VideoPlayer {
 	public static void playerRightFreeze() {
 				
 		frameRightControl = true;
-		playerRightInputFPS = false;
+		playerRightPlayVideo = false;
 		
 		if (playerRightVideo == null || playerRightVideo.isAlive() == false)		
 		{
@@ -1082,7 +1127,7 @@ public class VideoPlayer {
 		}	
 		
 		frameRightControl = false;
-		playerRightInputFPS = true;
+		playerRightPlayVideo = true;
 	}
 	
 	
@@ -1131,6 +1176,13 @@ public class VideoPlayer {
 					if (FFPROBE.isRunning == false)
 					{
 						FFPROBE.Data(videoPath);
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {}
+						} while (FFPROBE.isRunning);
+						
+						FFPROBE.FrameData(videoPath);	
 						do {
 							try {
 								Thread.sleep(10);
@@ -1229,21 +1281,24 @@ public class VideoPlayer {
     	}
 	}
  
-	public static String setVideoCommand(float inputTime, int width, int height, boolean readEncoding) {
-		
-		String re = "";		
-		if (readEncoding)
-			re = " -re";
+	public static String setVideoCommand(float inputTime, int width, int height, boolean isPlaying) {
+				
+		String yadif = "";
+		if (FFPROBE.entrelaced.equals("1"))
+			yadif = " -vf yadif=0:" + FFPROBE.fieldOrder + ":0";
 		
 		if (FFPROBE.audioOnly)
-		{
-			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -f lavfi -re -i " + '"' + "color=c=black:r=25:s="
-					+ width + "x" + height + '"' +  " -c:v bmp -an -sws_flags bilinear -f image2pipe pipe:-";		
+		{			
+			//Important
+			FFPROBE.currentFPS = 25.0f;
+			
+			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -f lavfi -i " + '"' + "color=c=black:r=25:s="
+					+ width + "x" + height + '"' +  " -c:v bmp -an -f image2pipe pipe:-";		
 		}
 		else
 		{
-			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -ss " + inputTime + "ms" + re + " -i " + '"' + videoPath + '"'
-					+  " -c:v bmp -an -s " + width + "x" + height + " -sws_flags bilinear -f image2pipe pipe:-";			
+			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -ss " + (long) inputTime + "ms -i " + '"' + videoPath + '"'
+					+  " -c:v bmp -an -s " + width + "x" + height + yadif + " -sws_flags fast_bilinear -f image2pipe pipe:-";			
 		}
 	}
 	
@@ -1255,7 +1310,7 @@ public class VideoPlayer {
 		}
 		else
 		{
-			return " -v quiet -ss " + inputTime + "ms -i " + '"' + videoPath + '"' +  " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+			return " -v quiet -ss " + (long) inputTime + "ms -i " + '"' + videoPath + '"' +  " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
 		}
 	}
     
@@ -1284,7 +1339,7 @@ public class VideoPlayer {
 				{
 					if (newWaveform || waveform.exists() == false)
 					{
-						long size = (long) (FFPROBE.totalLength / 10);
+						long size = 1920;
 						
 						String start = "";
 						String duration = "";
@@ -1466,7 +1521,7 @@ public class VideoPlayer {
 
 				i ++;
 				
-				if (frameLeft != null && i <= 1)
+				if (frameRight != null && i <= 1)
 				{										
 					Thread t = new Thread(new Runnable() {
 
@@ -1480,8 +1535,8 @@ public class VideoPlayer {
 							
 							if (playerRightVideo != null && frameRight != null)
 							{
-								if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
-									leftPlay.setText(Shutter.language.getProperty("btnResume"));
+								if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+									rightPlay.setText(Shutter.language.getProperty("btnResume"));
 		
 								rightFrameIsComplete = false;
 
@@ -1561,15 +1616,6 @@ public class VideoPlayer {
 				else if (rightPlay.getText().equals(Shutter.language.getProperty("btnResume")) && playerRightTime < (FFPROBE.totalLength - inputFramerateMS*2))
 				{
 					frameRightControl = false;
-					
-					playerRightStop();
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException er) {}
-					} while (playerRightThread.isAlive());
-									
-					playerRight(playerRightTime);	
 					rightPlay.setText(Shutter.language.getProperty("btnPause"));
 				}
 			}
@@ -1770,15 +1816,6 @@ public class VideoPlayer {
 				else if (leftPlay.getText().equals(Shutter.language.getProperty("btnResume")))
 				{				
 					frameLeftControl = false;
-					
-					playerLeftStop();
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException er) {}
-					} while (playerLeftThread.isAlive());
-									
-					playerLeft(playerLeftTime);	
 					leftPlay.setText(Shutter.language.getProperty("btnPause"));
 				}
 								
@@ -1878,7 +1915,7 @@ public class VideoPlayer {
 				{		
 					if (sliderIn.getValue() > 0)
 						playerLeftSetTime(formatTime(sliderIn.getValue()));	
-					else	
+					else
 						playerLeftSetTime(0);
 							
 					if (sliderIn.getValue() > sliderOut.getValue())
@@ -1928,7 +1965,14 @@ public class VideoPlayer {
 						Thread.sleep(200);
 					} catch (InterruptedException e1) {}
 					leftPlay.doClick();
-				}				
+				}	
+				
+				do {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException er) {}
+												
+				} while (leftFrameIsComplete == false);	
 			}
 
 			@Override
@@ -2065,7 +2109,14 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {			
-				sliderOutChange = false;			
+				sliderOutChange = false;	
+				
+				do {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException er) {}
+												
+				} while (rightFrameIsComplete == false);	
 			}
 
 			@Override
@@ -2088,12 +2139,6 @@ public class VideoPlayer {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				/*if (playerLeftVideo != null)
-					playerLeftVideo.getMediaPlayer().setVolume(sliderVolume.getValue());
-				
-				if (playerRightVideo != null)
-					playerRightVideo.getMediaPlayer().setVolume(sliderVolume.getValue());*/
-				
 				Settings.videoPlayerVolume = sliderVolume.getValue();			
 			}
 			
@@ -2101,7 +2146,7 @@ public class VideoPlayer {
 		
 		lblVolume = new JLabel(Shutter.language.getProperty("volume") + " ");
 		lblVolume.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblVolume.setBounds(sliderVolume.getLocation().x - 61, sliderIn.getLocation().y - 30, 61, 16);		
+		lblVolume.setBounds(sliderVolume.getLocation().x - 69, sliderIn.getLocation().y - 30, 69, 16);		
 		frame.getContentPane().add(lblVolume);
 				
 		addWaveform(true);
@@ -2184,10 +2229,12 @@ public class VideoPlayer {
 						case "H.265":
 						case "WMV":
 						case "MPEG":
-						case "WebM":
+						case "VP9":
+						case "AV1":
 						case "OGV":
 						case "MJPEG":
 						case "Xvid":
+						case "Blu-ray":
 							FFPROBE.CalculH264();
 							break;
 					}
@@ -2925,10 +2972,20 @@ public class VideoPlayer {
 		frame.getContentPane().add(caseTcInterne);	
 		
 		casePlaySound = new JRadioButton(Shutter.language.getProperty("casePlaySound"));
+		casePlaySound.setName("casePlaySound");
 		casePlaySound.setBounds(6, grpIn.getLocation().y - 36, 195, 23);	
 		casePlaySound.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		casePlaySound.setSelected(true);
+		casePlaySound.setSelected(Settings.videoPlayerCasePlaySound);
 		frame.getContentPane().add(casePlaySound);
+		
+		casePlaySound.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				Settings.videoPlayerCasePlaySound = casePlaySound.isSelected();
+			}
+
+		});
 		
 		btnPreview = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
 		btnPreview.setHorizontalAlignment(SwingConstants.CENTER);
@@ -3706,7 +3763,7 @@ public class VideoPlayer {
 		sliderIn.setBounds(grpIn.getLocation().x + grpIn.getSize().width + 12, grpIn.getLocation().y, frame.getSize().width - (grpIn.getLocation().x + grpIn.getSize().width + 12) - 12, 60); 
 		sliderOut.setBounds(grpOut.getLocation().x + grpOut.getSize().width + 12, grpOut.getLocation().y, frame.getSize().width - (grpOut.getLocation().x + grpOut.getSize().width + 12) - 12, 60); 
 		sliderVolume.setBounds(frame.getSize().width - 12 - 111, sliderIn.getLocation().y - 33, 111, 22);		
-		lblVolume.setBounds(sliderVolume.getLocation().x - 61, sliderIn.getLocation().y - 30, 61, 16);	
+		lblVolume.setBounds(sliderVolume.getLocation().x - 69, sliderIn.getLocation().y - 30, 69, 16);	
 		
 		//Lecteurs 
 		float largeurMax = (float) frame.getSize().width / frame.getSize().height;
@@ -3809,27 +3866,27 @@ public class VideoPlayer {
 	    		//Durée H264
 	    		switch (Shutter.comboFonctions.getSelectedItem().toString())
 	    		{
-				case "H.264":
-				case "H.265":
-				case "WMV":
-				case "MPEG":
-				case "VP9":
-				case "AV1":
-				case "OGV":
-				case "MJPEG":
-				case "Xvid":
-				case "Blu-ray":
-		    	   	 NumberFormat formatter = new DecimalFormat("00");
-		    	     int secondes = (int) ((sommeTotal / 1000) % 60);
-		    	     int minutes =  (int) (((sommeTotal / 1000) / 60) % 60);
-		    	     int heures = (int) ((sommeTotal / 1000) / 3600);
-		    	
-		    	     Shutter.textH.setText(formatter.format(heures));
-		    	     Shutter.textMin.setText(formatter.format(minutes));
-		    	     Shutter.textSec.setText(formatter.format(secondes));
-		    	     
-		    	     FFPROBE.setTailleH264();
-	    	     break;
+					case "H.264":
+					case "H.265":
+					case "WMV":
+					case "MPEG":
+					case "VP9":
+					case "AV1":
+					case "OGV":
+					case "MJPEG":
+					case "Xvid":
+					case "Blu-ray":
+			    	   	 NumberFormat formatter = new DecimalFormat("00");
+			    	     int secondes = (int) ((sommeTotal / 1000) % 60);
+			    	     int minutes =  (int) (((sommeTotal / 1000) / 60) % 60);
+			    	     int heures = (int) ((sommeTotal / 1000) / 3600);
+			    	
+			    	     Shutter.textH.setText(formatter.format(heures));
+			    	     Shutter.textMin.setText(formatter.format(minutes));
+			    	     Shutter.textSec.setText(formatter.format(secondes));
+			    	     
+			    	     FFPROBE.setTailleH264();
+		    	     break;
 	    		}
 			}
 		
@@ -3838,7 +3895,7 @@ public class VideoPlayer {
 	
 	public static float formatTime(float time) {
 		
-		long seconds = (long) Math.floor(Math.round(time / 1000) * 1000);		
+		long seconds = (long) Math.floor(time / 1000) * 1000;
 		long frameToMS = (long) Math.ceil((time % 1000) - Math.ceil(time % inputFramerateMS));
 		
 		return (seconds + frameToMS);	

@@ -1961,16 +1961,20 @@ public class ColorImage {
 						XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
 					else if (isRaw)
 						DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
-					else if (Shutter.inputDeviceIsRunning) //Screen capture			
+					else if (Shutter.inputDeviceIsRunning) //Screen capture	
+					{
+						frame.setVisible(false);
 						FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
+					}
 					else
 	          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');		
 					
-					do{
-						Thread.sleep(100);
-					} while(FFMPEG.isRunning);
+					 do {
+		            	Thread.sleep(100);  
+		            } while((FFMPEG.isRunning && FFMPEG.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));
+					 
+					frame.setVisible(true);
 					
-
 				} catch (InterruptedException e1) {}
 		        finally 
 		        {
@@ -2533,36 +2537,48 @@ public class ColorImage {
 							else if (isRaw)
 								DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
 							else if (Shutter.inputDeviceIsRunning) //Screen capture		
+							{
+								frame.setVisible(false);
 								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
+							}
 							else									
 			          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');			
 							
 				            do {
 				            	Thread.sleep(100);  
 				            } while((FFMPEG.isRunning && FFMPEG.error == false) || (XPDF.isRunning && XPDF.error == false) || (DCRAW.isRunning && DCRAW.error == false));
+				            
+				            frame.setVisible(true);
 						}					
 							
 						//EQ
 						String eq = setEQ();
 						
-						//Histogramm
-						String histogram = setHistogram(eq);
+						//Histogram
+						//String histogram = setHistogram(eq); //Strange colors with the overlay
 						
-						cmd = " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + histogram;	
-						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-							cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 17) + histogram;							
+						String finalEQ = "";
+						if (eq != "")
+							finalEQ = " -vf " + '"' + eq + '"';						
 						
 						//Screen capture
 						if (Shutter.inputDeviceIsRunning && preview.exists() == false)
 						{
+							cmd = " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + finalEQ;	
+							if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
+								cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 17) + finalEQ;	
+							
+							frame.setVisible(false);
 							FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
 						}				
 						else
-							FFMPEG.run(" -v quiet -i " + '"' + preview + '"' + cmd +  " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-");
+							FFMPEG.run(" -v quiet -i " + '"' + preview + '"' + finalEQ +  " -c:v bmp -f image2pipe pipe:-");
 
 						do {
 	    					Thread.sleep(10);
 	    				} while (FFMPEG.process.isAlive() == false);
+						
+						frame.setVisible(true);
 
 						InputStream videoInput = FFMPEG.process.getInputStream();			
 						

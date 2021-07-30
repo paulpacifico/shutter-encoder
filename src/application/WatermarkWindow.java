@@ -725,7 +725,7 @@ public class WatermarkWindow {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textSize.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR) && textSize.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
+				if (textSize.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{	
 					loadLogo(Integer.parseInt(textSize.getText()));					
 				}
@@ -978,10 +978,17 @@ public class WatermarkWindow {
 				seek = " -ss "+h+":"+m+":"+s+".0";
 
 			//Envoi de la commande
-			String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+			String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
 			
+			boolean isVisible = false;
 			if (Shutter.inputDeviceIsRunning) //Screen capture			
 			{
+				if (frame.isVisible())
+				{
+					frame.setVisible(false);
+					isVisible = true;
+				}
+				
 				FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
 			}
 			else					
@@ -990,8 +997,11 @@ public class WatermarkWindow {
      		}	
 			
 			do {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} while (FFMPEG.process.isAlive() == false);
+			
+			if (isVisible)
+				frame.setVisible(true);
 
 			InputStream videoInput = FFMPEG.process.getInputStream();
  
@@ -1159,12 +1169,12 @@ public class WatermarkWindow {
 			}
 			
 			if (Shutter.overlayDeviceIsRunning)
-				FFMPEG.run(" -v quiet " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bilinear -f image2pipe pipe:-");
+				FFMPEG.run(" -v quiet " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
 			else
-				FFMPEG.run(offset + " -v quiet -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bilinear -f image2pipe pipe:-");
+				FFMPEG.run(offset + " -v quiet -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
 			
 			do {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} while (FFMPEG.process.isAlive() == false);
 			
 			InputStream videoInput = FFMPEG.process.getInputStream();

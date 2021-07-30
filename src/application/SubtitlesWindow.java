@@ -1001,7 +1001,7 @@ public class SubtitlesWindow {
 					}					
 					
 					//Envoi de la commande
-		          	FFMPEG.run(" -ss "+h+":"+m+":"+s+"."+f+" -v quiet -i " + '"' + fichier + '"' + " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textWidth.getText() + ":" + size[1] + "+" + spinnerSubtitlesPosition.getValue() + ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboFont.getSelectedItem().toString() + ",FontSize=" + spinnerSize.getValue() + ",PrimaryColour=&H" + hex + "&" + background + "'" + '"' + " -vframes 1 -filter_complex " + '"' + "[0:v]" + crop + pad + "[1:v]overlay=x=" + ((int) (Integer.parseInt(i[0]) - Integer.parseInt(textWidth.getText()))/2) + ",scale=" + containerWidth + ":" + containerHeight + '"' + " -an -c:v bmp -sws_flags bilinear -f image2pipe pipe:-"); 
+		          	FFMPEG.run(" -ss "+h+":"+m+":"+s+"."+f+" -v quiet -i " + '"' + fichier + '"' + " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textWidth.getText() + ":" + size[1] + "+" + spinnerSubtitlesPosition.getValue() + ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboFont.getSelectedItem().toString() + ",FontSize=" + spinnerSize.getValue() + ",PrimaryColour=&H" + hex + "&" + background + "'" + '"' + " -vframes 1 -filter_complex " + '"' + "[0:v]" + crop + pad + "[1:v]overlay=x=" + ((int) (Integer.parseInt(i[0]) - Integer.parseInt(textWidth.getText()))/2) + ",scale=" + containerWidth + ":" + containerHeight + '"' + " -an -c:v bmp -sws_flags bicubic -f image2pipe pipe:-"); 
 		          	
 		            frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		            

@@ -548,7 +548,7 @@ public class CropVideo {
 						g.setColor(new Color(50,50,50));
 					
 					g.fillRect(0, 0, 8, 16);
-					g.fillRect((65 - 8), 0, (65 - 8), 16);
+					g.fillRect((70 - 8), 0, (70 - 8), 16);
 				}
 			}
 		};
@@ -558,7 +558,7 @@ public class CropVideo {
 		lblPad.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPad.setOpaque(true);
 		lblPad.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
-		lblPad.setBounds(positionVideo.getX() + positionVideo.getWidth() + 7, positionVideo.getY() + 3, 65, 16);
+		lblPad.setBounds(positionVideo.getX() + positionVideo.getWidth() + 7, positionVideo.getY() + 3, 70, 16);
 		frame.getContentPane().add(lblPad);
 		
 		lblPad.addMouseListener(new MouseListener() {
@@ -688,10 +688,17 @@ public class CropVideo {
 			}
 			
 			//Envoi de la commande
-			String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bilinear -f image2pipe pipe:-";
+			String cmd = " -vframes 1 -an -vf scale=" + containerWidth +":" + containerHeight + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
 			
+			boolean isVisible = false;
 			if (Shutter.inputDeviceIsRunning) //Screen capture			
-			{
+			{				
+				if (frame.isVisible())
+				{
+					frame.setVisible(false);
+					isVisible = true;
+				}
+				
 				FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
 			}
 			else					
@@ -700,8 +707,11 @@ public class CropVideo {
      		}	
 			
 			do {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} while (FFMPEG.process.isAlive() == false);
+			
+			if (isVisible)
+				frame.setVisible(true);
 			
 			InputStream videoInput = FFMPEG.process.getInputStream();
  
