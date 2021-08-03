@@ -997,7 +997,7 @@ public class WatermarkWindow {
      		}	
 			
 			do {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} while (FFMPEG.process.isAlive() == false);
 			
 			if (isVisible)
@@ -1174,7 +1174,7 @@ public class WatermarkWindow {
 				FFMPEG.run(offset + " -v quiet -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
 			
 			do {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} while (FFMPEG.process.isAlive() == false);
 			
 			InputStream videoInput = FFMPEG.process.getInputStream();

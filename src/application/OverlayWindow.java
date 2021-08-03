@@ -1992,7 +1992,7 @@ public class OverlayWindow {
 	     		}
 				
 	        	do {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} while (FFMPEG.process.isAlive() == false);
 	        	
 	        	if (isVisible)
