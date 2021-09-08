@@ -21,9 +21,12 @@ package library;
 
 import java.awt.Cursor;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 
 import application.Console;
+import application.RecordInputDevice;
+import application.Settings;
 import application.Shutter;
 
 public class FFPLAY extends Shutter {
@@ -146,4 +149,148 @@ public static Process process;
 		runProcess.start();
 	}
 
+	public static void previewFilters(String filter, boolean transitions) {
+
+		String seek = "";
+		String flags = " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+		
+		String option = "-fs";
+		
+		if (liste.getSize() > 0)
+		{
+			String file = "";
+						
+			//Selected file?
+			if (fileList.getSelectedIndices().length > 0)
+			{
+				if (scanIsRunning)
+				{
+					File dir = new File(Shutter.liste.firstElement());
+					for (File f : dir.listFiles()) {
+						if (f.isHidden() == false && f.isFile()) {
+							file = '"' + f.toString() + '"';
+							break;
+						}
+					}
+				} 
+				else
+					file = '"' + fileList.getSelectedValue().toString() + '"';
+
+			} 
+			else
+				file = '"' + liste.firstElement() + '"';
+			
+			if (transitions)
+			{				
+				option = "-autoexit";
+				
+				if (inputDeviceIsRunning == false)
+					FFPROBE.Data(file);
+				
+				do {
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {}
+				} while (FFPROBE.isRunning);
+				
+				if (filter.equals("fadeIn"))
+				{
+					long videoInValue = (long) (Integer.parseInt(spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+					long audioInValue = (long) (Integer.parseInt(spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+					
+					long duration = (long) videoInValue + 2000;
+					if (audioInValue > videoInValue && caseAudioFadeIn.isSelected())
+						duration = (long) audioInValue + 2000;
+					
+					String color = "black";
+					if (lblFadeInColor.getText().equals(language.getProperty("white")))
+						color = "white";
+					
+					String videoFade = "";
+					if (caseVideoFadeIn.isSelected())
+						videoFade = " -vf " + '"' + "scale=1080:-1,fade=in:d=" + videoInValue + "ms:color=" + color + '"';
+						
+					String audioFade = "";
+					if (caseAudioFadeIn.isSelected())
+						audioFade = " -af " + '"' + "afade=in:d=" + audioInValue + "ms" + '"';
+					
+					filter = videoFade + audioFade + " -t " + duration + "ms";
+				}
+				else if (filter.equals("fadeOut"))
+				{
+					long videoOutValue = (long) (Integer.parseInt(spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+					long audioOutValue = (long) (Integer.parseInt(spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+					
+					long forward = (long) FFPROBE.totalLength - ((long) videoOutValue + 2000);
+					if (audioOutValue > videoOutValue && caseAudioFadeOut.isSelected())
+						forward = (long) FFPROBE.totalLength - ((long) audioOutValue + 2000);
+					
+					String color = "black";
+					if (lblFadeOutColor.getText().equals(language.getProperty("white")))
+						color = "white";
+					
+					long videoStart = (long) FFPROBE.totalLength - videoOutValue;
+					long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
+					
+					String videoFade = "";
+					if (caseVideoFadeOut.isSelected())
+						videoFade = " -vf " + '"' + "scale=1080:-1,fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color + '"';
+						
+					String audioFade = "";
+					if (caseAudioFadeOut.isSelected())
+						audioFade = " -af " + '"' + "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms" + '"';
+					
+					seek = " -ss " + forward + "ms ";
+					filter = videoFade + audioFade;
+				}
+			}
+			
+			if (inputDeviceIsRunning)
+			{		
+				if (transitions == false)
+				{
+					filter = " -vf " + '"' + filter + ",scale=iw/2:ih/2" + '"';
+				}
+				
+				String device[] = RecordInputDevice.setInputDevices().replace("-thread_queue_size 4096", " ").split("-f ");
+				
+				if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+				{
+					FFPLAY.run(flags + " -f " + device[2] + filter);
+				}
+				else
+					FFPLAY.run(flags + " -f " + device[1] + filter);
+			}				
+			else if (caseEnableSequence.isSelected())
+			{		
+				if (transitions == false)
+				{
+					filter = " -vf " + '"' + "[in]split=2[v0][v1];[v0]scale=iw/2:ih/2[video1];[v1]"	+ filter + ",scale=iw/2:ih/2[video2];[video1][video2]hstack" + '"';
+				}
+				
+				String extension = file.substring(file.lastIndexOf("."));
+				
+				int n = 0;
+				do {
+					n ++;				
+				} while (file.substring(file.lastIndexOf(".") - n).replace(extension, "").matches("[0-9]+") != false);	
+				
+				int nombre = (n - 1);
+				String fileOut = file.substring(0, file.lastIndexOf(".") - nombre) + "%0" + nombre + "d" + extension;	
+				
+				FFPLAY.run(option + flags + " -start_number " + file.toString().substring(file.lastIndexOf(".") - n + 1).replace(extension, "")
+						+ seek + " -i " + fileOut + filter);
+			}
+			else
+			{	
+				if (transitions == false)
+				{
+					filter = " -vf " + '"' + "[in]split=2[v0][v1];[v0]scale=iw/2:ih/2[video1];[v1]" + filter + ",scale=iw/2:ih/2[video2];[video1][video2]hstack" + '"';
+				}
+				
+				FFPLAY.run(option + seek + flags + " -i " + file + filter);
+			}			
+		}
+	}
+	
 }

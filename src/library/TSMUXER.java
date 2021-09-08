@@ -41,8 +41,8 @@ public static Process process;
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
 		{
-	        RenderQueue.tableRow.addRow(new Object[] {lblEncodageEnCours.getText(), "tsMuxeR " + cmd, lblDestination1.getText()});
-	        lblEncodageEnCours.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "tsMuxeR " + cmd, lblDestination1.getText()});
+	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
 				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));

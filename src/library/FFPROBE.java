@@ -92,7 +92,7 @@ public static float HDRmax = 0;
 public static int gopCount = 0;
 public static int gopSpace = 124;
 
-	public static void Data(final String fichier) {	
+	public static void Data(final String file) {	
 		
 		getVideoLengthTC = null;
 		
@@ -150,9 +150,9 @@ public static int gopSpace = 124;
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';						
 						
-						if (inputDeviceIsRunning && (fichier.equals("Capture.current.screen") || fichier.equals("Capture.input.device")))
+						if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
 						{
-							if (fichier.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
+							if (file.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
 							{		
 								String s[] = RecordInputDevice.setInputDevices().split("-f ");
 								if (overlayDeviceIsRunning)
@@ -163,7 +163,7 @@ public static int gopSpace = 124;
 
 								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f " + inputDevice);
 							}
-							else if (fichier.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
+							else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
 							{
 								String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
 								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
@@ -172,7 +172,7 @@ public static int gopSpace = 124;
 								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0" + '"');	
 						}	
 						else
-							processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -i " + '"' + fichier + '"');
+							processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -i " + '"' + file + '"');
 					}
 					else
 					{
@@ -180,9 +180,9 @@ public static int gopSpace = 124;
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";						
 						
-						if (inputDeviceIsRunning && (fichier.equals("Capture.current.screen") || fichier.equals("Capture.input.device")))
+						if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
 						{
-							if (fichier.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
+							if (file.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
 							{
 								String s[] = RecordInputDevice.setInputDevices().split("-f ");
 								if (overlayDeviceIsRunning)
@@ -196,7 +196,7 @@ public static int gopSpace = 124;
 								
 								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f " + inputDevice);
 							}
-							else if (fichier.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
+							else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
 							{
 								String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
 								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
@@ -205,7 +205,7 @@ public static int gopSpace = 124;
 								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0");	
 						}
 						else
-							processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + fichier + '"');
+							processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + file + '"');
 					}
 					
 					isRunning = true;
@@ -254,7 +254,7 @@ public static int gopSpace = 124;
 				    		String ffmpegTime = s[0].replace(".", ":");	  
 				    					    		
 				    		getVideoLengthTC = ffmpegTime;
-				    		totalLength = (CalculTemps(ffmpegTime));
+				    		totalLength = (getTimeToMS(ffmpegTime));
 				    		
 				         	if (grpH264.isVisible() && totalLength != 0)
 							{     						         		
@@ -279,8 +279,8 @@ public static int gopSpace = 124;
 						 {							
 
 							 //Codec vidéo
-							String[] splitVCodec = line.substring(line.indexOf("Video:")).split(" ");							
-							videoCodec = splitVCodec[1];
+							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
+							videoCodec = splitVideo[1];
 							 
 							//Création de la waveform pour le lecteur vidéo
 				            audioOnly = false;
@@ -315,7 +315,7 @@ public static int gopSpace = 124;
 				            int imageHeight = Integer.parseInt(splitr[0]);
 			                imageResolution = imageWidth + "x" + getHeight[0];
 			                
-			                if (inputDeviceIsRunning && fichier.equals("Capture.current.screen"))
+			                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
 			                {
 			                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
 			                	imageWidth = RecordInputDevice.screenWidth;
@@ -406,7 +406,7 @@ public static int gopSpace = 124;
 			                // FPS
 			                if (inputDeviceIsRunning)
 			            	{
-			            		if (fichier.equals("Capture.current.screen"))
+			            		if (file.equals("Capture.current.screen"))
 			            			currentFPS = Float.parseFloat(Settings.txtScreenRecord.getText());
 			            		else
 			            			currentFPS = Float.parseFloat(Settings.txtInputDevice.getText());
@@ -464,8 +464,8 @@ public static int gopSpace = 124;
 			        		 }
 			        		 
 			        		 //Codec audio
-							 String[] splitACodec = line.substring(line.indexOf("Audio:")).split(" ");							
-							 audioCodec = splitACodec[1].replace(",", "");
+							 String[] splitAudio = line.substring(line.indexOf("Audio:")).split(" ");							
+							 audioCodec = splitAudio[1].replace(",", "");
 							 
 							 String[] splitBitrate = line.substring(line.indexOf("Audio:")).split(" kb/s");	
 							 String[] bitrate = splitBitrate[0].split(" ");
@@ -552,7 +552,7 @@ public static int gopSpace = 124;
 		
 	}
 
-	public static void FrameData(final String fichier) {	
+	public static void FrameData(final String file) {	
 		
 		if (caseForcerEntrelacement.isSelected() == false)
 			entrelaced = null;
@@ -581,14 +581,14 @@ public static int gopSpace = 124;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning -i " + '"' + fichier + '"');
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning -i " + '"' + file + '"');
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + fichier + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning");
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + file + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning");
 					}	
 					
 					isRunning = true;	
@@ -710,7 +710,7 @@ public static int gopSpace = 124;
 		processFrameData.start();
 	}
 	
-	public static void AnalyseGOP(final String fichier) {
+	public static void AnalyseGOP(final String file) {
 		gopCount = 0;
 		gopSpace = 124;
 				
@@ -726,14 +726,14 @@ public static int gopSpace = 124;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_frames -select_streams v:0 -i " + '"' + fichier + '"');
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_frames -select_streams v:0 -i " + '"' + file + '"');
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + fichier + '"' + " -select_streams v:0 -show_frames");
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + file + '"' + " -select_streams v:0 -show_frames");
 					}	
 					
 					isRunning = true;	
@@ -806,7 +806,7 @@ public static int gopSpace = 124;
 		processGOP.start();
 	}
 	
-	public static boolean FindStreams(final String fichier) {			
+	public static boolean FindStreams(final String file) {			
 		
 		try {		
 			String PathToFFPROBE;
@@ -816,31 +816,34 @@ public static int gopSpace = 124;
 				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 				PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-				processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_streams" + " -i " + '"' + fichier + '"');
+				processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_streams" + " -i " + '"' + file + '"');
 			}
 			else
 			{
 				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 				PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-				processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + fichier + '"' + " -show_streams");
+				processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + file + '"' + " -show_streams");
 			}				
 			
 			isRunning = true;	
 			Process process = processFFPROBE.start();
 			
 			String line;
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
+			InputStreamReader input = new InputStreamReader(process.getInputStream());
+	        BufferedReader br = new BufferedReader(input);
 							
 			//Analyse
-			while ((line = input.readLine()) != null) {
-		         if (line.contains("Stream"))
-		         {
-		        	 if (line.contains("Video"))
-		        		 return true;					        		 
-		        	 else if (line.contains("Audio"))
-		        		 return false;
-		         }
+	        while ((line = br.readLine()) != null) 
+			{
+	        	if (line.contains("codec_type=video"))
+	        	{
+	        		return true;					        		 
+	        	}
+	        	else if (line.contains("codec_type=audio"))
+		        {
+	        		return false;
+		        }
 			}									
 			process.waitFor();
 			
@@ -990,14 +993,14 @@ public static int gopSpace = 124;
 		
 	}
 	
-	private static int CalculTemps(String temps) {
+	private static int getTimeToMS(String time) {
 		
-		String[] time = temps.split(":");
+		String[] t = time.split(":");
 		
-		int heures = Integer.parseInt(time[0]);
-		int minutes = Integer.parseInt(time[1]);
-		int secondes = Integer.parseInt(time[2]);
-		int images = (int) (Integer.parseInt(time[3]) * 10);
+		int heures = Integer.parseInt(t[0]);
+		int minutes = Integer.parseInt(t[1]);
+		int secondes = Integer.parseInt(t[2]);
+		int images = (int) (Integer.parseInt(t[3]) * 10);
 		
 		int totalMiliSecondes = (heures * 3600000) + (minutes * 60000) + (secondes * 1000) + images;  
 				

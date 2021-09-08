@@ -34,7 +34,8 @@ public static boolean isRunning = false;
 public static Thread runProcess = new Thread();
 public static Process process;
 
-	public static void run(final String cmd) {				
+	public static void run(final String cmd) {	
+		
 	    Console.consoleMKVMERGE.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
 	    
 		error = false;
@@ -43,8 +44,8 @@ public static Process process;
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
 		{
 			btnStart.setEnabled(true);	
-	        RenderQueue.tableRow.addRow(new Object[] {lblEncodageEnCours.getText(), "mkvmerge " + checkList(cmd), lblDestination1.getText()});
-	        lblEncodageEnCours.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "mkvmerge " + checkList(cmd), lblDestination1.getText()});
+	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
 				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
@@ -83,8 +84,9 @@ public static Process process;
 						String line;
 				        InputStreamReader isr = new InputStreamReader(process.getInputStream());
 				        BufferedReader br = new BufferedReader(isr);				
-						
-						while ((line = br.readLine()) != null) {							
+
+						while ((line = br.readLine()) != null) 
+						{					
 						    Console.consoleMKVMERGE.append(line + System.lineSeparator());	
 						    
 						    if (line.contains("Progress"))

@@ -84,8 +84,8 @@ public static Process process;
 				PathToFFMPEG = PathToDCRAW.replace("dcraw", "ffmpeg");
 			}
 			
-	        RenderQueue.tableRow.addRow(new Object[] {lblEncodageEnCours.getText(), "dcraw" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
-	        lblEncodageEnCours.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dcraw" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
+	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
 				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));

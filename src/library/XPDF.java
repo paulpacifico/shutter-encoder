@@ -64,8 +64,8 @@ public static int pagesCount = 1;
 				PathToFFMPEG = PathToXPDF.replace("pdftoppm", "ffmpeg");
 			}
 			
-	        RenderQueue.tableRow.addRow(new Object[] {lblEncodageEnCours.getText(), "pdftoppm" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
-	        lblEncodageEnCours.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "pdftoppm" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
+	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
 				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));

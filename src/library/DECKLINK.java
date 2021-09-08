@@ -319,7 +319,7 @@ public static ArrayList<String> formatsList;
 	
 		String ffmpegTime = split[0].replace(".", ":");	  
 				
-		dureeTotale = (FFMPEG.CalculTemps(ffmpegTime));
+		dureeTotale = (FFMPEG.getTimeToSeconds(ffmpegTime));
 		
 		BlackMagicOutput.slider.setMaximum(dureeTotale);
 	  		
@@ -333,7 +333,7 @@ public static ArrayList<String> formatsList;
 	    
 		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	
 		if (BlackMagicOutput.sliderChange == false && BlackMagicOutput.btnLire.getText().equals(Shutter.language.getProperty("btnArret")))
-			BlackMagicOutput.slider.setValue(BlackMagicOutput.sliderValue + FFMPEG.CalculTemps(ffmpegTime));	
+			BlackMagicOutput.slider.setValue(BlackMagicOutput.sliderValue + FFMPEG.getTimeToSeconds(ffmpegTime));	
 	  }         
 	  
 	}

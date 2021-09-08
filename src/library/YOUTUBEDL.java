@@ -42,7 +42,7 @@ public static StringBuilder formatsOutput;
 public static String format = "";
 
 	public static void run(final String cmd, final String options) {
-        lblEncodageEnCours.setText(language.getProperty("getVideoName"));
+        lblCurrentEncoding.setText(language.getProperty("getVideoName"));
 		error = false;
 		Shutter.cancelled  = false;
 		
@@ -98,8 +98,8 @@ public static String format = "";
 						{			    	
 					    	if (lineOutput.contains("Destination"))
 					    	{
-					    		 lblEncodageEnCours.setText(lineOutput.substring(24).replace(lblDestination1.getText(), "").substring(1));
-					    		 fichierDeSortie = new File(lblDestination1.getText() + "/" + lblEncodageEnCours.getText());
+					    		 lblCurrentEncoding.setText(lineOutput.substring(24).replace(lblDestination1.getText(), "").substring(1));
+					    		 fichierDeSortie = new File(lblDestination1.getText() + "/" + lblCurrentEncoding.getText());
 					    	}
 					    		
 						    if (lineOutput.contains("ETA") && lineOutput.contains("Unknown ETA") == false)
@@ -195,7 +195,7 @@ public static String format = "";
 	}
 
 	public static void getAvailableFormats(final String cmd, final String options) {
-		lblEncodageEnCours.setText(Shutter.language.getProperty("getAvailableFormats"));
+		lblCurrentEncoding.setText(Shutter.language.getProperty("getAvailableFormats"));
 		error = false;
 		Shutter.cancelled  = false;
 		
