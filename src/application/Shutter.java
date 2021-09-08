@@ -4870,7 +4870,7 @@ public class Shutter {
 		caseBlend = new JRadioButton(language.getProperty("caseBlend"));
 		caseBlend.setName("caseBlend");
 		caseBlend.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseBlend.setBounds(7, caseRotate.getLocation().y + caseRotate.getHeight(), caseBlend.getPreferredSize().width + 10, 23);
+		caseBlend.setBounds(7, caseRotate.getLocation().y + caseRotate.getHeight(), caseBlend.getPreferredSize().width + 14, 23);
 		grpImageSequence.add(caseBlend);
 
 		caseBlend.addActionListener(new ActionListener() {
@@ -9260,7 +9260,7 @@ public class Shutter {
 		caseDetails.setName("caseDetails");
 		caseDetails.setToolTipText(language.getProperty("tooltipDetails"));
 		caseDetails.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseDetails.setSize(caseDetails.getPreferredSize().width + 10, 23);
+		caseDetails.setSize(caseDetails.getPreferredSize().width + 14, 23);
 
 		caseDetails.addActionListener(new ActionListener() {
 
@@ -9349,7 +9349,7 @@ public class Shutter {
 		caseBruit = new JRadioButton(language.getProperty("caseBruit"));
 		caseBruit.setName("caseBruit");
 		caseBruit.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseBruit.setSize(caseBruit.getPreferredSize().width + 10, 23);
+		caseBruit.setSize(caseBruit.getPreferredSize().width + 14, 23);
 
 		caseBruit.addActionListener(new ActionListener() {
 
@@ -9437,7 +9437,7 @@ public class Shutter {
 		caseExposure = new JRadioButton(language.getProperty("caseExposure"));
 		caseExposure.setName("caseExposure");
 		caseExposure.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseExposure.setSize(caseExposure.getPreferredSize().width + 15, 23);
+		caseExposure.setSize(caseExposure.getPreferredSize().width + 20, 23);
 
 		caseExposure.addActionListener(new ActionListener() {
 
