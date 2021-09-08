@@ -68,6 +68,9 @@ import library.MEDIAINFO;
 	public static JLabel lblFlecheBas;
 	public static JTabbedPane infoTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
+	private static int MousePositionX;
+	private static int MousePositionY;
+	
 	public Informations() {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -235,12 +238,7 @@ import library.MEDIAINFO;
 		frame.getContentPane().add(infoTabbedPane);			
 		
 	}
-	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-	
+		
 	private void topPanel() {	
 		topPanel	= new JPanel();
 		topPanel.setLayout(null);
@@ -299,7 +297,7 @@ import library.MEDIAINFO;
 		JLabel title = new JLabel(Shutter.language.getProperty("frameInformations"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -359,8 +357,8 @@ import library.MEDIAINFO;
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;	
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;	
 				
 				frame.toFront();
 			}
@@ -383,7 +381,7 @@ import library.MEDIAINFO;
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override

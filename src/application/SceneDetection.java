@@ -58,6 +58,7 @@ import javax.swing.table.DefaultTableModel;
 
 import library.FFMPEG;
 import library.FFPROBE;
+import settings.FunctionUtils;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -83,6 +84,9 @@ import javax.swing.JScrollPane;
 	private static JSpinner tolerance;
 	public static JButton btnAnalyse;
 	public static JScrollPane scrollPane;
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 	
 	public static File sortieDossier;
 	public static File sortieFichier;
@@ -206,11 +210,6 @@ import javax.swing.JScrollPane;
 			btnAnalyse.doClick();
 	}
 		
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-	
 	private void topPanel() {	
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
@@ -228,7 +227,7 @@ import javax.swing.JScrollPane;
 		JLabel title = new JLabel(Shutter.language.getProperty("frameDetectionCoupe"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -341,8 +340,8 @@ import javax.swing.JScrollPane;
 			@Override
 			public void mousePressed(MouseEvent down) {
 				
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -363,7 +362,7 @@ import javax.swing.JScrollPane;
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -728,7 +727,7 @@ import javax.swing.JScrollPane;
 			public void run() {				
 				complete = 0;
 			
-				Shutter.lblTermine.setText(Utils.completedFiles(complete));
+				Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 
 					
 				for (int i = 0 ; i < Shutter.liste.getSize() ; i++)
@@ -748,7 +747,7 @@ import javax.swing.JScrollPane;
 						 while (FFPROBE.isRunning);
 							 																	
 						String fichier = file.getName();
-						Shutter.lblEncodageEnCours.setText(fichier);
+						Shutter.lblCurrentEncoding.setText(fichier);
 						
 						String sortie = file.getParent();					
 						final String extension =  fichier.substring(fichier.lastIndexOf("."));
@@ -784,7 +783,7 @@ import javax.swing.JScrollPane;
 						
 					} catch (InterruptedException e) {
 						FFMPEG.error  = true;
-					}//End Try
+					}
 				}//End for
 				
 				//Affichage des erreurs
@@ -793,12 +792,12 @@ import javax.swing.JScrollPane;
 				errorList.setLength(0);
 				
 				FFMPEG.enfOfFunction();
-			}//run
+			}
 			
 		});
 		thread.start();
 		
-    }//main
+    }
 
 	private static void actionsDeFin() {
 		//Erreurs
@@ -811,7 +810,7 @@ import javax.swing.JScrollPane;
 		if (FFMPEG.cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			Shutter.lblTermine.setText(Utils.completedFiles(complete));
+			Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 		}
 		
 		tolerance.setEnabled(true);

@@ -81,6 +81,7 @@ import library.FFMPEG;
 import library.FFPLAY;
 import library.FFPROBE;
 import library.XPDF;
+import settings.InputAndOutput;
 
 public class ColorImage {
 	public static JFrame frame;
@@ -129,6 +130,9 @@ public class ColorImage {
 	public static JComboBox<String> comboRotate = new JComboBox<String>();
 	public static JSlider sliderAngle = new JSlider();
 	public static JSlider positionVideo;
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 	
 	/*
 	 * Valeurs
@@ -1695,7 +1699,7 @@ public class ColorImage {
 					
 					File file = new File (Shutter.fileList.getSelectedValue().toString());
 					
-					FFMPEG.fonctionInOut();
+					InputAndOutput.getInputAndOutput();
 					
 					//Slider
 					if (positionVideo.getValue() > 0 && FFPROBE.totalLength > 100)
@@ -1705,7 +1709,7 @@ public class ColorImage {
 						String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
 						String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
 						
-						FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+						InputAndOutput.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
 					}
 					
 					String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
@@ -1788,10 +1792,10 @@ public class ColorImage {
 					else if (Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG"))
 					{
 						String cmd = filter + '"' + " -an -c:v mjpeg" + compression + " -vframes 1 -f nut pipe:play |";
-						FFMPEG.toFFPLAY(FFMPEG.inPoint + " -i " + '"' + file + '"' + FFMPEG.outPoint + cmd);
+						FFMPEG.toFFPLAY(InputAndOutput.inPoint + " -i " + '"' + file + '"' + InputAndOutput.outPoint + cmd);
 					}
 					else
-						FFPLAY.run(FFMPEG.inPoint + " -fs -i " + '"' + file + '"' + filter + '"');
+						FFPLAY.run(InputAndOutput.inPoint + " -fs -i " + '"' + file + '"' + filter + '"');
 
 					do {
 						Thread.sleep(100);
@@ -1846,7 +1850,7 @@ public class ColorImage {
 					File file = new File (Shutter.fileList.getSelectedValue().toString());
 					String ext = file.toString().substring(file.toString().lastIndexOf("."));
 					
-					FFMPEG.fonctionInOut();	
+					InputAndOutput.getInputAndOutput();	
 					
 					//Slider
 					if (positionVideo.getValue() > 0 && FFPROBE.totalLength > 100)
@@ -1856,7 +1860,7 @@ public class ColorImage {
 						String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
 						String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
 						
-						FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+						InputAndOutput.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
 					}
 					
 					 //Dossier de sortie
@@ -1967,7 +1971,7 @@ public class ColorImage {
 						FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
 					}
 					else
-	          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');		
+	          			FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');		
 					
 					 do {
 		            	Thread.sleep(100);  
@@ -2028,12 +2032,7 @@ public class ColorImage {
 		
 		Utils.changeFrameVisibility(frame, false);		
 	}
-	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-			
+				
 	private void topPanel() {
 		
 		topPanel = new JPanel();		
@@ -2274,8 +2273,8 @@ public class ColorImage {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;	
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;	
 				
 				frame.toFront();
 			}
@@ -2319,7 +2318,7 @@ public class ColorImage {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -2330,7 +2329,7 @@ public class ColorImage {
 		
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -2507,7 +2506,7 @@ public class ColorImage {
 					}
 					
 						//InOut	
-						FFMPEG.fonctionInOut();
+						InputAndOutput.getInputAndOutput();
 						
 						//Slider
 						if (positionVideo.getValue() > 0 && FFPROBE.totalLength > 100)
@@ -2517,7 +2516,7 @@ public class ColorImage {
 							String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
 							String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
 							
-							FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+							InputAndOutput.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
 						}
 												
 						String deinterlace = "";
@@ -2542,7 +2541,7 @@ public class ColorImage {
 								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
 							}
 							else									
-			          			FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');			
+			          			FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');			
 							
 				            do {
 				            	Thread.sleep(100);  

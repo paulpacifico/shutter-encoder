@@ -637,13 +637,13 @@ public class RecordInputDevice {
 			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
 			{
 				if (setAudio != "") //Audio needs to be first for sync
-					return setAudio + " -thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
+					return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
 				else
-					return "-thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
+					return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
 			}
 			else
 			{				
-				return setAudio + " -thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
+				return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
 			}
 		}
 		else if (System.getProperty("os.name").contains("Windows"))
@@ -692,7 +692,7 @@ public class RecordInputDevice {
 		    	
 		if (System.getProperty("os.name").contains("Mac"))
 		{
-			return "-thread_queue_size 4096 -f avfoundation -pixel_format uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
+			return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
 		}
 		else if (System.getProperty("os.name").contains("Windows"))
 		{

@@ -88,6 +88,7 @@ import org.w3c.dom.NodeList;
 
 import library.FFMPEG;
 import library.FFPROBE;
+import settings.InputAndOutput;
 
 public class VideoPlayer {
 	
@@ -187,6 +188,9 @@ public class VideoPlayer {
 	public static JLabel waveformRight;
 	public static JPanel panelWaveformLeft;
 	private static JPanel panelWaveformRight;
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 		
 	public VideoPlayer() {  	
 		
@@ -231,7 +235,7 @@ public class VideoPlayer {
 	            	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					File file = new File (Shutter.liste.firstElement());
 					String ext = file.toString().substring(file.toString().lastIndexOf("."));
-					FFMPEG.fonctionInOut();	
+					InputAndOutput.getInputAndOutput();
 					
 					 //Dossier de sortie
 					String sortie;					
@@ -280,7 +284,7 @@ public class VideoPlayer {
 					    filter + " -vframes 1 -q:v 0 -an -filter_complex hstack -y " + '"'  + fileOut + '"');	
 					}
 					else
-						FFMPEG.run(FFMPEG.inPoint + " -i " + '"' + file.toString() + '"' + filter + " -vframes 1 -q:v 0 -an -y " + '"'  + fileOut + '"');			
+						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + filter + " -vframes 1 -q:v 0 -an -y " + '"'  + fileOut + '"');			
 					
 					do{
 						Thread.sleep(10);
@@ -722,7 +726,8 @@ public class VideoPlayer {
 				}
 				
 			});
-			playerLeftThread.start();
+			playerLeftThread.setPriority(Thread.MAX_PRIORITY);
+			playerLeftThread.start();	
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -994,6 +999,7 @@ public class VideoPlayer {
 				}
 				
 			});
+            playerRightThread.setPriority(Thread.MAX_PRIORITY);
             playerRightThread.start();
 			
 		} catch (Exception e) {
@@ -2152,11 +2158,6 @@ public class VideoPlayer {
 		addWaveform(true);
 	}
 	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-	
 	private void topPanel() {
 		
 		topPanel = new JPanel();		
@@ -2229,6 +2230,7 @@ public class VideoPlayer {
 						case "H.265":
 						case "WMV":
 						case "MPEG":
+						case "VP8":
 						case "VP9":
 						case "AV1":
 						case "OGV":
@@ -2469,8 +2471,8 @@ public class VideoPlayer {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;	
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;	
 				
 				frame.toFront();
 			}
@@ -2493,7 +2495,7 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -2504,7 +2506,7 @@ public class VideoPlayer {
 		
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -2999,104 +3001,7 @@ public class VideoPlayer {
 			@Override
 			public void mouseClicked(MouseEvent e) {	
 				
-				try {
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					FFMPEG.fonctionInOut();
-					
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {
-						}
-					} while (FFPROBE.isRunning);
-
-					String channels = "";
-					String videoOutput = "";
-					String audioOutput = "";
-					if (FFPROBE.audioOnly) {
-						if (FFPROBE.channels > 1) {
-							int i;
-							for (i = 0; i < FFPROBE.channels; i++) {
-								channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=720:h=12[a" + i + "];";
-								audioOutput += "[a" + i + "]";
-							}
-							audioOutput = channels + audioOutput + "vstack=" + i + "[volume]" + '"' + " -map " + '"'
-									+ "[volume]" + '"';
-
-						} else if (FFPROBE.channels <= 1)
-							audioOutput = "[0:a:0]showvolume=f=0.001:b=4:w=720:h=12[volume]" + '"' + " -map " + '"'
-									+ "[volume]" + '"';
-					} else {
-						if (FFPROBE.channels > 1) {
-							int i;
-							for (i = 0; i < FFPROBE.channels; i++) {
-								channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=1080:h=12[a" + i + "];";
-								audioOutput += "[a" + i + "]";
-							}
-							audioOutput += "vstack=" + (i + 1) + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
-						} else if (FFPROBE.channels == 1) {
-							channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
-							audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
-						}
-
-						// On ajoute la vidéo
-						videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
-
-						if (FFPROBE.channels == 0) {
-							videoOutput = "scale=1080:-1" + '"';
-							audioOutput = "";
-						}
-
-					}
-					
-					//Fichier
-					File fichier = new File(videoPath);
-					
-					final String extension =  videoPath.substring(videoPath.lastIndexOf("."));
-					String sortie = new File(videoPath).getParent();
-					
-					//Mode concat
-					String concat = "";
-					if (comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
-					{
-						concat = FFMPEG.setConcat(fichier, sortie);			
-						fichier = new File(sortie.replace("\\", "/") + "/" + fichier.getName().replace(extension, ".txt"));
-					}
-
-					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput + " -c:v rawvideo -map a? -f nut pipe:play |";
-
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));						
-					FFMPEG.toFFPLAY(FFMPEG.inPoint + concat + " -i " + '"' + fichier + '"' + FFMPEG.outPoint + cmd);
-
-					if (FFMPEG.isRunning) {
-						do {
-							if (FFMPEG.error) {
-								JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("cantReadFile"),
-										Shutter.language.getProperty("menuItemVisualiser"), JOptionPane.PLAIN_MESSAGE,
-										JOptionPane.ERROR_MESSAGE);
-								break;
-							}
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e1) {
-							}
-						} while (FFMPEG.isRunning || FFMPEG.error);
-					}
-					
-					//Mode concat
-					if (comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
-					{		
-						File listeBAB = new File(sortie.replace("\\", "/") + "/" + fichier.getName().replace(extension, ".txt"));			
-						listeBAB.delete();
-					}
-
-					if (FFMPEG.isRunning)
-						FFMPEG.process.destroy();
-
-					Shutter.enableAll();
-					Shutter.progressBar1.setValue(0);
-									
-				} catch (InterruptedException e1) {}
+				FFMPEG.toSDL(true);
 			}
 
 			@Override
@@ -3870,6 +3775,7 @@ public class VideoPlayer {
 					case "H.265":
 					case "WMV":
 					case "MPEG":
+					case "VP8":
 					case "VP9":
 					case "AV1":
 					case "OGV":

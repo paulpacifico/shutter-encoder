@@ -67,7 +67,7 @@ import library.FFPROBE;
 import library.MKVMERGE;
 import library.TSMUXER;
 import library.XPDF;
-import library.YOUTUBEDL;;
+import library.YOUTUBEDL;
 
 public class Utils extends Shutter {
 	
@@ -215,8 +215,9 @@ public class Utils extends Shutter {
 				input = defaultLanguage(pathToLanguages);
 			}
 			
-			if (getLanguage.equals("Chinese")) //use system default font
+			if (getLanguage.contains("Chinese") || getLanguage.contains("Japanese") || getLanguage.contains("Russian")) //use system default font
 			{
+				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "";
 				Shutter.freeSansFont = "";
 			}
@@ -292,13 +293,13 @@ public class Utils extends Shutter {
 
 						Transport.send(message);						
 						
-					    Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-				        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("mailSuccessful"));
+					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
 					} catch (MessagingException e) {
 						Console.consoleFFMPEG.append(System.lineSeparator() + e + System.lineSeparator());
 						
-						Shutter.lblEncodageEnCours.setForeground(Color.RED);
-			        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("mailFailed"));
+						Shutter.lblCurrentEncoding.setForeground(Color.RED);
+			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
 						Shutter.progressBar1.setValue(0);
 					} finally {
 						sendMailIsRunning = false;
@@ -436,19 +437,20 @@ public class Utils extends Shutter {
 	}
 	
 	public static String filesNumber() {
-		if (scanIsRunning) {
+		
+		if (scanIsRunning)
 			return "Scan...";
-		}
 
-		String nomDuLabel;
+		String labelName;
 		int total = liste.getSize();
 		if (total > 1 && total < 1000)
-			nomDuLabel = total + " " + language.getProperty("files");
+			labelName = total + " " + language.getProperty("files");
 		else if (total <= 1)
-			nomDuLabel = total + " " + language.getProperty("file");
+			labelName = total + " " + language.getProperty("file");
 		else
-			nomDuLabel = total / 1000 + "k " + language.getProperty("files");
-		return nomDuLabel;
+			labelName = total / 1000 + "k " + language.getProperty("files");
+		
+		return labelName;
 	}
 
 	public static void findFiles(String path) {
@@ -504,239 +506,22 @@ public class Utils extends Shutter {
 							{
 								Shutter.liste.addElement(f.getAbsoluteFile().toString());	
 								Shutter.addToList.setVisible(false);
-								Shutter.lblFichiers.setText(Utils.filesNumber());
+								Shutter.lblFiles.setText(Utils.filesNumber());
 							}
 						}
 						else
 						{
 							Shutter.liste.addElement(f.getAbsoluteFile().toString());
 							Shutter.addToList.setVisible(false);
-							Shutter.lblFichiers.setText(Utils.filesNumber());
+							Shutter.lblFiles.setText(Utils.filesNumber());
 						}
 					}
 				}
 			}
 		}
-		lblFichiers.setText(filesNumber());
+		lblFiles.setText(filesNumber());
 	}
-	
-	public static File scanFolder(String folder) {
-		progressBar1.setIndeterminate(true);
-		lblEncodageEnCours.setText(language.getProperty("waitingFiles"));
-		tempsRestant.setVisible(false);
-
-		disableAll();
-
-		File actualScanningFile = null;
-		do {
-			File dir = new File(folder);
-			btnStart.setEnabled(false);
-
-			for (File f : dir.listFiles()) // Récupère chaque fichier du dossier
-			{
-				if (f.isHidden() || f.isFile() == false)
-					continue;
-				else if (Settings.btnExclude.isSelected())
-				{							
-					boolean allowed = true;
-					for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
-					{
-						int s = f.toString().lastIndexOf('.');
-						String ext = f.toString().substring(s);
-						
-						if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
-							allowed = false;
-					}
-					
-					if (allowed == false)
-						continue;
-				}
-
-				actualScanningFile = f;
-
-				// Lorque un fichier est entrain d'être copié
-				progressBar1.setIndeterminate(true);
-				
-				waitFileCompleted(f);
-
-				if (actualScanningFile != null)
-					return actualScanningFile;
-			} // End for
-		} while (scanIsRunning);
-
-		// Action de fin
-		progressBar1.setIndeterminate(false);
-		enableAll();
-		btnEmptyList.doClick();
-
-		return null;
-	}
-
-	public static boolean waitFileCompleted(File f) {
 		
-		progressBar1.setIndeterminate(true);
-		lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-		lblEncodageEnCours.setText(f.getName());
-		tempsRestant.setVisible(false);
-		btnStart.setEnabled(false);
-		btnCancel.setEnabled(true);
-		comboFonctions.setEnabled(false);
-		
-		long fileSize = 0;
-		do {
-			fileSize = f.length();
-			try {
-				
-				Thread.sleep(1000);
-				
-				if (fileSize == f.length())
-				{
-					for (int count = 0 ; count < 8 ; count ++)
-					{
-						Thread.sleep(1000);
-
-						if (fileSize != f.length())
-							break;
-					}
-				}
-				
-			} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
-		} while (fileSize != f.length() && cancelled == false);
-
-		// Windows
-		while (f.renameTo(f) == false && cancelled == false) {
-			if (f.exists() == false) // Dans le cas où on annule la copie en cours
-				break;
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
-		}
-		
-		if (cancelled)
-		{
-			progressBar1.setIndeterminate(false);
-			lblEncodageEnCours.setText(language.getProperty("lblEncodageEnCours"));
-			btnStart.setEnabled(true);
-			btnCancel.setEnabled(false);
-			comboFonctions.setEnabled(true);
-			return false;
-		}
-		
-		progressBar1.setIndeterminate(false);
-		btnCancel.setEnabled(false);
-		
-		return true;
-	}
-	
-	public static File fileReplacement(String path, String file, String oldExt, String surname, String newExt) {
-		
-		int n = 1;
-		File fileOut = new File(path + "/" + file.replace(oldExt, surname.substring(0, surname.length() - 1) + newExt));
-		
-		//Nom identique à la source
-		if (file.equals(file.replace(oldExt, surname.substring(0, surname.length() - 1) + newExt)) && caseChangeFolder1.isSelected() == false)
-		{
-			do {
-				fileOut = new File(path + "/" + file.replace(oldExt, surname + n + newExt));
-				n++;
-			} while (fileOut.exists());
-		}
-		else
-		{
-			
-			int q = 0;
-			if (yesToAll == false && noToAll == false)
-			{				
-				Object[] options = { language.getProperty("yes"), language.getProperty("yesToAll"), language.getProperty("no"), language.getProperty("noToAll"), language.getProperty("btnCancel") };
-				
-				q = JOptionPane.showOptionDialog(frame, language.getProperty("eraseFile"),
-						Shutter.language.getProperty("File") + " " + fileOut.getName() + " " + Shutter.language.getProperty("alreadyExist"), JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.PLAIN_MESSAGE, null, options, options[2]);
-			}
-
-			if (q == 3) //No to all
-			{
-				noToAll = true;
-			}
-			
-			if (q == 1) //Yes to all
-			{
-				yesToAll = true;
-			}
-			
-			if (q == 2 || noToAll) //No
-			{
-				do {
-					fileOut = new File(path + "/" + file.replace(oldExt, surname + n + newExt));
-					n++;
-				} while (fileOut.exists());
-			}
-			else if (q == 4) //Cancel
-			{
-				if (caseChangeFolder1.isSelected() == false)
-				{
-					lblDestination1.setText(language.getProperty("sameAsSource"));
-				}
-				
-				return null;	
-			}
-		}
-			
-		return fileOut;				
-	}
-
-	public static void moveScannedFiles(String fichier)
-	{
-		File folder = new File(liste.getElementAt(0) + "completed");
-		
-		//Si erreur
-		if (FFMPEG.error || cancelled)
-			folder = new File(liste.getElementAt(0) + "error");
-		
-		if (folder.exists() == false)
-			folder.mkdir();
-		
-		File fileToMove = new File(folder + "/" + fichier);
-		
-		// Récupère le fichier du dossier
-		for (int i = 0 ; i < liste.getSize() ; i++)
-		{						
-			File getFile = new File(liste.getElementAt(i) + fichier);
-			
-			if (getFile.exists()) //Si le fichier correspond on le déplace dans le dossier
-			{
-					if (fileToMove.exists()) //Nom identique à la source
-					{
-						int n = 1;
-						
-						String ext =  fichier.substring(fichier.lastIndexOf("."));
-						
-						do {
-							fileToMove = new File(folder + "/" + fichier.replace(ext, "") + "_" + n + ext);
-							n++;
-						} while (fileToMove.exists());
-					}
-					
-					//Déplacement du fichier
-					getFile.renameTo(fileToMove);
-					
-					break;	
-			}
-		}
-	}
-	
-	public static String completedFiles(int nombre) {
-		String nomDuLabel;
-		if (nombre > 1 && nombre < 1000)
-			nomDuLabel = nombre + " " + Shutter.language.getProperty("filesEnded");
-		else if( nombre <= 1)
-			nomDuLabel = nombre + " " +  Shutter.language.getProperty("fileEnded");
-		else
-			nomDuLabel = nombre / 1000 + "k " + Shutter.language.getProperty("filesEnded");		
-		return nomDuLabel;
-	}
-	
 	@SuppressWarnings({"rawtypes"})
 	public static void saveSettings(boolean update) {
 		

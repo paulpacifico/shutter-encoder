@@ -85,6 +85,9 @@ public class Ftp {
 	public static JButton btnOK; //Si le bouton est disable alors la connexion est établie
 	private JButton btnReset;
 	
+	private static int MousePositionX;
+	private static int MousePositionY;
+	
 	public Ftp() {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -118,12 +121,7 @@ public class Ftp {
 			
 		Utils.changeDialogVisibility(Ftp.frame, false);		
 	}
-
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-			
+	
 	private void topPanel() {
 		
 		topPanel = new JPanel();		
@@ -174,7 +172,7 @@ public class Ftp {
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFtp"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 44);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -195,8 +193,8 @@ public class Ftp {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -217,7 +215,7 @@ public class Ftp {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -363,8 +361,8 @@ public class Ftp {
 
 					 input = new FileInputStream(fichier);
 			        	
-				    Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-			        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingFile") + " " + fichier.getName());
+				    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+			        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingFile") + " " + fichier.getName());
 
 			        Shutter.progressBar1.setMaximum((int) fichier.length());
 			        	
@@ -394,13 +392,13 @@ public class Ftp {
 			            
 					    if (uploaded)
 					    {
-				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingSuccessful"));
+				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingSuccessful"));
 							Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
 					    }
 					    else
 					    {
-					    	Shutter.lblEncodageEnCours.setForeground(Color.RED);
-				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingFailed"));
+					    	Shutter.lblCurrentEncoding.setForeground(Color.RED);
+				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingFailed"));
 							Shutter.progressBar1.setValue(0);
 					    }
 					  
@@ -409,14 +407,14 @@ public class Ftp {
 						
 				    	  if (Shutter.cancelled)
 				    	  {
-						    	Shutter.lblEncodageEnCours.setForeground(Color.RED);
-					        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingCancelled"));
+						    	Shutter.lblCurrentEncoding.setForeground(Color.RED);
+					        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingCancelled"));
 								Shutter.progressBar1.setValue(0);
 				    	  }
 					    
 					  //Envoi du mail de confirmation
 					  sendMailForFtp(uploaded, fichier.toString());
-				 	}//End Try
+				 	}
 				}
 		}//BtnOK
 	}
@@ -462,11 +460,11 @@ public class Ftp {
 					Transport.send(message);
 					
 					Shutter.sendMailIsRunning = false;
-				    Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-			        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("mailSuccessful"));
+				    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+			        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
 				} catch (MessagingException e) {
-					Shutter.lblEncodageEnCours.setForeground(Color.RED);
-		        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("mailFailed"));
+					Shutter.lblCurrentEncoding.setForeground(Color.RED);
+		        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
 				}		
 			}
 		});

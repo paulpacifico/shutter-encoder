@@ -67,6 +67,7 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.XPDF;
+import settings.InputAndOutput;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -101,6 +102,9 @@ public class CropImage {
 	private static int ancrageDroit;
 	private static int ancrageBas;
 	public static JSlider positionVideo;
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 	
 	/*
 	 * Valeurs
@@ -586,11 +590,6 @@ public class CropImage {
 		
 		Utils.changeDialogVisibility(frame, false);		
 	}
-	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
 			
 	private void topPanel() {
 		
@@ -760,8 +759,8 @@ public class CropImage {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;	
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;	
 				
 				frame.toFront();
 			}
@@ -784,7 +783,7 @@ public class CropImage {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -795,7 +794,7 @@ public class CropImage {
 		
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -1250,7 +1249,7 @@ public class CropImage {
 				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
 				
 				//InOut		
-				FFMPEG.fonctionInOut();
+				InputAndOutput.getInputAndOutput();
 				
 				//Slider
 				if (positionVideo != null && positionVideo.getValue() > 0 && positionVideo.getValue() < positionVideo.getMaximum() && FFPROBE.totalLength > 100)
@@ -1260,7 +1259,7 @@ public class CropImage {
 					String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
 					String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
 					
-					FFMPEG.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+					InputAndOutput.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
 				}
 				
 				//Envoi de la commande
@@ -1316,7 +1315,7 @@ public class CropImage {
 				}
 				else					
 				{					
-          			FFMPEG.run(FFMPEG.inPoint + " -v quiet -i " + '"' + file.toString() + '"' + cmd);
+          			FFMPEG.run(InputAndOutput.inPoint + " -v quiet -i " + '"' + file.toString() + '"' + cmd);
           			
     				do {
     					Thread.sleep(10);

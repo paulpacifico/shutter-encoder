@@ -64,10 +64,8 @@ public class ReducedWindow extends JDialog {
 	float opacity = 0.5f;	
 	private ImageIcon icon;
 	private boolean drag = false;
- 	
-	private static class MousePosition {
-		static int mouseY;
-	}
+
+	private static int MousePositionY;
 	
 	public ReducedWindow() {
 		frame = new JDialog();
@@ -163,9 +161,9 @@ public class ReducedWindow extends JDialog {
 			public void run() 
 			{
 				//lblEncodage
-				if (Shutter.lblEncodageEnCours.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")) == false)
+				if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")) == false)
 				{
-					lblEnCours.setText(Shutter.lblEncodageEnCours.getText());
+					lblEnCours.setText(Shutter.lblCurrentEncoding.getText());
 					if (Shutter.progressBar1.isIndeterminate() == false)
 						pourcentage.setVisible(true);
 					else
@@ -176,7 +174,7 @@ public class ReducedWindow extends JDialog {
 					pourcentage.setVisible(false);
 					lblEnCours.setText(Shutter.language.getProperty("lblEnCours"));
 				}
-				lblEnCours.setForeground(Shutter.lblEncodageEnCours.getForeground());
+				lblEnCours.setForeground(Shutter.lblCurrentEncoding.getForeground());
 											
 				//TempsRestant
 				if (Shutter.tempsRestant.isVisible())
@@ -239,19 +237,19 @@ public class ReducedWindow extends JDialog {
 				int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 				
 				int position;
-				if (MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY < 0)
+				if (MouseInfo.getPointerInfo().getLocation().y - MousePositionY < 0)
 				{
 					position = 0;
 					frame.setLocation(frame.getLocation().x, position);	
 				}
-				else if ( MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY > screenHeight - frame.getSize().height)
+				else if ( MouseInfo.getPointerInfo().getLocation().y - MousePositionY > screenHeight - frame.getSize().height)
 				{
 					position = screenHeight - frame.getSize().height;
 					frame.setLocation(frame.getLocation().x, position);	
 				}
 				else if (drag)
 				{				
-					frame.setLocation(frame.getLocation().x, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);		
+					frame.setLocation(frame.getLocation().x, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);		
 				}
 							
 			}
@@ -282,7 +280,7 @@ public class ReducedWindow extends JDialog {
 			@Override
 			public void mousePressed(MouseEvent down) {
 				drag = true;
-				MousePosition.mouseY = down.getPoint().y;				
+				MousePositionY = down.getPoint().y;				
 			}
 
 			@Override

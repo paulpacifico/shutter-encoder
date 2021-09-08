@@ -406,7 +406,7 @@ public class BlackMagicOutput {
 				 {
 					DECKLINK.run(position + " -i " + '"' + file + '"' +  videoFilter + format + audio + fieldOrder + " -f decklink -pix_fmt uyvy422 " + '"' + DECKLINK.getBlackMagic + '"');	
 				
-			  		Shutter.lblTermine.setVisible(false);
+			  		Shutter.lblFilesEnded.setVisible(false);
 			  		Shutter.enableAll();
 			  		caseForceInterlace.setEnabled(false);
 			  		caseAfficherLeTimecode.setEnabled(false);

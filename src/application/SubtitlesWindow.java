@@ -123,6 +123,9 @@ public class SubtitlesWindow {
 	public static JTextField textWidth = new JTextField();
 	public static JLabel lblBackground; 
 	public static String subtitlesFile;
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 
 	public SubtitlesWindow() {	
 		frame = new JDialog();
@@ -163,11 +166,6 @@ public class SubtitlesWindow {
 		image.setLayout(null);        
 		image.setOpaque(false);
 		
-	}
-	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
 	}
 	
 	private static class MouseSubSize {
@@ -231,7 +229,7 @@ public class SubtitlesWindow {
 		JLabel title = new JLabel(Shutter.language.getProperty("frameAddSubtitles"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -255,8 +253,8 @@ public class SubtitlesWindow {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -277,7 +275,7 @@ public class SubtitlesWindow {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override

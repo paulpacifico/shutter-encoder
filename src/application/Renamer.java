@@ -405,7 +405,7 @@ public class Renamer {
 							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Shutter.language.getProperty("filesAlreadyExists"), JOptionPane.INFORMATION_MESSAGE);
 						errorList.setLength(0);
 									
-						Shutter.lblFichiers.setText(Utils.filesNumber());
+						Shutter.lblFiles.setText(Utils.filesNumber());
 						
 						frame.dispose();
 					}

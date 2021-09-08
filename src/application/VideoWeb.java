@@ -60,6 +60,7 @@ import javax.swing.event.PopupMenuListener;
 
 import library.FFMPEG;
 import library.YOUTUBEDL;
+import settings.FunctionUtils;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -95,6 +96,9 @@ public class VideoWeb {
 	private JRadioButton casePass;
 	private JRadioButton caseVideoPass;
 	private JComboBox<String> comboFormats;
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 
 	public VideoWeb() {	
 		frame = new JDialog();
@@ -129,11 +133,6 @@ public class VideoWeb {
 		Utils.changeDialogVisibility(frame, false);	
 		
 	}
-	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
 			
 	private void topPanel() {	
 		topPanel = new JPanel();		
@@ -163,8 +162,8 @@ public class VideoWeb {
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{
-					Shutter.lblEncodageEnCours.setForeground(Color.RED);
-					Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("processCancelled"));
+					Shutter.lblCurrentEncoding.setForeground(Color.RED);
+					Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("processCancelled"));
 					Shutter.progressBar1.setValue(0);		            
 					Utils.changeDialogVisibility(frame, true);
 				}
@@ -229,7 +228,7 @@ public class VideoWeb {
 		JLabel title = new JLabel(Shutter.language.getProperty("panelWebVideo"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -250,8 +249,8 @@ public class VideoWeb {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -272,7 +271,7 @@ public class VideoWeb {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -622,7 +621,7 @@ public class VideoWeb {
 				public void run(){ 
 						
 				complete = 0;
-				Shutter.lblTermine.setText(Utils.completedFiles(complete));
+				Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 						
 		        try {
 		        	
@@ -630,7 +629,7 @@ public class VideoWeb {
 	        		{
 	        			FFMPEG.disableAll();
 	        			Shutter.btnStart.setEnabled(false);
-	        			Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("update"));
+	        			Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("update"));
 	        			YOUTUBEDL.update();
 	        			Shutter.progressBar1.setIndeterminate(true);
 	        			        			
@@ -681,7 +680,7 @@ public class VideoWeb {
 					    	   String ext = YOUTUBEDL.fichierDeSortie.toString().substring(YOUTUBEDL.fichierDeSortie.toString().lastIndexOf("."));
 					    	   if (caseWAV.isSelected())
 					    	   {		
-					    		   	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("convertToWAV")); 
+					    		   	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToWAV")); 
 									String cmd = " -vn -y ";
 									FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".wav") + '"');	
 								
@@ -698,8 +697,8 @@ public class VideoWeb {
 					    	   }
 					    	   else if (caseMP3.isSelected())
 					    	   {
-					    		   Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("convertToMP3"));  
-					    		   String cmd = " -vn -acodec mp3 -b:a 256k -y ";
+					    		   Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToMP3"));  
+					    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
 					    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".mp3") + '"');	
 								
 							       do { 
@@ -718,7 +717,7 @@ public class VideoWeb {
 					       if (Shutter.cancelled == false)
 					       {
 								complete++;
-								Shutter.lblTermine.setText(Utils.completedFiles(complete));
+								Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 								
 								//Ouverture du dossier
 								if (Shutter.caseOpenFolderAtEnd1.isSelected())

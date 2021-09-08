@@ -105,6 +105,19 @@ public class OverlayWindow {
 	private JLabel topImage;	
 	private JButton btnOK;
 	
+	private static int MousePositionX;
+	private static int MousePositionY;
+
+	private static int MouseTcPositionX;
+	private static int MouseTcOffsetX;
+	private static int MouseTcPositionY;
+	private static int MouseTcOffsetY;	
+	
+	private static int MouseNamePositionX;
+	private static int MouseNameOffsetX;
+	private static int MouseNamePositionY;
+	private static int MouseNameOffsetY;		
+	
 	/*
 	 * Valeurs
 	 */
@@ -204,25 +217,6 @@ public class OverlayWindow {
 		loadImage("0","0","0", true);	
 	}
 	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-	
-	private static class MouseTcPosition {
-		static int mouseX;
-		static int offsetX;
-		static int mouseY;
-		static int offsetY;
-	}
-	
-	private static class MouseNamePosition {
-		static int mouseX;
-		static int offsetX;
-		static int mouseY;
-		static int offsetY;
-	}
-		
 	private void topPanel() {
 		
 		topPanel = new JPanel();		
@@ -276,7 +270,7 @@ public class OverlayWindow {
 		JLabel title = new JLabel(Shutter.language.getProperty("grpOverlay"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -300,8 +294,8 @@ public class OverlayWindow {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -322,7 +316,7 @@ public class OverlayWindow {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -349,8 +343,12 @@ public class OverlayWindow {
 					String sp[] = FFPROBE.imageResolution.split("x");
 					imageRatio = (float) Integer.parseInt(sp[0])/containerWidth;
 			        g2.setFont(new Font(comboFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(spinnerSizeTC.getValue().toString()) / imageRatio)));
-						        
-			        String str = "00:00:00:00";
+						     
+			        String dropFrame = ":";
+			   		if (Shutter.caseConform.isSelected() == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || Shutter.caseConform.isSelected() && (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94")))
+			   			dropFrame = ";";
+			        
+			        String str = "00:00:00" + dropFrame + "00";
 			        
 					if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) 
 					{						
@@ -403,7 +401,7 @@ public class OverlayWindow {
 				        	Integer.parseInt(images));
 				        }
 				        else
-				        	str = heures+":"+minutes+":"+secondes+":"+images;	
+				        	str = heures+":"+minutes+":"+secondes+ dropFrame +images;	
 					}
 					
 			        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
@@ -1222,8 +1220,8 @@ public class OverlayWindow {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				MouseTcPosition.mouseX = e.getX();
-				MouseTcPosition.offsetX = Integer.parseInt(textTcPosX.getText());
+				MouseTcPositionX = e.getX();
+				MouseTcOffsetX = Integer.parseInt(textTcPosX.getText());
 			}
 
 			@Override
@@ -1238,7 +1236,7 @@ public class OverlayWindow {
 			public void mouseDragged(MouseEvent e) {
 				if (textTcPosX.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
-					textTcPosX.setText(String.valueOf(MouseTcPosition.offsetX + (e.getX() - MouseTcPosition.mouseX)));
+					textTcPosX.setText(String.valueOf(MouseTcOffsetX + (e.getX() - MouseTcPositionX)));
 					timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
 				}
 			}
@@ -1304,8 +1302,8 @@ public class OverlayWindow {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				MouseTcPosition.mouseY = e.getY();
-				MouseTcPosition.offsetY = Integer.parseInt(textTcPosY.getText());
+				MouseTcPositionY = e.getY();
+				MouseTcOffsetY = Integer.parseInt(textTcPosY.getText());
 			}
 
 			@Override
@@ -1320,7 +1318,7 @@ public class OverlayWindow {
 			public void mouseDragged(MouseEvent e) {
 				if (textTcPosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
-					textTcPosY.setText(String.valueOf(MouseTcPosition.offsetY + (e.getY() - MouseTcPosition.mouseY)));
+					textTcPosY.setText(String.valueOf(MouseTcOffsetY + (e.getY() - MouseTcPositionY)));
 					timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
 				}
 			}
@@ -1379,8 +1377,8 @@ public class OverlayWindow {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				MouseNamePosition.mouseY = e.getY();
-				MouseNamePosition.offsetY = Integer.parseInt(textNamePosY.getText());
+				MouseNamePositionY = e.getY();
+				MouseNameOffsetY = Integer.parseInt(textNamePosY.getText());
 			}
 
 			@Override
@@ -1395,7 +1393,7 @@ public class OverlayWindow {
 			public void mouseDragged(MouseEvent e) {
 				if (textNamePosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
-					textNamePosY.setText(String.valueOf(MouseNamePosition.offsetY + (e.getY() - MouseNamePosition.mouseY)));
+					textNamePosY.setText(String.valueOf(MouseNameOffsetY + (e.getY() - MouseNamePositionY)));
 					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
 				}
 			}
@@ -1527,8 +1525,8 @@ public class OverlayWindow {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				MouseNamePosition.mouseX = e.getX();
-				MouseNamePosition.offsetX = Integer.parseInt(textNamePosX.getText());
+				MouseNamePositionX = e.getX();
+				MouseNameOffsetX = Integer.parseInt(textNamePosX.getText());
 			}
 
 			@Override
@@ -1543,7 +1541,7 @@ public class OverlayWindow {
 			public void mouseDragged(MouseEvent e) {
 				if (textNamePosX.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
-					textNamePosX.setText(String.valueOf(MouseNamePosition.offsetX + (e.getX() - MouseNamePosition.mouseX)));
+					textNamePosX.setText(String.valueOf(MouseNameOffsetX + (e.getX() - MouseNamePositionX)));
 					fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);
 				}
 			}

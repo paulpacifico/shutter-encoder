@@ -66,6 +66,8 @@ public class Update {
 	
 	private static boolean cancelled = false;
 			
+	private static int MousePositionY;
+	
 	private Update() {
 		frame = new JDialog();
 		frame.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -110,10 +112,6 @@ public class Update {
 		frame.setVisible(true);		
 		
    	}
-	
-	private static class MousePosition {
-		static int mouseY;
-	}
 	
 	private void content() {
 		topPanel = new JPanel();		
@@ -177,7 +175,7 @@ public class Update {
 
 			@Override
 			public void mousePressed(MouseEvent down) {	
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -198,7 +196,7 @@ public class Update {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				frame.setLocation(frame.getLocation().x,MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);
+				frame.setLocation(frame.getLocation().x,MouseInfo.getPointerInfo().getLocation().y - MousePositionY);
 				
 			}
 

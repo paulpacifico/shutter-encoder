@@ -85,6 +85,9 @@ public class Functions {
 	private boolean drag;
 	public static JLabel lblFlecheBas;
 	
+	private static int MousePositionX;
+	private static int MousePositionY;
+	
 	public static File fonctionsFolder = new File(Shutter.documents + "/Functions");
 
 	@SuppressWarnings("serial")
@@ -456,11 +459,6 @@ public class Functions {
 		    }
 		});
 	}
-
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
 	
 	private void topPanel() {
 				
@@ -613,7 +611,7 @@ public class Functions {
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFonctions"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -633,8 +631,8 @@ public class Functions {
 
 			@Override
 			public void mousePressed(MouseEvent down) {	
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;
 				
 				frame.toFront();
 			}
@@ -657,7 +655,7 @@ public class Functions {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override

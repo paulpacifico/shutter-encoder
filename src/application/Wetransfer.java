@@ -94,6 +94,9 @@ public class Wetransfer {
 	public static JButton btnOK; //Si le bouton est disable alors la connexion est établie
 	private JButton btnReset;
 	private static String wetransferAdress = "";
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 
 	public Wetransfer() {
 		frame = new JDialog();
@@ -128,11 +131,6 @@ public class Wetransfer {
 		frame.getRootPane().setDefaultButton(btnOK);	
 			
 		Utils.changeDialogVisibility(Wetransfer.frame, false);		
-	}
-
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
 	}
 			
 	private void topPanel() {
@@ -185,7 +183,7 @@ public class Wetransfer {
 		JLabel title = new JLabel("WeTransfer");
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 44);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -206,8 +204,8 @@ public class Wetransfer {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -228,7 +226,7 @@ public class Wetransfer {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -503,8 +501,8 @@ public class Wetransfer {
 				Shutter.progressBar1.setValue(0);
 		        Shutter.progressBar1.setMaximum(100);		
 		        
-			    Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-		        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingFile") + " WeTransfer");
+			    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+		        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingFile") + " WeTransfer");
 								        
 				try {
 					String PathToWTCLIENT;
@@ -592,20 +590,20 @@ public class Wetransfer {
 						
 						if (error == false)
 					    {
-				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTSuccessful"));
+				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingWTSuccessful"));
 							Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
 					    }
 					    else
 					    {
-							Shutter.lblEncodageEnCours.setForeground(Color.RED);
-				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTFailed"));
+							Shutter.lblCurrentEncoding.setForeground(Color.RED);
+				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingWTFailed"));
 							Shutter.progressBar1.setValue(0);
 					    }
 							
 						if (Shutter.cancelled)
 						{
-					    	Shutter.lblEncodageEnCours.setForeground(Color.RED);
-				        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("sendingWTCancelled"));
+					    	Shutter.lblCurrentEncoding.setForeground(Color.RED);
+				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingWTCancelled"));
 							Shutter.progressBar1.setValue(0);
 						}
 					}
@@ -681,11 +679,11 @@ public class Wetransfer {
 						
 						Transport.send(message);						
 						
-					    Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-				        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("mailSuccessful"));
+					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
 					} catch (MessagingException e) {					
-						Shutter.lblEncodageEnCours.setForeground(Color.RED);
-			        	Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("mailFailed"));
+						Shutter.lblCurrentEncoding.setForeground(Color.RED);
+			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
 			        	
 						if (error == false)
 						{
@@ -694,8 +692,8 @@ public class Wetransfer {
 							
 								if (wetransferAdress != "")
 								{
-									Shutter.lblEncodageEnCours.setForeground(Color.LIGHT_GRAY);
-							        Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("linkCopied"));
+									Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+							        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("linkCopied"));
 								}
 							
 								Thread.sleep(3000);

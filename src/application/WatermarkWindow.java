@@ -87,6 +87,9 @@ public class WatermarkWindow {
 	private JLabel topImage;	
 	private JButton btnOK;
 	
+	private static int MousePositionX;
+	private static int MousePositionY;
+	
 	/*
 	 * Valeurs
 	 */
@@ -292,12 +295,7 @@ public class WatermarkWindow {
 		Utils.changeDialogVisibility(frame, false);		
 		frame.repaint();
 	}
-	
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-	
+		
 	private static class MouseLogoPosition {
 		static int mouseX;
 		static int offsetX;
@@ -358,7 +356,7 @@ public class WatermarkWindow {
 		JLabel title = new JLabel(Shutter.language.getProperty("frameLogo"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -379,8 +377,8 @@ public class WatermarkWindow {
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;					
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;					
 			}
 
 			@Override
@@ -401,7 +399,7 @@ public class WatermarkWindow {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+					frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override

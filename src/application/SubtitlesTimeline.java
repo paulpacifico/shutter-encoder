@@ -137,6 +137,10 @@ public class SubtitlesTimeline {
 	
 	private static File dirTemp = new File(Shutter.dirTemp + "subtitles");
 	
+	private static int MousePositionX;
+	private static int MouseTextWidth;
+	private static int MouseTextLocationX;
+	
 	public SubtitlesTimeline(int positionX, int positionY) {
     	frame = new JFrame();
     	frame.setResizable(true);
@@ -1415,12 +1419,6 @@ public class SubtitlesTimeline {
 
 	}
 	
-	private static class MousePosition {
-		static int mouseX;
-		static int textWidth;
-		static int textLocationX;
-	}
-	
 	private static class Offset {
 		static int mouseX;
 		static int offset;
@@ -1531,15 +1529,15 @@ public class SubtitlesTimeline {
 					}
 				}
 				
-				MousePosition.mouseX = down.getPoint().x;	
-				MousePosition.textWidth = text.getWidth();
-				MousePosition.textLocationX = down.getXOnScreen();	
+				MousePositionX = down.getPoint().x;	
+				MouseTextWidth = text.getWidth();
+				MouseTextLocationX = down.getXOnScreen();	
 				
 				if (zoom < 0.1)
 				{
 					enableAutoScroll = false;	
 					
-					setVideoPosition((int) ((down.getXOnScreen() - frame.getLocation().x - MousePosition.mouseX + timelineScrollBar.getValue())/zoom));
+					setVideoPosition((int) ((down.getXOnScreen() - frame.getLocation().x - MousePositionX + timelineScrollBar.getValue())/zoom));
 					
 					zoom = (double) 0.1;	
 					
@@ -1684,12 +1682,12 @@ public class SubtitlesTimeline {
 					else if (control && text.getX() >= previousSubX && text.getX() != cursor.getX())
 						text.setLocation(previousSubX + previousSubW + mouseOffset, text.getLocation().y);
 					else
-						text.setLocation(e.getXOnScreen() - frame.getLocation().x - MousePosition.mouseX + timelineScrollBar.getValue(), text.getLocation().y);					
+						text.setLocation(e.getXOnScreen() - frame.getLocation().x - MousePositionX + timelineScrollBar.getValue(), text.getLocation().y);					
 				}
 				else if (text.getCursor() == Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR) && text.getWidth() > 0)
 				{
-					text.setSize(MousePosition.textWidth - (e.getXOnScreen() - MousePosition.textLocationX), text.getHeight());
-					text.setLocation(e.getXOnScreen() - frame.getLocation().x - MousePosition.mouseX + timelineScrollBar.getValue() - mouseOffset, text.getLocation().y);
+					text.setSize(MouseTextWidth - (e.getXOnScreen() - MouseTextLocationX), text.getHeight());
+					text.setLocation(e.getXOnScreen() - frame.getLocation().x - MousePositionX + timelineScrollBar.getValue() - mouseOffset, text.getLocation().y);
 						
 				}
 				else if (text.getCursor() == Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR) && text.getWidth() > 0)

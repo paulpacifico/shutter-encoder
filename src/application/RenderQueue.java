@@ -69,6 +69,7 @@ import library.FFMPEG;
 import library.MKVMERGE;
 import library.TSMUXER;
 import library.XPDF;
+import settings.FunctionUtils;
 
 	public class RenderQueue {
 	public static JFrame frame;
@@ -91,6 +92,9 @@ import library.XPDF;
 	public static JScrollPane scrollPane;		
 	private static int complete;
 	private boolean drag = false;
+	
+	private static int MousePositionX;
+	private static int MousePositionY;
 	
 	public RenderQueue() {
 		frame = new JFrame();
@@ -132,7 +136,7 @@ import library.XPDF;
 				if (Shutter.btnCancel.isEnabled() == false)		
 				{
 					//File de rendus
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
+					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionMerge")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false
@@ -271,11 +275,6 @@ import library.XPDF;
 		
 	}
 		
-	private static class MousePosition {
-		static int mouseX;
-		static int mouseY;
-	}
-	
 	private void topPanel() {	
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
@@ -374,7 +373,7 @@ import library.XPDF;
 			
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font("Magneto", Font.PLAIN, 26));
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -455,7 +454,7 @@ import library.XPDF;
 					if (Shutter.btnCancel.isEnabled() == false)		
 					{						
 						//File de rendus
-						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBab")) == false
+						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionMerge")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false
@@ -572,8 +571,8 @@ import library.XPDF;
 
 			@Override
 			public void mousePressed(MouseEvent down) {
-				MousePosition.mouseX = down.getPoint().x;
-				MousePosition.mouseY = down.getPoint().y;
+				MousePositionX = down.getPoint().x;
+				MousePositionY = down.getPoint().y;
 				
 				frame.toFront();
 			}
@@ -596,7 +595,7 @@ import library.XPDF;
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePosition.mouseX, MouseInfo.getPointerInfo().getLocation().y - MousePosition.mouseY);	
+				frame.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);	
 			}
 
 			@Override
@@ -667,7 +666,7 @@ import library.XPDF;
 		table.getModel().addTableModelListener(new TableModelListener() {
 
 		      public void tableChanged(TableModelEvent e) {
-					Shutter.lblEncodageEnCours.setText(Shutter.language.getProperty("lblEncodageEnCours"));					
+					Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));					
 					if (Shutter.caseChangeFolder1.isSelected() == false)
 						Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
 		      }
@@ -782,7 +781,7 @@ import library.XPDF;
 							table.setRowSelectionInterval(i, i);
 							Shutter.disableAll();
 							
-							Shutter.lblEncodageEnCours.setText(fichier);
+							Shutter.lblCurrentEncoding.setText(fichier);
 							
 							try {
 								do {
@@ -806,7 +805,7 @@ import library.XPDF;
 								break;
 							}
 							
-						}//End For
+						}
 						
 						btnStartRender.setEnabled(true);
 						Shutter.enableAll();
@@ -859,7 +858,7 @@ import library.XPDF;
 		if (Shutter.cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			Shutter.lblTermine.setText(Utils.completedFiles(complete));
+			Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 		}
 		
 		//Suppression fichiers résiduels OP-Atom

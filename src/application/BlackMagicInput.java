@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import library.DECKLINK;
+import settings.FunctionUtils;
 
 public class BlackMagicInput {
 
@@ -761,9 +762,9 @@ public class BlackMagicInput {
 		if(fileOut.exists())
 		{						
 			if (comboOutput.getSelectedItem().toString().contains("H.264"))
-				fileOut = Utils.fileReplacement(lblDestination1.getText(), "Num.mp4", ".mp4", "_H.264_", ".mp4");
+				fileOut = FunctionUtils.fileReplacement(lblDestination1.getText(), "Num.mp4", ".mp4", "_H.264_", ".mp4");
 			else
-				fileOut = Utils.fileReplacement(lblDestination1.getText(), "Num.mov", ".mov", "_" + comboOutput.getSelectedItem().toString().replace(" 4/3", "").replace(" 16/9", "").replace(" ","_") + "_", ".mov");
+				fileOut = FunctionUtils.fileReplacement(lblDestination1.getText(), "Num.mov", ".mov", "_" + comboOutput.getSelectedItem().toString().replace(" 4/3", "").replace(" 16/9", "").replace(" ","_") + "_", ".mov");
 						
 			if (fileOut == null)
 			{
