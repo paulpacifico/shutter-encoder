@@ -4889,7 +4889,7 @@ public class Shutter {
 		sliderBlend.setMaximum(16);
 		sliderBlend.setMinimum(0);
 		sliderBlend.setValue(0);
-		sliderBlend.setBounds(163, caseBlend.getLocation().y, 110, 22);
+		sliderBlend.setBounds(163, caseBlend.getLocation().y, 106, 22);
 		grpImageSequence.add(sliderBlend);
 
 		iconTVBlend = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
@@ -9278,7 +9278,7 @@ public class Shutter {
 		sliderDetails.setMaximum(10);
 		sliderDetails.setMinimum(-10);
 		sliderDetails.setValue(0);
-		sliderDetails.setSize(110, 22);
+		sliderDetails.setSize(106, 22);
 
 		iconTVDetails = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
 		iconTVDetails.setToolTipText(language.getProperty("preview"));
@@ -9367,7 +9367,7 @@ public class Shutter {
 		sliderBruit.setMaximum(10);
 		sliderBruit.setMinimum(0);
 		sliderBruit.setValue(0);
-		sliderBruit.setSize(110, 22);
+		sliderBruit.setSize(106, 22);
 
 		iconTVBruit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
 		iconTVBruit.setToolTipText(language.getProperty("preview"));
@@ -9455,7 +9455,7 @@ public class Shutter {
 		sliderExposure.setMaximum(100);
 		sliderExposure.setMinimum(0);
 		sliderExposure.setValue(0);
-		sliderExposure.setSize(110, 22);
+		sliderExposure.setSize(106, 22);
 
 		iconTVExposure = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
 		iconTVExposure.setToolTipText(language.getProperty("preview"));
@@ -14558,7 +14558,7 @@ public class Shutter {
 							// Case Blend location
 							caseBlend.setLocation(7, caseEnableSequence.getLocation().y + caseEnableSequence.getHeight());
 							iconTVBlend.setLocation(289, caseBlend.getLocation().y + 2);
-							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth() -  4, caseBlend.getLocation().y);
+							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth(), caseBlend.getLocation().y);
 							
 							// Case Motion Blur
 							caseMotionBlur.setLocation(7, caseBlend.getHeight() + caseBlend.getLocation().y);
@@ -14616,13 +14616,13 @@ public class Shutter {
 							grpCorrections.add(caseDetails);
 							iconTVDetails.setLocation(289, caseDetails.getLocation().y + 2);
 							grpCorrections.add(iconTVDetails);
-							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth() -  4, caseDetails.getLocation().y);
+							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth(), caseDetails.getLocation().y);
 							grpCorrections.add(sliderDetails);
 							caseBruit.setLocation(7, caseDetails.getLocation().y + 17);
 							grpCorrections.add(caseBruit);
 							iconTVBruit.setLocation(289, caseBruit.getLocation().y + 2);
 							grpCorrections.add(iconTVBruit);
-							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth() -  4, caseBruit.getLocation().y);
+							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);						
 							
 						} else if ("DNxHD".equals(fonction) || "DNxHR".equals(fonction)
@@ -14819,7 +14819,7 @@ public class Shutter {
 							// Case Blend location
 							caseBlend.setLocation(7, caseEnableSequence.getLocation().y + caseEnableSequence.getHeight());
 							iconTVBlend.setLocation(289, caseBlend.getLocation().y + 2);
-							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth() -  4, caseBlend.getLocation().y);
+							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth(), caseBlend.getLocation().y);
 							
 							// Case Motion Blur
 							caseMotionBlur.setLocation(7, caseBlend.getHeight() + caseBlend.getLocation().y);
@@ -14894,19 +14894,19 @@ public class Shutter {
 							grpCorrections.add(caseDetails);
 							iconTVDetails.setLocation(289, caseDetails.getLocation().y + 2);
 							grpCorrections.add(iconTVDetails);
-							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth() -  4, caseDetails.getLocation().y);
+							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth(), caseDetails.getLocation().y);
 							grpCorrections.add(sliderDetails);
 							caseBruit.setLocation(7, caseDetails.getLocation().y + 17);
 							grpCorrections.add(caseBruit);
 							iconTVBruit.setLocation(289, caseBruit.getLocation().y + 2);
 							grpCorrections.add(iconTVBruit);
-							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth() -  4, caseBruit.getLocation().y);
+							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
 							caseExposure.setLocation(7, caseBruit.getLocation().y + 17);
 							grpCorrections.add(caseExposure);						
 							iconTVExposure.setLocation(289, caseExposure.getLocation().y + 2);
 							grpCorrections.add(iconTVExposure);							
-							sliderExposure.setLocation(iconTVExposure.getX() - sliderExposure.getWidth() -  4, caseExposure.getLocation().y);
+							sliderExposure.setLocation(iconTVExposure.getX() - sliderExposure.getWidth(), caseExposure.getLocation().y);
 							grpCorrections.add(sliderExposure);
 						} else if ("H.264".equals(fonction) || "H.265".equals(fonction)) {
 
@@ -15189,7 +15189,7 @@ public class Shutter {
 							// Case Blend location
 							caseBlend.setLocation(7, caseForcerDAR.getLocation().y + caseForcerDAR.getHeight());
 							iconTVBlend.setLocation(289, caseBlend.getLocation().y + 2);
-							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth() -  4, caseBlend.getLocation().y);
+							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth(), caseBlend.getLocation().y);
 							
 							// Case Motion Blur
 							caseMotionBlur.setLocation(7, caseBlend.getHeight() + caseBlend.getLocation().y);
@@ -15274,13 +15274,13 @@ public class Shutter {
 							grpCorrections.add(caseDetails);
 							iconTVDetails.setLocation(289, caseDetails.getLocation().y + 2);
 							grpCorrections.add(iconTVDetails);
-							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth() -  4, caseDetails.getLocation().y);
+							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth(), caseDetails.getLocation().y);
 							grpCorrections.add(sliderDetails);
 							caseBruit.setLocation(7, caseDetails.getLocation().y + 17);
 							grpCorrections.add(caseBruit);
 							iconTVBruit.setLocation(289, caseBruit.getLocation().y + 2);
 							grpCorrections.add(iconTVBruit);
-							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth() -  4, caseBruit.getLocation().y);
+							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
 						} else if ("WMV".equals(fonction) || "MPEG".equals(fonction) || "VP8".equals(fonction) || "VP9".equals(fonction) || "AV1".equals(fonction) || "OGV".equals(fonction)
 								|| "MJPEG".equals(fonction) || "Xvid".equals(fonction)) {
@@ -15529,7 +15529,7 @@ public class Shutter {
 							// Case Blend location
 							caseBlend.setLocation(7, caseForcerDAR.getLocation().y + caseForcerDAR.getHeight());
 							iconTVBlend.setLocation(289, caseBlend.getLocation().y + 2);
-							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth() -  4, caseBlend.getLocation().y);
+							sliderBlend.setLocation(iconTVBlend.getX() - sliderBlend.getWidth(), caseBlend.getLocation().y);
 							
 							// Case Motion Blur
 							caseMotionBlur.setLocation(7, caseBlend.getHeight() + caseBlend.getLocation().y);
@@ -15672,13 +15672,13 @@ public class Shutter {
 							grpCorrections.add(caseDetails);
 							iconTVDetails.setLocation(289, caseDetails.getLocation().y + 2);
 							grpCorrections.add(iconTVDetails);
-							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth() -  4, caseDetails.getLocation().y);
+							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth(), caseDetails.getLocation().y);
 							grpCorrections.add(sliderDetails);
 							caseBruit.setLocation(7, caseDetails.getLocation().y + 17);
 							grpCorrections.add(caseBruit);
 							iconTVBruit.setLocation(289, caseBruit.getLocation().y + 2);
 							grpCorrections.add(iconTVBruit);
-							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth() -  4, caseBruit.getLocation().y);
+							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
 						} else if ("DV PAL".equals(fonction)) {
 							addToList.setText(language.getProperty("filesVideo"));
@@ -15886,13 +15886,13 @@ public class Shutter {
 							grpCorrections.add(caseDetails);
 							iconTVDetails.setLocation(289, caseDetails.getLocation().y + 2);
 							grpCorrections.add(iconTVDetails);
-							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth() -  4, caseDetails.getLocation().y);
+							sliderDetails.setLocation(iconTVDetails.getX() - sliderDetails.getWidth(), caseDetails.getLocation().y);
 							grpCorrections.add(sliderDetails);
 							caseBruit.setLocation(7, caseDetails.getLocation().y + 17);
 							grpCorrections.add(caseBruit);
 							iconTVBruit.setLocation(289, caseBruit.getLocation().y + 2);
 							grpCorrections.add(iconTVBruit);
-							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth() -  4, caseBruit.getLocation().y);
+							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
 						} else if (language.getProperty("functionPicture").equals(fonction) || "JPEG".equals(fonction)) {
 							addToList.setText(language.getProperty("filesVideoOrPicture"));
