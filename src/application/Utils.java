@@ -255,7 +255,7 @@ public class Utils extends Shutter {
 		}		
 	}
 	
-	public static void sendMail(final String fichier) {
+	public static void sendMail(final String file) {
 		
 		if (caseSendMail.isSelected())
 		{
@@ -282,15 +282,15 @@ public class Utils extends Shutter {
 						message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(textMail.getText()));
 						if (FFMPEG.error) {
 							message.setSubject(Shutter.language.getProperty("shutterEncodingError"));
-							message.setText(fichier + " " + Shutter.language.getProperty("notEncoded"));
+							message.setText(file + " " + Shutter.language.getProperty("notEncoded"));
 						} else {
 							message.setSubject(Shutter.language.getProperty("shutterEncodingCompleted"));
 							if (caseChangeFolder3.isSelected())
-								message.setText(fichier + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText());
+								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText());
 							else if (caseChangeFolder2.isSelected())
-								message.setText(fichier + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText());
+								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText());
 							else
-								message.setText(fichier + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText());
+								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText());
 						}
 
 						Transport.send(message);						
@@ -315,14 +315,14 @@ public class Utils extends Shutter {
 		}
 	}
 
-	public static void copyFile(File fichier) {		
+	public static void copyFile(File file) {		
 		//Destination 2
 		if (caseChangeFolder2.isSelected())
 		{
 			btnStart.setEnabled(false);
 			grpDestination.setSelectedIndex(1);
-			File filein  = fichier;
-	        File fileout = new File(lblDestination2.getText() + "/" + fichier.getName());
+			File filein  = file;
+	        File fileout = new File(lblDestination2.getText() + "/" + file.getName());
 			try {		
 		        long length  = filein.length();
 				progressBar1.setMaximum((int) length);
@@ -360,8 +360,8 @@ public class Utils extends Shutter {
 		{
 			btnStart.setEnabled(false);
 			grpDestination.setSelectedIndex(2);
-			File filein  = fichier;
-	        File fileout = new File(lblDestination3.getText() + "/" + fichier.getName());
+			File filein  = file;
+	        File fileout = new File(lblDestination3.getText() + "/" + file.getName());
 			try {		
 		        long length  = filein.length();
 		        progressBar1.setMaximum((int) length);
