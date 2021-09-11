@@ -618,7 +618,8 @@ public class Wetransfer {
 	
 	public static void sendMailForWT(boolean error) {
 	
-		Thread thread = new Thread(new Runnable(){
+		Thread thread = new Thread(new Runnable() {
+			
 			public void run() {
 				
 				StringBuilder adresses = new StringBuilder();
@@ -645,8 +646,6 @@ public class Wetransfer {
 				for (String adds : adresses.toString().split("\\r?\\n"))
 				{					
 					Shutter.sendMailIsRunning = true;
-					final String username = "info@shutterencoder.com";
-					final String password = "";
 	
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
@@ -654,16 +653,15 @@ public class Wetransfer {
 					props.put("mail.smtp.host", "auth.smtp.1and1.fr");
 					props.put("mail.smtp.port", "587");
 	
-					Session session = Session.getInstance(props,
-					  new javax.mail.Authenticator() {
+					Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(username, password);
+							return new PasswordAuthentication(Utils.username, Utils.password);
 						}
-					  });
+					});
 	
 					try {
 						Message message = new MimeMessage(session);
-						message.setFrom(new InternetAddress(username));
+						message.setFrom(new InternetAddress(Utils.username));
 						message.setRecipients(Message.RecipientType.TO,
 						InternetAddress.parse(adds));
 						if (error)
@@ -681,7 +679,9 @@ public class Wetransfer {
 						
 					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
-					} catch (MessagingException e) {					
+				        
+					} catch (MessagingException e) {	
+						
 						Shutter.lblCurrentEncoding.setForeground(Color.RED);
 			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
 			        	

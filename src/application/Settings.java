@@ -729,7 +729,7 @@ public class Settings {
 				
 				String language = new Locale(l[0]).getDisplayLanguage();
 				String country = "";
-				
+							
 				//Country
 				if (l[0].contains("_"))
 				{				
@@ -1149,9 +1149,9 @@ public class Settings {
 		});
 				
 		// Drag & Drop
-		lblDestination1.setTransferHandler(new OutputTransferHandler1());
-		lblDestination2.setTransferHandler(new OutputTransferHandler2());
-		lblDestination3.setTransferHandler(new OutputTransferHandler3());
+		lblDestination1.setTransferHandler(new OutputTransferHandler());
+		lblDestination2.setTransferHandler(new OutputTransferHandler());
+		lblDestination3.setTransferHandler(new OutputTransferHandler());
 
 		loadSettings();
 		
@@ -2060,147 +2060,84 @@ public class Settings {
 	}				
 }
 
-//Drag & Drop lblDestination1
+//Drag & Drop lblDestination
 @SuppressWarnings("serial")
-class OutputTransferHandler1 extends TransferHandler {
+class OutputTransferHandler extends TransferHandler {
 
-	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
-		for (int i = 0; i < arg1.length; i++) {
+	public boolean canImport(JComponent comp, DataFlavor[] arg1) {
+		
+		for (int i = 0; i < arg1.length; i++) 
+		{
 			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Settings.lastUsedOutput1.isSelected() == false) {
-				Settings.lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-				return true;
+			if (flavor.equals(DataFlavor.javaFileListFlavor))
+			{
+				if (comp.getName().equals("lblDestination1"))
+				{
+					if (Settings.lastUsedOutput1.isSelected() == false)
+					{
+						Settings.lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));					
+						return true;
+					}
+					else
+						return false;
+				}
+				else if (comp.getName().equals("lblDestination2"))
+				{
+					if (Settings.lastUsedOutput2.isSelected() == false)
+					{
+						Settings.lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));					
+						return true;
+					}
+					else
+						return false;
+				}
+				else if (comp.getName().equals("lblDestination3"))
+				{
+					if (Settings.lastUsedOutput3.isSelected() == false)
+					{
+						Settings.lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));					
+						return true;
+					}
+					else
+						return false;
+				}
 			}
 		}
 		return false;
 	}
 
 	public boolean importData(JComponent comp, Transferable t) {
+		
 		DataFlavor[] flavors = t.getTransferDataFlavors();
-		for (int i = 0; i < flavors.length; i++) {
+				
+		for (int i = 0; i < flavors.length; i++) 
+		{
 			DataFlavor flavor = flavors[i];
+			
 			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor)) {
+				
+				if (flavor.equals(DataFlavor.javaFileListFlavor))
+				{
 					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					Iterator<?> iter = l.iterator();
-					while (iter.hasNext()) {
-						
+					
+					while (iter.hasNext())
+					{						
 						File file = (File) iter.next();
 						
 						//Montage du chemin UNC
 						if (System.getProperty("os.name").contains("Windows") && file.toString().substring(0, 2).equals("\\\\"))
-							file =Utils.UNCPath(file);
+							file = Utils.UNCPath(file);
 						
-						if (file.getName().contains(".")) {
-							Settings.lblDestination1.setText(file.getParent());
-						} else {
-							Settings.lblDestination1.setText(file.getAbsolutePath());
+						if (file.getName().contains(".")) 
+						{
+							((JLabel) comp).setText(file.getParent());
+						} 
+						else 
+						{
+							((JLabel) comp).setText(file.getAbsolutePath());
 						}
 
-					}
-
-					// Border
-					Settings.lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-					Settings.lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-					Settings.lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-
-					return true;
-				}
-			} catch (IOException | UnsupportedFlavorException ex) {
-			}
-		}
-		return false;
-	}
-}
-
-//Drag & Drop lblDestination2
-@SuppressWarnings("serial")
-class OutputTransferHandler2 extends TransferHandler {
-
-	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
-		for (int i = 0; i < arg1.length; i++) {
-			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Settings.lastUsedOutput2.isSelected() == false) {
-				Settings.lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean importData(JComponent comp, Transferable t) {
-		DataFlavor[] flavors = t.getTransferDataFlavors();
-		for (int i = 0; i < flavors.length; i++) {
-			DataFlavor flavor = flavors[i];
-			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
-					Iterator<?> iter = l.iterator();
-					while (iter.hasNext()) {
-						
-						File file = (File) iter.next();
-						
-						//Montage du chemin UNC
-						if (System.getProperty("os.name").contains("Windows") && file.toString().substring(0, 2).equals("\\\\"))
-							file =Utils.UNCPath(file);
-						
-						if (file.getName().contains(".")) {
-							Settings.lblDestination2.setText(file.getParent());
-						} else {
-							Settings.lblDestination2.setText(file.getAbsolutePath());
-						}						
-					}
-
-					// Border
-					Settings.lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-					Settings.lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-					Settings.lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-
-					return true;
-				}
-			} catch (IOException | UnsupportedFlavorException ex) {
-			}
-		}
-		return false;
-	}
-}
-
-//Drag & Drop lblDestination3
-@SuppressWarnings("serial")
-class OutputTransferHandler3 extends TransferHandler {
-
-	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
-		for (int i = 0; i < arg1.length; i++) {
-			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Settings.lastUsedOutput3.isSelected() == false) {
-				Settings.lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean importData(JComponent comp, Transferable t) {
-		DataFlavor[] flavors = t.getTransferDataFlavors();
-		for (int i = 0; i < flavors.length; i++) {
-			DataFlavor flavor = flavors[i];
-			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
-					Iterator<?> iter = l.iterator();
-					while (iter.hasNext()) {
-						
-						File file = (File) iter.next();
-						
-						//Montage du chemin UNC
-						if (System.getProperty("os.name").contains("Windows") && file.toString().substring(0, 2).equals("\\\\"))
-							file =Utils.UNCPath(file);
-						
-						if (file.getName().contains(".")) {
-							Settings.lblDestination3.setText(file.getParent());
-						} else {
-							Settings.lblDestination3.setText(file.getAbsolutePath());
-						}						
 					}
 
 					// Border

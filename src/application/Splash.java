@@ -51,7 +51,7 @@ public class Splash extends JWindow {
       		updateProgressBar();
    }
 
-   public void paint(Graphics g) {
+	public void paint(Graphics g) {
       super.paint(g);
 
 	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
@@ -73,13 +73,13 @@ public class Splash extends JWindow {
       }
    }
       
-   public static void increment() {   
+	public static void increment() {   
     	loading += 9;  
 		if (loading > 200) 
 			loading = 200;	
    }
     
-   public void updateProgressBar() {
+	public void updateProgressBar() {
     	
     	Thread refresh = new Thread(new Runnable() {
 

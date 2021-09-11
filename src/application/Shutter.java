@@ -162,7 +162,6 @@ import settings.FunctionUtils;
 @SuppressWarnings("serial")
 public class Shutter {
 
-	protected static final String fullscreen = null;
 	/*
 	 * Initialisation
 	 */
@@ -177,6 +176,7 @@ public class Shutter {
 	public static File lutsFolder;
 	public static File subtitlesFile;
 	public static Properties language = new Properties();
+	protected static final String fullscreen = null;
 	public static URL soundURL;
 	public static URL soundErrorURL;
 	public static JFrame frame = new JFrame();
@@ -204,18 +204,17 @@ public class Shutter {
 	/*
 	 * Animations
 	 */
-	//private static boolean changeSizeIsRunning = false;
 	private static boolean changeGroupes = false;
 
 	/*
-	 * Position fenêtre MiniWindow
+	 * Position ReducedWindow
 	 */
 	private static GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	private static Rectangle bounds = ge.getMaximumWindowBounds();
 	public static int MiniWindowY = bounds.height / 2;
 
 	/*
-	 * Composants
+	 * Components
 	 */
 	private static JLabel settings;
 	private static JLabel quit;
@@ -337,6 +336,7 @@ public class Shutter {
 	protected static JRadioButton caseDecimate;
 	protected static JRadioButton caseConform;
 	protected static JRadioButton caseCreateTree;
+	protected static JRadioButton casePreserveMetadata;
 	protected static JRadioButton casePreserveSubs;
 	protected static JRadioButton caseCreateOPATOM;
 	protected static JRadioButton caseOPATOM;
@@ -416,32 +416,6 @@ public class Shutter {
 	protected static JLabel lblCrParPaul;
 	protected static JLabel tempsRestant;
 	protected static JLabel tempsEcoule;
-
-	/*
-	 * Groupes Boxes
-	 */
-	protected static JPanel grpChooseFiles;
-	protected static JPanel grpChooseFunction;
-	protected static JTabbedPane grpDestination;
-	protected static JPanel destination1;
-	protected static JPanel destination2;
-	protected static JPanel destination3;
-	protected static JPanel destinationMail;
-	protected static JPanel destinationStream;
-	protected static JPanel grpProgression;
-	protected static JPanel grpResolution;
-	protected static JPanel grpImageSequence;
-	protected static JPanel grpImageFilter;
-	protected static JPanel grpColorimetry;
-	protected static JPanel grpInAndOut;
-	protected static JPanel grpSetTimecode;
-	protected static JPanel grpOverlay;
-	protected static JPanel grpSetAudio;
-	protected static JPanel grpAudio;
-	protected static JPanel grpCorrections;
-	protected static JPanel grpAdvanced;
-	protected static JPanel grpH264;
-	protected static JPanel grpTransitions;
 	protected static JLabel lblFadeInColor;
 	protected static JRadioButton caseVideoFadeIn;
 	protected static JTextField spinnerVideoFadeIn;
@@ -482,6 +456,33 @@ public class Shutter {
 	protected static JTextField textStream;
 	protected static JRadioButton caseStream;
 	protected static JRadioButton caseLoop;
+
+	/*
+	 * Groupes Boxes
+	 */
+	protected static JPanel grpChooseFiles;
+	protected static JPanel grpChooseFunction;
+	protected static JTabbedPane grpDestination;
+	protected static JPanel destination1;
+	protected static JPanel destination2;
+	protected static JPanel destination3;
+	protected static JPanel destinationMail;
+	protected static JPanel destinationStream;
+	protected static JPanel grpProgression;
+	protected static JPanel grpResolution;
+	protected static JPanel grpImageSequence;
+	protected static JPanel grpImageFilter;
+	protected static JPanel grpColorimetry;
+	protected static JPanel grpInAndOut;
+	protected static JPanel grpSetTimecode;
+	protected static JPanel grpOverlay;
+	protected static JPanel grpSetAudio;
+	protected static JPanel grpAudio;
+	protected static JPanel grpCorrections;
+	protected static JPanel grpAdvanced;
+	protected static JPanel grpH264;
+	protected static JPanel grpTransitions;
+
 
 	public static void main(String[] args) {
 		
@@ -4011,9 +4012,9 @@ public class Shutter {
 		});
 
 		// Drag & Drop
-		lblDestination1.setTransferHandler(new DestinationFileTransferHandler1());
-		lblDestination2.setTransferHandler(new DestinationFileTransferHandler2());
-		lblDestination3.setTransferHandler(new DestinationFileTransferHandler3());
+		lblDestination1.setTransferHandler(new DestinationFileTransferHandler());
+		lblDestination2.setTransferHandler(new DestinationFileTransferHandler());
+		lblDestination3.setTransferHandler(new DestinationFileTransferHandler());
 
 		MouseListener mouseListener = new MouseListener() {
 
@@ -10504,6 +10505,11 @@ public class Shutter {
 			}	
 		});
 		
+		casePreserveMetadata = new JRadioButton(language.getProperty("casePreserveMetadata"));
+		casePreserveMetadata.setName("casePreserveMetadata");
+		casePreserveMetadata.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		casePreserveMetadata.setSize(casePreserveMetadata.getPreferredSize().width, 23);
+		
 		casePreserveSubs = new JRadioButton(language.getProperty("casePreserveSubs"));
 		casePreserveSubs.setName("casePreserveSubs");
 		casePreserveSubs.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -13250,6 +13256,8 @@ public class Shutter {
 				caseLogo.setSelected(false);
 				if (caseCreateTree.isSelected())
 					caseCreateTree.doClick();
+				if (casePreserveMetadata.isSelected())
+					casePreserveMetadata.doClick();
 				if (casePreserveSubs.isSelected())
 					casePreserveSubs.doClick();
 				if (caseCreateOPATOM.isSelected())
@@ -13677,9 +13685,11 @@ public class Shutter {
 				|| "DVD".equals(fonction) || "Blu-ray".equals(fonction) || "QT JPEG".equals(fonction)
 				|| language.getProperty("functionPicture").equals(fonction)
 				|| "JPEG".equals(fonction)
-				|| language.getProperty("functionNormalization").equals(fonction)) {
+				|| language.getProperty("functionNormalization").equals(fonction))
+		{
 			changeFrameSize(true);
 			changeSections(anim);
+			
 		} else if (language.getProperty("functionExtract").equals(fonction)
 				|| language.getProperty("functionConform").equals(fonction)
 				|| language.getProperty("functionInsert").equals(fonction)
@@ -13688,14 +13698,21 @@ public class Shutter {
 				|| language.getProperty("functionSceneDetection").equals(fonction)
 				|| language.getProperty("functionSubtitles").equals(fonction)
 				|| "Synchronisation automatique".equals(fonction)
-				|| language.getProperty("functionWeb").equals(fonction)) {
+				|| language.getProperty("functionWeb").equals(fonction))
+		{
 			changeFrameSize(false);
 			changeSections(anim);
-		} else if (language.getProperty("itemMyFunctions").equals(fonction)) {
+			
+		} 
+		else if (language.getProperty("itemMyFunctions").equals(fonction))
+		{
 			changeFrameSize(false);
-			changeSections(anim);;
+			changeSections(anim);
+		
 			if (Functions.frame == null)
+			{
 				new Functions();
+			}
 			else {
 				if (Functions.listeDeFonctions.getModel().getSize() > 0) {
 					Functions.lblSave.setVisible(false);
@@ -13720,8 +13737,10 @@ public class Shutter {
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
-				&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)) {
-			iconList.setVisible(true);
+				&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false))
+		{
+			iconList.setVisible(true);			
+			
 			if (iconPresets.isVisible())
 			{
 				iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
@@ -13950,7 +13969,6 @@ public class Shutter {
 		} 
 		else 
 			comboForceSpeed.setEnabled(false);
-		
 
 	}
 
@@ -14050,11 +14068,15 @@ public class Shutter {
 						
 						btnReset.setVisible(true);
 				
-						if (language.getProperty("functionRewrap").equals(fonction) || language.getProperty("functionCut").equals(fonction)) {
-							if (language.getProperty("functionCut").equals(fonction))
+						if (language.getProperty("functionRewrap").equals(fonction) || language.getProperty("functionCut").equals(fonction) || language.getProperty("functionMerge").equals(fonction)) {
+							
+							if (language.getProperty("functionCut").equals(fonction) || language.getProperty("functionMerge").equals(fonction))
+							{
 								addToList.setText(language.getProperty("filesVideoOrAudio"));
+							}
 							else
 								addToList.setText(language.getProperty("filesVideoOrAudioOrPicture"));
+							
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
 							grpImageFilter.setVisible(false);
@@ -14062,12 +14084,23 @@ public class Shutter {
 							grpResolution.setVisible(false);
 							grpH264.setVisible(false);
 							grpOverlay.setVisible(false);
-							grpInAndOut.setVisible(true);
-							grpInAndOut.setLocation(grpInAndOut.getX(), 59);
-							grpSetTimecode.setVisible(true);
-							grpSetTimecode.setLocation(grpSetTimecode.getX(), grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);
+							
+							if (language.getProperty("functionRewrap").equals(fonction) || language.getProperty("functionCut").equals(fonction))
+							{	
+								grpInAndOut.setVisible(true);
+								grpInAndOut.setLocation(grpInAndOut.getX(), 59);
+								grpSetTimecode.setVisible(true);
+								grpSetTimecode.setLocation(grpSetTimecode.getX(), grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);
+								grpSetAudio.setLocation(grpSetAudio.getX(), grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
+							}
+							else
+							{
+								grpInAndOut.setVisible(false);
+								grpSetTimecode.setVisible(false);
+								grpSetAudio.setLocation(grpSetAudio.getX(), 59);							
+							}
+							
 							grpSetAudio.setVisible(true);
-							grpSetAudio.setLocation(grpSetAudio.getX(), grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
 							if (action)
 								grpSetAudio.setSize(312, 17);
 							grpAudio.setVisible(false);
@@ -14084,6 +14117,16 @@ public class Shutter {
 								grpAdvanced.add(caseSubtitles);
 								comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
 								grpAdvanced.add(comboSubtitles);								
+								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
+							}
+							else if (language.getProperty("functionMerge").equals(fonction))
+							{
+								grpAdvanced.removeAll();
+
+								grpAdvanced.setVisible(true);
+								grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+								caseOpenGop.setLocation(7, 14);													
+								grpAdvanced.add(caseOpenGop);	
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
 							}
 							else
@@ -14161,103 +14204,9 @@ public class Shutter {
 								comboAudio7.setSelectedIndex(6);
 								comboAudio8.setSelectedIndex(7);
 							}							
-							
-						} else if (language.getProperty("functionMerge").equals(fonction)) {	
-																												
-							//grpSetAudio
-							grpSetAudio.setLocation(grpSetAudio.getX(), 59);
-							grpSetAudio.removeAll();
-							grpSetAudio.add(caseChangeAudioCodec);							
-							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
-							{
-								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", language.getProperty("noAudio") }));
-								comboAudioCodec.setSelectedIndex(3);
-								caseChangeAudioCodec.setSelected(false);
-								comboAudioCodec.setEnabled(false);
-								comboAudioBitrate.setEnabled(false);
-							}
-							caseChangeAudioCodec.setEnabled(true);	
-							grpSetAudio.add(comboAudioCodec);
-							grpSetAudio.add(comboAudioBitrate);
-							grpSetAudio.add(lblKbs);
-							grpSetAudio.add(lbl48k);
-							lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-							
-							lblAudio1.setLocation(13, caseChangeAudioCodec.getLocation().y + caseChangeAudioCodec.getHeight() + 7);
-							comboAudio1.setLocation(lblAudio1.getX() + lblAudio1.getWidth() + 7, lblAudio1.getLocation().y + 1);
-							grpSetAudio.add(lblAudio1);
-							grpSetAudio.add(comboAudio1);
-							lblAudio2.setLocation(comboAudio1.getX() + comboAudio1.getWidth() + 13, lblAudio1.getLocation().y);
-							comboAudio2.setLocation(lblAudio2.getX() + lblAudio2.getWidth() + 7, lblAudio2.getLocation().y + 1);
-							grpSetAudio.add(lblAudio2);
-							grpSetAudio.add(comboAudio2);
-							lblAudio3.setLocation(lblAudio1.getX(), lblAudio1.getLocation().y + lblAudio1.getHeight() + 2);
-							comboAudio3.setLocation(lblAudio3.getX() + lblAudio3.getWidth() + 7, lblAudio3.getLocation().y + 1);
-							grpSetAudio.add(lblAudio3);
-							grpSetAudio.add(comboAudio3);
-							lblAudio4.setLocation(lblAudio2.getX(), lblAudio2.getLocation().y + lblAudio2.getHeight() + 2);
-							comboAudio4.setLocation(lblAudio4.getX() + lblAudio4.getWidth() + 7, lblAudio4.getLocation().y + 1);
-							grpSetAudio.add(lblAudio4);
-							grpSetAudio.add(comboAudio4);
-							lblAudio5.setLocation(lblAudio3.getX(), lblAudio3.getLocation().y + lblAudio3.getHeight() + 2);
-							comboAudio5.setLocation(lblAudio5.getX() + lblAudio5.getWidth() + 7, lblAudio5.getLocation().y + 1);
-							grpSetAudio.add(lblAudio5);
-							grpSetAudio.add(comboAudio5);
-							lblAudio6.setLocation(lblAudio4.getX(), lblAudio4.getLocation().y + lblAudio4.getHeight() + 2);
-							comboAudio6.setLocation(lblAudio6.getX() + lblAudio6.getWidth() + 7, lblAudio6.getLocation().y + 1);
-							grpSetAudio.add(lblAudio6);
-							grpSetAudio.add(comboAudio6);
-							lblAudio7.setLocation(lblAudio5.getX(), lblAudio5.getLocation().y + lblAudio5.getHeight() + 2);
-							comboAudio7.setLocation(lblAudio7.getX() + lblAudio7.getWidth() + 7, lblAudio7.getLocation().y + 1);
-							grpSetAudio.add(lblAudio7);
-							grpSetAudio.add(comboAudio7);
-							lblAudio8.setLocation(lblAudio6.getX(), lblAudio6.getLocation().y + lblAudio6.getHeight() + 2);
-							comboAudio8.setLocation(lblAudio8.getX() + lblAudio8.getWidth() + 7, lblAudio8.getLocation().y + 1);
-							grpSetAudio.add(lblAudio8);
-							grpSetAudio.add(comboAudio8);
-							
-							if (comboAudio1.getSelectedIndex() == 0
-								&& comboAudio2.getSelectedIndex() == 1
-								&& comboAudio3.getSelectedIndex() == 2
-								&& comboAudio4.getSelectedIndex() == 3
-								&& comboAudio5.getSelectedIndex() == 16
-								&& comboAudio6.getSelectedIndex() == 16
-								&& comboAudio7.getSelectedIndex() == 16
-								&& comboAudio8.getSelectedIndex() == 16)
-							{
-								comboAudio1.setSelectedIndex(0);
-								comboAudio2.setSelectedIndex(1);
-								comboAudio3.setSelectedIndex(2);
-								comboAudio4.setSelectedIndex(3);
-								comboAudio5.setSelectedIndex(4);
-								comboAudio6.setSelectedIndex(5);
-								comboAudio7.setSelectedIndex(6);
-								comboAudio8.setSelectedIndex(7);
-							}	
-							
-							grpImageSequence.setVisible(false);
-							grpImageFilter.setVisible(false);
-							grpColorimetry.setVisible(false);
-							grpResolution.setVisible(false);
-							grpH264.setVisible(false);
-							grpSetTimecode.setVisible(false);
-							grpOverlay.setVisible(false);
-							grpSetAudio.setVisible(true);
-							grpAudio.setVisible(false);
-							grpInAndOut.setVisible(false);
-							grpCorrections.setVisible(false);
-							grpTransitions.setVisible(false);
-							grpAdvanced.setVisible(true);
-							grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
-							btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-							
-							grpAdvanced.removeAll();
 
-							// grpAdvanced
-							caseOpenGop.setLocation(7, 14);													
-							grpAdvanced.add(caseOpenGop);	
-							
 						} else if (language.getProperty("functionReplaceAudio").equals(fonction) || language.getProperty("functionNormalization").equals(fonction)) {
+							
 							if (language.getProperty("functionReplaceAudio").equals(fonction))
 								addToList.setText(language.getProperty("fileVideoAndAudio"));
 							else
@@ -14316,7 +14265,9 @@ public class Shutter {
 							grpSetAudio.add(iconTVOffset);
 							
 							grpSetAudio.repaint();
+							
 						} else if ("WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction) || "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction) || "OGG".equals(fonction)) {
+						
 							addToList.setText(language.getProperty("filesVideoOrAudio"));
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
@@ -14342,18 +14293,24 @@ public class Shutter {
 							spinnerVideoFadeOut.setEnabled(false);							
 							grpAdvanced.setVisible(false);
 							btnReset.setLocation(btnReset.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+							
 						} else if ("Loudness & True Peak".equals(fonction)
-								|| language.getProperty("functionBlackDetection").equals(fonction)
-								|| language.getProperty("functionOfflineDetection").equals(fonction)
-								|| language.getProperty("functionInsert").equals(fonction)) {
+						|| language.getProperty("functionBlackDetection").equals(fonction)
+						|| language.getProperty("functionOfflineDetection").equals(fonction)
+						|| language.getProperty("functionInsert").equals(fonction))
+						{
 
-							if (language.getProperty("functionBlackDetection").equals(fonction)
-								|| language.getProperty("functionOfflineDetection").equals(fonction))
+							if (language.getProperty("functionBlackDetection").equals(fonction)	|| language.getProperty("functionOfflineDetection").equals(fonction))
+							{
 								addToList.setText(language.getProperty("filesVideo"));
+							}
 							else if (language.getProperty("functionInsert").equals(fonction))
+							{
 								addToList.setText(language.getProperty("fileMaster"));
+							}
 							else
 								addToList.setText(language.getProperty("filesVideoOrAudio"));
+							
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);
 							grpImageFilter.setVisible(false);
@@ -14370,6 +14327,7 @@ public class Shutter {
 							grpTransitions.setVisible(false);
 							grpAdvanced.setVisible(false);
 							btnReset.setLocation(btnReset.getX(), grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);
+							
 						} else if ("XDCAM HD422".equals(fonction) || "AVC-Intra 100".equals(fonction) || ("XAVC").equals(fonction) || "HAP".equals(fonction) || "FFV1".equals(fonction)) {
 							
 							if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") && caseAS10.isSelected())
@@ -14599,12 +14557,21 @@ public class Shutter {
 								grpAdvanced.add(caseAS10);
 								comboAS10.setLocation(caseAS10.getX() + caseAS10.getWidth() + 4, caseAS10.getLocation().y + 4);
 								grpAdvanced.add(comboAS10);
+								casePreserveMetadata.setLocation(7, caseAS10.getLocation().y + 17);
+								grpAdvanced.add(casePreserveMetadata);	
 							}
 							else if (fonction.equals("AVC-Intra 100"))
 							{		
 								caseAS10.setText(language.getProperty("caseAS10").replace("10" + language.getProperty("colon"), "11").replace("10 format" + language.getProperty("colon"), "11 format"));
 								caseAS10.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 								grpAdvanced.add(caseAS10);
+								casePreserveMetadata.setLocation(7, caseAS10.getLocation().y + 17);
+								grpAdvanced.add(casePreserveMetadata);	
+							}
+							else
+							{
+								casePreserveMetadata.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
+								grpAdvanced.add(casePreserveMetadata);	
 							}
 
 							// grpCorrections
@@ -14625,8 +14592,8 @@ public class Shutter {
 							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);						
 							
-						} else if ("DNxHD".equals(fonction) || "DNxHR".equals(fonction)
-								|| "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed YUV".equals(fonction) ) {
+						} else if ("DNxHD".equals(fonction) || "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed YUV".equals(fonction) ) {
+							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));			
 														
 							if (comboFonctions.getSelectedItem().equals("QT Animation") || comboSubtitles.isVisible())
@@ -14872,7 +14839,10 @@ public class Shutter {
 									caseCreateTree.setLocation(7, caseForcerInversion.getLocation().y + 17);
 							}							
 							grpAdvanced.add(caseCreateTree);
-							caseCreateOPATOM.setLocation(7, caseCreateTree.getLocation().y + 17);
+							
+							casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
+							grpAdvanced.add(casePreserveMetadata);							
+							caseCreateOPATOM.setLocation(7, casePreserveMetadata.getLocation().y + 17);
 							grpAdvanced.add(caseCreateOPATOM);						
 							lblOPATOM.setLocation(caseCreateOPATOM.getLocation().x + caseCreateOPATOM.getWidth() + 4, caseCreateOPATOM.getLocation().y + 3);
 							grpAdvanced.add(lblOPATOM);
@@ -14908,6 +14878,7 @@ public class Shutter {
 							grpCorrections.add(iconTVExposure);							
 							sliderExposure.setLocation(iconTVExposure.getX() - sliderExposure.getWidth(), caseExposure.getLocation().y);
 							grpCorrections.add(sliderExposure);
+							
 						} else if ("H.264".equals(fonction) || "H.265".equals(fonction)) {
 
 							addToList.setText(language.getProperty("filesVideoOrPicture"));			
@@ -15195,8 +15166,7 @@ public class Shutter {
 							caseMotionBlur.setLocation(7, caseBlend.getHeight() + caseBlend.getLocation().y);
 
 							// Ajout case miroir
-							caseMiror.setLocation(comboRotate.getWidth() + comboRotate.getLocation().x + 6,
-									caseRotate.getLocation().y);
+							caseMiror.setLocation(comboRotate.getWidth() + comboRotate.getLocation().x + 6, caseRotate.getLocation().y);
 							grpImageSequence.add(caseMiror);
 
 							// Ajout des fonctions avancées
@@ -15221,8 +15191,7 @@ public class Shutter {
 							
 							caseForceOutput.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 							grpAdvanced.add(caseForceOutput);
-							lblNiveaux.setLocation(caseForceOutput.getLocation().x + caseForceOutput.getWidth() + 4,
-									caseForceOutput.getLocation().y + 4);
+							lblNiveaux.setLocation(caseForceOutput.getLocation().x + caseForceOutput.getWidth() + 4, caseForceOutput.getLocation().y + 4);
 							grpAdvanced.add(lblNiveaux);							
 							caseForceLevel.setLocation(7, caseForceOutput.getLocation().y + 17);
 							grpAdvanced.add(caseForceLevel);
@@ -15260,7 +15229,9 @@ public class Shutter {
 							grpAdvanced.add(lblIsConform);
 							caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 							grpAdvanced.add(caseCreateTree);
-							casePreserveSubs.setLocation(7, caseCreateTree.getLocation().y + 17);
+							casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
+							grpAdvanced.add(casePreserveMetadata);
+							casePreserveSubs.setLocation(7, casePreserveMetadata.getLocation().y + 17);
 							grpAdvanced.add(casePreserveSubs);							
 							
 							// grpCorrections
@@ -15282,14 +15253,19 @@ public class Shutter {
 							grpCorrections.add(iconTVBruit);
 							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
+							
 						} else if ("WMV".equals(fonction) || "MPEG".equals(fonction) || "VP8".equals(fonction) || "VP9".equals(fonction) || "AV1".equals(fonction) || "OGV".equals(fonction)
 								|| "MJPEG".equals(fonction) || "Xvid".equals(fonction)) {
 							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));	
+							
 							if (comboSubtitles.isVisible() == false)
+							{
 								caseDisplay.setEnabled(true);
+							}
 							else
 								caseDisplay.setEnabled(false);
+							
 							case2pass.setEnabled(true);
 							lblNiveaux.setVisible(true);
 							grpColorimetry.setVisible(false);
@@ -15658,7 +15634,9 @@ public class Shutter {
 							grpAdvanced.add(lblIsConform);
 							caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 							grpAdvanced.add(caseCreateTree);
-							casePreserveSubs.setLocation(7, caseCreateTree.getLocation().y + 17);
+							casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
+							grpAdvanced.add(casePreserveMetadata);
+							casePreserveSubs.setLocation(7, casePreserveMetadata.getLocation().y + 17);
 							grpAdvanced.add(casePreserveSubs);	
 
 							// grpCorrections
@@ -15680,7 +15658,9 @@ public class Shutter {
 							grpCorrections.add(iconTVBruit);
 							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
+							
 						} else if ("DV PAL".equals(fonction)) {
+							
 							addToList.setText(language.getProperty("filesVideo"));
 							caseDisplay.setEnabled(true);
 							grpImageSequence.setVisible(false);
@@ -15708,6 +15688,7 @@ public class Shutter {
 							grpTransitions.setVisible(false);
 							grpAdvanced.setVisible(false);
 							btnReset.setLocation(btnReset.getX(), grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
+							
 						} else if ("DVD".equals(fonction) || "Blu-ray".equals(fonction)) {
 							
 							addToList.setText(language.getProperty("filesVideo"));
@@ -15894,7 +15875,9 @@ public class Shutter {
 							grpCorrections.add(iconTVBruit);
 							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
+							
 						} else if (language.getProperty("functionPicture").equals(fonction) || "JPEG".equals(fonction)) {
+							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));
 							caseDisplay.setEnabled(false);
 							grpImageSequence.setVisible(false);	
@@ -15995,19 +15978,33 @@ public class Shutter {
 							grpTransitions.setVisible(false);
 							grpAdvanced.setVisible(false);
 							btnReset.setLocation(btnReset.getX(), grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
+							
 						} else {
+							
 							if (language.getProperty("functionConform").equals(fonction) || language.getProperty("functionExtract").equals(fonction)) 
+							{
 								addToList.setText(language.getProperty("filesVideo"));
+							}
 							else if (language.getProperty("functionMerge").equals(fonction))
+							{
 								addToList.setText(language.getProperty("filesVideoOrAudio"));
+							}
 							else if (language.getProperty("functionSubtitles").equals(fonction))
+							{
 								addToList.setText(language.getProperty("fileVideo"));
+							}
 							else if (language.getProperty("functionSceneDetection").equals(fonction))
+							{
 								addToList.setText(language.getProperty("fileVideo"));
+							}
 							else if (language.getProperty("itemMyFunctions").equals(fonction))
+							{
 								addToList.setText(language.getProperty("dropFilesHere"));
+							}
 							else if (comboFonctions.getEditor().getItem().toString().isEmpty())
+							{
 								addToList.setText(language.getProperty("dropFilesHere"));
+							}
 							else
 								addToList.setText(language.getProperty(""));
 							
@@ -17189,11 +17186,13 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 class ListeFileTransferHandler extends TransferHandler {
 
 	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
-		for (int i = 0; i < arg1.length; i++) {
+		
+		for (int i = 0; i < arg1.length; i++)
+		{
 			DataFlavor flavor = arg1[i];
 			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.scanIsRunning == false && Shutter.inputDeviceIsRunning == false
-					&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions
-							.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false) {
+			&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false)
+			{
 
 				Shutter.fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 1));
 				return true;
@@ -17203,6 +17202,7 @@ class ListeFileTransferHandler extends TransferHandler {
 	}
 
 	public boolean importData(JComponent comp, Transferable t) {
+		
 		DataFlavor[] flavors = t.getTransferDataFlavors();
 		for (int i = 0; i < flavors.length; i++) {
 			DataFlavor flavor = flavors[i];
@@ -17364,222 +17364,147 @@ class ListeFileTransferHandler extends TransferHandler {
 	}
 }
 
-// Drag & Drop lblDestination1
+// Drag & Drop lblDestination
 @SuppressWarnings("serial")
-class DestinationFileTransferHandler1 extends TransferHandler {
+class DestinationFileTransferHandler extends TransferHandler {
 
-	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
-		for (int i = 0; i < arg1.length; i++) {
+	public boolean canImport(JComponent comp, DataFlavor[] arg1) {
+		
+		for (int i = 0; i < arg1.length; i++)
+		{
 			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-				Shutter.lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-				return true;
+			
+			if (flavor.equals(DataFlavor.javaFileListFlavor))
+			{
+				if (comp.getName().equals("lblDestination3") && Shutter.caseChangeFolder2.isSelected() == false)
+				{
+					return false;
+				}
+				else
+				{
+					comp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
 	public boolean importData(JComponent comp, Transferable t) {
+				
 		DataFlavor[] flavors = t.getTransferDataFlavors();
-		for (int i = 0; i < flavors.length; i++) {
+		for (int i = 0; i < flavors.length; i++)
+		{
 			DataFlavor flavor = flavors[i];
+			
 			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor)) {
+				
+				if (flavor.equals(DataFlavor.javaFileListFlavor))
+				{
 					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					Iterator<?> iter = l.iterator();
-					while (iter.hasNext()) {
-						
+					
+					while (iter.hasNext())
+					{						
 						File file = (File) iter.next();
 						
 						//Montage du chemin UNC
 						if (System.getProperty("os.name").contains("Windows") && file.toString().substring(0, 2).equals("\\\\"))
 							file = Utils.UNCPath(file);
 						
-						if (file.getName().contains(".")) {
-							Shutter.lblDestination1.setText(file.getParent());
-						} else {
-							Shutter.lblDestination1.setText(file.getAbsolutePath());
-						}
+						if (file.getName().contains("."))
+						{
+							((JTextField) comp).setText(file.getParent());
+						} 
+						else 
+							((JTextField) comp).setText(file.getAbsolutePath());
 
-						//Si destination identique à l'une des autres
-						if (Shutter.lblDestination1.getText().equals(Shutter.lblDestination2.getText()) || Shutter.lblDestination1.getText().equals(Shutter.lblDestination3.getText())) 
-						{
-							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"),
-									Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.ERROR_MESSAGE);
-							Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
-							Shutter.caseChangeFolder1.setSelected(false);
-						}
-						else
+						if (comp.getName().equals("lblDestination1"))
 						{							
-							Shutter.caseChangeFolder1.setSelected(true);
-							Shutter.caseOpenFolderAtEnd1.setSelected(false);
-						}						
-						
-						if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
-						{
-							// Si le dossier d'entrée et de sortie est identique
-							if (Shutter.liste.firstElement().substring(0, Shutter.liste.firstElement().length() - 1).equals(Shutter.lblDestination1.getText())) {
-								JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"),Shutter.language.getProperty("sameFolder"), JOptionPane.ERROR_MESSAGE);
+							//Si destination identique à l'une des autres
+							if (Shutter.lblDestination1.getText().equals(Shutter.lblDestination2.getText()) || Shutter.lblDestination1.getText().equals(Shutter.lblDestination3.getText())) 
+							{
+								JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.ERROR_MESSAGE);
 								Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
 								Shutter.caseChangeFolder1.setSelected(false);
-							} else {
-								Shutter.scanIsRunning = true;
 							}
+							else
+							{							
+								Shutter.caseChangeFolder1.setSelected(true);
+								Shutter.caseOpenFolderAtEnd1.setSelected(false);
+							}						
+							
+							if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
+							{
+								// Si le dossier d'entrée et de sortie est identique
+								if (Shutter.liste.firstElement().substring(0, Shutter.liste.firstElement().length() - 1).equals(Shutter.lblDestination1.getText()))
+								{
+									JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"),Shutter.language.getProperty("sameFolder"), JOptionPane.ERROR_MESSAGE);
+									Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
+									Shutter.caseChangeFolder1.setSelected(false);
+								}
+								else
+								{
+									Shutter.scanIsRunning = true;
+								}
+							}
+							
+							if (Shutter.lblDestination1.getText() != Shutter.language.getProperty("sameAsSource") && Settings.lastUsedOutput1.isSelected())
+								Settings.lblDestination1.setText(Shutter.lblDestination1.getText());
 						}
-						
-						if (Shutter.lblDestination1.getText() != Shutter.language.getProperty("sameAsSource") && Settings.lastUsedOutput1.isSelected())
-							Settings.lblDestination1.setText(Shutter.lblDestination1.getText());
-					}
-
-					// Border
-					Shutter.lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-
-					return true;
-				}
-			} catch (IOException | UnsupportedFlavorException ex) {
-			}
-		}
-		return false;
-	}
-}
-
-//Drag & Drop lblDestination2
-@SuppressWarnings("serial")
-class DestinationFileTransferHandler2 extends TransferHandler {
-
-	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
-		for (int i = 0; i < arg1.length; i++) {
-			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-				Shutter.lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean importData(JComponent comp, Transferable t) {
-		DataFlavor[] flavors = t.getTransferDataFlavors();
-		for (int i = 0; i < flavors.length; i++) {
-			DataFlavor flavor = flavors[i];
-			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
-					Iterator<?> iter = l.iterator();
-					while (iter.hasNext()) {
-						
-						File file = (File) iter.next();
-						
-						//Montage du chemin UNC
-						if (System.getProperty("os.name").contains("Windows") && file.toString().substring(0, 2).equals("\\\\"))
-							file = Utils.UNCPath(file);
-						
-						if (file.getName().contains(".")) {
-							Shutter.lblDestination2.setText(file.getParent());
-						} else {
-							Shutter.lblDestination2.setText(file.getAbsolutePath());
-						}
-						
-						//Si destination identique à l'une des autres
-						if (Shutter.lblDestination2.getText().equals(Shutter.lblDestination1.getText()) || Shutter.lblDestination2.getText().equals(Shutter.lblDestination3.getText())) 
+						else if (comp.getName().equals("lblDestination2"))
 						{
-							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"),
-									Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.ERROR_MESSAGE);
-							Shutter.lblDestination2.setText(Shutter.language.getProperty("aucune"));
-							Shutter.caseChangeFolder2.setSelected(false);
-							Shutter.caseOpenFolderAtEnd2.setSelected(false);
-							Shutter.caseOpenFolderAtEnd2.setEnabled(false);
+							//Si destination identique à l'une des autres
+							if (Shutter.lblDestination2.getText().equals(Shutter.lblDestination1.getText()) || Shutter.lblDestination2.getText().equals(Shutter.lblDestination3.getText())) 
+							{
+								JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.ERROR_MESSAGE);
+								Shutter.lblDestination2.setText(Shutter.language.getProperty("aucune"));
+								Shutter.caseChangeFolder2.setSelected(false);
+								Shutter.caseOpenFolderAtEnd2.setSelected(false);
+								Shutter.caseOpenFolderAtEnd2.setEnabled(false);
+							}
+							else
+							{							
+								Shutter.caseChangeFolder2.setSelected(true);
+								Shutter.caseOpenFolderAtEnd2.setSelected(false);
+								Shutter.caseOpenFolderAtEnd2.setEnabled(true);
+								Shutter.caseChangeFolder3.setEnabled(true);
+							}							
+							
+							if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
+								Shutter.scanIsRunning = true;
+							
+							if (Shutter.lblDestination2.getText() != Shutter.language.getProperty("sameAsSource") && Settings.lastUsedOutput2.isSelected())
+								Settings.lblDestination2.setText(Shutter.lblDestination2.getText());
 						}
-						else
-						{							
-							Shutter.caseChangeFolder2.setSelected(true);
-							Shutter.caseOpenFolderAtEnd2.setSelected(false);
-							Shutter.caseOpenFolderAtEnd2.setEnabled(true);
-							Shutter.caseChangeFolder3.setEnabled(true);
-						}							
-						
-						if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
-							Shutter.scanIsRunning = true;
-						
-						if (Shutter.lblDestination2.getText() != Shutter.language.getProperty("sameAsSource") && Settings.lastUsedOutput2.isSelected())
-							Settings.lblDestination2.setText(Shutter.lblDestination2.getText());
-					}
-
-					// Border
-					Shutter.lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-
-					return true;
-				}
-			} catch (IOException | UnsupportedFlavorException ex) {
-			}
-		}
-		return false;
-	}
-}
-
-//Drag & Drop lblDestination3
-@SuppressWarnings("serial")
-class DestinationFileTransferHandler3 extends TransferHandler {
-
-	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
-		for (int i = 0; i < arg1.length; i++) {
-			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.caseChangeFolder3.isEnabled()) {
-				Shutter.lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean importData(JComponent comp, Transferable t) {
-		DataFlavor[] flavors = t.getTransferDataFlavors();
-		for (int i = 0; i < flavors.length; i++) {
-			DataFlavor flavor = flavors[i];
-			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
-					Iterator<?> iter = l.iterator();
-					while (iter.hasNext()) {
-						
-						File file = (File) iter.next();
-						
-						//Montage du chemin UNC
-						if (System.getProperty("os.name").contains("Windows") && file.toString().substring(0, 2).equals("\\\\"))
-							file = Utils.UNCPath(file);
-						
-						if (file.getName().contains(".")) {
-							Shutter.lblDestination3.setText(file.getParent());
-						} else {
-							Shutter.lblDestination3.setText(file.getAbsolutePath());
-						}
-						
-						//Si destination identique à l'une des autres
-						if (Shutter.lblDestination3.getText().equals(Shutter.lblDestination1.getText()) || Shutter.lblDestination3.getText().equals(Shutter.lblDestination2.getText())) 
+						else if (comp.getName().equals("lblDestination3"))
 						{
-							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"),
-									Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.ERROR_MESSAGE);
-							Shutter.lblDestination3.setText(Shutter.language.getProperty("aucune"));
-							Shutter.caseChangeFolder3.setSelected(false);
-							Shutter.caseOpenFolderAtEnd3.setSelected(false);
-							Shutter.caseOpenFolderAtEnd3.setEnabled(false);
+							//Si destination identique à l'une des autres
+							if (Shutter.lblDestination3.getText().equals(Shutter.lblDestination1.getText()) || Shutter.lblDestination3.getText().equals(Shutter.lblDestination2.getText())) 
+							{
+								JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("ChooseDifferentFolder"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.ERROR_MESSAGE);
+								Shutter.lblDestination3.setText(Shutter.language.getProperty("aucune"));
+								Shutter.caseChangeFolder3.setSelected(false);
+								Shutter.caseOpenFolderAtEnd3.setSelected(false);
+								Shutter.caseOpenFolderAtEnd3.setEnabled(false);
+							}
+							else
+							{							
+								Shutter.caseChangeFolder3.setSelected(true);
+								Shutter.caseOpenFolderAtEnd3.setSelected(false);
+								Shutter.caseOpenFolderAtEnd3.setEnabled(true);
+							}	
+							
+							if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
+								Shutter.scanIsRunning = true;
+							
+							if (Shutter.lblDestination3.getText() != Shutter.language.getProperty("sameAsSource") && Settings.lastUsedOutput3.isSelected())
+								Settings.lblDestination3.setText(Shutter.lblDestination3.getText());
 						}
-						else
-						{							
-							Shutter.caseChangeFolder3.setSelected(true);
-							Shutter.caseOpenFolderAtEnd3.setSelected(false);
-							Shutter.caseOpenFolderAtEnd3.setEnabled(true);
-						}	
-						
-						if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
-							Shutter.scanIsRunning = true;
-						
-						if (Shutter.lblDestination3.getText() != Shutter.language.getProperty("sameAsSource") && Settings.lastUsedOutput3.isSelected())
-							Settings.lblDestination3.setText(Shutter.lblDestination3.getText());
 					}
 
 					// Border
-					Shutter.lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
+					comp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
 
 					return true;
 				}
@@ -17589,3 +17514,4 @@ class DestinationFileTransferHandler3 extends TransferHandler {
 		return false;
 	}
 }
+	

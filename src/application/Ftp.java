@@ -416,59 +416,61 @@ public class Ftp {
 					  sendMailForFtp(uploaded, fichier.toString());
 				 	}
 				}
-		}//BtnOK
+		}
 	}
 	
-	public static void sendMailForFtp(final boolean uploaded, final String fichier) {
+	public static void sendMailForFtp(final boolean uploaded, final String file) {
+		
 		if (Shutter.caseSendMail.isSelected())
 		{	       
-		Thread thread = new Thread(new Runnable(){
-			public void run() {
-				Shutter.sendMailIsRunning = true;
-				final String username = "info@shutterencoder.com";
-				final String password = "";
-
-				Properties props = new Properties();
-				props.put("mail.smtp.auth", "true");
-				props.put("mail.smtp.starttls.enable", "true");
-				props.put("mail.smtp.host", "auth.smtp.1and1.fr");
-				props.put("mail.smtp.port", "587");
-
-				Session session = Session.getInstance(props,
-				  new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(username, password);
-					}
-				  });
-
-				try {
-					Message message = new MimeMessage(session);
-					message.setFrom(new InternetAddress(username));
-					message.setRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(Shutter.textMail.getText()));
-					if (uploaded == false)
-					{
-						message.setSubject(Shutter.language.getProperty("shutterMailFailed"));
-						message.setText(Shutter.language.getProperty("theFile") + " " + new File(fichier).getName() + " " + Shutter.language.getProperty("notSended") + " " + textFtp.getText());
-					}
-					else
-					{
-						message.setSubject(Shutter.language.getProperty("shutterMailSuccessful"));
-						message.setText(Shutter.language.getProperty("theFile") + " " + new File(fichier).getName() + " " + Shutter.language.getProperty("isSended") + " " + textFtp.getText());
-					}
+			Thread thread = new Thread(new Runnable()
+			{			
+				public void run() {
 					
-					Transport.send(message);
-					
-					Shutter.sendMailIsRunning = false;
-				    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-			        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
-				} catch (MessagingException e) {
-					Shutter.lblCurrentEncoding.setForeground(Color.RED);
-		        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
-				}		
-			}
-		});
-		thread.start();
+					Shutter.sendMailIsRunning = true;
+	
+					Properties props = new Properties();
+					props.put("mail.smtp.auth", "true");
+					props.put("mail.smtp.starttls.enable", "true");
+					props.put("mail.smtp.host", "auth.smtp.1and1.fr");
+					props.put("mail.smtp.port", "587");
+	
+					Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+						protected PasswordAuthentication getPasswordAuthentication() {
+							return new PasswordAuthentication(Utils.username, Utils.password);
+						}
+					});
+	
+					try {
+						Message message = new MimeMessage(session);
+						message.setFrom(new InternetAddress(Utils.username));
+						message.setRecipients(Message.RecipientType.TO,
+						InternetAddress.parse(Shutter.textMail.getText()));
+						if (uploaded == false)
+						{
+							message.setSubject(Shutter.language.getProperty("shutterMailFailed"));
+							message.setText(Shutter.language.getProperty("theFile") + " " + new File(file).getName() + " " + Shutter.language.getProperty("notSended") + " " + textFtp.getText());
+						}
+						else
+						{
+							message.setSubject(Shutter.language.getProperty("shutterMailSuccessful"));
+							message.setText(Shutter.language.getProperty("theFile") + " " + new File(file).getName() + " " + Shutter.language.getProperty("isSended") + " " + textFtp.getText());
+						}
+						
+						Transport.send(message);
+						
+						Shutter.sendMailIsRunning = false;
+					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
+				        
+					} catch (MessagingException e) {
+						
+						Shutter.lblCurrentEncoding.setForeground(Color.RED);
+			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
+					}		
+				}
+			});
+			thread.start();
 		
 	   }
 	}

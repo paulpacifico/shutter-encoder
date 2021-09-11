@@ -338,7 +338,7 @@ public class ReducedWindow extends JDialog {
 	
 }
 
-//Fond
+//Background
 @SuppressWarnings("serial")
 class MiniWindowBackground extends JPanel {
     public void paintComponent(Graphics g){

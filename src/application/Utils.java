@@ -77,6 +77,8 @@ public class Utils extends Shutter {
 	public static Color highlightColor = new Color(129, 198, 253);
 	public static boolean yesToAll = false;
 	public static boolean noToAll = false;
+	public final static String username = "info@shutterencoder.com";
+	public final static String password = "";
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -153,7 +155,7 @@ public class Utils extends Shutter {
 					if (getLanguage != null && getLanguage != "")
 					{						
 						for (String local : Locale.getISOLanguages())
-						{							
+						{												
 							String language = new Locale(local).getDisplayLanguage();
 
 							//With Country
@@ -254,13 +256,13 @@ public class Utils extends Shutter {
 	}
 	
 	public static void sendMail(final String fichier) {
-		if (caseSendMail.isSelected()) {
+		
+		if (caseSendMail.isSelected())
+		{
 			Thread thread = new Thread(new Runnable() {
 				
 				public void run() {
 					sendMailIsRunning = true;
-					final String username = "info@shutterencoder.com";
-					final String password = "";
 
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
@@ -295,7 +297,9 @@ public class Utils extends Shutter {
 						
 					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
+				        
 					} catch (MessagingException e) {
+						
 						Console.consoleFFMPEG.append(System.lineSeparator() + e + System.lineSeparator());
 						
 						Shutter.lblCurrentEncoding.setForeground(Color.RED);
