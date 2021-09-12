@@ -219,9 +219,15 @@ public class Utils extends Shutter {
 			
 			if (getLanguage.contains("Chinese"))
 			{
-				Shutter.magnetoFont = "Noto Sans SC Medium";
-				Shutter.montserratFont = "Noto Sans SC Medium";
-				Shutter.freeSansFont = "Noto Sans SC Medium";
+				String style = "";
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					style = " Medium";
+				}
+				
+				Shutter.magnetoFont = "Noto Sans SC" + style;
+				Shutter.montserratFont = "Noto Sans SC" + style;
+				Shutter.freeSansFont = "Noto Sans SC" + style;
 			}
 			else if (getLanguage.contains("Japanese") || getLanguage.contains("Russian")) //use system default font
 			{
