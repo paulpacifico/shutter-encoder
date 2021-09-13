@@ -4656,10 +4656,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = sized;
 										else
@@ -4672,21 +4671,6 @@ public class Shutter {
 										grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 										grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 										btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
@@ -4714,6 +4698,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i < sized);
 							} catch (Exception e1) {
 							}
@@ -4728,10 +4716,9 @@ public class Shutter {
 						public void run() {
 								try {
 									int i = sized;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -4744,21 +4731,6 @@ public class Shutter {
 										grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 										grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 										btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -4789,6 +4761,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 								} catch (Exception e1) {
 								}
@@ -4993,10 +4969,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 122;
 										else
@@ -5004,21 +4979,6 @@ public class Shutter {
 										
 										grpImageFilter.setSize(312, i);
 										btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
-
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 										
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
@@ -5046,6 +5006,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i < 122);
 							} catch (Exception e1) {
 							}
@@ -5060,10 +5024,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 122;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -5071,21 +5034,6 @@ public class Shutter {
 										
 										grpImageFilter.setSize(312, i);
 										btnReset.setLocation(336, grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
-
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 										
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -5116,6 +5064,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 							} catch (Exception e1) {
 							}
@@ -5378,10 +5330,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = sized;
 										else
@@ -5400,21 +5351,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-										}
-										
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
 										}
 
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
@@ -5443,6 +5379,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i < sized);
 							} catch (Exception e1) {
 							}
@@ -5456,11 +5396,10 @@ public class Shutter {
 						@Override
 						public void run() {
 								try {
-									int i = sized;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
+									int i = sized;									
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -5479,21 +5418,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-										}
-										
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
 										}
 
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
@@ -5524,7 +5448,11 @@ public class Shutter {
 													grpAdvanced.getLocation().y + 1);
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
-												}
+										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 								} catch (Exception e1) {
 								}
@@ -6186,10 +6114,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = sized;
 										else
@@ -6225,21 +6152,6 @@ public class Shutter {
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										}
-										
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
@@ -6267,6 +6179,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i < sized);
 							} catch (Exception e1) {
 							}
@@ -6281,10 +6197,9 @@ public class Shutter {
 						public void run() {
 								try {
 									int i = sized;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -6315,21 +6230,6 @@ public class Shutter {
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										}
-
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 										
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -6359,7 +6259,11 @@ public class Shutter {
 													grpAdvanced.getLocation().y + 1);
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
-												}
+										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 								} catch (Exception e1) {
 								}
@@ -6611,10 +6515,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = sized;
 										else
@@ -6650,21 +6553,6 @@ public class Shutter {
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										}
 
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
-
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
 											grpH264.setLocation(grpH264.getLocation().x, grpH264.getLocation().y - 1);
@@ -6691,6 +6579,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i < sized);
 							} catch (Exception e1) {
 							}
@@ -6705,10 +6597,9 @@ public class Shutter {
 						public void run() {
 								try {
 									int i = sized;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -6744,21 +6635,6 @@ public class Shutter {
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										}
 
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
-
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
 												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
@@ -6788,6 +6664,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 								} catch (Exception e1) {
 								}
@@ -7607,9 +7487,6 @@ public class Shutter {
 							public void run() {
 								try {
 										int i = 17;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										int sized;
 										if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString()) 
 										|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
@@ -7641,6 +7518,8 @@ public class Shutter {
 												sized = 74;
 										}
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = sized;
 											else
@@ -7678,22 +7557,6 @@ public class Shutter {
 												grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 											}
-												
-	
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-	
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 	
 											if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
@@ -7721,6 +7584,10 @@ public class Shutter {
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y - 1);
 											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i < sized);
 								} catch (Exception e1) {
 								}
@@ -7764,10 +7631,9 @@ public class Shutter {
 											else
 												i = 74;
 										}
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 17;
 											else
@@ -7806,21 +7672,6 @@ public class Shutter {
 												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 											}
 	
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-	
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
-	
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
 													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
@@ -7849,7 +7700,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 17);
 									} catch (Exception e1) {
 									}
@@ -8171,11 +8026,10 @@ public class Shutter {
 							public void run() {
 								try {
 										int i = 74;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										int sized = 128;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = sized;
 											else
@@ -8202,22 +8056,6 @@ public class Shutter {
 												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 											}
 												
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
-
 											if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
 												grpH264.setLocation(grpH264.getLocation().x, grpH264.getLocation().y - 1);
@@ -8244,6 +8082,10 @@ public class Shutter {
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y - 1);
 											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i < sized);
 								} catch (Exception e1) {
 								}
@@ -8267,10 +8109,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -8296,22 +8137,7 @@ public class Shutter {
 												grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 											}
-
-											Thread.sleep(sleep);
 											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
-
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
 													 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
@@ -8340,7 +8166,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}
@@ -9090,10 +8920,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = sized;
 										else
@@ -9103,21 +8932,6 @@ public class Shutter {
 										grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 										grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 										btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
@@ -9145,6 +8959,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i < sized);
 							} catch (Exception e1) {
 							}
@@ -9159,10 +8977,9 @@ public class Shutter {
 						public void run() {
 								try {
 									int i = sized;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -9172,21 +8989,6 @@ public class Shutter {
 										grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 										grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 										btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -9217,6 +9019,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 								} catch (Exception e1) {
 								}
@@ -9548,10 +9354,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = sized;
 										else
@@ -9569,22 +9374,7 @@ public class Shutter {
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										}
-
-										Thread.sleep(sleep);
 										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
-
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
 											grpH264.setLocation(grpH264.getLocation().x, grpH264.getLocation().y - 1);
@@ -9611,6 +9401,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i < sized);
 							} catch (Exception e1) {
 							}
@@ -9625,10 +9419,9 @@ public class Shutter {
 						public void run() {
 								try {
 									int i = sized;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -9645,21 +9438,6 @@ public class Shutter {
 											grpTransitions.setSize(312, i);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-										}
-										
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
 										}
 
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
@@ -9691,6 +9469,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 								} catch (Exception e1) {
 								}
@@ -10178,10 +9960,9 @@ public class Shutter {
 						public void run() {
 							try {
 									int i = 17;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = sized;
 										else
@@ -10189,21 +9970,6 @@ public class Shutter {
 										
 										grpAdvanced.setSize(312, i);
 										btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-	
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
 
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
@@ -10231,6 +9997,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y - 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);									
+										
 									} while (i < sized);
 							} catch (Exception e1) {
 							}
@@ -10245,10 +10015,9 @@ public class Shutter {
 						public void run() {
 								try {
 									int i = sized;
-									long start = (System.currentTimeMillis());
-									int fps = 0;
-									int sleep = 1;
 									do {
+										long startTime = System.currentTimeMillis() + 1;
+										
 										if (Settings.btnDisableAnimations.isSelected())
 											i = 17;
 										else
@@ -10257,21 +10026,6 @@ public class Shutter {
 										grpAdvanced.setSize(312, i);
 										btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										
-										Thread.sleep(sleep);
-										
-										// Permet de définir la vitesse
-										if ((System.currentTimeMillis() - start) < 350)
-											fps += 1;
-										else {
-											if (fps > 30)
-												sleep = (int) (sleep / (fps / 25));
-											else if (fps < 20)
-												sleep = (int) (sleep * (fps / 25));
-
-											start = System.currentTimeMillis();
-											fps = 0;
-										}
-
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
 												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
@@ -10301,6 +10055,10 @@ public class Shutter {
 											btnReset.setLocation(btnReset.getLocation().x,
 													btnReset.getLocation().y + 1);
 										}
+										
+										//Animate size
+										animateSections(startTime);	
+										
 									} while (i > 17);
 								} catch (Exception e1) {
 								}
@@ -11529,11 +11287,10 @@ public class Shutter {
 									@Override
 									public void run() {
 										try {
-												int i = 17;
-												long start = (System.currentTimeMillis());
-												int fps = 0;
-												int sleep = 1;
-												do {
+												int i = 17;												
+												do {													
+													long startTime = System.currentTimeMillis() + 1;
+													
 													if (Settings.btnDisableAnimations.isSelected())
 														i = sized;
 													else
@@ -11546,22 +11303,7 @@ public class Shutter {
 													grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 													grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 													btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-		
-													Thread.sleep(sleep);
-													
-													// Permet de définir la vitesse
-													if ((System.currentTimeMillis() - start) < 350)
-														fps += 1;
-													else {
-														if (fps > 30)
-															sleep = (int) (sleep / (fps / 25));
-														else if (fps < 20)
-															sleep = (int) (sleep * (fps / 25));
-		
-														start = System.currentTimeMillis();
-														fps = 0;
-													}
-		
+				
 													if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 														grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
 														grpH264.setLocation(grpH264.getLocation().x, grpH264.getLocation().y - 1);
@@ -11588,6 +11330,10 @@ public class Shutter {
 														btnReset.setLocation(btnReset.getLocation().x,
 																btnReset.getLocation().y - 1);
 													}
+													
+													//Animate size
+													animateSections(startTime);	
+													
 												} while (i < sized);
 										} catch (Exception e1) {
 										}
@@ -12391,10 +12137,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -12408,21 +12153,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -12452,7 +12182,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -12482,10 +12216,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -12499,21 +12232,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -12543,7 +12261,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -12573,10 +12295,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -12590,21 +12311,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -12634,7 +12340,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -12664,10 +12374,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -12681,21 +12390,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -12725,7 +12419,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+												}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -12755,10 +12453,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -12772,21 +12469,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -12816,7 +12498,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -12846,10 +12532,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -12863,21 +12548,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -12907,7 +12577,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -12937,10 +12611,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -12954,21 +12627,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -12998,7 +12656,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -13028,10 +12690,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -13045,21 +12706,6 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
-											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
 
 											if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 													 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
@@ -13089,7 +12735,11 @@ public class Shutter {
 														grpAdvanced.getLocation().y + 1);
 												btnReset.setLocation(btnReset.getLocation().x,
 														btnReset.getLocation().y + 1);
-													}
+											}
+											
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -13122,10 +12772,9 @@ public class Shutter {
 							public void run() {
 									try {
 										int i = 128;
-										long start = (System.currentTimeMillis());
-										int fps = 0;
-										int sleep = 1;
 										do {
+											long startTime = System.currentTimeMillis() + 1;
+											
 											if (Settings.btnDisableAnimations.isSelected())
 												i = 74;
 											else
@@ -13137,21 +12786,10 @@ public class Shutter {
 											grpTransitions.setLocation(grpCorrections.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-
-											Thread.sleep(sleep);
 											
-											// Permet de définir la vitesse
-											if ((System.currentTimeMillis() - start) < 350)
-												fps += 1;
-											else {
-												if (fps > 30)
-													sleep = (int) (sleep / (fps / 25));
-												else if (fps < 20)
-													sleep = (int) (sleep * (fps / 25));
-
-												start = System.currentTimeMillis();
-												fps = 0;
-											}
+											//Animate size
+											animateSections(startTime);	
+											
 										} while (i > 74);
 									} catch (Exception e1) {
 									}									
@@ -14010,10 +13648,9 @@ public class Shutter {
 						
 						if (frame.getSize().width == 660 && action) {
 							int i = 334;
-							long start = (System.currentTimeMillis());
-							int fps = 0;
-							int sleep = 1;
 							do {
+								long startTime = System.currentTimeMillis() + 2;
+								
 								changeGroupes = true;
 								if (Settings.btnDisableAnimations.isSelected())
 									i = 680;
@@ -14034,20 +13671,9 @@ public class Shutter {
 								grpAdvanced.setLocation(i, grpAdvanced.getLocation().y);
 								btnReset.setLocation((i + 2), btnReset.getLocation().y);
 
-								Thread.sleep(sleep);
+								//Animate size
+								animateSections(startTime);	
 								
-								// Permet de définir la vitesse
-								if ((System.currentTimeMillis() - start) < 350)
-									fps += 1;
-								else {
-									if (fps > 30)
-										sleep = (int) (sleep / (fps / 25));
-									else if (fps < 20)
-										sleep = (int) (sleep * (fps / 25));
-
-									start = System.currentTimeMillis();
-									fps = 0;
-								}
 							} while (i < 680);
 						}
 
@@ -16016,10 +15642,9 @@ public class Shutter {
 						
 						if (action) {
 							int i2 = 680;
-							long start = (System.currentTimeMillis());
-							int fps = 0;
-							int sleep = 1;
 							do {
+								long startTime = System.currentTimeMillis() + 2;
+								
 								changeGroupes = true;
 								if (Settings.btnDisableAnimations.isSelected())
 									i2 = 334;
@@ -16040,20 +15665,9 @@ public class Shutter {
 								grpAdvanced.setLocation(i2, grpAdvanced.getLocation().y);
 								btnReset.setLocation((i2 + 2), btnReset.getLocation().y);
 
-								Thread.sleep(sleep);
-
-								// Permet de définir la vitesse
-								if ((System.currentTimeMillis() - start) < 350)
-									fps += 1;
-								else {
-									if (fps > 30)
-										sleep = (int) (sleep / (fps / 25));
-									else if (fps < 20)
-										sleep = (int) (sleep * (fps / 25));
-
-									start = System.currentTimeMillis();
-									fps = 0;
-								}
+								//Animate size
+								animateSections(startTime);	
+								
 							} while (i2 > 334);
 							changeGroupes = false;
 							changeSections(false); // une fois l'action terminé on vérifie que les groupes correspondent
@@ -16073,6 +15687,21 @@ public class Shutter {
 
 	}
 
+	private static void animateSections(long startTime) {
+		
+		long delay = startTime - System.currentTimeMillis();
+        
+    	if (delay > 0)
+    	{		            		
+        	long time = System.currentTimeMillis();
+        	do {
+            	try {
+					Thread.sleep(0);
+				} catch (InterruptedException e) {}
+        	} while (System.currentTimeMillis() - time < delay);			            	
+        }	
+	}
+	
 	public static void changeFilters() {
 		
 		if (liste.getSize() > 0) {
