@@ -55,7 +55,7 @@ import javax.swing.JTextField;
 public class SubtitlesEdit {
 
 	private static JDialog frame;
-	private final JButton btnAppliquer = new JButton(Shutter.language.getProperty("btnApply"));
+	private final JButton btnApply = new JButton(Shutter.language.getProperty("btnApply"));
 	private final JButton btnCancel = new JButton(Shutter.language.getProperty("btnCancel"));
 	
 	static int textPosition;
@@ -79,14 +79,29 @@ public class SubtitlesEdit {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
 						
-		btnAppliquer.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			btnAppliquer.setBounds(frame.getWidth() / 2 - 2, frame.getHeight() - 52, frame.getWidth() / 2 - 2, 21);
-		else
-			btnAppliquer.setBounds(frame.getWidth() / 2 - 2, frame.getHeight() - 67, frame.getWidth() / 2 - 18, 21);
-		frame.getContentPane().add(btnAppliquer);
 		
-		btnAppliquer.addActionListener(new ActionListener(){
+		btnCancel.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
+		btnCancel.setBounds(6, btnApply.getY(), frame.getWidth() / 2 - 12, 21);	
+		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+		{
+			btnCancel.setLocation(btnCancel.getX(), frame.getHeight() - 54);
+		}
+		frame.getContentPane().add(btnCancel);		
+		
+		btnCancel.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+			}
+			
+		});
+		
+		btnApply.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
+		btnApply.setBounds(frame.getWidth() / 2 + 6, btnCancel.getY(), btnCancel.getWidth(), 21);				
+		frame.getContentPane().add(btnApply);
+		
+		btnApply.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {		
@@ -139,22 +154,6 @@ public class SubtitlesEdit {
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
-			}
-			
-		});
-		
-		btnCancel.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			btnCancel.setBounds(3, frame.getHeight() - 52, frame.getWidth() / 2 - 2, 21);		
-		else
-			btnCancel.setBounds(3, frame.getHeight() - 67, frame.getWidth() / 2 - 12, 21);		
-		frame.getContentPane().add(btnCancel);		
-		
-		btnCancel.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.dispose();
 			}
 			
 		});
