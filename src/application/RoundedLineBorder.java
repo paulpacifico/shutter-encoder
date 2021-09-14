@@ -35,10 +35,7 @@ public class RoundedLineBorder extends AbstractBorder {
 
     @Override
     public Insets getBorderInsets(Component c, Insets insets) {
-        int size = Math.max(lineSize, cornerSize);
-        if(insets == null) insets = new Insets(size, size, size, size);
-        else insets.left = insets.top = insets.right = insets.bottom = size;
-        return insets;
+        return new Insets(1, 1, 1, 1);
     }
 
     @Override
