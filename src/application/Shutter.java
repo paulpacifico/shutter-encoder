@@ -1214,7 +1214,7 @@ public class Shutter {
 		grpChooseFiles.setLayout(null);
 		grpChooseFiles.setBounds(10, 59, 312, 315);
 		grpChooseFiles.setBackground(new Color(50, 50, 50));
-		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		frame.getContentPane().add(grpChooseFiles);
 
@@ -2177,7 +2177,7 @@ public class Shutter {
 		grpChooseFunction.setLayout(null);
 		grpChooseFunction.setBounds(10, 380, 312, 76);
 		grpChooseFunction.setBackground(new Color(50, 50, 50));
-		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		frame.getContentPane().add(grpChooseFunction);
 
@@ -3132,7 +3132,7 @@ public class Shutter {
 		
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);	
 		grpDestination.setBounds(12, 462, 308, 76);
-		grpDestination.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1)));		
+		grpDestination.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true)));		
 		grpDestination.setFont(new Font(montserratFont, Font.PLAIN, 11));	
 		frame.getContentPane().add(grpDestination);		
 
@@ -4113,7 +4113,7 @@ public class Shutter {
 		grpProgression.setBounds(10, 544, 312, 94);
 		grpProgression.setBackground(new Color(50, 50, 50));
 		grpProgression.setToolTipText(language.getProperty("rightClick"));
-		grpProgression.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpProgression.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpProgression") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		frame.getContentPane().add(grpProgression);
 
@@ -4251,7 +4251,7 @@ public class Shutter {
 		grpResolution = new JPanel();
 		grpResolution.setLayout(null);
 		grpResolution.setVisible(false);
-		grpResolution.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpResolution.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpResolution") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpResolution.setBackground(new Color(50, 50, 50));
 		grpResolution.setBounds(334, 59, 312, 145);
@@ -4631,7 +4631,7 @@ public class Shutter {
 		grpImageSequence = new JPanel();
 		grpImageSequence.setLayout(null);
 		grpImageSequence.setVisible(false);
-		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpImageSequence.setBackground(new Color(50, 50, 50));
 		grpImageSequence.setBounds(334, 199, 312, 17);
@@ -4953,7 +4953,7 @@ public class Shutter {
 		grpImageFilter = new JPanel();
 		grpImageFilter.setLayout(null);
 		grpImageFilter.setVisible(false);
-		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpImageFilter.setBackground(new Color(50, 50, 50));
 		grpImageFilter.setBounds(334, 199, 312, 17);
@@ -5313,7 +5313,7 @@ public class Shutter {
 		grpColorimetry = new JPanel();
 		grpColorimetry.setLayout(null);
 		grpColorimetry.setVisible(false);
-		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpColorimetry.setBackground(new Color(50, 50, 50));
 		grpColorimetry.setBounds(334, 199, 312, 17);
@@ -6089,7 +6089,7 @@ public class Shutter {
 		grpSetTimecode = new JPanel();
 		grpSetTimecode.setLayout(null);
 		grpSetTimecode.setVisible(false);
-		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1), language.getProperty("grpTimecode") + " ",
+		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), language.getProperty("grpTimecode") + " ",
 				0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpSetTimecode.setBackground(new Color(50, 50, 50));
 		grpSetTimecode.setBounds(334, 258, 312, 17);
@@ -6486,7 +6486,7 @@ public class Shutter {
 		grpOverlay = new JPanel();
 		grpOverlay.setLayout(null);
 		grpOverlay.setVisible(false);
-		grpOverlay.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1), language.getProperty("grpOverlay") + " ", 0,
+		grpOverlay.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), language.getProperty("grpOverlay") + " ", 0,
 				0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpOverlay.setBackground(new Color(50, 50, 50));
 		grpOverlay.setBounds(334, 258, 312, 17);
@@ -7343,7 +7343,7 @@ public class Shutter {
 		grpInAndOut = new JPanel();
 		grpInAndOut.setLayout(null);
 		grpInAndOut.setVisible(false);
-		grpInAndOut.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpInAndOut.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpInAndOut") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpInAndOut.setBackground(new Color(50, 50, 50));
 		grpInAndOut.setBounds(334, 343, 312, 47);
@@ -7440,7 +7440,7 @@ public class Shutter {
 		grpSetAudio = new JPanel();
 		grpSetAudio.setLayout(null);
 		grpSetAudio.setVisible(false);
-		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpSetAudio.setBackground(new Color(50, 50, 50));
 		grpSetAudio.setBounds(334, 343, 312, 47);
@@ -8637,7 +8637,7 @@ public class Shutter {
 		grpAudio = new JPanel();
 		grpAudio.setLayout(null);
 		grpAudio.setVisible(false);
-		grpAudio.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpAudio.setBackground(new Color(50, 50, 50));
 		grpAudio.setBounds(334, 343, 312, 116);
@@ -8898,7 +8898,7 @@ public class Shutter {
 		grpCorrections = new JPanel();
 		grpCorrections.setLayout(null);
 		grpCorrections.setVisible(false);
-		grpCorrections.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1), language.getProperty("grpCorrections") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpCorrections.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), language.getProperty("grpCorrections") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpCorrections.setBackground(new Color(50, 50, 50));
 		grpCorrections.setBounds(334, 396, 312, 17);
 		frame.getContentPane().add(grpCorrections);
@@ -9335,7 +9335,7 @@ public class Shutter {
 		grpTransitions = new JPanel();
 		grpTransitions.setLayout(null);
 		grpTransitions.setVisible(false);
-		grpTransitions.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1), language.getProperty("grpTransitions") + " ", 0,
+		grpTransitions.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), language.getProperty("grpTransitions") + " ", 0,
 				0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpTransitions.setBackground(new Color(50, 50, 50));
 		grpTransitions.setBounds(334, 258, 312, 17);
@@ -9938,7 +9938,7 @@ public class Shutter {
 		grpAdvanced = new JPanel();
 		grpAdvanced.setLayout(null);
 		grpAdvanced.setVisible(false);
-		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpAdvanced.setBackground(new Color(50, 50, 50));
 		grpAdvanced.setBounds(334, 396, 312, 17);
 		frame.getContentPane().add(grpAdvanced);
@@ -11076,7 +11076,7 @@ public class Shutter {
 		grpH264 = new JPanel();
 		grpH264.setLayout(null);
 		grpH264.setVisible(false);
-		grpH264.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color(80, 80, 80), 1),
+		grpH264.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true),
 				language.getProperty("grpH264") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpH264.setBackground(new Color(50, 50, 50));
 		grpH264.setBounds(658, 59, 312, 210);

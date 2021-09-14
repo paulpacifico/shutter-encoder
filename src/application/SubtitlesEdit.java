@@ -40,7 +40,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import javax.swing.JFrame;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTextPane;
@@ -249,7 +248,7 @@ public class SubtitlesEdit {
 		JTextPane text = new JTextPane();
 		text.setText(subContent);
 		text.setCaretColor(Color.BLACK);
-		text.setBounds(176, textPosition, 400, 48);
+		text.setBounds(180, textPosition, 400, 48);
 		textPosition += 60; 	
 	    return text;
 	}
@@ -257,10 +256,10 @@ public class SubtitlesEdit {
 	private static JTextField addInPoint(String subIn){
 		JTextField in = new JTextField();
 		in.setText(subIn);
-		in.setBorder(BorderFactory.createLineBorder(new Color(255,255,255,50)));
+		in.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));
 		in.setForeground(Utils.themeColor);
 		in.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		in.setBounds(82, textPosition - 2, 90, 25);	
+		in.setBounds(77, textPosition - 2, 94, 25);	
 		in.setBackground(new Color(50,50,50));
 		in.setHorizontalAlignment(SwingConstants.CENTER);
 	    return in;
@@ -269,10 +268,10 @@ public class SubtitlesEdit {
 	private static JTextField addOutPoint(String subOut){
 		JTextField out = new JTextField();
 		out.setText(subOut);
-		out.setBorder(BorderFactory.createLineBorder(new Color(255,255,255,50)));
+		out.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));
 		out.setForeground(Utils.themeColor);
 		out.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		out.setBounds(82, textPosition + 24, 90, 25);	
+		out.setBounds(77, textPosition + 24, 94, 25);	
 		out.setBackground(new Color(50,50,50));
 		out.setHorizontalAlignment(SwingConstants.CENTER);
 	    return out;

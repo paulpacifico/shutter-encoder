@@ -91,7 +91,7 @@ public class SubtitlesTimeline {
 
 	public static JFrame frame;
 	public static JTextPane txtSubtitles;
-	private static JLabel lblHelp;
+	private static JButton lblHelp;
 	public static File srt;
 	public static int number = 0;
 	public static long actualSubIn = 0;
@@ -416,13 +416,7 @@ public class SubtitlesTimeline {
     	});
     	
     	frame.getContentPane().add(txtSubtitles);
-    	    	
-    	lblHelp = new JLabel(Shutter.language.getProperty("lblHelp"));
-    	lblHelp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-    	lblHelp.setForeground(Utils.themeColor);
-    	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 40, 10, lblHelp.getPreferredSize().width, 14);
-    	frame.getContentPane().add(lblHelp);    	
-    	    	
+    	    	    	    	
     	JLabel lblTexte = new JLabel(Shutter.language.getProperty("lblTexte"));
     	lblTexte.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
     	lblTexte.setBounds(10, 12, lblTexte.getPreferredSize().width, 14);
@@ -518,6 +512,43 @@ public class SubtitlesTimeline {
     		
     	});
     	    	
+    	lblHelp = new JButton(Shutter.language.getProperty("lblHelp"));
+    	lblHelp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+    	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 4, 8, lblHelp.getPreferredSize().width, 22);
+    	frame.getContentPane().add(lblHelp);    
+    	
+    	lblHelp.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				if (SubtitlesHelp.frame != null)
+				{
+					if (SubtitlesHelp.frame.isVisible() == false)
+						new SubtitlesHelp();
+				} 
+				else
+					new SubtitlesHelp();
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+    		
+    	});
+    	
     	btnEditAll.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
     	btnEditAll.setMargin(new Insets(0,0,0,0));
     	btnEditAll.setSize(btnEditAll.getPreferredSize().width, 21);
@@ -940,17 +971,7 @@ public class SubtitlesTimeline {
 			        {
 			        	frame.requestFocus();
 			        	loadRestoreSubtitles();	
-			        }
-					
-					if (e.getKeyCode() == KeyEvent.VK_H)
-					{
-						e.consume();
-						if (SubtitlesHelp.frame != null) {
-							if (SubtitlesHelp.frame.isVisible() == false)
-								new SubtitlesHelp();
-						} else
-							new SubtitlesHelp();
-					}					
+			        }							
 					
 					//Volume up
 					if (e.getKeyCode() == 107)
@@ -1315,7 +1336,7 @@ public class SubtitlesTimeline {
                	textOffset.setBounds(images.getX() - images.getWidth() - 27, lblOffset.getLocation().y, 34, 16);
                	lblOffset.setBounds(textOffset.getX() - lblOffset.getWidth() - 7, 9, lblOffset.getPreferredSize().width, 16);           	
                	
-            	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 40, 10, lblHelp.getPreferredSize().width, 14);
+               	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 4, 8, lblHelp.getPreferredSize().width, 22);
             	           
             	if (frame.getHeight() != currentFrameHeight)
             	{           		

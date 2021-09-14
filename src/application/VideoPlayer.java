@@ -75,7 +75,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilder;
@@ -1456,8 +1455,8 @@ public class VideoPlayer {
 							
 							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 							{
-								waveformLeft.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));							
-								waveformRight.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+								waveformLeft.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));							
+								waveformRight.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));
 							}
 							
 							panelWaveformLeft.setBounds((int) ((long) ((long) waveformLeft.getSize().width * sliderIn.getValue()) / sliderIn.getMaximum()) ,0, 2, waveformLeft.getSize().height);
@@ -2878,8 +2877,8 @@ public class VideoPlayer {
 							
 							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 							{
-								waveformLeft.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));							
-								waveformRight.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1));
+								waveformLeft.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));							
+								waveformRight.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));
 							}
 
 							frame.getContentPane().add(waveformLeft);  
@@ -2927,7 +2926,7 @@ public class VideoPlayer {
 	private void grpIn(){
 		grpIn = new JPanel();
 		grpIn.setLayout(null);
-		grpIn.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("grpIn") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpIn.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), Shutter.language.getProperty("grpIn") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpIn.setBackground(new Color(50, 50, 50));
 		grpIn.setBounds(6, frame.getSize().height - 147, 156, 52);
 		frame.getContentPane().add(grpIn);
@@ -3355,7 +3354,7 @@ public class VideoPlayer {
 	private void grpOut(){
 		grpOut = new JPanel();
 		grpOut.setLayout(null);
-		grpOut.setBorder(BorderFactory.createTitledBorder(new LineBorder(new Color (80,80,80), 1), Shutter.language.getProperty("grpOut") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpOut.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), Shutter.language.getProperty("grpOut") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		grpOut.setBackground(new Color(50, 50, 50));
 		grpOut.setBounds(6, frame.getSize().height - 86, 156, 52);
 		frame.getContentPane().add(grpOut);
