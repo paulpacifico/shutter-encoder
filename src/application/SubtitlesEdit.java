@@ -78,13 +78,12 @@ public class SubtitlesEdit {
 				
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
-						
-		
+					
 		btnCancel.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
-		btnCancel.setBounds(6, btnApply.getY(), frame.getWidth() / 2 - 12, 21);	
+		btnCancel.setBounds(6, frame.getHeight() - 65, frame.getWidth() / 2 - 16, 21);	
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 		{
-			btnCancel.setLocation(btnCancel.getX(), frame.getHeight() - 54);
+			btnCancel.setBounds(6, frame.getHeight() - 54, frame.getWidth() / 2 - 8, 21);	
 		}
 		frame.getContentPane().add(btnCancel);		
 		
@@ -98,7 +97,7 @@ public class SubtitlesEdit {
 		});
 		
 		btnApply.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
-		btnApply.setBounds(frame.getWidth() / 2 + 6, btnCancel.getY(), btnCancel.getWidth(), 21);				
+		btnApply.setBounds(btnCancel.getX() + btnCancel.getWidth() + 2, btnCancel.getY(), btnCancel.getWidth(), 21);				
 		frame.getContentPane().add(btnApply);
 		
 		btnApply.addActionListener(new ActionListener(){
@@ -241,6 +240,7 @@ public class SubtitlesEdit {
 		});
 		
 		frame.setVisible(true);
+		frame.repaint();
 	}
 	
 	private static JTextPane addText(String subContent){
