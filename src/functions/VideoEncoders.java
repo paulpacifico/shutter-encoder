@@ -530,13 +530,13 @@ public class VideoEncoders extends Shutter {
 									filterComplex = Image.setPad(filterComplex, false, comboResolution, false);									
 									break;
 							}
-						}
-								
-						//Force TFF
-						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);				
+						}										
 						
 						//Interlace50p
 			            filterComplex = AdvancedFeatures.setInterlace50p(filterComplex);
+			            
+						//Force TFF
+						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);	
 								
 						//Overlay
 						if (grpH264.isVisible())
