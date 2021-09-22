@@ -62,6 +62,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.DCRAW;
 import library.EXIFTOOL;
 import library.FFMPEG;
@@ -597,9 +599,9 @@ public class CropImage {
 		topPanel.setLayout(null);
 		topPanel.setBounds(0, 0, frame.getWidth(), 52);
 			
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -611,7 +613,7 @@ public class CropImage {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -629,21 +631,21 @@ public class CropImage {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 
 						
 		});
 		
-		fullscreen = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/max2.png")));
+		fullscreen = new JLabel(new FlatSVGIcon("contents/max.svg", 15, 15));
 		fullscreen.setHorizontalAlignment(SwingConstants.CENTER);
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+		fullscreen.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 			
 		fullscreen.addMouseListener(new MouseListener(){
 			
@@ -655,7 +657,7 @@ public class CropImage {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max3.png"))));
+				fullscreen.setIcon(new FlatSVGIcon("contents/max_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -698,12 +700,12 @@ public class CropImage {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max.png"))));
+				fullscreen.setIcon(new FlatSVGIcon("contents/max_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max2.png"))));
+				fullscreen.setIcon(new FlatSVGIcon("contents/max.svg", 15, 15));
 				accept = false;
 			}
 			
@@ -1448,8 +1450,8 @@ public class CropImage {
 		topPanel.setBounds(0,0,frame.getSize().width, 52);
 		
 		topImage.setLocation(frame.getSize().width / 2 - topImage.getSize().width / 2, 0);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);	
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		fullscreen.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 		
 		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);					

@@ -128,6 +128,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import functions.AudioEncoders;
 import functions.AudioNormalization;
 import functions.BlackDetection;
@@ -435,6 +437,7 @@ public class Shutter {
 	protected static JPanel h264lines;
 	protected static JTextField taille;
 	protected static JLabel lock;
+	public static boolean isLocked = false;
 	protected static JLabel lblDureH264;
 	protected static JLabel lblSec;
 	protected static JLabel lblMin;
@@ -482,7 +485,6 @@ public class Shutter {
 	protected static JPanel grpAdvanced;
 	protected static JPanel grpH264;
 	protected static JPanel grpTransitions;
-
 
 	public static void main(String[] args) {
 		
@@ -876,9 +878,9 @@ public class Shutter {
 
 		});
 
-		settings = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/settings.png")));
+		settings = new JLabel(new FlatSVGIcon("contents/settings.svg", 13, 13));
 		settings.setHorizontalAlignment(SwingConstants.CENTER);
-		settings.setBounds(0, 0, 21, 21);
+		settings.setBounds(4, 4, 13, 13);
 		topPanel.add(settings);
 		
 		settings.addMouseListener(new MouseListener() {
@@ -891,7 +893,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				settings.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/settings3.png"))));
+				settings.setIcon(new FlatSVGIcon("contents/settings_pressed.svg", 13, 13));
 				accept = true;
 			}
 
@@ -906,20 +908,20 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				settings.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/settings2.png"))));
+				settings.setIcon(new FlatSVGIcon("contents/settings_hover.svg", 13, 13));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				settings.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/settings.png"))));
+				settings.setIcon(new FlatSVGIcon("contents/settings.svg", 13, 13));
 				accept = false;
 			}
 
 		});
 
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
-		quit.setHorizontalAlignment(SwingConstants.CENTER);		
-		quit.setBounds(frame.getSize().width - 24, 0, 21, 21);
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
+		quit.setHorizontalAlignment(SwingConstants.CENTER);	
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
 		topPanel.add(quit);
 		
 		quit.addMouseListener(new MouseListener() {
@@ -932,7 +934,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				if (FFMPEG.isRunning)
 					btnCancel.doClick();
 				else
@@ -954,20 +956,20 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 
 		});
 		
-		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
+		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21, 0, 21, 21);
+		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 		topPanel.add(reduce);
 
 		reduce.addMouseListener(new MouseListener() {
@@ -980,7 +982,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce3.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -1003,20 +1005,20 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce2.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 				accept = false;
 			}
 
 		});
 
-		help = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/help2.png")));
+		help = new JLabel(new FlatSVGIcon("contents/help.svg", 15, 15));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(reduce.getLocation().x - 21, 0, 21, 21);
+		help.setBounds(reduce.getLocation().x - 20, 3, 15, 15);
 		topPanel.add(help);
 
 		help.addMouseListener(new MouseListener() {
@@ -1029,7 +1031,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help3.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -1046,20 +1048,20 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help2.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help.svg", 15, 15));
 				accept = false;
 			}
 
 		});
 
-		newInstance = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/new2.png")));
+		newInstance = new JLabel(new FlatSVGIcon("contents/new.svg", 15, 15));
 		newInstance.setHorizontalAlignment(SwingConstants.CENTER);
-		newInstance.setBounds(help.getLocation().x - 21, 0, 21, 21);
+		newInstance.setBounds(help.getLocation().x - 20, 3, 15, 15);
 		newInstance.setToolTipText(language.getProperty("newInstance"));
 		topPanel.add(newInstance);
 
@@ -1073,7 +1075,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new3.png"))));
+				newInstance.setIcon(new FlatSVGIcon("contents/new_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -1112,12 +1114,12 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new.png"))));
+				newInstance.setIcon(new FlatSVGIcon("contents/new_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new2.png"))));
+				newInstance.setIcon(new FlatSVGIcon("contents/new.svg", 15, 15));
 				accept = false;
 			}
 
@@ -2316,7 +2318,7 @@ public class Shutter {
 			}
 		});
 
-		iconList = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/list.png")));
+		iconList = new JLabel(new FlatSVGIcon("contents/list.svg", 15, 15));
 		iconList.setHorizontalAlignment(SwingConstants.CENTER);
 		iconList.setVisible(false);
 		iconList.setBounds(180, 46, 21, 21);
@@ -2332,7 +2334,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				iconList.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/list3.png"))));
+				iconList.setIcon(new FlatSVGIcon("contents/list_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -2345,7 +2347,7 @@ public class Shutter {
 					
 					if (iconPresets.isVisible())
 					{
-						iconPresets.setBounds(180, 46, 21, 21);
+						iconPresets.setBounds(180, 45, 21, 21);
 						btnCancel.setBounds(207, 46, 97, 21);
 					}
 					else
@@ -2362,21 +2364,21 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconList.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/list2.png"))));
+				iconList.setIcon(new FlatSVGIcon("contents/list_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconList.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/list.png"))));
+				iconList.setIcon(new FlatSVGIcon("contents/list.svg", 15, 15));
 				accept = false;
 			}
 
 		});
 				
-		iconPresets = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/presets.png")));
+		iconPresets = new JLabel(new FlatSVGIcon("contents/presets.svg", 15, 15));
 		iconPresets.setHorizontalAlignment(SwingConstants.CENTER);
 		iconPresets.setVisible(true);
-		iconPresets.setBounds(180, 46, 21, 21);
+		iconPresets.setBounds(180, 45, 21, 21);
 		grpChooseFunction.add(iconPresets);
 
 		iconPresets.addMouseListener(new MouseListener() {
@@ -2389,7 +2391,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				iconPresets.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/presets3.png"))));
+				iconPresets.setIcon(new FlatSVGIcon("contents/presets_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -2413,19 +2415,19 @@ public class Shutter {
 
 						Functions.frame.setVisible(true);
 					}
-					iconPresets.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/presets.png"))));
+					iconPresets.setIcon(new FlatSVGIcon("contents/presets.svg", 15, 15));
 					Utils.changeFrameVisibility(Functions.frame, false);
 				}
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconPresets.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/presets2.png"))));
+				iconPresets.setIcon(new FlatSVGIcon("contents/presets_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconPresets.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/presets.png"))));
+				iconPresets.setIcon(new FlatSVGIcon("contents/presets.svg", 15, 15));
 				accept = false;
 			}
 
@@ -2996,10 +2998,10 @@ public class Shutter {
 					changeFilters();
 					changeFrameSize(false);
 
-					quit.setLocation(frame.getSize().width - 24, 0);
-					reduce.setLocation(quit.getLocation().x - 21, 0);
-					help.setLocation(reduce.getLocation().x - 21, 0);
-					newInstance.setLocation(help.getLocation().x - 21, 0);
+					quit.setLocation(frame.getSize().width - 20, 3);
+					reduce.setLocation(quit.getLocation().x - 20, 3);
+					help.setLocation(reduce.getLocation().x - 20, 3);
+					newInstance.setLocation(help.getLocation().x - 20, 3);
 					
 					addToList.setText(language.getProperty("dropFilesHere"));
 					addToList.setVisible(true);
@@ -3950,9 +3952,9 @@ public class Shutter {
 		
 		
 		//Destinations icons
-		wetransferIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/wetransfer.png"));
-		mailIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/mail.png"));
-		streamIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/stream.png"));
+		wetransferIcon = new FlatSVGIcon("contents/wetransfer.svg", 18, 18);
+		mailIcon = new FlatSVGIcon("contents/mail.svg", 18, 18);
+		streamIcon = new FlatSVGIcon("contents/stream.svg", 18, 18);
 		
 		//Ajout des tabs	
 		setDestinationTabs(6);
@@ -4516,9 +4518,9 @@ public class Shutter {
 		lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
 		grpResolution.add(lblIsInterpret);
 		
-		iconTVInterpret = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVInterpret = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVInterpret.setHorizontalAlignment(SwingConstants.CENTER);
-		iconTVInterpret.setBounds(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY() + 1, 16, 16);
+		iconTVInterpret.setBounds(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY(), 16, 16);
 		iconTVInterpret.setToolTipText(language.getProperty("preview"));
 		grpResolution.add(iconTVInterpret);
 		
@@ -4571,13 +4573,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVInterpret.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVInterpret.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVInterpret.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVInterpret.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -4588,9 +4590,9 @@ public class Shutter {
 		lblTaille.setBounds(42, 20, 42, 16);
 		grpResolution.add(lblTaille);
 
-		iconTVResolution = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVResolution = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVResolution.setHorizontalAlignment(SwingConstants.CENTER);
-		iconTVResolution.setBounds(14, 19, 16, 16);
+		iconTVResolution.setBounds(14, 20, 16, 16);
 		iconTVResolution.setToolTipText(language.getProperty("preview"));
 		grpResolution.add(iconTVResolution);
 
@@ -4613,13 +4615,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVResolution.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVResolution.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVResolution.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVResolution.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -4869,10 +4871,10 @@ public class Shutter {
 		sliderBlend.setBounds(163, caseBlend.getLocation().y, 106, 22);
 		grpImageSequence.add(sliderBlend);
 
-		iconTVBlend = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVBlend = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVBlend.setToolTipText(language.getProperty("preview"));
 		iconTVBlend.setHorizontalAlignment(SwingConstants.CENTER);
-		iconTVBlend.setBounds(289, caseBlend.getLocation().y + 2, 16, 16);
+		iconTVBlend.setBounds(289, caseBlend.getLocation().y + 3, 16, 16);
 		grpImageSequence.add(iconTVBlend);
 
 		iconTVBlend.addMouseListener(new MouseListener() {
@@ -4903,13 +4905,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVBlend.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVBlend.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVBlend.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVBlend.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -5985,11 +5987,11 @@ public class Shutter {
 		comboLUTs.setBounds(7, caseLUTs.getLocation().y + caseLUTs.getHeight() + 7, grpColorimetry.getWidth() - 38, 22);
 		grpColorimetry.add(comboLUTs);
 
-		iconTVLUTs = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVLUTs = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVLUTs.setToolTipText(language.getProperty("preview"));
 		iconTVLUTs.setHorizontalAlignment(SwingConstants.CENTER);
 		iconTVLUTs.setSize(16, 16);
-		iconTVLUTs.setLocation(289, comboLUTs.getLocation().y + 2);
+		iconTVLUTs.setLocation(287, comboLUTs.getLocation().y + 3);
 		grpColorimetry.add(iconTVLUTs);
 
 		iconTVLUTs.addMouseListener(new MouseListener() {
@@ -6026,13 +6028,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVLUTs.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVLUTs.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVLUTs.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVLUTs.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -7866,11 +7868,11 @@ public class Shutter {
 		lblOffsetFPS.setBounds(txtAudioOffset.getLocation().x + txtAudioOffset.getWidth() + 3, caseAudioOffset.getLocation().y + 4, lblOffsetFPS.getPreferredSize().width, 16);
 		grpSetAudio.add(lblOffsetFPS);
 				
-		iconTVOffset = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVOffset = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVOffset.setToolTipText(language.getProperty("preview"));
 		iconTVOffset.setHorizontalAlignment(SwingConstants.CENTER);
 		iconTVOffset.setSize(16, 16);
-		iconTVOffset.setLocation(lblOffsetFPS.getX() + lblOffsetFPS.getWidth() + 5, lblOffsetFPS.getLocation().y);
+		iconTVOffset.setLocation(lblOffsetFPS.getX() + lblOffsetFPS.getWidth() + 6, lblOffsetFPS.getLocation().y);
 		grpSetAudio.add(iconTVOffset);
 		
 		iconTVOffset.addMouseListener(new MouseListener() {
@@ -7974,13 +7976,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVOffset.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVOffset.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVOffset.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVOffset.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -9087,7 +9089,7 @@ public class Shutter {
 		sliderDetails.setValue(0);
 		sliderDetails.setSize(106, 22);
 
-		iconTVDetails = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVDetails = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVDetails.setToolTipText(language.getProperty("preview"));
 		iconTVDetails.setHorizontalAlignment(SwingConstants.CENTER);
 		iconTVDetails.setSize(16, 16);
@@ -9115,13 +9117,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVDetails.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVDetails.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVDetails.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVDetails.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -9176,7 +9178,7 @@ public class Shutter {
 		sliderBruit.setValue(0);
 		sliderBruit.setSize(106, 22);
 
-		iconTVBruit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVBruit = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVBruit.setToolTipText(language.getProperty("preview"));
 		iconTVBruit.setHorizontalAlignment(SwingConstants.CENTER);
 		iconTVBruit.setSize(16, 16);
@@ -9203,13 +9205,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVBruit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVBruit.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVBruit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVBruit.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -9264,7 +9266,7 @@ public class Shutter {
 		sliderExposure.setValue(0);
 		sliderExposure.setSize(106, 22);
 
-		iconTVExposure = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVExposure = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVExposure.setToolTipText(language.getProperty("preview"));
 		iconTVExposure.setHorizontalAlignment(SwingConstants.CENTER);
 		iconTVExposure.setSize(16, 16);
@@ -9291,13 +9293,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVExposure.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVExposure.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVExposure.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVExposure.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -9660,10 +9662,10 @@ public class Shutter {
 		audioInFrames.setBounds(spinnerAudioFadeIn.getLocation().x + spinnerAudioFadeIn.getWidth() + 4, spinnerAudioFadeIn.getY(), videoInFrames.getWidth(), 16);
 		grpTransitions.add(audioInFrames);
 		
-		JLabel iconFadeIn = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		JLabel iconFadeIn = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeIn.setToolTipText(language.getProperty("preview"));
 		iconFadeIn.setHorizontalAlignment(SwingConstants.CENTER);
-		iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 7, lblFadeInColor.getY(), 16, 16);
+		iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 8, lblFadeInColor.getY(), 16, 16);
 		grpTransitions.add(iconFadeIn);
 
 		iconFadeIn.addMouseListener(new MouseListener() {
@@ -9686,13 +9688,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconFadeIn.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconFadeIn.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconFadeIn.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconFadeIn.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -9861,10 +9863,10 @@ public class Shutter {
 		audioOutFrames.setBounds(spinnerAudioFadeOut.getLocation().x + spinnerAudioFadeOut.getWidth() + 4, spinnerAudioFadeOut.getY(), videoInFrames.getWidth(), 16);
 		grpTransitions.add(audioOutFrames);
 		
-		JLabel iconFadeOut = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		JLabel iconFadeOut = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeOut.setToolTipText(language.getProperty("preview"));
 		iconFadeOut.setHorizontalAlignment(SwingConstants.CENTER);
-		iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 7, lblFadeOutColor.getY(), 16, 16);
+		iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 8, lblFadeOutColor.getY(), 16, 16);
 		grpTransitions.add(iconFadeOut);
 		
 		iconFadeOut.addMouseListener(new MouseListener() {
@@ -9885,13 +9887,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconFadeOut.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconFadeOut.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconFadeOut.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconFadeOut.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -11643,9 +11645,9 @@ public class Shutter {
 		lblH264.setBounds(6, 19, 300, 16);
 		grpH264.add(lblH264);
 
-		iconTVH264 = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		iconTVH264 = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVH264.setHorizontalAlignment(SwingConstants.CENTER);
-		iconTVH264.setBounds(14, 72, 16, 16);
+		iconTVH264.setBounds(14, 73, 16, 16);
 		iconTVH264.setToolTipText(language.getProperty("preview"));
 		grpH264.add(iconTVH264);
 
@@ -11668,13 +11670,13 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconTVH264.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconTVH264.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconTVH264.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconTVH264.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -11797,20 +11799,27 @@ public class Shutter {
 		taille.setBounds(121, 152, 83, 21);
 		grpH264.add(taille);
 				
-		lock = new JLabel();
-		lock.setIcon(new ImageIcon(getClass().getClassLoader().getResource("contents/unlock.png")));
+		lock = new JLabel(new FlatSVGIcon("contents/unlock.svg", 16, 16));
 		lock.setHorizontalAlignment(SwingConstants.CENTER);
-		lock.setBounds(taille.getX() - 21 - 4, taille.getY() + 1, 21, 21);
+		lock.setBounds(taille.getX() - 21 - 3, taille.getY(), 21, 21);
 		grpH264.add(lock);
 		
 		lock.addMouseListener(new MouseListener() {
-
+						
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-			if (lock.getIcon().toString().substring(lock.getIcon().toString().lastIndexOf("/") + 1).equals("lock.png"))	
-				lock.setIcon(new ImageIcon(getClass().getClassLoader().getResource("contents/unlock.png")));
-			else
-				lock.setIcon(new ImageIcon(getClass().getClassLoader().getResource("contents/lock.png")));
+								
+				if (isLocked)	
+				{
+					lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+					isLocked = false;
+				}
+				else
+				{
+					lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+					isLocked = true;
+				}
+
 			}
 
 			@Override
@@ -11968,6 +11977,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				// Resolution
 				comboResolution.setSelectedIndex(0);
 				caseRognerImage.setSelected(false);
@@ -12002,6 +12012,8 @@ public class Shutter {
 				caseShowFileName.setSelected(false);
 
 				// H264
+				lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+				isLocked = false;
 				textH.setEnabled(true);
 				textMin.setEnabled(true);
 				textSec.setEnabled(true);
@@ -12036,7 +12048,7 @@ public class Shutter {
 				comboH264Taille.addItem("640x360");
 				comboH264Taille.addItem("320x180");
 				comboH264Taille.setSelectedIndex(0);
-
+				
 				// grpSetAudio	
 				grpSetAudio.removeAll();
 				lblAudioMapping.setText(language.getProperty("stereo"));
@@ -13381,12 +13393,12 @@ public class Shutter {
 			
 			if (iconPresets.isVisible())
 			{
-				iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
+				iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
 				btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 			}
 			else
 			{
-				iconPresets.setBounds(180, 46, 21, 21);
+				iconPresets.setBounds(180, 45, 21, 21);
 				btnCancel.setBounds(207, 46, 97, 21);
 			}
 		}
@@ -13396,7 +13408,7 @@ public class Shutter {
 			
 			if (iconPresets.isVisible())
 			{
-				iconPresets.setBounds(180, 46, 21, 21);
+				iconPresets.setBounds(180, 45, 21, 21);
 				btnCancel.setBounds(207, 46, 97, 21);
 			}
 			else
@@ -13618,20 +13630,20 @@ public class Shutter {
 		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 		        shape1.add(shape2);
 				frame.setShape(shape1);
-				quit.setLocation(frame.getSize().width - 24, 0);
-				reduce.setLocation(quit.getLocation().x - 21, 0);
-				help.setLocation(reduce.getLocation().x - 21, 0);
-				newInstance.setLocation(help.getLocation().x - 21, 0);
+				quit.setLocation(frame.getSize().width - 20, 3);
+				reduce.setLocation(quit.getLocation().x - 20, 3);
+				help.setLocation(reduce.getLocation().x - 20, 3);
+				newInstance.setLocation(help.getLocation().x - 20, 3);
 			} else if (bigger == false && frame.getSize().width > 332) {
 				frame.setSize(332, 670);
 				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 		        shape1.add(shape2);
 				frame.setShape(shape1);
-				quit.setLocation(frame.getSize().width - 24, 0);
-				reduce.setLocation(quit.getLocation().x - 21, 0);
-				help.setLocation(reduce.getLocation().x - 21, 0);
-				newInstance.setLocation(help.getLocation().x - 21, 0);
+				quit.setLocation(frame.getSize().width - 20, 3);
+				reduce.setLocation(quit.getLocation().x - 20, 3);
+				help.setLocation(reduce.getLocation().x - 20, 3);
+				newInstance.setLocation(help.getLocation().x - 20, 3);
 			}
 		 
 	}
@@ -15557,7 +15569,7 @@ public class Shutter {
 							grpResolution.add(comboInterpret);							
 							lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
 							grpResolution.add(lblIsInterpret);							
-							iconTVInterpret.setLocation(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY() - 1);
+							iconTVInterpret.setLocation(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY());
 							grpResolution.add(iconTVInterpret);
 
 							// Ajout case miroir
@@ -16052,7 +16064,7 @@ public class Shutter {
 			String PathToWTCLIENT = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			PathToWTCLIENT = PathToWTCLIENT.substring(0,PathToWTCLIENT.length()-1);
 			PathToWTCLIENT = PathToWTCLIENT.substring(0,(int) (PathToWTCLIENT.lastIndexOf("/"))).replace("%20", " ")  + "/Library/wtclient";
-						
+				
 			if (System.getProperty("os.name").contains("Mac") && new File (PathToWTCLIENT).exists() == false)
 			{
 				addWetransfer = false;
@@ -16762,12 +16774,11 @@ public class Shutter {
 @SuppressWarnings({ "serial", "rawtypes" })
 class FilesCellRenderer extends JLabel implements ListCellRenderer {
 
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-			boolean cellHasFocus) {
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		
 		setText(value.toString());
-
-		ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/liste.png"));
-		setIcon(imageIcon);
+		
+		setIcon(new FlatSVGIcon("contents/item.svg", 10, 10));
 
 		setToolTipText(value.toString());
 		

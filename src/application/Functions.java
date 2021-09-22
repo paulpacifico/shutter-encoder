@@ -54,6 +54,8 @@ import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.SEVENZIP;
 
 import java.awt.Color;
@@ -146,12 +148,12 @@ public class Functions {
 				Shutter.iconPresets.setVisible(true);
 				if (Shutter.iconList.isVisible())
 				{
-					Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
+					Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
 					Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 				}
 				else
 				{
-					Shutter.iconPresets.setBounds(180, 46, 21, 21);
+					Shutter.iconPresets.setBounds(180, 45, 21, 21);
 					Shutter.btnCancel.setBounds(207, 46, 97, 21);
 				}
 				
@@ -307,12 +309,12 @@ public class Functions {
 					Shutter.iconPresets.setVisible(true);
 					if (Shutter.iconList.isVisible())
 					{
-						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
+						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
 						Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 					}
 					else
 					{
-						Shutter.iconPresets.setBounds(180, 46, 21, 21);
+						Shutter.iconPresets.setBounds(180, 45, 21, 21);
 						Shutter.btnCancel.setBounds(207, 46, 97, 21);
 					}
 					
@@ -466,9 +468,9 @@ public class Functions {
 		topPanel.setLayout(null);
 		topPanel.setBounds(0, 0, 333, 52);
 	
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
 		topPanel.add(quit);
 		
 		quit.addMouseListener(new MouseListener(){
@@ -481,7 +483,7 @@ public class Functions {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -492,12 +494,12 @@ public class Functions {
 					Shutter.iconPresets.setVisible(true);
 					if (Shutter.iconList.isVisible())
 					{
-						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 46);
+						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
 						Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
 					}
 					else
 					{
-						Shutter.iconPresets.setBounds(180, 46, 21, 21);
+						Shutter.iconPresets.setBounds(180, 45, 21, 21);
 						Shutter.btnCancel.setBounds(207, 46, 97, 21);
 					}
 					
@@ -507,21 +509,21 @@ public class Functions {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 
 						
 		});
 		
-		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
+		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
+		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 		topPanel.add(reduce);
 		
 		reduce.addMouseListener(new MouseListener(){
@@ -534,7 +536,7 @@ public class Functions {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce3.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -549,21 +551,21 @@ public class Functions {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce2.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 				accept = false;
 			}
 			
 			
 		});
 				
-		newInstance = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/new2.png")));
+		newInstance = new JLabel(new FlatSVGIcon("contents/new.svg", 15, 15));
 		newInstance.setHorizontalAlignment(SwingConstants.CENTER);
-		newInstance.setBounds(reduce.getLocation().x - 21, 0, 21, 21);
+		newInstance.setBounds(reduce.getLocation().x - 20, 3, 15, 15);
 		newInstance.setToolTipText(Shutter.language.getProperty("btnSave"));
 		topPanel.add(newInstance);
 
@@ -577,7 +579,7 @@ public class Functions {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new3.png"))));
+				newInstance.setIcon(new FlatSVGIcon("contents/new_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -597,12 +599,12 @@ public class Functions {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new.png"))));
+				newInstance.setIcon(new FlatSVGIcon("contents/new_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				newInstance.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/new2.png"))));
+				newInstance.setIcon(new FlatSVGIcon("contents/new.svg", 15, 15));
 				accept = false;
 			}
 

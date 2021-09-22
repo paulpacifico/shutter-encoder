@@ -46,6 +46,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.FFMPEG;
 import library.FFPROBE;
 
@@ -177,9 +179,9 @@ public class RecordInputDevice {
 			
 		});
 		
-		JLabel iconScreenPreview = new JLabel(new ImageIcon(Shutter.class.getClassLoader().getResource("contents/preview2.png")));
+		JLabel iconScreenPreview = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconScreenPreview.setHorizontalAlignment(SwingConstants.CENTER);
-		iconScreenPreview.setBounds(comboScreenVideo.getX() + comboScreenVideo.getWidth() + 8, comboScreenVideo.getLocation().y + 2, 16, 16);
+		iconScreenPreview.setBounds(comboScreenVideo.getX() + comboScreenVideo.getWidth() + 8, comboScreenVideo.getLocation().y + 3, 16, 16);
 		iconScreenPreview.setToolTipText(Shutter.language.getProperty("preview"));
 		frame.getContentPane().add(iconScreenPreview);
 		
@@ -266,13 +268,13 @@ public class RecordInputDevice {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconScreenPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconScreenPreview.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconScreenPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconScreenPreview.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 			
@@ -325,9 +327,9 @@ public class RecordInputDevice {
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(comboInputAudio);
 		
-		JLabel iconDevicePreview = new JLabel(new ImageIcon(Shutter.class.getClassLoader().getResource("contents/preview2.png")));
+		JLabel iconDevicePreview = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconDevicePreview.setHorizontalAlignment(SwingConstants.CENTER);
-		iconDevicePreview.setBounds(comboInputVideo.getX() + comboInputVideo.getWidth() + 8, comboInputVideo.getLocation().y + 2, 16, 16);
+		iconDevicePreview.setBounds(comboInputVideo.getX() + comboInputVideo.getWidth() + 8, comboInputVideo.getLocation().y + 3, 16, 16);
 		iconDevicePreview.setToolTipText(Shutter.language.getProperty("preview"));
 		
 		if (System.getProperty("os.name").contains("Windows"))
@@ -412,13 +414,13 @@ public class RecordInputDevice {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconDevicePreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				iconDevicePreview.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				iconDevicePreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				iconDevicePreview.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 			

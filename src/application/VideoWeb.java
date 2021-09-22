@@ -57,6 +57,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.FFMPEG;
 import library.YOUTUBEDL;
 import settings.FunctionUtils;
@@ -138,9 +140,9 @@ public class VideoWeb {
 		topPanel.setLayout(null);
 		topPanel.setBounds(0, 0, 420, 52);
 			
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
 		topPanel.add(quit);
 		
 		quit.addMouseListener(new MouseListener(){
@@ -153,7 +155,7 @@ public class VideoWeb {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -170,21 +172,21 @@ public class VideoWeb {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 
 						
 		});
 	
-		help = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/help2.png")));
+		help = new JLabel(new FlatSVGIcon("contents/help.svg", 15, 15));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(quit.getLocation().x - 21,0,21, 21);
+		help.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 		topPanel.add(help);
 		
 		help.addMouseListener(new MouseListener(){
@@ -197,7 +199,7 @@ public class VideoWeb {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help3.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -213,12 +215,12 @@ public class VideoWeb {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help2.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help.svg", 15, 15));
 				accept = false;
 			}
 		

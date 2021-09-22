@@ -89,6 +89,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.FFMPEG;
 
 public class Settings {
@@ -1163,9 +1165,9 @@ public class Settings {
 		topPanel.setName("topPanel");
 		topPanel.setLayout(null);
 			
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -1177,7 +1179,7 @@ public class Settings {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -1185,7 +1187,7 @@ public class Settings {
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{
-					quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+					quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 					
 	            	if (txtThreads.getText().isEmpty() ||  txtThreads.getText() == null)
 	            		txtThreads.setText("0");
@@ -1198,20 +1200,20 @@ public class Settings {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 					
 		});
 		
-		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
+		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
+		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -1223,7 +1225,7 @@ public class Settings {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce3.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -1238,21 +1240,21 @@ public class Settings {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce2.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 				accept = false;
 			}
 			
 			
 		});
 
-		help = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/help2.png")));
+		help = new JLabel(new FlatSVGIcon("contents/help.svg", 15, 15));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(reduce.getLocation().x - 21, 0, 21, 21);
+		help.setBounds(reduce.getLocation().x - 20, 3, 15, 15);
 		topPanel.add(help);
 
 		help.addMouseListener(new MouseListener() {
@@ -1265,7 +1267,7 @@ public class Settings {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help3.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -1281,12 +1283,12 @@ public class Settings {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				help.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/help2.png"))));
+				help.setIcon(new FlatSVGIcon("contents/help.svg", 15, 15));
 				accept = false;
 			}
 

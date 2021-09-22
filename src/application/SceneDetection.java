@@ -56,6 +56,8 @@ import javax.swing.JSpinner;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
@@ -215,8 +217,8 @@ import javax.swing.JScrollPane;
 		topPanel.setLayout(null);
 		topPanel.setBounds(0, 0, frame.getSize().width, 51);
 		
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
 				
 		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_SMOOTH);
@@ -235,9 +237,9 @@ import javax.swing.JScrollPane;
 		topImage.setIcon(imageIcon);		
 		topImage.setBounds(title.getBounds());
 		
-		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
+		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 21,0,21, 21);
+		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -249,7 +251,7 @@ import javax.swing.JScrollPane;
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce3.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -266,12 +268,12 @@ import javax.swing.JScrollPane;
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce2.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 				accept = false;
 			}
 			
@@ -293,7 +295,7 @@ import javax.swing.JScrollPane;
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -316,12 +318,12 @@ import javax.swing.JScrollPane;
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 

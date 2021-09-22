@@ -3,6 +3,7 @@ package application;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Insets;
 import java.io.BufferedReader;
@@ -2120,20 +2121,20 @@ public class Utils extends Shutter {
 				}	
 								
 				if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
-					FlatLaf.install( new FlatDarkLaf() );
+					FlatLaf.setup( new FlatDarkLaf() );
 				else
-					FlatLaf.install( new FlatLightLaf() );
+					FlatLaf.setup( new FlatLightLaf() );
 				
 			} catch (Exception e) {
 				try {
-				    FlatLaf.install( new FlatLightLaf() );
+				    FlatLaf.setup( new FlatLightLaf() );
 				} catch( Exception ex ) {}
 			}
 		}
 		else
 		{
 			try {
-			    FlatLaf.install( new FlatLightLaf() );
+				FlatLaf.setup( new FlatLightLaf() );
 			} catch( Exception ex ) {}
 		}
 		
@@ -2190,6 +2191,7 @@ public class Utils extends Shutter {
 			UIManager.put("CheckBox.icon.disabledBorderColor", new Color(60,60,60));	
 			UIManager.put("CheckBox.icon.disabledBackground", new Color(60,60,60));	
 			UIManager.put("CheckBox.icon.focusedBorderColor", new Color(40,40,40));
+			UIManager.put("CheckBox.icon.focusedBackground", new Color(80,80,80));
 			
 			UIManager.put("TableHeader.foreground", new Color(245,245,245));
 			UIManager.put("Table.foreground", new Color(245,245,245));
@@ -2253,6 +2255,7 @@ public class Utils extends Shutter {
 			UIManager.put("CheckBoxMenuItem.foreground", Color.BLACK);
 			UIManager.put("CheckBoxMenuItem.selectionBackground", themeColor);
 			UIManager.put("CheckBox.icon.focusedBorderColor", new Color(220, 220, 220));
+			UIManager.put("CheckBox.icon.focusedBackground", new Color(245,245,245));
 			
 			UIManager.put("TableHeader.foreground", Color.BLACK);
 			UIManager.put("Table.foreground", Color.BLACK);
@@ -2293,8 +2296,8 @@ public class Utils extends Shutter {
 		UIManager.put("Menu.selectionForeground", Color.WHITE);
 										
 		UIManager.put("TabbedPane.focusColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.tabHeight", 22);
 		UIManager.put("TabbedPane.tabInsets", new Insets(0,5,0,5));
-	    UIManager.put("TabbedPane.tabAreaInsets", new Insets(-5,0,-5,0));
 		UIManager.put("TabbedPane.background", new Color(40,40,40));
 		UIManager.put("TabbedPane.selectedBackground", new Color(50,50,50));
 		UIManager.put("TabbedPane.hoverColor", new Color(50,50,50));
@@ -2317,7 +2320,11 @@ public class Utils extends Shutter {
 		
 		UIManager.put("Slider.thumbColor", themeColor);		
 		UIManager.put("Slider.hoverColor", highlightColor);
+		UIManager.put("Slider.trackValueColor", themeColor);
 		UIManager.put("Slider.trackColor", new Color(40,40,40));
+		UIManager.put("Slider.thumbSize", new Dimension(10,10));
+		UIManager.put("Slider.trackWidth", 4);
+		UIManager.put("Slider.focusWidth", 0);	
 		
 		UIManager.put("RadioButton.foreground" , new Color(245,245,245));
 		UIManager.put("RadioButton.background" , new Color(50,50,50,0));	

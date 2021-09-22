@@ -85,6 +85,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.InputAndOutput;
@@ -2163,9 +2165,9 @@ public class VideoPlayer {
 		topPanel.setLayout(null);
 		topPanel.setBounds(0, 0, frame.getSize().width, 52);
 		
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		quit.setBounds(frame.getSize().width - 20 , 3, 15, 15);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -2177,7 +2179,7 @@ public class VideoPlayer {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));;
 				accept = true;
 			}
 
@@ -2250,21 +2252,21 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 
 						
 		});
 		
-		fullscreen = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/max2.png")));
+		fullscreen = new JLabel(new FlatSVGIcon("contents/max.svg", 15, 15));
 		fullscreen.setHorizontalAlignment(SwingConstants.CENTER);
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
+		fullscreen.setBounds(quit.getLocation().x - 20, 3, 15, 15);
 			
 		fullscreen.addMouseListener(new MouseListener(){
 			
@@ -2276,7 +2278,7 @@ public class VideoPlayer {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max3.png"))));
+				fullscreen.setIcon(new FlatSVGIcon("contents/max_pressed.svg", 15, 15));
 				accept = true;
 				
 				if (playerLeftVideo != null)
@@ -2343,21 +2345,21 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max.png"))));
+				fullscreen.setIcon(new FlatSVGIcon("contents/max_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				fullscreen.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/max2.png"))));
+				fullscreen.setIcon(new FlatSVGIcon("contents/max.svg", 15, 15));
 				accept = false;
 			}
 			
 			
 		});
 		
-		reduce = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/reduce2.png")));
+		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21);
+		reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15, 15);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -2369,7 +2371,7 @@ public class VideoPlayer {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce3.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -2386,12 +2388,12 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				reduce.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/reduce2.png"))));
+				reduce.setIcon(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 				accept = false;
 			}
 			
@@ -2988,9 +2990,9 @@ public class VideoPlayer {
 
 		});
 		
-		btnPreview = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/preview2.png")));
+		btnPreview = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		btnPreview.setHorizontalAlignment(SwingConstants.CENTER);
-		btnPreview.setBounds(frame.getSize().width - 30, frame.getSize().height - 26, 16, 16);
+		btnPreview.setBounds(frame.getSize().width - 28, frame.getSize().height - 26, 16, 16);
 		btnPreview.setToolTipText(Shutter.language.getProperty("preview"));
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			frame.getContentPane().add(btnPreview);
@@ -3005,13 +3007,13 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				btnPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview.png"))));
+				btnPreview.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btnPreview.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/preview2.png"))));
+				btnPreview.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -3640,9 +3642,9 @@ public class VideoPlayer {
 		//topPanel
 		topPanel.setBounds(0,0,frame.getSize().width, 52);
 		topImage.setLocation(frame.getSize().width / 2 - topImage.getSize().width / 2, 0);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
-		fullscreen.setBounds(quit.getLocation().x - 21,0,21, 21);
-		reduce.setBounds(fullscreen.getLocation().x - 21,0,21, 21); 		
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		fullscreen.setBounds(quit.getLocation().x - 20, 3, 15, 15);
+		reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15, 15); 		
 
 		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_AREA_AVERAGING));
 		bottomImage.setIcon(imageIcon);
@@ -3652,7 +3654,7 @@ public class VideoPlayer {
 		//Boutons		
 		btnCaptureIn.setBounds(8, topPanel.getSize().height + 10, 130, 21);		
 		btnApply.setBounds(frame.getSize().width - 6 - 130 - 4, topPanel.getSize().height + 10, 130, 21);		
-		btnPreview.setBounds(frame.getSize().width - 30, frame.getSize().height - 26, 16, 16);
+		btnPreview.setBounds(frame.getSize().width - 28, frame.getSize().height - 26, 16, 16);
 		lblVideo.setBounds(btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6, topPanel.getSize().height + 12, frame.getSize().width - (btnCaptureIn.getLocation().x + btnCaptureIn.getSize().width + 6 + btnApply.getSize().width + 12), 16);     		
 		
 		//Groupes boxes

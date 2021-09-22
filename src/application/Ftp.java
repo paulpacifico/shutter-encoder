@@ -63,6 +63,8 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.io.CopyStreamAdapter;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import library.FFMPEG;
 
 public class Ftp {
@@ -127,9 +129,9 @@ public class Ftp {
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
 			
-		quit = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/quit2.png")));
+		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 24,0,21, 21);
+		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
 		topPanel.add(quit);
 		topPanel.setBounds(0, 0, 267, 44);
 		
@@ -143,7 +145,7 @@ public class Ftp {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit3.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				accept = true;
 			}
 
@@ -151,19 +153,19 @@ public class Ftp {
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{
-					quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+					quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 					Utils.changeDialogVisibility(frame, true);
 				}
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				quit.setIcon(new ImageIcon((getClass().getClassLoader().getResource("contents/quit2.png"))));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 				accept = false;
 			}
 					
