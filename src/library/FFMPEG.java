@@ -1282,7 +1282,7 @@ private static StringBuilder getAll;
 				
 		//Calcul de la durée
 	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && firstInput)
-		{
+		{	    	
 			String str = line.substring(line.indexOf(":") + 2);
 			String[] split = str.split(",");	 
 	

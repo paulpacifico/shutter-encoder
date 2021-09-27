@@ -2223,8 +2223,7 @@ public class Utils extends Shutter {
 						
 			UIManager.put("MenuBar.foreground", new Color(245,245,245));
 			
-			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(40,40,40)));			
-			
+			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(40,40,40)));				
 		}
 		else
 		{
@@ -2337,7 +2336,7 @@ public class Utils extends Shutter {
 		UIManager.put("TextPane.selectionBackground", themeColor);		
 		
 		UIManager.put("Component.arrowType", "triangle");
-		UIManager.put("Component.focusColor", highlightColor);
+		UIManager.put("Component.focusColor", new Color(120,120,120));
 		UIManager.put("Component.focusedBorderColor", highlightColor);
 		
 		UIManager.put("Button.hoverBorderColor", highlightColor);		

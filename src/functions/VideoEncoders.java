@@ -30,6 +30,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.apache.commons.io.FileUtils;
+
 import application.Ftp;
 import application.OverlayWindow;
 import application.RecordInputDevice;
@@ -759,25 +761,35 @@ public class VideoEncoders extends Shutter {
 							Thread.sleep(100);
 						}
 						while(FFMPEG.runProcess.isAlive());
-													
-						switch (comboFonctions.getSelectedItem().toString())
-						{
-							case "AV1":
-							case "H.265":
-							case "VP8":
-							case "VP9":
-								
-								//HDR
-								Colorimetry.setHDR(fileName, fileOut);
-								
-								break;
-						}
 						
-						//Creating VOB files
+						if (grpH264.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
+						{						
+							if (FFMPEG.cancelled == false)
+								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+							
+							do
+							{
+								Thread.sleep(100);
+							}
+							while(FFMPEG.runProcess.isAlive());							
+						}
+																			
 						if (FFMPEG.saveCode == false && cancelled == false && FFMPEG.error == false)
 						{
+							//HDR
 							switch (comboFonctions.getSelectedItem().toString())
 							{
+								case "AV1":
+								case "H.265":
+								case "VP8":
+								case "VP9":
+									
+									//HDR
+									Colorimetry.setHDR(fileName, fileOut);
+									
+									break;
+									
+								//Creating VOB files
 								case "DVD":
 									
 									lblCurrentEncoding.setText(Shutter.language.getProperty("createBurnFiles"));
@@ -792,11 +804,8 @@ public class VideoEncoders extends Shutter {
 									
 									break;
 							}								
-						}
-						
-						//OPATOM creation						
-						if (FFMPEG.saveCode == false && cancelled == false && FFMPEG.error == false)
-						{
+
+							//OPATOM creation
 							if (caseCreateOPATOM.isSelected() && lblOPATOM.getText().equals("OP-Atom"))
 							{							
 								String key = FunctionUtils.getRandomHexString().toUpperCase();
@@ -863,29 +872,21 @@ public class VideoEncoders extends Shutter {
 								}
 							}
 						}
-						
-						if (grpH264.isVisible() && case2pass.isSelected())
+					
+						//Removing temporary files
+						if (pass != "")
 						{						
-							if (FFMPEG.cancelled == false)
-								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
-							
-							do
-							{
-								Thread.sleep(100);
-							}
-							while(FFMPEG.runProcess.isAlive());
-							
-							//Removing temporary files
 							final File folder = new File(fileOut.getParent());
 							FunctionUtils.listFilesForFolder(fileName.replace(extension, ""), folder);
 						}
 						
-						if (comboFonctions.getSelectedItem().toString().equals("DVD")
-						|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+						if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 						{
-							//Removing temporary files
 							final File folder = new File(fileOut.getParent());
 							FunctionUtils.listFilesForFolder(null, folder);
+							
+							if (FFMPEG.saveCode || cancelled || FFMPEG.error)
+								FileUtils.deleteDirectory(authoringFolder);	
 						}
 		
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
@@ -1210,6 +1211,15 @@ public class VideoEncoders extends Shutter {
 			case "DVD":
 				
 				float bitrate = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
+				if (caseInAndOut.isSelected())
+				{
+					float totalIn =  Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * VideoPlayer.inputFramerateMS;
+					float totalOut = Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * VideoPlayer.inputFramerateMS;
+					
+					float sommeTotal = totalOut - totalIn;
+					
+					bitrate = (float) ((float) 4000000 / sommeTotal) * 8;
+				}
 				
 				NumberFormat formatter = new DecimalFormat("0000");
 				

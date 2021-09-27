@@ -1383,7 +1383,7 @@ public class Shutter {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+				
 				FFMPEG.toSDL(false);
 			}
 		});
@@ -2994,7 +2994,8 @@ public class Shutter {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
-				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")) {
+				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")) 
+				{
 					changeFilters();
 					changeFrameSize(false);
 
@@ -3004,8 +3005,14 @@ public class Shutter {
 					newInstance.setLocation(help.getLocation().x - 20, 3);
 					
 					addToList.setText(language.getProperty("dropFilesHere"));
-					addToList.setVisible(true);
-				} else {
+					
+					if (liste.getSize() == 0)
+						addToList.setVisible(true);				
+					else
+						addToList.setVisible(false);		
+				}
+				else 
+				{
 					if (comboFonctions.getEditor().toString().length() <= 1)
 						text = String.valueOf(e.getKeyChar()).toLowerCase();
 
@@ -8358,6 +8365,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (comboAudio1.getSelectedIndex() == 16)
 				{
 					comboAudio2.setSelectedIndex(16);
@@ -8367,6 +8375,8 @@ public class Shutter {
 					comboAudio6.setSelectedIndex(16);
 					comboAudio7.setSelectedIndex(16);
 					comboAudio8.setSelectedIndex(16);
+					
+					comboAudioCodec.setSelectedIndex(comboAudioCodec.getItemCount() - 1);
 				}
 				
 				if (lblAudioMapping.getText().equals("Multi"))
@@ -10142,7 +10152,7 @@ public class Shutter {
 
 		comboForcerDesentrelacement = new JComboBox<String>();
 		comboForcerDesentrelacement.setName("comboForcerDesentrelacement");
-		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "detelecine"}));
+		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "w3fdif", "detelecine"}));
 		comboForcerDesentrelacement.setSelectedIndex(0);
 		comboForcerDesentrelacement.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		comboForcerDesentrelacement.setEditable(false);
@@ -14753,8 +14763,8 @@ public class Shutter {
 							}
 							else
 							{
-								if (comboColorspace.getItemCount() != 8)
-									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));
+								if (comboColorspace.getItemCount() != 7)
+									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));
 							}
 							
 							grpCorrections.setVisible(true);
@@ -15090,8 +15100,8 @@ public class Shutter {
 							
 							if ("VP9".equals(fonction) || "AV1".equals(fonction))
 							{
-								if (comboColorspace.getItemCount() != 8)
-									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));							
+								if (comboColorspace.getItemCount() != 7)
+									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));							
 							}
 							else
 							{
@@ -15716,23 +15726,30 @@ public class Shutter {
 	
 	public static void changeFilters() {
 		
-		if (liste.getSize() > 0) {
-			if (comboFonctions.getSelectedItem().toString().contains("H.26") || comboFonctions.getEditor().getItem().toString().contains("ffmpeg"))
+		if (comboFonctions.getEditor().getItem().toString().length() == 0)
+		{
+			lblFilter.setText(language.getProperty("lblFilter"));			
+			final String filtres[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
+					".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
+			final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+			comboFilter.setModel(model);
+			comboFilter.setSelectedIndex(0);
+		}		
+		else
+		{
+			if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 			{
 				lblFilter.setText("Ext." + language.getProperty("colon"));
+
+				String[] extensions = new String[] { ".mp4", ".mov", ".mkv", ".avi", ".flv", ".f4v", ".mpg", ".ts", ".m2ts" };
 				
-				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg") == false) 
-				{
-					String[] extensions = new String[] { ".mp4", ".mov", ".mkv", ".avi", ".flv", ".f4v", ".mpg", ".ts", ".m2ts" };
-					
-					if (comboFonctions.getSelectedItem().toString().equals("H.265") && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
-						extensions = new String[] {".mkv"};	
-					
-					DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(extensions);
-					if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
-						comboFilter.setModel(model);
-						comboFilter.setSelectedIndex(0);
-					}
+				if (comboFonctions.getSelectedItem().toString().equals("H.265") && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
+					extensions = new String[] {".mkv"};	
+				
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(extensions);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
 				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionConform"))) {
@@ -16005,32 +16022,22 @@ public class Shutter {
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
-				}
-				
-			} else if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg") == false) // Si liste > 0 mais
-																									// ne correspond à
-																									// aucun d'avant et
-																									// qu'elle ne
-																									// contient pas
-																									// "ffmpeg"
+				}	
+			}
+			else
 			{
 				lblFilter.setText(language.getProperty("lblFilter"));
-				final String filtres[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv",
-						".mp4", ".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
+				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg"))
+				{
+					lblFilter.setText("Ext." + language.getProperty("colon"));
+				}
+				
+				final String filtres[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
+						".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
 				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
 				comboFilter.setModel(model);
 				comboFilter.setSelectedIndex(0);
 			}
-		} else if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg") == false) // Si la liste = 0 et
-																								// qu'elle ne contient
-																								// pas "ffmpeg"
-		{
-			lblFilter.setText(language.getProperty("lblFilter"));
-			final String filtres[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
-					".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
-			final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-			comboFilter.setModel(model);
-			comboFilter.setSelectedIndex(0);
 		}
 	}
 

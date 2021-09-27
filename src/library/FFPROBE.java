@@ -88,7 +88,7 @@ public static String timeBase = "";
 public static String creationTime = "";
 public static float HDRmin = 0;
 public static float HDRmax = 0;
-
+public static float keyFrame = 0;
 public static int gopCount = 0;
 public static int gopSpace = 124;
 
@@ -710,7 +710,7 @@ public static int gopSpace = 124;
 		processFrameData.start();
 	}
 	
-	public static void AnalyseGOP(final String file) {
+	public static void AnalyzeGOP(final String file, boolean isGOPWindow) {
 		gopCount = 0;
 		gopSpace = 124;
 				
@@ -739,9 +739,12 @@ public static int gopSpace = 124;
 					isRunning = true;	
 					
 					//Attente de l'ouverture de la fenêtre
-					do {
-						Thread.sleep(100);
-					} while(GOP.frame == null);
+					if (isGOPWindow)
+					{
+						do {
+							Thread.sleep(100);
+						} while(GOP.frame == null);
+					}
 					
 					Process process = processFFPROBE.start();
 			         
@@ -752,7 +755,9 @@ public static int gopSpace = 124;
 					//Analyse des données	
 			        int i = 0; //stop la boucle si elle est interminable
 					int intra = 0;
+					
 					do {
+						
 						line = br.readLine();
 						
 						Console.consoleFFPROBE.append(line + System.lineSeparator());
@@ -761,7 +766,7 @@ public static int gopSpace = 124;
 						 {
 							isRunning = false;
 				            process.destroy();
-				            if (i > 10000 || gopCount > 500)
+				            if ((i > 10000 || gopCount > 500) && isGOPWindow)
 				            {
 				            	GOP.frame.dispose();
 				            	JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantAnalyzeGop"), Shutter.language.getProperty("analyzeError"), JOptionPane.ERROR_MESSAGE);			
@@ -771,21 +776,31 @@ public static int gopSpace = 124;
 						 else
 						 {
 							if (line.equals("pict_type=I")) {
+								
 								intra ++;
+								
 								if (intra == 2)
 								{
-									GOP.newImage('I', gopSpace);		
+									if (isGOPWindow)
+										GOP.newImage('I', gopSpace);	
+									
 								    gopSpace += 112;
 								    gopCount += 1;
 								}
 							}
 							if (line.equals("pict_type=P")) {
-								GOP.newImage('P', gopSpace);
+								
+								if (isGOPWindow)
+									GOP.newImage('P', gopSpace);
+								
 							    gopSpace += 112;
 							    gopCount += 1;
 							}
 							if (line.equals("pict_type=B")) {
-								GOP.newImage('B', gopSpace);
+								
+								if (isGOPWindow)
+									GOP.newImage('B', gopSpace);
+								
 							    gopSpace += 112;
 							    gopCount += 1;
 							 }						   				    
@@ -800,10 +815,120 @@ public static int gopSpace = 124;
 						isRunning = false;
 					}		
 						
-			}//RUN				
+			}			
 
-		});//THREAD		
+		});	
 		processGOP.start();
+	}
+	
+	public static void Keyframes(final String file, float inputTime, boolean getTheNextKey) {
+
+		keyFrame = 0;
+		FFMPEG.error = false;	
+				
+		processFrameData = new Thread(new Runnable()  {
+			
+			float seekTime = inputTime;
+			
+			@Override
+			public void run() {
+				
+				if (getTheNextKey == false)
+				{
+					seekTime = inputTime - 20000; //Rewind of 20sec
+					
+					if (seekTime < 0)
+						seekTime = 0;
+				}
+				
+				try {		
+					
+					String PathToFFPROBE;
+					ProcessBuilder processFFPROBE;
+					if (System.getProperty("os.name").contains("Windows"))
+					{						
+						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
+						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries packet=pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0 -i " + '"' + file + '"');
+					}
+					else
+					{
+						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
+						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries packet=pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
+					}	
+				
+					VideoPlayer.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					isRunning = true;	
+					Process process = processFFPROBE.start();
+
+			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
+			        BufferedReader br = new BufferedReader(isr);
+			        			        
+			        String line;
+			        			        
+			        Console.consoleFFPROBE.append(System.lineSeparator());
+			        
+					//Analyse des données	
+			        while ((line = br.readLine()) != null) 
+			        {		
+				        	
+						Console.consoleFFPROBE.append(line + System.lineSeparator());	
+						
+						//Erreurs
+						if (line.contains("Invalid data found when processing input") 
+								|| line.contains("No such file or directory")
+								|| line.contains("Invalid data found")
+								|| line.contains("No space left")
+								|| line.contains("does not contain any stream")
+								|| line.contains("Invalid argument"))
+						{
+							FFMPEG.error = true;
+						}
+
+						if (line.equals("") == false && line.contains("K"))
+						{						
+							String s[] =  line.split(",");
+							float keyPTS = Float.parseFloat(s[0]) * 1000;
+							
+							if (getTheNextKey)
+							{
+								if (keyPTS > inputTime)
+								{
+									keyFrame = keyPTS;	
+									process.destroy();
+									break;
+								}
+							}
+							else 
+							{				
+								if (keyPTS < inputTime && keyPTS > keyFrame)
+								{
+									keyFrame = keyPTS;	
+								}
+								else if (keyPTS >= inputTime)
+								{
+									process.destroy();
+									break;
+								}
+							} 
+						}
+			        }
+				
+			        process.waitFor();					
+							
+				} catch (Exception e) {				
+					FFMPEG.error = true;					
+				} finally {
+					VideoPlayer.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					isRunning = false;
+				}						
+			}			
+		});	
+		processFrameData.start();
+		
 	}
 	
 	public static boolean FindStreams(final String file) {			
@@ -961,7 +1086,7 @@ public static int gopSpace = 124;
 				
 		if (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false)
 		{
-			if (lock.getIcon().toString().substring(lock.getIcon().toString().lastIndexOf("/") + 1).equals("lock.png"))
+			if (isLocked)
 			{
 				 //Injection du débit
 				int h = Integer.parseInt(textH.getText());

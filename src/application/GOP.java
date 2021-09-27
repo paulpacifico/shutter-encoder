@@ -89,7 +89,7 @@ public class GOP {
 		
 		File fichier = new File(Shutter.fileList.getSelectedValue());
 		
-		FFPROBE.AnalyseGOP(fichier.toString());
+		FFPROBE.AnalyzeGOP(fichier.toString(), true);
 		
 		do {
 			try {

@@ -896,7 +896,7 @@ public class FunctionUtils extends Shutter {
         	String[] languages = Locale.getISOLanguages();			
 			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
         	
-        	filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
+			mapping += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
         }
 		
 		return mapping;

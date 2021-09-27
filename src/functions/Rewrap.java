@@ -69,10 +69,7 @@ public class Rewrap extends Shutter {
 						
 						//File output name
 						String extensionName = "";
-						
-						if (Settings.btnExtension.isSelected())
-							extensionName = Settings.txtExtension.getText();
-						
+												
 						//Function cut without re-encoding
 						String newExtension = extension;
 						String subtitles = "";
@@ -96,6 +93,9 @@ public class Rewrap extends Shutter {
 							//Output extension
 							newExtension = comboFilter.getSelectedItem().toString();
 						}
+						
+						if (Settings.btnExtension.isSelected())
+							extensionName = Settings.txtExtension.getText();
 						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + newExtension); 	

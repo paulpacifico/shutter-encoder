@@ -550,7 +550,6 @@ public class SubtitlesTimeline {
     	});
     	
     	btnEditAll.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-    	btnEditAll.setMargin(new Insets(0,0,0,0));
     	btnEditAll.setSize(btnEditAll.getPreferredSize().width, 21);
     	if (System.getProperty("os.name").contains("Windows"))    		
     		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 22, 8);
@@ -1199,11 +1198,14 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				
 				frame.requestFocus();
 				
-				setVideoPosition((int) ((e.getX()-2)/zoom));
-
+				VideoPlayer.sliderInChange = true;
+				
 				cursor.setLocation(e.getX(), cursor.getLocation().y);
+				
+				VideoPlayer.sliderIn.setValue((int) ((e.getX()-2)/zoom));	
 				
 				if (selectedSubs.size() != 0)
 				{
@@ -1220,6 +1222,9 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
+				
+				VideoPlayer.sliderInChange = false;						
+				VideoPlayer.getTimeInPoint(VideoPlayer.playerLeftGetTime());
 			}				
 			
 		});
@@ -1228,9 +1233,19 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				setVideoPosition((int) ((e.getX()-2)/zoom));
-	
-				cursor.setLocation(e.getX(), cursor.getLocation().y);
+
+				VideoPlayer.sliderInChange = true;	
+
+				if (e.getX() <= 0)
+				{
+					cursor.setLocation(0, cursor.getLocation().y);
+					VideoPlayer.sliderIn.setValue(0);	
+				}
+				else
+				{
+					cursor.setLocation(e.getX(), cursor.getLocation().y);
+					VideoPlayer.sliderIn.setValue((int) ((e.getX()-2)/zoom));	
+				}
 			}
 
 			@Override
@@ -1967,6 +1982,7 @@ public class SubtitlesTimeline {
 	}
 	
 	private static void previousSubtitle() {
+		
 		int time = 0;
 		for (Component c : timeline.getComponents())
 		{
@@ -1986,7 +2002,8 @@ public class SubtitlesTimeline {
 		setVideoPosition(time);
 	}
 	
-	private static void nextSubtitle() {		
+	private static void nextSubtitle() {
+		
 		int time = 0;
 		for (Component c : timeline.getComponents())
 		{
@@ -2008,7 +2025,7 @@ public class SubtitlesTimeline {
 		
 		if (time > 0)
 		{
-			setVideoPosition(time);
+			setVideoPosition(time);				
 		}
 	}
 	
@@ -2306,11 +2323,6 @@ public class SubtitlesTimeline {
 	private static void setVideoPosition(int time) {
 		
 		VideoPlayer.playerLeftSetTime(time);						
-		VideoPlayer.sliderIn.setValue(time);
-		
-		if (VideoPlayer.panelWaveformLeft != null)
-			VideoPlayer.panelWaveformLeft.setLocation((VideoPlayer.waveformLeft.getSize().width * VideoPlayer.sliderIn.getValue()) / VideoPlayer.sliderIn.getMaximum() ,0);			
-		VideoPlayer.getTimeInPoint(time);
 	}
 	
 	public static int setTime(int rawTime) {

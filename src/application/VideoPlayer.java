@@ -138,21 +138,23 @@ public class VideoPlayer {
     public static Process playerLeftVideo;
     public static Process playerLeftAudio;
     public static Thread playerLeftThread;
+    public static Thread setTimeLeft;
     public static float playerLeftTime = 0;
     public static Image frameLeft;
+    public static boolean playerLeftLoop = false;
     public static boolean leftFrameIsComplete = false;
     public static boolean playerLeftPlayVideo = true;
-    public static int playerLeftSleep = (int) inputFramerateMS;
 	
 	public static JPanel playerRight;
     public static Process playerRightVideo;
     public static Process playerRightAudio;
     public static Thread playerRightThread;
+    public static Thread setTimeRight;
     public static float playerRightTime = 0;
     public static Image frameRight;
+    public static boolean playerRightLoop = false;
     public static boolean rightFrameIsComplete = false;
     public static boolean playerRightPlayVideo = true;
-    public static int playerRightSleep = (int) inputFramerateMS;
     
     public static JButton leftStop;
     public static JButton leftPlay;
@@ -181,6 +183,7 @@ public class VideoPlayer {
 	//Avance et recul d'une image
 	static boolean frameLeftControl = false;
 	static boolean frameRightControl = false;
+	static boolean seekOnKeyFrames = false;
 	
 	//Waveform
 	public static boolean addWaveformIsRunning = false;
@@ -367,13 +370,12 @@ public class VideoPlayer {
 		frame.getContentPane().add(lblDuree);
 		        		        		
 		totalDuration();
-		
-		drag = false;
-		
+				
 		frame.addMouseMotionListener(new MouseMotionListener(){
  			
 			@Override
 			public void mouseDragged(MouseEvent e) {
+				
 				if (frame.getSize().width >= 636 &&  frame.getSize().height >= 619 && e.getX() >= 636 && e.getY() >= 619 && drag)
 				{
 					frame.setSize(e.getX() + 20, e.getY() + 20);
@@ -423,11 +425,13 @@ public class VideoPlayer {
 															
     				if (playerLeftVideo != null)
     				{
+    					leftPlay.setText(Shutter.language.getProperty("btnResume"));
     					playerLeftStop();
     				}
 					
     				if (playerRightVideo != null)
     				{
+    					rightPlay.setText(Shutter.language.getProperty("btnResume"));
     					playerRightStop();
     				}
 				}
@@ -592,6 +596,7 @@ public class VideoPlayer {
 		Utils.changeFrameVisibility(frame, false);
 	}
 				
+	
 	//Player left
 	public static void playerLeft(float inputTime) {
 		
@@ -651,7 +656,7 @@ public class VideoPlayer {
 						
 						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
 						
-						if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+						if (playerLeftLoop)
 						{							
 							try {	
 								
@@ -679,7 +684,7 @@ public class VideoPlayer {
 								
 								if (frameLeftControl)
 								{
-									leftPlay.setText(Shutter.language.getProperty("btnResume"));	
+									playerLeftLoop = false;
 								}
 								else if (playerLeftPlayVideo)
 								{
@@ -710,7 +715,7 @@ public class VideoPlayer {
 						}							
 						
 					} while (playerLeftVideo.isAlive());
-					
+										
 					try {
 						video.close();
 					} catch (IOException e) {}		
@@ -739,18 +744,19 @@ public class VideoPlayer {
 	public static void playerLeftPlay() {
 		
 		if (playerLeftVideo == null || playerLeftVideo.isAlive() == false)		
-		{
+		{		
 			playerLeft(playerLeftTime);							
 		}		
 	}
 	
 	public static void playerLeftStop() {
 				
-		leftPlay.setText(Shutter.language.getProperty("btnResume"));
+		playerLeftLoop = false;
+		
 		try {
 			Thread.sleep((long) inputFramerateMS);
 		} catch (InterruptedException e1) {}
-			
+		
 		if (playerLeftVideo != null)
 		{
 			playerLeftVideo.destroy();
@@ -783,55 +789,68 @@ public class VideoPlayer {
 	}
 	
 	public static void playerLeftSetTime(float time) {
-				
-		if (time < 0.0f)
-			time = 0;
 		
-		playerLeftPlayVideo = false;
-		
-		if (frameLeft != null)
+		if (setTimeLeft == null || setTimeLeft.isAlive() == false)
 		{
-			if (playerLeftIsPlaying())
-			{				
-				playerLeftStop();
-				do {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
-				} while (playerLeftThread.isAlive());
-								
-				playerLeftPlayVideo = true;
-				playerLeft(time);	
-				leftPlay.setText(Shutter.language.getProperty("btnPause"));
-			}
-			else
-			{						
-				playerLeftStop();
-				do {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
-				} while (playerLeftThread.isAlive());				
+			setTimeLeft = new Thread(new Runnable() {
+
+				@Override
+				public void run() {					
+
+					float t = time;
+					
+					if (t < 0.0f)
+						t = 0;
+					
+					playerLeftPlayVideo = false;
+					
+					if (frameLeft != null)
+					{
+						if (playerLeftIsPlaying())
+						{				
+							playerLeftStop();
+							do {
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e) {}
+							} while (playerLeftThread.isAlive());
+											
+							playerLeftPlayVideo = true;
+							playerLeft(t);	
+							playerLeftLoop = true;
+						}
+						else
+						{						
+							playerLeftStop();
+							do {
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e) {}
+							} while (playerLeftThread.isAlive());				
+							
+							playerLeft(t);
+							
+							playerLeftLoop = true;
+							
+							do {
+								try {
+									Thread.sleep(4);
+								} catch (InterruptedException e) {}
+							} while (frameLeft == null);
+							
+							playerLeftLoop = false;
+						}
+						
+						playerLeftTime = t;
+					}
+					
+					frameLeftControl = false;
+					playerLeftPlayVideo = true;		
+				}
 				
-				playerLeft(time);
-				
-				//Allow to read 1 frame	
-				leftPlay.setText(Shutter.language.getProperty("btnPause"));
-				
-				do {
-					try {
-						Thread.sleep(4);
-					} catch (InterruptedException e) {}
-				} while (frameLeft == null);
-				
-				leftPlay.setText(Shutter.language.getProperty("btnResume"));
-			}
-			
-			playerLeftTime = time;
-		}
-		
-		frameLeftControl = false;
-		playerLeftPlayVideo = true;				
+			});
+			setTimeLeft.start();
+		}	
 	}
 	
 	public static float playerLeftGetTime() {
@@ -845,7 +864,7 @@ public class VideoPlayer {
 		
 		if (playerLeftVideo == null || playerLeftVideo.isAlive() == false)		
 		{
-			leftPlay.setText(Shutter.language.getProperty("btnPause"));
+			playerLeftLoop = true;
 			
 			if (playerLeftTime > 0)
 				playerLeftTime -= 1 * inputFramerateMS;					
@@ -858,7 +877,7 @@ public class VideoPlayer {
 				} catch (InterruptedException e) {}
 			} while (frameLeft == null);
 			
-			leftPlay.setText(Shutter.language.getProperty("btnResume"));
+			playerLeftLoop = false;
 		}
 		
 		frameLeftControl = false;	
@@ -924,7 +943,7 @@ public class VideoPlayer {
 						
 						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
 						
-						if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+						if (playerRightLoop)
 						{
 							try {	
 
@@ -952,7 +971,7 @@ public class VideoPlayer {
 								
 								if (frameRightControl)
 								{
-									rightPlay.setText(Shutter.language.getProperty("btnResume"));	
+									playerRightLoop = false;
 								}
 								else if (playerRightPlayVideo)
 								{
@@ -1018,12 +1037,13 @@ public class VideoPlayer {
 	}
 
 	public static void playerRightStop() {
-				
-		rightPlay.setText(Shutter.language.getProperty("btnResume"));
+						
+		playerRightLoop = false;
+		
 		try {
 			Thread.sleep((long) inputFramerateMS);
 		} catch (InterruptedException e1) {}
-			
+					
 		if (playerRightVideo != null)
 		{
 			playerRightVideo.destroy();
@@ -1032,9 +1052,7 @@ public class VideoPlayer {
 		
 		if (playerRightAudio != null)
 			playerRightAudio.destroy();
-		
-		SubtitlesTimeline.cursor.setLocation(0, SubtitlesTimeline.cursor.getY());
-		
+				
 	}
 
 	public static void playerRightRepaint() {
@@ -1060,51 +1078,62 @@ public class VideoPlayer {
 	
 	public static void playerRightSetTime(float time) {
 		
-		playerRightPlayVideo = false;
-				
-		if (frameRight != null && time < (FFPROBE.totalLength - inputFramerateMS*2))
+		if (setTimeRight == null || setTimeRight.isAlive() == false)
 		{
-			if (playerRightIsPlaying())
-			{				
-				playerRightStop();
-				do {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
-				} while (playerRightThread.isAlive());
-								
-				playerRightPlayVideo = true;
-				playerRight(time);	
-				rightPlay.setText(Shutter.language.getProperty("btnPause"));
-			}
-			else
-			{
-				playerRightStop();
-				do {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {}
-				} while (playerRightThread.isAlive());
-				
-				playerRight(time);
-				
-				//Allow to read 1 frame
-				rightPlay.setText(Shutter.language.getProperty("btnPause"));
-				
-				do {
-					try {
-						Thread.sleep(4);
-					} catch (InterruptedException e) {}
-				} while (frameRight == null);
-				
-				rightPlay.setText(Shutter.language.getProperty("btnResume"));
-			}
-			
-			playerRightTime = time;
+			setTimeRight = new Thread(new Runnable() {
+
+				@Override
+				public void run() {	
+
+					playerRightPlayVideo = false;
+							
+					if (frameRight != null && time < (FFPROBE.totalLength - inputFramerateMS*2))
+					{
+						if (playerRightIsPlaying())
+						{				
+							playerRightStop();
+							do {
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e) {}
+							} while (playerRightThread.isAlive());
+											
+							playerRightPlayVideo = true;
+							playerRight(time);	
+							playerRightLoop = true;
+						}
+						else
+						{
+							playerRightStop();
+							do {
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e) {}
+							} while (playerRightThread.isAlive());
+							
+							playerRight(time);
+							
+							//Allow to read 1 frame
+							playerRightLoop = true;
+							
+							do {
+								try {
+									Thread.sleep(4);
+								} catch (InterruptedException e) {}
+							} while (frameRight == null);
+							
+							playerRightLoop = false;
+						}
+						
+						playerRightTime = time;
+					}
+					
+					frameRightControl = false;
+					playerRightPlayVideo = true;
+				}
+			});
+			setTimeRight.start();
 		}
-		
-		frameRightControl = false;
-		playerRightPlayVideo = true;
 	}
 	
 	public static float playerRightGetTime() {
@@ -1118,7 +1147,7 @@ public class VideoPlayer {
 		
 		if (playerRightVideo == null || playerRightVideo.isAlive() == false)		
 		{
-			rightPlay.setText(Shutter.language.getProperty("btnPause"));
+			playerRightLoop = true;
 			
 			playerRightTime -= 1 * inputFramerateMS;
 			
@@ -1130,7 +1159,7 @@ public class VideoPlayer {
 				} catch (InterruptedException e) {}
 			} while (frameRight == null);
 			
-			rightPlay.setText(Shutter.language.getProperty("btnResume"));
+			playerRightLoop = false;
 		}	
 		
 		frameRightControl = false;
@@ -1195,12 +1224,31 @@ public class VideoPlayer {
 								Thread.sleep(10);
 							} catch (InterruptedException e) {}
 						} while (FFPROBE.isRunning);
+						
+						seekOnKeyFrames = false;
+						
+						if (FFPROBE.audioOnly == false
+						&& (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut"))
+						|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))))
+						{
+							FFPROBE.AnalyzeGOP(videoPath, false);
+							do {
+								try {
+									Thread.sleep(10);
+								} catch (InterruptedException e) {}
+								
+								if (FFPROBE.gopCount > 2)
+								{
+									seekOnKeyFrames = true;
+									FFPROBE.process.destroy();
+									break;
+								}
+							} while (FFPROBE.isRunning);	
+						}
 					}
 					
 					inputFramerate = FFPROBE.currentFPS;
 					inputFramerateMS = (float) 1000 / inputFramerate;					
-					playerLeftSleep = (int) inputFramerateMS;
-				    playerRightSleep = (int) inputFramerateMS;
 					playerLeftTime = 0;
 					playerRightTime = FFPROBE.totalLength;
 					
@@ -1246,7 +1294,7 @@ public class VideoPlayer {
 				sliderOut.setValue(sliderOut.getMaximum());
 
 				leftPlay.setText(Shutter.language.getProperty("btnPlay"));
-				rightPlay.setText(Shutter.language.getProperty("btnPlay"));		
+				rightPlay.setText(Shutter.language.getProperty("btnResume"));		
 				
 				leftPlay.setEnabled(false);
 				leftPrevious.setEnabled(false);
@@ -1512,7 +1560,8 @@ public class VideoPlayer {
 		addWaveform.start();
 	}
 	
-    private void buttons() {		    	
+    private void buttons() {		 
+    	
 		rightPrevious = new JButton("<");
 		rightPrevious.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		rightPrevious.setBounds(playerRight.getLocation().x + playerRight.getSize().width / 2 - 21 - 4, playerRight.getLocation().y + playerRight.getSize().height + 10, 22, 21);		
@@ -1542,8 +1591,11 @@ public class VideoPlayer {
 							
 							if (playerRightVideo != null && frameRight != null)
 							{
-								if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+								if (playerRightLoop)
+								{
 									rightPlay.setText(Shutter.language.getProperty("btnResume"));
+									playerRightLoop = false;
+								}
 		
 								rightFrameIsComplete = false;
 
@@ -1591,17 +1643,20 @@ public class VideoPlayer {
 				
 				if (playerRightVideo != null)
 				{				
-					if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+					if (playerRightLoop)
+					{
 						rightPlay.setText(Shutter.language.getProperty("btnResume"));
-	
-					//Allow to read 1 frame					
-					rightPlay.setText(Shutter.language.getProperty("btnPause"));
+						playerRightLoop = false;
+					}
+
+					//Allow to read 1 frame	
+					playerRightLoop = true;
 				}				
 			}
 			
 		});
 		
-		rightPlay = new JButton(Shutter.language.getProperty("btnPlay"));
+		rightPlay = new JButton(Shutter.language.getProperty("btnResume"));
 		rightPlay.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		rightPlay.setMargin(new Insets(0,0,0,0));
 		rightPlay.setBounds(rightPrevious.getLocation().x - 80 - 4, rightPrevious.getLocation().y, 80, 21);		
@@ -1619,11 +1674,13 @@ public class VideoPlayer {
 				if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 				{
 					rightPlay.setText(Shutter.language.getProperty("btnResume"));
+					playerRightLoop = false;
 				}
 				else if (rightPlay.getText().equals(Shutter.language.getProperty("btnResume")) && playerRightTime < (FFPROBE.totalLength - inputFramerateMS*2))
 				{
 					frameRightControl = false;
 					rightPlay.setText(Shutter.language.getProperty("btnPause"));
+					playerRightLoop = true;
 				}
 			}
 			
@@ -1640,6 +1697,7 @@ public class VideoPlayer {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				if (playerRightVideo != null)
 				{
 					if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
@@ -1650,7 +1708,8 @@ public class VideoPlayer {
 					
 					sliderOut.setValue(sliderOut.getMaximum());
 				}
-				rightPlay.setText(Shutter.language.getProperty("btnPlay"));
+				rightPlay.setText(Shutter.language.getProperty("btnResume"));
+				playerRightLoop = false;
 									
 				playerRightTime = FFPROBE.totalLength;
 				
@@ -1721,12 +1780,31 @@ public class VideoPlayer {
 							
 							if (playerLeftVideo != null && frameLeft != null)
 							{										
-								if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+								if (playerLeftLoop)
+								{
 									leftPlay.setText(Shutter.language.getProperty("btnResume"));
+									playerLeftLoop = false;
+								}
 
 								leftFrameIsComplete = false;
 								
-								playerLeftSetTime(playerLeftTime - (inputFramerateMS * 2));
+								if (seekOnKeyFrames && FFPROBE.isRunning == false)
+								{				
+									FFPROBE.Keyframes(videoPath, playerLeftTime - (inputFramerateMS * 2), false);
+									
+									do {
+										try {
+											Thread.sleep(10);
+										} catch (InterruptedException e) {}
+									} while (FFPROBE.isRunning);
+									
+									if (FFPROBE.keyFrame > 0)
+									{
+										playerLeftSetTime(FFPROBE.keyFrame);
+									}
+								}
+								else
+									playerLeftSetTime(playerLeftTime - (inputFramerateMS * 2));
 								
 								long time = System.currentTimeMillis();
 								
@@ -1770,11 +1848,32 @@ public class VideoPlayer {
 				
 				if (playerLeftVideo != null)
 				{
-					if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+					if (playerLeftLoop)
+					{
 						leftPlay.setText(Shutter.language.getProperty("btnResume"));
-	
-					//Allow to read 1 frame					
-					leftPlay.setText(Shutter.language.getProperty("btnPause"));
+						playerLeftLoop = false;
+					}
+
+					if (seekOnKeyFrames && FFPROBE.isRunning == false)
+					{									
+						FFPROBE.Keyframes(videoPath, playerLeftTime, true);
+						
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException er) {}
+						} while (FFPROBE.isRunning);
+						
+						if (FFPROBE.keyFrame > 0)
+						{	
+							playerLeftSetTime(FFPROBE.keyFrame);
+						}
+					}
+					else
+					{
+						//Allow to read 1 frame					
+						playerLeftLoop = true;
+					}
 				}	
 			}
 			
@@ -1796,6 +1895,8 @@ public class VideoPlayer {
 				
 				if (leftPlay.getText().equals(Shutter.language.getProperty("btnPlay")) && Shutter.liste.getSize() != 0 || playerLeftVideo.isAlive() == false) 
 				{							
+					leftPlay.setText(Shutter.language.getProperty("btnResume"));
+					
 					if (playerHasBeenStopped == false)
 					{			
 						playerLeftSetTime(0);
@@ -1804,6 +1905,7 @@ public class VideoPlayer {
 					{
 						playerLeftPlay();
 						leftPlay.setText(Shutter.language.getProperty("btnPause"));
+						playerLeftLoop = true;
 					}
 										
 					caseInH.setEnabled(true);
@@ -1818,12 +1920,14 @@ public class VideoPlayer {
 				}
 				else if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 				{
-					leftPlay.setText(Shutter.language.getProperty("btnResume"));				
+					leftPlay.setText(Shutter.language.getProperty("btnResume"));	
+					playerLeftLoop = false;
 				}
 				else if (leftPlay.getText().equals(Shutter.language.getProperty("btnResume")))
 				{				
 					frameLeftControl = false;
 					leftPlay.setText(Shutter.language.getProperty("btnPause"));
+					playerLeftLoop = true;
 				}
 								
 			}
@@ -1848,7 +1952,7 @@ public class VideoPlayer {
 						playerLeftStop();
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(1);
 							} catch (InterruptedException e1) {};
 						} while (playerLeftVideo.isAlive());
 						sliderIn.setValue(0);
@@ -1860,7 +1964,7 @@ public class VideoPlayer {
 						playerRightStop();
 						do {
 							try {
-								Thread.sleep(10);
+								Thread.sleep(1);
 							} catch (InterruptedException e1) {};
 						} while (playerRightVideo.isAlive());
 						sliderOut.setValue(sliderOut.getMaximum());
@@ -1881,15 +1985,12 @@ public class VideoPlayer {
 					rightStop.setVisible(false);
 					
 					leftPlay.setText(Shutter.language.getProperty("btnResume"));
+					playerLeftLoop = false;
 					
 					caseInH.setText("00");
 					caseInM.setText("00");
 					caseInS.setText("00");
 					caseInF.setText("00");
-					caseOutH.setText("00");
-					caseOutH.setText("00");
-					caseOutH.setText("00");
-					caseOutH.setText("00");
 										
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 						SubtitlesTimeline.actualSubOut = 0;	
@@ -1918,6 +2019,9 @@ public class VideoPlayer {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				
+				if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+					rightPlay.doClick();
+				
 				if (playerLeftVideo != null && sliderInChange)
 				{		
 					if (sliderIn.getValue() > 0)
@@ -1935,11 +2039,11 @@ public class VideoPlayer {
 							
 						}catch (Exception e1){}
 					}							
-						
-					if (FFPROBE.hasAudio && panelWaveformLeft != null)
+					
+					if (FFPROBE.audioOnly && panelWaveformLeft != null)
 					{
 		        		panelWaveformLeft.setLocation((int) ((long) ((long) waveformLeft.getSize().width * sliderIn.getValue()) / sliderIn.getMaximum()) ,0);	        		
-					}	
+					}
 				}
 			}
 			
@@ -1963,23 +2067,28 @@ public class VideoPlayer {
 			@Override
 			public void mouseReleased(MouseEvent e) {		
 				
-				sliderInChange = false;
-				
-				if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) && leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
+				//Allows to wait for the last frame to load
+				if (playerLeftLoop == false)
 				{
-					leftPlay.doClick();
 					try {
-						Thread.sleep(200);
+						Thread.sleep(100);
 					} catch (InterruptedException e1) {}
-					leftPlay.doClick();
-				}	
+				}
 				
-				do {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException er) {}
-												
-				} while (leftFrameIsComplete == false);	
+				if (leftPlay.getText().equals(Shutter.language.getProperty("btnResume")))
+				{
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (playerLeftLoop);
+				}
+				
+				sliderInChange = false;		
+				
+				//Then refresh the slider position
+				getTimeInPoint(playerLeftTime);
+							
 			}
 
 			@Override
@@ -2005,14 +2114,10 @@ public class VideoPlayer {
 			public void stateChanged(ChangeEvent e) {				
 				
 					if (sliderOut.getValue() != sliderOut.getMaximum())
-					{
-						if (leftPlay.getText().equals(Shutter.language.getProperty("btnPlay")))
+					{			
+						if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 						{
-							leftPlay.setText(Shutter.language.getProperty("btnResume"));
-							caseInH.setEnabled(true);
-							caseInM.setEnabled(true);
-							caseInS.setEnabled(true);
-							caseInF.setEnabled(true);
+							leftPlay.doClick();
 						}
 						
 						caseOutH.setEnabled(true);
@@ -2028,8 +2133,10 @@ public class VideoPlayer {
 							rightStop.setVisible(true);							
 							
 							if (playerRightGetTime() == 0 || playerRightGetTime() == FFPROBE.totalLength) // Seul moyen pour effectuer l'action seulement quand le playerRight est invisible
-							{									
-		    					playerLeftStop();
+							{				
+		    					leftPlay.setText(Shutter.language.getProperty("btnResume"));
+		    					
+		    					playerLeftStop();		    						    					
 		    					do {
 		    						try {
 		    							Thread.sleep(1);
@@ -2043,32 +2150,13 @@ public class VideoPlayer {
 							else if (playerRightVideo != null && sliderOutChange)
 							{
 								playerRightSetTime(formatTime(sliderOut.getValue()));
-							}
-														
-							if (FFPROBE.hasAudio && waveform.exists())
+							}			
+							
+							if (FFPROBE.audioOnly && panelWaveformRight != null)
 							{
-								if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-									panelWaveformLeft.setLocation((int) ((long) ((long) waveformLeft.getSize().width * sliderIn.getValue()) / sliderIn.getMaximum()) ,0);
-								else
-								{
-									if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && waveformRight != null)
-									{										
-										if ((FFPROBE.audioOnly == false || FFPROBE.audioOnly && sliderOut.getValue() != sliderOut.getMaximum()) && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
-											waveformRight.setVisible(true);
-										else
-											waveformRight.setVisible(false);
-									}
-									
-									if (panelWaveformLeft != null)
-										panelWaveformLeft.setLocation((int) ((long) ((long) waveformLeft.getSize().width * sliderIn.getValue()) / sliderIn.getMaximum()) ,0);
-									
-									if (panelWaveformRight != null)
-									{
-										panelWaveformRight.setVisible(true);
-						 	  			panelWaveformRight.setLocation((int) ((long) ((long) waveformRight.getSize().width * sliderOut.getValue()) / sliderOut.getMaximum()) ,0);
-									}
-								}								
-							}							
+								panelWaveformRight.setVisible(true);
+				 	  			panelWaveformRight.setLocation((int) ((long) ((long) waveformRight.getSize().width * sliderOut.getValue()) / sliderOut.getMaximum()) ,0);        		
+							}
 														
 							if (FFPROBE.audioOnly == false)
 								playerRight.setVisible(true);
@@ -2115,15 +2203,30 @@ public class VideoPlayer {
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {			
-				sliderOutChange = false;	
+			public void mouseReleased(MouseEvent e) {	
 				
-				do {
+				//Allows to wait for the last frame to load
+				if (playerRightLoop == false)
+				{
 					try {
-						Thread.sleep(1);
-					} catch (InterruptedException er) {}
-												
-				} while (rightFrameIsComplete == false);	
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {}
+				}
+				
+				if (rightPlay.getText().equals(Shutter.language.getProperty("btnResume")))
+				{
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (playerRightLoop);
+				}
+				
+				sliderOutChange = false;		
+				
+				//Then refresh the slider position
+				getTimeOutPoint(playerRightTime);	
+
 			}
 
 			@Override
@@ -2212,7 +2315,7 @@ public class VideoPlayer {
 					sliderOut.setValue(sliderOut.getMaximum());
 
 					leftPlay.setText(Shutter.language.getProperty("btnPlay"));
-					rightPlay.setText(Shutter.language.getProperty("btnPlay"));		
+					rightPlay.setText(Shutter.language.getProperty("btnResume"));		
 					
 					leftPlay.setEnabled(false);
 					leftPrevious.setEnabled(false);
@@ -2283,11 +2386,13 @@ public class VideoPlayer {
 				
 				if (playerLeftVideo != null)
 				{
+					leftPlay.setText(Shutter.language.getProperty("btnResume"));
 					playerLeftStop();
 				}
 				
 				if (playerRightVideo != null)
 				{
+					rightPlay.setText(Shutter.language.getProperty("btnResume"));
 					playerRightStop();
 				}
 			}
@@ -2413,11 +2518,13 @@ public class VideoPlayer {
 				{
 					if (playerLeftVideo != null)
     				{
+						leftPlay.setText(Shutter.language.getProperty("btnResume"));
     					playerLeftStop();
     				}
 					
     				if (playerRightVideo != null)
     				{
+    					rightPlay.setText(Shutter.language.getProperty("btnResume"));
     					playerRightStop();
     				}
 					
@@ -2544,10 +2651,14 @@ public class VideoPlayer {
                 
                 g2.setColor(Color.BLACK);
                                 
-                if (playerLeftVideo != null && playerLeftVideo.isAlive())
-                	g2.drawImage(frameLeft, 0, 0, null); 
-                else
+                if (drag)
+                {
                 	g2.fillRect(0, 0, playerLeft.getWidth(), playerRight.getHeight()); 
+                }
+                else
+                {
+                	g2.drawImage(frameLeft, 0, 0, null); 
+                }
                 
                 if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
                 {
@@ -2652,10 +2763,14 @@ public class VideoPlayer {
                 
                 g.setColor(Color.BLACK);
                 
-                if (playerRightVideo != null && playerRightVideo.isAlive())
-                	g.drawImage(frameRight, 0, 0, null); 
+                if (drag)
+                {
+                	g.fillRect(0, 0, playerLeft.getWidth(), playerRight.getHeight()); 
+                }
                 else
-                	g.fillRect(0, 0, playerRight.getWidth(), playerRight.getHeight()); 
+                {
+                	g.drawImage(frameRight, 0, 0, null); 
+                }               
             }
         };
 		playerRight.setLayout(null);
@@ -2688,8 +2803,9 @@ public class VideoPlayer {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				
 				if (leftPlay.getText().equals(Shutter.language.getProperty("btnPlay")))
-					leftPlay.doClick();
+					leftPlay.doClick();			
 				
 				if (e.getX() >= 0 && e.getX() <= waveformLeft.getWidth() - 2)
 				{
@@ -2712,16 +2828,37 @@ public class VideoPlayer {
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				sliderInChange = false;
+			public void mouseReleased(MouseEvent e) {	
+
+				//Allows to wait for the last frame to load
+				if (playerLeftLoop == false)
+				{
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {}
+				}
+					
+				if (leftPlay.getText().equals(Shutter.language.getProperty("btnResume")))
+				{					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (playerLeftLoop);
+				}
+				
+				sliderInChange = false;		
+				
+				//Then refresh the slider position
+				getTimeInPoint(playerLeftTime);
 			}
 			
 		});
 		
 		waveformLeft.addMouseMotionListener(new MouseMotionListener(){
-
+			
 			@Override
-			public void mouseDragged(MouseEvent e) {							
+			public void mouseDragged(MouseEvent e) {
+								
 				if (e.getX() >= 0 && e.getX() <= waveformLeft.getWidth() - 2)
 				{
 					sliderInChange = true;					
@@ -2737,9 +2874,9 @@ public class VideoPlayer {
 				else if (e.getX() <= waveformLeft.getWidth() - 2)
 				{
 					sliderInChange = true;					
-					panelWaveformLeft.setLocation(waveformLeft.getWidth() - 2, panelWaveformLeft.getLocation().y);	
+					panelWaveformLeft.setLocation(waveformLeft.getWidth() - 2, panelWaveformLeft.getLocation().y);		
 					sliderIn.setValue((int) ((long) sliderIn.getMaximum() * panelWaveformLeft.getLocation().x / waveformLeft.getSize().width));
-				}
+				}				
 			}
 
 			@Override
@@ -2766,9 +2903,7 @@ public class VideoPlayer {
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
-				if (rightPlay.getText().equals(Shutter.language.getProperty("btnPlay")))
-					rightPlay.doClick();								
+			public void mousePressed(MouseEvent e) {				
 
 				if (e.getX() >= 0 && e.getX() <= waveformRight.getWidth() - 2)
 				{
@@ -2801,7 +2936,33 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				sliderOutChange = false;
+				
+				//Allows to wait for the last frame to load
+				if (playerRightLoop == false)
+				{
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e1) {}
+				}
+				
+				if (rightPlay.getText().equals(Shutter.language.getProperty("btnResume")))
+				{
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (playerRightLoop);
+				}
+				
+				sliderOutChange = false;		
+				
+				//Then refresh the slider position
+				getTimeOutPoint(playerRightTime);	
+				
+				if (sliderOut.getValue() == sliderOut.getMaximum())
+				{
+					panelWaveformRight.setLocation(waveformRight.getWidth() - 2, panelWaveformRight.getLocation().y);
+				}
 			}
 			
 		});
@@ -3636,7 +3797,6 @@ public class VideoPlayer {
 		});	
 	}
 
-	//Resize
 	private void resizeAll() {
 				
 		//topPanel
@@ -3743,6 +3903,7 @@ public class VideoPlayer {
 	}
 	
 	public static void totalDuration() {	
+		
 		try {
 			
 			float totalIn =  Integer.parseInt(caseInH.getText()) * 3600000 + Integer.parseInt(caseInM.getText()) * 60000 + Integer.parseInt(caseInS.getText()) * 1000 + Integer.parseInt(caseInF.getText()) * inputFramerateMS;
@@ -3808,7 +3969,6 @@ public class VideoPlayer {
 		return (seconds + frameToMS);	
 	}
 
-	
 	public static void getTimeInPoint(float time) {	
 		
 		if (caseTcInterne.isSelected())
@@ -3826,6 +3986,7 @@ public class VideoPlayer {
     			if (playerLeftIsPlaying())
     			{
     				leftPlay.setText(Shutter.language.getProperty("btnResume"));
+    				playerLeftLoop = false;
     			}
     		}    		
     		    		
@@ -3847,10 +4008,8 @@ public class VideoPlayer {
     			if (sliderIn.getValue() > sliderOut.getValue())
 				{
     				sliderInChange = true;
-					try {
-						sliderOut.setValue(sliderIn.getValue());
-						panelWaveformRight.setLocation((int) ((long) ((long) waveformRight.getSize().width * sliderOut.getValue()) / sliderOut.getMaximum()) ,0);
-					} catch (Exception e1){}
+					sliderOut.setValue(sliderIn.getValue());
+					panelWaveformRight.setLocation((int) ((long) ((long) waveformRight.getSize().width * sliderOut.getValue()) / sliderOut.getMaximum()) ,0);
 					sliderInChange = false;
 				}
     		}
@@ -3886,6 +4045,7 @@ public class VideoPlayer {
     		if (time >= (FFPROBE.totalLength - inputFramerateMS*2))
     		{
     			rightPlay.setText(Shutter.language.getProperty("btnResume"));
+    			playerRightLoop = false;
     		}    		
 
 			NumberFormat formatter = new DecimalFormat("00");
@@ -3903,10 +4063,8 @@ public class VideoPlayer {
 	  			if (sliderOut.getValue() < sliderIn.getValue())
 				{			
 	  				sliderOutChange = true;
-					try {
-						sliderIn.setValue(sliderOut.getValue());
-						panelWaveformLeft.setLocation((int) ((long) ((long) waveformLeft.getSize().width * sliderIn.getValue()) / sliderIn.getMaximum()) ,0);									
-					} catch (Exception e1){}
+					sliderIn.setValue(sliderOut.getValue());
+					panelWaveformLeft.setLocation((int) ((long) ((long) waveformLeft.getSize().width * sliderIn.getValue()) / sliderIn.getMaximum()) ,0);									
 					sliderOutChange = false;
 				}
 	  		}
@@ -3931,9 +4089,7 @@ public class VideoPlayer {
 				do {
 					Thread.sleep(10);					
 				} while (leftPlay.getText().equals(Shutter.language.getProperty("btnPlay")));
-				
-				VideoPlayer.leftPlay.doClick();
-				
+
 				boolean changeInPoint = false;
 				boolean changeOutPoint = false;
 
@@ -3964,10 +4120,8 @@ public class VideoPlayer {
 										if (p.getName().contains("caseOut"))
 											changeOutPoint = true;
 										
-										leftPlay.setText(Shutter.language.getProperty("btnResume"));
-																				
 										if (p instanceof JTextField)
-										{										
+										{			
 											//Value
 											((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																				
@@ -3984,7 +4138,7 @@ public class VideoPlayer {
 					}
 				}			
 								
-				//Position des sliders
+				//In
 				if (changeInPoint)
 				{
 					sliderInChange = true;
