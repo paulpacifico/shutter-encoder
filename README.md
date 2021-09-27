@@ -1,7 +1,7 @@
 <img align=left src="https://www.shutterencoder.com/images/icon.png" width="64">
 <h1>Shutter Encoder v15.4</h1>
 
-<img src="https://www.shutterencoder.com/images/SocialBanner.png">
+<img style="border-radius: 10%;" src="https://www.shutterencoder.com/images/SocialBanner.png">
 
 ![logo](/SocialBanner.png)
 
