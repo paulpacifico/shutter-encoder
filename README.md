@@ -1,8 +1,6 @@
 <img align=left src="https://www.shutterencoder.com/images/icon.png" width="64">
 <h1>Shutter Encoder v15.4</h1>
 
-<img style="border-radius: 5px 5px 5px 5px" src="https://www.shutterencoder.com/images/SocialBanner.png">
-
 ![logo](/SocialBanner.png)
 
 Download required [dependencies](../master/Library/sources.txt) into "Library" folder.
