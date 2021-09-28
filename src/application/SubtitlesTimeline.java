@@ -1368,7 +1368,6 @@ public class SubtitlesTimeline {
             }
 	    });    	
 
-    	
 		for (Component c : frame.getContentPane().getComponents())
 		{
 			c.setFocusable(false);

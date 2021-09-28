@@ -56,6 +56,7 @@ public static Thread processVideoLevels;
 public static Thread processGOP;
 public static Thread processFindStreams;
 public static Thread processCalculH264;
+public static String subtitlesCodec = "";
 public static int subtitleStreams = 0;
 public static int audioStreams = 0;
 public static int totalLength;
@@ -105,6 +106,7 @@ public static int gopSpace = 124;
 		surround = false;
 		totalLength = 0;
 		qantization = 16;
+		subtitlesCodec = "";
  		subtitleStreams = 0;
  		audioSampleRate = 48000;
  		audioStreams = 0;
@@ -479,9 +481,14 @@ public static int gopSpace = 124;
 			        	 
 			        	 //Extract Subtitles			     		
 			        	 if (line.contains("Subtitle:"))
+			        	 {
 			        		 subtitleStreams ++;
-			        							 
-						//Timecode
+			        		 
+			        		 String s[] = line.substring(line.lastIndexOf(":") + 1).split(" ");	
+			        		 subtitlesCodec = s[1];
+			        	 }
+			        	 
+		        	 	//Timecode
 			            if (line.contains("timecode") && (OverlayWindow.caseShowTimecode.isSelected()
 			            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")
 			            		|| comboFonctions.getSelectedItem().equals("XAVC")

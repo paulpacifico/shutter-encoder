@@ -1234,6 +1234,70 @@ private static StringBuilder getAll;
 		 }				
 	}
 	
+	public static boolean isReadable(File file) {
+		
+		try {	
+			
+			String PathToFFMPEG;
+			ProcessBuilder processFFMPEG;
+			if (System.getProperty("os.name").contains("Windows"))
+			{							
+				PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
+				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+												
+				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hide_banner -i " + '"' + file + '"' + " -f null -" + '"');
+				process = processFFMPEG.start();
+			}
+			else
+			{
+				PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
+				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
+	
+				
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -i " + '"' + file + '"' + " -f null -");							
+				process = processFFMPEG.start();
+			}		
+			
+			
+			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hide_banner -i " + '"' + file + '"' + " -f null -" + System.lineSeparator() + System.lineSeparator());
+			
+			String line;
+	
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
+								
+			while ((line = input.readLine()) != null) {						
+				
+				Console.consoleFFMPEG.append(line + System.lineSeparator() );		
+				
+				//Erreurs
+				if (line.contains("No such file or directory")
+					|| line.contains("Invalid data found")
+					|| line.contains("moov atom not found")
+					|| line.contains("Operation not permitted")
+					|| line.contains("File ended prematurely")
+					|| line.contains("Warning MVs not available")
+					|| line.contains("broken or empty index")
+					|| line.contains("corrupt decoded frame")
+					|| line.contains("invalid new backstep")
+					|| line.contains("Packet corrupt")
+					|| line.contains("ac-tex damaged")
+					|| line.contains("Error"))
+				{
+					return false;
+				} 
+																		
+			}			
+	   					     																		
+		} catch (IOException io) {//Bug Linux							
+		} catch (Exception e) {
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public static void suspendProcess()
 	{
 		try {

@@ -205,7 +205,7 @@ public class Console extends JFrame {
 
 		frmConsole.setJMenuBar(menuBar);
 		
-		spinner = new JSpinner( new SpinnerNumberModel( 12,1,100,1 ));	
+		spinner = new JSpinner( new SpinnerNumberModel(12, 1 , 100 ,1));	
 		spinner.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));				
 		menuBar.add(spinner);
 		
@@ -216,13 +216,10 @@ public class Console extends JFrame {
 		frmConsole.addComponentListener(new ComponentAdapter(){
 
 			public void componentResized(ComponentEvent e) {
-					if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))					
-						tabbedPane.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 49);
-					else			
-						tabbedPane.setBounds(0, 0, frmConsole.getSize().width - 15, frmConsole.getSize().height - 64);
+				
+				tabbedPane.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 						
 			}
-
 			
 		});
 		
@@ -258,43 +255,43 @@ public class Console extends JFrame {
 		});
 		
 		consoleFFMPEG.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleFFMPEG.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleFFMPEG.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleFFMPEG.setWrapStyleWord(true);
 		consoleFFMPEG.addKeyListener(kl);
 		consoleFFPLAY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleFFPLAY.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleFFPLAY.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleFFPLAY.setWrapStyleWord(true);
 		consoleFFPLAY.addKeyListener(kl);
 		consoleFFPROBE.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleFFPROBE.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleFFPROBE.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleFFPROBE.setWrapStyleWord(true);
 		consoleFFPROBE.addKeyListener(kl);
 		consoleBMXTRANSWRAP.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleBMXTRANSWRAP.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleBMXTRANSWRAP.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleBMXTRANSWRAP.setWrapStyleWord(true);
 		consoleBMXTRANSWRAP.addKeyListener(kl);
 		consoleDVDAUTHOR.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleDVDAUTHOR.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleDVDAUTHOR.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleDVDAUTHOR.setWrapStyleWord(true);
 		consoleDVDAUTHOR.addKeyListener(kl);
 		consoleTSMUXER.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleTSMUXER.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleTSMUXER.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleTSMUXER.setWrapStyleWord(true);
 		consoleTSMUXER.addKeyListener(kl);
 		consoleMEDIAINFO.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleMEDIAINFO.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleMEDIAINFO.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleMEDIAINFO.setWrapStyleWord(true);
 		consoleMEDIAINFO.addKeyListener(kl);
 		consoleYOUTUBEDL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleYOUTUBEDL.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleYOUTUBEDL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleYOUTUBEDL.setWrapStyleWord(true);
 		consoleYOUTUBEDL.addKeyListener(kl);
 		consoleEXIFTOOL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleEXIFTOOL.setWrapStyleWord(true);
 		consoleEXIFTOOL.addKeyListener(kl);
 		consoleMKVMERGE.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleMKVMERGE.setBounds(0, 0, frmConsole.getSize().width, frmConsole.getSize().height - 65);
+		consoleMKVMERGE.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleMKVMERGE.setWrapStyleWord(true);
 		consoleMKVMERGE.addKeyListener(kl);
 		

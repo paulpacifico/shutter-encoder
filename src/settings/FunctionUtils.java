@@ -133,60 +133,38 @@ public class FunctionUtils extends Shutter {
 		 return false;
 	}
 	
-	public static boolean waitFileCompleted(File f) {
+	public static boolean waitFileCompleted(File file) {
 		
 		progressBar1.setIndeterminate(true);
 		lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-		lblCurrentEncoding.setText(f.getName());
+		lblCurrentEncoding.setText(file.getName());
 		tempsRestant.setVisible(false);
 		btnStart.setEnabled(false);
 		btnCancel.setEnabled(true);
 		comboFonctions.setEnabled(false);
 		
 		long fileSize = 0;
-		do {
-			fileSize = f.length();
-			try {
-				
-				Thread.sleep(1000);
-				
-				if (fileSize == f.length())
-				{
-					for (int count = 0 ; count < 8 ; count ++)
-					{
-						Thread.sleep(1000);
-
-						if (fileSize != f.length())
-							break;
-					}
-				}
-				
-			} catch (InterruptedException e) {} // Permet d'attendre la nouvelle valeur de la copie
-		} while (fileSize != f.length() && cancelled == false);
-
-		// Windows
-		while (f.renameTo(f) == false && cancelled == false) {
-			if (f.exists() == false) // Dans le cas où on annule la copie en cours
-				break;
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-			}
-		}
 		
-		if (cancelled)
-		{
-			progressBar1.setIndeterminate(false);
-			lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
-			btnStart.setEnabled(true);
-			btnCancel.setEnabled(false);
-			comboFonctions.setEnabled(true);
-			return false;
-		}
+		do {
+			
+			fileSize = file.length();
+			try {				
+				Thread.sleep(5000);				// Permet d'attendre la nouvelle valeur de la copie					
+			} catch (InterruptedException e) {}
+
+		} while ((fileSize != file.length() || FFMPEG.isReadable(file) == false) && cancelled == false && file.exists());
 		
 		progressBar1.setIndeterminate(false);
 		btnCancel.setEnabled(false);
 		
+		if (cancelled)
+		{
+			lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
+			btnStart.setEnabled(true);
+			comboFonctions.setEnabled(true);
+			return false;
+		}
+				
 		return true;
 	}
 	
@@ -194,7 +172,7 @@ public class FunctionUtils extends Shutter {
 		
         if (Shutter.scanIsRunning)
         {
-        	input = scanFolder(input.toString());
+        	input = watchFolder(input.toString());
         	if (input != null)
         		btnStart.setEnabled(true);
         	else
@@ -211,7 +189,7 @@ public class FunctionUtils extends Shutter {
         return input;
 	}
 	
-	public static File scanFolder(String folder) {
+	public static File watchFolder(String folder) {
 		
 		progressBar1.setIndeterminate(true);
 		lblCurrentEncoding.setText(language.getProperty("waitingFiles"));
@@ -224,17 +202,17 @@ public class FunctionUtils extends Shutter {
 			File dir = new File(folder);
 			btnStart.setEnabled(false);
 
-			for (File f : dir.listFiles()) // Récupère chaque fichier du dossier
+			for (File file : dir.listFiles()) // Récupère chaque fichier du dossier
 			{
-				if (f.isHidden() || f.isFile() == false)
+				if (file.isHidden() || file.isFile() == false)
 					continue;
 				else if (Settings.btnExclude.isSelected())
 				{							
 					boolean allowed = true;
 					for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
 					{
-						int s = f.toString().lastIndexOf('.');
-						String ext = f.toString().substring(s);
+						int s = file.toString().lastIndexOf('.');
+						String ext = file.toString().substring(s);
 						
 						if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
 							allowed = false;
@@ -244,15 +222,17 @@ public class FunctionUtils extends Shutter {
 						continue;
 				}
 
-				actualScanningFile = f;
+				actualScanningFile = file;
 
 				// Lorque un fichier est entrain d'être copié
 				progressBar1.setIndeterminate(true);
 				
-				waitFileCompleted(f);
+				if (waitFileCompleted(file) == false)
+					return null;
 
 				if (actualScanningFile != null)
 					return actualScanningFile;
+				
 			} // End for
 		} while (scanIsRunning);
 
@@ -742,8 +722,36 @@ public class FunctionUtils extends Shutter {
         }
         else if (casePreserveSubs.isSelected())
         {
-        	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        	if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
+        	{
+        		if (lblFilter.getText().equals("Ext." + language.getProperty("colon")))
+        		{
+        			switch (comboFilter.getSelectedItem().toString())
+        			{
+        				case ".mp4":
+        				case ".mkv":
+        					
+        					filterComplex += " -c:s dvdsub -map s?";
+        					break;
+        					
+        				case ".ts":
+        					
+        					filterComplex += " -c:s dvbsub -map s?";
+        					break;
+        					
+        				default:
+        					
+        					filterComplex += " -c:s copy -map s?";
+        					break;
+        			}
+        		}
+        		else
+        			filterComplex += " -c:s copy -map s?";
+        	}
+        	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        	{
         		filterComplex += " -c:s srt -map s?";
+        	}
         	else
         		filterComplex += " -c:s mov_text -map s?";
         }
@@ -1161,6 +1169,9 @@ public class FunctionUtils extends Shutter {
 			
 			if (caseInAndOut.isSelected())
 				millisecondsToTc = timecodeToMs + VideoPlayer.dureeHeures * 3600000 + VideoPlayer.dureeMinutes * 60000 + VideoPlayer.dureeSecondes * 1000 + VideoPlayer.dureeImages * (int) (1000 / FFPROBE.currentFPS);
+			
+			if (caseEnableSequence.isSelected())
+				millisecondsToTc = Shutter.liste.getSize() * (int) (1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString()));
 			
 			TCset1.setText(formatter.format(millisecondsToTc / 3600000));
 			TCset2.setText(formatter.format((millisecondsToTc / 60000) % 60));

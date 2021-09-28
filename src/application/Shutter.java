@@ -692,7 +692,71 @@ public class Shutter {
 					KeyEvent ke = (KeyEvent) event;
 										
 					if (ke.getID() == KeyEvent.KEY_PRESSED) 
-					{						
+					{					
+						//CMD + Q
+						if (System.getProperty("os.name").contains("Mac") && (ke.getKeyCode() == KeyEvent.VK_Q) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0))
+						{							
+							Runtime.getRuntime().addShutdownHook(new Thread()
+					        {
+					            @Override
+					            public void run()
+					            {
+					            	if (FFMPEG.runProcess != null && FFMPEG.runProcess.isAlive()) 
+					            	{
+										if (btnStart.getText().equals(language.getProperty("resume")))
+											FFMPEG.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le
+																	// détruire
+
+										try {
+											FFMPEG.writer.write('q');
+											FFMPEG.writer.flush();
+											FFMPEG.writer.close();
+										} catch (IOException er) {
+										}
+										
+										if (comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false)
+											FFMPEG.process.destroy();
+									}					            	
+									if (DCRAW.runProcess != null && DCRAW.runProcess.isAlive())
+									{
+										DCRAW.process.destroy();
+									}									
+									if (XPDF.runProcess != null && XPDF.runProcess.isAlive())
+									{
+										XPDF.process.destroy();
+									}									
+									if (MKVMERGE.runProcess != null && MKVMERGE.runProcess.isAlive())
+									{
+										MKVMERGE.process.destroy();
+									}									
+									if (YOUTUBEDL.runProcess != null && YOUTUBEDL.runProcess.isAlive())
+									{
+										YOUTUBEDL.process.destroy();
+									}
+									if (BMXTRANSWRAP.runProcess != null && BMXTRANSWRAP.runProcess.isAlive())
+									{
+										BMXTRANSWRAP.process.destroy();
+									}
+									if (Ftp.isRunning) {
+										try {
+											Ftp.ftp.abort();
+										} catch (IOException e1) {
+											System.out.println(e1);
+										}
+									}
+									if (Wetransfer.isRunning) {
+										try {
+											Wetransfer.process.destroy();
+										} catch (Exception e1) {
+											System.out.println(e1);
+										}
+									}
+									
+									Settings.saveSettings();
+					            }
+					        });
+						}
+						
 						if ((ke.getKeyCode() == KeyEvent.VK_S) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
 						|| (ke.getKeyCode() == KeyEvent.VK_S)
 						&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
@@ -2290,6 +2354,7 @@ public class Shutter {
 						cancelled = true;
 				}
 				if (scanIsRunning) {
+					cancelled = true;
 					enableAll();
 					scan.setText(language.getProperty("menuItemStartScan"));
 					btnEmptyList.doClick();
@@ -6997,10 +7062,17 @@ public class Shutter {
 									{
 										Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
 										
-										int sub = JOptionPane.showOptionDialog(frame, language.getProperty("chooseSubsIntegration"), language.getProperty("caseSubtitles"),
-												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-											    options,
-											    options[0]);
+										int sub = 0;
+										
+										if (comboFilter.getSelectedItem().toString().equals(".mxf") == false
+										&& comboFonctions.getSelectedItem().toString().equals("XAVC") == false
+										&& caseCreateOPATOM.isSelected() == false)
+										{
+											sub = JOptionPane.showOptionDialog(frame, language.getProperty("chooseSubsIntegration"), language.getProperty("caseSubtitles"),
+													JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												    options,
+												    options[0]);
+										}
 											
 										if (sub == 0) //Burn
 										{
@@ -7052,10 +7124,17 @@ public class Shutter {
 									{
 										Object[] options = {language.getProperty("subtitlesBurn"), language.getProperty("subtitlesEmbed")};
 										
-										int sub = JOptionPane.showOptionDialog(frame, language.getProperty("chooseSubsIntegration"), language.getProperty("caseSubtitles"),
-												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-											    options,
-											    options[0]);
+										int sub = 0;
+										
+										if (comboFilter.getSelectedItem().toString().equals(".mxf") == false
+										&& comboFonctions.getSelectedItem().toString().equals("XAVC") == false
+										&& caseCreateOPATOM.isSelected() == false)
+										{
+											sub = JOptionPane.showOptionDialog(frame, language.getProperty("chooseSubsIntegration"), language.getProperty("caseSubtitles"),
+													JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												    options,
+												    options[0]);
+										}
 											
 										if (sub == 0) //Burn
 										{
@@ -9374,18 +9453,9 @@ public class Shutter {
 										else
 											i ++;
 										
-										String fonction = comboFonctions.getSelectedItem().toString();
-										if ("WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction) || "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction) || "OGG".equals(fonction))
-										{
-											grpTransitions.setSize(312, i);
-											btnReset.setLocation(336, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
-										}
-										else
-										{
-											grpTransitions.setSize(312, i);
-											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
-											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-										}
+										grpTransitions.setSize(312, i);
+										grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+										btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										
 										if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
 											grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
@@ -9438,20 +9508,11 @@ public class Shutter {
 											i = 17;
 										else
 											i --;
+																				
+										grpTransitions.setSize(312, i);
+										grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+										btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 										
-										String fonction = comboFonctions.getSelectedItem().toString();
-										if ("WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction) || "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction) || "OGG".equals(fonction))
-										{
-											grpTransitions.setSize(312, i);
-											btnReset.setLocation(336, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
-										}
-										else
-										{
-											grpTransitions.setSize(312, i);
-											grpAdvanced.setLocation(grpTransitions.getLocation().x, grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
-											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-										}
-
 										if (grpH264.getLocation().y < grpChooseFiles.getLocation().y && grpH264.isVisible() 
 												 || grpInAndOut.getLocation().y < grpChooseFiles.getLocation().y && grpInAndOut.isVisible()
 												 || grpResolution.getLocation().y < grpChooseFiles.getLocation().y && grpResolution.isVisible() ) {
@@ -13357,7 +13418,6 @@ public class Shutter {
 				|| "DVD Rip".equals(fonction)				
 				|| language.getProperty("functionSceneDetection").equals(fonction)
 				|| language.getProperty("functionSubtitles").equals(fonction)
-				|| "Synchronisation automatique".equals(fonction)
 				|| language.getProperty("functionWeb").equals(fonction))
 		{
 			changeFrameSize(false);
@@ -13938,9 +13998,15 @@ public class Shutter {
 							caseVideoFadeIn.setEnabled(false);
 							spinnerVideoFadeIn.setEnabled(false);
 							caseVideoFadeOut.setEnabled(false);
-							spinnerVideoFadeOut.setEnabled(false);							
-							grpAdvanced.setVisible(false);
-							btnReset.setLocation(btnReset.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+							spinnerVideoFadeOut.setEnabled(false);	
+							
+							// grpAdvanced
+							grpAdvanced.removeAll();
+							grpAdvanced.setVisible(true);
+							caseCreateTree.setLocation(7, 14);
+							grpAdvanced.add(caseCreateTree);
+							grpAdvanced.setLocation(grpAdvanced.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+							btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 							
 						} else if ("Loudness & True Peak".equals(fonction)
 						|| language.getProperty("functionBlackDetection").equals(fonction)

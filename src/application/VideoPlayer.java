@@ -345,8 +345,7 @@ public class VideoPlayer {
 		buttons();
 		grpIn();
 		grpOut();
-		sliders();
-		
+		sliders();		
 		setMedia();	
 				
 		if (FFPROBE.audioOnly || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -512,28 +511,7 @@ public class VideoPlayer {
             	}
             }
         });
-		
-		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-		{
-			File video = new File(Shutter.liste.firstElement());
-			String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
-			
-			SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
-			
-    		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-    		frame.setLocation(frame.getLocation().x , dim.height/3 - frame.getHeight()/2);
-    		    		
-    		if (SubtitlesTimeline.frame == null)    		
-    			new SubtitlesTimeline(dim.width/2-500,frame.getLocation().y + frame.getHeight() + 7);
-    		else
-    		{        		
-    			SubtitlesTimeline.frame.setVisible(true);
-    			SubtitlesTimeline.subtitlesNumber();
-    		}    			
-			
-			sliderVolume.setValue(sliderVolume.getMaximum());
-		}
-		
+				
 		KeyListener keyListener = new KeyListener(){
 
 			@Override	
@@ -594,8 +572,29 @@ public class VideoPlayer {
 		resizeAll();
 				
 		Utils.changeFrameVisibility(frame, false);
+		
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+		{
+			File video = new File(Shutter.liste.firstElement());
+			String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
+			
+			SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
+			
+    		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    		frame.setLocation(frame.getLocation().x , dim.height/3 - frame.getHeight()/2);
+    		    		    		
+    		if (SubtitlesTimeline.frame == null)    		
+    			new SubtitlesTimeline(dim.width/2-500,frame.getLocation().y + frame.getHeight() + 7);
+    		else
+    		{        		
+    			SubtitlesTimeline.frame.setVisible(true);
+    			SubtitlesTimeline.subtitlesNumber();
+    		}    	
+    					    		
+			sliderVolume.setValue(sliderVolume.getMaximum());
+		}
 	}
-				
+	
 	
 	//Player left
 	public static void playerLeft(float inputTime) {
@@ -2289,10 +2288,15 @@ public class VideoPlayer {
 			@Override
 			public void mouseReleased(MouseEvent e) {	
 				
-				int reply = JOptionPane.showConfirmDialog(frame,
+				int reply = JOptionPane.YES_OPTION;
+				
+				if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+				{
+					reply = JOptionPane.showConfirmDialog(frame,
 						Shutter.language.getProperty("areYouSure"),
 						Shutter.language.getProperty("frameLecteurVideo"), JOptionPane.YES_NO_OPTION,
-						JOptionPane.PLAIN_MESSAGE);			
+						JOptionPane.PLAIN_MESSAGE);		
+				}
 				
 				if (accept && reply == JOptionPane.YES_OPTION) 
 				{			
