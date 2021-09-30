@@ -795,18 +795,21 @@ public class SubtitlesWindow {
 			
             BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(subtitlesFile.toString()),  StandardCharsets.UTF_8);
             BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(Shutter.subtitlesFile.toString()),  StandardCharsets.UTF_8);
-
+            
             String line;
             boolean start = false;
             while((line = bufferedReader.readLine()) != null) {
-            	            	
+            	
+            	//Removes UTF-8 with BOM
+            	line = line.replace("\uFEFF", "");
+            	
             	if (line.matches("[0-9]+") && line.equals(spinnerSubtitle.getValue().toString()))
-            	{
-            		bufferedWriter.write(line);
-            		bufferedWriter.newLine();
-            		start = true;
-            	}
-            		
+             	{
+             		bufferedWriter.write(line);
+             		bufferedWriter.newLine();
+             		start = true;
+             	}
+            	
             	if (start)
             	{
             		if (line.contains("-->"))
@@ -833,13 +836,13 @@ public class SubtitlesWindow {
 	            		positionVideo.setValue(positionVideo.getMinimum());		
             		}
             		else if (line.contains("-->") == false && line.matches("[0-9]+") == false && line.isEmpty() == false)
-            		{
+            		{           			
             			if (lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
         					bufferedWriter.write(" \\h" + line + " \\h");
 	        			else
 	        				bufferedWriter.write(line);
-            			
-                		bufferedWriter.newLine();
+        			
+            			bufferedWriter.newLine();
             		}
             		
             		if (line.isEmpty())
@@ -1213,7 +1216,7 @@ public class SubtitlesWindow {
 					}
 				}			
 				
-				sliderChange(false);
+				//sliderChange(false);
 				
 			} catch (Exception e) {}	
 			}					

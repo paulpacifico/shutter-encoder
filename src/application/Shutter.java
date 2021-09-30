@@ -7177,10 +7177,11 @@ public class Shutter {
 		            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(subtitlesFile.toString()),  StandardCharsets.UTF_8);
 
 		            String line;
-		            //int spinnerValue = 0;
 		            boolean stop = false;
 		            while((line = bufferedReader.readLine()) != null)
 		            {
+		            	//Removes UTF-8 with BOM
+		            	line = line.replace("\uFEFF", "");
 		            	
 		            	if (line.matches("[0-9]+"))
 		            	{
@@ -7189,7 +7190,6 @@ public class Shutter {
 			            		bufferedWriter.write(line);
 			            		bufferedWriter.newLine();
 		            		}
-		            		//spinnerValue ++;
 		            	}
 		            	else if (line.contains("-->"))
 		            	{
@@ -7218,24 +7218,15 @@ public class Shutter {
 		            		}
 		            	}
 		            	else if (line.contains("-->") == false && line.matches("[0-9]+") == false && line.isEmpty() == false)
-		            	{
-		            		//Fichier avec BOM
-		            		if (line.contains("1") && line.length() == 2)
+		            	{	            		
+		            		if (stop == false)
 		            		{
-		            			bufferedWriter.write("1");
-			            		bufferedWriter.newLine();
-		            		}
-		            		else
-		            		{		            		
-			            		if (stop == false)
-			            		{
-			            			if (SubtitlesWindow.frame != null && SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-			            				bufferedWriter.write(" \\h" + line + " \\h");
-			            			else
-			            				bufferedWriter.write(line);
-			            			
-			            			bufferedWriter.newLine();
-			            		}
+		            			if (SubtitlesWindow.frame != null && SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+		            				bufferedWriter.write(" \\h" + line + " \\h");
+		            			else
+		            				bufferedWriter.write(line);
+		            			
+		            			bufferedWriter.newLine();
 		            		}
 		            	} 
 		            	else if (line.isEmpty())						            		
@@ -7245,9 +7236,7 @@ public class Shutter {
 
 		            bufferedReader.close();  
 		            bufferedWriter.close();
-		            
-		            //SubtitlesWindow.spinnerSubtitle.setModel(new SpinnerNumberModel(1, 1, spinnerValue, 1));
-		            
+
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					try {
 						frame.setOpacity(0.5f);

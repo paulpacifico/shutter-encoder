@@ -1851,7 +1851,10 @@ public class SubtitlesTimeline {
 									
 					String line;					
 					while((line = reader.readLine()) != null)
-					{							
+					{			
+						//Removes UTF-8 with BOM
+		            	line = line.replace("\uFEFF", "");
+						
 						if (line.isEmpty() == false && line.matches("[0-9]+") == false)
 						{
 							String[] s = line.replace(",", ":").split(" ");
@@ -2341,6 +2344,7 @@ public class SubtitlesTimeline {
 	}
 	
 	public static void subtitlesNumber() {
+		
 		BufferedReader reader = null;
 		
 		try {
@@ -2357,6 +2361,9 @@ public class SubtitlesTimeline {
 				String line;					
 				while((line = reader.readLine()) != null)
 				{
+					//Removes UTF-8 with BOM
+	            	line = line.replace("\uFEFF", "");
+					
 					if (line.matches("[0-9]+") && Integer.parseInt(line) == (number + 1)) //permet de ne pas prendre en compte un sous titre avec des chiffres
 						number = Integer.parseInt(line);					
 				}

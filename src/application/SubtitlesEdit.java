@@ -294,7 +294,9 @@ public class SubtitlesEdit {
 				
 				String line;					
 				while((line = reader.readLine()) != null)
-				{		
+				{							
+					//Removes UTF-8 with BOM
+	            	line = line.replace("\uFEFF", "");
 					
 					if (line.matches("[0-9]+"))
 					{
