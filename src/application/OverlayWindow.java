@@ -192,9 +192,7 @@ public class OverlayWindow {
 			frame.setModal(false);	
 		else
 			frame.setModal(true);	
-			
-		frame.setAlwaysOnTop(true);		
-				
+
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);

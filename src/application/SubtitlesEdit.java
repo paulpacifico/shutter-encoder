@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import javax.swing.JFrame;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JTextPane;
@@ -72,6 +73,7 @@ public class SubtitlesEdit {
 		frame.getContentPane().setLayout(null);
 		frame.setSize(620, 670);
 		frame.setAlwaysOnTop(true);
+		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));

@@ -45,7 +45,6 @@ public class GOP {
 	public GOP() {
 		frame = new JDialog();
 		frame.setResizable(false);		
-		frame.setAlwaysOnTop(true);
 		frame.setModal(true);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);

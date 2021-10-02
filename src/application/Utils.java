@@ -472,6 +472,8 @@ public class Utils extends Shutter {
 		if (list == null)
 			return;
 
+		boolean addAll = false;
+		
 		for (File f : list) {
 			if (f.isDirectory()) 
 			{
@@ -491,16 +493,18 @@ public class Utils extends Shutter {
 					}
 					else if (f.isHidden() == false && f.getName().contains("."))
 					{			
-						if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
+						if (addAll == false && (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\")))
 						{
-							Object[] options = { Shutter.language.getProperty("btnAdd"), Shutter.language.getProperty("btnNext"), Shutter.language.getProperty("btnCancel") };
+							Object[] options = { Shutter.language.getProperty("btnAdd") + " " + Shutter.language.getProperty("setAll").toLowerCase(), Shutter.language.getProperty("btnAdd"), Shutter.language.getProperty("btnNext"), Shutter.language.getProperty("btnCancel") };
 							
 							int q = JOptionPane.showOptionDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
-									JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+									JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 						
-							if (q == 1) //Next
+							if (q == 0) //Add All
+								addAll = true;
+							else if (q == 2) //Next
 								continue;
-							else if (q == 2) //Cancel
+							else if (q == 3) //Cancel
 								break;
 						}
 						

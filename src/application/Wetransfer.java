@@ -110,8 +110,7 @@ public class Wetransfer {
 		frame.setSize(267, 340);
 		frame.setResizable(false);
 		frame.setModal(true);
-		frame.setAlwaysOnTop(true);
-		
+		frame.setAlwaysOnTop(true);		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{

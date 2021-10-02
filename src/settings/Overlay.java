@@ -1,12 +1,15 @@
 package settings;
 
 import java.awt.Color;
+import java.awt.Component;
 
 import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 import application.OverlayWindow;
 import application.RecordInputDevice;
 import application.Shutter;
+import application.SubtitlesEmbed;
 import application.SubtitlesWindow;
 import application.WatermarkWindow;
 import library.FFMPEG;
@@ -150,8 +153,20 @@ public class Overlay extends Shutter {
 				}
 			}
 			else if (caseSubtitles.isSelected() && subtitlesBurn == false)
-	    	{
-	    		return InputAndOutput.inPoint + " -i " + '"' +  subtitlesFile.toString() + '"';
+	    	{	
+				String subsFiles = "";
+				for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
+				{			
+					if (c instanceof JTextField)
+					{
+						if (((JTextField) c).getText().equals(language.getProperty("aucun")) == false)
+						{
+							subsFiles += InputAndOutput.inPoint + " -i " + '"' +  ((JTextField) c).getText() + '"';
+						}
+					}
+				}
+				
+	    		return subsFiles;
 	    	}
 		}
     	

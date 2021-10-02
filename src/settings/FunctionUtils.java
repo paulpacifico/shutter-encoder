@@ -26,11 +26,13 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import application.Console;
 import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
+import application.SubtitlesEmbed;
 import application.Utils;
 import application.VideoPlayer;
 import library.EXIFTOOL;
@@ -596,6 +598,47 @@ public class FunctionUtils extends Shutter {
 		return metadata;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static String setMapSubtitles() {
+		
+		int i = 0;
+		if (caseLogo.isSelected())
+			i = 1;
+		
+		String subsMapping = "";
+		boolean addSub = false;
+		
+		for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
+		{			
+			if (c instanceof JTextField)
+			{
+				if (((JTextField) c).getText().equals(language.getProperty("aucun")) == false)
+				{
+					i++;
+					addSub = true;
+				}
+				else
+					break;
+			}
+			else if (c instanceof JComboBox && addSub)
+			{
+	        	String[] languages = Locale.getISOLanguages();			
+				Locale loc = new Locale(languages[((JComboBox) c).getSelectedIndex()]);
+				
+				if (caseLogo.isSelected())
+				{
+					subsMapping += " -map " + i + ":s -metadata:s:s:" + (i - 2) + " language=" + loc.getISO3Language().replace("zho", "chi"); //For chinese compatibility			
+				}
+				else
+					subsMapping += " -map " + i + ":s -metadata:s:s:" + (i - 1) + " language=" + loc.getISO3Language().replace("zho", "chi"); //For chinese compatibility
+					
+				addSub = false;
+			}
+		}
+		
+		return subsMapping;
+	}
+	
 	public static String setFilterComplex(String filterComplex, boolean isOutputCodec, String audio) {
 
 		//No audio
@@ -707,18 +750,11 @@ public class FunctionUtils extends Shutter {
         
 		//On map les sous-titres que l'on intègre        
         if (caseSubtitles.isSelected() && subtitlesBurn == false)
-        {
-        	String map = " -map 1:s";
-        	if (caseLogo.isSelected())
-        		map = " -map 2:s";
-        	
-        	String[] languages = Locale.getISOLanguages();			
-			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
-			        	
+        {			        	
         	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
-        		filterComplex += map + " -c:s srt -metadata:s:s:0 language=" + loc.getISO3Language();
+        		filterComplex += " -c:s srt" + setMapSubtitles();
         	else
-        		filterComplex += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();      	
+        		filterComplex += " -c:s mov_text" + setMapSubtitles();    	
         }
         else if (casePreserveSubs.isSelected())
         {
@@ -803,7 +839,9 @@ public class FunctionUtils extends Shutter {
 			
 			//On map les sous-titres que l'on intègre        
 			if (caseSubtitles.isSelected() && subtitlesBurn == false)
-				mapping += " -map 1:s -c:s mov_text";
+			{
+				mapping += " -c:s mov_text" + setMapSubtitles();
+			}
 			
 			return mapping;
 		}
@@ -896,15 +934,8 @@ public class FunctionUtils extends Shutter {
 		
 		//On map les sous-titres que l'on intègre        
         if (caseSubtitles.isSelected() && subtitlesBurn == false)
-        {
-        	String map = " -map 1:s";
-        	if (caseLogo.isSelected())
-        		map = " -map 2:s";
-        	
-        	String[] languages = Locale.getISOLanguages();			
-			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
-        	
-			mapping += map + " -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();
+        {        				
+			mapping += " -c:s mov_text" + setMapSubtitles();
         }
 		
 		return mapping;

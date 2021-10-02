@@ -138,10 +138,7 @@ public class WatermarkWindow {
 		if (Functions.frame != null && Functions.frame.isVisible())
 			frame.setModal(false);	
 		else
-			frame.setModal(true);
-		
-		frame.setAlwaysOnTop(true);
-		
+			frame.setModal(true);	
 				
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{

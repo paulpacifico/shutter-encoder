@@ -19,12 +19,15 @@
 
 package functions;
 
+import java.awt.Component;
 import java.io.File;
-import java.util.Locale;
+
+import javax.swing.JTextField;
 
 import application.Ftp;
 import application.Settings;
 import application.Shutter;
+import application.SubtitlesEmbed;
 import application.Utils;
 import application.VideoPlayer;
 import application.Wetransfer;
@@ -128,7 +131,7 @@ public class Rewrap extends Shutter {
 							concat = " -noaccurate_seek";
 										
 						//Command
-						String cmd = " -avoid_negative_ts make_zero -c:v copy -c:s copy" + audio + timecode + " -map v:0?" + audioMapping + mapSubtitles + " -y ";
+						String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + " -map v:0?" + audioMapping + mapSubtitles + " -y ";
 						FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 						
 						do
@@ -253,8 +256,20 @@ public class Rewrap extends Shutter {
 	private static String setSubtitles() {
 		
 		if (caseSubtitles.isSelected())
-    	{			
-    		return InputAndOutput.inPoint + " -i " + '"' +  subtitlesFile.toString() + '"';
+    	{		
+			String subsFiles = "";
+			for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
+			{			
+				if (c instanceof JTextField)
+				{
+					if (((JTextField) c).getText().equals(language.getProperty("aucun")) == false)
+					{
+						subsFiles += InputAndOutput.inPoint + " -i " + '"' +  ((JTextField) c).getText() + '"';
+					}
+				}
+			}
+			
+    		return subsFiles;
     	}
 		
 		return "";
@@ -263,17 +278,14 @@ public class Rewrap extends Shutter {
 	private static String setMapSubtitles() {
 		
 		if (caseSubtitles.isSelected())
-		{
-        	String[] languages = Locale.getISOLanguages();			
-			Locale loc = new Locale(languages[comboSubtitles.getSelectedIndex()]);
-			        	
-        	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
-        		return " -map 1:s -c:s srt -metadata:s:s:0 language=" + loc.getISO3Language();
-        	else
-        		return " -map 1:s -c:s mov_text -metadata:s:s:0 language=" + loc.getISO3Language();      	
+		{			
+			if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+				return " -c:s srt" + FunctionUtils.setMapSubtitles();
+			else
+				return " -c:s mov_text" + FunctionUtils.setMapSubtitles();	
 		}
 		
-		return " -map s?";
+		return " -c:s copy -map s?";
 	}
 	
 	private static boolean lastActions(String fileName, File fileOut, String output) {

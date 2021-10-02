@@ -130,6 +130,7 @@ public class SubtitlesWindow {
 	private static int MousePositionY;
 
 	public SubtitlesWindow() {	
+		
 		frame = new JDialog();
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -143,10 +144,7 @@ public class SubtitlesWindow {
 			frame.setModal(false);	
 		else
 			frame.setModal(true);
-		
-		frame.setAlwaysOnTop(true);
-		
-		
+
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
@@ -159,8 +157,7 @@ public class SubtitlesWindow {
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);				
 			
-		}
-		
+		}		
 		
 		topPanel();
 		buttons();

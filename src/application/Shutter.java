@@ -344,7 +344,6 @@ public class Shutter {
 	protected static JRadioButton caseOPATOM;
 	protected static JRadioButton caseSubtitles;
 	protected static JRadioButton caseAS10;
-	protected static JComboBox<String> comboSubtitles;
 	protected static JComboBox<String> comboConform;
 	protected static JComboBox<String> comboFPS;
 	protected static JComboBox<String> comboAudioIn;
@@ -6918,6 +6917,8 @@ public class Shutter {
 						{
 							subtitlesBurn = false;
 							subtitlesFile = new File(SubtitlesTimeline.srt.toString());
+							changeSections(false);
+				        	caseDisplay.setSelected(false);
 
 							//On copy le .srt dans le fichier
 							Thread copySRT = new Thread(new Runnable()
@@ -7054,9 +7055,21 @@ public class Shutter {
 								{
 									if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())) 
 									{
-										comboSubtitles.setVisible(true);
+										SubtitlesEmbed.subtitlesFile1.setText(dialog.getDirectory() + dialog.getFile().toString());
+										
+										try {
+											frame.setOpacity(0.5f);
+										} catch (Exception er) {}
+										
+										if (SubtitlesEmbed.frame == null)
+											new SubtitlesEmbed();
+										else
+											Utils.changeDialogVisibility(SubtitlesEmbed.frame, false);
+
+										frame.setOpacity(1.0f);											
 										subtitlesBurn = false;
-										subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
+										changeSections(false);
+							        	caseDisplay.setSelected(false);
 									}
 									else
 									{
@@ -7104,10 +7117,22 @@ public class Shutter {
 											writeSub(SubtitlesWindow.subtitlesFile, StandardCharsets.UTF_8);										
 										}
 										else
-										{
-											comboSubtitles.setVisible(true);
+										{											
+											SubtitlesEmbed.subtitlesFile1.setText(dialog.getDirectory() + dialog.getFile().toString());
+											
+											try {
+												frame.setOpacity(0.5f);
+											} catch (Exception er) {}
+											
+											if (SubtitlesEmbed.frame == null)
+												new SubtitlesEmbed();
+											else
+												Utils.changeDialogVisibility(SubtitlesEmbed.frame, false);
+
+											frame.setOpacity(1.0f);											
 											subtitlesBurn = false;
-											subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
+											changeSections(false);
+								        	caseDisplay.setSelected(false);
 										}
 									}
 								}
@@ -7116,9 +7141,21 @@ public class Shutter {
 									
 									if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())) 
 									{
-										comboSubtitles.setVisible(true);
+										SubtitlesEmbed.subtitlesFile1.setText(dialog.getDirectory() + dialog.getFile().toString());
+										
+										try {
+											frame.setOpacity(0.5f);
+										} catch (Exception er) {}
+										
+										if (SubtitlesEmbed.frame == null)
+											new SubtitlesEmbed();
+										else
+											Utils.changeDialogVisibility(SubtitlesEmbed.frame, false);
+
+										frame.setOpacity(1.0f);											
 										subtitlesBurn = false;
-										subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
+										changeSections(false);
+							        	caseDisplay.setSelected(false);
 									}
 									else
 									{
@@ -7146,9 +7183,21 @@ public class Shutter {
 										}
 										else
 										{
-											comboSubtitles.setVisible(true);
+											SubtitlesEmbed.subtitlesFile1.setText(dialog.getDirectory() + dialog.getFile().toString());
+											
+											try {
+												frame.setOpacity(0.5f);
+											} catch (Exception er) {}
+											
+											if (SubtitlesEmbed.frame == null)
+												new SubtitlesEmbed();
+											else
+												Utils.changeDialogVisibility(SubtitlesEmbed.frame, false);
+
+											frame.setOpacity(1.0f);											
 											subtitlesBurn = false;
-											subtitlesFile = new File(dialog.getDirectory() + dialog.getFile().toString());
+											changeSections(false);
+								        	caseDisplay.setSelected(false);
 										}
 									}
 								}
@@ -7164,7 +7213,6 @@ public class Shutter {
 					}
 				} else {
 					caseSubtitles.setSelected(false);
-					comboSubtitles.setVisible(false);
 				}
 			}
 			
@@ -7287,9 +7335,6 @@ public class Shutter {
 
 		});
 
-		comboSubtitles = new JComboBox<String>();
-		comboSubtitles.setName("comboSubtitles");
-
 		String[] languages = Locale.getISOLanguages();
 		String[] allLanguages = new String[languages.length];
 		
@@ -7298,27 +7343,6 @@ public class Shutter {
 		    Locale loc = new Locale(languages[i]);
 		    allLanguages[i] = loc.getDisplayLanguage();
 		}
-
-		comboSubtitles.setModel(new DefaultComboBoxModel<String>(allLanguages));
-		comboSubtitles.setVisible(false);
-		comboSubtitles.setSelectedItem("English");
-		comboSubtitles.setFont(new Font(freeSansFont, Font.PLAIN, 10));
-		comboSubtitles.setEditable(false);
-		comboSubtitles.setSize(100, 18);
-		
-		comboSubtitles.addComponentListener( new ComponentAdapter ()
-	    {
-	        public void componentShown(ComponentEvent e)
-	        {
-	        	changeSections(false);
-	        	caseDisplay.setSelected(false);
-	        }
-
-	        public void componentHidden(ComponentEvent e)
-	        {
-	        	changeSections(false);
-	        }
-	    });
 		
 		caseLogo = new JRadioButton(language.getProperty("caseLogo"));
 		caseLogo.setName("caseLogo");
@@ -12975,7 +12999,6 @@ public class Shutter {
 				lblOPATOM.setText("OP-Atom");
 				caseOPATOM.setSelected(false);
 				caseSubtitles.setSelected(false);
-				comboSubtitles.setVisible(false);
 				caseConform.setSelected(false);
 				comboConform.setEnabled(false);
 				caseDecimate.setSelected(false);
@@ -13811,9 +13834,7 @@ public class Shutter {
 								grpAdvanced.setVisible(true);
 								grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 								caseSubtitles.setLocation(7, 16);
-								grpAdvanced.add(caseSubtitles);
-								comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
-								grpAdvanced.add(comboSubtitles);								
+								grpAdvanced.add(caseSubtitles);								
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
 							}
 							else if (language.getProperty("functionMerge").equals(fonction))
@@ -14163,7 +14184,7 @@ public class Shutter {
 							grpResolution.add(caseMiror);			
 							
 							addToList.setText(language.getProperty("filesVideo"));
-							if (comboSubtitles.isVisible() == false)
+							if (subtitlesBurn)
 								caseDisplay.setEnabled(true);
 							else
 								caseDisplay.setEnabled(false);
@@ -14211,8 +14232,6 @@ public class Shutter {
 							//grpOverlay
 							caseSubtitles.setLocation(7, 16);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
-							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
 														
@@ -14299,7 +14318,7 @@ public class Shutter {
 							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));			
 														
-							if (comboFonctions.getSelectedItem().equals("QT Animation") || comboSubtitles.isVisible())
+							if (comboFonctions.getSelectedItem().equals("QT Animation") || subtitlesBurn == false)
 								caseDisplay.setEnabled(false);
 							else
 								caseDisplay.setEnabled(true);
@@ -14481,8 +14500,6 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);	
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
-							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
 														
@@ -14585,7 +14602,7 @@ public class Shutter {
 						} else if ("H.264".equals(fonction) || "H.265".equals(fonction)) {
 
 							addToList.setText(language.getProperty("filesVideoOrPicture"));			
-							if (comboSubtitles.isVisible() == false)
+							if (subtitlesBurn)
 								caseDisplay.setEnabled(true);
 							else
 								caseDisplay.setEnabled(false);
@@ -14801,8 +14818,6 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);											
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
-							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
 														
@@ -14962,7 +14977,7 @@ public class Shutter {
 							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));	
 							
-							if (comboSubtitles.isVisible() == false)
+							if (subtitlesBurn)
 							{
 								caseDisplay.setEnabled(true);
 							}
@@ -15143,8 +15158,6 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);												
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
-							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
 
@@ -15395,7 +15408,7 @@ public class Shutter {
 						} else if ("DVD".equals(fonction) || "Blu-ray".equals(fonction)) {
 							
 							addToList.setText(language.getProperty("filesVideo"));
-							if (comboFonctions.getSelectedItem().equals("DVD") || comboSubtitles.isVisible())
+							if (comboFonctions.getSelectedItem().equals("DVD") || subtitlesBurn == false)
 								caseDisplay.setEnabled(false);
 							else
 								caseDisplay.setEnabled(true);
@@ -15529,8 +15542,6 @@ public class Shutter {
 							grpOverlay.add(caseAddOverlay);											
 							caseSubtitles.setLocation(7, caseAddOverlay.getHeight() + caseAddOverlay.getLocation().y);
 							grpOverlay.add(caseSubtitles);
-							comboSubtitles.setLocation(caseSubtitles.getLocation().x + caseSubtitles.getWidth(), caseSubtitles.getLocation().y + 3);
-							grpOverlay.add(comboSubtitles);
 							caseLogo.setLocation(7, caseSubtitles.getHeight() + caseSubtitles.getLocation().y);
 							grpOverlay.add(caseLogo);
 							
