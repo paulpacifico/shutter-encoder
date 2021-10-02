@@ -1151,9 +1151,9 @@ public class Settings {
 		});
 				
 		// Drag & Drop
-		lblDestination1.setTransferHandler(new DragAndDropJTextField());
-		lblDestination2.setTransferHandler(new DragAndDropJTextField());
-		lblDestination3.setTransferHandler(new DragAndDropJTextField());
+		lblDestination1.setTransferHandler(new OutputTransferHandler());
+		lblDestination2.setTransferHandler(new OutputTransferHandler());
+		lblDestination3.setTransferHandler(new OutputTransferHandler());
 
 		loadSettings();
 		
@@ -2064,7 +2064,7 @@ public class Settings {
 
 //Drag & Drop lblDestination
 @SuppressWarnings("serial")
-class DragAndDropJTextField extends TransferHandler {
+class OutputTransferHandler extends TransferHandler {
 
 	public boolean canImport(JComponent comp, DataFlavor[] arg1) {
 		
