@@ -113,12 +113,10 @@ public class SubtitlesTimeline {
 	public static double zoom = (double) 0.1;
 	boolean enableZoom = false;
 	private static boolean enableAutoScroll = true;
-	private static boolean enableTimelineScroll = false;	
 	private static boolean control = false;
 	private static boolean shift = false;
 	private static boolean controlRight = false;
 	private static boolean txtSubtitlesHasFocus = false;
-	private static boolean mouseSrolling = false;
 		
 	public static JButton btnAjouter;	
 	public static JButton btnSupprimer;	
@@ -980,17 +978,15 @@ public class SubtitlesTimeline {
 					if (e.getKeyCode() == 109)
 						VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() - 2);
 				}				
-				
-				
+								
 				if (frame.hasFocus())
-				{
+				{					
 					if (e.getKeyCode() == KeyEvent.VK_HOME)
 					{
 						enableAutoScroll = false;	
 						cursor.setLocation(0, cursor.getY());
 						setVideoPosition(0);
 						timelineScrollBar.setValue(0);	
-
 	  					enableAutoScroll = true;
 					}
 					
@@ -1074,8 +1070,12 @@ public class SubtitlesTimeline {
 		
 		MouseWheelListener mouseWheelListener = new MouseWheelListener() {
 
+			Thread t;
+			long mouseScrollTime = System.currentTimeMillis();
+			
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
+				
 				if (enableZoom)
 				{			
 					enableAutoScroll = false;		
@@ -1122,33 +1122,39 @@ public class SubtitlesTimeline {
 					setSubtitles(srt);	
 				}
 				else
-				{			
-					if (mouseSrolling == false)
-					{
-						mouseSrolling = true;
+				{					
+					mouseScrollTime = System.currentTimeMillis();
+					
+					if (VideoPlayer.frameLeft != null)
+					{	
+						int newValue = timelineScrollBar.getValue() + e.getWheelRotation() * 100;
+						if (zoom < 0.1)
+							newValue = timelineScrollBar.getValue() + e.getWheelRotation() * 10;
+												
+						timelineScrollBar.setValue(newValue);
 						
-						Thread t = new Thread(new Runnable() {
+						if (t == null || t.isAlive() == false)
+						{
+							t = new Thread(new Runnable() {
 	
-							@Override
-							public void run() {
-																
-								if (VideoPlayer.frameLeft != null)
-								{
-									int newValue = timelineScrollBar.getValue() + e.getWheelRotation() * 100;
-									if (zoom < 0.1)
-										newValue = timelineScrollBar.getValue() + e.getWheelRotation() * 10;
+								@Override
+								public void run() {
 									
-									enableTimelineScroll = true;
-									enableAutoScroll = false;
-									timelineScrollBar.setValue(newValue);	
-									enableTimelineScroll = false;
-									enableAutoScroll = true;	
-								}
+									do {
+										
+										try {
+											Thread.sleep(100);
+										} catch (InterruptedException e) {}
+										
+									} while (System.currentTimeMillis() - mouseScrollTime < 300);
+									
+									//Waveform
+									VideoPlayer.addWaveform(true);
+								}							
 								
-								mouseSrolling = false;
-							}						
-						});		
-						t.start();
+							});						
+							t.start();
+						}
 					}
 				}							
 			}			
@@ -1284,14 +1290,15 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				enableTimelineScroll = true;
 				enableAutoScroll = false;
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {	
-				enableTimelineScroll = false;
 				enableAutoScroll = true;
+				
+				//Waveform
+				VideoPlayer.addWaveform(true);
 			}
 			
 		});
@@ -1301,17 +1308,6 @@ public class SubtitlesTimeline {
 			public void adjustmentValueChanged(AdjustmentEvent ae) {	
 									
 					timeline.setLocation(0 - timelineScrollBar.getValue(), timeline.getLocation().y);
-
-					if (cursor.getLocation().x - timelineScrollBar.getValue() >= frame.getContentPane().getWidth() && enableTimelineScroll)
-					{
-						cursor.setLocation((int) (timelineScrollBar.getValue() + frame.getWidth() - (1000/FFPROBE.currentFPS)), cursor.getY());
-						setVideoPosition((int) (cursor.getX()/zoom));
-					}
-					else if (cursor.getLocation().x - timelineScrollBar.getValue() < 0 && enableTimelineScroll)
-					{
-						cursor.setLocation(timelineScrollBar.getValue(), cursor.getY());
-						setVideoPosition((int) (cursor.getX()/zoom));
-					}
 		      }			
 			
 		});
@@ -1621,7 +1617,6 @@ public class SubtitlesTimeline {
 					selectedSubs.clear();
 				}
 				
-				enableTimelineScroll = false;
 				enableAutoScroll = true;
 				
 				repaintTimeline();
@@ -1798,13 +1793,11 @@ public class SubtitlesTimeline {
 				//Débordement timeline
 				if (e.getXOnScreen() > (frame.getX() + frame.getWidth()))
 				{
-					enableTimelineScroll = true;
 					enableAutoScroll = false;
 					timelineScrollBar.setValue(timelineScrollBar.getValue() + (e.getXOnScreen() - (frame.getX() + frame.getWidth())));
 				}
 				else if (e.getXOnScreen() < frame.getX() && timelineScrollBar.getValue() > 0)
 				{
-					enableTimelineScroll = true;
 					enableAutoScroll = false;
 					timelineScrollBar.setValue(timelineScrollBar.getValue() - (frame.getX() - e.getXOnScreen()));
 				}				

@@ -753,7 +753,7 @@ public class SubtitlesWindow {
 		            		else
 		            		{
 		            			if (lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-		            				bufferedWriter.write(" \\h" + line + " \\h");
+		            				bufferedWriter.write("\\h" + line + "\\h");
 		            			else
 		            				bufferedWriter.write(line);
 		            		}
@@ -835,7 +835,7 @@ public class SubtitlesWindow {
             		else if (line.contains("-->") == false && line.matches("[0-9]+") == false && line.isEmpty() == false)
             		{           			
             			if (lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-        					bufferedWriter.write(" \\h" + line + " \\h");
+        					bufferedWriter.write("\\h" + line + "\\h");
 	        			else
 	        				bufferedWriter.write(line);
         			

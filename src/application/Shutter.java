@@ -7006,29 +7006,33 @@ public class Shutter {
 						
 						FileDialog dialog = new FileDialog(frame, language.getProperty("chooseSubtitles"),	FileDialog.LOAD);
 						
+						char slash = '/';
+						if (System.getProperty("os.name").contains("Windows"))
+							slash = '\\';
+						
 						if (new File (video.toString().replace(ext, ".srt")).exists())
 						{
-							dialog.setDirectory(video.getParent() + "/");
+							dialog.setDirectory(video.getParent() + slash);
 							dialog.setFile(video.getName().replace(ext, ".srt"));
 						}
 						else if (new File (video.toString().replace(ext, ".vtt")).exists())
 						{
-							dialog.setDirectory(video.getParent() + "/");
+							dialog.setDirectory(video.getParent() + slash);
 							dialog.setFile(video.getName().replace(ext, ".vtt"));
 						}
 						else if (new File (video.toString().replace(ext, ".ass")).exists())
 						{
-							dialog.setDirectory(video.getParent() + "/");
+							dialog.setDirectory(video.getParent() + slash);
 							dialog.setFile(video.getName().replace(ext, ".ass"));
 						}
 						else if (new File (video.toString().replace(ext, ".ssa")).exists())
 						{
-							dialog.setDirectory(video.getParent() + "/");
+							dialog.setDirectory(video.getParent() + slash);
 							dialog.setFile(video.getName().replace(ext, ".ssa"));
 						}
 						else if (new File (video.toString().replace(ext, ".scc")).exists())
 						{
-							dialog.setDirectory(video.getParent() + "/");
+							dialog.setDirectory(video.getParent() + slash);
 							dialog.setFile(video.getName().replace(ext, ".scc"));
 						}
 						else
@@ -7270,7 +7274,7 @@ public class Shutter {
 		            		if (stop == false)
 		            		{
 		            			if (SubtitlesWindow.frame != null && SubtitlesWindow.lblBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-		            				bufferedWriter.write(" \\h" + line + " \\h");
+		            				bufferedWriter.write("\\h" + line + "\\h");
 		            			else
 		            				bufferedWriter.write(line);
 		            			

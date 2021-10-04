@@ -1398,7 +1398,13 @@ public class VideoPlayer {
 						String start = "";
 						String duration = "";
 						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-						{		
+						{	
+							do {
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e) {}
+							} while (SubtitlesTimeline.frame == null);
+							
 							if (SubtitlesTimeline.waveform == null)
 								SubtitlesTimeline.waveform = new JLabel();	
 							
