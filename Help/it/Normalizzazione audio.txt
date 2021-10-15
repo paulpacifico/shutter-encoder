@@ -1,3 +1,0 @@
-Ti consigliamo di eseguire nuovamente la scansione del file dopo questo passaggio.
-Questa funzione non effettua una compressione audio e riduce o aumenta solo il livello audio.
-Se la sorgente usa 4 canali, verranno usati solo i primi due per l'analisi.

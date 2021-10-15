@@ -1,1 +1,0 @@
-Supporta il formato RAW per le foto e i file PDF.

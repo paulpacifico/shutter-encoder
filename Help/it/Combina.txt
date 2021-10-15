@@ -1,1 +1,0 @@
-Consente di incollare i file video o audio con lo stesso codec nell'ordine dell'elenco dei file.
