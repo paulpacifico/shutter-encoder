@@ -42,6 +42,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -171,6 +172,8 @@ public class VideoPlayer {
 	public static JLabel lblDuree;
 	private static JLabel lblMode;
 	public static JComboBox<Object> comboMode = new JComboBox<Object>(new String [] {Shutter.language.getProperty("cutUpper"), Shutter.language.getProperty("removeMode")});
+	private static JLabel lblSpeed;
+	private static JSlider sliderSpeed;
 	private static boolean showInfoMessage = true;
 	
 	//Temps final
@@ -529,6 +532,19 @@ public class VideoPlayer {
 					sliderVolume.setValue(sliderVolume.getValue() - 2);
 				
 				
+				if (e.getKeyCode() == KeyEvent.VK_K)
+					leftPlay.doClick();
+
+				if (e.getKeyCode() == KeyEvent.VK_J)
+				{
+					playerLeftSetTime((float) (VideoPlayer.playerLeftTime - ((1000 /FFPROBE.currentFPS) * 11)));
+  				}
+					
+				if (e.getKeyCode() == KeyEvent.VK_L)
+				{
+					playerLeftSetTime((float) (VideoPlayer.playerLeftTime + ((1000 /FFPROBE.currentFPS) * 9)));
+				}
+				
 				if (playerLeftVideo != null)
 				{
 					if (e.getKeyCode() == KeyEvent.VK_LEFT)
@@ -673,8 +689,18 @@ public class VideoPlayer {
 				        		//Read 1 video frame
 								frameLeft = ImageIO.read(videoInputStream);
 								playerLeftRepaint();
-					
-								playerLeftTime += inputFramerateMS;
+													
+								if (sliderSpeed.getValue() != 2)
+								{													
+									if (sliderSpeed.getValue() != 0)
+									{
+										playerLeftTime += inputFramerateMS * sliderSpeed.getValue() / 2;
+									}
+									else
+										playerLeftTime += inputFramerateMS * 0.25f;
+								}
+								else
+									playerLeftTime += inputFramerateMS;
 																								
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -774,7 +800,7 @@ public class VideoPlayer {
 			frame.getContentPane().repaint();	
 		}
 		
-		getTimeInPoint(playerLeftGetTime()); 
+		getTimeInPoint(playerLeftTime); 
 	}
 	
 	public static boolean playerLeftIsPlaying() {
@@ -851,11 +877,7 @@ public class VideoPlayer {
 			setTimeLeft.start();
 		}	
 	}
-	
-	public static float playerLeftGetTime() {
-		return playerLeftTime;			
-	}
-	
+		
 	public static void playerLeftFreeze() {
 		
 		frameLeftControl = true;
@@ -961,7 +983,17 @@ public class VideoPlayer {
 								frameRight = ImageIO.read(videoInputStream);
 								playerRightRepaint();
 					
-								playerRightTime += inputFramerateMS;
+								if (sliderSpeed.getValue() != 2)
+								{
+									if (sliderSpeed.getValue() != 0)
+									{
+										playerRightTime += inputFramerateMS * sliderSpeed.getValue() / 2;
+									}
+									else
+										playerRightTime += inputFramerateMS * 0.25f;
+								}
+								else
+									playerRightTime += inputFramerateMS;
 																								
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -1062,7 +1094,7 @@ public class VideoPlayer {
 			frame.getContentPane().repaint();			
 		}
 				
-		getTimeOutPoint(playerRightGetTime()); 
+		getTimeOutPoint(playerRightTime); 
 	}
 	
 	public static boolean playerRightIsPlaying() {
@@ -1134,11 +1166,7 @@ public class VideoPlayer {
 			setTimeRight.start();
 		}
 	}
-	
-	public static float playerRightGetTime() {
-		return playerRightTime;			
-	}
-			
+				
 	public static void playerRightFreeze() {
 				
 		frameRightControl = true;
@@ -1341,30 +1369,55 @@ public class VideoPlayer {
 		if (FFPROBE.entrelaced.equals("1"))
 			yadif = " -vf yadif=0:" + FFPROBE.fieldOrder + ":0";
 		
+		String speed = "";
+		if (sliderSpeed.getValue() != 2)
+		{
+			if (yadif != "")
+				speed = ",";
+			else
+				speed = " -vf ";
+			
+			if (sliderSpeed.getValue() != 0)
+			{
+				speed += "setpts=" + (float) 1 / ((float) sliderSpeed.getValue() / 2) + "*PTS";
+			}
+			else
+				speed += "setpts=4*PTS";				
+		}
+				
 		if (FFPROBE.audioOnly)
 		{			
 			//Important
 			FFPROBE.currentFPS = 25.0f;
 			
 			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -f lavfi -i " + '"' + "color=c=black:r=25:s="
-					+ width + "x" + height + '"' +  " -c:v bmp -an -f image2pipe pipe:-";		
+					+ width + "x" + height + '"' + speed + " -c:v bmp -an -f image2pipe pipe:-";		
 		}
 		else
 		{
 			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -ss " + (long) inputTime + "ms -i " + '"' + videoPath + '"'
-					+  " -c:v bmp -an -s " + width + "x" + height + yadif + " -sws_flags fast_bilinear -f image2pipe pipe:-";			
+					+  " -c:v bmp -an -s " + width + "x" + height + yadif + speed + " -sws_flags fast_bilinear -f image2pipe pipe:-";			
 		}
 	}
 	
 	public static String setAudioCommand(float inputTime) {
 				
+		String speed = "";					
+		if (sliderSpeed.getValue() != 2)
+		{
+			if (sliderSpeed.getValue() != 0)
+				speed = " -af atempo=" + (float) sliderSpeed.getValue() / 2;
+			else
+				speed = " -af atempo=0.5,atempo=0.5";
+		}
+				
 		if (FFPROBE.hasAudio == false)
 		{
-			return " -v quiet -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
+			return " -v quiet -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
 		}
 		else
 		{
-			return " -v quiet -ss " + (long) inputTime + "ms -i " + '"' + videoPath + '"' +  " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+			return " -v quiet -ss " + (long) inputTime + "ms -i " + '"' + videoPath + '"' + speed + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
 		}
 	}
     
@@ -1589,6 +1642,14 @@ public class VideoPlayer {
 						@Override
 						public void run() {
 							
+							if (sliderSpeed.getValue() != 2)
+							{
+								sliderSpeed.setValue(2);
+								lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+								lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);								
+								playerRightSetTime(sliderOut.getValue() - inputFramerateMS);
+							}
+							
 							if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 								leftPlay.doClick();
 
@@ -1641,6 +1702,14 @@ public class VideoPlayer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+				if (sliderSpeed.getValue() != 2)
+				{
+					sliderSpeed.setValue(2);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+					lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
+					playerRightSetTime(sliderOut.getValue() + inputFramerateMS);
+				}
+				
 				if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 					leftPlay.doClick();
 
@@ -1680,6 +1749,11 @@ public class VideoPlayer {
 				{
 					rightPlay.setText(Shutter.language.getProperty("btnResume"));
 					playerRightLoop = false;
+					
+					if (sliderSpeed.getValue() != 2 && sliderOut.getValue() != sliderOut.getMaximum())
+					{
+						playerRightSetTime(formatTime(sliderOut.getValue()));	
+					}	
 				}
 				else if (rightPlay.getText().equals(Shutter.language.getProperty("btnResume")) && playerRightTime < (FFPROBE.totalLength - inputFramerateMS*2))
 				{
@@ -1706,7 +1780,10 @@ public class VideoPlayer {
 				if (playerRightVideo != null)
 				{
 					if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
-						rightPlay.doClick();					
+					{
+						rightPlay.setText(Shutter.language.getProperty("btnResume"));
+						playerRightLoop = false;				
+					}
 									
 					if (panelWaveformRight != null)
 						panelWaveformRight.setLocation(waveformRight.getWidth() - 2, panelWaveformRight.getLocation().y);	
@@ -1777,7 +1854,15 @@ public class VideoPlayer {
 
 						@Override
 						public void run() {
-														
+									
+							if (sliderSpeed.getValue() != 2)
+							{
+								sliderSpeed.setValue(2);
+								lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+								lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
+								playerLeftSetTime(sliderIn.getValue() - inputFramerateMS);
+							}
+							
 							if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 								rightPlay.doClick();
 			
@@ -1846,6 +1931,14 @@ public class VideoPlayer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				if (sliderSpeed.getValue() != 2)
+				{
+					sliderSpeed.setValue(2);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+					lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
+					playerLeftSetTime(sliderIn.getValue() + inputFramerateMS);
+				}
+				
 				if (rightPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 					rightPlay.doClick();
 				
@@ -1927,6 +2020,11 @@ public class VideoPlayer {
 				{
 					leftPlay.setText(Shutter.language.getProperty("btnResume"));	
 					playerLeftLoop = false;
+					
+					if (sliderSpeed.getValue() != 2)
+					{
+						playerLeftSetTime(formatTime(sliderIn.getValue()));	
+					}							
 				}
 				else if (leftPlay.getText().equals(Shutter.language.getProperty("btnResume")))
 				{				
@@ -2092,7 +2190,7 @@ public class VideoPlayer {
 				sliderInChange = false;		
 				
 				//Then refresh the slider position
-				getTimeInPoint(playerLeftTime);
+				getTimeInPoint(playerLeftTime - inputFramerateMS);
 							
 			}
 
@@ -2122,6 +2220,12 @@ public class VideoPlayer {
 					{			
 						if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 						{
+							if (sliderSpeed.getValue() != 2)
+							{
+								sliderSpeed.setValue(2);
+								lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+							}
+								
 							leftPlay.doClick();
 						}
 						
@@ -2137,7 +2241,7 @@ public class VideoPlayer {
 							rightPlay.setVisible(true);
 							rightStop.setVisible(true);							
 							
-							if (playerRightGetTime() == 0 || playerRightGetTime() == FFPROBE.totalLength) // Seul moyen pour effectuer l'action seulement quand le playerRight est invisible
+							if (playerRightTime == 0 || playerRightTime == FFPROBE.totalLength) // Seul moyen pour effectuer l'action seulement quand le playerRight est invisible
 							{				
 		    					leftPlay.setText(Shutter.language.getProperty("btnResume"));
 		    					
@@ -2230,7 +2334,7 @@ public class VideoPlayer {
 				sliderOutChange = false;		
 				
 				//Then refresh the slider position
-				getTimeOutPoint(playerRightTime);	
+				getTimeOutPoint(playerRightTime - inputFramerateMS);	
 
 			}
 
@@ -2859,7 +2963,7 @@ public class VideoPlayer {
 				sliderInChange = false;		
 				
 				//Then refresh the slider position
-				getTimeInPoint(playerLeftTime);
+				getTimeInPoint(playerLeftTime - inputFramerateMS);
 			}
 			
 		});
@@ -2967,7 +3071,7 @@ public class VideoPlayer {
 				sliderOutChange = false;		
 				
 				//Then refresh the slider position
-				getTimeOutPoint(playerRightTime);	
+				getTimeOutPoint(playerRightTime - inputFramerateMS);	
 				
 				if (sliderOut.getValue() == sliderOut.getMaximum())
 				{
@@ -3199,7 +3303,7 @@ public class VideoPlayer {
 		
 		comboMode.setName("comboMode");
 		comboMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		comboMode.setMaximumRowCount(20);
+		comboMode.setMaximumRowCount(2);
 		comboMode.setSize(76, 22);
 		comboMode.setLocation(btnPreview.getX() - 76 - 5, frame.getSize().height - 16 - 12 - 1);
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
@@ -3227,7 +3331,188 @@ public class VideoPlayer {
 		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			frame.getContentPane().add(lblMode);
+
+		sliderSpeed = new JSlider();
+		sliderSpeed.setMaximum(4);
+		sliderSpeed.setValue(2);
+		sliderSpeed.setMinorTickSpacing(1);
+		sliderSpeed.setMajorTickSpacing(1);
+		sliderSpeed.setSize(80, 22);
+		sliderSpeed.setLocation(lblMode.getX() - 80 - 5, frame.getSize().height - 16 - 12);
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
+			frame.getContentPane().add(sliderSpeed);
+
+		sliderSpeed.addMouseMotionListener(new MouseMotionListener() {
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				
+				if (e.getX() < 20)
+				{
+					sliderSpeed.setValue(0);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x0.25");
+				}
+				else if (e.getX() > 10 && e.getX() < 30)
+				{
+					sliderSpeed.setValue(1);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x0.5");
+				}
+				else if (e.getX() > 30 && e.getX() < 50)
+				{
+					sliderSpeed.setValue(2);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+				}
+				else if (e.getX() > 50 && e.getX() < 70)
+				{
+					sliderSpeed.setValue(3);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1.5");
+				}
+				else if (e.getX() > 70)
+				{
+					sliderSpeed.setValue(4);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x2");
+				}
+				
+				lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
+				
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent arg0) {	
+				
+			}
+			
+		});
+		
+		sliderSpeed.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				if (e.getClickCount() == 2)
+				{
+					sliderSpeed.setValue(2);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+					
+					if (sliderIn.getValue() > 0)
+					{
+						leftFrameIsComplete = false;
+									
+						playerLeftSetTime(sliderIn.getValue());
 						
+						long time = System.currentTimeMillis();
+						
+						do {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException er) {}
+							
+							if (System.currentTimeMillis() - time > 1000)
+								leftFrameIsComplete = true;
+														
+						} while (leftFrameIsComplete == false);		
+					}
+					
+					if (sliderOut.getValue() != sliderOut.getMaximum())
+					{
+						rightFrameIsComplete = false;
+						
+						playerRightSetTime(sliderOut.getValue());
+	
+						long time = System.currentTimeMillis();
+						
+						do {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException er) {}
+							
+							if (System.currentTimeMillis() - time > 1000)
+								rightFrameIsComplete = true;
+														
+						} while (rightFrameIsComplete == false);
+					}	
+				}
+			}	
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+					
+				if (e.getX() < 20)
+				{
+					sliderSpeed.setValue(0);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x0.25");
+				}
+				else if (e.getX() > 10 && e.getX() < 30)
+				{
+					sliderSpeed.setValue(1);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x0.5");
+				}
+				else if (e.getX() > 30 && e.getX() < 50)
+				{
+					sliderSpeed.setValue(2);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
+				}
+				else if (e.getX() > 50 && e.getX() < 70)
+				{
+					sliderSpeed.setValue(3);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1.5");
+				}
+				else if (e.getX() > 70)
+				{
+					sliderSpeed.setValue(4);
+					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x2");
+				}
+				
+				lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
+								
+				if (sliderIn.getValue() > 0)
+				{
+					leftFrameIsComplete = false;
+								
+					playerLeftSetTime(sliderIn.getValue());
+					
+					long time = System.currentTimeMillis();
+					
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException er) {}
+						
+						if (System.currentTimeMillis() - time > 1000)
+							leftFrameIsComplete = true;
+													
+					} while (leftFrameIsComplete == false);		
+				}
+				
+				if (sliderOut.getValue() != sliderOut.getMaximum())
+				{
+					rightFrameIsComplete = false;
+					
+					playerRightSetTime(sliderOut.getValue());
+
+					long time = System.currentTimeMillis();
+					
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException er) {}
+						
+						if (System.currentTimeMillis() - time > 1000)
+							rightFrameIsComplete = true;
+													
+					} while (rightFrameIsComplete == false);
+				}	
+			}
+
+		});
+				
+		lblSpeed = new JLabel(Shutter.language.getProperty("conformBySpeed") + " x1"); //0.25 allow to get max preferred size width
+		lblSpeed.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblSpeed.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
+			frame.getContentPane().add(lblSpeed);
+		
 		caseTcInterne.addActionListener(new ActionListener()
 		{
 			@Override
@@ -3260,12 +3545,12 @@ public class VideoPlayer {
 					offset = 0;
 					
 					if (sliderIn.getValue() != 0)
-						timeIn = (playerLeftGetTime() - inputFramerateMS);
+						timeIn = (playerLeftTime - inputFramerateMS);
 					else
 						timeIn = 0;
 					
 					if (sliderOut.getValue() < sliderOut.getMaximum())
-						timeOut = playerRightGetTime();
+						timeOut = playerRightTime;
 					else
 						timeOut = FFPROBE.totalLength;
 				}
@@ -3833,7 +4118,10 @@ public class VideoPlayer {
 		casePlaySound.setBounds(6, grpIn.getLocation().y - 36, 195, 23);
 		caseTcInterne.setBounds(6, frame.getHeight() - 31, 195, 23);		
 		comboMode.setLocation(btnPreview.getX() - 76 - 5, frame.getSize().height - 16 - 12 - 1);
-		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);
+		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);		
+		sliderSpeed.setLocation(lblMode.getX() - 80 - 5, frame.getSize().height - 16 - 12);
+		lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
+		
 		
 		//Sliders
 		sliderIn.setBounds(grpIn.getLocation().x + grpIn.getSize().width + 12, grpIn.getLocation().y, frame.getSize().width - (grpIn.getLocation().x + grpIn.getSize().width + 12) - 12, 60); 
@@ -3991,7 +4279,7 @@ public class VideoPlayer {
     	if (playerLeftVideo != null && time - offset < FFPROBE.totalLength)
     	{    		
     		//Lorsque le sliderIn atteint le sliderOut
-    		if (playerLeftGetTime() >= (playerRightGetTime() - inputFramerateMS*2) && sliderOut.getValue() != sliderOut.getMaximum())
+    		if (playerLeftTime >= (playerRightTime - inputFramerateMS*2) && sliderOut.getValue() != sliderOut.getMaximum())
     		{
     			if (playerLeftIsPlaying())
     			{
@@ -4011,7 +4299,7 @@ public class VideoPlayer {
     		
     		if (sliderOutChange == false && sliderInChange == false && drag == false)
     		{    			
-    			sliderIn.setValue((int) playerLeftGetTime());
+    			sliderIn.setValue((int) playerLeftTime);
     			if (FFPROBE.hasAudio && VideoPlayer.panelWaveformLeft != null)
     				panelWaveformLeft.setLocation((int) ((long) ((long) waveformLeft.getSize().width * sliderIn.getValue()) / sliderIn.getMaximum()) ,0);
     			
@@ -4023,8 +4311,7 @@ public class VideoPlayer {
 					sliderInChange = false;
 				}
     		}
-    		       
-    		playerLeftTime = playerLeftGetTime();
+
     		totalDuration();		
         		        	
     	}
@@ -4049,7 +4336,7 @@ public class VideoPlayer {
 			sliderOutChange = false;    		
 		}
 		
-    	if (playerRightVideo != null && playerRightGetTime() != 0)
+    	if (playerRightVideo != null && playerRightTime != 0)
     	{			    		    		
     		//Lorsque la video atteint le maximum
     		if (time >= (FFPROBE.totalLength - inputFramerateMS*2))
@@ -4066,7 +4353,7 @@ public class VideoPlayer {
        		
 	  		if (sliderInChange == false && sliderOutChange == false && drag == false)
 	  		{	  			
-	  			sliderOut.setValue((int) playerRightGetTime());
+	  			sliderOut.setValue((int) playerRightTime);
     			if (FFPROBE.hasAudio && panelWaveformRight != null)
     				panelWaveformRight.setLocation((int) ((long) ((long) waveformRight.getSize().width * sliderOut.getValue()) / sliderOut.getMaximum()) ,0);
     			    			
@@ -4079,7 +4366,6 @@ public class VideoPlayer {
 				}
 	  		}
 
-            playerRightTime = playerRightGetTime();
     		totalDuration();
     	}
 	}

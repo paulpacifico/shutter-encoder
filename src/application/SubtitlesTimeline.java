@@ -1018,12 +1018,12 @@ public class SubtitlesTimeline {
 	
 					if (e.getKeyCode() == KeyEvent.VK_J)
 					{
-						setVideoPosition((int) (VideoPlayer.playerLeftGetTime() - ((1000 /FFPROBE.currentFPS) * 10)));
+						setVideoPosition((int) (VideoPlayer.playerLeftTime - ((1000 /FFPROBE.currentFPS) * 11)));
 	  				}
 						
 					if (e.getKeyCode() == KeyEvent.VK_L)
 					{
-						setVideoPosition((int) (VideoPlayer.playerLeftGetTime() + ((1000 /FFPROBE.currentFPS) * 10)));
+						setVideoPosition((int) (VideoPlayer.playerLeftTime + ((1000 /FFPROBE.currentFPS) * 9)));
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -1230,7 +1230,9 @@ public class SubtitlesTimeline {
 			public void mouseReleased(MouseEvent e) {	
 				
 				VideoPlayer.sliderInChange = false;						
-				VideoPlayer.getTimeInPoint(VideoPlayer.playerLeftGetTime());
+
+				//Then refresh the slider position
+				VideoPlayer.getTimeInPoint(VideoPlayer.playerLeftTime - VideoPlayer.inputFramerateMS);
 			}				
 			
 		});

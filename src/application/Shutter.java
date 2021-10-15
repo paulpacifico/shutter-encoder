@@ -541,7 +541,6 @@ public class Shutter {
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
         frame.setShape(shape1);
-		//frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100, 100, 100)));
 		
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -558,10 +557,6 @@ public class Shutter {
 		
 		soundURL = this.getClass().getClassLoader().getResource("contents/complete.wav");
 		soundErrorURL = this.getClass().getClassLoader().getResource("contents/error.wav");
-		
-		// Seulement pour mac
-		//if (System.getProperty("os.name").contains("Mac"))
-			//Application.getApplication().setDockIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 
 		frame.getRootPane().setDefaultButton(btnStart);
 
@@ -15799,9 +15794,9 @@ public class Shutter {
 		if (comboFonctions.getEditor().getItem().toString().length() == 0)
 		{
 			lblFilter.setText(language.getProperty("lblFilter"));			
-			final String filtres[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
+			final String types[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
 					".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
-			final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+			final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 			comboFilter.setModel(model);
 			comboFilter.setSelectedIndex(0);
 		}		
@@ -15825,41 +15820,47 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionConform"))) {
 				
 				lblFilter.setText(Shutter.language.getProperty("lblTo"));
-				final String filtres[] = {"23,976 " + Shutter.language.getProperty("fps"), "24 " + Shutter.language.getProperty("fps"), "25 " + Shutter.language.getProperty("fps"), "29,97 " + Shutter.language.getProperty("fps"), "30 " + Shutter.language.getProperty("fps"), "48 " + Shutter.language.getProperty("fps"), "50 " + Shutter.language.getProperty("fps"), "59,94 " + Shutter.language.getProperty("fps"), "60 " + Shutter.language.getProperty("fps") };				
-				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				final String types[] = {"23,976 " + Shutter.language.getProperty("fps"), "24 " + Shutter.language.getProperty("fps"), "25 " + Shutter.language.getProperty("fps"), "29,97 " + Shutter.language.getProperty("fps"), "30 " + Shutter.language.getProperty("fps"), "48 " + Shutter.language.getProperty("fps"), "50 " + Shutter.language.getProperty("fps"), "59,94 " + Shutter.language.getProperty("fps"), "60 " + Shutter.language.getProperty("fps") };				
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				comboFilter.setModel(model);
 				comboFilter.setSelectedIndex(2);
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionReplaceAudio"))) {
 				
 				lblFilter.setText(Shutter.language.getProperty("lblAt"));
-				final String filtres[] = {	language.getProperty("shortest"), language.getProperty("longest") };				
-				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-				comboFilter.setModel(model);
-				comboFilter.setSelectedIndex(0);
+				final String types[] = {	language.getProperty("shortest"), language.getProperty("longest") };				
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
 
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))) {
 
 				lblFilter.setText(Shutter.language.getProperty("lblTo"));
-				final String filtres[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi",
+				final String types[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi",
 						".mp4", ".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".webm"};
-				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-				comboFilter.setModel(model);
-				comboFilter.setSelectedIndex(0);
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
 			
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionExtract"))) {
 
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				final String filtres[] = { language.getProperty("setAll"), language.getProperty("video"), language.getProperty("audio"), language.getProperty("subtitles")};
-				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-				comboFilter.setModel(model);
-				comboFilter.setSelectedIndex(0);
+				final String types[] = { language.getProperty("setAll"), language.getProperty("video"), language.getProperty("audio"), language.getProperty("subtitles")};
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionBlackDetection"))) {
 
 				lblFilter.setText(Shutter.language.getProperty("levels"));
-				String filtres[] = { "16-235", "0-255" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "16-235", "0-255" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15868,8 +15869,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("DV PAL")) {
 
 				lblFilter.setText("Format");
-				String filtres[] = { "16/9", "4/3" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "16/9", "4/3" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15882,8 +15883,8 @@ public class Shutter {
 				if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
 					extensions = new String[] {".mkv"};				
 				
-				String filtres[] = extensions;
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = extensions;
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15893,8 +15894,8 @@ public class Shutter {
 							
 				String[] extensions = new String[] { ".webm", ".mkv" };			
 				
-				String filtres[] = extensions;
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = extensions;
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15906,8 +15907,8 @@ public class Shutter {
 				if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
 					extensions = new String[] {".mkv"};				
 				
-				String filtres[] = extensions;
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = extensions;
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15916,8 +15917,8 @@ public class Shutter {
 					|| comboFonctions.getSelectedItem().toString().equals("AIFF")) {
 
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String filtres[] = { "16 Bits", "24 Bits", "32 Bits", "32 Float" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "16 Bits", "24 Bits", "32 Bits", "32 Float" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15926,8 +15927,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("FLAC")) {
 
 				lblFilter.setText("Comp.:");
-				String filtres[] = { "0","1","2","3","4","5","6","7","8","9","10","11","12" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "0","1","2","3","4","5","6","7","8","9","10","11","12" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(5);
@@ -15938,32 +15939,39 @@ public class Shutter {
 					|| comboFonctions.getSelectedItem().toString().equals("OGG")) {
 
 				lblFilter.setText(language.getProperty("lblBitrate"));
-				String filtres[] = { "320", "256", "192", "128", "96", "64" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "320", "256", "192", "128", "96", "64" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
 				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("AC3")) {
+				
 				lblFilter.setText(language.getProperty("lblBitrate"));
-				String filtres[] = { "640", "448", "384", "320", "256", "192", "128", "96", "64" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-				comboFilter.setModel(model);
-				comboFilter.setSelectedIndex(1);
+				String types[] = { "640", "448", "384", "320", "256", "192", "128", "96", "64" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(1);
+				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("OPUS")) {
-				lblFilter.setText(language.getProperty("lblBitrate"));
-				String filtres[] = { "256", "192", "128", "96", "64" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-				comboFilter.setModel(model);
-				comboFilter.setSelectedIndex(0);
 				
-			} else if (comboFonctions.getSelectedItem().toString().equals("HAP")) {				
+				lblFilter.setText(language.getProperty("lblBitrate"));
+				String types[] = { "256", "192", "128", "96", "64" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
+				
+			} else if (comboFonctions.getSelectedItem().toString().equals("HAP")) {		
+				
 				lblFilter.setText("Type" + language.getProperty("colon"));
 				DefaultComboBoxModel<Object> model;
-				String filtres[] = { "Standard", "Alpha", "Q"};
-				model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "Standard", "Alpha", "Q"};
+				model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15972,9 +15980,9 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")) {				
 				lblFilter.setText("Ext." + language.getProperty("colon"));
 				DefaultComboBoxModel<Object> model;
-				String filtres[] = { ".mxf", ".mov"};
+				String types[] = { ".mxf", ".mov"};
 								
-				model = new DefaultComboBoxModel<Object>(filtres);
+				model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -15985,15 +15993,15 @@ public class Shutter {
 				lblFilter.setText("Type" + language.getProperty("colon"));
 				DefaultComboBoxModel<Object> model;
 				if (comboResolution.getSelectedItem().toString().equals("1280x720")) {
-					String filtres[] = { "60", "90", "90 X", "75", "110", "145", "220", "220 X" };
-					model = new DefaultComboBoxModel<Object>(filtres);
+					String types[] = { "60", "90", "90 X", "75", "110", "145", "220", "220 X" };
+					model = new DefaultComboBoxModel<Object>(types);
 					if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 						comboFilter.setModel(model);
 						comboFilter.setSelectedIndex(0);
 					}
 				} else {
-					String filtres[] = { "36", "115", "175", "175 X", "36", "120", "185", "185 X", "45", "145", "220", "220 X", "75", "240", "365", "365 X", "90", "290", "440", "440 X"};
-					model = new DefaultComboBoxModel<Object>(filtres);
+					String types[] = { "36", "115", "175", "175 X", "36", "120", "185", "185 X", "45", "145", "220", "220 X", "75", "240", "365", "365 X", "90", "290", "440", "440 X"};
+					model = new DefaultComboBoxModel<Object>(types);
 
 					if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 						comboFilter.setModel(model);
@@ -16005,8 +16013,8 @@ public class Shutter {
 
 				lblFilter.setText("Type" + language.getProperty("colon"));
 				DefaultComboBoxModel<Object> model;
-				String filtres[] = { "LB", "SQ", "HQ", "HQX", "444" };
-				model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "LB", "SQ", "HQ", "HQX", "444" };
+				model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(2);
@@ -16015,8 +16023,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("Apple ProRes")) {
 
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String filtres[] = { "Proxy", "LT", "422", "422 HQ", "444", "4444", "4444 XQ" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "Proxy", "LT", "422", "422 HQ", "444", "4444", "4444 XQ" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(2);
@@ -16025,8 +16033,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")) {
 
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String filtres[] = { "Low", "Medium", "High", "Film Scan", "Film Scan 2", "Film Scan 3", "Film Scan 3+"};
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "Low", "Medium", "High", "Film Scan", "Film Scan 2", "Film Scan 3", "Film Scan 3+"};
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(3);
@@ -16035,8 +16043,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("Uncompressed YUV")) {
 				
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String filtres[] = { "8 Bits 422", "10 Bits 422" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "8 Bits 422", "10 Bits 422" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -16044,16 +16052,18 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("XAVC")) {
 				lblFilter.setText(language.getProperty("lblBitrate"));
-				String filtres[] = { "480", "960"};
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-				comboFilter.setModel(model);
-				comboFilter.setSelectedIndex(0);
+				String types[] = { "480", "960"};
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("MPEG")) {
 				
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String filtres[] = { "version 1", "version 2" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "version 1", "version 2" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -16062,24 +16072,24 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString()
 					.equals(language.getProperty("functionNormalization"))) {
 				lblFilter.setText(" " + language.getProperty("at") + language.getProperty("colon"));
-				String filtres[] = new String[31];
+				String types[] = new String[31];
 
-				filtres[0] = "0 LUFS";
+				types[0] = "0 LUFS";
 				int i = 1;
 				do {
-					filtres[i] = ("-" + i + " LUFS");
+					types[i] = ("-" + i + " LUFS");
 					i++;
 				} while (i < 31);
 
-				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(23);
 				}
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))) {
 				lblFilter.setText("Ext." + language.getProperty("colon"));
-				String filtres[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".bmp", ".ico", ".webp" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".bmp", ".ico", ".webp" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -16087,8 +16097,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("JPEG")) {
 				
 				lblFilter.setText("Qual.:");
-				String filtres[] = { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%"};
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				String types[] = { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%"};
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
@@ -16102,9 +16112,9 @@ public class Shutter {
 					lblFilter.setText("Ext." + language.getProperty("colon"));
 				}
 				
-				final String filtres[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
+				final String types[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
 						".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
-				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				comboFilter.setModel(model);
 				comboFilter.setSelectedIndex(0);
 			}
