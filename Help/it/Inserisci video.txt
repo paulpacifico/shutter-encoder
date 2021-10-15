@@ -1,0 +1,3 @@
+Aggiungi il file principal e le tue scene video all'elenco dei file, quindi avvia la funzione per creare automaticamente il video.
+L'algoritmo si basa sul timecode dei tuoi piani, quindi devono tutti fare riferimento alla stessa sequenza temporale.
+Verrà usato l'audio del file master. Usa la funzione "Sostituisci audio" per modificare l'audio del file master.

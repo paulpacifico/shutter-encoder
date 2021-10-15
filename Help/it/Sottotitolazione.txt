@@ -1,0 +1,1 @@
+Aggiungi un file video all'elenco e quindi avvia la funzione per creare un file .srt con lo stesso nome del file video e nello stessa percorso, e quindi aggiunge i sottotitoli.

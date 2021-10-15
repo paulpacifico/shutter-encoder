@@ -1,0 +1,2 @@
+Analizza un video per recuperare i tagli ed esportarli in EDL o esportare ogni piano senza compressione.
+Nella finestra di analisi è possibile copiare il timecode.

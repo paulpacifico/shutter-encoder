@@ -1,0 +1,2 @@
+Il primo valore "I:" è il valore del volume in LUFS.
+Salva la tua analisi e recupera i valori a breve termine superiori a -16 LUFS.
