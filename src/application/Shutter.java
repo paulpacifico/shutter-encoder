@@ -1688,7 +1688,7 @@ public class Shutter {
 
 				for (String item : fileList.getSelectedValuesList()) 
 				{
-					MEDIAINFO.run("--Output=HTML " + '"' + item + '"', item);					
+					MEDIAINFO.run(item, true);					
 				}
 			}
 		});

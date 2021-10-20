@@ -40,14 +40,17 @@ public static boolean error = false;
 public static boolean isRunning = false;
 public static Thread runProcess;
 
-	public static void run(final String cmd, final String fichier) {
+	public static void run(final String file, boolean showInformationsFrame) {
 				
-	    Console.consoleMEDIAINFO.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleMEDIAINFO.append(System.lineSeparator() + Shutter.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"' + System.lineSeparator() + System.lineSeparator());
 		
 		runProcess = new Thread(new Runnable()  {
 			@Override
 			public void run() {
-				Informations.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
+				if (showInformationsFrame)
+					Informations.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
 				try {
 					
 					String PathToMEDIAINFO;
@@ -57,84 +60,99 @@ public static Thread runProcess;
 						PathToMEDIAINFO = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToMEDIAINFO = PathToMEDIAINFO.substring(1,PathToMEDIAINFO.length()-1);
 						PathToMEDIAINFO = '"' + PathToMEDIAINFO.substring(0,(int) (PathToMEDIAINFO.lastIndexOf("/"))).replace("%20", " ")  + "/Library/MediaInfo.exe" + '"';
-						processMEDIAINFO = new ProcessBuilder(PathToMEDIAINFO + " " + cmd);
+						processMEDIAINFO = new ProcessBuilder(PathToMEDIAINFO + " --Output=HTML " + '"' + file.toString() + '"');
 					}
 					else
 					{
 						PathToMEDIAINFO = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToMEDIAINFO = PathToMEDIAINFO.substring(0,PathToMEDIAINFO.length()-1);
 						PathToMEDIAINFO = PathToMEDIAINFO.substring(0,(int) (PathToMEDIAINFO.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/mediainfo";
-						processMEDIAINFO = new ProcessBuilder("/bin/bash", "-c" , PathToMEDIAINFO + " " + cmd);
+						processMEDIAINFO = new ProcessBuilder("/bin/bash", "-c" , PathToMEDIAINFO + " --Output=HTML " + '"' + file.toString() + '"');
 					}
-				
+					
 					isRunning = true;	
 					Process process = processMEDIAINFO.start();
-			         
-			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
-			        BufferedReader br = new BufferedReader(isr);
-			        StringBuilder infoData = new StringBuilder();
+					 
+					InputStreamReader isr = new InputStreamReader(process.getInputStream());
+					BufferedReader br = new BufferedReader(isr);
+					StringBuilder infoData = new StringBuilder();
 
-			       int stopMediaInfo = 0; //Seul moyen de tout récupérer et stopper le flux à la fois
-			       while (stopMediaInfo < 300)
-			       {
-			        	
-			    	   stopMediaInfo++;
-			    	   infoData.append(br.readLine());
+					String line;		       
+					while ((line = br.readLine()) != null)
+					{		
+					   infoData.append(line);
+					   
+					   if (line.contains("Time code of first frame") && FFPROBE.timecode1 == "")
+					   {
+						   infoData.append(System.lineSeparator());
+						   
+						   line = br.readLine();
+						   infoData.append(line);
+						   			    		   
+						   String s[] = line.split(">");
+						   String s2[] = s[1].split("<");			    		   
+						   String str[]= s2[0].replace(";" , ":").split(":");
+							    		   			    		   
+			    		   FFPROBE.timecode1 = str[0];
+			    		   FFPROBE.timecode2 = str[1];
+			    		   FFPROBE.timecode3 = str[2];
+			    		   FFPROBE.timecode4 = str[3];
+			    	   }
+			    	   
 			    	   infoData.append(System.lineSeparator());
-			        
-			       };
-			        
-			       if (stopMediaInfo >= 300)
-			    	   process.destroy();
-					    
-			       process.waitFor();
-   
-			       String StrTotal = "";
-					
-			       int x = infoData.indexOf("<head>");
-			       x = infoData.indexOf("<head>", x + 1);
-			       x = infoData.indexOf("<head>", x + 1);
-					
-			       StrTotal = infoData.substring(infoData.indexOf("<head>") + (x + 3));
-      
-									
-		           //Ajout de la Tab	           	
-		           Informations.addTabControl();		           
-		           
-		           String informationsFrameSize = String.valueOf((int) Informations.frame.getSize().width - 320);
-		           String htmlSize = "";
-		           for (String line : StrTotal.toString().split(System.lineSeparator()))
-	        	   {
-	        	   		if (line.contains("td width"))
-	        	   			{
-	        	   				String s[] = line.split("\"");
-	        	   				htmlSize = s[1];
-	        	   			}
-	        	   			
-	        	   }
-		           
-		           	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + StrTotal.toString().replace(htmlSize, informationsFrameSize));
-		           	content.setBackground(new Color(245,245,245));
-		           	content.setForeground(Color.BLACK);
-		           	content.setOpaque(true);
-		           		
-		           	JScrollPane scrollPane = new JScrollPane();
-		   			scrollPane.setViewportView(content);
-		   			scrollPane.setBounds(Informations.tabPanel.getBounds());	
-		   			scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		   			
-		   			Informations.lblWait.setVisible(false);
-		   			Informations.lblFlecheBas.setVisible(true);
-		   				
-		   			Informations.infoTabbedPane.addTab(new File(fichier).getName(), scrollPane);		    
-									
-					} catch (IOException | InterruptedException e) {
-						error = true;
-					} finally {
-						isRunning = false;
 					}
+									    
+					process.waitFor();
+					
+					String StrTotal = "";
+					
+					int x = infoData.indexOf("<head>");
+					x = infoData.indexOf("<head>", x + 1);
+					x = infoData.indexOf("<head>", x + 1);
+					
+					StrTotal = infoData.substring(infoData.indexOf("<head>") + (x + 3));
+				  
+					if (showInformationsFrame)
+					{
+			           //Adding tab	           	
+					   Informations.addTabControl();		           
+					   
+					   String informationsFrameSize = String.valueOf((int) Informations.frame.getSize().width - 320);
+					   String htmlSize = "";
+					   for (String l : StrTotal.toString().split(System.lineSeparator()))
+					   {
+					   		if (l.contains("td width"))
+					   		{
+					   			String s[] = l.split("\"");
+								htmlSize = s[1];
+							}
+					   			
+					   }
+					   
+					   	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + StrTotal.toString().replace(htmlSize, informationsFrameSize));
+				       	content.setBackground(new Color(245,245,245));
+				       	content.setForeground(Color.BLACK);
+				       	content.setOpaque(true);
+				       		
+				       	JScrollPane scrollPane = new JScrollPane();
+						scrollPane.setViewportView(content);
+						scrollPane.setBounds(Informations.tabPanel.getBounds());	
+						scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+						
+						Informations.lblWait.setVisible(false);
+						Informations.lblFlecheBas.setVisible(true);
+							
+						Informations.infoTabbedPane.addTab(new File(file).getName(), scrollPane);	    			
+					}
+			       
+				} catch (IOException | InterruptedException e) {
+					error = true;
+				} finally {
+					isRunning = false;
+				}
 				
-				Informations.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				if (showInformationsFrame)
+					Informations.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}				
 		});		
 		runProcess.start();

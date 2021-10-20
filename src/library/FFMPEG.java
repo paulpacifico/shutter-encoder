@@ -239,7 +239,6 @@ private static StringBuilder getAll;
 									|| line.contains("Operation not permitted"))
 							{
 								error = true;
-								//break;
 							} 
 																	
 							if (cancelled == false)

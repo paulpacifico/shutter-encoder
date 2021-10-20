@@ -38,6 +38,7 @@ import application.VideoPlayer;
 import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
+import library.MEDIAINFO;
 import library.XPDF;
 
 public class FunctionUtils extends Shutter {
@@ -119,6 +120,17 @@ public class FunctionUtils extends Shutter {
 			 					 		 
 			if (analyzeError(file.toString()))
 				return false;
+			
+			if (FFPROBE.timecode1 == "")
+			{
+				MEDIAINFO.run(file.toString(), false);
+				
+				do
+				{
+					Thread.sleep(100);
+				}
+				while (MEDIAINFO.isRunning);
+			}
 		}
 
 		return true;

@@ -90,6 +90,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.FFMPEG;
 import library.FFPROBE;
+import library.MEDIAINFO;
 
 public class OverlayWindow {
 	public static JDialog frame;
@@ -1085,13 +1086,16 @@ public class OverlayWindow {
 		else		 
 		{
 			if (Utils.inputDeviceIsRunning == false)
+			{
 				FFPROBE.Data(Shutter.liste.firstElement());
+			}
 		}
+		
 		do {
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e1) {}
-		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+		} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);   
 		
 		String sp[] = FFPROBE.imageResolution.split("x");
 		imageRatio = (float) Integer.parseInt(sp[0])/containerWidth;
@@ -1941,11 +1945,26 @@ public class OverlayWindow {
 					
 	    	  	//On récupère la taille du logo pour l'adater à l'image vidéo
 				if (Utils.inputDeviceIsRunning == false)
-					FFPROBE.Data(fichier);		
-				
-				do {
-					Thread.sleep(100);
-				} while (FFPROBE.isRunning);	
+				{
+					FFPROBE.Data(fichier);	
+					
+					do {
+						Thread.sleep(100);
+					} while (FFPROBE.isRunning);
+					
+					if (FFPROBE.timecode1 == "")
+	    			{
+	    				MEDIAINFO.run(Shutter.liste.firstElement(), false);
+	    				
+	    				do
+	    				{
+	    					try {
+		        				Thread.sleep(100);
+		        			} catch (InterruptedException e1) {}
+	    				}
+	    				while (MEDIAINFO.isRunning);
+	    			}
+				}
 				
 				if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "")
 				{
