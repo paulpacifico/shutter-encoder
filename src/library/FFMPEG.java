@@ -620,7 +620,7 @@ private static StringBuilder getAll;
 		case "DNxHR":
 		case "Apple ProRes":
 		case "GoPro CineForm":
-		case "Uncompressed YUV":
+		case "Uncompressed":
 		case "XDCAM HD422":				
 		case "AVC-Intra 100":
 		case "XAVC":
@@ -632,7 +632,8 @@ private static StringBuilder getAll;
 		case "VP9":
 		case "AV1":
 		case "WMV":
-		case "MPEG":
+		case "MPEG-1":
+		case "MPEG-2":
 		case "OGV":
 		case "MJPEG":
 		case "Xvid":
@@ -1379,7 +1380,8 @@ private static StringBuilder getAll;
 			if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 					|| comboFonctions.getSelectedItem().toString().equals("H.265")
 					|| comboFonctions.getSelectedItem().toString().equals("WMV")
-					|| comboFonctions.getSelectedItem().toString().equals("MPEG")
+					|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
+					|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
 					|| comboFonctions.getSelectedItem().toString().equals("WebM")
 					|| comboFonctions.getSelectedItem().toString().equals("AV1")
 					|| comboFonctions.getSelectedItem().toString().equals("OGV")
@@ -1490,7 +1492,8 @@ private static StringBuilder getAll;
 			 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 						|| comboFonctions.getSelectedItem().toString().equals("H.265")
 						|| comboFonctions.getSelectedItem().toString().equals("WMV")
-						|| comboFonctions.getSelectedItem().toString().equals("MPEG")
+						|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
+						|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
 						|| comboFonctions.getSelectedItem().toString().equals("WebM")
 						|| comboFonctions.getSelectedItem().toString().equals("AV1")
 						|| comboFonctions.getSelectedItem().toString().equals("OGV")
@@ -1516,7 +1519,8 @@ private static StringBuilder getAll;
 				 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 							|| comboFonctions.getSelectedItem().toString().equals("H.265")
 							|| comboFonctions.getSelectedItem().toString().equals("WMV")
-							|| comboFonctions.getSelectedItem().toString().equals("MPEG")
+							|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
+							|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
 							|| comboFonctions.getSelectedItem().toString().equals("WebM")
 							|| comboFonctions.getSelectedItem().toString().equals("AV1")
 						 	|| comboFonctions.getSelectedItem().toString().equals("OGV")

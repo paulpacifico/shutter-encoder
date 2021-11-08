@@ -111,7 +111,8 @@ public class Overlay extends Shutter {
 	
 						return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
 					}		
-					else if (comboScale != null && comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+					else if (comboScale != null && comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false && lblPad.getText().equals(language.getProperty("lblStretch")) == false
+					&& (caseRognage.isSelected() == false || caseRognage.isSelected() && lblPad.getText().equals(Shutter.language.getProperty("lblCrop"))))
 					{
 						String s[] = comboScale.getSelectedItem().toString().split("x");
 						
@@ -122,7 +123,7 @@ public class Overlay extends Shutter {
 						
 						int width = (int) ((float) Integer.parseInt(SubtitlesWindow.textWidth.getText()) / ((float) iw/ow));	        		        	
 						int height = (int) ((float) (ih + Integer.parseInt(SubtitlesWindow.spinnerSubtitlesPosition.getValue().toString())) / ((float) ih/oh));
-	
+						
 						return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + SubtitlesWindow.comboFont.getSelectedItem().toString() + ",FontSize=" + SubtitlesWindow.spinnerSize.getValue() + ",PrimaryColour=&H" + SubtitlesWindow.hex + "&" + background + "'" + '"';
 					}
 					else

@@ -75,8 +75,7 @@ public class ReducedWindow extends JDialog {
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(290, 94);
-		frame.setResizable(false);
-		
+		frame.setResizable(false);		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{

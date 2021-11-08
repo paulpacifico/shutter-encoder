@@ -61,7 +61,8 @@ import settings.Transitions;
  * AV1
  * H.264
  * H.265
- * MPEG
+ * MPEG-1
+ * MPEG-2
  * MJPEG
  * VP8
  * VP9
@@ -79,7 +80,7 @@ import settings.Transitions;
  * GoPro CineForm
  * HAP
  * QT Animation
- * Uncompressed YUV
+ * Uncompressed
  * XAVC
  * XDCAM HD422
  */
@@ -190,7 +191,6 @@ public class VideoEncoders extends Shutter {
 								container = ".mkv";								
 								break;
 							
-							case "MPEG":
 							case "DVD":
 								
 								container = ".mpg";								
@@ -206,6 +206,11 @@ public class VideoEncoders extends Shutter {
 								container = ".wmv";								
 								break;
 								
+							case "MPEG-1":
+								
+								container = ".mpg";								
+								break;
+								
 							case "Xvid":
 								
 								container = ".avi";								
@@ -216,7 +221,7 @@ public class VideoEncoders extends Shutter {
 							case "HAP":
 							case "MJPEG":
 							case "QT Animation":
-							case "Uncompressed YUV":
+							case "Uncompressed":
 							case "DV PAL":
 								
 								container = ".mov";
@@ -375,15 +380,14 @@ public class VideoEncoders extends Shutter {
 								filterComplex = AdvancedFeatures.setDeinterlace(true);									
 								break;
 							
-							case "MPEG":
+							case "MPEG-1":
 								
-								if (comboFilter.getSelectedIndex() == 0)
-								{
-									filterComplex = AdvancedFeatures.setDeinterlace(true);
-								}
-								else
-									filterComplex = AdvancedFeatures.setDeinterlace(false);
+								filterComplex = AdvancedFeatures.setDeinterlace(true);
+								break;
 								
+							case "MPEG-2":
+								
+								filterComplex = AdvancedFeatures.setDeinterlace(false);								
 								break;
 							
 							case "DNxHD":
@@ -417,7 +421,7 @@ public class VideoEncoders extends Shutter {
 							case "GoPro CineForm":
 							case "HAP":
 							case "QT Animation":
-							case "Uncompressed YUV":
+							case "Uncompressed":
 							case "XAVC":
 							case "XDCAM HD422":
 								
@@ -442,7 +446,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = ImageSequence.setMotionBlur(filterComplex);
 						
 						//Stabilisation
-						filterComplex = Corrections.setStabilisation(filterComplex, file, fileName, concat);
+						filterComplex = Corrections.setStabilisation(filterComplex, sequence, file, fileName, concat);
 						
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
@@ -691,7 +695,8 @@ public class VideoEncoders extends Shutter {
 								case "AV1":
 								case "H.264":
 								case "H.265":
-								case "MPEG":
+								case "MPEG-1":
+								case "MPEG-2":
 								case "MJPEG":
 								case "OGV":
 								case "VP8":
@@ -718,7 +723,7 @@ public class VideoEncoders extends Shutter {
 								case "FFV1":
 								case "GoPro CineForm":
 								case "HAP":
-								case "Uncompressed YUV":
+								case "Uncompressed":
 									
 									output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
 									break;
@@ -984,14 +989,13 @@ public class VideoEncoders extends Shutter {
 				
 				break;
 			
-			case "MPEG":
+			case "MPEG-1":
 				
-				if (comboFilter.getSelectedIndex() == 0)
-				{
-					return " -c:v mpeg1video";
-				}
-		        else
-		        	return " -c:v mpeg2video";
+				return " -c:v mpeg1video";
+				
+			case "MPEG-2":
+				
+				return " -c:v mpeg2video";
 			
 			case "MJPEG":
 				
@@ -1089,23 +1093,34 @@ public class VideoEncoders extends Shutter {
 			
 			case "HAP":
 				
-				return " -c:v hap -chunks 4";
+				if (caseChunks.isSelected())
+				{
+					return " -c:v hap -chunks " + (chunksSize.getSelectedIndex() + 1);
+				}
+				else
+					return " -c:v hap -chunks 4";
 				
 			case "QT Animation":
 				
 				return " -c:v qtrle";
 				
-			case "Uncompressed YUV":
+			case "Uncompressed":
 				
 				switch (comboFilter.getSelectedItem().toString())
-				{					
-					case "8 Bits 422" :
-					
-						return " -c:v rawvideo -pix_fmt uyvy422 -vtag 2vuy";
-					
-					case "10 Bits 422" :
+				{		
+					case "YUV" :
+				
+						if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
+						{
+							return " -c:v v210 -pix_fmt yuv422p10le";
+						}
+						else						
+							return " -c:v rawvideo -pix_fmt uyvy422 -vtag 2vuy";
 						
-						return " -c:v v210 -pix_fmt yuv422p10le";
+					case "RGB" :						
+						
+						return " -c:v r210 -pix_fmt gbrp10le";
+					
 				}
 				
 				break;
@@ -1178,7 +1193,14 @@ public class VideoEncoders extends Shutter {
 				else				
 					return " -pix_fmt yuv420p";
 		        
-			case "MPEG":
+			case "MPEG-2":
+				
+				if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("4:2:2"))
+				{
+					return " -pix_fmt yuv422p";
+				}
+				
+			case "MPEG-1":
 			case "OGV":
 			case "WMV":
 			case "Xvid":
@@ -1242,7 +1264,13 @@ public class VideoEncoders extends Shutter {
 		    		String gpu = "";
 					if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
-						gpu = " -cq " + debitVideo.getSelectedItem().toString();
+						
+						if (comboFonctions.getSelectedItem().toString().equals("H.264"))
+						{	
+							gpu = " -qp " + debitVideo.getSelectedItem().toString();
+						}
+						else
+							gpu = " -cq " + debitVideo.getSelectedItem().toString();
 					}
 					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{
@@ -1272,7 +1300,8 @@ public class VideoEncoders extends Shutter {
 		        else
 		        	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
 				
-			case "MPEG":
+			case "MPEG-1":
+			case "MPEG-2":
 			case "MJPEG":
 			case "OGV":
 			case "WMV":

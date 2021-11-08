@@ -344,6 +344,8 @@ public class Shutter {
 	protected static JRadioButton caseOPATOM;
 	protected static JRadioButton caseSubtitles;
 	protected static JRadioButton caseAS10;
+	protected static JRadioButton caseChunks;
+	protected static JComboBox<String> chunksSize;
 	protected static JComboBox<String> comboConform;
 	protected static JComboBox<String> comboFPS;
 	protected static JComboBox<String> comboAudioIn;
@@ -1049,7 +1051,7 @@ public class Shutter {
 			public void mouseReleased(MouseEvent e) {
 				if (accept) 
 				{
-					if (inputDeviceIsRunning == false 
+					if (inputDeviceIsRunning == false && Settings.btnDisableMinimizedWindow.isSelected() == false
 					&& lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
 					&& lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
 					&& lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
@@ -2207,7 +2209,8 @@ public class Shutter {
 					case "H.264":
 					case "H.265":
 					case "WMV":
-					case "MPEG":
+					case "MPEG-1":
+					case "MPEG-2":
 					case "VP8":
 					case "VP9":
 					case "AV1":
@@ -2718,11 +2721,12 @@ public class Shutter {
 									|| "Apple ProRes".equals(fonction)
 									|| "GoPro CineForm".equals(fonction)
 									|| "QT Animation".equals(fonction)
-									|| "Uncompressed YUV".equals(fonction)
+									|| "Uncompressed".equals(fonction)
 									|| "H.264".equals(fonction)
 									|| "H.265".equals(fonction)
 									|| "WMV".equals(fonction)
-									|| "MPEG".equals(fonction)
+									|| "MPEG-1".equals(fonction)
+									|| "MPEG-2".equals(fonction)
 									|| "VP8".equals(fonction)
 									|| "VP9".equals(fonction)
 									|| "AV1".equals(fonction)
@@ -2847,13 +2851,13 @@ public class Shutter {
 				
 				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "MP3", "AAC", "AC3", "OPUS", "OGG",
 				
-				language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation", "GoPro CineForm" ,"Uncompressed YUV",
+				language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation", "GoPro CineForm" ,"Uncompressed",
 				
-				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "VP8", "VP9", "AV1", "OGV",		
+				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "VP8", "VP9", "AV1", "OGV", "MPEG-2",		
 				
 				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "AVC-Intra 100", "XAVC", "HAP",
 				
-				language.getProperty("itemOldCodecs"), "DV PAL", "MJPEG", "Xvid", "WMV", "MPEG",
+				language.getProperty("itemOldCodecs"), "DV PAL", "MJPEG", "Xvid", "WMV", "MPEG-1",
 				
 				language.getProperty("itemArchiveCodecs"), "FFV1",		
 				
@@ -2946,7 +2950,7 @@ public class Shutter {
 					newList.add("Apple ProRes");
 					newList.add("QT Animation");
 					newList.add("GoPro CineForm");
-					newList.add("Uncompressed YUV");
+					newList.add("Uncompressed");
 				}
 				else if (comboFonctions.getSelectedItem().equals(language.getProperty("itemOuputCodecs")))
 				{
@@ -2978,7 +2982,8 @@ public class Shutter {
 					newList.add("MJPEG");
 					newList.add("Xvid");
 					newList.add("WMV");
-					newList.add("MPEG");
+					newList.add("MPEG-1");
+					newList.add("MPEG-2");
 					
 				}
 				else if (comboFonctions.getSelectedItem().equals(language.getProperty("itemArchiveCodecs")))
@@ -3158,7 +3163,7 @@ public class Shutter {
 							|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
 							|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
 							|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed YUV")) 
+							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed")) 
 					{
 						if (comboFilter.getSelectedItem().toString().equals("36")) {
 							caseForcerEntrelacement.setEnabled(false);
@@ -4712,7 +4717,7 @@ public class Shutter {
 				int grpSize = 161;
 				
 				String fonction = comboFonctions.getSelectedItem().toString();
-				if ("DNxHD".equals(fonction) || "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed YUV".equals(fonction)
+				if ("DNxHD".equals(fonction) || "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed".equals(fonction)
 				|| "XDCAM HD422".equals(fonction) || "AVC-Intra 100".equals(fonction) || ("XAVC").equals(fonction) || "HAP".equals(fonction) || "FFV1".equals(fonction))
 					grpSize = 93;
 				
@@ -6883,6 +6888,11 @@ public class Shutter {
 				
 				if (caseSubtitles.isSelected())
 				{
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
+					{
+						casePreserveSubs.setSelected(false);
+					}
+					
 					if (liste.getSize() == 0) {
 						JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),
 								language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
@@ -7512,7 +7522,8 @@ public class Shutter {
 						case "H.264":
 						case "H.265":
 						case "WMV":
-						case "MPEG":
+						case "MPEG-1":
+						case "MPEG-2":
 						case "VP8":
 						case "VP9":
 						case "AV1":
@@ -7565,7 +7576,7 @@ public class Shutter {
 							|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
 							|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
 							|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed YUV")
+							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed")
 							|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
 							|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 							|| comboFonctions.getSelectedItem().toString().equals("XAVC")
@@ -7601,7 +7612,7 @@ public class Shutter {
 												|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
 												|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
 												|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-												|| comboFonctions.getSelectedItem().toString().equals("Uncompressed YUV")
+												|| comboFonctions.getSelectedItem().toString().equals("Uncompressed")
 												|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
 												|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 												|| comboFonctions.getSelectedItem().toString().equals("XAVC")
@@ -7715,7 +7726,7 @@ public class Shutter {
 												|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
 												|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
 												|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-												|| comboFonctions.getSelectedItem().toString().equals("Uncompressed YUV")
+												|| comboFonctions.getSelectedItem().toString().equals("Uncompressed")
 												|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
 												|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 												|| comboFonctions.getSelectedItem().toString().equals("XAVC")
@@ -10358,6 +10369,19 @@ public class Shutter {
 		casePreserveSubs.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		casePreserveSubs.setSize(casePreserveSubs.getPreferredSize().width, 23);
 				
+		casePreserveSubs.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (casePreserveSubs.isSelected() && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
+				{
+					caseSubtitles.setSelected(false);
+				}
+			}			
+			
+		});		
+		
 		caseCreateOPATOM = new JRadioButton(language.getProperty("caseCreateOPATOM"));
 		caseCreateOPATOM.setName("caseCreateOPATOM");
 		caseCreateOPATOM.setToolTipText(language.getProperty("tooltipCreateOpatom"));
@@ -11154,6 +11178,44 @@ public class Shutter {
 		comboAS10.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		comboAS10.setEditable(false);
 		comboAS10.setSize(129, 16);
+
+		caseChunks = new JRadioButton(language.getProperty("caseChunks"));
+		caseChunks.setName("caseChunks");
+		caseChunks.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseChunks.setSize(caseChunks.getPreferredSize().width + 4, 23);
+		
+		caseChunks.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (caseChunks.isSelected())
+				{
+					chunksSize.setEnabled(true);
+				}
+				else
+				{
+					chunksSize.setEnabled(false);		
+				}	
+				
+				Utils.textFieldBackground();
+			}
+			
+		});
+			
+		chunksSize = new JComboBox<String>();
+		chunksSize.setName("chunksSize");
+		chunksSize.setEnabled(false);
+		chunksSize.setMaximumRowCount(15);
+		String[] values = new String[64];
+		for (int i = 0 ; i < 64 ; i++)
+		{
+			values[i] = String.valueOf(i + 1);
+		}			
+		chunksSize.setModel(new DefaultComboBoxModel<String>(values));
+		chunksSize.setSelectedIndex(3);
+		chunksSize.setFont(new Font(freeSansFont, Font.PLAIN, 10));
+		chunksSize.setEditable(false);
+		chunksSize.setSize(40, 16);
 
 	}
 
@@ -12448,7 +12510,7 @@ public class Shutter {
 						changeSize.start();
 					}	
 				}
-				else if ("MPEG".equals(comboFonctions.getSelectedItem().toString()))
+				else if ("MPEG-1".equals(comboFonctions.getSelectedItem().toString()) || "MPEG-2".equals(comboFonctions.getSelectedItem().toString()))
 				{
 					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP2", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);
@@ -12916,7 +12978,7 @@ public class Shutter {
 						|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
 						|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
 						|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-						|| comboFonctions.getSelectedItem().toString().equals("Uncompressed YUV") 	
+						|| comboFonctions.getSelectedItem().toString().equals("Uncompressed") 	
 						|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
 						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 						|| comboFonctions.getSelectedItem().toString().equals("XAVC")
@@ -12972,6 +13034,9 @@ public class Shutter {
 				caseGOP.setSelected(false);
 				gopSize.setEnabled(false);
 				gopSize.setText("250");
+				caseChunks.setSelected(false);
+				chunksSize.setEnabled(false);
+				chunksSize.setSelectedIndex(3);
 				caseForceLevel.setSelected(false);
 				comboForceProfile.setEnabled(false);
 				comboForceLevel.setEnabled(false);
@@ -13410,9 +13475,9 @@ public class Shutter {
 				|| "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction)
 				|| "OGG".equals(fonction) || "Loudness & True Peak".equals(fonction)
 				|| language.getProperty("functionBlackDetection").equals(fonction) || language.getProperty("functionOfflineDetection").equals(fonction) 
-				|| "DNxHD".equals(fonction)	|| "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed YUV".equals(fonction)
+				|| "DNxHD".equals(fonction)	|| "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed".equals(fonction)
 				|| "H.264".equals(fonction) || "H.265".equals(fonction) || "DV PAL".equals(fonction)
-				|| "WMV".equals(fonction) || "MPEG".equals(fonction) || "VP8".equals(fonction) || "VP9".equals(fonction) || "AV1".equals(fonction) || "OGV".equals(fonction)
+				|| "WMV".equals(fonction) || "MPEG-1".equals(fonction) || "MPEG-2".equals(fonction) || "VP8".equals(fonction) || "VP9".equals(fonction) || "AV1".equals(fonction) || "OGV".equals(fonction)
 				|| "MJPEG".equals(fonction) || "Xvid".equals(fonction) || "XDCAM HD422".equals(fonction) || "AVC-Intra 100".equals(fonction) || ("XAVC").equals(fonction) || "HAP".equals(fonction) || "FFV1".equals(fonction)
 				|| "DVD".equals(fonction) || "Blu-ray".equals(fonction) || "QT JPEG".equals(fonction)
 				|| language.getProperty("functionPicture").equals(fonction)
@@ -13833,7 +13898,9 @@ public class Shutter {
 								grpAdvanced.setVisible(true);
 								grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 								caseSubtitles.setLocation(7, 16);
-								grpAdvanced.add(caseSubtitles);								
+								grpAdvanced.add(caseSubtitles);	
+								casePreserveSubs.setLocation(7, caseSubtitles.getLocation().y + 17);
+								grpAdvanced.add(casePreserveSubs);								
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
 							}
 							else if (language.getProperty("functionMerge").equals(fonction))
@@ -14289,6 +14356,15 @@ public class Shutter {
 								casePreserveMetadata.setLocation(7, caseAS10.getLocation().y + 17);
 								grpAdvanced.add(casePreserveMetadata);	
 							}
+							else if (comboFonctions.getSelectedItem().toString().equals("HAP"))
+							{
+								caseChunks.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
+								grpAdvanced.add(caseChunks);
+								chunksSize.setLocation(caseChunks.getX() + caseChunks.getWidth() + 3, caseChunks.getY() + 3);
+								grpAdvanced.add(chunksSize);
+								casePreserveMetadata.setLocation(7, caseChunks.getLocation().y + 17);
+								grpAdvanced.add(casePreserveMetadata);		
+							}
 							else
 							{
 								casePreserveMetadata.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
@@ -14313,7 +14389,7 @@ public class Shutter {
 							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);						
 							
-						} else if ("DNxHD".equals(fonction) || "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed YUV".equals(fonction) ) {
+						} else if ("DNxHD".equals(fonction) || "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed".equals(fonction) ) {
 							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));			
 														
@@ -14421,8 +14497,18 @@ public class Shutter {
 							grpImageFilter.setVisible(false);
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(), grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
-							if (comboColorspace.getItemCount() != 3)
-								comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+							
+							if ("Uncompressed".equals(fonction))
+							{
+								if (comboColorspace.getItemCount() != 4)
+									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits"}));
+							}
+							else
+							{
+								if (comboColorspace.getItemCount() != 3)
+									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+							}
+	
 							grpCorrections.setVisible(true);
 							grpCorrections.setLocation(grpCorrections.getX(), grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							grpTransitions.setVisible(true);
@@ -14970,8 +15056,14 @@ public class Shutter {
 							grpCorrections.add(iconTVBruit);
 							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
+							caseExposure.setLocation(7, caseBruit.getLocation().y + 17);
+							grpCorrections.add(caseExposure);
+							iconTVExposure.setLocation(289, caseExposure.getLocation().y + 2);
+							grpCorrections.add(iconTVExposure);							
+							sliderExposure.setLocation(iconTVExposure.getX() - sliderExposure.getWidth(), caseExposure.getLocation().y);
+							grpCorrections.add(sliderExposure);
 							
-						} else if ("WMV".equals(fonction) || "MPEG".equals(fonction) || "VP8".equals(fonction) || "VP9".equals(fonction) || "AV1".equals(fonction) || "OGV".equals(fonction)
+						} else if ("WMV".equals(fonction) || "MPEG-1".equals(fonction) || "MPEG-2".equals(fonction) || "VP8".equals(fonction) || "VP9".equals(fonction) || "AV1".equals(fonction) || "OGV".equals(fonction)
 								|| "MJPEG".equals(fonction) || "Xvid".equals(fonction)) {
 							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));	
@@ -15058,7 +15150,7 @@ public class Shutter {
 									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "WMA", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 									comboAudioCodec.setSelectedIndex(0);
 								}
-								else if (comboAudioCodec.getModel().getElementAt(0).equals("MP2") == false && "MPEG".equals(fonction))
+								else if (comboAudioCodec.getModel().getElementAt(0).equals("MP2") == false && ("MPEG-1".equals(fonction) || "MPEG-2".equals(fonction)))
 								{
 									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP2", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 									comboAudioCodec.setSelectedIndex(0);
@@ -15169,6 +15261,11 @@ public class Shutter {
 							{
 								if (comboColorspace.getItemCount() != 7)
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));							
+							}
+							else if ("MPEG-2".equals(fonction))
+							{
+								if (comboColorspace.getItemCount() != 6)
+									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 4:2:2", "Rec. 2020 PQ", "Rec. 2020 PQ 4:2:2", "Rec. 2020 HLG", "Rec. 2020 HLG 4:2:2"}));	
 							}
 							else
 							{
@@ -15331,6 +15428,14 @@ public class Shutter {
 								grpAdvanced.add(gopSize);								
 								caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
 							}	
+							else if ("MPEG-2".equals(fonction))
+							{
+								caseGOP.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
+								grpAdvanced.add(caseGOP);
+								gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+								grpAdvanced.add(gopSize);
+								caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
+							}
 							else
 							{
 								caseDecimate.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
@@ -15373,6 +15478,12 @@ public class Shutter {
 							grpCorrections.add(iconTVBruit);
 							sliderBruit.setLocation(iconTVBruit.getX() - sliderBruit.getWidth(), caseBruit.getLocation().y);
 							grpCorrections.add(sliderBruit);
+							caseExposure.setLocation(7, caseBruit.getLocation().y + 17);
+							grpCorrections.add(caseExposure);
+							iconTVExposure.setLocation(289, caseExposure.getLocation().y + 2);
+							grpCorrections.add(iconTVExposure);							
+							sliderExposure.setLocation(iconTVExposure.getX() - sliderExposure.getWidth(), caseExposure.getLocation().y);
+							grpCorrections.add(sliderExposure);
 							
 						} else if ("DV PAL".equals(fonction)) {
 							
@@ -16040,10 +16151,10 @@ public class Shutter {
 					comboFilter.setSelectedIndex(3);
 				}			
 
-			} else if (comboFonctions.getSelectedItem().toString().equals("Uncompressed YUV")) {
+			} else if (comboFonctions.getSelectedItem().toString().equals("Uncompressed")) {
 				
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String types[] = { "8 Bits 422", "10 Bits 422" };
+				String types[] = { "YUV", "RGB" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -16059,10 +16170,10 @@ public class Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 				
-			} else if (comboFonctions.getSelectedItem().toString().equals("MPEG")) {
+			} else if (comboFonctions.getSelectedItem().toString().equals("MPEG-2")) {
 				
 				lblFilter.setText("Type" + language.getProperty("colon"));
-				String types[] = { "version 1", "version 2" };
+				String types[] = { ".mpg", ".ts" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -16589,6 +16700,9 @@ public class Shutter {
 		if (caseGOP.isSelected() == false)
 			gopSize.setEnabled(false);
 		
+		if (caseChunks.isSelected() == false)
+			chunksSize.setEnabled(false);
+		
 		if ((caseAccel.isSelected() || lblVBR.getText().equals("CQ")))
 		{
 			if (lblVBR.getText().equals("CQ") == false)
@@ -16929,7 +17043,7 @@ class ListeFileTransferHandler extends TransferHandler {
 	}
 
 	public boolean importData(JComponent comp, Transferable t) {
-		
+
 		DataFlavor[] flavors = t.getTransferDataFlavors();
 		for (int i = 0; i < flavors.length; i++) {
 			DataFlavor flavor = flavors[i];
@@ -17039,7 +17153,8 @@ class ListeFileTransferHandler extends TransferHandler {
 					case "H.264":
 					case "H.265":
 					case "WMV":
-					case "MPEG":
+					case "MPEG-1":
+					case "MPEG-2":
 					case "VP8":
 					case "VP9":
 					case "AV1":
@@ -17058,7 +17173,7 @@ class ListeFileTransferHandler extends TransferHandler {
 					case "Apple ProRes":
 					case "GoPro CineForm":
 					case "QT Animation":
-					case "Uncompressed YUV":
+					case "Uncompressed":
 						if (Shutter.caseOPATOM.isSelected()) {
 							for (int item = 0; item < Shutter.liste.getSize(); item++) {
 								int s = Shutter.liste.getElementAt(item).toString().lastIndexOf('.');
@@ -17081,12 +17196,13 @@ class ListeFileTransferHandler extends TransferHandler {
 
 					// Border
 					Shutter.fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
-
+					
 					return true;
 				}
 			} catch (IOException | UnsupportedFlavorException ex) {
 			}
 		}
+		
 		return false;
 	}
 }

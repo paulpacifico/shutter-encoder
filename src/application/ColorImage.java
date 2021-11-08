@@ -83,6 +83,7 @@ import library.FFMPEG;
 import library.FFPLAY;
 import library.FFPROBE;
 import library.XPDF;
+import settings.Colorimetry;
 import settings.InputAndOutput;
 
 public class ColorImage {
@@ -1771,11 +1772,16 @@ public class ColorImage {
 					} while (FFPROBE.isRunning);
 										
 					//EQ
-					String eq = setEQ();					
+					String eq = setEQ(false);					
 					
 					if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
 						eq += ",yadif=0:" + FFPROBE.fieldOrder + ":0";		
 
+					if (comboRotate.getSelectedIndex() == 1 || comboRotate.getSelectedIndex() == 2 || comboRotate.getSelectedIndex() == 3)
+					{
+						eq = setRotate(eq);
+					}
+					
 					String filter = " -vf " + '"' + eq;
 					
 					String compression = " -q:v 0";
@@ -1948,11 +1954,16 @@ public class ColorImage {
 					 while (FFPROBE.isRunning);
 					
 					//EQ
-					String eq = setEQ();	
+					String eq = setEQ(false);	
 										
 					if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
 						eq += ",yadif=0:" + FFPROBE.fieldOrder + ":0";				 	
 
+					if (comboRotate.getSelectedIndex() == 1 || comboRotate.getSelectedIndex() == 2 || comboRotate.getSelectedIndex() == 3)
+					{
+						eq = setRotate(eq);
+					}
+					
 					String compression = " -q:v 0";
 					if (Shutter.comboFonctions.getSelectedItem().equals("JPEG"))
 					{
@@ -2012,7 +2023,8 @@ public class ColorImage {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setFinalEQ();
+				
+				setEQ(true);
 				
 				Shutter.tempsRestant.setVisible(false);
 	            Shutter.progressBar1.setValue(0);
@@ -2525,10 +2537,22 @@ public class ColorImage {
 						if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.entrelaced != null && FFPROBE.entrelaced.equals("1"))
 							deinterlace = " -vf yadif=0:" + FFPROBE.fieldOrder + ":0";		
 						
+						String rotate = "";
+
+						if (comboRotate.getSelectedIndex() == 1 || comboRotate.getSelectedIndex() == 2 || comboRotate.getSelectedIndex() == 3)
+						{
+							if (deinterlace != "")
+							{
+								rotate = setRotate(deinterlace);
+							}
+							else
+								rotate = " -vf " + setRotate("");
+						}
+						
 						//Création du fichier preview																		
-						String cmd = deinterlace + " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + " -y ";	
+						String cmd = deinterlace + rotate + " -vframes 1 -an -s " + (frame.getWidth() - 48 - sliderExposure.getWidth()) + "x" + finalHeight + " -y ";	
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
-							cmd = deinterlace + " -vframes 1 -an -s " + Math.round(finalWidth / 2) * 2 + "x" +  Math.round((frame.getHeight() - topPanel.getHeight() - 35 - 17) / 2) * 2 + " -y ";
+							cmd = deinterlace + rotate + " -vframes 1 -an -s " + Math.round(finalWidth / 2) * 2 + "x" +  Math.round((frame.getHeight() - topPanel.getHeight() - 35 - 17) / 2) * 2 + " -y ";
 					
 						if (new File(Shutter.dirTemp + "preview.bmp").exists() == false)
 						{											   		
@@ -2552,7 +2576,7 @@ public class ColorImage {
 						}					
 							
 						//EQ
-						String eq = setEQ();
+						String eq = setEQ(false);
 						
 						//Histogram
 						//String histogram = setHistogram(eq); //Strange colors with the overlay
@@ -2647,66 +2671,6 @@ public class ColorImage {
 		return histogram;
 	}
 
-	protected static String setLuts(String eq) {
-		if (Shutter.caseLUTs.isSelected())
-		{			
-			String pathToLuts;
-			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			{
-				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
-				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
-			}
-			else
-				pathToLuts = "LUTs/";
-			
-			if (eq != "")
-				eq += ",";
-
-			eq += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
-		}
-		
-		return eq;
-	}
-
-	protected static String setLevels(String eq) {
-		
-		if (Shutter.caseLevels.isSelected())
-		{			
-			if (eq != "") eq += ",";
-			
-			eq += "scale=in_range=" + Shutter.comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full") + ":out_range=" + Shutter.comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");		
-		}
-
-		return eq;
-	}
-	
-	protected static String setColormatrix(String eq) {
-		if (Shutter.caseColormatrix.isSelected())
-		{
-			if (eq != "") eq += ",";
-			
-			if (Shutter.comboInColormatrix.getSelectedItem().equals("HDR"))
-			{		
-				String pathToLuts;
-				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				{
-					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
-					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
-				}
-				else
-					pathToLuts = "LUTs/HDR-to-SDR.cube";
-
-				eq += "lut3d=file=" + pathToLuts;	
-			}
-			else
-				eq += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
-		}
-		
-		return eq;
-	}
-	
 	protected static String setGrain(String eq) {
 		if (sliderGrain.getValue() != 0)
 		{		
@@ -2742,6 +2706,11 @@ public class ColorImage {
 					break;
 			}
 		}
+
+		return eq;
+	}
+	
+	protected static String setAngle(String eq) {
 		
 		if (sliderAngle.getValue() != 0)
 		{
@@ -3002,18 +2971,21 @@ public class ColorImage {
 		return eq;
 	}
 
-	protected static String setEQ() {
+	public static String setEQ(boolean finalEQ) {
 		
 		String eq = "";
-		
-		//LUTs
-		eq = setLuts(eq);	
-		
-		//Levels
-		eq = setLevels(eq);
-		
-		//Colormatrix
-		eq = setColormatrix(eq);
+
+		if (finalEQ == false)
+		{
+			//LUTs
+			eq = Colorimetry.setLUT(eq);	
+			
+			//Levels
+			eq = Colorimetry.setLevels(eq);
+			
+			//Colormatrix
+			eq = Colorimetry.setColormatrix(eq);
+		}
 		
 		//Exposure
 		eq = setExposure(eq);
@@ -3054,67 +3026,22 @@ public class ColorImage {
 		//Grain
 		eq = setGrain(eq);
 		
-		//Rotate
-		eq = setRotate(eq);
+		if (finalEQ)
+		{
+			//Rotate
+			eq = setRotate(eq);
+		}
 		
-		//Vignette
-		eq = setVignette(eq);
-		
-		setFinalEQ();
-		
-		return eq;
-	}
-	
-	protected static void setFinalEQ() {
-		String eq = "";
-		
-		//Exposure
-		eq = setExposure(eq);
-		
-		//Contrast
-		eq = setContrast(eq);
-		
-		//White
-		eq = setWhite(eq);
-
-		//Black
-		eq = setBlack(eq);
-		
-		//Highlights 
-		eq = setHighlights(eq);
-		
-		//Mediums 
-		eq = setMediums(eq);
-		
-		//Shadows 
-		eq = setShadows(eq);
-				
-		//White Balance 
-		eq = setWB(eq);
-		
-		//Hue
-		eq = setHUE(eq);
-				
-		//Balance
-		eq = setBalance(eq);
-		
-		//Vibrance
-		eq = setVibrance(eq);
-		
-		//Saturation
-		eq = setSaturation(eq);
-		
-		//Grain
-		eq = setGrain(eq);
-		
-		//Rotate
-		eq = setRotate(eq);
+		//Angle
+		eq = setAngle(eq);
 		
 		//Vignette
 		eq = setVignette(eq);
 		
 		//FinalEQ
 		Shutter.finalEQ = eq.replace("\"", "'");
+		
+		return eq;
 	}
 	
 	public static void loadSettings(File encFile) {

@@ -32,6 +32,7 @@ import application.Utils;
 import application.VideoPlayer;
 import application.Wetransfer;
 import library.FFMPEG;
+import library.FFPROBE;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 import settings.Timecode;
@@ -284,8 +285,40 @@ public class Rewrap extends Shutter {
 			else
 				return " -c:s mov_text" + FunctionUtils.setMapSubtitles();	
 		}
+		else if (casePreserveSubs.isSelected())
+        {
+        	if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
+        	{
+        		if (lblFilter.getText().equals(language.getProperty("lblTo")))
+        		{
+        			switch (comboFilter.getSelectedItem().toString())
+        			{
+        				case ".mp4":
+        				case ".mkv":
+        					
+        					return " -c:s dvdsub -map s?";
+        					
+        				case ".ts":
+        					
+        					return " -c:s dvbsub -map s?";
+        					
+        				default:
+        					
+        					return " -c:s copy -map s?";
+        			}
+        		}
+        		else
+        			return " -c:s copy -map s?";
+        	}
+        	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        	{
+        		return " -c:s srt -map s?";
+        	}
+        	else
+        		return " -c:s mov_text -map s?";
+        }
 		
-		return " -c:s copy -map s?";
+		return "";
 	}
 	
 	private static boolean lastActions(String fileName, File fileOut, String output) {

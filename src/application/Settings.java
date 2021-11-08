@@ -131,6 +131,7 @@ public class Settings {
 	public static JRadioButton btnDisableAnimations = new JRadioButton(Shutter.language.getProperty("btnDisableAnimations"));
 	public static JRadioButton btnDisableSound = new JRadioButton(Shutter.language.getProperty("btnDisableSound"));
 	public static JRadioButton btnDisableUpdate = new JRadioButton(Shutter.language.getProperty("btnDisableUpdate"));
+	public static JRadioButton btnDisableMinimizedWindow = new JRadioButton(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
 	public static JTextField txtExtension = new JTextField();
 	public static JTextField txtExclude = new JTextField();
 	private JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1 " + Shutter.language.getProperty("toDefault"));
@@ -158,6 +159,7 @@ public class Settings {
 		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
 		btnDisableUpdate.setName("btnDisableUpdate");
+		btnDisableMinimizedWindow.setName("btnDisableMinimizedWindow");
 		btnEmptyListAtEnd.setName("btnEmptyListAtEnd");
 		lblDestination1.setName("lblDestination1");
 		lblDestination2.setName("lblDestination2");
@@ -464,8 +466,12 @@ public class Settings {
 		btnDisableUpdate.setBounds(12, btnDisableSound.getLocation().y + btnDisableSound.getHeight() + 10, btnDisableUpdate.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableUpdate);
 		
+		btnDisableMinimizedWindow.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnDisableMinimizedWindow.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnDisableMinimizedWindow.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnDisableMinimizedWindow);
+		
 		btnEmptyListAtEnd.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnEmptyListAtEnd.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnEmptyListAtEnd.getPreferredSize().width, 16);
+		btnEmptyListAtEnd.setBounds(12, btnDisableMinimizedWindow.getLocation().y + btnDisableMinimizedWindow.getHeight() + 10, btnEmptyListAtEnd.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEmptyListAtEnd);
 		
 		btnEndingAction.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));

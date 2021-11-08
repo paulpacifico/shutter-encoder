@@ -2217,7 +2217,7 @@ public class VideoPlayer {
 			public void stateChanged(ChangeEvent e) {				
 				
 					if (sliderOut.getValue() != sliderOut.getMaximum())
-					{			
+					{
 						if (leftPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 						{
 							if (sliderSpeed.getValue() != 2)
@@ -2240,7 +2240,7 @@ public class VideoPlayer {
 							rightNext.setVisible(true);
 							rightPlay.setVisible(true);
 							rightStop.setVisible(true);							
-							
+
 							if (playerRightTime == 0 || playerRightTime == FFPROBE.totalLength) // Seul moyen pour effectuer l'action seulement quand le playerRight est invisible
 							{				
 		    					leftPlay.setText(Shutter.language.getProperty("btnResume"));
@@ -2259,7 +2259,7 @@ public class VideoPlayer {
 							else if (playerRightVideo != null && sliderOutChange)
 							{
 								playerRightSetTime(formatTime(sliderOut.getValue()));
-							}			
+							}	
 							
 							if (FFPROBE.audioOnly && panelWaveformRight != null)
 							{
@@ -2268,8 +2268,7 @@ public class VideoPlayer {
 							}
 														
 							if (FFPROBE.audioOnly == false)
-								playerRight.setVisible(true);
-													
+								playerRight.setVisible(true);			
 							
 							if (sliderOut.getValue() < sliderIn.getValue())
 							{								
@@ -2447,7 +2446,8 @@ public class VideoPlayer {
 						case "H.264":
 						case "H.265":
 						case "WMV":
-						case "MPEG":
+						case "MPEG-1":
+						case "MPEG-2":
 						case "VP8":
 						case "VP9":
 						case "AV1":
@@ -3037,7 +3037,7 @@ public class VideoPlayer {
 					panelWaveformRight.setLocation(waveformRight.getWidth() - 2, panelWaveformRight.getLocation().y);	
 					sliderOut.setValue(sliderOut.getMaximum());	
 				}
-				
+				/*
 				if (playerRightVideo == null)
 				{
 					do {
@@ -3045,7 +3045,7 @@ public class VideoPlayer {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 					} while (playerRightVideo == null);
-				}
+				}*/
 			}
 
 			@Override
@@ -4234,7 +4234,8 @@ public class VideoPlayer {
 					case "H.264":
 					case "H.265":
 					case "WMV":
-					case "MPEG":
+					case "MPEG-1":
+					case "MPEG-2":
 					case "VP8":
 					case "VP9":
 					case "AV1":

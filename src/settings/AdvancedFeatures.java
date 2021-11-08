@@ -78,7 +78,8 @@ public class AdvancedFeatures extends Shutter {
 				
 				break;
 		        
-			case "MPEG":
+			case "MPEG-1":
+			case "MPEG-2":
 			case "WMV":
 				
 				if (caseQMax.isSelected())
@@ -263,7 +264,8 @@ public class AdvancedFeatures extends Shutter {
 		
 		switch (comboFonctions.getSelectedItem().toString())
 		{
-			case "MPEG":
+			case "MPEG-1":
+			case "MPEG-2":
 		
 				if (FFPROBE.entrelaced.equals("1") && caseForcerDesentrelacement.isSelected() == false && comboFilter.getSelectedIndex() == 1)
 		        {               
@@ -278,7 +280,7 @@ public class AdvancedFeatures extends Shutter {
 			case "Apple ProRes":
 			case "GoPro CineForm":
 			case "QT Animation":
-			case "Uncompressed YUV":
+			case "Uncompressed":
 		
 		        if (caseForcerProgressif.isSelected())
 				{
@@ -348,6 +350,7 @@ public class AdvancedFeatures extends Shutter {
 			case "H.265":
 			case "VP8":
 			case "VP9":
+			case "MPEG-2":
 		       
 				if (caseGOP.isSelected())
 		        {
@@ -369,7 +372,8 @@ public class AdvancedFeatures extends Shutter {
 			case "H.265":
 			case "VP8":
 			case "VP9":						
-			case "MPEG":
+			case "MPEG-1":
+			case "MPEG-2":
 			case "MJPEG":
 			case "OGV":
 			case "WMV":
@@ -527,7 +531,7 @@ public class AdvancedFeatures extends Shutter {
 			case "GoPro CineForm":
 			case "HAP":
 			case "QT Animation":
-			case "Uncompressed YUV":
+			case "Uncompressed":
 				
 				if (caseForcerEntrelacement.isSelected())
 				{			
@@ -600,7 +604,8 @@ public class AdvancedFeatures extends Shutter {
 				flags += " -f dvd";				
 				break;
 			
-			case "MPEG":
+			case "MPEG-1":
+			case "MPEG-2":
 			case "MJPEG":
 			case "OGV":
 			case "WMV":

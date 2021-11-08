@@ -498,7 +498,7 @@ public static int gopSpace = 124;
 			            		|| comboFonctions.getSelectedItem().equals("Apple ProRes")
 			            		|| comboFonctions.getSelectedItem().equals("QT Animation")
 								|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
-			            		|| comboFonctions.getSelectedItem().equals("Uncompressed YUV")
+			            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
 			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
 			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))))
 			            {

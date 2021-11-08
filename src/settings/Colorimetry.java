@@ -2,6 +2,7 @@ package settings;
 
 import java.io.File;
 
+import application.ColorImage;
 import application.Shutter;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -14,6 +15,9 @@ public class Colorimetry extends Shutter {
 		if (grpColorimetry.isVisible() && caseColor.isSelected())
 		{			
 			if (filterComplex != "") filterComplex += ",";
+			
+			//Important
+			ColorImage.setEQ(true);
 			
 			filterComplex += finalEQ;	
 		}
