@@ -2566,7 +2566,9 @@ public class Shutter {
 									|| "OGG".equals(fonction)
 									|| "AIFF".equals(fonction)
 									|| "FLAC".equals(fonction)
-									|| "AAC".equals(fonction))
+									|| "AAC".equals(fonction)
+									|| "Dolby Digital Plus".equals(fonction)
+									|| "Dolby TrueHD".equals(fonction))
 							{
 								if (inputDeviceIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
@@ -2849,7 +2851,7 @@ public class Shutter {
 				language.getProperty("functionSubtitles"),
 				language.getProperty("functionInsert"),
 				
-				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "MP3", "AAC", "AC3", "OPUS", "OGG",
+				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "MP3", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", "Dolby TrueHD",
 				
 				language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation", "GoPro CineForm" ,"Uncompressed",
 				
@@ -2939,7 +2941,8 @@ public class Shutter {
 					newList.add("AC3");
 					newList.add("OPUS");
 					newList.add("OGG");
-					
+					newList.add("Dolby Digital Plus");
+					newList.add("Dolby TrueHD");					
 				}
 				else if (comboFonctions.getSelectedItem().equals(language.getProperty("itemEditingCodecs")))
 				{
@@ -7878,7 +7881,7 @@ public class Shutter {
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64"}));
 					comboAudioBitrate.setSelectedIndex(1);
 				}
-				else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
+				else if (comboAudioCodec.getSelectedItem().toString().equals("AC3") || comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 				{
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "640", "448", "384", "320", "256", "192", "128", "96", "64"}));					
 					comboAudioBitrate.setSelectedIndex(2);
@@ -13473,7 +13476,7 @@ public class Shutter {
 				|| language.getProperty("functionReplaceAudio").equals(fonction)
 				|| "WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction)
 				|| "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction)
-				|| "OGG".equals(fonction) || "Loudness & True Peak".equals(fonction)
+				|| "OGG".equals(fonction) || "Dolby Digital Plus".equals(fonction) || "Dolby TrueHD".equals(fonction) || "Loudness & True Peak".equals(fonction)
 				|| language.getProperty("functionBlackDetection").equals(fonction) || language.getProperty("functionOfflineDetection").equals(fonction) 
 				|| "DNxHD".equals(fonction)	|| "DNxHR".equals(fonction) || "Apple ProRes".equals(fonction) || "QT Animation".equals(fonction) || ("GoPro CineForm").equals(fonction) || "Uncompressed".equals(fonction)
 				|| "H.264".equals(fonction) || "H.265".equals(fonction) || "DV PAL".equals(fonction)
@@ -14050,7 +14053,7 @@ public class Shutter {
 							
 							grpSetAudio.repaint();
 							
-						} else if ("WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction) || "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction) || "OGG".equals(fonction)) {
+						} else if ("WAV".equals(fonction) || "AIFF".equals(fonction) || "FLAC".equals(fonction) || "MP3".equals(fonction) || "AAC".equals(fonction) || "AC3".equals(fonction) || "OPUS".equals(fonction) || "OGG".equals(fonction) || "Dolby Digital Plus".equals(fonction) || "Dolby TrueHD".equals(fonction)) {
 						
 							addToList.setText(language.getProperty("filesVideoOrAudio"));
 							caseDisplay.setEnabled(false);
@@ -16057,7 +16060,7 @@ public class Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 				
-			} else if (comboFonctions.getSelectedItem().toString().equals("AC3")) {
+			} else if (comboFonctions.getSelectedItem().toString().equals("AC3") || comboFonctions.getSelectedItem().toString().equals("Dolby Digital Plus")) {
 				
 				lblFilter.setText(language.getProperty("lblBitrate"));
 				String types[] = { "640", "448", "384", "320", "256", "192", "128", "96", "64" };

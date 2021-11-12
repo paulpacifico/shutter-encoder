@@ -27,6 +27,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
@@ -97,6 +99,7 @@ public class VideoPlayer {
 	public static JFrame frame = new JFrame();
 	JLabel title = new JLabel(Shutter.language.getProperty("frameLecteurVideo"));
 	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
+	private static int taskBarHeight;
 	
 	private JLabel quit;
 	private JLabel fullscreen;
@@ -218,6 +221,8 @@ public class VideoPlayer {
     		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
     		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
     		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);	
+    		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+    		taskBarHeight = (int) (dim.getHeight() - winSize.height);
     		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
             Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
             shape1.add(shape2);
@@ -225,7 +230,7 @@ public class VideoPlayer {
     		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
         	
 		}
-		
+				
 		topPanel();
 		
 		//Ces deux boutons définissent la postion des autres objets par la suite ils doivent donc être appelés en amont
@@ -892,10 +897,16 @@ public class VideoPlayer {
 
 			playerLeft(playerLeftTime);	
 			
+			long time = System.currentTimeMillis();
+			
 			do {
 				try {
 					Thread.sleep(4);
 				} catch (InterruptedException e) {}
+				
+				if (System.currentTimeMillis() - time > 1000)
+					break;
+				
 			} while (frameLeft == null);
 			
 			playerLeftLoop = false;
@@ -1180,10 +1191,16 @@ public class VideoPlayer {
 			
 			playerRight(playerRightTime);	
 			
+			long time = System.currentTimeMillis();
+			
 			do {
 				try {
 					Thread.sleep(4);
 				} catch (InterruptedException e) {}
+				
+				if (System.currentTimeMillis() - time > 1000)
+					break;
+				
 			} while (frameRight == null);
 			
 			playerRightLoop = false;
@@ -2240,11 +2257,11 @@ public class VideoPlayer {
 							rightNext.setVisible(true);
 							rightPlay.setVisible(true);
 							rightStop.setVisible(true);							
-
+														
 							if (playerRightTime == 0 || playerRightTime == FFPROBE.totalLength) // Seul moyen pour effectuer l'action seulement quand le playerRight est invisible
-							{				
-		    					leftPlay.setText(Shutter.language.getProperty("btnResume"));
-		    					
+							{											
+								leftPlay.setText(Shutter.language.getProperty("btnResume"));
+
 		    					playerLeftStop();		    						    					
 		    					do {
 		    						try {
@@ -2254,13 +2271,23 @@ public class VideoPlayer {
 		    													
 								playerRightTime = formatTime(sliderOut.getValue());	
 								
-								resizeAll();	
+								resizeAll();
 							}
 							else if (playerRightVideo != null && sliderOutChange)
 							{
-								playerRightSetTime(formatTime(sliderOut.getValue()));
+								playerRightSetTime(formatTime(sliderOut.getValue()));								
 							}	
 							
+							/*							
+							//IMPORTANT when the frame can't be loaded by ffmpeg							
+							if (frameRight == null && playerRightVideo.isAlive() == false)
+							{
+								System.out.println("ok");
+								
+								playerRightTime = formatTime(sliderOut.getValue());	
+								playerRightFreeze();
+							}*/
+														
 							if (FFPROBE.audioOnly && panelWaveformRight != null)
 							{
 								panelWaveformRight.setVisible(true);
@@ -2312,7 +2339,7 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
-				
+								
 				//Allows to wait for the last frame to load
 				if (playerRightLoop == false)
 				{
@@ -2334,7 +2361,6 @@ public class VideoPlayer {
 				
 				//Then refresh the slider position
 				getTimeOutPoint(playerRightTime - inputFramerateMS);	
-
 			}
 
 			@Override
@@ -2514,32 +2540,55 @@ public class VideoPlayer {
 			@Override
 			public void mouseReleased(MouseEvent e) {		
 				
-				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-				Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-				int taskBarHeight = screenSize.height - winSize.height;
-        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        		        		
-				if (accept && frame.getHeight() < screenSize.height - taskBarHeight)
+				GraphicsConfiguration config = frame.getGraphicsConfiguration();
+				GraphicsDevice myScreen = config.getDevice();
+				GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsDevice[] allScreens = env.getScreenDevices();
+				int screenIndex = -1;
+				for (int i = 0; i < allScreens.length; i++) {
+				    if (allScreens[i].equals(myScreen))
+				    {
+				    	screenIndex = i;
+				        break;
+				    }
+				}
+
+				int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
+				int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
+				        		        		
+				if (accept && frame.getHeight() < screenHeight - taskBarHeight)
 				{					
 					if (playerLeft.getHeight() > playerLeft.getWidth())
 					{
-						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
+						frame.setBounds(0,0, screenWidth, screenHeight - taskBarHeight); 	
 					}
 					else
 					{
-						int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - taskBarHeight - btnCaptureIn.getHeight() - leftPlay.getHeight() - sliderIn.getHeight() * 2 - lblDuree.getHeight() - 40) * ((float) (playerLeft.getWidth() * 2) / playerLeft.getHeight()));
-						if (setWidth <= screenSize.width)
-							frame.setSize(setWidth, screenSize.height - taskBarHeight); 
+						int setWidth = (int) ((float) (screenHeight - topPanel.getHeight() - taskBarHeight - btnCaptureIn.getHeight() - leftPlay.getHeight() - sliderIn.getHeight() * 2 - lblDuree.getHeight() - 40) * ((float) (playerLeft.getWidth() * 2) / playerLeft.getHeight()));
+						if (setWidth <= screenWidth)
+							frame.setSize(setWidth, screenHeight - taskBarHeight); 
 						else
-							frame.setSize(screenSize.width, screenSize.height - taskBarHeight);						
+							frame.setSize(screenWidth, screenHeight - taskBarHeight);						
 							
-						frame.setLocation(dim.width/2-frame.getSize().width/2,0); 	
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width,
+		        		   					  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);		        		
+						}
+						else
+		        		{
+		        			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width,
+		        							  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);	
+		        		}
+		        			
 					}						
 				}
 				else if (accept)
 				{
 	        		frame.setSize(1000, 640);
-	        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
+	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	    			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+				
 					try {
 						Thread.sleep(10);
 					} catch (InterruptedException e1) {}
@@ -2642,32 +2691,55 @@ public class VideoPlayer {
     					playerRightStop();
     				}
 					
-					Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-					Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-					int taskBarHeight = screenSize.height - winSize.height;
-	        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	        		
-					if (frame.getHeight() < screenSize.height - taskBarHeight)
+    				GraphicsConfiguration config = frame.getGraphicsConfiguration();
+    				GraphicsDevice myScreen = config.getDevice();
+    				GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    				GraphicsDevice[] allScreens = env.getScreenDevices();
+    				int screenIndex = -1;
+    				for (int i = 0; i < allScreens.length; i++) {
+    				    if (allScreens[i].equals(myScreen))
+    				    {
+    				    	screenIndex = i;
+    				        break;
+    				    }
+    				}
+
+    				int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
+    				int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
+    				
+					if (frame.getHeight() < screenHeight - taskBarHeight)
 					{						
 						if (playerLeft.getHeight() > playerLeft.getWidth())
 						{
-							frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight); 	
+							frame.setBounds(0,0, screenWidth, screenHeight - taskBarHeight); 	
 						}
 						else
 						{
-							int setWidth = (int) ((float) (screenSize.height - topPanel.getHeight() - taskBarHeight - btnCaptureIn.getHeight() - leftPlay.getHeight() - sliderIn.getHeight() * 2 - lblDuree.getHeight() - 40) * ((float) (playerLeft.getWidth() * 2) / playerLeft.getHeight()));
-							if (setWidth <= screenSize.width)
-								frame.setSize(setWidth, screenSize.height - taskBarHeight); 
+							int setWidth = (int) ((float) (screenHeight - topPanel.getHeight() - taskBarHeight - btnCaptureIn.getHeight() - leftPlay.getHeight() - sliderIn.getHeight() * 2 - lblDuree.getHeight() - 40) * ((float) (playerLeft.getWidth() * 2) / playerLeft.getHeight()));
+							if (setWidth <= screenWidth)
+								frame.setSize(setWidth, screenHeight - taskBarHeight); 
 							else
-								frame.setSize(screenSize.width, screenSize.height - taskBarHeight);						
+								frame.setSize(screenWidth, screenHeight - taskBarHeight);						
 								
-							frame.setLocation(dim.width/2-frame.getSize().width/2,0); 	
+							if (System.getProperty("os.name").contains("Windows"))
+							{
+								frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width,
+			        		   					  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);		        		
+							}
+							else
+			        		{
+			        			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width,
+			        							  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);	
+			        		}
+								
 						}						
 					}
 					else
 					{
 		        		frame.setSize(1000, 640);
-		        		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
+		        		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		    			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+		        		
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
@@ -3037,15 +3109,6 @@ public class VideoPlayer {
 					panelWaveformRight.setLocation(waveformRight.getWidth() - 2, panelWaveformRight.getLocation().y);	
 					sliderOut.setValue(sliderOut.getMaximum());	
 				}
-				/*
-				if (playerRightVideo == null)
-				{
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-					} while (playerRightVideo == null);
-				}*/
 			}
 
 			@Override

@@ -86,7 +86,7 @@ public class ReducedWindow extends JDialog {
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		}
 		
-		GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
+		GraphicsConfiguration config = frame.getGraphicsConfiguration();
 		GraphicsDevice myScreen = config.getDevice();
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] allScreens = env.getScreenDevices();
@@ -219,7 +219,8 @@ public class ReducedWindow extends JDialog {
 		frame.addMouseMotionListener(new MouseMotionListener(){
 
 			@Override
-			public void mouseDragged(MouseEvent e) {						
+			public void mouseDragged(MouseEvent e) {
+				
 				GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
 				GraphicsDevice myScreen = config.getDevice();
 				GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();

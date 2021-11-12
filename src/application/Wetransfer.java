@@ -514,7 +514,7 @@ public class Wetransfer {
 					{
 						cmd = " upload" + uploadFileList.toString()
 							+ " --from=" + textFrom.getText() 
-							+ " --to=" + textTo.getText().replace(" ", ",")
+							+ " --to=" + textTo.getText().replace(", ", ",").replace(" ", ",")
 							+ " --message=" + '"' + textMessage.getText() + System.lineSeparator() + System.lineSeparator() + Shutter.language.getProperty("sentFrom") + '"';
 					}
 					else

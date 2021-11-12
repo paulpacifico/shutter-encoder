@@ -60,7 +60,7 @@ public static String format = "";
 					{
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(1,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/youtube-dl.exe" + '"';
+						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp.exe" + '"';
 						if (options != "")
 						{
 							String opts[] = options.split(" ");
@@ -78,8 +78,18 @@ public static String format = "";
 					{
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/youtube-dl";
-						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace("youtube-dl", "ffmpeg") + " --no-part -o " + '"' + fichierDeSortie + '"');
+						
+						if (System.getProperty("os.name").contains("Mac"))
+						{
+							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp_macos";
+							processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace("yt-dlp_macos", "ffmpeg") + " --no-part -o " + '"' + fichierDeSortie + '"');
+						}
+						else
+						{
+							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp";
+							processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace("yt-dlp", "ffmpeg") + " --no-part -o " + '"' + fichierDeSortie + '"');
+						}
+		
 					}
 									
 					isRunning = true;	
@@ -155,14 +165,21 @@ public static String format = "";
 					{
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(1,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/youtube-dl.exe" + '"';
+						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp.exe" + '"';
 						processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, "-U");
 					}
 					else
 					{
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/youtube-dl";
+						
+						if (System.getProperty("os.name").contains("Mac"))
+						{
+							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp_macos";
+						}
+						else
+							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp";
+						
 						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c", PathToYOUTUBEDL + " -U");
 					}
 									
@@ -211,7 +228,7 @@ public static String format = "";
 					{
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(1,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/youtube-dl.exe" + '"';	
+						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp.exe" + '"';	
 						if (options != "")
 						{
 							String opts[] = options.split(" ");
@@ -229,7 +246,14 @@ public static String format = "";
 					{
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/youtube-dl";
+						
+						if (System.getProperty("os.name").contains("Mac"))
+						{
+							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp_macos";
+						}
+						else
+							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp";
+						
 						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + options + " -F " + cmd);
 					}					
 					

@@ -41,6 +41,8 @@ import settings.Transitions;
  * AIFF
  * FLAC
  * OGG
+ * Dolby Digital Plus
+ * Dolby TrueHD
  * OPUS
  * MP3
  * WAV
@@ -136,6 +138,20 @@ public class AudioEncoders extends Shutter {
 								
 								audioCodec = "libvorbis -b:a " + comboFilter.getSelectedItem().toString() + "k";									
 								container = ".ogg";
+								stereoOutput = true;
+								break;
+								
+							case "Dolby Digital Plus":
+								
+								audioCodec = "eac3 -b:a " + comboFilter.getSelectedItem().toString() + "k";									
+								container = ".eac3";
+								stereoOutput = true;
+								break;
+								
+							case "Dolby TrueHD":
+								
+								audioCodec = "truehd -strict -2";									
+								container = ".thd";
 								stereoOutput = true;
 								break;
 								

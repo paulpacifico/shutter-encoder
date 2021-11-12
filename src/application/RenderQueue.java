@@ -25,6 +25,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.MouseInfo;
@@ -75,6 +77,7 @@ import settings.FunctionUtils;
 
 	public class RenderQueue {
 	public static JFrame frame;
+	private static int taskBarHeight;
 	
 	/*
 	 * Composants
@@ -118,7 +121,9 @@ import settings.FunctionUtils;
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y + (int) (Shutter.frame.getSize().getHeight() / 4));
-	    	
+			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+			Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+    		taskBarHeight = (int) (dim.getHeight() - winSize.height);
 		}
 				
 		topPanel();
@@ -304,17 +309,40 @@ import settings.FunctionUtils;
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {		
+			public void mouseReleased(MouseEvent e) {	
+				
 				if (accept)
 				{
-					if (frame.getExtendedState() == JFrame.NORMAL)
-					{
-						frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+					GraphicsConfiguration config = frame.getGraphicsConfiguration();
+					GraphicsDevice myScreen = config.getDevice();
+					GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					GraphicsDevice[] allScreens = env.getScreenDevices();
+					int screenIndex = -1;
+					for (int i = 0; i < allScreens.length; i++) {
+					    if (allScreens[i].equals(myScreen))
+					    {
+					    	screenIndex = i;
+					        break;
+					    }
+					}
+
+					int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
+					int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();						
+
+					if (accept && frame.getHeight() < screenHeight - taskBarHeight)
+					{		
+						frame.setSize(screenWidth, screenHeight - taskBarHeight);
 						
-						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-						Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-						int taskBarHeight = screenSize.height - winSize.height;
-						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight);	
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width,
+		        		   					  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);		        		
+						}
+						else
+		        		{
+		        			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width,
+		        							  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);	
+		        		}
 						
 						title.setBounds(0, 0, frame.getWidth(), 52);
 						
@@ -331,10 +359,12 @@ import settings.FunctionUtils;
 						
 						topImage.setLocation(frame.getSize().width / 2 - 200, 0);
 					}
-					else
+					else if (accept)
 					{
-						frame.setExtendedState(JFrame.NORMAL);
 						frame.setSize(600, 348);
+						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+						
 						title.setBounds(0, 0, frame.getWidth(), 52);
 						
 						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
@@ -525,14 +555,36 @@ import settings.FunctionUtils;
 			public void mouseClicked(MouseEvent down) {
 				if (down.getClickCount() == 2 && down.getButton() == MouseEvent.BUTTON1)
 				{
-					if (frame.getExtendedState() == JFrame.NORMAL)
+					GraphicsConfiguration config = frame.getGraphicsConfiguration();
+					GraphicsDevice myScreen = config.getDevice();
+					GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					GraphicsDevice[] allScreens = env.getScreenDevices();
+					int screenIndex = -1;
+					for (int i = 0; i < allScreens.length; i++) {
+					    if (allScreens[i].equals(myScreen))
+					    {
+					    	screenIndex = i;
+					        break;
+					    }
+					}
+
+					int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
+					int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
+
+					if (frame.getHeight() < screenHeight - taskBarHeight)
 					{
-						frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+						frame.setSize(screenWidth, screenHeight - taskBarHeight);
 						
-						Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-						Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-						int taskBarHeight = screenSize.height - winSize.height;
-						frame.setBounds(0,0, screenSize.width, screenSize.height - taskBarHeight);
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width,
+		        		   					  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);		        		
+						}
+						else
+		        		{
+		        			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width,
+		        							  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);	
+		        		}		
 						
 						title.setBounds(0, 0, frame.getWidth(), 52);
 						
@@ -551,8 +603,10 @@ import settings.FunctionUtils;
 					}
 					else
 					{
-						frame.setExtendedState(JFrame.NORMAL);
 						frame.setSize(600, 348);
+						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
+						
 						title.setBounds(0, 0, frame.getWidth(), 52);
 						
 						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
