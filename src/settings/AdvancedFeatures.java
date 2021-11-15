@@ -593,10 +593,7 @@ public class AdvancedFeatures extends Shutter {
 				
 				if (caseDecimate.isSelected())		
 					flags += " -vsync vfr";	
-				
-				if (comboAudioCodec.getSelectedItem().toString().contains("FLAC"))
-					flags += " -strict -2";
-				
+
 				break;	
 			
 			case "DVD":

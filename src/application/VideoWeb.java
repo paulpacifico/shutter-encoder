@@ -672,18 +672,18 @@ public class VideoWeb {
 					       
 					       if (Shutter.cancelled)
 					       {
-						    	 if (YOUTUBEDL.fichierDeSortie.exists()) 
-						    		 YOUTUBEDL.fichierDeSortie.delete();
+						    	 if (YOUTUBEDL.outputFile.exists()) 
+						    		 YOUTUBEDL.outputFile.delete();
 					       }
 					       else //Conversions Audio
 					       {
 					    	   Shutter.tempsRestant.setVisible(false);
-					    	   String ext = YOUTUBEDL.fichierDeSortie.toString().substring(YOUTUBEDL.fichierDeSortie.toString().lastIndexOf("."));
+					    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
 					    	   if (caseWAV.isSelected())
 					    	   {		
 					    		   	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToWAV")); 
 									String cmd = " -vn -y ";
-									FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".wav") + '"');	
+									FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
 								
 								       do { 
 											Thread.sleep(100);		
@@ -692,7 +692,7 @@ public class VideoWeb {
 							       //Suppression du fichier audio si processus annulé
 							       if (Shutter.cancelled)
 							       {
-							    	   File audioFile = new File (YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".wav"));
+							    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".wav"));
 							    	   audioFile.delete();
 							       }
 					    	   }
@@ -700,7 +700,7 @@ public class VideoWeb {
 					    	   {
 					    		   Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToMP3"));  
 					    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
-					    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.fichierDeSortie.toString() + '"' + cmd + '"'  + YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".mp3") + '"');	
+					    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
 								
 							       do { 
 											Thread.sleep(100);		
@@ -709,7 +709,7 @@ public class VideoWeb {
 							       //Suppression du fichier audio si processus annulé
 							       if (Shutter.cancelled)
 							       {
-							    	   File audioFile = new File (YOUTUBEDL.fichierDeSortie.toString().replace(ext, ".mp3"));
+							    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".mp3"));
 							    	   audioFile.delete();
 							       }
 					    	   }		    	   			       
@@ -732,7 +732,7 @@ public class VideoWeb {
 					       }
 							FFMPEG.enableAll();
 							FFMPEG.enfOfFunction();							
-		        			Utils.sendMail(YOUTUBEDL.fichierDeSortie.toString());		        			
+		        			Utils.sendMail(YOUTUBEDL.outputFile.toString());		        			
 	        			}
 					       				        
 					} catch (InterruptedException e1) {}

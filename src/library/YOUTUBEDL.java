@@ -37,7 +37,7 @@ static int dureeTotale = 0;
 public static boolean isRunning = false;
 public static Thread runProcess;
 public static	Process process;
-public static File fichierDeSortie;
+public static File outputFile;
 public static StringBuilder formatsOutput;
 public static String format = "";
 
@@ -46,9 +46,9 @@ public static String format = "";
 		error = false;
 		Shutter.cancelled  = false;
 		
-        fichierDeSortie = new File(lblDestination1.getText() + "/%(title)s.%(ext)s");
+        outputFile = new File(lblDestination1.getText() + "/%(title)s.%(ext)s");
         
-	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + format + " " + cmd + options + " --no-continue -o " + '"' + fichierDeSortie + '"' + System.lineSeparator());
+	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + format + " " + cmd + options + " --no-continue -o " + '"' + outputFile + '"' + System.lineSeparator());
 
 		runProcess = new Thread(new Runnable()  {
 			@Override
@@ -65,31 +65,32 @@ public static String format = "";
 						{
 							String opts[] = options.split(" ");
 							if (opts.length == 3)
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], "--no-continue", "--no-part", "-o","" + '"' + fichierDeSortie +'"');
+								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
 							else if (opts.length == 5)
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], opts[3], opts[4], "--no-continue", "--no-part", "-o","" + '"' + fichierDeSortie +'"');
+								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], opts[3], opts[4], "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
 							else
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], opts[3], opts[4], opts[5], opts[6], "--no-continue", "--no-part", "-o","" + '"' + fichierDeSortie +'"');
+								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], opts[3], opts[4], opts[5], opts[6], "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
 						}
 						else
-							processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, "--no-continue", "--no-part", "-o","" + '"' + fichierDeSortie +'"');
+							processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
 					}
 					else
 					{
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
 						
+						String youtubedl = "yt-dlp";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
-							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp_macos";
-							processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace("yt-dlp_macos", "ffmpeg") + " --no-part -o " + '"' + fichierDeSortie + '"');
+							youtubedl = "yt-dlp_macos";
+							if (Integer.parseInt(System.getProperty("os.version").replace(".", "")) < 1015)
+							{
+								youtubedl = "youtube-dl";
+							}
 						}
-						else
-						{
-							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp";
-							processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace("yt-dlp", "ffmpeg") + " --no-part -o " + '"' + fichierDeSortie + '"');
-						}
-		
+
+						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
+						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace(youtubedl, "ffmpeg") + " --no-part -o " + '"' + outputFile + '"');		
 					}
 									
 					isRunning = true;	
@@ -109,7 +110,7 @@ public static String format = "";
 					    	if (lineOutput.contains("Destination"))
 					    	{
 					    		 lblCurrentEncoding.setText(lineOutput.substring(24).replace(lblDestination1.getText(), "").substring(1));
-					    		 fichierDeSortie = new File(lblDestination1.getText() + "/" + lblCurrentEncoding.getText());
+					    		 outputFile = new File(lblDestination1.getText() + "/" + lblCurrentEncoding.getText());
 					    	}
 					    		
 						    if (lineOutput.contains("ETA") && lineOutput.contains("Unknown ETA") == false)
@@ -134,7 +135,7 @@ public static String format = "";
 					process.waitFor();
 								     	
                     if (Shutter.cancelled)
-                    	fichierDeSortie.delete();					
+                    	outputFile.delete();					
 														
 					} catch (IOException | InterruptedException e) {
 	                    JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("downloadError"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
@@ -173,13 +174,17 @@ public static String format = "";
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
 						
+						String youtubedl = "yt-dlp";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
-							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp_macos";
+							youtubedl = "yt-dlp_macos";
+							if (Integer.parseInt(System.getProperty("os.version").replace(".", "")) < 1015)
+							{
+								youtubedl = "youtube-dl";
+							}
 						}
-						else
-							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp";
-						
+
+						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
 						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c", PathToYOUTUBEDL + " -U");
 					}
 									
@@ -247,13 +252,17 @@ public static String format = "";
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
 						
+						String youtubedl = "yt-dlp";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
-							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp_macos";
+							youtubedl = "yt-dlp_macos";
+							if (Integer.parseInt(System.getProperty("os.version").replace(".", "")) < 1015)
+							{
+								youtubedl = "youtube-dl";
+							}
 						}
-						else
-							PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/yt-dlp";
-						
+
+						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
 						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + options + " -F " + cmd);
 					}					
 					

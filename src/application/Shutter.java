@@ -167,7 +167,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "15.5";
+	public static String actualVersion = "15.6";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String magnetoFont = "Magneto";
@@ -491,7 +491,7 @@ public class Shutter {
 		
 		//Splashscreen
 		new Splash();
-		
+				
 		//Accès à la police Montserrat pour drawtext
 		if (System.getProperty("os.name").contains("Mac"))
 		{
@@ -556,7 +556,7 @@ public class Shutter {
 				Settings.saveSettings();
             }
         });
-		
+				
 		soundURL = this.getClass().getClassLoader().getResource("contents/complete.wav");
 		soundErrorURL = this.getClass().getClassLoader().getResource("contents/error.wav");
 
@@ -7899,7 +7899,7 @@ public class Shutter {
 		comboAudioCodec.setName("comboAudioCodec");
 		comboAudioCodec.setEnabled(false);
 		comboAudioCodec.setMaximumRowCount(20);
-		comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", language.getProperty("noAudio") }));
+		comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
 		comboAudioCodec.setSelectedIndex(3);
 		comboAudioCodec.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		comboAudioCodec.setEditable(false);
@@ -8411,7 +8411,7 @@ public class Shutter {
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);
 				}
-				else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
+				else if (comboAudioCodec.getSelectedItem().toString().equals("AC3") || comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 				{
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "640", "448", "384", "320", "256", "192", "128", "96", "64"}));					
 					comboAudioBitrate.setSelectedIndex(2);
@@ -12246,7 +12246,7 @@ public class Shutter {
 				|| language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString())
 				|| language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(3);
 					caseChangeAudioCodec.setSelected(false);
 					comboAudioCodec.setEnabled(false);
@@ -12357,7 +12357,7 @@ public class Shutter {
 				}
 				else if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", "FLAC", "Dolby Digital Plus", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);						
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);
@@ -13925,11 +13925,11 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);							
-							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
+							if ((comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
 							{
-								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", language.getProperty("noAudio") }));
-								comboAudioCodec.setSelectedIndex(3);
-								caseChangeAudioCodec.setSelected(false);
+								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
+								comboAudioCodec.setSelectedIndex(3);								
+								caseChangeAudioCodec.setSelected(false);								
 								comboAudioCodec.setEnabled(false);
 								comboAudioBitrate.setEnabled(false);
 							}
@@ -14032,9 +14032,9 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);
-							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
+							if ((comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
 							{
-								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", language.getProperty("noAudio") }));
+								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(3);
 								caseChangeAudioCodec.setSelected(false);
 								comboAudioCodec.setEnabled(false);
@@ -14822,7 +14822,7 @@ public class Shutter {
 							grpSetAudio.add(caseChangeAudioCodec);
 							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("AAC") == false)
 							{
-								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", "FLAC", "Dolby Digital Plus", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(0);
 								caseChangeAudioCodec.setSelected(true);
 								comboAudioCodec.setEnabled(true);

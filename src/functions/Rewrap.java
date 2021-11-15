@@ -208,6 +208,10 @@ public class Rewrap extends Shutter {
 			{
 				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
+			else if (comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
+			{
+				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
 			{
 				return " -an";

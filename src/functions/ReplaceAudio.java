@@ -229,6 +229,10 @@ public class ReplaceAudio extends Shutter {
 			{
 				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
+			else if (comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
+			{
+				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+			}
 			else //Sans audio
 			{
 				return " -an";
@@ -236,8 +240,13 @@ public class ReplaceAudio extends Shutter {
 		}
 		else //Mode Auto
 		{
-			switch (ext.toLowerCase()) 
+			if (audioExt.equals(".thd"))
 			{
+				return  " -c:a copy -strict -2";
+			}
+			
+			switch (ext.toLowerCase()) 
+			{			
 				case ".mp4":
 				if (audioExt.equals(".m4a") == false)
 					return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k";

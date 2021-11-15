@@ -186,6 +186,10 @@ public class AudioSettings extends Shutter {
 			{
 				audioCodec = "libvorbis";	
 			}
+			else if (audioCodec.equals("Dolby Digital Plus"))
+			{
+				audioCodec = "eac3";
+			}
 			else if (audioCodec.equals("WMA"))
 			{
 				audioCodec = "wmav2";
