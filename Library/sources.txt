@@ -1,12 +1,12 @@
 7za: www.7-zip.org
 dcraw: www.dechifro.org/dcraw
+yt-dlp: github.com/yt-dlp/yt-dlp
 ffmpeg: ffmpeg.org
 exiftool: exiftool.org
 tsMuxeR: github.com/justdan96/tsMuxer
 mkvmerge: mkvtoolnix.download
 mediainfo: mediaarea.net/fr/MediaInfo
 dvdauthor: dvdauthor.sourceforge.net
-youtube-dl: youtube-dl.org
 WeTransfer: developers.wetransfer.com
 XpdfReader: www.xpdfreader.com
 bmxtranswrap: sourceforge.net/p/bmxlib/home/Home
