@@ -13925,7 +13925,7 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);							
-							if ((comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
+							if ((comboAudioCodec.getItemCount() != 10 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
 							{
 								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(3);								
@@ -14032,7 +14032,7 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);
-							if ((comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
+							if ((comboAudioCodec.getItemCount() != 10 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
 							{
 								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(3);
@@ -14820,7 +14820,7 @@ public class Shutter {
 							//grpSetAudio
 							grpSetAudio.removeAll();
 							grpSetAudio.add(caseChangeAudioCodec);
-							if (comboAudioCodec.getItemCount() != 9 || comboAudioCodec.getModel().getElementAt(0).equals("AAC") == false)
+							if (comboAudioCodec.getItemCount() != 10 || comboAudioCodec.getModel().getElementAt(0).equals("AAC") == false)
 							{
 								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "AC3", "OPUS", "FLAC", "Dolby Digital Plus", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 								comboAudioCodec.setSelectedIndex(0);
