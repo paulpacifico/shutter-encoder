@@ -217,6 +217,10 @@ public class ReplaceAudio extends Shutter {
 			{
 				return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
+			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
+			{
+				return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 			{
 				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
@@ -248,20 +252,25 @@ public class ReplaceAudio extends Shutter {
 			switch (ext.toLowerCase()) 
 			{			
 				case ".mp4":
-				if (audioExt.equals(".m4a") == false)
-					return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k";
-				else
-					return  " -c:a copy";
+					if (audioExt.equals(".m4a") == false)
+						return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k";
+					else
+						return  " -c:a copy";
+				case ".mp3":
+					if (audioExt.equals(".mp3") == false)
+						return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a 256k";
+					else
+						return  " -c:a copy";
 				case ".wmv":
-				if (audioExt.equals(".wma") == false)
-					return " -c:a wmav2 -ar " + lbl48k.getText() + " -b:a 256k";
-				else
-					return  " -c:a copy";
+					if (audioExt.equals(".wma") == false)
+						return " -c:a wmav2 -ar " + lbl48k.getText() + " -b:a 256k";
+					else
+						return  " -c:a copy";
 				case ".mpg":
-				if (audioExt.equals(".mp2") == false)
-					return " -c:a mp2 -ar " + lbl48k.getText() + " -b:a 256k";
-				else
-					return  " -c:a copy";
+					if (audioExt.equals(".mp2") == false)
+						return " -c:a mp2 -ar " + lbl48k.getText() + " -b:a 256k";
+					else
+						return  " -c:a copy";
 				case ".ogv":
 				case ".av1":
 				case ".webm":

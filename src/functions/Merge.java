@@ -167,6 +167,10 @@ public class Merge extends Shutter {
 			{
 				return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
+			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
+			{
+				return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 			{
 				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";

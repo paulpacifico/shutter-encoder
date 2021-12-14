@@ -980,7 +980,14 @@ public class VideoEncoders extends Shutter {
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 						return " -c:v hevc_amf";
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
-						return " -c:v hevc_videotoolbox";			
+					{
+						if (caseAlpha.isSelected())
+						{
+							return " -c:v hevc_videotoolbox -alpha_quality 1";		
+						}
+						else
+							return " -c:v hevc_videotoolbox";
+					}
 					else if (comboAccel.getSelectedItem().equals("VAAPI"))
 						return " -c:v hevc_vaapi";	
 				}
@@ -1007,20 +1014,20 @@ public class VideoEncoders extends Shutter {
 						
 			case "VP8":
 			
-				return " -c:v libvpx";
+				return " -c:v libvpx -row-mt 1";
 			
 			case "VP9":
 				
 				if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 				{
-					return " -c:v vp9_qsv";
+					return " -c:v vp9_qsv -row-mt 1";
 				}
 		    	else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))
 		    	{
-		    		return " -c:v vp9_vaapi";
+		    		return " -c:v vp9_vaapi -row-mt 1";
 		    	}
 		    	else
-		        	return " -c:v libvpx-vp9";  
+		        	return " -c:v libvpx-vp9 -row-mt 1";  
 				
 			case "WMV":
 				
@@ -1264,13 +1271,7 @@ public class VideoEncoders extends Shutter {
 		    		String gpu = "";
 					if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
-						
-						if (comboFonctions.getSelectedItem().toString().equals("H.264"))
-						{	
-							gpu = " -qp " + debitVideo.getSelectedItem().toString();
-						}
-						else
-							gpu = " -cq " + debitVideo.getSelectedItem().toString();
+						gpu = " -qp " + debitVideo.getSelectedItem().toString();
 					}
 					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{

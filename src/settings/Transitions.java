@@ -17,23 +17,12 @@ public class Transitions extends Shutter {
 	    		if (filterComplex != "") filterComplex += ",";	
 	    		
 	    		long videoInValue = (long) (Integer.parseInt(spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-	    		long videoStart = 0;
-	    		
-	    		if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
-	    		{
-	        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-	
-	        		if (totalIn >= 10000)
-	        			videoStart = 10000;
-	        		else
-	        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-	    		}
 	    		
 	    		String color = "black";
 				if (lblFadeInColor.getText().equals(language.getProperty("white")))
 					color = "white";
 	    		
-	    		String videoFade = "fade=in:st=" + videoStart + "ms:d=" + videoInValue + "ms:color=" + color;
+	    		String videoFade = "fade=in:st=0ms:d=" + videoInValue + "ms:color=" + color;
 	    		
 	        	filterComplex += videoFade;
 	    	}
@@ -53,10 +42,7 @@ public class Transitions extends Shutter {
 	        		 
 	        		if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
 	        		{
-		        		if (totalIn >= 10000)
-		        			videoStart = 10000 + (totalOut - totalIn) - videoOutValue;
-		        		else
-		        			videoStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - videoOutValue;
+		        		videoStart = (totalOut - totalIn) - videoOutValue;
 	        		}
 	        		else //Remove mode
 	        			videoStart = FFPROBE.totalLength - (totalOut - totalIn) - videoOutValue;
@@ -93,19 +79,8 @@ public class Transitions extends Shutter {
 		if (grpTransitions.isVisible() && caseAudioFadeIn.isSelected())
     	{ 
     		long audioInValue = (long) (Integer.parseInt(spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long audioStart = 0;
-    		
-			if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
-			{
-				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-				
-				if (totalIn >= 10000)
-					audioStart = 10000;
-				else
-					audioStart = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-			}
 			
-			audioFilter += "afade=in:st=" + audioStart + "ms:d=" + audioInValue + "ms";
+			audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
     	}    
         
 		return audioFilter;
@@ -128,10 +103,7 @@ public class Transitions extends Shutter {
 				 
 				if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
 				{
-					if (totalIn >= 10000)
-						audioStart = 10000 + (totalOut - totalIn) - audioOutValue;
-					else
-						audioStart = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS)) - audioOutValue;
+					audioStart = (totalOut - totalIn) - audioOutValue;
 				}
 				else //Remove mode
 					audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
