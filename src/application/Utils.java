@@ -230,6 +230,10 @@ public class Utils extends Shutter {
 				Shutter.montserratFont = "";
 				Shutter.freeSansFont = "";
 			}
+			else if (getLanguage.contains("Slovenian"))
+			{
+				Shutter.montserratFont = "FreeSans";
+			}
 						
 			language.load(input);	
 			input.close();														
