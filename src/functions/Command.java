@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ public class Command extends Shutter {
 			return true;
 		
 		//Sending processes
-		FunctionUtils.sendMail(fileName);	
+		FunctionUtils.addFileForMail(fileName);	
 		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		FunctionUtils.copyFile(fileOut);

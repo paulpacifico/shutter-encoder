@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -392,7 +392,7 @@ public class VideoInserts extends Shutter {
 		listeBAB.delete();
 		
 		//Sending processes
-		Utils.sendMail(fileOut.toString());
+		FunctionUtils.addFileForMail(fileOut.toString());
 		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);			

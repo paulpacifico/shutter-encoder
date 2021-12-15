@@ -1,3 +1,22 @@
+/*******************************************************************************************
+* Copyright (C) 2022 PACIFICO PAUL
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+* 
+********************************************************************************************/
+
 package settings;
 
 import java.awt.Color;
@@ -49,6 +68,7 @@ public class FunctionUtils extends Shutter {
 	public static File OPAtomFolder;
 	public static String silentTrack = "";
 	public static int mergeDuration = 0;
+	private static StringBuilder mailFileList = new StringBuilder();
 	
 	public static boolean analyze(File file, boolean isRaw) throws InterruptedException {
 		
@@ -1010,63 +1030,68 @@ public class FunctionUtils extends Shutter {
 		return fileOut;				
 	}
 
-	public static void sendMail(final String file) {
-		
-		if (caseSendMail.isSelected()) 
+	public static void addFileForMail(final String file)
+	{		
+		if (caseChangeFolder3.isSelected())
 		{
-			Thread thread = new Thread(new Runnable() {
-				
-				public void run() {
-					sendMailIsRunning = true;
+			mailFileList.append(file + " " + Shutter.language.getProperty("isEncoded") + " " + lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText()  + System.lineSeparator());
+		}
+		else if (caseChangeFolder2.isSelected())
+		{
+			mailFileList.append(file + " " + Shutter.language.getProperty("isEncoded") + " " + lblDestination1.getText() + " | " + lblDestination2.getText()  + System.lineSeparator());
+		}
+		else
+			mailFileList.append(file + " " + Shutter.language.getProperty("isEncoded") + " " + lblDestination1.getText()  + System.lineSeparator());
+	}
+	
+	public static void sendMail() {
+		
+		if (caseSendMail.isSelected() && mailFileList.length() != 0) 
+		{
+			sendMailIsRunning = true;
 
-					Properties props = new Properties();
-					props.put("mail.smtp.auth", "true");
-					props.put("mail.smtp.starttls.enable", "true");
-					props.put("mail.smtp.host", "auth.smtp.1and1.fr");
-					props.put("mail.smtp.port", "587");
+			Properties props = new Properties();
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", "auth.smtp.1and1.fr");
+			props.put("mail.smtp.port", "587");
 
-					Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(Utils.username, Utils.password);
-						}
-					});
-					
-					try {
-						Message message = new MimeMessage(session);
-						message.setFrom(new InternetAddress(Utils.username));
-						message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(textMail.getText()));
-						if (FFMPEG.error) {
-							message.setSubject(Shutter.language.getProperty("shutterEncodingError"));
-							message.setText(file + " " + Shutter.language.getProperty("notEncoded"));
-						} else {
-							message.setSubject(Shutter.language.getProperty("shutterEncodingCompleted"));
-							if (caseChangeFolder3.isSelected())
-								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText());
-							else if (caseChangeFolder2.isSelected())
-								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText());
-							else
-								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText());
-						}
-
-						Transport.send(message);						
-						
-					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
-				        
-					} catch (MessagingException e) {
-						
-						Console.consoleFFMPEG.append(System.lineSeparator() + e + System.lineSeparator());
-						
-						Shutter.lblCurrentEncoding.setForeground(Color.RED);
-			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
-						Shutter.progressBar1.setValue(0);
-					} finally {
-						sendMailIsRunning = false;
-					}
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(Utils.username, Utils.password);
 				}
 			});
-			thread.start();
+			
+			try {
+				
+				Message message = new MimeMessage(session);
+				message.setFrom(new InternetAddress(Utils.username));
+				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(textMail.getText()));						
+				message.setSubject(Shutter.language.getProperty("shutterEncodingCompleted"));
+				message.setText(mailFileList.toString());
 
+				Transport.send(message);						
+				
+			    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+		        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
+		        
+			} catch (MessagingException e) {
+				
+				Console.consoleFFMPEG.append(System.lineSeparator() + e + System.lineSeparator());
+				
+				Shutter.lblCurrentEncoding.setForeground(Color.RED);
+	        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
+				Shutter.progressBar1.setValue(0);
+				
+			} finally {
+				sendMailIsRunning = false;
+				mailFileList.setLength(0);
+			}
+
+		}
+		else
+		{
+			mailFileList.setLength(0);
 		}
 	}
 

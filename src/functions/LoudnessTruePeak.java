@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ import java.io.UnsupportedEncodingException;
 import javax.swing.JOptionPane;
 
 import application.Shutter;
-import application.Utils;
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
@@ -188,7 +187,7 @@ public class LoudnessTruePeak extends Shutter {
 		}
 		
 		//Sending process
-		Utils.sendMail(fileName);		
+		FunctionUtils.addFileForMail(fileName);		
 		
 		//Watch folder
 		if (Shutter.scanIsRunning)

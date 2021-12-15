@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ public static Thread processFrameData;
 public static Thread processVideoLevels;
 public static Thread processGOP;
 public static Thread processFindStreams;
-public static Thread processCalculH264;
+public static Thread processSetLength;
 public static String subtitlesCodec = "";
 public static int subtitleStreams = 0;
 public static int audioStreams = 0;
@@ -272,7 +272,7 @@ public static int gopSpace = 124;
 					      		if (caseInAndOut.isSelected() && VideoPlayer.playerLeftVideo != null)	
 					     			VideoPlayer.totalDuration();
 
-					             setTailleH264();
+					             setFilesize();
 							}
 			            }
  
@@ -488,53 +488,56 @@ public static int gopSpace = 124;
 			        		 subtitlesCodec = s[1];
 			        	 }
 			        	 
+			        	//Timecode from XML
+			        	if (line.contains("StartTimecode"))
+			        	{
+			        		String s1[] = line.split(">");
+			        		String s2[] = s1[1].split("<");
+			        					        		
+			        		String str[] = s2[0].replace(";" , ":").split(":");
+		                	timecode1 = str[0].replace(" ", "");
+		                	timecode2 = str[1].replace(" ", "");
+		                	timecode3 = str[2].replace(" ", "");
+		                	timecode4 = str[3].replace(" ", "");
+			        	}
+			        	 
 		        	 	//Timecode
-			            if (line.contains("timecode") && (OverlayWindow.caseShowTimecode.isSelected()
-			            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")
-			            		|| comboFonctions.getSelectedItem().equals("XAVC")
-			            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
-			            		|| comboFonctions.getSelectedItem().equals("DNxHD")
-			            		|| comboFonctions.getSelectedItem().equals("DNxHR")
-			            		|| comboFonctions.getSelectedItem().equals("Apple ProRes")
-			            		|| comboFonctions.getSelectedItem().equals("QT Animation")
-								|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
-			            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
-			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
-			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))))
-			            {
-			                String str[]= line.replace(";" , ":").split(":");
-		                	timecode1 = str[1].replace(" ", "");
-		                	timecode2 = str[2].replace(" ", "");
-		                	timecode3 = str[3].replace(" ", "");
-		                	timecode4 = str[4].replace(" ", "");
+			            if (line.contains("timecode"))
+			            {				            	
+			            	if (OverlayWindow.caseShowTimecode.isSelected()
+		            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")
+		            		|| comboFonctions.getSelectedItem().equals("XAVC")
+		            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
+		            		|| comboFonctions.getSelectedItem().equals("DNxHD")
+		            		|| comboFonctions.getSelectedItem().equals("DNxHR")
+		            		|| comboFonctions.getSelectedItem().equals("Apple ProRes")
+		            		|| comboFonctions.getSelectedItem().equals("QT Animation")
+							|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
+		            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
+		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
+		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))
+			            			
+	            			|| (caseInAndOut.isSelected() && VideoPlayer.caseTcInterne != null && VideoPlayer.caseTcInterne.isSelected()))
+				            {
+			            		if (FFPROBE.timecode1 == "")
+				                {
+			            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
+				                	timecode1 = str[1];
+				                	timecode2 = str[2];
+				                	timecode3 = str[3];
+				                	timecode4 = str[4];
+				                }
+				            }
+				            
+				            if (BlackMagicOutput.frame != null && BlackMagicOutput.frame.isVisible())
+				            {
+				                BlackMagicOutput.timecode1 = Integer.parseInt(timecode1);
+				                BlackMagicOutput.timecode2 = Integer.parseInt(timecode2);
+				                BlackMagicOutput.timecode3 = Integer.parseInt(timecode3);
+				                BlackMagicOutput.timecode4 = Integer.parseInt(timecode4);
+				            }
 			            }
 			            
-			            if (line.contains("timecode") && BlackMagicOutput.frame != null) {
-							if (BlackMagicOutput.frame.isVisible())
-							{
-				                String str[]= line.replace(";" , ":").split(":");
-				                BlackMagicOutput.timecode1 = Integer.parseInt(str[1].replace(" ", ""));
-				                BlackMagicOutput.timecode2 = Integer.parseInt(str[2].replace(" ", ""));
-				                BlackMagicOutput.timecode3 = Integer.parseInt(str[3].replace(" ", ""));
-				                BlackMagicOutput.timecode4 = Integer.parseInt(str[4].replace(" ", ""));
-							}
-			            }
-			            
-			            if (line.contains("timecode") && caseInAndOut.isSelected())
-			            {
-			            	if (VideoPlayer.caseTcInterne != null) //contourne un bug
-			            	{
-				            	if (VideoPlayer.caseTcInterne.isSelected())
-				            	{
-					                String str[]= line.split(":");
-				                	timecode1 = str[1].replace(" ", "");
-				                	timecode2 = str[2].replace(" ", "");
-				                	timecode3 = str[3].replace(" ", "");
-				                	timecode4 = str[4].replace(" ", "");
-				            	}
-			            	}
-			            }
-
 		                // Creation time
 		                if (line.contains("creation_time") && creationTime.equals(""))
 		                {
@@ -988,11 +991,11 @@ public static int gopSpace = 124;
 
 	}
 	
-	public static void CalculH264() {
+	public static void setLength() {
 		
 	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	
-	processCalculH264 = new Thread(new Runnable()  {
+	processSetLength = new Thread(new Runnable()  {
 		@Override
 		public void run() { 
 			try {
@@ -1052,7 +1055,7 @@ public static int gopSpace = 124;
 	             if (caseInAndOut.isSelected() && VideoPlayer.playerLeftVideo != null)	
 		     			VideoPlayer.totalDuration();
 	             
-	             setTailleH264();
+	             setFilesize();
 			}
          	
 		 } catch (Exception e) {}
@@ -1062,11 +1065,11 @@ public static int gopSpace = 124;
 			}
 		}//Run
 	});
-	processCalculH264.start();
+	processSetLength.start();
 	
 	}
 	
-	public static void setTailleH264() {
+	public static void setFilesize() {
 		
 		int multi = 0;
 		if (lblAudioMapping.getText().equals("Multi"))
