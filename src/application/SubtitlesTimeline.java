@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -182,7 +182,7 @@ public class SubtitlesTimeline {
 			Utils.changeFrameVisibility(frame, true);
 			
     		if (Shutter.comboFonctions.getSelectedItem().equals("H.264") || Shutter.comboFonctions.getSelectedItem().equals("H.264"))
-    			FFPROBE.CalculH264();
+    			FFPROBE.setLength();
     		
     		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
     		{

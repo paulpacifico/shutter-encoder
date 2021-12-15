@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -411,8 +411,8 @@ public class Wetransfer {
 		});
 	}
 
-	public static void addFile(final File fichier) {
-		uploadFileList.append(" " +  '"'+ fichier.toString() + '"');
+	public static void addFile(final File file) {
+		uploadFileList.append(" " +  '"'+ file.toString() + '"');
 	}
 	
 	public static void plusAccount() {	
@@ -485,6 +485,7 @@ public class Wetransfer {
 	}
 	
 	public static void sendToWeTransfer() {	
+		
 		if (btnOK != null) 
 		{
 			if (btnOK.isEnabled() == false && Shutter.cancelled == false && uploadFileList.length() != 0)

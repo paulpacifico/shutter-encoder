@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -1198,14 +1198,13 @@ public class Shutter {
 		
 		topImage = new JLabel();
 		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width,
-				topPanel.getSize().height, Image.SCALE_DEFAULT));
+		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
 		topImage.setIcon(imageIcon);
 		topImage.setBounds(0, 0, 1000 ,53);
 
 		topPanel.add(topImage);
 		frame.getContentPane().add(topPanel);
-
+		
 		topImage.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -1366,7 +1365,7 @@ public class Shutter {
 							addToList.setVisible(true);
 						
 						lblFiles.setText(Utils.filesNumber());
-						FFPROBE.CalculH264();
+						FFPROBE.setLength();
 
 						// VideoPlayer
 						VideoPlayer.setMedia();
@@ -2218,7 +2217,7 @@ public class Shutter {
 					case "MJPEG":
 					case "Xvid":
 					case "Blu-ray":
-						FFPROBE.CalculH264();
+						FFPROBE.setLength();
 						break;
 					}
 					
@@ -4553,15 +4552,30 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+								
 				if (inputDeviceIsRunning)
 				{
 					JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
 					caseCreateSequence.setSelected(false);
 				}
-				
+
 				if (caseCreateSequence.isSelected())
+				{
+					if (liste.getSize() > 0 && inputDeviceIsRunning == false)
+					{
+						//Analyse
+						FFPROBE.Data(liste.firstElement().toString());	
+						do
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e1) {}
+						while (FFPROBE.isRunning);
+						
+						comboInterpret.setSelectedItem(String.valueOf(FFPROBE.currentFPS).replace(".0", "").replace(".", ","));
+					}
+					
 					comboInterpret.setEnabled(true);
+				}
 				else
 					comboInterpret.setEnabled(false);				
 			}
@@ -7543,7 +7557,7 @@ public class Shutter {
 						case "MJPEG":
 						case "Xvid":
 						case "Blu-ray":
-							FFPROBE.CalculH264();
+							FFPROBE.setLength();
 							break;
 						}
 						
@@ -8318,7 +8332,7 @@ public class Shutter {
 				}
 				
 				try {
-					FFPROBE.setTailleH264();
+					FFPROBE.setFilesize();
 				} catch (Exception e1) {}
 			}
 
@@ -8496,7 +8510,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -8536,7 +8550,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -8575,7 +8589,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -8613,7 +8627,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -8650,7 +8664,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -8686,7 +8700,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -8721,7 +8735,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -8751,7 +8765,7 @@ public class Shutter {
 				if (lblAudioMapping.getText().equals("Multi"))
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -10789,7 +10803,7 @@ public class Shutter {
 								h264lines.setVisible(true);
 								if (caseAccel.isSelected() == false)
 									case2pass.setEnabled(true);
-								FFPROBE.CalculH264();
+								FFPROBE.setLength();
 							}
 						}
 					} catch (InterruptedException e1) {
@@ -11327,7 +11341,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {
 					}
 
@@ -11353,7 +11367,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {
 					}
 
@@ -11379,7 +11393,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 				{
 					try {
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					} catch (Exception e1) {
 					}
 
@@ -11909,7 +11923,7 @@ public class Shutter {
 					h264lines.setVisible(true);
 					if (caseAccel.isSelected() == false || comboFonctions.getSelectedItem().toString().equals("VP8") == false && comboFonctions.getSelectedItem().toString().equals("VP9") == false && comboFonctions.getSelectedItem().toString().contains("H.26") == false)
 						case2pass.setEnabled(true);
-					FFPROBE.CalculH264();
+					FFPROBE.setLength();
 				}
 			}
 
@@ -12091,7 +12105,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 				try {
 					if (taille.isFocusOwner() == false)
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 				} catch (Exception e1) {
 				}
 			}
@@ -12106,7 +12120,7 @@ public class Shutter {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (taille.isFocusOwner() == false)
-						FFPROBE.setTailleH264();
+						FFPROBE.setFilesize();
 					
 					if (debitVideo.getSelectedItem().toString().equals(language.getProperty("lblBest")))
 						debitVideo.setSelectedIndex(1);
@@ -12208,7 +12222,7 @@ public class Shutter {
 				h264lines.setVisible(true);
 				
 				if (comboFonctions.getSelectedItem().toString().contains("Blu-ray"))
-					FFPROBE.CalculH264();
+					FFPROBE.setLength();
 				
 				case2pass.setSelected(false);
 				case2pass.setEnabled(true);
@@ -13183,6 +13197,7 @@ public class Shutter {
 				// Important
 				topPanel.repaint();
 				statusBar.repaint();
+				topImage.repaint();
 			}
 
 		});
@@ -14825,11 +14840,7 @@ public class Shutter {
 							lblNiveaux.setVisible(true);
 							grpResolution.setVisible(false);
 							grpH264.setVisible(true);
-
-							if (grpAdvanced.getHeight() > 181)
-								grpH264.setLocation(grpH264.getX(), 59 - (grpAdvanced.getHeight() - 181));
-							else
-								grpH264.setLocation(grpH264.getX(), 59);
+							grpH264.setLocation(grpH264.getX(), 59);
 							
 							if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")))
 								lblPad.setVisible(false);
@@ -14972,7 +14983,7 @@ public class Shutter {
 							
 							// CalculH264
 							if (liste.getSize() > 0 && FFPROBE.calcul == false)
-								FFPROBE.CalculH264();
+								FFPROBE.setLength();
 							// Qualité Max
 							caseQMax.setEnabled(true);
 							
@@ -15168,7 +15179,7 @@ public class Shutter {
 									lblVideoBitrate.setText(language.getProperty("lblVideoBitrate"));
 									lblKbsH264.setVisible(true);
 									h264lines.setVisible(true);
-									FFPROBE.CalculH264();
+									FFPROBE.setLength();
 								}
 								lblVBR.setText("VBR");
 							}
@@ -15348,7 +15359,7 @@ public class Shutter {
 							
 							// CalculH264
 							if (liste.getSize() > 0 && FFPROBE.calcul == false)
-								FFPROBE.CalculH264();
+								FFPROBE.setLength();
 							// Qualité Max
 							if (comboFonctions.getSelectedItem().equals("OGV")
 									|| comboFonctions.getSelectedItem().equals("MJPEG"))
@@ -15736,7 +15747,7 @@ public class Shutter {
 
 							// CalculH264
 							if (liste.getSize() > 0 && FFPROBE.calcul == false)
-								FFPROBE.CalculH264();
+								FFPROBE.setLength();
 							// Qualité Max
 							caseQMax.setEnabled(true);
 							
@@ -16504,6 +16515,7 @@ public class Shutter {
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(false);
 		}
+		Utils.textFieldBackground();
 
 		lblFiles.setEnabled(true);
 		lblFilesEnded.setEnabled(true);
@@ -16548,8 +16560,10 @@ public class Shutter {
 			}
 		}
 		
-		Utils.textFieldBackground();
-		
+		// Important
+		topPanel.repaint();
+		statusBar.repaint();
+		topImage.repaint();				
 		frame.repaint();
 	}
 
@@ -16756,10 +16770,12 @@ public class Shutter {
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(true);
 		}
+		
 		components = grpH264.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(true);
 		}
+		Utils.textFieldBackground();
 
 		if (caseAS10.isSelected() == false)
 			comboAS10.setEnabled(false);
@@ -16822,12 +16838,12 @@ public class Shutter {
 		btnStart.setEnabled(true);
 		btnCancel.setEnabled(false);
 		changeFunction(false);
-
-		Utils.textFieldBackground();
 		
 		// Important
 		topPanel.repaint();
 		statusBar.repaint();
+		topImage.repaint();
+		frame.repaint();
 		
 		if (inputDeviceIsRunning)
 			progressBar1.setIndeterminate(false);
@@ -16958,6 +16974,7 @@ public class Shutter {
 		if (grpDestination.isEnabled())
 			grpDestination.setSelectedIndex(0);
 		
+		FunctionUtils.sendMail();
 		Wetransfer.sendToWeTransfer();
 		lastActions();
 	}
@@ -17232,7 +17249,7 @@ class ListeFileTransferHandler extends TransferHandler {
 					case "MJPEG":
 					case "Xvid":
 					case "Blu-ray":
-						FFPROBE.CalculH264();
+						FFPROBE.setLength();
 						break;
 					}
 

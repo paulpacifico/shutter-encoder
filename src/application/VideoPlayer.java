@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2021 PACIFICO PAUL
+* Copyright (C) 2022 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -2481,7 +2481,7 @@ public class VideoPlayer {
 						case "MJPEG":
 						case "Xvid":
 						case "Blu-ray":
-							FFPROBE.CalculH264();
+							FFPROBE.setLength();
 							break;
 					}
 		    		
@@ -4315,7 +4315,7 @@ public class VideoPlayer {
 			    	     Shutter.textMin.setText(formatter.format(minutes));
 			    	     Shutter.textSec.setText(formatter.format(secondes));
 			    	     
-			    	     FFPROBE.setTailleH264();
+			    	     FFPROBE.setFilesize();
 		    	     break;
 	    		}
 			}

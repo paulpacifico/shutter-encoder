@@ -1,3 +1,22 @@
+/*******************************************************************************************
+* Copyright (C) 2022 PACIFICO PAUL
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+* 
+********************************************************************************************/
+
 package application;
 
 import java.awt.Color;
@@ -15,15 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Locale;
-import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -264,66 +275,6 @@ public class Utils extends Shutter {
 			getLanguage = "English";
 			return new FileInputStream(pathToLanguages + "en.properties");
 		}		
-	}
-	
-	public static void sendMail(final String file) {
-		
-		if (caseSendMail.isSelected())
-		{
-			Thread thread = new Thread(new Runnable() {
-				
-				public void run() {
-					sendMailIsRunning = true;
-
-					Properties props = new Properties();
-					props.put("mail.smtp.auth", "true");
-					props.put("mail.smtp.starttls.enable", "true");
-					props.put("mail.smtp.host", "auth.smtp.1and1.fr");
-					props.put("mail.smtp.port", "587");
-
-					Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-						protected PasswordAuthentication getPasswordAuthentication() {
-							return new PasswordAuthentication(username, password);
-						}
-					});
-					
-					try {
-						Message message = new MimeMessage(session);
-						message.setFrom(new InternetAddress(username));
-						message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(textMail.getText()));
-						if (FFMPEG.error) {
-							message.setSubject(Shutter.language.getProperty("shutterEncodingError"));
-							message.setText(file + " " + Shutter.language.getProperty("notEncoded"));
-						} else {
-							message.setSubject(Shutter.language.getProperty("shutterEncodingCompleted"));
-							if (caseChangeFolder3.isSelected())
-								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText());
-							else if (caseChangeFolder2.isSelected())
-								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText() + " | " + lblDestination2.getText());
-							else
-								message.setText(file + " " + Shutter.language.getProperty("isEncoded") + " "	+ lblDestination1.getText());
-						}
-
-						Transport.send(message);						
-						
-					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
-				        
-					} catch (MessagingException e) {
-						
-						Console.consoleFFMPEG.append(System.lineSeparator() + e + System.lineSeparator());
-						
-						Shutter.lblCurrentEncoding.setForeground(Color.RED);
-			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
-						Shutter.progressBar1.setValue(0);
-					} finally {
-						sendMailIsRunning = false;
-					}
-				}
-			});
-			thread.start();
-
-		}
 	}
 
 	public static void copyFile(File file) {		
@@ -2371,6 +2322,73 @@ public class Utils extends Shutter {
 		
 		FlatInspector.install("ctrl shift alt X");		
 	}
+	
+	public static void textFieldBackground() {
+		
+		if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
+		{
+			if (Settings.txtExtension.isEnabled())
+				Settings.txtExtension.setBackground(new Color(80,80,80));
+			else
+				Settings.txtExtension.setBackground(new Color(60,60,60));
+			
+			if (Settings.txtExclude.isEnabled())
+				Settings.txtExclude.setBackground(new Color(80,80,80));
+			else
+				Settings.txtExclude.setBackground(new Color(60,60,60));
+			
+			if (txtAudioOffset.isEnabled())
+				txtAudioOffset.setBackground(new Color(80,80,80));
+			else
+				txtAudioOffset.setBackground(new Color(60,60,60));
+			
+			if (textH.isEnabled())
+				textH.setBackground(new Color(80,80,80));
+			else
+				textH.setBackground(new Color(60,60,60));
+			
+			if (textMin.isEnabled())
+				textMin.setBackground(new Color(80,80,80));
+			else
+				textMin.setBackground(new Color(60,60,60));
+			
+			if (textSec.isEnabled())
+				textSec.setBackground(new Color(80,80,80));
+			else
+				textSec.setBackground(new Color(60,60,60));
+			
+			if (taille.isEnabled())
+				taille.setBackground(new Color(80,80,80));
+			else
+				taille.setBackground(new Color(60,60,60));
+			
+			if (gopSize.isEnabled())
+				gopSize.setBackground(new Color(80,80,80));
+			else
+				gopSize.setBackground(new Color(60,60,60));
+			
+			if (spinnerVideoFadeIn.isEnabled())
+				spinnerVideoFadeIn.setBackground(new Color(80,80,80));
+			else
+				spinnerVideoFadeIn.setBackground(new Color(60,60,60));
+			
+			if (spinnerAudioFadeIn.isEnabled())
+				spinnerAudioFadeIn.setBackground(new Color(80,80,80));
+			else
+				spinnerAudioFadeIn.setBackground(new Color(60,60,60));
+			
+			if (spinnerVideoFadeOut.isEnabled())
+				spinnerVideoFadeOut.setBackground(new Color(80,80,80));
+			else
+				spinnerVideoFadeOut.setBackground(new Color(60,60,60));
+			
+			if (spinnerAudioFadeOut.isEnabled())
+				spinnerAudioFadeOut.setBackground(new Color(80,80,80));
+			else
+				spinnerAudioFadeOut.setBackground(new Color(60,60,60));
+			
+		}		
+	}
 
 	@SuppressWarnings("unused")
 	public static void restartApp() {
@@ -2496,71 +2514,4 @@ public class Utils extends Shutter {
 		
 	}
 	
-	public static void textFieldBackground() {
-		
-		if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
-		{
-			if (Settings.txtExtension.isEnabled())
-				Settings.txtExtension.setBackground(new Color(80,80,80));
-			else
-				Settings.txtExtension.setBackground(new Color(60,60,60));
-			
-			if (Settings.txtExclude.isEnabled())
-				Settings.txtExclude.setBackground(new Color(80,80,80));
-			else
-				Settings.txtExclude.setBackground(new Color(60,60,60));
-			
-			if (txtAudioOffset.isEnabled())
-				txtAudioOffset.setBackground(new Color(80,80,80));
-			else
-				txtAudioOffset.setBackground(new Color(60,60,60));
-			
-			if (textH.isEnabled())
-				textH.setBackground(new Color(80,80,80));
-			else
-				textH.setBackground(new Color(60,60,60));
-			
-			if (textMin.isEnabled())
-				textMin.setBackground(new Color(80,80,80));
-			else
-				textMin.setBackground(new Color(60,60,60));
-			
-			if (textSec.isEnabled())
-				textSec.setBackground(new Color(80,80,80));
-			else
-				textSec.setBackground(new Color(60,60,60));
-			
-			if (taille.isEnabled())
-				taille.setBackground(new Color(80,80,80));
-			else
-				taille.setBackground(new Color(60,60,60));
-			
-			if (gopSize.isEnabled())
-				gopSize.setBackground(new Color(80,80,80));
-			else
-				gopSize.setBackground(new Color(60,60,60));
-			
-			if (spinnerVideoFadeIn.isEnabled())
-				spinnerVideoFadeIn.setBackground(new Color(80,80,80));
-			else
-				spinnerVideoFadeIn.setBackground(new Color(60,60,60));
-			
-			if (spinnerAudioFadeIn.isEnabled())
-				spinnerAudioFadeIn.setBackground(new Color(80,80,80));
-			else
-				spinnerAudioFadeIn.setBackground(new Color(60,60,60));
-			
-			if (spinnerVideoFadeOut.isEnabled())
-				spinnerVideoFadeOut.setBackground(new Color(80,80,80));
-			else
-				spinnerVideoFadeOut.setBackground(new Color(60,60,60));
-			
-			if (spinnerAudioFadeOut.isEnabled())
-				spinnerAudioFadeOut.setBackground(new Color(80,80,80));
-			else
-				spinnerAudioFadeOut.setBackground(new Color(60,60,60));
-			
-		}		
-	}
-
 }
