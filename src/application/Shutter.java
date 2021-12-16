@@ -9993,7 +9993,8 @@ public class Shutter {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-																					FFPLAY.previewFilters("fadeOut", true);
+																	
+				FFPLAY.previewFilters("fadeOut", true);
 			}
 
 			@Override
@@ -10793,6 +10794,12 @@ public class Shutter {
 							case2pass.setSelected(false);
 							case2pass.setEnabled(false);
 							
+							if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+							{
+								caseQMax.setEnabled(false);
+								caseQMax.setSelected(false);
+							}
+								
 							if (lblVBR.getText().equals("CBR") || lblVBR.getText().equals("CQ") && comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.arch").equals("amd64"))
 							{								
 								lblVBR.setText("VBR");
@@ -10814,6 +10821,8 @@ public class Shutter {
 					caseForcerEntrelacement.setEnabled(true);					
 
 					lblVBR.setVisible(true);
+					
+					caseQMax.setEnabled(true);
 					
 					if (caseQMax.isSelected() == false)
 						caseForcePreset.setEnabled(true);
@@ -11647,6 +11656,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseQMax.isSelected())
 				{
 					caseForcePreset.setSelected(false);
@@ -11666,8 +11676,10 @@ public class Shutter {
 					caseForceSpeed.setEnabled(true);
 					caseForceQuality.setEnabled(true);
 					
-					if (caseAccel.isSelected() == false)
+					if (caseAccel.isSelected() == false || caseAccel.isSelected() && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Intel Quick Sync")))
+					{
 						caseForcePreset.setEnabled(true);
+					}
 				}
 			}
 			
@@ -14984,8 +14996,14 @@ public class Shutter {
 							// CalculH264
 							if (liste.getSize() > 0 && FFPROBE.calcul == false)
 								FFPROBE.setLength();
+							
 							// Qualité Max
-							caseQMax.setEnabled(true);
+							if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+							{
+								caseQMax.setEnabled(false);
+							}
+							else
+								caseQMax.setEnabled(true);
 							
 							// Ajout case rognage
 							caseRognerImage.setLocation(7,
@@ -15361,8 +15379,7 @@ public class Shutter {
 							if (liste.getSize() > 0 && FFPROBE.calcul == false)
 								FFPROBE.setLength();
 							// Qualité Max
-							if (comboFonctions.getSelectedItem().equals("OGV")
-									|| comboFonctions.getSelectedItem().equals("MJPEG"))
+							if (comboFonctions.getSelectedItem().equals("OGV") || comboFonctions.getSelectedItem().equals("MJPEG"))
 								caseQMax.setEnabled(false);
 							else
 								caseQMax.setEnabled(true);
