@@ -2362,7 +2362,7 @@ public class Utils extends Shutter {
 			else
 				taille.setBackground(new Color(60,60,60));
 			
-			if (gopSize.isEnabled())
+			if (gopSize.isEnabled() && caseGOP.isSelected())
 				gopSize.setBackground(new Color(80,80,80));
 			else
 				gopSize.setBackground(new Color(60,60,60));
