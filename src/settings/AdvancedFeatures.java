@@ -369,6 +369,7 @@ public class AdvancedFeatures extends Shutter {
 			case "H.265":
 			case "VP8":
 			case "VP9":
+			case "MPEG-1":
 			case "MPEG-2":
 		       
 				if (caseGOP.isSelected())
