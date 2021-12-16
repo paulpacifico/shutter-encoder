@@ -167,7 +167,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "15.6";
+	public static String actualVersion = "15.7";
 	public static String getLanguage = "";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String magnetoFont = "Magneto";
@@ -15503,7 +15503,7 @@ public class Shutter {
 								grpAdvanced.add(gopSize);								
 								caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
 							}	
-							else if ("MPEG-2".equals(fonction))
+							else if ("MPEG-1".equals(fonction) || "MPEG-2".equals(fonction))
 							{
 								caseGOP.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 								grpAdvanced.add(caseGOP);
