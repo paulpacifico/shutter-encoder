@@ -747,8 +747,6 @@ public class Shutter {
 											System.out.println(e1);
 										}
 									}
-									
-									Settings.saveSettings();
 					            }
 					        });
 						}
@@ -9993,8 +9991,7 @@ public class Shutter {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-																	
-				FFPLAY.previewFilters("fadeOut", true);
+																					FFPLAY.previewFilters("fadeOut", true);
 			}
 
 			@Override
