@@ -4196,8 +4196,7 @@ public class Shutter {
 		caseRunInBackground.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		caseRunInBackground.setBounds(9, 64, caseRunInBackground.getPreferredSize().width, 23);
 
-		if (System.getProperty("os.arch").equals("amd64")) //Not compatible with Mac ARM
-			grpProgression.add(caseRunInBackground);
+		grpProgression.add(caseRunInBackground);
 
 		// Inactivité
 		caseRunInBackground.addActionListener(new ActionListener() {
