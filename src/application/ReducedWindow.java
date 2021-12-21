@@ -136,9 +136,7 @@ public class ReducedWindow extends JDialog {
 		frame.getContentPane().add(progressBar);
 		
 		Shutter.caseRunInBackground.setBounds(100, 53, Shutter.caseRunInBackground.getPreferredSize().width, 16);	
-		
-		if (System.getProperty("os.arch").equals("amd64")) //Not compatible with Mac ARM
-			frame.getContentPane().add(Shutter.caseRunInBackground);
+		frame.getContentPane().add(Shutter.caseRunInBackground);
 		
 				
 		lblTempsRestant = new JLabel(Shutter.language.getProperty("tempsRestant") + " ");
@@ -271,9 +269,7 @@ public class ReducedWindow extends JDialog {
 					
 					Shutter.frame.setState(Shutter.frame.NORMAL);
 					Shutter.caseRunInBackground.setBounds(6, 64, Shutter.caseRunInBackground.getPreferredSize().width, 23);		
-					
-					if (System.getProperty("os.arch").equals("amd64")) //Not compatible with Mac ARM
-						Shutter.grpProgression.add(Shutter.caseRunInBackground);	
+					Shutter.grpProgression.add(Shutter.caseRunInBackground);	
 				}
 			}
 

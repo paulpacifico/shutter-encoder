@@ -4195,7 +4195,6 @@ public class Shutter {
 		caseRunInBackground.setEnabled(false);
 		caseRunInBackground.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		caseRunInBackground.setBounds(9, 64, caseRunInBackground.getPreferredSize().width, 23);
-
 		grpProgression.add(caseRunInBackground);
 
 		// Inactivité
