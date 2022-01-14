@@ -383,7 +383,7 @@ public class VideoPlayer {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				
-				if (frame.getSize().width >= 636 &&  frame.getSize().height >= 619 && e.getX() >= 636 && e.getY() >= 619 && drag)
+				if (frame.getSize().width >= 636 && frame.getSize().height >= 619 && e.getX() >= 636 && e.getY() >= 619 && drag)
 				{
 					frame.setSize(e.getX() + 20, e.getY() + 20);
 					
@@ -2390,7 +2390,8 @@ public class VideoPlayer {
 		
 		lblVolume = new JLabel(Shutter.language.getProperty("volume") + " ");
 		lblVolume.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblVolume.setBounds(sliderVolume.getLocation().x - 69, sliderIn.getLocation().y - 30, 69, 16);		
+		lblVolume.setSize(lblVolume.getPreferredSize().width, 16);	
+		lblVolume.setLocation(sliderVolume.getLocation().x - lblVolume.getWidth(), sliderIn.getLocation().y - 30);		
 		frame.getContentPane().add(lblVolume);
 				
 		addWaveform(true);
@@ -3309,7 +3310,7 @@ public class VideoPlayer {
 				
 		caseTcInterne = new JRadioButton(Shutter.language.getProperty("caseTcInterne"));
 		caseTcInterne.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseTcInterne.setBounds(6, frame.getHeight() - 31, 195, 23);
+		caseTcInterne.setBounds(6, frame.getHeight() - 31, caseTcInterne.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseTcInterne);	
 		
 		casePlaySound = new JRadioButton(Shutter.language.getProperty("casePlaySound"));
@@ -4179,7 +4180,7 @@ public class VideoPlayer {
 		grpIn.setBounds(6, frame.getSize().height - 147, 156, 52);
 		grpOut.setBounds(6, frame.getSize().height - 86, 156, 52);
 		casePlaySound.setBounds(6, grpIn.getLocation().y - 36, 195, 23);
-		caseTcInterne.setBounds(6, frame.getHeight() - 31, 195, 23);		
+		caseTcInterne.setBounds(6, frame.getHeight() - 31, caseTcInterne.getPreferredSize().width, 23);		
 		comboMode.setLocation(btnPreview.getX() - 76 - 5, frame.getSize().height - 16 - 12 - 1);
 		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);		
 		sliderSpeed.setLocation(lblMode.getX() - 80 - 5, frame.getSize().height - 16 - 12);
@@ -4190,7 +4191,7 @@ public class VideoPlayer {
 		sliderIn.setBounds(grpIn.getLocation().x + grpIn.getSize().width + 12, grpIn.getLocation().y, frame.getSize().width - (grpIn.getLocation().x + grpIn.getSize().width + 12) - 12, 60); 
 		sliderOut.setBounds(grpOut.getLocation().x + grpOut.getSize().width + 12, grpOut.getLocation().y, frame.getSize().width - (grpOut.getLocation().x + grpOut.getSize().width + 12) - 12, 60); 
 		sliderVolume.setBounds(frame.getSize().width - 12 - 111, sliderIn.getLocation().y - 33, 111, 22);		
-		lblVolume.setBounds(sliderVolume.getLocation().x - 69, sliderIn.getLocation().y - 30, 69, 16);	
+		lblVolume.setLocation(sliderVolume.getLocation().x - lblVolume.getWidth(), sliderIn.getLocation().y - 30);
 		
 		//Lecteurs 
 		float largeurMax = (float) frame.getSize().width / frame.getSize().height;

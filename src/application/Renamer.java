@@ -48,20 +48,20 @@ import javax.swing.event.ChangeListener;
 public class Renamer {
 
 	public static JDialog frame;
-	private JLabel lblRemplacer;
-	private JTextField txtRemplacer;
-	private JLabel lblPar;
-	private JTextField txtPar;
-	private JButton Renommer;
-	private JLabel lblExemple;
+	private JLabel lblReplace;
+	private JTextField txtReplace;
+	private JLabel lblBy;
+	private JTextField txtBy;
+	private JButton Rename;
+	private JLabel lblExample;
 	private JRadioButton btnLimit;
 	private JSpinner spinnerLimit;
-	private JRadioButton btnIncrementer;
-	private JSpinner spinnerIncrementer;
-	private JRadioButton btnAjouterAvant;
-	private JTextField txtAjouterAvant;
-	private JRadioButton btnAjouterApres;
-	private JTextField txtAjouterApres;
+	private JRadioButton btnIncrement;
+	private JSpinner spinnerIncrement;
+	private JRadioButton btnAddBefore;
+	private JTextField txtAddBefore;
+	private JRadioButton btnAddAfter;
+	private JTextField txtAddAfter;
 	private JRadioButton convertToLower;
 	private JRadioButton convertToUpper;
 	private JRadioButton removeSpecialCharacters;
@@ -117,113 +117,113 @@ public class Renamer {
 		spinnerLimit.setBounds(226, 10, 46, 20);
 		frame.getContentPane().add(spinnerLimit);
 		
-		btnIncrementer = new JRadioButton(Shutter.language.getProperty("btnIncrementer"));
-		btnIncrementer.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnIncrementer.setBounds(7, 34, btnIncrementer.getPreferredSize().width, 16);
-		frame.getContentPane().add(btnIncrementer);
+		btnIncrement = new JRadioButton(Shutter.language.getProperty("btnIncrementer"));
+		btnIncrement.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnIncrement.setBounds(7, 34, btnIncrement.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnIncrement);
 		
-		btnIncrementer.addActionListener(new ActionListener(){
+		btnIncrement.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (btnIncrementer.isSelected())
-					spinnerIncrementer.setEnabled(true);
+				if (btnIncrement.isSelected())
+					spinnerIncrement.setEnabled(true);
 				else
-					spinnerIncrementer.setEnabled(false);
+					spinnerIncrement.setEnabled(false);
 				
 			}
 			
 		});
 		
-		spinnerIncrementer = new JSpinner(new SpinnerNumberModel(0, 0, 99999999, 1));
-		spinnerIncrementer.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		spinnerIncrementer.setEnabled(false);
-		spinnerIncrementer.setBounds(166, 33, 106, 20);
-		frame.getContentPane().add(spinnerIncrementer);
+		spinnerIncrement = new JSpinner(new SpinnerNumberModel(0, 0, 99999999, 1));
+		spinnerIncrement.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		spinnerIncrement.setEnabled(false);
+		spinnerIncrement.setBounds(166, 33, 106, 20);
+		frame.getContentPane().add(spinnerIncrement);
 		
-		lblRemplacer = new JLabel(Shutter.language.getProperty("lblRemplacer"));
-		lblRemplacer.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblRemplacer.setBounds(12, 80, 70, 14);
-		frame.getContentPane().add(lblRemplacer);
+		lblReplace = new JLabel(Shutter.language.getProperty("lblRemplacer"));
+		lblReplace.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblReplace.setBounds(12, 80, 70, 14);
+		frame.getContentPane().add(lblReplace);
 		
-		txtRemplacer = new JTextField();
-		txtRemplacer.setColumns(10);
-		txtRemplacer.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtRemplacer.setBounds(84, 77, 140, 21);
-		frame.getContentPane().add(txtRemplacer);;		
+		txtReplace = new JTextField();
+		txtReplace.setColumns(10);
+		txtReplace.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtReplace.setBounds(84, 77, 130, 21);
+		frame.getContentPane().add(txtReplace);;		
 				
-		lblPar = new JLabel(Shutter.language.getProperty("lblPar"));
-		lblPar.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblPar.setBounds(226, 80, 29, 14);
-		frame.getContentPane().add(lblPar);
+		lblBy = new JLabel(Shutter.language.getProperty("lblPar"));
+		lblBy.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblBy.setBounds(226, 80, lblBy.getPreferredSize().width, 14);
+		frame.getContentPane().add(lblBy);
 		
-		txtPar = new JTextField();
-		txtPar.setColumns(10);
-		txtPar.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtPar.setBounds(257, 77, txtRemplacer.getWidth(), 21);
-		frame.getContentPane().add(txtPar);
+		txtBy = new JTextField();
+		txtBy.setColumns(10);
+		txtBy.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtBy.setBounds(267, 77, txtReplace.getWidth(), 21);
+		frame.getContentPane().add(txtBy);
 		
-		lblExemple = new JLabel(Shutter.language.getProperty("lblExemple") + " " + fichier + ext);
-		lblExemple.setForeground(Utils.themeColor);
-		lblExemple.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblExemple.setBounds(12, 104, 481, 14);
-		frame.getContentPane().add(lblExemple);
+		lblExample = new JLabel(Shutter.language.getProperty("lblExemple") + " " + fichier + ext);
+		lblExample.setForeground(Utils.themeColor);
+		lblExample.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		lblExample.setBounds(12, 104, 481, 14);
+		frame.getContentPane().add(lblExample);
 						
-		Renommer = new JButton(Shutter.language.getProperty("renommer"));
-		Renommer.setBounds(410, 77, 108, 21);
-		Renommer.setMargin(new Insets(0,0,0,0));
-		Renommer.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		frame.getContentPane().add(Renommer);
+		Rename = new JButton(Shutter.language.getProperty("renommer"));
+		Rename.setBounds(410, 77, 108, 21);
+		Rename.setMargin(new Insets(0,0,0,0));
+		Rename.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		frame.getContentPane().add(Rename);
 		
-		btnAjouterAvant = new JRadioButton(Shutter.language.getProperty("btnAjouterAvant"));
-		btnAjouterAvant.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnAjouterAvant.setBounds(280, 12, 130, 16);
-		frame.getContentPane().add(btnAjouterAvant);
+		btnAddBefore = new JRadioButton(Shutter.language.getProperty("btnAjouterAvant"));
+		btnAddBefore.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnAddBefore.setBounds(280, 12, 130, 16);
+		frame.getContentPane().add(btnAddBefore);
 		
-		btnAjouterAvant.addActionListener(new ActionListener(){
+		btnAddBefore.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (btnAjouterAvant.isSelected())
-					txtAjouterAvant.setEnabled(true);
+				if (btnAddBefore.isSelected())
+					txtAddBefore.setEnabled(true);
 				else
-					txtAjouterAvant.setEnabled(false);
+					txtAddBefore.setEnabled(false);
 				
 			}
 			
 		});
 		
-		txtAjouterAvant = new JTextField();
-		txtAjouterAvant.setEnabled(false);
-		txtAjouterAvant.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtAjouterAvant.setColumns(10);
-		txtAjouterAvant.setBounds(410, 10, 108, 21);
-		frame.getContentPane().add(txtAjouterAvant);
+		txtAddBefore = new JTextField();
+		txtAddBefore.setEnabled(false);
+		txtAddBefore.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtAddBefore.setColumns(10);
+		txtAddBefore.setBounds(410, 10, 108, 21);
+		frame.getContentPane().add(txtAddBefore);
 		
-		btnAjouterApres = new JRadioButton(Shutter.language.getProperty("btnAjouterApres"));
-		btnAjouterApres.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnAjouterApres.setBounds(280, 34, 130, 16);
-		frame.getContentPane().add(btnAjouterApres);
+		btnAddAfter = new JRadioButton(Shutter.language.getProperty("btnAjouterApres"));
+		btnAddAfter.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnAddAfter.setBounds(280, 34, 130, 16);
+		frame.getContentPane().add(btnAddAfter);
 		
-		btnAjouterApres.addActionListener(new ActionListener(){
+		btnAddAfter.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (btnAjouterApres.isSelected())
-					txtAjouterApres.setEnabled(true);
+				if (btnAddAfter.isSelected())
+					txtAddAfter.setEnabled(true);
 				else
-					txtAjouterApres.setEnabled(false);
+					txtAddAfter.setEnabled(false);
 				
 			}
 			
 		});
 		
-		txtAjouterApres = new JTextField();
-		txtAjouterApres.setEnabled(false);
-		txtAjouterApres.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtAjouterApres.setColumns(10);
-		txtAjouterApres.setBounds(410, 32, 108, 21);
-		frame.getContentPane().add(txtAjouterApres);
+		txtAddAfter = new JTextField();
+		txtAddAfter.setEnabled(false);
+		txtAddAfter.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtAddAfter.setColumns(10);
+		txtAddAfter.setBounds(410, 32, 108, 21);
+		frame.getContentPane().add(txtAddAfter);
 		
 		convertToLower = new JRadioButton(Shutter.language.getProperty("convertToLower"));
 		convertToLower.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -299,20 +299,20 @@ public class Renamer {
 			
 		};		
 		
-		txtRemplacer.addKeyListener(key);
-		txtPar.addKeyListener(key);
-		txtAjouterAvant.addKeyListener(key);
-		txtAjouterApres.addKeyListener(key);
+		txtReplace.addKeyListener(key);
+		txtBy.addKeyListener(key);
+		txtAddBefore.addKeyListener(key);
+		txtAddAfter.addKeyListener(key);
 		
-		btnAjouterAvant.addActionListener(action);
-		btnAjouterApres.addActionListener(action);
-		btnIncrementer.addActionListener(action);
+		btnAddBefore.addActionListener(action);
+		btnAddAfter.addActionListener(action);
+		btnIncrement.addActionListener(action);
 		btnLimit.addActionListener(action);
 		
 		spinnerLimit.addChangeListener(change);
-		spinnerIncrementer.addChangeListener(change);
+		spinnerIncrement.addChangeListener(change);
 		
-		Renommer.addActionListener(new ActionListener() {
+		Rename.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -334,7 +334,7 @@ public class Renamer {
 				Thread rename = new Thread(new Runnable() {
 					@Override
 					public void run() {				
-						int number = (int) spinnerIncrementer.getValue();
+						int number = (int) spinnerIncrement.getValue();
 						for (String item : Shutter.fileList.getSelectedValuesList())
 						{				
 							ext = item.substring(item.lastIndexOf("."));	
@@ -342,17 +342,17 @@ public class Renamer {
 							
 							String newName;
 							if (btnLimit.isSelected())
-								newName = fichier.replace(txtRemplacer.getText(), txtPar.getText()).substring(0,(int) spinnerLimit.getValue());
+								newName = fichier.replace(txtReplace.getText(), txtBy.getText()).substring(0,(int) spinnerLimit.getValue());
 							else
-								newName = fichier.replace(txtRemplacer.getText(), txtPar.getText());
+								newName = fichier.replace(txtReplace.getText(), txtBy.getText());
 						
-							if (btnAjouterAvant.isSelected())
-								newName = txtAjouterAvant.getText() + newName;
+							if (btnAddBefore.isSelected())
+								newName = txtAddBefore.getText() + newName;
 							
-							if (btnAjouterApres.isSelected())
-								newName += txtAjouterApres.getText();
+							if (btnAddAfter.isSelected())
+								newName += txtAddAfter.getText();
 							
-							if (btnIncrementer.isSelected())
+							if (btnIncrement.isSelected())
 								newName += formatter.format(number);					
 							
 							if (convertToLower.isSelected())
@@ -365,7 +365,7 @@ public class Renamer {
 								newName = Normalizer.normalize(newName, Normalizer.Form.NFD).replace(" ", "_").replaceAll("[^\\w\\s]+","");
 							
 							//Ajout de l'extension
-							newName += ext.replace(txtRemplacer.getText(), txtPar.getText());
+							newName += ext.replace(txtReplace.getText(), txtBy.getText());
 							
 							number ++;
 							
@@ -383,7 +383,7 @@ public class Renamer {
 							else
 							{						
 								file.renameTo(newFile);
-								lblExemple.setText(newFile.getName());
+								lblExample.setText(newFile.getName());
 								
 								for (int i = 0 ; i < Shutter.liste.getSize() ; i++)				
 								{
@@ -433,31 +433,31 @@ public class Renamer {
 		String exemple = Shutter.language.getProperty("lblExemple") + " ";
 		
 		if (btnLimit.isSelected())
-			lblExemple.setText(fichier.replace(txtRemplacer.getText(), txtPar.getText()).substring(0,(int) spinnerLimit.getValue()));
+			lblExample.setText(fichier.replace(txtReplace.getText(), txtBy.getText()).substring(0,(int) spinnerLimit.getValue()));
 		else
-			lblExemple.setText(fichier.replace(txtRemplacer.getText(), txtPar.getText()));
+			lblExample.setText(fichier.replace(txtReplace.getText(), txtBy.getText()));
 		
-		if (btnAjouterAvant.isSelected())
-			lblExemple.setText(txtAjouterAvant.getText() + lblExemple.getText());
+		if (btnAddBefore.isSelected())
+			lblExample.setText(txtAddBefore.getText() + lblExample.getText());
 		
-		if (btnAjouterApres.isSelected())
-			lblExemple.setText(lblExemple.getText() + txtAjouterApres.getText());
+		if (btnAddAfter.isSelected())
+			lblExample.setText(lblExample.getText() + txtAddAfter.getText());
 		
-		if (btnIncrementer.isSelected())
-			lblExemple.setText(lblExemple.getText() + formatter.format(spinnerIncrementer.getValue()));
+		if (btnIncrement.isSelected())
+			lblExample.setText(lblExample.getText() + formatter.format(spinnerIncrement.getValue()));
 		
 		if (convertToLower.isSelected())
-			lblExemple.setText(lblExemple.getText().toLowerCase());
+			lblExample.setText(lblExample.getText().toLowerCase());
 					
 		if (convertToUpper.isSelected())
-			lblExemple.setText(lblExemple.getText().toUpperCase());
+			lblExample.setText(lblExample.getText().toUpperCase());
 		
 		if (removeSpecialCharacters.isSelected())			
-			lblExemple.setText(Normalizer.normalize(lblExemple.getText(), Normalizer.Form.NFD).replace(" ", "_").replaceAll("[^\\w\\s]+",""));
+			lblExample.setText(Normalizer.normalize(lblExample.getText(), Normalizer.Form.NFD).replace(" ", "_").replaceAll("[^\\w\\s]+",""));
 			
-		lblExemple.setText(exemple + lblExemple.getText());
+		lblExample.setText(exemple + lblExample.getText());
 		
 		//Ajout de l'extension
-		lblExemple.setText(lblExemple.getText() + ext.replace(txtRemplacer.getText(), txtPar.getText()));		
+		lblExample.setText(lblExample.getText() + ext.replace(txtReplace.getText(), txtBy.getText()));		
 	}
 }

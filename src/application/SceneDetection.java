@@ -78,20 +78,20 @@ import javax.swing.JScrollPane;
 	private JLabel reduce;
 	private JLabel topImage;
 	private JLabel bottomImage;
-	private static JLabel lblFlecheBas;
+	private static JLabel lblBottomArrow;
 	private static JButton btnEDL;
 	public static JLabel lblEdit;
 	public static JTable table;
 	public static DefaultTableModel tableRow;
 	private static JSpinner tolerance;
-	public static JButton btnAnalyse;
+	public static JButton btnAnalyze;
 	public static JScrollPane scrollPane;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
 	
-	public static File sortieDossier;
-	public static File sortieFichier;
+	public static File outputFolder;
+	public static File outputFile;
 	
 	public static boolean isRunning = false;
 	private static StringBuilder errorList = new StringBuilder();
@@ -122,7 +122,7 @@ import javax.swing.JScrollPane;
 		}
 				
 		topPanel();
-		contenu();
+		content();
 		
 		drag = false;
 				
@@ -134,9 +134,9 @@ import javax.swing.JScrollPane;
 		       	{	
 			        frame.setSize(frame.getSize().width, e.getY() + 10);	
 			        scrollPane.setSize(scrollPane.getSize().width, frame.getSize().height - 160);
-			    	lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);		
+			    	lblBottomArrow.setLocation(0, frame.getSize().height - lblBottomArrow.getSize().height);		
 					btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
-					lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 31, 245, 15);
+					lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 89 + scrollPane.getHeight() + 31);
 		       	}	
 			}
 
@@ -176,7 +176,7 @@ import javax.swing.JScrollPane;
 				if (frame.getSize().height <= 90)
 				{
 					frame.setSize(frame.getSize().width, 100);
-		    		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
+		    		lblBottomArrow.setLocation(0, frame.getSize().height - lblBottomArrow.getSize().height);
 				}
 			}
 
@@ -209,7 +209,7 @@ import javax.swing.JScrollPane;
 		Utils.changeFrameVisibility(frame, false);
 		
 		if (runAnalyse)
-			btnAnalyse.doClick();
+			btnAnalyze.doClick();
 	}
 		
 	private void topPanel() {	
@@ -308,8 +308,8 @@ import javax.swing.JScrollPane;
 					
 					if (Shutter.btnCancel.isEnabled() == false)
 					{
-						if (sortieDossier.exists())
-							deleteDirectory(sortieDossier);
+						if (outputFolder.exists())
+							deleteDirectory(outputFolder);
 						
 						Utils.changeFrameVisibility(frame, true);	
 						}
@@ -375,31 +375,42 @@ import javax.swing.JScrollPane;
 		
 	}
 
-	private void contenu() {
+	private void content() {
+		
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(9, 89, 380, frame.getSize().height - 160);
 		frame.getContentPane().add(scrollPane);
+			
+		JLabel lblSensibilit = new JLabel(Shutter.language.getProperty("lblSensibility"));
+		lblSensibilit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblSensibilit.setBounds(10, 62, lblSensibilit.getPreferredSize().width, 15);
+		frame.getContentPane().add(lblSensibilit);
+		
+		tolerance = new JSpinner(new SpinnerNumberModel(80, 0, 100, 10));
+		tolerance.setBounds(lblSensibilit.getX() + lblSensibilit.getWidth() + 4, 59, 55, 21);
+		frame.getContentPane().add(tolerance);	
 		
 		JLabel lblPourcentage = new JLabel("%");
 		lblPourcentage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblPourcentage.setBounds(143, 63, 11, 15);
+		lblPourcentage.setBounds(tolerance.getX() + tolerance.getWidth() + 4, 62, 11, 15);
 		frame.getContentPane().add(lblPourcentage);
-			
-		btnAnalyse = new JButton(Shutter.language.getProperty("btnAnalyse"));
-		btnAnalyse.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnAnalyse.setBounds(164, 59, 223, 21);
-		frame.getContentPane().add(btnAnalyse);
 		
-		btnAnalyse.addActionListener(new ActionListener(){
+		btnAnalyze = new JButton(Shutter.language.getProperty("btnAnalyse"));
+		btnAnalyze.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnAnalyze.setLocation(lblPourcentage.getX() + lblPourcentage.getWidth() + 7, 59);
+		btnAnalyze.setSize(frame.getWidth() - (tolerance.getX() + tolerance.getWidth()) - 34, 21);
+		frame.getContentPane().add(btnAnalyze);
+		
+		btnAnalyze.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				tolerance.setEnabled(false);
-				btnAnalyse.setEnabled(false);
+				btnAnalyze.setEnabled(false);
 				btnEDL.setEnabled(false);
 				lblEdit.setVisible(false);
-				if (sortieDossier != null && sortieDossier.exists())
-					deleteDirectory(sortieDossier);
+				if (outputFolder != null && outputFolder.exists())
+					deleteDirectory(outputFolder);
 				
 
 				if (tableRow != null)
@@ -409,23 +420,14 @@ import javax.swing.JScrollPane;
 			}
 			
 		});
-		
-		JLabel lblSensibilit = new JLabel(Shutter.language.getProperty("lblSensibility"));
-		lblSensibilit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblSensibilit.setBounds(10, 62, lblSensibilit.getPreferredSize().width, 15);
-		frame.getContentPane().add(lblSensibilit);
-		
-		tolerance = new JSpinner(new SpinnerNumberModel(80, 0, 100, 10));
-		tolerance.setBounds(86, 59, 55, 21);
-		frame.getContentPane().add(tolerance);	
-		
-		lblFlecheBas = new JLabel("▲▼");
-		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
-		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
-		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
-		lblFlecheBas.setVisible(true);		
-		frame.getContentPane().add(lblFlecheBas);
+				
+		lblBottomArrow = new JLabel("▲▼");
+		lblBottomArrow.setHorizontalAlignment(SwingConstants.CENTER);
+		lblBottomArrow.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
+		lblBottomArrow.setSize(new Dimension(frame.getSize().width, 20));
+		lblBottomArrow.setLocation(0, frame.getSize().height - lblBottomArrow.getSize().height);
+		lblBottomArrow.setVisible(true);		
+		frame.getContentPane().add(lblBottomArrow);
 		
 		btnEDL = new JButton(Shutter.language.getProperty("btnEDL"));
 		btnEDL.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -552,11 +554,11 @@ import javax.swing.JScrollPane;
 			    					+ ":" + (formatter.format((int) (tcEndToMS / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));
 			    			
 							String cutName;
-							String ext = sortieFichier.toString().substring(sortieFichier.toString().lastIndexOf("."));
+							String ext = outputFile.toString().substring(outputFile.toString().lastIndexOf("."));
 							if (i % 2 == 0)
-								cutName = sortieFichier.toString().replace(" ", "_");
+								cutName = outputFile.toString().replace(" ", "_");
 							else
-								cutName = sortieFichier.toString().replace(" ", "_").replace(ext, "_" + Shutter.language.getProperty("cut") + ext);
+								cutName = outputFile.toString().replace(" ", "_").replace(ext, "_" + Shutter.language.getProperty("cut") + ext);
 			    																	
 							writer.println(formatEDL.format(countItemsEDL + 1) + "  " + cutName + " V     C        " + tcInVideo + " " + tcOutVideo + " " + tcInTimeLine + " " + tcOutTimeLine);
 							writer.println(formatEDL.format(countItemsEDL + 2) + "  " + cutName + " A     C        " + tcInVideo + " " + tcOutVideo + " " + tcInTimeLine + " " + tcOutTimeLine);
@@ -583,7 +585,8 @@ import javax.swing.JScrollPane;
 		lblEdit.setForeground(Utils.themeColor);
 		lblEdit.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEdit.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
-		lblEdit.setBounds(frame.getWidth() / 2 - 119, 89 + scrollPane.getHeight() + 31, 245, 15);
+		lblEdit.setSize(lblEdit.getPreferredSize().width, 15);
+		lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 89 + scrollPane.getHeight() + 31);
 		lblEdit.setVisible(false);
 		frame.getContentPane().add(lblEdit);
 									
@@ -591,7 +594,7 @@ import javax.swing.JScrollPane;
 	
 	@SuppressWarnings("serial")
 	private static void newTable() {
-		ImageIcon imageIcon = new ImageIcon(SceneDetection.sortieDossier.toString() + "/0.png");
+		ImageIcon imageIcon = new ImageIcon(SceneDetection.outputFolder.toString() + "/0.png");
 		ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(142, 80, Image.SCALE_DEFAULT));			
 		Object[][] firstImage = {{"1", icon, "00:00:00:00"}};
 
@@ -629,14 +632,14 @@ import javax.swing.JScrollPane;
 			public void keyPressed(KeyEvent e) {
 				if ((e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE) && FFMPEG.isRunning == false && table.getSelectedRowCount() > 0)
 				{	
-					File imageToDelete = new File(sortieDossier.toString() + "/" + (table.getSelectedRow()) + ".png");
+					File imageToDelete = new File(outputFolder.toString() + "/" + (table.getSelectedRow()) + ".png");
 					imageToDelete.delete();
 					
 					int i = 0; //On renomme toutes les images
-					for (File file : sortieDossier.listFiles())
+					for (File file : outputFolder.listFiles())
 					{
 						if (file.toString().substring(file.toString().lastIndexOf(".")).equals(".png"))
-							file.renameTo(new File(sortieDossier.toString() + "/" + i + ".png"));
+							file.renameTo(new File(outputFolder.toString() + "/" + i + ".png"));
 						
 						i++;			
 					}
@@ -673,7 +676,7 @@ import javax.swing.JScrollPane;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 	            try {
-					Desktop.getDesktop().open(new File(sortieDossier + "/" + table.getSelectedRow() + ".png"));
+					Desktop.getDesktop().open(new File(outputFolder + "/" + table.getSelectedRow() + ".png"));
 				} catch (IOException e1) {}			
 			}		
 		});
@@ -682,7 +685,7 @@ import javax.swing.JScrollPane;
 			@Override
 			public void actionPerformed(ActionEvent e) {
 	            try {
-					Desktop.getDesktop().open(sortieDossier);
+					Desktop.getDesktop().open(outputFolder);
 				} catch (IOException e1) {}
 			}		
 		});
@@ -708,7 +711,7 @@ import javax.swing.JScrollPane;
 		        if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && table.getSelectedRowCount() == 1)
 		        {
 		            try {
-						Desktop.getDesktop().open(new File(sortieDossier + "/" + table.getSelectedRow() + ".png"));
+						Desktop.getDesktop().open(new File(outputFolder + "/" + table.getSelectedRow() + ".png"));
 					} catch (IOException e1) {}
 		        }
 		        
@@ -753,15 +756,15 @@ import javax.swing.JScrollPane;
 						
 						String sortie = file.getParent();					
 						final String extension =  fichier.substring(fichier.lastIndexOf("."));
-						sortieDossier =  new File(sortie + "/" + fichier.replace(extension, ""));		
-						sortieDossier.mkdir();
+						outputFolder =  new File(sortie + "/" + fichier.replace(extension, ""));		
+						outputFolder.mkdir();
 						
-						sortieFichier =  new File(file.getName());
+						outputFile =  new File(file.getName());
 						
 						//Envoi de la commande
 						String cmd;
 						cmd = " -f image2 -vframes 1 ";
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + sortieDossier.toString() + "/0.png" + '"');
+						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/0.png" + '"');
 						
 						//Attente de la fin de FFMPEG
 						do
@@ -774,14 +777,14 @@ import javax.swing.JScrollPane;
 						//Envoi de la commande
 						String tol = String.valueOf((float) (100 - Integer.valueOf(application.SceneDetection.tolerance.getValue().toString())) / 100);
 						cmd = " -vf select=" + '"' + "gt(scene\\," + tol  + ")" + '"' + ",showinfo -vsync 2 -f image2 ";
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + sortieDossier.toString() + "/%01d.png" + '"');		
+						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/%01d.png" + '"');		
 						
 						//Attente de la fin de FFMPEG
 						do
 							Thread.sleep(100);
 						while(FFMPEG.runProcess.isAlive());						
 					
-						actionsDeFin();
+						endAction();
 						
 					} catch (InterruptedException e) {
 						FFMPEG.error  = true;
@@ -801,14 +804,15 @@ import javax.swing.JScrollPane;
 		
     }
 
-	private static void actionsDeFin() {
-		//Erreurs
+	private static void endAction() {
+		
+		//Erros
 		if (FFMPEG.error)
 		{
 		    errorList.append(System.lineSeparator());
 		}
 
-		//Fichiers terminés
+		//Ended files
 		if (FFMPEG.cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
@@ -816,7 +820,7 @@ import javax.swing.JScrollPane;
 		}
 		
 		tolerance.setEnabled(true);
-		btnAnalyse.setEnabled(true);
+		btnAnalyze.setEnabled(true);
 		btnEDL.setEnabled(true);
 		lblEdit.setVisible(true);
 

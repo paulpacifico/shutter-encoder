@@ -90,7 +90,7 @@ public class Functions {
 	private static int MousePositionX;
 	private static int MousePositionY;
 	
-	public static File fonctionsFolder = new File(Shutter.documents + "/Functions");
+	public static File functionsFolder = new File(Shutter.documents + "/Functions");
 
 	@SuppressWarnings("serial")
 	public Functions() {
@@ -256,7 +256,7 @@ public class Functions {
 			public void actionPerformed(ActionEvent e) {
 				Shutter.btnReset.doClick();
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				Utils.loadSettings(new File(fonctionsFolder + "/" + listeDeFonctions.getSelectedValue()));
+				Utils.loadSettings(new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue()));
 			}
 			
 		});
@@ -290,7 +290,7 @@ public class Functions {
 						lblDrop.setVisible(true);
 					}
 	
-					File enc = new File(fonctionsFolder + "/" + listeDeFonctions.getSelectedValue());
+					File enc = new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue());
 					enc.delete();
 					liste.remove(listeDeFonctions.getSelectedIndex());
 				}
@@ -303,7 +303,7 @@ public class Functions {
 			@Override
 			public void actionPerformed(ActionEvent e) {							        	
 				try {
-					Desktop.getDesktop().open(fonctionsFolder);
+					Desktop.getDesktop().open(functionsFolder);
 					Utils.changeFrameVisibility(frame, true);
 					
 					Shutter.iconPresets.setVisible(true);
@@ -343,7 +343,7 @@ public class Functions {
 					{					
 						Shutter.btnReset.doClick();
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						Utils.loadSettings(new File(fonctionsFolder + "/" + listeDeFonctions.getSelectedValue()));
+						Utils.loadSettings(new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue()));
 					}
 				}
 			}
@@ -671,28 +671,28 @@ public class Functions {
 	public static void addFonctions(){
 		liste.clear();
 		
-		File oldFolder = new File(fonctionsFolder.toString().replace("Functions", "Fonctions"));
+		File oldFolder = new File(functionsFolder.toString().replace("Functions", "Fonctions"));
 		if (oldFolder.exists())
 		{
-			oldFolder.renameTo(fonctionsFolder);
+			oldFolder.renameTo(functionsFolder);
 		}
 		
-		if (fonctionsFolder.exists() == false)
+		if (functionsFolder.exists() == false)
 		{
-			fonctionsFolder.mkdir();
+			functionsFolder.mkdir();
 			lblSave.setVisible(true);
 			lblDrop.setVisible(true);
 		}
 		else
 		{
-			if (fonctionsFolder.listFiles().length == 0)
+			if (functionsFolder.listFiles().length == 0)
 			{
 				lblSave.setVisible(true);
 				lblDrop.setVisible(true);
 			}
 			else
 			{
-				for (File f : fonctionsFolder.listFiles())
+				for (File f : functionsFolder.listFiles())
 				{
 					if(f.getName().toString().equals(".DS_Store") == false)
 						liste.addElement(f.getName());
@@ -778,7 +778,7 @@ public boolean importData(JComponent comp, Transferable t) {
 	            if (ext.equals(".enc"))
 	            {
 	            	File droppedFile = new File(file.getCanonicalPath().toString());
-	            	File toCopy = new File(Functions.fonctionsFolder + "/" + droppedFile.getName());
+	            	File toCopy = new File(Functions.functionsFolder + "/" + droppedFile.getName());
 	            	InputStream inStream = new FileInputStream(droppedFile);
 	            	OutputStream outStream = new FileOutputStream(toCopy);
 
@@ -801,7 +801,7 @@ public boolean importData(JComponent comp, Transferable t) {
 	            {
 	            	Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	            	File droppedFile = new File(file.getCanonicalPath().toString());
-	            	SEVENZIP.run("e " + '"' + droppedFile.toString() + '"' + " -y -o" + '"' + Functions.fonctionsFolder + '"', false);
+	            	SEVENZIP.run("e " + '"' + droppedFile.toString() + '"' + " -y -o" + '"' + Functions.functionsFolder + '"', false);
 	            	
 	            	try {
 		            	do {

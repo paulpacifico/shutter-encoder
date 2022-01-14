@@ -142,10 +142,10 @@ public class Utils extends Shutter {
 				dirTemp += "/";
 			}
 			
-			if (new File(Shutter.documents + "/settings.xml").exists())
+			if (Shutter.settingsXML.exists())
 			{				
 				try {
-					File fXmlFile = new File(Shutter.documents + "/settings.xml");
+					File fXmlFile = Shutter.settingsXML;
 					DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 					Document doc = dBuilder.parse(fXmlFile);
@@ -495,18 +495,18 @@ public class Utils extends Shutter {
 	@SuppressWarnings({"rawtypes"})
 	public static void saveSettings(boolean update) {
 		
-		File oldFolder = new File(Functions.fonctionsFolder.toString().replace("Functions", "Fonctions"));
+		File oldFolder = new File(Functions.functionsFolder.toString().replace("Functions", "Fonctions"));
 		if (oldFolder.exists())
 		{
-			oldFolder.renameTo(Functions.fonctionsFolder);
+			oldFolder.renameTo(Functions.functionsFolder);
 		}
 		
-		if (Functions.fonctionsFolder.exists() == false)
-			Functions.fonctionsFolder.mkdir();
+		if (Functions.functionsFolder.exists() == false)
+			Functions.functionsFolder.mkdir();
 		
 		
 		FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveSettings"), FileDialog.SAVE);
-		dialog.setDirectory(Functions.fonctionsFolder.toString()); 
+		dialog.setDirectory(Functions.functionsFolder.toString()); 
 		dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
 		dialog.setAlwaysOnTop(true);
 	
@@ -2041,10 +2041,10 @@ public class Utils extends Shutter {
 	public static void loadThemes() {
 								
 		//Theme
-		if (new File(Shutter.documents + "/settings.xml").exists())
+		if (Shutter.settingsXML.exists())
 		{				
 			try {
-				File fXmlFile = new File(Shutter.documents + "/settings.xml");
+				File fXmlFile = Shutter.settingsXML;
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(fXmlFile);
@@ -2465,8 +2465,8 @@ public class Utils extends Shutter {
 			
 		} catch (Exception er) {}
 
-		if (SceneDetection.sortieDossier != null && SceneDetection.sortieDossier.exists())
-			SceneDetection.deleteDirectory(SceneDetection.sortieDossier);
+		if (SceneDetection.outputFolder != null && SceneDetection.outputFolder.exists())
+			SceneDetection.deleteDirectory(SceneDetection.outputFolder);
 
 		// Suppression des SRT temporaires
 		String rootPath = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();					

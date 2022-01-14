@@ -102,7 +102,6 @@ public class Settings {
 	private JLabel help;
 	private JPanel topPanel;
 	private JLabel topImage;
-	public static File settingsXML = new File(Shutter.documents + "/settings.xml");
 	private JLabel lblThreads = new JLabel(Shutter.language.getProperty("lblThreads"));
 	public static JTextField txtThreads = new JTextField();
 	private JLabel lblScreenRecord = new JLabel(Shutter.language.getProperty("lblScreenRecord"));
@@ -150,7 +149,8 @@ public class Settings {
 	private static int MousePositionY;
 	
 	public Settings() {
-		//Pour la sauvegarde	
+				
+		//For saving	
 		btnExtension.setName("btnExtension");
 		txtExtension.setName("txtExtension");
 		btnExclude.setName("btnExclude");
@@ -176,7 +176,11 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(360, 670);
+		frame.setSize(370, 690);
+		if (Shutter.getLanguage.equals("Russian"))
+		{
+			frame.setSize(frame.getWidth() + 30, frame.getHeight());
+		}
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -255,8 +259,8 @@ public class Settings {
 						JOptionPane.PLAIN_MESSAGE);					
 				if (reply == JOptionPane.YES_OPTION) 
 				{	
-					if (settingsXML.exists())
-						settingsXML.delete();
+					if (Shutter.settingsXML.exists())
+						Shutter.settingsXML.delete();
 					
 					try {
 						String newShutter;
@@ -1195,7 +1199,7 @@ public class Settings {
 				{
 					quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15));
 					
-	            	if (txtThreads.getText().isEmpty() ||  txtThreads.getText() == null)
+	            	if (txtThreads.getText().isEmpty() || txtThreads.getText() == null)
 	            		txtThreads.setText("0");
 	            		
 					Settings.saveSettings();
@@ -1366,9 +1370,9 @@ public class Settings {
 	public static void loadSettings() {	
 		
 	try {
-		if (settingsXML.exists())
+		if (Shutter.settingsXML.exists())
 		{
-			File fXmlFile = settingsXML;
+			File fXmlFile = Shutter.settingsXML;
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
@@ -2058,7 +2062,7 @@ public class Settings {
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(settingsXML);
+			StreamResult streamResult = new StreamResult(Shutter.settingsXML);
 
 			transformer.transform(domSource, streamResult);
 			

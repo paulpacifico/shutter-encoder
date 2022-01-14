@@ -115,6 +115,7 @@ import library.MEDIAINFO;
  			
 			@Override
 			public void mouseDragged(MouseEvent e) {
+				
 				if (drag && frame.getSize().height > 90 && MEDIAINFO.isRunning == false)
 		       	{	
 			        frame.setSize(frame.getSize().width, e.getY() + 10);		
@@ -126,6 +127,7 @@ import library.MEDIAINFO;
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
+				
 				if ((MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y) > frame.getSize().height - 20 && infoTabbedPane.getTabCount() > 0 && MEDIAINFO.isRunning == false)
 					 frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
 				 else 

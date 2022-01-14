@@ -542,8 +542,7 @@ public class RecordInputDevice {
 				Shutter.addToList.setVisible(false);
 				Shutter.case2pass.setSelected(false);
 				
-				if (Shutter.caseDisplay.isEnabled())
-					Shutter.caseDisplay.setSelected(true);
+				Shutter.caseDisplay.setSelected(true);
 				
 				if (Shutter.caseChangeFolder1.isSelected() == false)
 				{

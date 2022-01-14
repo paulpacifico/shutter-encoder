@@ -45,6 +45,7 @@ public class Help {
 	private JButton btnDoc;
 
 	public Help() {
+		
 		frame = new JFrame();
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);

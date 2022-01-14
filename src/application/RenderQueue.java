@@ -102,6 +102,7 @@ import settings.FunctionUtils;
 	private static int MousePositionY;
 	
 	public RenderQueue() {
+		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -853,7 +854,7 @@ import settings.FunctionUtils;
 								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 							} catch (InterruptedException e) {}
 
-							actionsDeFin(i, fichier, fileOut);
+							lastActions(i, fichier, fileOut);
 							
 							if (Shutter.cancelled)
 							{
@@ -876,7 +877,7 @@ import settings.FunctionUtils;
 
 	}	
 
-	private static void actionsDeFin(int item, String fichier, File fileOut) {
+	private static void lastActions(int item, String file, File fileOut) {
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
 		
@@ -895,11 +896,21 @@ import settings.FunctionUtils;
 		//Erreurs
 		if (FFMPEG.error || fileOut.length() == 0 && Shutter.caseCreateSequence.isSelected() == false)
 		{
-			FFMPEG.errorList.append(Shutter.language.getProperty("file") + " N°" + (item + 1) + " - " +fichier);
+			FFMPEG.errorList.append(Shutter.language.getProperty("file") + " N°" + (item + 1) + " - " + file);
 		    FFMPEG.errorList.append(System.lineSeparator());
 			try {
 				fileOut.delete();
 			} catch (Exception e) {}
+		}
+		
+		//Concat mode or Image sequence
+		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")) && Shutter.caseInAndOut.isSelected())
+		{
+			String extension = file.substring(file.lastIndexOf("."));
+			
+			File concatList = new File(fileOut.getParent().replace("\\", "/") + "/" + file.replace(extension, ".txt"));
+			
+			concatList.delete();
 		}
 		
 		//Annulation
@@ -938,10 +949,10 @@ import settings.FunctionUtils;
 		{
 			if (cli[0].toString().equals("ffmpeg"))
 			{
-				final String extension =  fichier.substring(fichier.lastIndexOf("."));
+				final String extension =  file.substring(file.lastIndexOf("."));
 			    for (final File fileEntry : folder.listFiles()) {
 			        if (fileEntry.isFile()) {
-			        	if (fileEntry.getName().contains(fichier.replace(extension, "")) && fileEntry.getName().contains("log"))
+			        	if (fileEntry.getName().contains(file.replace(extension, "")) && fileEntry.getName().contains("log"))
 			        	{
 			        		File fileToDelete = new File(fileEntry.getAbsolutePath());
 			        		fileToDelete.delete();
@@ -992,7 +1003,7 @@ import settings.FunctionUtils;
 		}
 		
 		//Envoi par e-mail et FTP
-		FunctionUtils.addFileForMail(fichier);
+		FunctionUtils.addFileForMail(file);
 		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		

@@ -29,6 +29,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -233,6 +234,7 @@ public class WatermarkWindow {
 		values();
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
+		btnOK.setMargin(new Insets(0,0,0,0));
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setBounds(caseSafeArea.getX() + caseSafeArea.getWidth() + 6, frame.getHeight() - 32, frame.getWidth() - (caseSafeArea.getX() + caseSafeArea.getWidth()) - 12 - 6, 21);		
 		frame.getContentPane().add(btnOK);
@@ -436,7 +438,14 @@ public class WatermarkWindow {
 		positionVideo.setMaximum(FFPROBE.totalLength);
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		positionVideo.setBounds(12, frame.getHeight() - 32, 122, 22);	
+		
+		if (Shutter.getLanguage.equals("Russian"))
+		{
+			positionVideo.setBounds(12, frame.getHeight() - 30, 80, 22);
+		}
+		else
+			positionVideo.setBounds(12, frame.getHeight() - 30, 122, 22);			
+			
 		
 		//Contournement d'un bug
 		Component[] components = frame.getContentPane().getComponents();		    
@@ -485,7 +494,7 @@ public class WatermarkWindow {
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posX.setForeground(Utils.themeColor);
-		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, positionVideo.getLocation().y + 3, posX.getPreferredSize().width, 16);
+		posX.setBounds(positionVideo.getLocation().x + positionVideo.getWidth() + 12, positionVideo.getLocation().y + 1, posX.getPreferredSize().width, 16);
 				
 		textPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * logoRatio) ) ) );
 		textPosX.setName("textPosX");

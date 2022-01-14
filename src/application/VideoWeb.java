@@ -450,7 +450,8 @@ public class VideoWeb {
 		lblQualit = new JLabel(Shutter.language.getProperty("lblQualit"));
 		lblQualit.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblQualit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblQualit.setBounds(16, 51, lblQualit.getPreferredSize().width, 16);		
+		lblQualit.setSize(lblQualit.getPreferredSize().width, 16);
+		lblQualit.setLocation(textURL.getX() - lblQualit.getWidth() - 5, 51);		
 		grpURL.add(lblQualit);
 		
 		btnOK = new JButton("OK");
