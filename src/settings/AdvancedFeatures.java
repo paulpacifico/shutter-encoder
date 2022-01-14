@@ -241,7 +241,14 @@ public class AdvancedFeatures extends Shutter {
 		            int height = Integer.parseInt(s[1]); 
 
 		            if (width > 1920 || height > 1080)
-		            	return " -profile:v " + profile + " -level 5.2";
+		            {
+		            	if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		            	{
+		            		return " -profile:v " + profile + " -level 6.1";
+		            	}
+		            	else
+		            		return " -profile:v " + profile + " -level 5.2";
+		            }
 		            else
 		            	return " -profile:v " + profile + " -level 5.1";
 		        }
@@ -463,10 +470,11 @@ public class AdvancedFeatures extends Shutter {
 
 	public static String setPTS(String filterComplex) {
 		
-		if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))))
+		if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed"))
+		|| comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))))
         {		            		
         	float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
-            
+                    	
             if (filterComplex != "") filterComplex += ",";
             	
             filterComplex += "setpts=" + (FFPROBE.currentFPS / newFPS) + "*PTS";   
@@ -500,15 +508,6 @@ public class AdvancedFeatures extends Shutter {
 		{
 			return " -r " + Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));            
 		}
-        else if (caseEnableSequence.isSelected())
-        {
-        	if (caseConform.isSelected())
-        	{
-        		return " -r " + Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", ".")) + " -frames:v " + liste.getSize();	
-        	}
-        	else
-        		return " -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -frames:v " + liste.getSize();
-        }
 		else if (inputDeviceIsRunning)
 		{
 			return " -vsync vfr";

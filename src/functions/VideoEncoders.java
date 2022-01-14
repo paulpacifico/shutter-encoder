@@ -263,15 +263,12 @@ public class VideoEncoders extends Shutter {
 							hardwareDecoding += " -vaapi_device /dev/dri/renderD128";
 						}
 						
-						//Concat mode
+						//Concat mode or Image sequence
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
-						if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						{
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
-						
-						//Image sequence
-						String sequence = ImageSequence.setSequence(file, extension);
-						
-						file = ImageSequence.setSequenceName(file, extension);
+						}
 						
 						//Loop image					
 						String loop = FunctionUtils.setLoop(extension);	
@@ -446,7 +443,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = ImageSequence.setMotionBlur(filterComplex);
 						
 						//Stabilisation
-						filterComplex = Corrections.setStabilisation(filterComplex, sequence, file, fileName, concat);
+						filterComplex = Corrections.setStabilisation(filterComplex, file, fileName, concat);
 						
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
@@ -753,12 +750,11 @@ public class VideoEncoders extends Shutter {
 						}
 						else if (encode) //Encoding
 						{
-							FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
+							FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
 						}
 						else //Preview
 						{						
-							FFMPEG.toFFPLAY(hardwareDecoding + loop + stream + InputAndOutput.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
-							break;
+							FFMPEG.toFFPLAY(hardwareDecoding + loop + stream + InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
 						}
 
 						do
@@ -770,7 +766,7 @@ public class VideoEncoders extends Shutter {
 						if (grpH264.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
 							if (FFMPEG.cancelled == false)
-								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 							
 							do
 							{
@@ -1039,22 +1035,43 @@ public class VideoEncoders extends Shutter {
 				
 			case "Apple ProRes":
 				
-				switch (comboFilter.getSelectedItem().toString())
-				{					
-					case "Proxy" :
-						return " -c:v prores -profile:v 0 -pix_fmt yuv422p10";
-					case "LT" :
-						return " -c:v prores -profile:v 1 -pix_fmt yuv422p10";
-					case "422" :
-						return " -c:v prores -profile:v 2 -pix_fmt yuv422p10";
-					case "422 HQ" :
-						return " -c:v prores -profile:v 3 -pix_fmt yuv422p10";
-					case "444" :
-						return " -c:v prores -profile:v 4 -pix_fmt yuv444p10";
-					case "4444" :
-						return " -c:v prores_ks -pix_fmt yuva444p10le -alpha_bits 16 -profile:v 4444";
-					case "4444 XQ" :
-						return " -c:v prores_ks -pix_fmt yuva444p10le -alpha_bits 16 -profile:v 4444xq";
+				if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.name").contains("Mac"))
+				{
+					switch (comboFilter.getSelectedItem().toString())
+					{					
+						case "Proxy" :
+							return " -c:v prores_videotoolbox -profile:v 0 -pix_fmt yuv422p10";
+						case "LT" :
+							return " -c:v prores_videotoolbox -profile:v 1 -pix_fmt yuv422p10";
+						case "422" :
+							return " -c:v prores_videotoolbox -profile:v 2 -pix_fmt yuv422p10";
+						case "422 HQ" :
+							return " -c:v prores_videotoolbox -profile:v 3 -pix_fmt yuv422p10";
+						case "4444" :
+							return " -c:v prores_videotoolbox -profile:v 4 -pix_fmt yuv444p10le";
+						case "4444 XQ" :
+							return " -c:v prores_videotoolbox -profile:v 5 -pix_fmt yuv444p10le";
+					}
+				}
+				else
+				{				
+					switch (comboFilter.getSelectedItem().toString())
+					{					
+						case "Proxy" :
+							return " -c:v prores -profile:v 0 -pix_fmt yuv422p10";
+						case "LT" :
+							return " -c:v prores -profile:v 1 -pix_fmt yuv422p10";
+						case "422" :
+							return " -c:v prores -profile:v 2 -pix_fmt yuv422p10";
+						case "422 HQ" :
+							return " -c:v prores -profile:v 3 -pix_fmt yuv422p10";
+						case "444" :
+							return " -c:v prores -profile:v 4 -pix_fmt yuv444p10";
+						case "4444" :
+							return " -c:v prores_ks -pix_fmt yuva444p10le -alpha_bits 16 -profile:v 4444";
+						case "4444 XQ" :
+							return " -c:v prores_ks -pix_fmt yuva444p10le -alpha_bits 16 -profile:v 4444xq";
+					}
 				}
 				
 				break;

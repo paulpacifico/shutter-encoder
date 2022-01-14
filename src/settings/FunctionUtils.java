@@ -49,6 +49,7 @@ import javax.swing.JTextField;
 
 import application.Console;
 import application.RecordInputDevice;
+import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
 import application.SubtitlesEmbed;
@@ -409,12 +410,17 @@ public class FunctionUtils extends Shutter {
 			
 			return " -safe 0 -f concat";
 		}
-		else if (Settings.btnSetBab.isSelected()) //Mode concat
+		else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) //Image sequence
 		{
 			setMerge(file.getName(), extension, output);	
-			
-			if (caseEnableSequence.isSelected() == false)
-				return " -safe 0 -f concat";
+
+			return " -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".");			
+		}
+		else if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected())) //Concat mode
+		{
+			setMerge(file.getName(), extension, output);	
+
+			return " -safe 0 -f concat";
 		}
 		
 		return "";
@@ -441,13 +447,21 @@ public class FunctionUtils extends Shutter {
 	            }
 				//Scanning
 				
-				FFPROBE.Data(liste.getElementAt(i));
-				do {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e1) {}
-				} while (FFPROBE.isRunning == true);
-				mergeDuration += FFPROBE.totalLength;
+				if (Settings.btnSetBab.isSelected())
+				{
+					FFPROBE.Data(liste.getElementAt(i));
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning == true);
+					mergeDuration += FFPROBE.totalLength;
+				}
+				else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
+				{
+					FFPROBE.currentFPS = 25.0f; //Important
+					mergeDuration = (int) (Shutter.liste.getSize() * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString())));
+				}
 				
 				writer.println("file '" + liste.getElementAt(i) + "'");
 			}				
@@ -550,7 +564,7 @@ public class FunctionUtils extends Shutter {
 		}
 		else
 		{
-			output =  file.getParent();
+			output = file.getParent();
 			lblDestination1.setText(output);
 		}
 		
@@ -1204,11 +1218,13 @@ public class FunctionUtils extends Shutter {
 			Corrections.vidstab = null;
 		}
 		
-		//Concat mode
-		if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+		//Concat mode or Image sequence
+		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 		{
 			File concatList = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 			
-			concatList.delete();
+			
+			if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
+				concatList.delete();
 		}
 		
 		//Process cancelled

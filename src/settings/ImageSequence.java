@@ -19,47 +19,10 @@
 
 package settings;
 
-import java.io.File;
-
 import application.Shutter;
 
 public class ImageSequence extends Shutter {
-
-	public static String setSequence(File file, String extension) {
 		
-		if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
-		{
-			int n = 0;
-			do {
-				n ++;
-			} while (file.toString().substring(file.toString().lastIndexOf(".") - n).replace(extension, "").matches("[0-9]+") != false);					
-
-			if (caseBlend.isSelected())
-				return " -start_number " + file.toString().substring(file.toString().lastIndexOf(".") - n + 1).replace(extension, "");	
-			else	
-				return " -framerate " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -start_number " + file.toString().substring(file.toString().lastIndexOf(".") - n + 1).replace(extension, "");	
-		}		
-		
-		return "";
-	}
-	
-	public static File setSequenceName(File file, String extension) {
-		
-		if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
-		{
-			int n = 0;
-			do {
-				n ++;
-			} while (file.toString().substring(file.toString().lastIndexOf(".") - n).replace(extension, "").matches("[0-9]+") != false);	
-			
-			int nombre = (n - 1);
-			file = new File(file.toString().substring(0, file.toString().lastIndexOf(".") - nombre) + "%0" + nombre + "d" + extension);				
-		}
-		
-		return file;
-		
-	}
-	
 	public static String setBlend(String filterComplex) {
 		
 		if (grpImageSequence.isVisible() && caseBlend.isSelected())

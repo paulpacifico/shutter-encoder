@@ -28,6 +28,7 @@ import application.Console;
 import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
+import settings.FunctionUtils;
 
 public class FFPLAY extends Shutter {
 	
@@ -38,6 +39,7 @@ public static Thread runProcess;
 public static Process process;
 
 	public static void run(final String cmd) {				
+		
 	    Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
 	    
 	    error = false;
@@ -268,18 +270,32 @@ public static Process process;
 					filter = " -vf " + '"' + "[in]split=2[v0][v1];[v0]scale=iw/2:ih/2[video1];[v1]"	+ filter + ",scale=iw/2:ih/2[video2];[video1][video2]hstack" + '"';
 				}
 				
-				String extension = file.substring(file.lastIndexOf("."));
+				File f = new File(liste.firstElement());
 				
-				int n = 0;
+				String extension =  f.getName().substring(f.getName().lastIndexOf("."));
+				
+				//Output folder
+				String output = FunctionUtils.setOutputDestination("", f);
+				
+				//Concat file
+				String concat = FunctionUtils.setConcat(f, output);		
+				
+				File concatList = new File(output.replace("\\", "/") + "/" + f.getName().replace(extension, ".txt"));				
+	
+				FFPLAY.run(option + flags + concat + " -i " + '"' + concatList + '"' + filter);
+				
 				do {
-					n ++;				
-				} while (file.substring(file.lastIndexOf(".") - n).replace(extension, "").matches("[0-9]+") != false);	
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {}
+				} while (FFPLAY.isRunning);
 				
-				int nombre = (n - 1);
-				String fileOut = file.substring(0, file.lastIndexOf(".") - nombre) + "%0" + nombre + "d" + extension;	
+				if (caseChangeFolder1.isSelected() == false)
+				{
+					lblDestination1.setText(language.getProperty("sameAsSource"));
+				}
 				
-				FFPLAY.run(option + flags + " -start_number " + file.toString().substring(file.lastIndexOf(".") - n + 1).replace(extension, "")
-						+ seek + " -i " + fileOut + filter);
+				concatList.delete();
 			}
 			else
 			{	

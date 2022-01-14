@@ -119,18 +119,27 @@ private static StringBuilder getAll;
 		{
 			//On récupère le nom précédent
 			if (lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")))
+			{
 				lblCurrentEncoding.setText(RenderQueue.tableRow.getValueAt(RenderQueue.tableRow.getRowCount() - 1, 0).toString());
+			}
 			
 			if (caseChangeFolder1.isSelected() == false)
+			{
 				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
+			}
 				
 			if (caseChangeFolder3.isSelected() && caseChangeFolder2.isSelected())
+			{
 				RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "ffmpeg" + checkList(cmd), lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText()});
+			}
 			else if (caseChangeFolder2.isSelected())
+			{
 				RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "ffmpeg" + checkList(cmd), lblDestination1.getText() + " | " + lblDestination2.getText()});
+			}
 			else
 				RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "ffmpeg" + checkList(cmd), lblDestination1.getText()});
-	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
+	        
+			lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
 		}
 		else
 		{
@@ -139,8 +148,10 @@ private static StringBuilder getAll;
 				disableAll();
 			
 			runProcess = new Thread(new Runnable()  {
+				
 				@Override
 				public void run() {
+					
 					try {
 						String PathToFFMPEG;
 						ProcessBuilder processFFMPEG;
@@ -155,16 +166,13 @@ private static StringBuilder getAll;
 							if ((cmd.contains("pipe:play") || caseStream.isSelected()) && cmd.contains("image2pipe") == false)
 							{								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
-								String codec = "";
-								if (comboFonctions.getSelectedItem().equals("QT Animation"))
-									codec = " -c:v qtrle";								
-								
-									String aspect ="";
-									if (caseForcerDAR.isSelected())
-										aspect = ",setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
-								
-									pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';										
-									process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
+
+								String aspect ="";
+								if (caseForcerDAR.isSelected())
+									aspect = ",setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
+							
+								pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';										
+								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 							}						
 							else if (cmd.contains("pipe:stab") || cmd.contains("image2pipe") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 									|| comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
@@ -194,15 +202,11 @@ private static StringBuilder getAll;
 							String pipe = "";								
 							if (cmd.contains("pipe:play"))
 							{
-								String codec = "";
-								if (comboFonctions.getSelectedItem().equals("QT Animation"))
-									codec = " -c:v qtrle";
-								
 								String aspect ="";
 								if (caseForcerDAR.isSelected())
 									aspect = ",setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
 								
-								pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"'  + codec + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';
+								pipe =  " | " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -loglevel quiet -x 320 -y 180 -alwaysontop -autoexit -an -vf setpts=FRAME_RATE" + aspect + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + Shutter.language.getProperty("viewEncoding") + '"';
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);									
@@ -309,6 +313,7 @@ private static StringBuilder getAll;
 	}
 
 	public static void toFFPLAY(final String cmd) {
+		
 			error = false;		
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -316,8 +321,10 @@ private static StringBuilder getAll;
 			isRunning = true;
 			
 			runProcess = new Thread(new Runnable()  {
+				
 				@Override
 				public void run() {
+					
 					try {
 						String PathToFFMPEG;
 						ProcessBuilder processFFMPEG;
@@ -1177,7 +1184,7 @@ private static StringBuilder getAll;
 	private static void saveToXML(String cmd) {	  
 		
 		FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveSettings"), FileDialog.SAVE);
-		dialog.setDirectory(Functions.fonctionsFolder.toString());
+		dialog.setDirectory(Functions.functionsFolder.toString());
 		dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
 		dialog.setAlwaysOnTop(true);
 		dialog.setVisible(true);
@@ -1353,9 +1360,13 @@ private static StringBuilder getAll;
 			String ffmpegTime = split[0].replace(".", ":");	  
 					
 			if (caseEnableSequence.isSelected())
+			{
 				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
+			}
 			else if (caseInAndOut.isSelected())
+			{
 				dureeTotale = VideoPlayer.dureeHeures * 3600 + VideoPlayer.dureeMinutes * 60 + VideoPlayer.dureeSecondes;
+			}
 			else
 				dureeTotale = (getTimeToSeconds(ffmpegTime));
 			
@@ -1578,7 +1589,7 @@ private static StringBuilder getAll;
           String s = formatter.format((rawTime / 1000) % 60);          
           String f = formatter.format((int) (rawTime / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS));
     
-          File imageName = new File(SceneDetection.sortieDossier + "/" + SceneDetection.tableRow.getRowCount() + ".png");
+          File imageName = new File(SceneDetection.outputFolder + "/" + SceneDetection.tableRow.getRowCount() + ".png");
                     
           //Permet d'attendre la création de l'image
           do {

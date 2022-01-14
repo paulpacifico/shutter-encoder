@@ -29,7 +29,7 @@ public class Corrections extends Shutter {
 
 	public static File vidstab = null;
 	
-	public static String setStabilisation(String filterComplex, String sequence, File file, String fichier, String concat) throws InterruptedException {
+	public static String setStabilisation(String filterComplex, File file, String fichier, String concat) throws InterruptedException {
 				
 		if (grpCorrections.isVisible() && caseStabilisation.isSelected())
 		{
@@ -50,7 +50,7 @@ public class Corrections extends Shutter {
 			else
 				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab | PathToFFMPEG -i pipe:stab -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -" + '"';	
 			
-			FFMPEG.run(InputAndOutput.inPoint + sequence + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
+			FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
 			
 			//Attente de la fin de FFMPEG
 			do

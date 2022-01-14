@@ -146,9 +146,17 @@ public class Transitions extends Shutter {
 		if (grpTransitions.isVisible() || grpAudio.isVisible())
 		{
 	    	//Audio Speed				        
-			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))))    
+			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed"))
+			|| comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse")))
+			|| grpImageSequence.isVisible() && caseEnableSequence.isSelected()) 
 	        {
 	        	float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
+	            
+	        	if (caseEnableSequence.isSelected())
+	        	{
+	        		newFPS = Float.parseFloat((caseSequenceFPS.getSelectedItem().toString()).replace(",", "."));
+	        	}
+	        	
 	        	float value = (float) (newFPS/ FFPROBE.currentFPS);
 	        	
 	        	if (value < 0.5f || value > 2.0f)
