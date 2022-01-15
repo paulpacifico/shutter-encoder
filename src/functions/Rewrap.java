@@ -285,7 +285,7 @@ public class Rewrap extends Shutter {
 	}
 	
 	private static String setMapSubtitles() {
-		
+
 		if (caseSubtitles.isSelected())
 		{			
 			if (comboFilter.getSelectedItem().toString().equals(".mkv"))
@@ -297,30 +297,27 @@ public class Rewrap extends Shutter {
         {
         	if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
         	{
-        		if (lblFilter.getText().equals(language.getProperty("lblTo")))
-        		{
-        			switch (comboFilter.getSelectedItem().toString())
-        			{
-        				case ".mp4":
-        				case ".mkv":
-        					
-        					return " -c:s dvdsub -map s?";
-        					
-        				case ".ts":
-        					
-        					return " -c:s dvbsub -map s?";
-        					
-        				default:
-        					
-        					return " -c:s copy -map s?";
-        			}
-        		}
-        		else
-        			return " -c:s copy -map s?";
+    			switch (comboFilter.getSelectedItem().toString())
+    			{
+    				case ".mp4":
+    				case ".mkv":
+    				case ".ts":	
+    					
+    					return " -c:s dvbsub -map s?";
+    					
+    				default:
+    					
+    					return " -c:s copy -map s?";
+    			}
         	}
         	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
         	{
-        		return " -c:s srt -map s?";
+        		if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle"))
+        		{
+        			return " -c:s copy -map s?";
+        		}
+        		else
+        			return " -c:s srt -map s?";
         	}
         	else
         		return " -c:s mov_text -map s?";

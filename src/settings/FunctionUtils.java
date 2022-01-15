@@ -806,33 +806,29 @@ public class FunctionUtils extends Shutter {
         {
         	if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
         	{
-        		if (lblFilter.getText().equals("Ext." + language.getProperty("colon")))
-        		{
-        			switch (comboFilter.getSelectedItem().toString())
-        			{
-        				case ".mp4":
-        				case ".mkv":
-        					
-        					filterComplex += " -c:s dvdsub -map s?";
-        					break;
-        					
-        				case ".ts":
-        					
-        					filterComplex += " -c:s dvbsub -map s?";
-        					break;
-        					
-        				default:
-        					
-        					filterComplex += " -c:s copy -map s?";
-        					break;
-        			}
-        		}
-        		else
-        			filterComplex += " -c:s copy -map s?";
+    			switch (comboFilter.getSelectedItem().toString())
+    			{
+    				case ".mp4":
+    				case ".mkv":
+    				case ".ts":
+    					
+    					filterComplex += " -c:s dvbsub -map s?";
+    					break;
+    					
+    				default:
+    					
+    					filterComplex += " -c:s copy -map s?";
+    					break;
+    			}
         	}
         	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
         	{
-        		filterComplex += " -c:s srt -map s?";
+        		if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle"))
+        		{
+        			filterComplex += " -c:s copy -map s?";
+        		}
+        		else
+        			filterComplex += " -c:s srt -map s?";
         	}
         	else
         		filterComplex += " -c:s mov_text -map s?";

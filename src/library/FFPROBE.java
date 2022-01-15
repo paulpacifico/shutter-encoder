@@ -485,8 +485,7 @@ public static int gopSpace = 124;
 			        		 subtitleStreams ++;
 			        		 
 			        		 String s[] = line.substring(line.lastIndexOf(":") + 1).split(" ");	
-			        		 subtitlesCodec = s[1];
-			        	 }
+			        		 subtitlesCodec = s[1].replace(",", "");			        	 }
 			        	 
 			        	//Timecode from XML
 			        	if (line.contains("StartTimecode"))

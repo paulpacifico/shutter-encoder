@@ -113,7 +113,7 @@ public class Extract extends Shutter {
 						}		
 									
 						//Command
-						String cmd = " -c copy -c:s mov_text -c:s srt" + mapping + " -y ";
+						String cmd = mapping + " -y ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
 						
 						do
@@ -258,18 +258,18 @@ public class Extract extends Shutter {
 		
 		if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
 		{
-			return " -an -map v:0?";
+			return " -an -sn -c:v copy -map v:0?";
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 		{
-			return " -vn -map a:" + audioStream + "?";
+			return " -vn -sn -c:a copy -map a:" + audioStream + "?";
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
 		{
 			return " -vn -an -map s:" + subStream + "?";
 		}
 		
-		return " -map v:0? -map a? -map s?";
+		return " -c copy -map v:0? -map a? -map s?";
 	}
 
 	private static boolean lastActions(String fileName, File fileOut, String output) {

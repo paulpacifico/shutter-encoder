@@ -233,7 +233,6 @@ public class Merge extends Shutter {
 		return mapping;
 	}
 	
-	
 	private static void lastActions(File fileOut) {
 		
 		FunctionUtils.cleanFunction(fileOut.toString(), fileOut, "");
