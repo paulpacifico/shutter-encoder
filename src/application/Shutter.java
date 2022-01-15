@@ -3228,42 +3228,51 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 								
-				if (lblFilter.getText().equals("Ext." + language.getProperty("colon")))
+				if (lblFilter.getText().equals(Shutter.language.getProperty("lblFilter")) == false)
 				{
-					if (comboFilter.getSelectedItem().toString().equals(".mp4") || comboFilter.getSelectedItem().toString().equals(".mov"))
-						caseFastStart.setEnabled(true);
-					else
-						caseFastStart.setEnabled(false);
+					if (comboFonctions.getSelectedItem().toString().contains("H.26") || comboFonctions.getSelectedItem().toString().equals("AV1"))
+					{
+						if (comboFilter.getSelectedItem().toString().equals(".mp4") || comboFilter.getSelectedItem().toString().equals(".mov"))
+						{
+							caseFastStart.setEnabled(true);
+						}
+						else
+							caseFastStart.setEnabled(false);
+					}
 										
-					// Ajout de la quality pour l'extension .webp
-					if (comboFilter.getSelectedItem().toString().equals(".webp"))
+					// Add quality selection for .webp
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 					{
-						grpResolution.add(lblImageQuality);
-						grpResolution.add(comboImageQuality);
-						grpResolution.repaint();
+						if (comboFilter.getSelectedItem().toString().equals(".webp"))
+						{
+							grpResolution.add(lblImageQuality);
+							grpResolution.add(comboImageQuality);
+							grpResolution.repaint();
+						}
+						else
+						{
+							grpResolution.remove(lblImageQuality);
+							grpResolution.remove(comboImageQuality);
+							grpResolution.repaint();
+						}
 					}
-					else
-					{
-						grpResolution.remove(lblImageQuality);
-						grpResolution.remove(comboImageQuality);
-						grpResolution.repaint();
-					}
-				}
-				else if (lblFilter.getText().equals("Type" + language.getProperty("colon")))
-				{
+
 					if (comboFonctions.getSelectedItem().toString().equals("DNxHD") 
-							|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
-							|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
-							|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
-							|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed")) 
+					|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
+					|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
+					|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
+					|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
+					|| comboFonctions.getSelectedItem().toString().equals("Uncompressed")) 
 					{
-						if (comboFilter.getSelectedItem().toString().equals("36")) {
+						if (comboFilter.getSelectedItem().toString().equals("36"))
+						{
 							caseForcerEntrelacement.setEnabled(false);
 							caseForcerInversion.setEnabled(false);
 							caseForcerEntrelacement.setSelected(false);
 							caseForcerInversion.setSelected(false);
-						} else {
+						}
+						else
+						{
 							caseForcerEntrelacement.setEnabled(true);
 							caseForcerInversion.setEnabled(true);
 						}
@@ -15834,9 +15843,7 @@ public class Shutter {
 								}
 								caseAlpha.setLocation(7, caseForceTune.getY() + 17);
 								grpAdvanced.add(caseAlpha);								
-								caseFastStart.setLocation(7, caseAlpha.getLocation().y + 17);
-								grpAdvanced.add(caseFastStart);
-								caseGOP.setLocation(7, caseFastStart.getLocation().y + 17);
+								caseGOP.setLocation(7, caseAlpha.getLocation().y + 17);
 								grpAdvanced.add(caseGOP);
 								gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
 								grpAdvanced.add(gopSize);								
