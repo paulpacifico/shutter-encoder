@@ -505,7 +505,7 @@ public class Shutter {
 			pathToFont = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			pathToFont = pathToFont.substring(0,pathToFont.length()-1);
 			pathToFont = pathToFont.substring(0,(int) (pathToFont.lastIndexOf("/"))).replace("%20", " ");
-			pathToFont = "'" + pathToFont + "/JRE/Contents/Home/lib/fonts/Montserrat.ttf" + "'";
+			pathToFont = "'" + pathToFont + "/JRE/lib/fonts/Montserrat.ttf" + "'";
 		}
 		else if (System.getProperty("os.name").contains("Linux"))
 		{
@@ -520,7 +520,7 @@ public class Shutter {
 			
 			String PathToJAVA = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			PathToJAVA = PathToJAVA.substring(0,PathToJAVA.length()-1);
-			PathToJAVA = PathToJAVA.substring(0,(int) (PathToJAVA.lastIndexOf("/"))).replace("%20", " ")  + "/JRE/Contents/Home/bin/java";
+			PathToJAVA = PathToJAVA.substring(0,(int) (PathToJAVA.lastIndexOf("/"))).replace("%20", " ")  + "/JRE/bin/java";
 			
 			ProcessBuilder processJAVA = new ProcessBuilder("file", PathToJAVA);	            				
 			Process proc = processJAVA.start();	            		         				
@@ -529,8 +529,8 @@ public class Shutter {
 	        
 	        String s[] = reader.readLine().split(" ");     		       
 	        
-	        arch = s[s.length - 1];           		       
-
+	        arch = s[s.length - 1];        
+	        
 		} catch (Exception e) {}     
 		
 		//Drop files
@@ -9129,7 +9129,7 @@ public class Shutter {
 		lblAudioIs.setSize(lblAudioIs.getPreferredSize().width, 16);
 		lblAudioIs.setLocation(comboAudioOut.getLocation().x + comboAudioOut.getWidth() + 7, caseConvertAudioFramerate.getLocation().y + 3);
 		
-		if (getLanguage.equals("Dutch") == false && getLanguage.equals("Russian") == false)		
+		if (getLanguage.equals(new Locale("nl").getDisplayLanguage()) == false && getLanguage.equals(new Locale("ru").getDisplayLanguage()) == false)		
 			grpAudio.add(lblAudioIs);
 	}
 
@@ -9754,7 +9754,7 @@ public class Shutter {
 		spinnerVideoFadeIn.setName("spinnerVideoFadeIn");
 		spinnerVideoFadeIn.setEnabled(false);
 		spinnerVideoFadeIn.setFont(new Font(freeSansFont, Font.PLAIN, 11));
-		if (getLanguage.equals("English"))
+		if (getLanguage.equals(new Locale("en").getDisplayLanguage()))
 			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 12, caseVideoFadeIn.getLocation().y + 3, 41, 16);
 		else
 			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 6, caseVideoFadeIn.getLocation().y + 3, 41, 16);
@@ -9884,7 +9884,7 @@ public class Shutter {
 		JLabel iconFadeIn = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeIn.setToolTipText(language.getProperty("preview"));
 		iconFadeIn.setHorizontalAlignment(SwingConstants.CENTER);		
-		if (getLanguage.equals("Russian"))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 3, lblFadeInColor.getY(), 16, 16);
 		else
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 8, lblFadeInColor.getY(), 16, 16);
@@ -10088,7 +10088,7 @@ public class Shutter {
 		JLabel iconFadeOut = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeOut.setToolTipText(language.getProperty("preview"));
 		iconFadeOut.setHorizontalAlignment(SwingConstants.CENTER);
-		if (getLanguage.equals("Russian"))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 3, lblFadeOutColor.getY(), 16, 16);
 		else
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 8, lblFadeOutColor.getY(), 16, 16);		
@@ -10138,7 +10138,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeIn.setLocation(lblFadeInColor.getX(), iconFadeIn.getY() + iconFadeIn.getHeight());
-		if (getLanguage.equals("Russian"))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() - 3, 10);
 		else
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() + 1, 10);
@@ -10158,7 +10158,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeOut.setLocation(lblFadeOutColor.getX(), iconFadeOut.getY() + iconFadeOut.getHeight());
-		if (getLanguage.equals("Russian"))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() - 3, 10);
 		else
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() + 1, 10);
@@ -10688,7 +10688,7 @@ public class Shutter {
 		lblIsConform = new JLabel(Shutter.language.getProperty("fps"));
 		lblIsConform.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblIsConform.setSize(20, 16);
-		if (getLanguage.equals("Russian"))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			lblIsConform.setVisible(false);
 		
 		caseForcerProgressif.addActionListener(new ActionListener() {
@@ -11587,7 +11587,7 @@ public class Shutter {
 		caseRognage = new JRadioButton(language.getProperty("caseRognage"));
 		caseRognage.setName("caseRognage");
 		caseRognage.setFont(new Font(freeSansFont, Font.PLAIN, 12));		
-		if (getLanguage.equals("Russian"))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 		{
 			caseRognage.setLocation(103, 178);
 		}
@@ -11797,7 +11797,7 @@ public class Shutter {
 		caseQMax = new JRadioButton(language.getProperty("caseQMax"));
 		caseQMax.setName("caseQMax");
 		caseQMax.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		if (getLanguage.equals("Slovenian") || getLanguage.equals("Russian"))
+		if (getLanguage.equals(new Locale("sl").getDisplayLanguage()) || getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 		{
 			caseQMax.setLocation(195, 178);
 		}
@@ -16786,7 +16786,7 @@ public class Shutter {
 		try {
 			//Affichage des titres
 			Font tabFont = new Font(montserratFont, Font.PLAIN, 11);		
-			if (getLanguage.equals("English"))
+			if (getLanguage.equals(new Locale("en").getDisplayLanguage()))
 				tabFont = new Font(montserratFont, Font.PLAIN, 10);		
 			
 			JLabel output = new JLabel(language.getProperty("output"));

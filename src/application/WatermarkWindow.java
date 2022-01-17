@@ -48,6 +48,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -439,7 +440,7 @@ public class WatermarkWindow {
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		
-		if (Shutter.getLanguage.equals("Russian"))
+		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 		{
 			positionVideo.setBounds(12, frame.getHeight() - 30, 80, 22);
 		}

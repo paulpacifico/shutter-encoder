@@ -177,7 +177,7 @@ public class Settings {
 		comboTheme.setName("comboTheme");
 		
 		frame.setSize(370, 690);
-		if (Shutter.getLanguage.equals("Russian"))
+		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
 		}
@@ -294,7 +294,7 @@ public class Settings {
 		});
 		
 		JLabel donate;
-		if (Shutter.getLanguage.equals("Français"))
+		if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage()))
 			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
 		else
 			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_EN.png")));
@@ -309,11 +309,18 @@ public class Settings {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				
 				try {
-					if (Shutter.getLanguage.equals("French") || Shutter.getLanguage.equals("Italian") || Shutter.getLanguage.equals("Spanish"))
+					
+					if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage())
+					|| Shutter.getLanguage.equals(new Locale("it").getDisplayLanguage())
+					|| Shutter.getLanguage.equals(new Locale("es").getDisplayLanguage()))
+					{
 						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=EUR"));
+					}
 					else
 						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=USD"));
+				
 				} catch (IOException | URISyntaxException e) {
 				}
 			}
@@ -731,7 +738,7 @@ public class Settings {
 
 		//load languages
 		String[] data = new String[new File(Utils.pathToLanguages).listFiles().length]; 
-		
+				
 		int d = 0;
 		for (File f : new File(Utils.pathToLanguages).listFiles())
 		{
