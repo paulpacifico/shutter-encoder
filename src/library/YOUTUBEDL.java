@@ -51,8 +51,10 @@ public static String format = "";
 	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + format + " " + cmd + options + " --no-continue -o " + '"' + outputFile + '"' + System.lineSeparator());
 
 		runProcess = new Thread(new Runnable()  {
+			
 			@Override
 			public void run() {
+				
 				try {					
 					String PathToYOUTUBEDL;
 					ProcessBuilder processYOUTUBEDL;
@@ -113,7 +115,7 @@ public static String format = "";
 					    		 outputFile = new File(lblDestination1.getText() + "/" + lblCurrentEncoding.getText());
 					    	}
 					    		
-						    if (lineOutput.contains("ETA") && lineOutput.contains("Unknown ETA") == false)
+						    if (lineOutput.contains("ETA") && lineOutput.contains("Unknown ETA") == false && lineOutput.contains("ETA Unknown") == false)
 						    {
 		                        String[] splitPercent= lineOutput.split("%");
 		                        String progress = splitPercent[0].replace("[download]", "");
