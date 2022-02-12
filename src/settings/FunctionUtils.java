@@ -357,7 +357,7 @@ public class FunctionUtils extends Shutter {
 		    {
 		        if (fileEntry.isFile()) 
 		        {
-		        	if (fileEntry.getName().contains(file) && fileEntry.getName().contains("log"))
+		        	if (fileEntry.getName().contains(file) && fileEntry.getName().contains(".log"))
 		        	{
 		        		File fileToDelete = new File(fileEntry.getAbsolutePath());
 		        		fileToDelete.delete();

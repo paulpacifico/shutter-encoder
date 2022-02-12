@@ -56,133 +56,133 @@ private static Boolean horizontal = true;
 	 exifWidth = "";
 	 exifHeight = "";
 		 
-			runProcess = new Thread(new Runnable()  {
-				@Override
-				public void run() {
-					try {
-						String PathToEXIFTOOL;
-						ProcessBuilder processEXIFTOOL;
-						if (System.getProperty("os.name").contains("Windows"))
+		runProcess = new Thread(new Runnable()  {
+			@Override
+			public void run() {
+				try {
+					String PathToEXIFTOOL;
+					ProcessBuilder processEXIFTOOL;
+					if (System.getProperty("os.name").contains("Windows"))
+					{
+						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToEXIFTOOL = PathToEXIFTOOL.substring(1,PathToEXIFTOOL.length()-1);
+						PathToEXIFTOOL = '"' + PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/exiftool.exe" + '"';
+						processEXIFTOOL = new ProcessBuilder(PathToEXIFTOOL + " " + '"' + fichier + '"');
+					}
+					else
+					{
+						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,PathToEXIFTOOL.length()-1);
+						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/exiftool";
+						processEXIFTOOL = new ProcessBuilder("/bin/bash", "-c" , PathToEXIFTOOL + " " + '"' + fichier + '"');
+					}
+											
+					isRunning = true;	
+					Process process = processEXIFTOOL.start();
+					
+			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
+			        BufferedReader br = new BufferedReader(isr);
+			        
+					String line;
+					
+					//Analyse des données	
+					while ((line = br.readLine()) != null) {	
+						
+						  Console.consoleEXIFTOOL.append(line + System.lineSeparator());		
+					    
+						  if (line.contains("Date/Time Original"))
+						  {
+							  String l = line.substring(line.indexOf(":") + 2);
+							  String f[] = l.split(" ");
+							  exifDate = f[0]; //2018:04:06
+							  exifHours = f[1]; //12:30:00
+						  }
+						  
+						  if (line.contains("Create Date"))
+						  {								  
+							  String l = line.substring(line.indexOf(":") + 2);
+							  String f[] = l.split(" ");								  
+							  creationDate = f[0]; //2018:04:06
+							  
+							  ZoneOffset zoneOffSet = ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now());									
+							  String o[] = zoneOffSet.toString().split(":");
+							  Integer offsetTime = Integer.parseInt(o[0]);
+							  
+							  NumberFormat formatter = new DecimalFormat("00");
+							  String time[]	= f[1].split(":"); //12:30:00								  
+							  Integer hours = (Integer.parseInt(time[0]) + offsetTime) % 24;
+							 								  								  
+							  creationHours = formatter.format(hours) + ":" + time[1] + ":" + time[2];
+						  }	
+						  
+						  if (line.contains("Image Width"))
+							  exifWidth = line.substring(line.indexOf(":") + 2);
+						  
+						  if (line.contains("Image Height"))
+							  exifHeight = line.substring(line.indexOf(":") + 2);	
+						  
+						  if (line.contains("Orientation"))
+						  {
+							  if (line.substring(line.indexOf(":") + 2).contains("Horizontal") == false)
+								  horizontal = false;								  
+						  }
+
+					}//While					
+					process.waitFor();
+					
+					Console.consoleEXIFTOOL.append(System.lineSeparator());
+
+					//Si il n'y a pas d'exif on lit la date de création système
+					if (exifDate == "" && exifHours == "")
+					{
+						exifDate = creationDate;
+						exifHours = creationHours;
+					}
+					
+					//On inject la résolution dans FFPROBE
+					if (exifWidth != "" && exifHeight != "")
+					{
+						if (horizontal)
 						{
-							PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToEXIFTOOL = PathToEXIFTOOL.substring(1,PathToEXIFTOOL.length()-1);
-							PathToEXIFTOOL = '"' + PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/exiftool.exe" + '"';
-							processEXIFTOOL = new ProcessBuilder(PathToEXIFTOOL + " " + '"' + fichier + '"');
+							FFPROBE.imageResolution = exifWidth + "x" + exifHeight; 
+						    if (caseRognerImage.isSelected())
+			                {
+								CropImage.ImageWidth = Integer.parseInt(exifWidth);
+								CropImage.ImageHeight = Integer.parseInt(exifHeight);
+			                }
+							
+							if (caseColor.isSelected())
+			                {
+								ColorImage.ImageWidth = Integer.parseInt(exifWidth);
+								ColorImage.ImageHeight = Integer.parseInt(exifHeight);
+			                }
 						}
 						else
 						{
-							PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToEXIFTOOL = PathToEXIFTOOL.substring(0,PathToEXIFTOOL.length()-1);
-							PathToEXIFTOOL = PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/exiftool";
-							processEXIFTOOL = new ProcessBuilder("/bin/bash", "-c" , PathToEXIFTOOL + " " + '"' + fichier + '"');
-						}
-												
-						isRunning = true;	
-						Process process = processEXIFTOOL.start();
-						
-				        InputStreamReader isr = new InputStreamReader(process.getInputStream());
-				        BufferedReader br = new BufferedReader(isr);
-				        
-						String line;
-						
-						//Analyse des données	
-						while ((line = br.readLine()) != null) {	
+							FFPROBE.imageResolution = exifHeight + "x" + exifWidth; 
+						    if (caseRognerImage.isSelected())
+			                {
+						    	CropImage.ImageWidth = Integer.parseInt(exifHeight);
+						    	CropImage.ImageHeight = Integer.parseInt(exifWidth);
+			                }
 							
-							  Console.consoleEXIFTOOL.append(line + System.lineSeparator());		
-						    
-							  if (line.contains("Date/Time Original"))
-							  {
-								  String l = line.substring(line.indexOf(":") + 2);
-								  String f[] = l.split(" ");
-								  exifDate = f[0]; //2018:04:06
-								  exifHours = f[1]; //12:30:00
-							  }
-							  
-							  if (line.contains("Create Date"))
-							  {								  
-								  String l = line.substring(line.indexOf(":") + 2);
-								  String f[] = l.split(" ");								  
-								  creationDate = f[0]; //2018:04:06
-								  
-								  ZoneOffset zoneOffSet = ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now());									
-								  String o[] = zoneOffSet.toString().split(":");
-								  Integer offsetTime = Integer.parseInt(o[0]);
-								  
-								  NumberFormat formatter = new DecimalFormat("00");
-								  String time[]	= f[1].split(":"); //12:30:00								  
-								  Integer hours = (Integer.parseInt(time[0]) + offsetTime) % 24;
-								 								  								  
-								  creationHours = formatter.format(hours) + ":" + time[1] + ":" + time[2];
-							  }	
-							  
-							  if (line.contains("Image Width"))
-								  exifWidth = line.substring(line.indexOf(":") + 2);
-							  
-							  if (line.contains("Image Height"))
-								  exifHeight = line.substring(line.indexOf(":") + 2);	
-							  
-							  if (line.contains("Orientation"))
-							  {
-								  if (line.substring(line.indexOf(":") + 2).contains("Horizontal") == false)
-									  horizontal = false;								  
-							  }
+						    if (caseColor.isSelected())
+			                {
+						    	ColorImage.ImageWidth = Integer.parseInt(exifHeight);
+						    	ColorImage.ImageHeight = Integer.parseInt(exifWidth);
+			                }
+						}
 
-						}//While					
-						process.waitFor();
+					}
+											
+					} catch (IOException | InterruptedException e) {
+						error = true;
+					} finally {
+						isRunning = false;
+					}
 						
-						Console.consoleEXIFTOOL.append(System.lineSeparator());
-
-						//Si il n'y a pas d'exif on lit la date de création système
-						if (exifDate == "" && exifHours == "")
-						{
-							exifDate = creationDate;
-							exifHours = creationHours;
-						}
-						
-						//On inject la résolution dans FFPROBE
-						if (exifWidth != "" && exifHeight != "")
-						{
-							if (horizontal)
-							{
-								FFPROBE.imageResolution = exifWidth + "x" + exifHeight; 
-							    if (caseRognerImage.isSelected())
-				                {
-									CropImage.ImageWidth = Integer.parseInt(exifWidth);
-									CropImage.ImageHeight = Integer.parseInt(exifHeight);
-				                }
-								
-								if (caseColor.isSelected())
-				                {
-									ColorImage.ImageWidth = Integer.parseInt(exifWidth);
-									ColorImage.ImageHeight = Integer.parseInt(exifHeight);
-				                }
-							}
-							else
-							{
-								FFPROBE.imageResolution = exifHeight + "x" + exifWidth; 
-							    if (caseRognerImage.isSelected())
-				                {
-							    	CropImage.ImageWidth = Integer.parseInt(exifHeight);
-							    	CropImage.ImageHeight = Integer.parseInt(exifWidth);
-				                }
-								
-							    if (caseColor.isSelected())
-				                {
-							    	ColorImage.ImageWidth = Integer.parseInt(exifHeight);
-							    	ColorImage.ImageHeight = Integer.parseInt(exifWidth);
-				                }
-							}
-
-						}
-												
-						} catch (IOException | InterruptedException e) {
-							error = true;
-						} finally {
-							isRunning = false;
-						}
-							
-				}				
-			});		
-			runProcess.start();
-		}
+			}				
+		});		
+		runProcess.start();
+	}
 }

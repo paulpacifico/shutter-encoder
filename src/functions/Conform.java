@@ -28,7 +28,6 @@ import application.Utils;
 import application.Wetransfer;
 import library.FFMPEG;
 import library.FFPROBE;
-import library.MKVMERGE;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 
@@ -92,38 +91,21 @@ public class Conform extends Shutter {
 						}
 										
 						//Command		    		
-						File tempMKV = new File(labelOutput + "/" + fileName.replace(extension, "_Conform.mkv"));
-	
-						String cmd = " --default-duration 0:" + comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".") + "fps -A -S -T -M -B --fix-bitstream-timing-information 0 ";
-						MKVMERGE.run(cmd + '"' + file.toString() + '"' + " -o " + '"'  + tempMKV + '"');	
+				    	float FPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".")));
+				    	float value = (float) (FFPROBE.currentFPS / FPSOut);
+						
+						String cmd = " -c:v copy -c:s copy" + audio + " -map v:0 -map a? -map s? -y ";
+						FFMPEG.run(" -itsscale " + value + " -i " + '"' + file + '"' + cmd + '"'  + fileOut + '"');						
 						
 						do
 						{
 							Thread.sleep(100);
 						}
-						while(MKVMERGE.runProcess.isAlive());					
-						
-						if (tempMKV.exists() && cancelled == false || btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
-						{
-							cmd = " -c:v copy -c:s copy" + audio + " -map v:0 -map 1:a? -map s? -y ";
-							FFMPEG.run(" -i " + '"' + tempMKV + '"' + " -i " + '"' + file + '"' + cmd + '"'  + fileOut + '"');						
-							
-							do
-							{
-								Thread.sleep(100);
-							}
-							while(FFMPEG.runProcess.isAlive());
-							
-							btnStart.setEnabled(true);	
-						}
-						else if (tempMKV.exists() == false)
-						{
-							FFMPEG.error = true;
-						}
+						while(FFMPEG.runProcess.isAlive());
 	
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							if (lastActions(fileName, tempMKV, fileOut, labelOutput))
+							if (lastActions(fileName, fileOut, labelOutput))
 								break;
 						}
 						
@@ -158,12 +140,8 @@ public class Conform extends Shutter {
     	
 	}
 	
-	private static boolean lastActions(String fileName, File tempMKV, File fileOut, String output) {
-		
-		//Temp. MKV file
-		if (tempMKV.exists())
-			tempMKV.delete();		
-		
+	private static boolean lastActions(String fileName, File fileOut, String output) {
+				
 		if (FunctionUtils.cleanFunction(fileName, fileOut, output))
 			return true;
 		

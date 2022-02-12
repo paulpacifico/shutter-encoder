@@ -240,7 +240,7 @@ public class AdvancedFeatures extends Shutter {
 		            int width = Integer.parseInt(s[0]);
 		            int height = Integer.parseInt(s[1]); 
 
-		            if (width > 1920 || height > 1080)
+		            if (width > 1920 || height > 1080 || FFPROBE.currentFPS >= 59.94f)
 		            {
 		            	if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		            	{

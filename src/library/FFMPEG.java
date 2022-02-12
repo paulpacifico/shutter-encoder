@@ -706,7 +706,7 @@ private static StringBuilder getAll;
 				}
 				else if (isRaw)
 				{
-					 EXIFTOOL.run(file.toString());	
+					 EXIFTOOL.run(file);	
 					 do
 						try {
 							Thread.sleep(10);
@@ -1374,15 +1374,19 @@ private static StringBuilder getAll;
 			{
 				float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));	
 				if (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))
+				{
 					dureeTotale = (int) (dureeTotale * (FFPROBE.currentFPS / newFPS ));	
+				}
 				else if (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
+				{
 					dureeTotale = (int) (dureeTotale * (newFPS / FFPROBE.currentFPS));	
+				}
 			}
 			
-			if (comboFonctions.getSelectedItem().toString().equals("functionConform"))
+			if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionConform")))
 			{
 				float newFPS = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".")));		
-				dureeTotale = (int) (dureeTotale * (FFPROBE.currentFPS / newFPS ));
+				dureeTotale = (int) (dureeTotale * (FFPROBE.currentFPS / newFPS));
 			}
 						
 			if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")))
@@ -1423,7 +1427,9 @@ private static StringBuilder getAll;
     			progressBar1.setStringPainted(true);
     		
 			if (pass2)
+			{
 				progressBar1.setValue((dureeTotale / 2) + getTimeToSeconds(ffmpegTime));
+			}
 			else
 				progressBar1.setValue(getTimeToSeconds(ffmpegTime));
 	  }
@@ -1588,7 +1594,7 @@ private static StringBuilder getAll;
           String m = formatter.format((rawTime / 60000) % 60);
           String s = formatter.format((rawTime / 1000) % 60);          
           String f = formatter.format((int) (rawTime / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS));
-    
+
           File imageName = new File(SceneDetection.outputFolder + "/" + SceneDetection.tableRow.getRowCount() + ".png");
                     
           //Permet d'attendre la création de l'image
