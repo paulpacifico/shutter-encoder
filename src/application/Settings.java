@@ -123,6 +123,7 @@ public class Settings {
 	public static JRadioButton btnSetBab = new JRadioButton(Shutter.language.getProperty("btnSetBab"));
 	public static JRadioButton btnExtension = new JRadioButton(Shutter.language.getProperty("btnExtension"));
 	public static JRadioButton btnExclude = new JRadioButton(Shutter.language.getProperty("btnExclude"));
+	public static JRadioButton btnHidePath = new JRadioButton(Shutter.language.getProperty("btnHidePath"));
 	public static JRadioButton btnWaitFileComplete = new JRadioButton(Shutter.language.getProperty("btnWaitFileComplete"));
 	public static JRadioButton btnEmptyListAtEnd = new JRadioButton(Shutter.language.getProperty("btnEmptyListAtEnd"));
 	public static JRadioButton btnEndingAction = new JRadioButton(Shutter.language.getProperty("btnEndingAction"));
@@ -155,6 +156,7 @@ public class Settings {
 		txtExtension.setName("txtExtension");
 		btnExclude.setName("btnExclude");
 		txtExclude.setName("txtExclude");
+		btnHidePath.setName("btnHidePath");
 		btnWaitFileComplete.setName("btnWaitFileComplete");
 		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
@@ -176,11 +178,12 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(370, 690);
-		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()))
+		frame.setSize(370, 1000);
+		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
 		}
+		
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
@@ -230,169 +233,32 @@ public class Settings {
 		});
 		
 		frame.getContentPane().add(scrollBar);
-		
+				
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setName("backgroundPanel");
 		backgroundPanel.setLayout(null);
 		backgroundPanel.setBackground(new Color(50, 50, 50));
 		backgroundPanel.setOpaque(true);
-		backgroundPanel.setSize(frame.getWidth(), 50);	
+		backgroundPanel.setSize(frame.getWidth(), 50);
 		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
 		frame.getContentPane().add(backgroundPanel);
 		
-		JButton btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setName("btnReset");
-		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnReset.setSize(btnReset.getPreferredSize().width + 4, 21);
-		btnReset.setLocation(backgroundPanel.getWidth() / 2 - (btnReset.getWidth() + 14), backgroundPanel.getHeight() / 2 - btnReset.getHeight() / 2);
-		backgroundPanel.add(btnReset);
+		btnHidePath.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnHidePath.setBounds(12, 56, btnHidePath.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnHidePath);
+		
+		btnHidePath.addActionListener(new ActionListener(){
 
-		btnReset.addActionListener(new ActionListener() {
-
-			@SuppressWarnings("unused")
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				int reply = JOptionPane.showConfirmDialog(frame,
-						Shutter.language.getProperty("areYouSure"),
-						Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION,
-						JOptionPane.PLAIN_MESSAGE);					
-				if (reply == JOptionPane.YES_OPTION) 
-				{	
-					if (Shutter.settingsXML.exists())
-						Shutter.settingsXML.delete();
-					
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
-						}
-	
-					} catch (Exception error) {
-					}
-				
-					System.exit(0);
-				}
-				
-			}
-		
-		});
-		
-		JLabel donate;
-		if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage()))
-			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
-		else
-			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_EN.png")));
-		
-		donate.setName("donate");
-		donate.setHorizontalAlignment(SwingConstants.CENTER);
-		donate.setSize(donate.getPreferredSize().width, donate.getPreferredSize().height);
-		donate.setLocation(backgroundPanel.getWidth() / 2 + 14, backgroundPanel.getHeight() / 2 - donate.getHeight() / 2);
-		backgroundPanel.add(donate);
-
-		donate.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				
-				try {
-					
-					if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage())
-					|| Shutter.getLanguage.equals(new Locale("it").getDisplayLanguage())
-					|| Shutter.getLanguage.equals(new Locale("es").getDisplayLanguage()))
-					{
-						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=EUR"));
-					}
-					else
-						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=USD"));
-				
-				} catch (IOException | URISyntaxException e) {
-				}
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
+				Shutter.fileList.repaint();
 			}
 			
 		});
-					
-		frame.addMouseWheelListener(new MouseWheelListener(){
-
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent e) {
-				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
-			}
-			
-		});	
-		
-		frame.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-				lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-				lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
-			}
-
-		});
-		
-		frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-            	if (txtThreads.getText().isEmpty() ||  txtThreads.getText() == null)
-            		txtThreads.setText("0");
-            		
-				Settings.saveSettings();
-            }
-        });
 		
 		btnWaitFileComplete.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnWaitFileComplete.setBounds(12, 56, btnWaitFileComplete.getPreferredSize().width, 16);
+		btnWaitFileComplete.setBounds(12, btnHidePath.getLocation().y + btnHidePath.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnWaitFileComplete);
 		
 		btnExtension.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -774,7 +640,7 @@ public class Settings {
 		//Set comboItem
 		comboLanguage.setSelectedItem(Shutter.getLanguage);
 		comboLanguage.setBounds(btnEndingAction.getX() + lblLanguage.getWidth() + 6, lblLanguage.getLocation().y - 4, comboLanguage.getPreferredSize().width, 22);
-		comboLanguage.setMaximumRowCount(10);
+		comboLanguage.setMaximumRowCount(20);
 		frame.getContentPane().add(comboLanguage);
 		
 		comboLanguage.addActionListener(new ActionListener() {
@@ -1172,6 +1038,165 @@ public class Settings {
 		lblDestination2.setTransferHandler(new OutputTransferHandler());
 		lblDestination3.setTransferHandler(new OutputTransferHandler());
 
+		//Set frameSize
+		frame.setSize(frame.getWidth(), lblDestination3.getY() + lblDestination3.getHeight() + 20);
+		
+		//Important
+		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
+		scrollBar.setLocation(frame.getWidth() - scrollBar.getWidth() - 2, topPanel.getHeight());
+		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());
+		
+		JButton btnReset = new JButton(Shutter.language.getProperty("btnReset"));
+		btnReset.setName("btnReset");
+		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnReset.setSize(btnReset.getPreferredSize().width + 4, 21);
+		btnReset.setLocation(backgroundPanel.getWidth() / 2 - (btnReset.getWidth() + 14), backgroundPanel.getHeight() / 2 - btnReset.getHeight() / 2);
+		backgroundPanel.add(btnReset);
+
+		btnReset.addActionListener(new ActionListener() {
+
+			@SuppressWarnings("unused")
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				int reply = JOptionPane.showConfirmDialog(frame,
+						Shutter.language.getProperty("areYouSure"),
+						Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION,
+						JOptionPane.PLAIN_MESSAGE);					
+				if (reply == JOptionPane.YES_OPTION) 
+				{	
+					if (Shutter.settingsXML.exists())
+						Shutter.settingsXML.delete();
+					
+					try {
+						String newShutter;
+						if (System.getProperty("os.name").contains("Windows")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
+							String[] arguments = new String[] { newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else if (System.getProperty("os.name").contains("Mac")) {
+							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+							newShutter = newShutter.substring(0, newShutter.length() - 1);
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
+							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
+									"\\ ");
+							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
+							Process proc = new ProcessBuilder(arguments).start();
+						} else { //Linux	
+							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
+							Process proc = new ProcessBuilder(arguments).start();
+						}
+	
+					} catch (Exception error) {
+					}
+				
+					System.exit(0);
+				}
+				
+			}
+		
+		});
+		
+		JLabel donate;
+		if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage()))
+			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
+		else
+			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_EN.png")));
+		
+		donate.setName("donate");
+		donate.setHorizontalAlignment(SwingConstants.CENTER);
+		donate.setSize(donate.getPreferredSize().width, donate.getPreferredSize().height);
+		donate.setLocation(backgroundPanel.getWidth() / 2 + 14, backgroundPanel.getHeight() / 2 - donate.getHeight() / 2);
+		backgroundPanel.add(donate);
+
+		donate.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				try {
+					
+					if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage())
+					|| Shutter.getLanguage.equals(new Locale("it").getDisplayLanguage())
+					|| Shutter.getLanguage.equals(new Locale("es").getDisplayLanguage()))
+					{
+						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=EUR"));
+					}
+					else
+						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=USD"));
+				
+				} catch (IOException | URISyntaxException e) {
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+			
+		});
+					
+		frame.addMouseWheelListener(new MouseWheelListener(){
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
+			}
+			
+		});	
+		
+		frame.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				lblDestination1.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
+				lblDestination2.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
+				lblDestination3.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 0));
+			}
+
+		});
+		
+		frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	if (txtThreads.getText().isEmpty() ||  txtThreads.getText() == null)
+            		txtThreads.setText("0");
+            		
+				Settings.saveSettings();
+            }
+        });
+		
 		loadSettings();
 		
 	}

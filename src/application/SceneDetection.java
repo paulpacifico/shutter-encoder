@@ -751,49 +751,54 @@ import javax.swing.JScrollPane;
 							Thread.sleep(100);	
 						 while (FFPROBE.isRunning);
 							 																	
-						String fichier = file.getName();
-						Shutter.lblCurrentEncoding.setText(fichier);
+						String filename = file.getName();
+						Shutter.lblCurrentEncoding.setText(filename);
 						
 						String sortie = file.getParent();					
-						final String extension =  fichier.substring(fichier.lastIndexOf("."));
-						outputFolder =  new File(sortie + "/" + fichier.replace(extension, ""));		
+						final String extension =  filename.substring(filename.lastIndexOf("."));
+						outputFolder =  new File(sortie + "/" + filename.replace(extension, ""));		
 						outputFolder.mkdir();
 						
 						outputFile =  new File(file.getName());
 						
-						//Envoi de la commande
+						//Command
 						String cmd;
 						cmd = " -f image2 -vframes 1 ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/0.png" + '"');
 						
-						//Attente de la fin de FFMPEG
 						do
+						{
 							Thread.sleep(100);
+						}
 						while(FFMPEG.runProcess.isAlive());										
 						
 						//On créer le tableau ici après la première image
 						newTable();
 					        		
-						//Envoi de la commande
+						//Command
 						String tol = String.valueOf((float) (100 - Integer.valueOf(application.SceneDetection.tolerance.getValue().toString())) / 100);
 						cmd = " -vf select=" + '"' + "gt(scene\\," + tol  + ")" + '"' + ",showinfo -vsync 2 -f image2 ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/%01d.png" + '"');		
 						
-						//Attente de la fin de FFMPEG
 						do
+						{
 							Thread.sleep(100);
+						}
 						while(FFMPEG.runProcess.isAlive());						
 					
-						endAction();
+						lastAction();
 						
 					} catch (InterruptedException e) {
 						FFMPEG.error  = true;
 					}
-				}//End for
+				}
 				
-				//Affichage des erreurs
+				//Errors
 				if (errorList.length() != 0)
+				{
 					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Shutter.language.getProperty("encodingError"), JOptionPane.ERROR_MESSAGE);
+				}
+				
 				errorList.setLength(0);
 				
 				FFMPEG.enfOfFunction();
@@ -804,7 +809,7 @@ import javax.swing.JScrollPane;
 		
     }
 
-	private static void endAction() {
+	private static void lastAction() {
 		
 		//Erros
 		if (FFMPEG.error)

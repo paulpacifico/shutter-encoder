@@ -90,7 +90,7 @@ public class Utils extends Shutter {
 	public static boolean yesToAll = false;
 	public static boolean noToAll = false;
 	public final static String username = "info@shutterencoder.com";
-	public final static String password = "";
+	public final static String password = "shutterencodermail";
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -235,7 +235,7 @@ public class Utils extends Shutter {
 				Shutter.montserratFont = "Noto Sans SC Medium";
 				Shutter.freeSansFont = "Noto Sans SC Medium";
 			}
-			else if (getLanguage.contains(new Locale("ja").getDisplayLanguage()) || getLanguage.equals(new Locale("ru").getDisplayLanguage())) //use system default font
+			else if (getLanguage.contains(new Locale("ja").getDisplayLanguage()) || getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "";
@@ -276,7 +276,7 @@ public class Utils extends Shutter {
 			return new FileInputStream(pathToLanguages + "en.properties");
 		}		
 	}
-
+	
 	public static void copyFile(File file) {		
 		//Destination 2
 		if (caseChangeFolder2.isSelected())

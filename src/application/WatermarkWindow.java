@@ -440,7 +440,7 @@ public class WatermarkWindow {
 		positionVideo.setValue(0);		
 		positionVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		
-		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()))
+		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 		{
 			positionVideo.setBounds(12, frame.getHeight() - 30, 80, 22);
 		}

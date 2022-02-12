@@ -231,8 +231,20 @@ public class Console extends JFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
+				
 				if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
+				{
 					followLine.setSelected(false);
+				}
+				else if (e.getKeyCode() == KeyEvent.VK_F1)
+				{
+					if (followLine.isSelected())
+					{
+						followLine.setSelected(false);
+					}
+					else
+						followLine.setSelected(true);
+				}
 			}			
 		};
 		

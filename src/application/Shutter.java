@@ -152,7 +152,6 @@ import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DECKLINK;
 import library.DVDAUTHOR;
-import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPLAY;
 import library.FFPROBE;
@@ -923,8 +922,6 @@ public class Shutter {
 		Splash.increment();
 				
 		YOUTUBEDL.update();
-		EXIFTOOL.run(""); //Permet de prélancer l'exécutable
-		
 		Splash.increment();
 		
 		Utils.changeFrameVisibility(frame, false);
@@ -3216,6 +3213,7 @@ public class Shutter {
 		String AllFilters[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4", ".mov",
 				".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp"};
 		comboFilter = new JComboBox<Object>(AllFilters);
+		comboFilter.setVisible(false);
 		comboFilter.setName("comboFilter");
 		comboFilter.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		comboFilter.setEditable(true);
@@ -3228,7 +3226,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 								
-				if (lblFilter.getText().equals(Shutter.language.getProperty("lblFilter")) == false)
+				if (Shutter.lblFilter.isVisible())
 				{
 					if (comboFonctions.getSelectedItem().toString().contains("H.26") || comboFonctions.getSelectedItem().toString().equals("AV1"))
 					{
@@ -3295,7 +3293,7 @@ public class Shutter {
 			}
 		});
 
-		lblFilter = new JLabel(language.getProperty("lblFilter"));
+		lblFilter = new JLabel();
 		lblFilter.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblFilter.setFont(new Font(montserratFont, Font.PLAIN, 13));
 		lblFilter.setBounds(164, 21, 60, 16);
@@ -9129,7 +9127,7 @@ public class Shutter {
 		lblAudioIs.setSize(lblAudioIs.getPreferredSize().width, 16);
 		lblAudioIs.setLocation(comboAudioOut.getLocation().x + comboAudioOut.getWidth() + 7, caseConvertAudioFramerate.getLocation().y + 3);
 		
-		if (getLanguage.equals(new Locale("nl").getDisplayLanguage()) == false && getLanguage.equals(new Locale("ru").getDisplayLanguage()) == false)		
+		if (getLanguage.equals(new Locale("nl").getDisplayLanguage()) == false && getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()) == false)		
 			grpAudio.add(lblAudioIs);
 	}
 
@@ -9884,7 +9882,7 @@ public class Shutter {
 		JLabel iconFadeIn = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeIn.setToolTipText(language.getProperty("preview"));
 		iconFadeIn.setHorizontalAlignment(SwingConstants.CENTER);		
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 3, lblFadeInColor.getY(), 16, 16);
 		else
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 8, lblFadeInColor.getY(), 16, 16);
@@ -10088,7 +10086,7 @@ public class Shutter {
 		JLabel iconFadeOut = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeOut.setToolTipText(language.getProperty("preview"));
 		iconFadeOut.setHorizontalAlignment(SwingConstants.CENTER);
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 3, lblFadeOutColor.getY(), 16, 16);
 		else
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 8, lblFadeOutColor.getY(), 16, 16);		
@@ -10138,7 +10136,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeIn.setLocation(lblFadeInColor.getX(), iconFadeIn.getY() + iconFadeIn.getHeight());
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() - 3, 10);
 		else
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() + 1, 10);
@@ -10158,7 +10156,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeOut.setLocation(lblFadeOutColor.getX(), iconFadeOut.getY() + iconFadeOut.getHeight());
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() - 3, 10);
 		else
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() + 1, 10);
@@ -10688,7 +10686,7 @@ public class Shutter {
 		lblIsConform = new JLabel(Shutter.language.getProperty("fps"));
 		lblIsConform.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblIsConform.setSize(20, 16);
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 			lblIsConform.setVisible(false);
 		
 		caseForcerProgressif.addActionListener(new ActionListener() {
@@ -14310,7 +14308,9 @@ public class Shutter {
 								caseSubtitles.setLocation(7, 16);
 								grpAdvanced.add(caseSubtitles);	
 								casePreserveSubs.setLocation(7, caseSubtitles.getLocation().y + 17);
-								grpAdvanced.add(casePreserveSubs);								
+								grpAdvanced.add(casePreserveSubs);				
+								casePreserveMetadata.setLocation(7, casePreserveSubs.getLocation().y + 17);
+								grpAdvanced.add(casePreserveMetadata);	
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
 							}
 							else if (language.getProperty("functionMerge").equals(function))
@@ -16354,7 +16354,8 @@ public class Shutter {
 				
 		if (comboFonctions.getEditor().getItem().toString().length() == 0)
 		{
-			lblFilter.setText(language.getProperty("lblFilter"));
+			lblFilter.setVisible(false);
+			comboFilter.setVisible(false);
 			lblFilter.setLocation(164, 21);
 			lblFilter.setIcon(null);
 			
@@ -16368,7 +16369,9 @@ public class Shutter {
 		{
 			if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 			{
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");		
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16385,7 +16388,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionConform"))) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16396,7 +16401,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionReplaceAudio"))) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16409,7 +16416,9 @@ public class Shutter {
 
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16423,7 +16432,9 @@ public class Shutter {
 			
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionExtract"))) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");		
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16437,6 +16448,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionBlackDetection"))) {
 
 				lblFilter.setText(Shutter.language.getProperty("levels"));
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(164, 21);
 				lblFilter.setIcon(null);
 				
@@ -16449,7 +16462,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("DV PAL")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16462,7 +16477,9 @@ public class Shutter {
 
 			} else if (comboFonctions.getSelectedItem().toString().equals("AV1")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16478,7 +16495,9 @@ public class Shutter {
 				}
 			} else if (comboFonctions.getSelectedItem().toString().equals("VP8")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");		
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 							
@@ -16492,7 +16511,9 @@ public class Shutter {
 				}
 			} else if (comboFonctions.getSelectedItem().toString().equals("VP9")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 							
@@ -16509,7 +16530,9 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("WAV")
 					|| comboFonctions.getSelectedItem().toString().equals("AIFF")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16523,6 +16546,8 @@ public class Shutter {
 			} else if (comboFonctions.getSelectedItem().toString().equals("FLAC")) {
 
 				lblFilter.setText("Comp.:");
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(164, 21);
 				lblFilter.setIcon(null);
 				
@@ -16537,7 +16562,9 @@ public class Shutter {
 					|| comboFonctions.getSelectedItem().toString().equals("AAC")
 					|| comboFonctions.getSelectedItem().toString().equals("OGG")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16550,7 +16577,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("AC3") || comboFonctions.getSelectedItem().toString().equals("Dolby Digital Plus")) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16563,7 +16592,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("OPUS")) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16576,7 +16607,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("HAP")) {		
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16590,7 +16623,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")) {				
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16605,7 +16640,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("DNxHD")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16629,7 +16666,9 @@ public class Shutter {
 
 			} else if (comboFonctions.getSelectedItem().toString().equals("DNxHR")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16643,7 +16682,9 @@ public class Shutter {
 
 			} else if (comboFonctions.getSelectedItem().toString().equals("Apple ProRes")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 								
@@ -16654,14 +16695,16 @@ public class Shutter {
 				}
 				
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
-				if (model.getElementAt(4).equals(comboFilter.getModel().getElementAt(4)) == false) {
+				if (model.getElementAt(4).equals(comboFilter.getModel().getElementAt(4)) == false || model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(2);
 				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")) {
 
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16674,7 +16717,9 @@ public class Shutter {
 
 			} else if (comboFonctions.getSelectedItem().toString().equals("Uncompressed")) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16687,7 +16732,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("XAVC")) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");		
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16700,7 +16747,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("MPEG-2")) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");		
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16713,7 +16762,9 @@ public class Shutter {
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization"))) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");		
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16733,7 +16784,9 @@ public class Shutter {
 				}
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16745,7 +16798,9 @@ public class Shutter {
 				}
 			} else if (comboFonctions.getSelectedItem().toString().equals("JPEG")) {
 				
-				lblFilter.setText(" ");				
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
@@ -16758,13 +16813,16 @@ public class Shutter {
 			}
 			else
 			{
-				lblFilter.setText(language.getProperty("lblFilter"));
+				lblFilter.setVisible(false);
+				comboFilter.setVisible(false);
 				lblFilter.setLocation(164, 21);
 				lblFilter.setIcon(null);
 				
 				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg"))
 				{
-					lblFilter.setText(" ");				
+					lblFilter.setText(" ");			
+					lblFilter.setVisible(true);
+					comboFilter.setVisible(true);
 					lblFilter.setLocation(165, 23);
 					lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				}
@@ -17535,7 +17593,13 @@ class FilesCellRenderer extends JLabel implements ListCellRenderer {
 
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		
-		setText(value.toString());
+		//Show only file name
+		if (Settings.btnHidePath.isSelected() && Shutter.scanIsRunning == false)
+		{
+			setText(new File(value.toString()).getName());
+		}
+		else
+			setText(value.toString());
 		
 		setIcon(new FlatSVGIcon("contents/item.svg", 10, 10));
 
@@ -17607,8 +17671,7 @@ class ListeFileTransferHandler extends TransferHandler {
 			DataFlavor flavor = flavors[i];
 			try {
 				if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.scanIsRunning == false
-						&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions
-								.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false) {
+				&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false) {
 
 					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					Iterator<?> iter = l.iterator();
@@ -17655,9 +17718,7 @@ class ListeFileTransferHandler extends TransferHandler {
 								{
 									Utils.loadSettings(new File (file.getCanonicalPath().toString()));
 								} 
-								else if (ext.toLowerCase().equals(Shutter.comboFilter.getSelectedItem().toString())
-										|| Shutter.comboFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun"))
-										|| Shutter.lblFilter.getText().equals(Shutter.language.getProperty("lblFilter")) == false) 
+								else 
 								{
 									if (file.isHidden() == false)
 									{			
