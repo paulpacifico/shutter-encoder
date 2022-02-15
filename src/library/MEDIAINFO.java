@@ -140,7 +140,7 @@ public static Thread runProcess;
 						scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 						
 						Informations.lblWait.setVisible(false);
-						Informations.lblFlecheBas.setVisible(true);
+						Informations.lblArrows.setVisible(true);
 							
 						Informations.infoTabbedPane.addTab(new File(file).getName(), scrollPane);	    			
 					}

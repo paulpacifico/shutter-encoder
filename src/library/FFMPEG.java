@@ -65,6 +65,7 @@ import application.VideoPlayer;
 import application.WatermarkWindow;
 import functions.VideoEncoders;
 import settings.BitratesAdjustement;
+import settings.Colorimetry;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 
@@ -827,6 +828,9 @@ private static StringBuilder getAll;
 						filter += " -vf " + miror;
 				}
 
+				//EXR gamma
+				String EXRGamma = Colorimetry.setEXRGamma(extension);
+				
 				String compression = "";
 				int fileSize = 0;
 				if (comboFonctions.getSelectedItem().toString().equals("JPEG") && extension.toLowerCase().equals(".pdf") == false && isRaw == false)
@@ -840,7 +844,7 @@ private static StringBuilder getAll;
 					//InOut
 					InputAndOutput.getInputAndOutput();	
 					
-					FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + filter + compression + " -vframes 1 " + '"' + fileOut + '"');							
+					FFMPEG.run(InputAndOutput.inPoint + EXRGamma + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + filter + compression + " -vframes 1 " + '"' + fileOut + '"');							
 					
 					do
 						try {
@@ -861,19 +865,23 @@ private static StringBuilder getAll;
 					else
 						filter = " -vf drawtext=fontfile=" + pathToFont + ":text='" + fileSize + "Ko" + "':" + '"' + "x=(w-tw)*0.95:y=h-(2*lh)" + '"' + ":fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
 				}							
-				
+								
 				//FFPLAY
 				if (extension.toLowerCase().equals(".pdf"))
+				{
 					XPDF.toFFPLAY(filter);
+				}
 				else if (isRaw)
+				{
 					DCRAW.toFFPLAY(filter);
+				}
 				else if (comboFonctions.getSelectedItem().toString().equals("JPEG"))
 				{
 					String cmd = filter + " -an -c:v mjpeg" + compression + " -vframes 1 -f nut pipe:play |";
-					FFMPEG.toFFPLAY(InputAndOutput.inPoint + " -i " + '"' + file + '"' + InputAndOutput.outPoint + cmd);
+					FFMPEG.toFFPLAY(InputAndOutput.inPoint + EXRGamma + " -i " + '"' + file + '"' + InputAndOutput.outPoint + cmd);
 				}
 				else
-					FFPLAY.run(" -i " + '"' + file + '"' + filter);
+					FFPLAY.run(EXRGamma + " -i " + '"' + file + '"' + filter);
 			}
 			
 			break;
@@ -1120,10 +1128,8 @@ private static StringBuilder getAll;
 						
 						//Get devices Windows
 						if (cmd.contains("dshow"))
-						{
-							if (line.contains("DirectShow audio devices"))
-								isAudioDevices = true;
-							else if (isAudioDevices && line.contains("\"") && line.contains("Alternative name") == false)
+						{							
+							if (line.contains("audio") && line.contains("\"") && line.contains("Alternative name") == false)
 							{
 								String s[] = line.split("\"");
 								
@@ -1133,9 +1139,7 @@ private static StringBuilder getAll;
 								audioDevices.append(":" + utf8EncodedString);
 							}
 							
-							if (line.contains("DirectShow video devices"))
-								isVideoDevices = true;
-							else if (isVideoDevices && line.contains("\"") && line.contains("Alternative name") == false && isAudioDevices == false)
+							if (line.contains("video") && line.contains("\"") && line.contains("Alternative name") == false && isAudioDevices == false)
 							{
 								String s[] = line.split("\"");
 								
@@ -1585,7 +1589,6 @@ private static StringBuilder getAll;
 	  //Détection de coupe
 	  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) && line.contains("pts"))
 	  {
-		  
 		  NumberFormat formatter = new DecimalFormat("00");
 		  String rawline[] = line.split(":");
 		  String fullTime[] = rawline[3].split(" ");

@@ -73,6 +73,7 @@ public static int cropWidth;
 public static int cropHeight;
 public static int cropPixelsWidth;
 public static int cropPixelsHeight;
+public static boolean dropFrameTC = false;
 public static String timecode1 = "";
 public static String timecode2 = "";
 public static String timecode3 = "";
@@ -103,6 +104,7 @@ public static int gopSpace = 124;
 			stereo = false;	
 		}
 		
+		dropFrameTC = false;
 		surround = false;
 		totalLength = 0;
 		qantization = 16;
@@ -502,7 +504,15 @@ public static int gopSpace = 124;
 			        	 
 		        	 	//Timecode
 			            if (line.contains("timecode"))
-			            {				            	
+			            {		
+			            	//Drop frame / non drop frame
+			            	if (line.contains(";"))
+			            	{
+			            		dropFrameTC = true;
+			            	}
+			            	else
+			            		dropFrameTC = false;
+			            	
 			            	if (OverlayWindow.caseShowTimecode.isSelected()
 		            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")
 		            		|| comboFonctions.getSelectedItem().equals("XAVC")
@@ -519,7 +529,7 @@ public static int gopSpace = 124;
 	            			|| (caseInAndOut.isSelected() && VideoPlayer.caseTcInterne != null && VideoPlayer.caseTcInterne.isSelected()))
 				            {
 			            		if (FFPROBE.timecode1 == "")
-				                {
+				                {			            					            			
 			            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
 				                	timecode1 = str[1];
 				                	timecode2 = str[2];

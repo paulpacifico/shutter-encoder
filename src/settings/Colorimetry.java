@@ -104,6 +104,16 @@ public class Colorimetry extends Shutter {
 		return "";
 	}
 
+	public static String setEXRGamma(String extension) {
+		
+		if (extension.toLowerCase().equals(".exr"))
+		{
+			return " -apply_trc iec61966_2_1";
+		}
+		
+		return "";	
+	}
+	
 	public static String setLUT(String filterComplex) {
 		
 		if (grpColorimetry.isVisible() && caseLUTs.isSelected())

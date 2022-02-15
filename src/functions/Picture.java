@@ -99,7 +99,7 @@ public class Picture extends Shutter {
 						//Date filter
 						if (Filter.dateFilter(file) == false)
 							continue;
-						
+												
 				        //Framerate
 						String frameRate = setFramerate();
 						
@@ -150,6 +150,9 @@ public class Picture extends Shutter {
 						
 			    		//Colorspace
 			            String colorspace = Colorimetry.setColorspace();
+			            
+						//EXR gamma
+						String EXRGamma = Colorimetry.setEXRGamma(extension);
 						
 						//Compression
 						String compression = setCompression();
@@ -215,7 +218,7 @@ public class Picture extends Shutter {
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
 						else
-							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
+							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + EXRGamma + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
 	
 						if (isRaw)
 						{

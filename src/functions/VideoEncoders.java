@@ -358,6 +358,9 @@ public class VideoEncoders extends Shutter {
 						
 			            //Colorspace
 			            String colorspace = Colorimetry.setColorspace();
+			            
+			            //EXR gamma
+						String EXRGamma = Colorimetry.setEXRGamma(extension);
 			        
 				        //Deinterlace
 						String filterComplex = "";						
@@ -750,11 +753,11 @@ public class VideoEncoders extends Shutter {
 						}
 						else if (encode) //Encoding
 						{
-							FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
+							FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + EXRGamma + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
 						}
 						else //Preview
 						{						
-							FFMPEG.toFFPLAY(hardwareDecoding + loop + stream + InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
+							FFMPEG.toFFPLAY(hardwareDecoding + loop + stream + InputAndOutput.inPoint + EXRGamma + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
 						}
 
 						do
@@ -766,7 +769,7 @@ public class VideoEncoders extends Shutter {
 						if (grpH264.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
 							if (FFMPEG.cancelled == false)
-								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + EXRGamma + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 							
 							do
 							{
