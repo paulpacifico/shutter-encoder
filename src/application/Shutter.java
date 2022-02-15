@@ -152,6 +152,7 @@ import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DECKLINK;
 import library.DVDAUTHOR;
+import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPLAY;
 import library.FFPROBE;
@@ -922,6 +923,7 @@ public class Shutter {
 		Splash.increment();
 				
 		YOUTUBEDL.update();
+		EXIFTOOL.run(""); //Preload the binary
 		Splash.increment();
 		
 		Utils.changeFrameVisibility(frame, false);
@@ -4700,7 +4702,11 @@ public class Shutter {
 		lblIsInterpret.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblIsInterpret.setSize(20, 16);
 		lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
-		grpResolution.add(lblIsInterpret);
+		grpResolution.add(lblIsInterpret);		
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()));
+		{
+			lblIsInterpret.setVisible(false);
+		}		
 		
 		iconTVInterpret = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVInterpret.setHorizontalAlignment(SwingConstants.CENTER);
@@ -8472,6 +8478,9 @@ public class Shutter {
 						lbl48k.setText("16k");
 						break;
 					case "16k" :
+						lbl48k.setText("32k");
+						break;
+					case "32k" :
 						lbl48k.setText("44.1k");
 						break;
 					case "44.1k" :
@@ -9882,7 +9891,7 @@ public class Shutter {
 		JLabel iconFadeIn = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeIn.setToolTipText(language.getProperty("preview"));
 		iconFadeIn.setHorizontalAlignment(SwingConstants.CENTER);		
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 3, lblFadeInColor.getY(), 16, 16);
 		else
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 8, lblFadeInColor.getY(), 16, 16);
@@ -10086,7 +10095,7 @@ public class Shutter {
 		JLabel iconFadeOut = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeOut.setToolTipText(language.getProperty("preview"));
 		iconFadeOut.setHorizontalAlignment(SwingConstants.CENTER);
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 3, lblFadeOutColor.getY(), 16, 16);
 		else
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 8, lblFadeOutColor.getY(), 16, 16);		
@@ -10136,7 +10145,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeIn.setLocation(lblFadeInColor.getX(), iconFadeIn.getY() + iconFadeIn.getHeight());
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() - 3, 10);
 		else
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() + 1, 10);
@@ -10156,7 +10165,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeOut.setLocation(lblFadeOutColor.getX(), iconFadeOut.getY() + iconFadeOut.getHeight());
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()))
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() - 3, 10);
 		else
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() + 1, 10);
@@ -12243,7 +12252,7 @@ public class Shutter {
 
 		lblVideoBitrate = new JLabel(language.getProperty("lblVideoBitrate"));
 		lblVideoBitrate.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblVideoBitrate.setBounds(40, 100, 76, 16);
+		lblVideoBitrate.setBounds(40, 100, 78, 16);
 		grpH264.add(lblVideoBitrate);
 
 		lblAudioBitrate = new JLabel(language.getProperty("lblAudioBitrate"));

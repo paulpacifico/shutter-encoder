@@ -178,7 +178,7 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(370, 1000);
+		frame.setSize(370, 670);
 		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
@@ -203,7 +203,7 @@ public class Settings {
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(40);
+		scrollBar.setMaximum(90);
 		scrollBar.setBackground(new Color(50,50,50));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
@@ -1037,14 +1037,6 @@ public class Settings {
 		lblDestination1.setTransferHandler(new OutputTransferHandler());
 		lblDestination2.setTransferHandler(new OutputTransferHandler());
 		lblDestination3.setTransferHandler(new OutputTransferHandler());
-
-		//Set frameSize
-		frame.setSize(frame.getWidth(), lblDestination3.getY() + lblDestination3.getHeight() + 20);
-		
-		//Important
-		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
-		scrollBar.setLocation(frame.getWidth() - scrollBar.getWidth() - 2, topPanel.getHeight());
-		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());
 		
 		JButton btnReset = new JButton(Shutter.language.getProperty("btnReset"));
 		btnReset.setName("btnReset");

@@ -52,9 +52,9 @@ public class SubtitlesHelp {
     	frame.getContentPane().add(lblHelp);	
 		
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			frame.setSize(lblHelp.getWidth() + 10, lblHelp.getHeight() - 10);
+			frame.setSize(lblHelp.getWidth() + 10, lblHelp.getY() + lblHelp.getHeight());
 		else
-			frame.setSize(lblHelp.getWidth() + 10, lblHelp.getHeight() + 10);
+			frame.setSize(lblHelp.getWidth() + 10, lblHelp.getY() + lblHelp.getHeight() + 10);
     	
 		frame.setVisible(true);
 		

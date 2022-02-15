@@ -60,20 +60,21 @@ import library.MEDIAINFO;
 	 * Composants
 	 */
 	private static JPanel topPanel;
-	private boolean drag;
+	private boolean drag = false;
 	private JLabel quit;
 	private JLabel reduce;
 	private JLabel topImage;
 	private JLabel bottomImage;
 	public static JPanel tabPanel;
 	public static JLabel lblWait;
-	public static JLabel lblFlecheBas;
+	public static JLabel lblArrows;
 	public static JTabbedPane infoTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
 	private static int MousePositionX;
 	private static int MousePositionY;
 	
 	public Informations() {
+		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -98,18 +99,16 @@ import library.MEDIAINFO;
 		lblWait.setVisible(true);
 		frame.getContentPane().add(lblWait);
 		
-		lblFlecheBas = new JLabel("▲▼");
-		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
-		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
-		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
-		lblFlecheBas.setVisible(false);
+		lblArrows = new JLabel("▲▼");
+		lblArrows.setHorizontalAlignment(SwingConstants.CENTER);
+		lblArrows.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
+		lblArrows.setSize(new Dimension(frame.getSize().width, 20));
+		lblArrows.setLocation(0, frame.getSize().height - lblArrows.getSize().height);
+		lblArrows.setVisible(false);
 		
-		frame.getContentPane().add(lblFlecheBas);
+		frame.getContentPane().add(lblArrows);
 				
-		topPanel();
-		
-		drag = false;		
+		topPanel();	
 				
 		frame.addMouseMotionListener (new MouseMotionListener(){
  			
@@ -119,7 +118,7 @@ import library.MEDIAINFO;
 				if (drag && frame.getSize().height > 90 && MEDIAINFO.isRunning == false)
 		       	{	
 			        frame.setSize(frame.getSize().width, e.getY() + 10);		
-			    	lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
+			    	lblArrows.setLocation(0, frame.getSize().height - lblArrows.getSize().height);
 			    	tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);	
 			    	infoTabbedPane.setBounds(tabPanel.getBounds());	
 		       	}	
@@ -163,7 +162,7 @@ import library.MEDIAINFO;
 				if (frame.getSize().height <= 90)
 				{
 					frame.setSize(frame.getSize().width, 100);
-		    		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
+		    		lblArrows.setLocation(0, frame.getSize().height - lblArrows.getSize().height);
 		    		tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);	
 		    		infoTabbedPane.setBounds(tabPanel.getBounds());	
 				}

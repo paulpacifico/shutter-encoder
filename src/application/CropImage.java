@@ -69,6 +69,7 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.XPDF;
+import settings.Colorimetry;
 import settings.InputAndOutput;
 
 import javax.swing.JButton;
@@ -1241,116 +1242,119 @@ public class CropImage {
 			}			
 
         	
-        		finalWidth = (int) Math.round(((frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth) / ImageHeight);
-        			        	
-        		finalHeight = (int) Math.round(((frame.getWidth() - 24) * ImageHeight) / ImageWidth);
-        	                   	        						
-				Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
+    		finalWidth = (int) Math.round(((frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) * ImageWidth) / ImageHeight);
+    			        	
+    		finalHeight = (int) Math.round(((frame.getWidth() - 24) * ImageHeight) / ImageWidth);
+    	                   	        						
+			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("tempFolder")+ " "  + Shutter.dirTemp + System.lineSeparator() + System.lineSeparator());
+			
+			//InOut		
+			InputAndOutput.getInputAndOutput();
+			
+			//Slider
+			if (positionVideo != null && positionVideo.getValue() > 0 && positionVideo.getValue() < positionVideo.getMaximum() && FFPROBE.totalLength > 100)
+			{
+				DecimalFormat tc = new DecimalFormat("00");			
+				String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
+				String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
+				String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
 				
-				//InOut		
-				InputAndOutput.getInputAndOutput();
+				InputAndOutput.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+			}
+			
+			//Envoi de la commande
+			String cmd = " -vframes 1 -an -s " + (frame.getWidth() - 24) + "x" + finalHeight + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
+			
+			if (ImageHeight >= ImageWidth)
+				cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
 				
-				//Slider
-				if (positionVideo != null && positionVideo.getValue() > 0 && positionVideo.getValue() < positionVideo.getMaximum() && FFPROBE.totalLength > 100)
+				
+			//EXR gamma
+			String EXRGamma = Colorimetry.setEXRGamma(extension);
+			
+    		InputStream videoInput = null;
+			
+			if (extension.toLowerCase().equals(".pdf"))
+			{
+				FFMPEG.error = false; //Contourne un bug
+				
+				XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -v quiet -i -" + cmd);
+				
+				do {
+					Thread.sleep(10);
+				} while (XPDF.process.isAlive() == false);
+				
+				videoInput = XPDF.process.getInputStream();					
+			}
+			else if (isRaw)
+			{
+				DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -v quiet -i -" + cmd);
+				
+				do {
+					Thread.sleep(10);
+				} while (DCRAW.process.isAlive() == false);
+				
+				videoInput = DCRAW.process.getInputStream();
+			}
+			else if (Shutter.inputDeviceIsRunning) //Screen capture			
+			{
+				boolean isVisible = false;
+				if (frame.isVisible())
 				{
-					DecimalFormat tc = new DecimalFormat("00");			
-					String h = String.valueOf(tc.format((positionVideo.getValue() / 3600000)));
-					String m = String.valueOf(tc.format((positionVideo.getValue() / 60000) % 60));
-					String s = String.valueOf(tc.format((positionVideo.getValue() / 1000) % 60));
-					
-					InputAndOutput.inPoint = " -ss " + h + ":" + m + ":" + s + ".0";
+					frame.setVisible(false);
+					isVisible = true;
 				}
 				
-				//Envoi de la commande
-				String cmd = " -vframes 1 -an -s " + (frame.getWidth() - 24) + "x" + finalHeight + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
+				FFMPEG.run(" -v quiet " + RecordInputDevice.setInputDevices() + cmd);
 				
-				if (ImageHeight >= ImageWidth)
-					cmd = " -vframes 1 -an -s " + finalWidth + "x" + (frame.getHeight() - topPanel.getHeight() - 35 - 22 - 17) + " -c:v bmp -sws_flags bicubic -f image2pipe pipe:-";
-					
-					
-	    		InputStream videoInput = null;
+				do {
+					Thread.sleep(10);
+				} while (FFMPEG.process.isAlive() == false);
 				
-				if (extension.toLowerCase().equals(".pdf"))
-				{
-					FFMPEG.error = false; //Contourne un bug
-					
-					XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -v quiet -i -" + cmd);
-					
-					do {
-						Thread.sleep(10);
-					} while (XPDF.process.isAlive() == false);
-					
-					videoInput = XPDF.process.getInputStream();					
-				}
-				else if (isRaw)
-				{
-					DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -v quiet -i -" + cmd);
-					
-					do {
-						Thread.sleep(10);
-					} while (DCRAW.process.isAlive() == false);
-					
-					videoInput = DCRAW.process.getInputStream();
-				}
-				else if (Shutter.inputDeviceIsRunning) //Screen capture			
-				{
-					boolean isVisible = false;
-					if (frame.isVisible())
-					{
-						frame.setVisible(false);
-						isVisible = true;
-					}
-					
-					FFMPEG.run(" -v quiet " +  RecordInputDevice.setInputDevices() + cmd);
-					
-					do {
-						Thread.sleep(10);
-					} while (FFMPEG.process.isAlive() == false);
-					
-					if (isVisible)
-						frame.setVisible(true);
-					
-					videoInput = FFMPEG.process.getInputStream();
-				}
-				else					
-				{					
-          			FFMPEG.run(InputAndOutput.inPoint + " -v quiet -i " + '"' + file.toString() + '"' + cmd);
-          			
-    				do {
-    					Thread.sleep(10);
-    				} while (FFMPEG.process.isAlive() == false);
-    				
-    				videoInput = FFMPEG.process.getInputStream();
-				}						
-											
-				InputStream is = new BufferedInputStream(videoInput);
-				Image imageBMP = ImageIO.read(is);
+				if (isVisible)
+					frame.setVisible(true);
 				
-				if (FFMPEG.error == false && DCRAW.error == false && XPDF.error == false && imageBMP != null)
-	            {						
-		           	image.removeAll();  
-		           	
-		           	//On charge l'image après la création du fichier pour avoir le bon ratio
-		    		image();	 
-					
-		            ImageIcon imageIcon = new ImageIcon(imageBMP);
-		    		JLabel newImage = new JLabel(imageIcon);
-		            imageIcon.getImage().flush();	
-		            
-		    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
-		    		newImage.setBounds(0, 0, image.getWidth(), image.getHeight());  
-		    		
-		    		image.add(newImage);
-		    		image.repaint();
-		    		selection.repaint();
-		    		frame.getContentPane().repaint();
-		    		
-					Shutter.tempsRestant.setVisible(false);
-		            Shutter.progressBar1.setValue(0);	   
-		            
-		            if (btnOK != null) 
-		            	checkSelection();
-	            }
+				videoInput = FFMPEG.process.getInputStream();
+			}
+			else					
+			{					
+      			FFMPEG.run(InputAndOutput.inPoint + EXRGamma + " -v quiet -i " + '"' + file.toString() + '"' + cmd);
+      			
+				do {
+					Thread.sleep(10);
+				} while (FFMPEG.process.isAlive() == false);
+				
+				videoInput = FFMPEG.process.getInputStream();
+			}						
+										
+			InputStream is = new BufferedInputStream(videoInput);
+			Image imageBMP = ImageIO.read(is);
+			
+			if (FFMPEG.error == false && DCRAW.error == false && XPDF.error == false && imageBMP != null)
+            {						
+	           	image.removeAll();  
+	           	
+	           	//On charge l'image après la création du fichier pour avoir le bon ratio
+	    		image();	 
+				
+	            ImageIcon imageIcon = new ImageIcon(imageBMP);
+	    		JLabel newImage = new JLabel(imageIcon);
+	            imageIcon.getImage().flush();	
+	            
+	    		newImage.setHorizontalAlignment(SwingConstants.CENTER);
+	    		newImage.setBounds(0, 0, image.getWidth(), image.getHeight());  
+	    		
+	    		image.add(newImage);
+	    		image.repaint();
+	    		selection.repaint();
+	    		frame.getContentPane().repaint();
+	    		
+				Shutter.tempsRestant.setVisible(false);
+	            Shutter.progressBar1.setValue(0);	   
+	            
+	            if (btnOK != null) 
+	            	checkSelection();
+            }
         }
 	    catch (Exception e)
 	    {

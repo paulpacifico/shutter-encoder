@@ -117,6 +117,7 @@ public class ColorImage {
 	private static JPanel backgroundPanel;
 	public static JComboBox<String> comboRGB = new JComboBox<String>();
 	public static JSlider sliderExposure = new JSlider();
+	public static JSlider sliderGamma = new JSlider();
 	public static JSlider sliderContrast = new JSlider();
 	public static JSlider sliderHighlights = new JSlider();
 	public static JSlider sliderMediums = new JSlider();
@@ -503,6 +504,7 @@ public class ColorImage {
 				balanceMedium = "";
 				balanceLow = "";
 				sliderExposure.setValue(0);
+				sliderGamma.setValue(0);
 				sliderContrast.setValue(0);
 				sliderHighlights.setValue(0);
 				sliderMediums.setValue(0);
@@ -584,10 +586,57 @@ public class ColorImage {
 		});
 		
 		frame.add(sliderExposure);
+		
+		JLabel lblGamma = new JLabel(Shutter.language.getProperty("lblGamma"));
+		lblGamma.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblGamma.setBounds(12, sliderExposure.getY() + sliderExposure.getHeight() + 4, lblExposure.getSize().width, 16);		
+		frame.getContentPane().add(lblGamma);
+
+		frame.add(lblGamma);
+		
+		sliderGamma.setName("sliderGamma");
+		sliderGamma.setMaximum(90);
+		sliderGamma.setMinimum(-90);
+		sliderGamma.setValue(0);		
+		sliderGamma.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		sliderGamma.setBounds(12, lblGamma.getY() + lblGamma.getHeight(), 180, 22);	
+		
+		sliderGamma.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderGamma.setValue(0);	
+					lblGamma.setText(Shutter.language.getProperty("lblGamma"));
+				}
+			}		
+
+		});
+	
+		sliderGamma.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderGamma.getValue() == 0)
+				{
+					lblGamma.setText(Shutter.language.getProperty("lblGamma"));
+				}
+				else
+				{
+					lblGamma.setText(Shutter.language.getProperty("lblGamma") + " " + sliderGamma.getValue());
+				}	
+				
+				loadImage(false);
+			}
+			
+		});
+		
+		frame.add(sliderGamma);
 				
 		JLabel lblContrast = new JLabel(Shutter.language.getProperty("lblContrast"));
 		lblContrast.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblContrast.setBounds(12, sliderExposure.getY() + sliderExposure.getHeight() + 4, lblExposure.getSize().width, 16);		
+		lblContrast.setBounds(12, sliderGamma.getY() + sliderGamma.getHeight() + 4, lblExposure.getSize().width, 16);		
 		frame.getContentPane().add(lblContrast);
 		
 		frame.add(lblContrast);
@@ -1795,18 +1844,25 @@ public class ColorImage {
 						compression = " -q:v " + q;
 					}	
 					
+					//EXR gamma
+					String EXRGamma = Colorimetry.setEXRGamma(extension);
+					
 					//FFPLAY
 					if (extension.toLowerCase().equals(".pdf"))
+					{
 						XPDF.toFFPLAY(filter + '"');
+					}
 					else if (isRaw)
+					{	
 						DCRAW.toFFPLAY(filter + '"');
+					}
 					else if (Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG"))
 					{
 						String cmd = filter + '"' + " -an -c:v mjpeg" + compression + " -vframes 1 -f nut pipe:play |";
-						FFMPEG.toFFPLAY(InputAndOutput.inPoint + " -i " + '"' + file + '"' + InputAndOutput.outPoint + cmd);
+						FFMPEG.toFFPLAY(InputAndOutput.inPoint + EXRGamma + " -i " + '"' + file + '"' + InputAndOutput.outPoint + cmd);
 					}
 					else
-						FFPLAY.run(InputAndOutput.inPoint + " -fs -i " + '"' + file + '"' + filter + '"');
+						FFPLAY.run(InputAndOutput.inPoint + EXRGamma + " -fs -i " + '"' + file + '"' + filter + '"');
 
 					do {
 						Thread.sleep(100);
@@ -1977,17 +2033,24 @@ public class ColorImage {
 					
 					String cmd = " -vf " + '"' + eq + '"' + " -vframes 1" + compression + " -an -y ";
 					
+					//EXR gamma
+					String EXRGamma = Colorimetry.setEXRGamma(extension);
+					
 					if (extension.toLowerCase().equals(".pdf"))
+					{
 						XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
+					}
 					else if (isRaw)
+					{
 						DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + fileOut + '"');
+					}
 					else if (Shutter.inputDeviceIsRunning) //Screen capture	
 					{
 						frame.setVisible(false);
 						FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + fileOut + '"');
 					}
 					else
-	          			FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');		
+	          			FFMPEG.run(InputAndOutput.inPoint + EXRGamma + " -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');		
 					
 					 do {
 		            	Thread.sleep(100);  
@@ -2602,19 +2665,26 @@ public class ColorImage {
 						if (finalHeight > (float) (frame.getWidth() - 48 - sliderExposure.getWidth()) / 1.77f || ImageHeight > ImageWidth)
 							cmd = deinterlace + rotate + " -vframes 1 -an -s " + Math.round(finalWidth / 2) * 2 + "x" +  Math.round((frame.getHeight() - topPanel.getHeight() - 35 - 17) / 2) * 2 + " -y ";
 					
+						//EXR gamma
+						String EXRGamma = Colorimetry.setEXRGamma(extension);
+						
 						if (new File(Shutter.dirTemp + "preview.bmp").exists() == false)
 						{											   		
 							if (extension.toLowerCase().equals(".pdf"))
+							{
 								XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
+							}
 							else if (isRaw)
+							{	
 								DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
+							}
 							else if (Shutter.inputDeviceIsRunning) //Screen capture		
 							{
 								frame.setVisible(false);
 								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
 							}
 							else									
-			          			FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');			
+			          			FFMPEG.run(InputAndOutput.inPoint + EXRGamma + " -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');			
 							
 				            do {
 				            	Thread.sleep(100);  
@@ -2644,7 +2714,7 @@ public class ColorImage {
 							FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
 						}				
 						else
-							FFMPEG.run(" -v quiet -i " + '"' + preview + '"' + finalEQ +  " -c:v bmp -f image2pipe pipe:-");
+							FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"' + finalEQ +  " -c:v bmp -f image2pipe pipe:-");
 
 						do {
 	    					Thread.sleep(10);
@@ -3018,6 +3088,18 @@ public class ColorImage {
 		
 		return eq;
 	}
+	
+	protected static String setGamma(String eq) {		
+		if (sliderGamma.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+			
+			eq += "eq=gamma=" + (1 + (float) sliderGamma.getValue() / 100); 
+		}
+		
+		return eq;
+	}
 
 	public static String setEQ(boolean finalEQ) {
 		
@@ -3037,6 +3119,9 @@ public class ColorImage {
 		
 		//Exposure
 		eq = setExposure(eq);
+		
+		//Gamma
+		eq = setGamma(eq);
 		
 		//Contrast
 		eq = setContrast(eq);
@@ -3221,6 +3306,7 @@ public class ColorImage {
 	}
 		
 	private void resizeAll() {
+		
 		topPanel.setBounds(0,0,frame.getSize().width, 52);
 		
 		topImage.setLocation(frame.getSize().width / 2 - topImage.getSize().width / 2, 0);

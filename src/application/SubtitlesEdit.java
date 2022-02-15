@@ -23,11 +23,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.MouseInfo;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
@@ -39,39 +45,36 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import javax.swing.JFrame;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
-import java.awt.Font;
-
-import javax.swing.JLabel;
-import javax.swing.JScrollBar;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
 public class SubtitlesEdit {
 
-	private static JDialog frame;
-	private final JButton btnApply = new JButton(Shutter.language.getProperty("btnApply"));
-	private final JButton btnCancel = new JButton(Shutter.language.getProperty("btnCancel"));
-	
-	static int textPosition;
-	private JScrollBar scrollBar;
+	public static JFrame frame;
+	public static int textPosition;
+	private static JScrollBar scrollBar;
 	int scrollValue = 0;
-	private final JPanel panelHide; 
+	private static long keyboardTime;
+	private static boolean keyboardLoop = false;
+	public static boolean isWriting = true;
+	private boolean drag = false;
 	
-	public SubtitlesEdit(final int numberOfSubs) {		
+	public SubtitlesEdit() {	
+		
 		textPosition = 12;
 		
-		frame = new JDialog();
-		frame.setModal(true);
+		frame = new JFrame();
+		frame.setAlwaysOnTop(true);
 		frame.setResizable(false);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(620, 670);
+		frame.setSize(620, 645);
 		frame.setAlwaysOnTop(true);
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 		frame.getContentPane().setBackground(new Color(50,50,50));
@@ -80,118 +83,27 @@ public class SubtitlesEdit {
 				
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
-					
-		btnCancel.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
-		btnCancel.setBounds(6, frame.getHeight() - 65, frame.getWidth() / 2 - 16, 21);	
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-		{
-			btnCancel.setBounds(6, frame.getHeight() - 54, frame.getWidth() / 2 - 8, 21);	
-		}
-		frame.getContentPane().add(btnCancel);		
-		
-		btnCancel.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				frame.dispose();
-			}
-			
-		});
-		
-		btnApply.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));	
-		btnApply.setBounds(btnCancel.getX() + btnCancel.getWidth() + 2, btnCancel.getY(), btnCancel.getWidth(), 21);				
-		frame.getContentPane().add(btnApply);
-		
-		btnApply.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {		
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				
-				BufferedWriter writer = null;
-				
-				try {
-					writer = Files.newBufferedWriter(Paths.get(SubtitlesTimeline.srt.toString()),  StandardCharsets.UTF_8);
-					boolean isInPoint = true;
-					for (Component c : frame.getContentPane().getComponents())
-					{	
-						if (c instanceof JLabel)
-						{
-							if (((JLabel) c).getText().matches("[0-9]+"))
-							{
-								//Numéro
-								if (((JLabel) c).getText().equals("1"))
-									writer.write(((JLabel) c).getText() + System.lineSeparator());
-								else
-									writer.write(System.lineSeparator()  + System.lineSeparator() + ((JLabel) c).getText() + System.lineSeparator());
-							}							
-						}
-						else if (c instanceof JTextField)
-						{
-							if (isInPoint)
-							{
-								writer.write(((JTextField) c).getText() + " --> ");
-								isInPoint = false;
-							}
-							else
-							{
-								writer.write(((JTextField) c).getText() + System.lineSeparator() );
-								isInPoint = true;
-							}
-						}							
-						else if (c instanceof JTextPane)
-								writer.write(((JTextPane) c).getText());	
-					}
-				} catch (IOException e1) {}
-				finally {
-					try {
-						writer.close();
-					} catch (IOException e1) {}
-					finally {
-						SubtitlesTimeline.timeline.removeAll();
-						SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);
-						frame.dispose();
-					}
-					
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
-			}
-			
-		});
-		
-		panelHide = new JPanel();
-		panelHide.setBounds(0, 610, frame.getWidth(), 38);	
-		panelHide.setBackground(new Color(50,50,50));
-		frame.getContentPane().add(panelHide);
-				
-		//Ajout des subs
-		addSubtitles();
 				
 		scrollBar = new JScrollBar();
 		scrollBar.setBackground(new Color(50,50,50));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
-		if (numberOfSubs > 10)
-			scrollBar.setVisible(true);
-		else
-			scrollBar.setVisible(false);
 		
-		scrollBar.setMaximum(60 * (numberOfSubs + 1) - 648);
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			scrollBar.setBounds(frame.getWidth() - 17, 0, 17, frame.getHeight() - 60);
-		else
-			scrollBar.setBounds(frame.getWidth() - 34, 0, 17, frame.getHeight() - 65);
-		
-		frame.getContentPane().add(scrollBar);
-				
+		//Add subs
+		refreshSubtitles();
+						
 		frame.addMouseWheelListener(new MouseWheelListener(){
 
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
+				
+				if (scrollBar.isVisible())
+				{
+					scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
+				}
 			}
 			
 		});	
-		
+						
 		frame.addWindowListener(new WindowListener(){
 
 			@Override
@@ -225,36 +137,201 @@ public class SubtitlesEdit {
 			
 		});
 		
-		scrollBar.addAdjustmentListener(new AdjustmentListener(){
-			
-			public void adjustmentValueChanged(AdjustmentEvent ae) {
-					int scrollIncrement = scrollBar.getValue() - scrollValue;
-					for (Component c : frame.getContentPane().getComponents())
+		frame.addMouseMotionListener (new MouseMotionListener(){
+ 			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				
+				int i = 0;
+				int posY = 0;
+				
+				for (Component c : frame.getContentPane().getComponents())
+				{
+					if (c instanceof JTextPane)
 					{
-						if (c instanceof JButton == false && c instanceof JScrollBar == false && c instanceof JPanel == false)
-						{
-								c.setLocation(c.getLocation().x, c.getLocation().y - scrollIncrement);
-						}
+						i = c.getY() + c.getHeight() + 60 - frame.getHeight();
+						posY = c.getY() + c.getHeight() + 36;
 					}
-					scrollValue = scrollBar.getValue();
-		      }			
+				}
+				
+				if (i > 0)
+				{					
+					scrollBar.setVisible(true);	
+					scrollBar.setMaximum(i);
+					frame.getContentPane().add(scrollBar);
+				}
+				else
+				{
+					scrollBar.setVisible(false);
+					frame.getContentPane().remove(scrollBar);
+				}
+								
+				if (e.getY() > posY)
+				{
+					drag = false;
+				}
+				else
+					drag = true;
+				
+				if (drag && frame.getSize().height > 90)
+		       	{	
+			        frame.setSize(frame.getSize().width, e.getY() + 10);		
+			                
+			    	if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+			    	{
+			    		scrollBar.setBounds(frame.getWidth() - 17, 0, 17, frame.getHeight() - 35);
+			    	}
+					else
+						scrollBar.setBounds(frame.getWidth() - 34, 0, 17, frame.getHeight() - 40);
+		       	}	
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				
+				if ((MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y) > frame.getSize().height - 20)
+				{
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+				}
+				else 
+				{
+					if (drag == false)
+					{
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					}
+				}
+			}				
 			
 		});
 		
+		frame.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				if (frame.getCursor().getType() == Cursor.S_RESIZE_CURSOR)
+				{
+					drag = true;
+				}
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {	
+				
+				drag = false;
+				
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				
+				if (frame.getSize().height <= 90)
+				{
+					frame.setSize(frame.getSize().width, 100);
+				}
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {		
+				
+				if (frame.getCursor().getType() == Cursor.S_RESIZE_CURSOR)
+				{
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				}
+			}
+			
+		});	
+		
+		scrollBar.addAdjustmentListener(new AdjustmentListener(){
+			
+			public void adjustmentValueChanged(AdjustmentEvent ae) {
+				
+				int scrollIncrement = scrollBar.getValue() - scrollValue;
+				for (Component c : frame.getContentPane().getComponents())
+				{
+					if (c instanceof JButton == false && c instanceof JScrollBar == false && c instanceof JPanel == false)
+					{
+							c.setLocation(c.getLocation().x, c.getLocation().y - scrollIncrement);
+					}
+				}
+				scrollValue = scrollBar.getValue();
+		      }		
+		});
+		
 		frame.setVisible(true);
-		frame.repaint();
+		frame.repaint();		
 	}
 	
-	private static JTextPane addText(String subContent){
+	private static JTextPane addText(String subContent) {
+		
 		JTextPane text = new JTextPane();
 		text.setText(subContent);
 		text.setCaretColor(Color.BLACK);
 		text.setBounds(180, textPosition, 400, 48);
-		textPosition += 60; 	
+		textPosition += 60; 
+		
+		text.addKeyListener(new KeyAdapter()
+    	{
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				keyboardTime = System.currentTimeMillis();
+								
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+		
+				keyboardSaveTime();	
+			}
+			
+			private void keyboardSaveTime() {
+				
+				if (keyboardLoop == false)
+				{
+					Thread t = new Thread(new Runnable() {
+						
+						public void run() 
+						{
+							do {
+								keyboardLoop = true;
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e) {}
+							} while ((keyboardTime + 1000) > System.currentTimeMillis());
+							
+							updateTimeline();
+							
+							keyboardLoop = false;
+						}					
+					});
+					t.start();	
+				}
+			}
+    		
+    	});
+		
+		text.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+				SubtitlesEdit.isWriting = true;				
+			}
+			
+		});
+		
 	    return text;
 	}
 	
-	private static JTextField addInPoint(String subIn){
+	private static JTextField addInPoint(String subIn) {
+		
 		JTextField in = new JTextField();
 		in.setText(subIn);
 		in.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));
@@ -263,10 +340,64 @@ public class SubtitlesEdit {
 		in.setBounds(77, textPosition - 2, 94, 25);	
 		in.setBackground(new Color(50,50,50));
 		in.setHorizontalAlignment(SwingConstants.CENTER);
+			   	
+		in.addKeyListener(new KeyAdapter()
+    	{
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				keyboardTime = System.currentTimeMillis();
+								
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+		
+				keyboardSaveTime();	
+			}
+			
+			private void keyboardSaveTime() {
+				
+				if (keyboardLoop == false)
+				{
+					Thread t = new Thread(new Runnable() {
+						
+						public void run() 
+						{
+							do {
+								keyboardLoop = true;
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e) {}
+							} while ((keyboardTime + 1000) > System.currentTimeMillis());
+							
+							updateTimeline();
+							
+							keyboardLoop = false;
+						}					
+					});
+					t.start();	
+				}
+			}
+    		
+    	});
+    			
+		in.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+				SubtitlesEdit.isWriting = true;				
+			}
+			
+		});
+		
 	    return in;
 	}
 	
-	private static JTextField addOutPoint(String subOut){
+	private static JTextField addOutPoint(String subOut) {
+		
 		JTextField out = new JTextField();
 		out.setText(subOut);
 		out.setBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true));
@@ -275,21 +406,78 @@ public class SubtitlesEdit {
 		out.setBounds(77, textPosition + 24, 94, 25);	
 		out.setBackground(new Color(50,50,50));
 		out.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		out.addKeyListener(new KeyAdapter()
+    	{
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				keyboardTime = System.currentTimeMillis();
+								
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+		
+				keyboardSaveTime();	
+			}
+			
+			private void keyboardSaveTime() {
+				
+				if (keyboardLoop == false)
+				{
+					Thread t = new Thread(new Runnable() {
+						
+						public void run() 
+						{
+							do {
+								keyboardLoop = true;
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e) {}
+							} while ((keyboardTime + 1000) > System.currentTimeMillis());
+							
+							updateTimeline();
+							
+							keyboardLoop = false;
+						}					
+					});
+					t.start();	
+				}
+			}
+    		
+    	});
+		
+		out.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+				SubtitlesEdit.isWriting = true;				
+			}
+			
+		});
+		
 	    return out;
 	}
 	
-	private static JLabel addNumber(int number){
+	private static JLabel addNumber(int number) {
+		
 		JLabel nb = new JLabel(String.valueOf(number));
 		nb.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		nb.setHorizontalAlignment(SwingConstants.CENTER);
 		nb.setBounds(9, textPosition + 16, 61, 16);
+		
 	    return nb;
 	}
 
-	private static void addSubtitles() {		
+	private static void addSubtitles() {
+		
 		BufferedReader reader = null;		
 		
 		try {
+			
 			if (SubtitlesTimeline.srt.exists())
 			{
 				reader = Files.newBufferedReader(Paths.get(SubtitlesTimeline.srt.toString()),  StandardCharsets.UTF_8);
@@ -312,25 +500,172 @@ public class SubtitlesEdit {
 						
 						StringBuilder subContent = new StringBuilder();
 						
-						 while ((line = reader.readLine()) != null && line.isEmpty() == false)
-						 {
+						while ((line = reader.readLine()) != null && line.isEmpty() == false)
+						{
 							subContent.append(line + System.lineSeparator());						
-						 }
+						}
 						
-							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-								frame.getContentPane().add(addText(subContent.toString().substring(0, subContent.length() - 1)));	
-							else
-								frame.getContentPane().add(addText(subContent.toString().substring(0, subContent.length() - 2)));
+						if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+						{
+							frame.getContentPane().add(addText(subContent.toString().substring(0, subContent.length() - 1)));	
+						}
+						else
+							frame.getContentPane().add(addText(subContent.toString().substring(0, subContent.length() - 2)));
 					}
 				}			
 			}					
-			} catch (Exception e) {}
-			finally 
-			{
-				try {
-					reader.close();
-				} catch (IOException e) {}	
-			}
+		}
+		catch (Exception e) {}
+		finally 
+		{
+			try {
+				reader.close();
+			} catch (IOException e) {}	
 			
+			frame.repaint();
+			frame.getContentPane().repaint();
+		}			
 	}
+	
+	public static void refreshSubtitles() {
+		
+		for (Component c : frame.getContentPane().getComponents())
+		{
+			if (c instanceof JScrollBar == false)
+			{
+				frame.remove(c);
+			}
+		}		
+		
+		frame.repaint();
+
+		//IMPORTANT
+		textPosition = 12;
+		scrollBar.setValue(0);
+				
+		//Add subs
+		addSubtitles();
+
+		int i = 0;
+		for (Component c : frame.getContentPane().getComponents())
+		{
+			if (c instanceof JTextPane)
+			{
+				i = c.getY() + c.getHeight() + 60 - frame.getHeight();
+			}
+		}
+						
+		if (i > 0)
+		{
+			scrollBar.setVisible(true);						
+			scrollBar.setMaximum(i);
+			frame.getContentPane().add(scrollBar);
+		}
+		else
+		{
+			scrollBar.setVisible(false);		
+			frame.getContentPane().remove(scrollBar);
+		}
+
+		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+		{
+			scrollBar.setBounds(frame.getWidth() - 17, 0, 17, frame.getHeight() - 35);
+		}
+		else
+			scrollBar.setBounds(frame.getWidth() - 34, 0, 17, frame.getHeight() - 40);	
+		
+		int currentSubtitle = 0;
+		for (Component c : SubtitlesTimeline.timeline.getComponents())
+		{
+			if (c instanceof JTextPane)
+			{
+				currentSubtitle ++;
+				
+				if (SubtitlesTimeline.cursor.getLocation().x >= c.getLocation().x && SubtitlesTimeline.cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
+				{				
+					break;
+				}
+			}
+		}
+		
+		//Get the currentSub position
+		int currentText = 0;
+		int currentTextPosY = 0;
+		for (Component c : frame.getContentPane().getComponents())
+		{
+			if (c instanceof JTextPane)
+			{
+				currentText ++;
+				
+				if (currentText == currentSubtitle)
+				{
+					currentTextPosY = c.getY() - 12;
+					break;
+				}
+			}
+		}
+		
+		//Set the ScrollBarValue
+		if (currentTextPosY < scrollBar.getMaximum())
+		{
+			scrollBar.setValue(currentTextPosY);
+		}
+		else
+			scrollBar.setValue(scrollBar.getMaximum());		
+
+	}
+	
+	private static void updateTimeline() {
+				
+		BufferedWriter writer = null;
+		
+		try {
+			
+			writer = Files.newBufferedWriter(Paths.get(SubtitlesTimeline.srt.toString()),  StandardCharsets.UTF_8);
+			boolean isInPoint = true;
+			for (Component c : frame.getContentPane().getComponents())
+			{	
+				if (c instanceof JLabel)
+				{
+					if (((JLabel) c).getText().matches("[0-9]+"))
+					{
+						//Number
+						if (((JLabel) c).getText().equals("1"))
+							writer.write(((JLabel) c).getText() + System.lineSeparator());
+						else
+							writer.write(System.lineSeparator()  + System.lineSeparator() + ((JLabel) c).getText() + System.lineSeparator());
+					}							
+				}
+				else if (c instanceof JTextField)
+				{
+					if (isInPoint)
+					{
+						writer.write(((JTextField) c).getText() + " --> ");
+						isInPoint = false;
+					}
+					else
+					{
+						writer.write(((JTextField) c).getText() + System.lineSeparator() );
+						isInPoint = true;
+					}
+				}							
+				else if (c instanceof JTextPane)
+						writer.write(((JTextPane) c).getText());	
+			}
+		}
+		catch (IOException e1) {}
+		finally
+		{
+			try {
+				writer.close();
+			}
+			catch (IOException e1) {}
+			finally {
+				
+				SubtitlesTimeline.timeline.removeAll();
+				SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);
+			}
+		}
+	}
+	
 }

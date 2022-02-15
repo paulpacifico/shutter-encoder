@@ -731,7 +731,7 @@ public class VideoPlayer {
 					                }
 								}								
 								
-								leftFrameIsComplete = true;						
+								leftFrameIsComplete = true;			
 							}
 						}	 
 						else

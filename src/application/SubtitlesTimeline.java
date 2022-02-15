@@ -43,6 +43,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -120,7 +121,7 @@ public class SubtitlesTimeline {
 		
 	public static JButton btnAjouter;	
 	public static JButton btnSupprimer;	
-	private static JButton btnEditAll = new JButton(Shutter.language.getProperty("btnModify"));
+	private static JButton btnEditAll = new JButton(Shutter.language.getProperty("frameSubtitlesEdit"));
 	public static JButton btnDebut; 
 	public static JButton btnFin;
 	private JButton btnI = new JButton("I");
@@ -158,6 +159,19 @@ public class SubtitlesTimeline {
     	    	
     	frame.setTitle(Shutter.language.getProperty("frameSubtitles") + " - 0 " + Shutter.language.getProperty("subtitlesLower"));   
     	
+    	frame.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				
+				if (frame.hasFocus() || txtSubtitles.hasFocus())
+				{
+					SubtitlesEdit.isWriting = false;
+				}
+			}
+    		
+    	});
+    	
     	frame.addWindowListener(new WindowListener()
     	{
 			@Override
@@ -188,6 +202,7 @@ public class SubtitlesTimeline {
     		{
 				Shutter.caseInAndOut.setSelected(false);
     			SubtitlesTimeline.frame.dispose();
+    			SubtitlesEdit.frame.dispose();
     		}
     		
     		if (srt.exists())
@@ -271,7 +286,7 @@ public class SubtitlesTimeline {
 			}
     		
     	});
-    	    	
+    	       	
     	frame.addWindowStateListener(new WindowStateListener() {
 
 			@Override
@@ -308,7 +323,9 @@ public class SubtitlesTimeline {
     	txtSubtitles.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12)); 
     	
     	if (System.getProperty("os.name").contains("Windows"))
+    	{
     		txtSubtitles.setBounds(10, 36, frame.getWidth() - 36, 36); 
+    	}
     	else
     		txtSubtitles.setBounds(10, 36, frame.getWidth() - 24, 36); 
     	
@@ -559,9 +576,20 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				new SubtitlesEdit(number);
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				
+				if (SubtitlesEdit.frame == null)
+				{
+					new SubtitlesEdit();
+				}
+				else if (SubtitlesEdit.frame.isVisible())
+				{
+					SubtitlesEdit.frame.setVisible(false);
+				}
+				else if (SubtitlesEdit.frame.isVisible() == false)
+				{
+					SubtitlesEdit.frame.setVisible(true);
+				}
+
 			}
     		
     	});
@@ -842,6 +870,7 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
+				
 				if (textOffset.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textOffset.setText(String.valueOf(Offset.offset + (e.getX() - Offset.mouseX)));					
@@ -865,7 +894,7 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void keyPressed(KeyEvent e) {				
-					
+									
 				if ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)
 				{								        
 					control = true;
@@ -894,7 +923,7 @@ public class SubtitlesTimeline {
 						frame.requestFocus();
 					}
 					else
-					{
+					{						
 						txtSubtitles.requestFocus();
 					}
 					
@@ -951,7 +980,9 @@ public class SubtitlesTimeline {
 					if (e.getKeyCode() == KeyEvent.VK_C) 
 					{
 						if (txtSubtitles.getSelectionStart() != txtSubtitles.getSelectionEnd())
+						{
 							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(txtSubtitles.getText().substring(txtSubtitles.getSelectionStart(), txtSubtitles.getSelectionEnd())), null);
+						}
 						else
 							Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(txtSubtitles.getText()), null);
 					}
@@ -1033,12 +1064,16 @@ public class SubtitlesTimeline {
 						btnSupprimer.doClick();
 					
 					if (e.getKeyCode() == KeyEvent.VK_UP)
+					{
 						nextSubtitle();			
+					}
 					else if (e.getKeyCode() == KeyEvent.VK_DOWN)
 						previousSubtitle();	
 					
 					if (e.getKeyCode() == KeyEvent.VK_LEFT)
+					{
 						VideoPlayer.leftPrevious.doClick();			
+					}
 					else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
 						VideoPlayer.leftNext.doClick();					
 					}
@@ -1165,12 +1200,16 @@ public class SubtitlesTimeline {
 		txtSubtitles.addKeyListener(keyListener);	
 		
 		Toolkit.getDefaultToolkit().addAWTEventListener(
-			    new AWTEventListener(){
-			        public void eventDispatched(AWTEvent event){
-			              KeyEvent ke = (KeyEvent)event;
-			              if(ke.getID() == KeyEvent.KEY_PRESSED && txtSubtitles.hasFocus() == false){
-			            	  frame.requestFocus();
-			        	}
+				
+			    new AWTEventListener()
+			    {
+			        public void eventDispatched(AWTEvent event)
+			        {
+			              KeyEvent ke = (KeyEvent) event;
+			              if (ke.getID() == KeyEvent.KEY_PRESSED && txtSubtitles.hasFocus() == false && SubtitlesEdit.isWriting == false)
+			              {
+			            	 frame.requestFocus();
+			              }
 			        }
 			     }, AWTEvent.KEY_EVENT_MASK);	
 		
@@ -1383,6 +1422,12 @@ public class SubtitlesTimeline {
 			{	
 				int posX = VideoPlayer.sliderIn.getValue();
 				cursor.setLocation((int) (setTime(posX)*zoom), cursor.getY());
+				
+				//Updating SubtitleEdit frame
+				if (SubtitlesEdit.frame != null && SubtitlesEdit.frame.isVisible())
+				{
+					SubtitlesEdit.refreshSubtitles();
+				}
 			}
 			
 			//Permet d'afficher le sub en cours dès que timeIn change
@@ -1498,9 +1543,10 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void mouseClicked(MouseEvent down) {				
+				
 				if (down.getClickCount() == 2)
-				{
-					setVideoPosition((int) ((text.getX())/zoom));					
+				{					
+					setVideoPosition((int) ((text.getX())/zoom));		
 				}			
 				
 			}
@@ -2304,6 +2350,7 @@ public class SubtitlesTimeline {
 				
 			} catch (IOException e1) {}
 			finally {
+				
 				try {
 					writer.close();
 				} catch (IOException e) {}
@@ -2431,4 +2478,5 @@ public class SubtitlesTimeline {
                }
            }		
 		}
-	}
+	
+}
