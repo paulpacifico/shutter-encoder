@@ -60,11 +60,13 @@ public class SubtitlesEdit {
 	public static JFrame frame;
 	public static int textPosition;
 	private static JScrollBar scrollBar;
-	int scrollValue = 0;
+	private static int lastScrollBarValue;
+	private static int scrollValue = 0;
 	private static long keyboardTime;
 	private static boolean keyboardLoop = false;
 	public static boolean isWriting = true;
 	private boolean drag = false;
+	private static boolean refreshSubs = false;
 	
 	public SubtitlesEdit() {	
 		
@@ -74,22 +76,29 @@ public class SubtitlesEdit {
 		frame.setAlwaysOnTop(true);
 		frame.setResizable(false);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(620, 645);
+		frame.setSize(620, 640);
 		frame.setAlwaysOnTop(true);
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 		frame.getContentPane().setBackground(new Color(50,50,50));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));
-				
+
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
-				
+		if (VideoPlayer.frame.getX() == dim.width/2-VideoPlayer.frame.getSize().width/2)
+		{
+			VideoPlayer.frame.setLocation(VideoPlayer.frame.getX() - frame.getWidth() / 2, VideoPlayer.frame.getY());
+		}
+		
+		if (VideoPlayer.frame.getX() + VideoPlayer.frame.getWidth() + 20 + frame.getWidth() < dim.width)
+		{
+			frame.setLocation(VideoPlayer.frame.getX() + VideoPlayer.frame.getWidth() + 20, VideoPlayer.frame.getY());
+		}
+		else
+			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);	
+		
 		scrollBar = new JScrollBar();
 		scrollBar.setBackground(new Color(50,50,50));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
-		
-		//Add subs
-		refreshSubtitles();
 						
 		frame.addMouseWheelListener(new MouseWheelListener(){
 
@@ -259,6 +268,7 @@ public class SubtitlesEdit {
 							c.setLocation(c.getLocation().x, c.getLocation().y - scrollIncrement);
 					}
 				}
+								
 				scrollValue = scrollBar.getValue();
 		      }		
 		});
@@ -322,7 +332,56 @@ public class SubtitlesEdit {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				
-				SubtitlesEdit.isWriting = true;				
+				SubtitlesEdit.isWriting = true;		
+				
+				//Current sub number
+				int selectedSub = 0;
+				for (Component c : frame.getContentPane().getComponents())
+				{
+					if (c instanceof JTextPane)
+					{
+						selectedSub ++;
+						
+						if (c.getY() == text.getY())
+						{
+							break;
+						}
+					}
+				}
+
+				//Timline Cursor position
+				int currentSubtitle = 0;
+				for (Component c : SubtitlesTimeline.timeline.getComponents())
+				{
+					if (c instanceof JTextPane)
+					{
+						currentSubtitle ++;
+						
+						if (currentSubtitle == selectedSub)
+						{		
+							SubtitlesTimeline.cursor.setLocation(c.getX(), SubtitlesTimeline.cursor.getY());
+							VideoPlayer.sliderInChange = true;	
+
+							if (c.getX() <= 0)
+							{
+								SubtitlesTimeline.cursor.setLocation(0, SubtitlesTimeline.cursor.getLocation().y);
+								VideoPlayer.sliderIn.setValue(0);	
+							}
+							else
+							{
+								SubtitlesTimeline.cursor.setLocation(c.getX(), SubtitlesTimeline.cursor.getLocation().y);
+								VideoPlayer.sliderIn.setValue((int) ((c.getX())/SubtitlesTimeline.zoom));	
+							}
+							
+							VideoPlayer.sliderInChange = false;						
+
+							//Then refresh the slider position
+							VideoPlayer.getTimeInPoint(VideoPlayer.playerLeftTime - VideoPlayer.inputFramerateMS);
+							
+							break;
+						}
+					}
+				}				
 			}
 			
 		});
@@ -528,91 +587,117 @@ public class SubtitlesEdit {
 	}
 	
 	public static void refreshSubtitles() {
-		
-		for (Component c : frame.getContentPane().getComponents())
-		{
-			if (c instanceof JScrollBar == false)
-			{
-				frame.remove(c);
-			}
-		}		
-		
-		frame.repaint();
-
-		//IMPORTANT
-		textPosition = 12;
-		scrollBar.setValue(0);
 				
-		//Add subs
-		addSubtitles();
-
-		int i = 0;
-		for (Component c : frame.getContentPane().getComponents())
+		if (SubtitlesEdit.frame != null && SubtitlesEdit.frame.isVisible() && VideoPlayer.playerLeftIsPlaying() == false && VideoPlayer.sliderInChange == false && refreshSubs == false)		
 		{
-			if (c instanceof JTextPane)
-			{
-				i = c.getY() + c.getHeight() + 60 - frame.getHeight();
-			}
-		}
+			refreshSubs = true;
+			
+			Thread refresh = new Thread(new Runnable() {
+		
+				@Override
+				public void run() {
+		
+					for (Component c : frame.getContentPane().getComponents())
+					{
+						if (c instanceof JScrollBar == false)
+						{
+							frame.remove(c);
+						}
+					}		
+										
+					//IMPORTANT
+					textPosition = 12;
+					scrollBar.setValue(0);
+							
+					//Add subs
+					addSubtitles();
+					
+					if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+					{
+						scrollBar.setBounds(frame.getWidth() - 17, 0, 17, frame.getHeight() - 35);
+					}
+					else
+						scrollBar.setBounds(frame.getWidth() - 34, 0, 17, frame.getHeight() - 40);		
+					
+					int i = 0;
+					for (Component c : frame.getContentPane().getComponents())
+					{
+						if (c instanceof JTextPane)
+						{
+							i = c.getY() + c.getHeight() + 60 - frame.getHeight();
+						}
+					}
+									
+					if (i > 0)
+					{
+						scrollBar.setVisible(true);						
+						scrollBar.setMaximum(i);
+						frame.getContentPane().add(scrollBar);
 						
-		if (i > 0)
-		{
-			scrollBar.setVisible(true);						
-			scrollBar.setMaximum(i);
-			frame.getContentPane().add(scrollBar);
-		}
-		else
-		{
-			scrollBar.setVisible(false);		
-			frame.getContentPane().remove(scrollBar);
-		}
-
-		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-		{
-			scrollBar.setBounds(frame.getWidth() - 17, 0, 17, frame.getHeight() - 35);
-		}
-		else
-			scrollBar.setBounds(frame.getWidth() - 34, 0, 17, frame.getHeight() - 40);	
-		
-		int currentSubtitle = 0;
-		for (Component c : SubtitlesTimeline.timeline.getComponents())
-		{
-			if (c instanceof JTextPane)
-			{
-				currentSubtitle ++;
+						int currentSubtitle = 0;
+						boolean subExists = false;
+						for (Component c : SubtitlesTimeline.timeline.getComponents())
+						{
+							if (c instanceof JTextPane)
+							{
+								currentSubtitle ++;
+								
+								if (SubtitlesTimeline.cursor.getLocation().x >= c.getLocation().x && SubtitlesTimeline.cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
+								{				
+									subExists = true;
+									
+									break;
+								}
+							}
+						}
+												
+						if (subExists)
+						{
+							//Get the currentSub position
+							int currentText = 0;
+							int currentTextPosY = 0;
+							for (Component c : frame.getContentPane().getComponents())
+							{
+								if (c instanceof JTextPane)
+								{
+									currentText ++;
+									
+									if (currentText == currentSubtitle)
+									{
+										currentTextPosY = c.getY() - 12;
+										break;
+									}
+								}
+							}
+							
+							//Set the ScrollBarValue
+							if (currentTextPosY < scrollBar.getMaximum())
+							{
+								scrollBar.setValue(currentTextPosY);
+							}
+							else
+								scrollBar.setValue(scrollBar.getMaximum());	
+							
+							lastScrollBarValue = scrollBar.getValue();
+						}
+						else
+							scrollBar.setValue(lastScrollBarValue);
+					}
+					else
+					{
+						scrollBar.setVisible(false);		
+						frame.getContentPane().remove(scrollBar);
+					}
+					
+					frame.repaint();
+					
+					refreshSubs = false;		
+				}		
 				
-				if (SubtitlesTimeline.cursor.getLocation().x >= c.getLocation().x && SubtitlesTimeline.cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
-				{				
-					break;
-				}
-			}
+			});
+			
+			refresh.start();
 		}
-		
-		//Get the currentSub position
-		int currentText = 0;
-		int currentTextPosY = 0;
-		for (Component c : frame.getContentPane().getComponents())
-		{
-			if (c instanceof JTextPane)
-			{
-				currentText ++;
-				
-				if (currentText == currentSubtitle)
-				{
-					currentTextPosY = c.getY() - 12;
-					break;
-				}
-			}
-		}
-		
-		//Set the ScrollBarValue
-		if (currentTextPosY < scrollBar.getMaximum())
-		{
-			scrollBar.setValue(currentTextPosY);
-		}
-		else
-			scrollBar.setValue(scrollBar.getMaximum());		
-
 	}
 	
 	private static void updateTimeline() {

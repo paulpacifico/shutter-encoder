@@ -48,7 +48,7 @@ public class SubtitlesHelp {
 		lblHelp.setHighlighter(null);
 		lblHelp.setEditable(false);
 		lblHelp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		lblHelp.setBounds(10, 12, 420, 310);
+		lblHelp.setBounds(10, 12, 420, 320);
     	frame.getContentPane().add(lblHelp);	
 		
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))

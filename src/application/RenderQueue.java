@@ -782,7 +782,9 @@ import settings.FunctionUtils;
 				complete = 0;
 				
 				Thread render = new Thread(new Runnable() {
+					
 				public void run() {
+					
 						for (int i = 0 ; i < tableRow.getRowCount() ; i++)
 						{
 							String cli[] = tableRow.getValueAt(i, 1).toString().split(" ");

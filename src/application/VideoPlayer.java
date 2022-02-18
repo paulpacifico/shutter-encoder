@@ -213,8 +213,7 @@ public class VideoPlayer {
 		frame.setSize(1000, 640);
 		frame.setTitle(Shutter.language.getProperty("frameLecteurVideo"));
 		frame.setForeground(Color.WHITE);
-		
-		
+				
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
     		frame.setUndecorated(true);
