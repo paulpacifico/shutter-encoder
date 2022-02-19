@@ -175,7 +175,9 @@ public class ReplaceAudio extends Shutter {
 			else if (liste.getElementAt(i).equals(videoFile.toString()) == false) //Si le fichier n'est pas le fichier vidéo
 			{
 				if (caseAudioOffset.isSelected())
+				{
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(i)  + '"';
+				}
 				else if (caseInAndOut.isSelected())
 				{
 					offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);

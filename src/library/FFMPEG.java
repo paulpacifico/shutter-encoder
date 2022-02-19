@@ -1593,11 +1593,13 @@ private static StringBuilder getAll;
 		  String rawline[] = line.split(":");
 		  String fullTime[] = rawline[3].split(" ");
 		  int rawTime = (int) (Float.valueOf(fullTime[0]) * 1000);	 
-          String h = formatter.format(rawTime / 3600000);
-          String m = formatter.format((rawTime / 60000) % 60);
-          String s = formatter.format((rawTime / 1000) % 60);          
-          String f = formatter.format((int) (rawTime / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS));
-
+		  long rawFrames = (long) Math.round(rawTime / (1000 / FFPROBE.currentFPS));		  
+		  
+          String h = formatter.format(Math.round(rawFrames / Math.round(FFPROBE.currentFPS)) / 3600);
+          String m = formatter.format(Math.round((rawFrames / Math.round(FFPROBE.currentFPS)) / 60) % 60);
+          String s = formatter.format(Math.round((rawFrames / Math.round(FFPROBE.currentFPS)) % 60));          
+          String f = formatter.format(rawFrames % Math.round(FFPROBE.currentFPS));
+          
           File imageName = new File(SceneDetection.outputFolder + "/" + SceneDetection.tableRow.getRowCount() + ".png");
                     
           //Permet d'attendre la création de l'image

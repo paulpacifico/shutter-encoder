@@ -31,6 +31,7 @@ import application.SubtitlesEmbed;
 import application.Utils;
 import application.VideoPlayer;
 import application.Wetransfer;
+import library.BMXTRANSWRAP;
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
@@ -127,33 +128,54 @@ public class Rewrap extends Shutter {
 								continue;						
 						}
 						
-						//Concat mode
-						String concat = FunctionUtils.setConcat(file, labelOutput);					
-						if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
-							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
-						else
-							concat = " -noaccurate_seek";
-										
-						//Command
-						String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
-						FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
+						//OPATOM creation
+						if (caseCreateOPATOM.isSelected())
+						{							
+							String key = FunctionUtils.getRandomHexString().toUpperCase();
+							
+							if (Settings.btnExtension.isSelected())
+								key = Settings.txtExtension.getText();
+
+							lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
+																									
+							BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName + '"' + " " + '"' + file + '"');
 						
-						do
-						{
-							Thread.sleep(100);
+							do
+							{
+								Thread.sleep(100);
+							}
+							while (BMXTRANSWRAP.isRunning);				
 						}
-						while(FFMPEG.runProcess.isAlive());
-						
-						if (FFMPEG.error)
+						else //FFMPEG
 						{
-							cmd = " -avoid_negative_ts make_zero -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
-							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
+							//Concat mode
+							String concat = FunctionUtils.setConcat(file, labelOutput);					
+							if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+								file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
+							else
+								concat = " -noaccurate_seek";
+														
+							//Command
+							String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
+							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 							
 							do
 							{
 								Thread.sleep(100);
 							}
 							while(FFMPEG.runProcess.isAlive());
+							
+							if (FFMPEG.error)
+							{
+								cmd = " -avoid_negative_ts make_zero -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
+								FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
+								
+								do
+								{
+									Thread.sleep(100);
+								}
+								while(FFMPEG.runProcess.isAlive());
+							}
 						}
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
