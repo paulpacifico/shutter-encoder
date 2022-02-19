@@ -4703,10 +4703,10 @@ public class Shutter {
 		lblIsInterpret.setSize(20, 16);
 		lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
 		grpResolution.add(lblIsInterpret);		
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()));
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 		{
 			lblIsInterpret.setVisible(false);
-		}		
+		}				
 		
 		iconTVInterpret = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVInterpret.setHorizontalAlignment(SwingConstants.CENTER);
@@ -10537,6 +10537,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseCreateOPATOM.isSelected())
 				{
 					setDestinationTabs(2);		
@@ -10546,12 +10547,23 @@ public class Shutter {
 						JOptionPane.showMessageDialog(frame, language.getProperty("opatomNoSound"), caseCreateOPATOM.getText(), JOptionPane.WARNING_MESSAGE);
 					}
 					
-				} else {
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
+					{
+						comboFilter.setSelectedItem(".mxf");
+					}
+				} 
+				else 
+				{
 					if (caseChangeFolder1.isSelected() == false)
 						lblDestination1.setText(language.getProperty("sameAsSource"));
 					
 					if (caseCreateTree.isSelected() == false)
 						setDestinationTabs(6);		
+					
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
+					{
+						comboFilter.setSelectedItem(language.getProperty("aucun"));
+					}
 				}		
 			}	
 		});
@@ -10573,8 +10585,11 @@ public class Shutter {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (lblOPATOM.getText().equals("OP-Atom"))
+				
+				if (lblOPATOM.getText().equals("OP-Atom") && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) == false)
+				{
 					lblOPATOM.setText("OP1a");
+				}
 				else 
 					lblOPATOM.setText("OP-Atom");
 			}
@@ -10678,9 +10693,9 @@ public class Shutter {
 		comboConform.setEditable(false);
 		comboConform.setSize(100, 16);
 
-		lblToConform = new JLabel(language.getProperty("at") + language.getProperty("colon"));
+		lblToConform = new JLabel(">");
 		lblToConform.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblToConform.setSize(lblToConform.getPreferredSize().width, 16);
+		lblToConform.setSize(lblToConform.getPreferredSize().width + 1, 16);
 
 		comboFPS = new JComboBox<String>();
 		comboFPS.setName("comboFPS");
@@ -14320,6 +14335,12 @@ public class Shutter {
 								grpAdvanced.add(casePreserveSubs);				
 								casePreserveMetadata.setLocation(7, casePreserveSubs.getLocation().y + 17);
 								grpAdvanced.add(casePreserveMetadata);	
+								caseCreateOPATOM.setLocation(7, casePreserveMetadata.getLocation().y + 17);
+								grpAdvanced.add(caseCreateOPATOM);						
+								lblOPATOM.setLocation(caseCreateOPATOM.getLocation().x + caseCreateOPATOM.getWidth() + 4, caseCreateOPATOM.getLocation().y + 3);
+								grpAdvanced.add(lblOPATOM);
+								lblCreateOPATOM.setLocation(lblOPATOM.getX() + lblOPATOM.getWidth() + 4, caseCreateOPATOM.getLocation().y);
+								grpAdvanced.add(lblCreateOPATOM);	
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
 							}
 							else if (language.getProperty("functionMerge").equals(function))
@@ -14737,7 +14758,7 @@ public class Shutter {
 							grpAdvanced.add(caseConform);
 							comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboConform);								
-							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
+							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y - 2);
 							grpAdvanced.add(lblToConform);							
 							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
@@ -15034,7 +15055,7 @@ public class Shutter {
 							grpAdvanced.add(caseConform);
 							comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboConform);							
-							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
+							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y - 2);
 							grpAdvanced.add(lblToConform);							
 							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
@@ -15482,7 +15503,7 @@ public class Shutter {
 							grpAdvanced.add(caseConform);
 							comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboConform);							
-							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
+							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y - 2);
 							grpAdvanced.add(lblToConform);							
 							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
@@ -15905,7 +15926,7 @@ public class Shutter {
 							grpAdvanced.add(caseConform);
 							comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboConform);							
-							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y);
+							lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4, comboConform.getLocation().y - 2);
 							grpAdvanced.add(lblToConform);							
 							comboFPS.setLocation(lblToConform.getX() + lblToConform.getWidth() + 3, caseConform.getLocation().y + 4);
 							grpAdvanced.add(comboFPS);
