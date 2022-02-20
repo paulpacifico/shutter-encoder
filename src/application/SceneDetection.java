@@ -472,87 +472,81 @@ import javax.swing.JScrollPane;
 						int countItemsEDL = 0;
 				    	for (int i = 0 ; i < tableRow.getRowCount(); i++)
 						{   							
-							String timecodeStart = String.valueOf(tableRow.getValueAt(i, 2));
+
+				    		///////////////////////////////////IN POINT
+				    		
+				    		String timecodeStart = String.valueOf(tableRow.getValueAt(i, 2));
 							String tcStart[] = timecodeStart.split(":");
-							int tcStartToMs = (int) (Integer.valueOf(tcStart[0]) * 3600000 + Integer.valueOf(tcStart[1]) * 60000 + Integer.valueOf(tcStart[2]) * 1000 + Integer.valueOf(tcStart[3]) * (1000 / FFPROBE.currentFPS));
-							
-			    			NumberFormat formatter = new DecimalFormat("00");
-			    			String tcInTimeLine = (formatter.format(tcStartToMs / 3600000)) 
-			    					+ ":" + (formatter.format((tcStartToMs / 60000) % 60))
-			    					+ ":" + (formatter.format((tcStartToMs / 1000) % 60)) 		
-			    					+ ":" + (formatter.format((int) (tcStartToMs / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));
+			    			String tcIn = tcStart[0] + ":" + tcStart[1] + ":" + tcStart[2] + ":" + tcStart[3];
 			    			
-			    			//Timecode Initial de la vidéo
-			    			int preTcMs; 
-			    			if (FFPROBE.timecode1 != "" && FFPROBE.timecode2 != "" && FFPROBE.timecode3 != "" && FFPROBE.timecode4 != "" )
+			    			//Timecode offset
+			    			long offset; 
+			    			if (tcStart[0] != "" && FFPROBE.timecode2 != "" && FFPROBE.timecode3 != "" && FFPROBE.timecode4 != "" )
 			    			{    			
-		    					preTcMs = (int) (Integer.parseInt(FFPROBE.timecode1) * 3600000 
-		    					+ Integer.parseInt(FFPROBE.timecode2) * 60000 
-		    					+ Integer.parseInt(FFPROBE.timecode3) * 1000 
-		    					+ (Integer.parseInt(FFPROBE.timecode4) * (1000 / FFPROBE.currentFPS)));
+		    					offset = Math.round(Integer.parseInt(FFPROBE.timecode1) * 3600 * Math.round(FFPROBE.currentFPS))
+	    							+ Math.round(Integer.parseInt(FFPROBE.timecode2) * 60 * Math.round(FFPROBE.currentFPS))
+	    							+ Math.round(Integer.parseInt(FFPROBE.timecode3) * Math.round(FFPROBE.currentFPS))
+	    							+ Integer.parseInt(FFPROBE.timecode4);
 			    			}
 			    			else
-			    				preTcMs = 0;
+			    				offset = 0;
 			    			
-			    			//Timecode de la coupe
-			    			int preTcInVideo = (int) (Integer.parseInt(tcStart[0]) * 3600000 
-			    					+ Integer.parseInt(tcStart[1]) * 60000 
-			    					+ Integer.parseInt(tcStart[2]) * 1000 
-			    					+ (Integer.parseInt(tcStart[3]) * (1000 / FFPROBE.currentFPS))); 	
+			    			//Timecode of start point	
+			    			long totalFramesIn = Math.round(Integer.parseInt(tcStart[0]) * 3600 * Math.round(FFPROBE.currentFPS))
+			    					+ Math.round(Integer.parseInt(tcStart[1]) * 60 * Math.round(FFPROBE.currentFPS))
+			    					+ Math.round(Integer.parseInt(tcStart[2]) * Math.round(FFPROBE.currentFPS))
+			    					+ Integer.parseInt(tcStart[3]);
 			    			
 			    			//Total
-			    			int totalTcIn = (preTcMs + preTcInVideo);
+			    			totalFramesIn = (offset + totalFramesIn);
 			    			
-			    			//Mise en forme
-			    			String tcInVideo = (formatter.format(totalTcIn / 3600000)) 
-			    					+ ":" + (formatter.format((totalTcIn / 60000) % 60))
-			    					+ ":" + (formatter.format((totalTcIn / 1000) % 60)) 		
-			    					+ ":" + (formatter.format((int) (totalTcIn / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));							
+			    			NumberFormat formatter = new DecimalFormat("00");
 			    			
-			    			int tcEndToMS;
-			    			int preTcOutVideo;
-			    			String tcOutVideo;
+			    			//Convert total frames to timecode	        
+			    			String tcInVideo = formatter.format(Math.round(totalFramesIn / Math.round(FFPROBE.currentFPS)) / 3600)
+			    					+ ":" + formatter.format(Math.round((totalFramesIn / Math.round(FFPROBE.currentFPS)) / 60) % 60)
+		    						+ ":" + formatter.format(Math.round((totalFramesIn / Math.round(FFPROBE.currentFPS)) % 60))        
+	    							+ ":" + formatter.format(totalFramesIn % Math.round(FFPROBE.currentFPS));
+			    			
+			    			///////////////////////////////////OUT POINT
+			    			
+			    			long totalFramesOut = 0;
 			    			if (i < tableRow.getRowCount() - 1)
 			    			{
 								String timecodeEnd = String.valueOf(tableRow.getValueAt(i + 1, 2));
 								String tcEnd[] = timecodeEnd.split(":");
-								tcEndToMS = (int) (Integer.valueOf(tcEnd[0]) * 3600000 + Integer.valueOf(tcEnd[1]) * 60000 + Integer.valueOf(tcEnd[2]) * 1000 + Integer.valueOf(tcEnd[3]) * (1000 / FFPROBE.currentFPS));
-	
-				    			//Timecode de la coupe
-				    			 preTcOutVideo = (int) (Integer.parseInt(tcEnd[0]) * 3600000 
-				    					+ Integer.parseInt(tcEnd[1]) * 60000 
-				    					+ Integer.parseInt(tcEnd[2]) * 1000 
-				    					+ (Integer.parseInt(tcEnd[3]) * (1000 / FFPROBE.currentFPS))); 	
+
+				    			//Timecode of the cut
+								totalFramesOut = Math.round(Integer.parseInt(tcEnd[0]) * 3600 * Math.round(FFPROBE.currentFPS))
+				    					+ Math.round(Integer.parseInt(tcEnd[1]) * 60 * Math.round(FFPROBE.currentFPS))
+				    					+ Math.round(Integer.parseInt(tcEnd[2]) * Math.round(FFPROBE.currentFPS))
+				    					+ Integer.parseInt(tcEnd[3]);
 			    			}
-			    			else //Si c'est le dernier fichier on récupère la durée de la vidéo
+			    			else //On last the cut we take the length of the video
 							{								
-								String tc[] = FFPROBE.getVideoLengthTC.split(":");
-								int h = (Integer.valueOf(tc[0]) * 3600000);
-								int m = (Integer.valueOf(tc[1]) * 60000);
-								int s = (Integer.valueOf(tc[2]) * 1000);
-								int f = (int) (Integer.valueOf(tc[3]) * 10);
-										
-								tcEndToMS = (h+m+s+f);
-															
-				    			//Timecode de la coupe
-				    			preTcOutVideo = tcEndToMS;			
+								String tc[] = FFPROBE.getVideoLengthTC.split(":");		
+
+								totalFramesOut = Math.round(Integer.parseInt(tc[0]) * 3600 * Math.round(FFPROBE.currentFPS))
+			    					+ Math.round(Integer.parseInt(tc[1]) * 60 * Math.round(FFPROBE.currentFPS))
+			    					+ Math.round(Integer.parseInt(tc[2]) * Math.round(FFPROBE.currentFPS))
+			    					+ (int) (Integer.parseInt(tc[3]) * 10) / (1000 / Math.round(FFPROBE.currentFPS));	
 							}							
 							
-			    			//Total
-			    			int totalTcOut = (preTcMs + preTcOutVideo);
+			    			//Set timeline outpoint = no offset
+			    			String tcOutTimeLine = formatter.format(Math.round(totalFramesOut / Math.round(FFPROBE.currentFPS)) / 3600)
+			    					+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) / 60) % 60)
+		    						+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) % 60))        
+	    							+ ":" + formatter.format(totalFramesOut % Math.round(FFPROBE.currentFPS));
 			    			
-			    			//Mise en forme
-			    			tcOutVideo = (formatter.format(totalTcOut / 3600000)) 
-			    					+ ":" + (formatter.format((totalTcOut / 60000) % 60))
-			    					+ ":" + (formatter.format((totalTcOut / 1000) % 60)) 		
-			    					+ ":" + (formatter.format((int) (totalTcOut / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));	
+			    			//Adding the offset for tcOutVideo
+			    			totalFramesOut = (offset + totalFramesOut);
 			    			
-			    			
-			    			String tcOutTimeLine = (formatter.format(tcEndToMS / 3600000)) 
-			    					+ ":" + (formatter.format((tcEndToMS / 60000) % 60))
-			    					+ ":" + (formatter.format((tcEndToMS / 1000) % 60)) 		
-			    					+ ":" + (formatter.format((int) (tcEndToMS / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));
-			    			
+			    			//Convert total frames to timecode	        
+			    			String tcOutVideo = formatter.format(Math.round(totalFramesOut / Math.round(FFPROBE.currentFPS)) / 3600)
+			    					+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) / 60) % 60)
+		    						+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) % 60))        
+	    							+ ":" + formatter.format(totalFramesOut % Math.round(FFPROBE.currentFPS));
+
 							String cutName;
 							String ext = outputFile.toString().substring(outputFile.toString().lastIndexOf("."));
 							if (i % 2 == 0)
@@ -560,12 +554,12 @@ import javax.swing.JScrollPane;
 							else
 								cutName = outputFile.toString().replace(" ", "_").replace(ext, "_" + Shutter.language.getProperty("cut") + ext);
 			    																	
-							writer.println(formatEDL.format(countItemsEDL + 1) + "  " + cutName + " V     C        " + tcInVideo + " " + tcOutVideo + " " + tcInTimeLine + " " + tcOutTimeLine);
-							writer.println(formatEDL.format(countItemsEDL + 2) + "  " + cutName + " A     C        " + tcInVideo + " " + tcOutVideo + " " + tcInTimeLine + " " + tcOutTimeLine);
-							writer.println(formatEDL.format(countItemsEDL + 3) + "  " + cutName + " A2    C        " + tcInVideo + " " + tcOutVideo + " " + tcInTimeLine + " " + tcOutTimeLine);
+							writer.println(formatEDL.format(countItemsEDL + 1) + "  " + cutName + " V     C        " + tcInVideo + " " + tcOutVideo + " " + tcIn + " " + tcOutTimeLine);
+							writer.println(formatEDL.format(countItemsEDL + 2) + "  " + cutName + " A     C        " + tcInVideo + " " + tcOutVideo + " " + tcIn + " " + tcOutTimeLine);
+							writer.println(formatEDL.format(countItemsEDL + 3) + "  " + cutName + " A2    C        " + tcInVideo + " " + tcOutVideo + " " + tcIn + " " + tcOutTimeLine);
 							
 							countItemsEDL += 3;	
-						} //End for
+						}
 				    	
 				    } catch (Exception e){
 				    	System.out.println(e);
@@ -574,7 +568,7 @@ import javax.swing.JScrollPane;
 					writer.close();	
 					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("fileCreated"), "EDL", JOptionPane.INFORMATION_MESSAGE);
 						
-					}//End run
+					}
 					
 			    }); runProcess.start();					
 				}
