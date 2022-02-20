@@ -11333,7 +11333,7 @@ public class Shutter {
 		comboForceSpeed.setName("comboForceSpeed");
 		comboForceSpeed.setEnabled(false);
 		comboForceSpeed.setMaximumRowCount(15);
-		comboForceSpeed.setModel(new DefaultComboBoxModel<String>(new String[] { "0","1","2","3","4","5","6","7","8"}));
+		comboForceSpeed.setModel(new DefaultComboBoxModel<String>(new String[] { "0","1","2","3","4","5","6","7","8","10","11","12","13"}));
 		comboForceSpeed.setSelectedIndex(4);
 		comboForceSpeed.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		comboForceSpeed.setEditable(false);
