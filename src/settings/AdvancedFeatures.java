@@ -63,8 +63,8 @@ public class AdvancedFeatures extends Shutter {
 				 {
 					 return " -preset " + Shutter.comboForceSpeed.getSelectedItem().toString();
 				 }
-				
-				break;			
+				 else
+					 return " -preset 8";		
 			
 			case "H.264":
 			case "H.265":
