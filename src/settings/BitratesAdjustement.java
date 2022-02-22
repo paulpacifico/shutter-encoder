@@ -28,8 +28,7 @@ public class BitratesAdjustement extends Shutter {
 	public static int DVDBitrate;
 	
 	public static String setResolution() {		
-		
-		String resolution  = comboH264Taille.getSelectedItem().toString();		
+				
         if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) && caseRognage.isSelected() == false)
         {
         	return "";
@@ -45,7 +44,18 @@ public class BitratesAdjustement extends Shutter {
         	return " -s " + s[0] + "x" + (int) ((float)ow/((float)iw/ih));	
         }
         else
-        	return " -s " + resolution;	
+        {
+        	String s[] = FFPROBE.imageResolution.split("x");
+    		
+        	if (comboH264Taille.getSelectedItem().toString().contains("%"))
+			{
+				double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
+				
+				return " -s " + (int) (Integer.parseInt(s[0]) * value) + "x" + (int) (Integer.parseInt(s[1]) * value);
+			}
+			else										
+				return " -s " + comboH264Taille.getSelectedItem().toString();
+        }
 	}
 	
 	public static String setPass(String outputFile) {

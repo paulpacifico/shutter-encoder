@@ -762,8 +762,8 @@ private static StringBuilder getAll;
 				if (caseRognerImage.isSelected())
 					filter = " -vf " + cropFinal;
 				
-				if (comboResolution.getSelectedItem().toString().contains(":")) {
-					
+				if (comboResolution.getSelectedItem().toString().contains(":"))
+				{					
 		        	if (comboResolution.getSelectedItem().toString().contains("auto"))
 		        	{
 		        		String s[] = comboResolution.getSelectedItem().toString().split(":");
@@ -779,9 +779,21 @@ private static StringBuilder getAll;
 			    		frameSize = "scale=iw*" + number + ":ih*" + number;
 		        	}
 					
-				} else if (comboResolution.getSelectedItem().toString().contains("x")) {
+				}
+				else
+				{
 					String i[] = FFPROBE.imageResolution.split("x");
-		        	String o[] = comboResolution.getSelectedItem().toString().split("x");         	
+		        	String o[] = FFPROBE.imageResolution.split("x");
+					
+					if (comboResolution.getSelectedItem().toString().contains("%"))
+					{
+						double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+												
+						o[0] = String.valueOf((int) (Integer.parseInt(i[0]) * value));
+						o[1] = String.valueOf((int) (Integer.parseInt(i[1]) * value));
+					}
+					else					
+						o = comboResolution.getSelectedItem().toString().split("x");	
 		
 		        	int iw = Integer.parseInt(i[0]);
 		        	int ih = Integer.parseInt(i[1]);		        	

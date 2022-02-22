@@ -133,7 +133,17 @@ public class Overlay extends Shutter {
 					else if (comboScale != null && comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false && lblPad.getText().equals(language.getProperty("lblStretch")) == false
 					&& (caseRognage.isSelected() == false || caseRognage.isSelected() && lblPad.getText().equals(Shutter.language.getProperty("lblCrop"))))
 					{
-						String s[] = comboScale.getSelectedItem().toString().split("x");
+						String s[] = FFPROBE.imageResolution.split("x");	
+						
+						if (comboScale.getSelectedItem().toString().contains("%"))
+						{
+							double value = (double) Integer.parseInt(comboScale.getSelectedItem().toString().replace("%", "")) / 100;
+							
+							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+						}					
+						else							
+							s = comboScale.getSelectedItem().toString().split("x");
 						
 						int iw = Integer.parseInt(i[0]);
 						int ih = Integer.parseInt(i[1]);
@@ -157,7 +167,18 @@ public class Overlay extends Shutter {
 					
 					if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 					{
-						String s[] = comboScale.getSelectedItem().toString().split("x");
+						String s[] = FFPROBE.imageResolution.split("x");	
+						
+						if (comboScale.getSelectedItem().toString().contains("%"))
+						{
+							double value = (double) Integer.parseInt(comboScale.getSelectedItem().toString().replace("%", "")) / 100;
+							
+							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+						}					
+						else					
+							s = comboScale.getSelectedItem().toString().split("x");
+						
 			        	int iw = Integer.parseInt(i[0]);
 			        	int ih = Integer.parseInt(i[1]);
 			        	int ow = Integer.parseInt(s[0]);
@@ -257,7 +278,17 @@ public class Overlay extends Shutter {
         	}
         	else if (comboScale != null && comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
         	{
-	        	String s[] = comboScale.getSelectedItem().toString().split("x");
+        		String s[] = FFPROBE.imageResolution.split("x");	
+				
+        		if (comboScale.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboScale.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+					s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+				}					
+				else					
+					s = comboScale.getSelectedItem().toString().split("x");
 	        		        	
 	        	int iw = Integer.parseInt(i[0]);
 	        	int ow = Integer.parseInt(s[0]);  

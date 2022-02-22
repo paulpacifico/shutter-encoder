@@ -114,14 +114,23 @@ public class Image extends Shutter {
 				if (filterComplex != "")
 					filterComplex += "[c];[c]";
 				
-				String s[] = FFPROBE.imageResolution.split("x");
+				String s[] = FFPROBE.imageResolution.split("x");	
 				if (caseRognage.isSelected())
 				{
 					filterComplex += "pad=" + FFPROBE.imageResolution.replace("x", ":") + ":(ow-iw)*0.5:(oh-ih)*0.5";
 				}
 				else
 				{
-					s = comboH264Taille.getSelectedItem().toString().split("x");
+					if (comboH264Taille.getSelectedItem().toString().contains("%"))
+					{
+						double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
+						
+						s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+						s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+					}					
+					else		
+						s = comboH264Taille.getSelectedItem().toString().split("x");
+					
 					filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad="+s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
 				}
 			}
@@ -132,7 +141,17 @@ public class Image extends Shutter {
 		{
 			if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{
-				String s[] = comboScale.getSelectedItem().toString().split("x");
+				String s[] = FFPROBE.imageResolution.split("x");	
+				
+				if (comboScale.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboScale.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+					s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+				}					
+				else
+					s = comboScale.getSelectedItem().toString().split("x");
 				
 	        	if (filterComplex != "") filterComplex += ",";
 				

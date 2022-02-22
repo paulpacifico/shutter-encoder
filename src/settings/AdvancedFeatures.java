@@ -176,7 +176,17 @@ public class AdvancedFeatures extends Shutter {
 		            
 		        	String s[] = FFPROBE.imageResolution.split("x");
 		        	if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-		        		s = comboH264Taille.getSelectedItem().toString().split("x");
+		        	{
+		        		if (comboH264Taille.getSelectedItem().toString().contains("%"))
+						{
+							double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
+							
+							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+						}
+						else					
+							s = comboH264Taille.getSelectedItem().toString().split("x");
+		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);
 		            int height = Integer.parseInt(s[1]); 
@@ -235,7 +245,17 @@ public class AdvancedFeatures extends Shutter {
 		        	
 		        	String s[] = FFPROBE.imageResolution.split("x");
 		        	if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-		        		s = comboH264Taille.getSelectedItem().toString().split("x");
+		        	{
+		        		if (comboH264Taille.getSelectedItem().toString().contains("%"))
+						{
+							double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
+							
+							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+						}
+						else					
+							s = comboH264Taille.getSelectedItem().toString().split("x");
+		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);
 		            int height = Integer.parseInt(s[1]); 
