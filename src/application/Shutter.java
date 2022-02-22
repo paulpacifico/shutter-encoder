@@ -4478,7 +4478,7 @@ public class Shutter {
 				}
 				
 				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != 'x'
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != 'x' && caracter != '%'
 						|| String.valueOf(caracter).matches("[éèçàù]"))
 					e.consume();
 			}
@@ -11754,7 +11754,9 @@ public class Shutter {
 							comboH264Taille.removeAllItems();
 				        	
 							if (ratioFinal == 0)
+							{
 								caseRognage.setSelected(false);
+							}
 							else if (ratioFinal < (float) Integer.parseInt(i[0]) / Integer.parseInt(i[1]))
 							{
 								Integer cropValue = (int) (Math.floor(Integer.parseInt(i[1]) * ratioFinal));
@@ -11809,6 +11811,8 @@ public class Shutter {
 					comboH264Taille.addItem("720x576");
 					comboH264Taille.addItem("640x360");
 					comboH264Taille.addItem("320x180");
+					comboH264Taille.addItem("50%");
+					comboH264Taille.addItem("25%");
 					comboH264Taille.setSelectedIndex(0);
 					comboH264Taille.setEnabled(true);
 				}
@@ -11865,13 +11869,13 @@ public class Shutter {
 		comboH264Taille = new JComboBox<String>();
 		comboH264Taille.setName("comboH264Taille");
 		comboH264Taille.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
-						"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180" }));
+						"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "50%", "25%" }));
 		comboH264Taille.setMaximumRowCount(20);
 		comboH264Taille.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		comboH264Taille.setEditable(true);
 		comboH264Taille.setBounds(86, 71, 118, 22);
 		grpH264.add(comboH264Taille);
-
+		
 		comboH264Taille.getEditor().getEditorComponent().addKeyListener(new KeyListener() {
 
 			@Override
@@ -11880,7 +11884,7 @@ public class Shutter {
 				lblPad.setText(language.getProperty("lblPad"));
 				
 				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != 'x'
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != 'x' && caracter != '%'
 						|| String.valueOf(caracter).matches("[éèçàù]"))
 					e.consume();
 			}
@@ -11894,7 +11898,7 @@ public class Shutter {
 			}
 
 		});
-
+		
 		lblPad = new JLabel() {			
 			@Override
 			public void paintComponent(Graphics g) {
@@ -12428,6 +12432,8 @@ public class Shutter {
 				comboH264Taille.addItem("720x576");
 				comboH264Taille.addItem("640x360");
 				comboH264Taille.addItem("320x180");
+				comboH264Taille.addItem("50%");
+				comboH264Taille.addItem("25%");
 				comboH264Taille.setSelectedIndex(0);
 				
 				// grpSetAudio	
@@ -14662,10 +14668,10 @@ public class Shutter {
 							}
 							else
 							{
-								if (comboResolution.getItemCount() != 12)
+								if (comboResolution.getItemCount() != 14)
 								{
 									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
-											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180" }));
+											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "50%", "25%" }));
 								}
 							}
 							
@@ -14892,10 +14898,10 @@ public class Shutter {
 							}
 							else
 							{
-								if (comboResolution.getItemCount() != 12)
+								if (comboResolution.getItemCount() != 14)
 								{
 									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
-											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180" }));
+											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "50%", "25%" }));
 								}
 							}
 							
