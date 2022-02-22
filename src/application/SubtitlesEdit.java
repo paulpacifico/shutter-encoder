@@ -274,7 +274,8 @@ public class SubtitlesEdit {
 		});
 		
 		frame.setVisible(true);
-		frame.repaint();		
+		frame.repaint();			
+
 	}
 	
 	private static JTextPane addText(String subContent) {
@@ -292,6 +293,31 @@ public class SubtitlesEdit {
 			public void keyPressed(KeyEvent e) {
 
 				keyboardTime = System.currentTimeMillis();
+				
+				boolean control = false;
+				boolean shift = false;
+				
+				if ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)
+				{								        
+					control = true;
+					
+					if (e.getKeyCode() == KeyEvent.VK_SHIFT)
+						shift = true;	
+				}
+				
+				if (control)
+				{													        
+			        if (e.getKeyCode() == KeyEvent.VK_Z && shift == false) 
+			        {
+			        	SubtitlesTimeline.loadBackupSubtitles();		
+			        }
+			        else if (e.getKeyCode() == KeyEvent.VK_Z && shift || e.getKeyCode() == KeyEvent.VK_Y)
+			        {
+			        	SubtitlesTimeline.loadRestoreSubtitles();	
+			        }							
+				}	
+				
+				text.requestFocus();
 								
 			}
 

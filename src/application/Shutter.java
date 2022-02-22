@@ -170,7 +170,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "15.8";
+	public static String actualVersion = "15.9";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
@@ -17416,7 +17416,8 @@ public class Shutter {
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
-	public static void enfOfFunction() {		
+	public static void enfOfFunction() {	
+		
 		//Affichage des erreurs
 		String[] FFPROBESplit = Console.consoleFFPROBE.getText().split(System.lineSeparator());
 		String[] FFMPEGSplit = Console.consoleFFMPEG.getText().split(System.lineSeparator());
@@ -17454,12 +17455,16 @@ public class Shutter {
 			
 			if (result == JOptionPane.NO_OPTION)
 			{
-				if (Console.frmConsole != null) {
+				if (Console.frmConsole != null)
+				{
 					if (Console.frmConsole.isVisible())
+					{
 						Console.frmConsole.toFront();
+					}
 					else
 						new Console();
-				} else
+				} 
+				else
 					new Console();
 			}
 			
@@ -17510,16 +17515,20 @@ public class Shutter {
 		{
 			RenderQueue.tableRow.setRowCount(0);
 		}
+
 						
 		enableAll();
 		Utils.yesToAll = false;
 		Utils.noToAll = false;
 
-		if (cancelled == true) {
+		if (cancelled == true)
+		{
 			lblCurrentEncoding.setForeground(Color.RED);
 			lblCurrentEncoding.setText(language.getProperty("processCancelled"));
 			progressBar1.setValue(0);
-		} else {
+		}
+		else
+		{
 			lblCurrentEncoding.setText(language.getProperty("processEnded"));
 			if (progressBar1.getMaximum() == 0)
 				progressBar1.setMaximum(1);

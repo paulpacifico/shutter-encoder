@@ -1129,7 +1129,7 @@ public class SubtitlesTimeline {
 					if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
 						btnDelete.doClick();
 					
-					if (e.getKeyCode() == KeyEvent.VK_C)
+					if (e.getKeyCode() == KeyEvent.VK_C && control == false)
 						btnCut.doClick();
 					
 					if (e.getKeyCode() == KeyEvent.VK_UP)
@@ -1515,7 +1515,7 @@ public class SubtitlesTimeline {
 							btnCut.setEnabled(true);
 							
 							//Updating SubtitleEdit frame	
-							if (frame.hasFocus() || txtSubtitles.hasFocus())						
+							if (VideoPlayer.frameLeftControl == false && (frame.hasFocus() || txtSubtitles.hasFocus()))						
 							{
 								SubtitlesEdit.refreshSubtitles();	
 							}
@@ -2231,7 +2231,7 @@ public class SubtitlesTimeline {
 		timeIn = 0;
 	}
 	
-	private static void loadBackupSubtitles() {		
+	public static void loadBackupSubtitles() {		
 		//Load backup File
 		File backupFile = new File(dirTemp + "/backup_1.srt");
 		
@@ -2279,7 +2279,7 @@ public class SubtitlesTimeline {
 		}
 	}
 	
-	private static void loadRestoreSubtitles() {
+	public static void loadRestoreSubtitles() {
 		
 		File restoreFile = new File(dirTemp + "/restore_1.srt");
 		
