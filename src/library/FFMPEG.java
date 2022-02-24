@@ -1090,7 +1090,7 @@ private static StringBuilder getAll;
 							{								
 								String s[] = line.split("\\]");
 								
-								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.UTF_8);
+								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.ISO_8859_1);
 								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
 								
 								audioDevices.append(":" + utf8EncodedString);
@@ -1105,7 +1105,7 @@ private static StringBuilder getAll;
 							{						
 								String s[] = line.split("\\]");
 								
-								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.UTF_8);
+								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.ISO_8859_1);
 								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
 								
 								videoDevices.append(":" + utf8EncodedString);
@@ -1145,7 +1145,7 @@ private static StringBuilder getAll;
 							{
 								String s[] = line.split("\"");
 								
-								byte[] bytes = s[1].getBytes(StandardCharsets.UTF_8);
+								byte[] bytes = s[1].getBytes(StandardCharsets.ISO_8859_1);
 								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
 								
 								audioDevices.append(":" + utf8EncodedString);
@@ -1155,7 +1155,7 @@ private static StringBuilder getAll;
 							{
 								String s[] = line.split("\"");
 								
-								byte[] bytes = s[1].getBytes(StandardCharsets.UTF_8);
+								byte[] bytes = s[1].getBytes(StandardCharsets.ISO_8859_1);
 								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
 								
 								videoDevices.append(":" + utf8EncodedString);
