@@ -1158,7 +1158,7 @@ public class VideoEncoders extends Shutter {
 		
 			case "XAVC":
 				
-				return " -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
+				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
 		}
 		
 		return "";		
