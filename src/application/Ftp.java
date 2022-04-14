@@ -91,13 +91,14 @@ public class Ftp {
 	private static int MousePositionY;
 	
 	public Ftp() {
+		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFtp"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(267, 185);
+		frame.setSize(267, 165);
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setAlwaysOnTop(true);		
@@ -131,9 +132,9 @@ public class Ftp {
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 		topPanel.add(quit);
-		topPanel.setBounds(0, 0, 267, 44);
+		topPanel.setBounds(0, 0, 267, 28);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -173,8 +174,8 @@ public class Ftp {
 
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFtp"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 44);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, -2, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 16));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -229,33 +230,34 @@ public class Ftp {
 	}
 
 	private void grpFtp() {
+		
 		lblFtp = new JLabel(Shutter.language.getProperty("lblFtp"));
-		lblFtp.setBounds(10, 56, 90, 16);
+		lblFtp.setBounds(10, 36, 90, 16);
 		lblFtp.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblFtp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblFtp);		
 
-		textFtp.setBounds(101, 55, 154, 21);
+		textFtp.setBounds(101, lblFtp.getY() - 1, 154, 21);
 		textFtp.setName("textFtp");
 		frame.getContentPane().add(textFtp);
 		textFtp.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFtp.setColumns(10);		
-				
-		textUser.setBounds(101, 88, 154, 21);
-		textUser.setName("textUser");
-		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		textUser.setColumns(10);
-		frame.getContentPane().add(textUser);
-				
+								
 		lblUtilisateur = new JLabel(Shutter.language.getProperty("lblUser"));
-		lblUtilisateur.setBounds(10, 89, 90, 16);
+		lblUtilisateur.setBounds(10, 69, 90, 16);
 		lblUtilisateur.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblUtilisateur.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblUtilisateur);		
 			
+		textUser.setBounds(101, lblUtilisateur.getY() - 1, 154, 21);
+		textUser.setName("textUser");
+		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		textUser.setColumns(10);
+		frame.getContentPane().add(textUser);
+		
 		lblMotDePasse = new JLabel(Shutter.language.getProperty("lblPassword"));
 		lblMotDePasse.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblMotDePasse.setBounds(8, 123, 92, 16);
+		lblMotDePasse.setBounds(8, 103, 92, 16);
 		frame.getContentPane().add(lblMotDePasse);
 		
 		lblMotDePasse.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -263,12 +265,12 @@ public class Ftp {
 		textPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPassword.setColumns(10);
 		textPassword.setEchoChar('•');
-		textPassword.setBounds(101, 122, 154, 21);
+		textPassword.setBounds(101, lblMotDePasse.getY() - 1, 154, 21);
 		frame.getContentPane().add(textPassword);
 				
 		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
 		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnReset.setBounds(12, textPassword.getX() + textPassword.getHeight() + 32, frame.getWidth() / 2 - 12, 21);		
+		btnReset.setBounds(12, textPassword.getY() + textPassword.getHeight() + 12, frame.getWidth() / 2 - 12, 21);		
 		frame.getContentPane().add(btnReset);	
 		
 		btnReset.addActionListener(new ActionListener(){
@@ -288,7 +290,7 @@ public class Ftp {
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnOK.setBounds(btnReset.getX() + btnReset.getWidth() + 4, textPassword.getX() + textPassword.getHeight() + 32, frame.getWidth() / 2 - 12 - 4, 21);		
+		btnOK.setBounds(btnReset.getX() + btnReset.getWidth() + 4, btnReset.getY(), frame.getWidth() / 2 - 12 - 4, 21);		
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener(){

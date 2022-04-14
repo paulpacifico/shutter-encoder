@@ -104,12 +104,12 @@ import settings.FunctionUtils;
 	public RenderQueue() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFileDeRendus"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(600, 348);
+		frame.setSize(600, 332);
 		frame.setResizable(true);
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
@@ -246,20 +246,7 @@ import settings.FunctionUtils;
 					if (frame.getHeight() < 90)
 						frame.setSize(frame.getWidth(), 90);
 					
-					title.setBounds(0, 0, frame.getWidth(), 52);
-					
-					btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
-					
-					scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
-					
-					zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
-					
-					quit.setBounds(frame.getSize().width - 20, 3, 15,15);		
-					fullscreen.setBounds(quit.getLocation().x - 20, 3, 15,15);
-					reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15,15);
-					topPanel.setBounds(0, 0, frame.getSize().width, 51);	
-					
-					topImage.setLocation(frame.getSize().width / 2 - 200, 0);
+					resizeAll();
 				}
 			}
 						
@@ -284,16 +271,17 @@ import settings.FunctionUtils;
 	}
 		
 	private void topPanel() {	
+		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 				
 		fullscreen = new JLabel(new FlatSVGIcon("contents/max.svg", 15, 15));
 		fullscreen.setHorizontalAlignment(SwingConstants.CENTER);
-		fullscreen.setBounds(quit.getLocation().x - 20, 3, 15, 15);
+		fullscreen.setBounds(quit.getLocation().x - 20, 4, 15, 15);
 			
 		fullscreen.addMouseListener(new MouseListener(){
 			
@@ -344,43 +332,15 @@ import settings.FunctionUtils;
 		        			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width,
 		        							  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);	
 		        		}
-						
-						title.setBounds(0, 0, frame.getWidth(), 52);
-						
-						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
-						
-						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
-						
-						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
-						
-						quit.setBounds(frame.getSize().width - 20, 3, 15,15);	
-						fullscreen.setBounds(quit.getLocation().x - 20, 3, 15,15);
-						reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15,15);
-						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
-						
-						topImage.setLocation(frame.getSize().width / 2 - 200, 0);
 					}
 					else if (accept)
 					{
-						frame.setSize(600, 348);
+						frame.setSize(600, 332);
 						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-						
-						title.setBounds(0, 0, frame.getWidth(), 52);
-						
-						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
-						
-						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
-						
-						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
-						
-						quit.setBounds(frame.getSize().width - 20, 3, 15,15);
-						fullscreen.setBounds(quit.getLocation().x - 20, 3, 15,15);
-						reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15,15);
-						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
-						
-						topImage.setLocation(frame.getSize().width / 2 - 200, 0);						
+						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
 					}
+					
+					resizeAll();
 				}
 			}
 
@@ -402,11 +362,11 @@ import settings.FunctionUtils;
 		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width * 10, topPanel.getSize().height, Image.SCALE_SMOOTH);
 		ImageIcon header = new ImageIcon(scaledImage);
 		bottomImage = new JLabel(header);
-		bottomImage.setBounds(0 ,0, frame.getSize().width * 10, 51);
+		bottomImage.setBounds(0 ,0, frame.getSize().width * 10, 28);
 			
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -416,7 +376,7 @@ import settings.FunctionUtils;
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15, 15);
+		reduce.setBounds(fullscreen.getLocation().x - 20, 4, 15, 15);
 		
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -547,13 +507,14 @@ import settings.FunctionUtils;
 						
 		});
 		
-		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		frame.getContentPane().add(topPanel);						
 
 		bottomImage.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent down) {
+				
 				if (down.getClickCount() == 2 && down.getButton() == MouseEvent.BUTTON1)
 				{
 					GraphicsConfiguration config = frame.getGraphicsConfiguration();
@@ -586,43 +547,15 @@ import settings.FunctionUtils;
 		        			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width,
 		        							  allScreens[screenIndex].getDefaultConfiguration().getBounds().y);	
 		        		}		
-						
-						title.setBounds(0, 0, frame.getWidth(), 52);
-						
-						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
-						
-						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
-						
-						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
-						
-						quit.setBounds(frame.getSize().width - 20, 3, 15,15);		
-						fullscreen.setBounds(quit.getLocation().x - 20, 3, 15,15);
-						reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15,15);
-						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
-						
-						topImage.setLocation(frame.getSize().width / 2 - 200, 0);
 					}
 					else
 					{
-						frame.setSize(600, 348);
+						frame.setSize(600, 332);
 						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-						
-						title.setBounds(0, 0, frame.getWidth(), 52);
-						
-						btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
-						
-						scrollPane.setBounds(10, 62, frame.getWidth() - 20, frame.getHeight() - 98);
-						
-						zebra.setBounds(10, 67, frame.getWidth() - 20, frame.getHeight() - 103);
-						
-						quit.setBounds(frame.getSize().width - 20, 3, 15,15);
-						fullscreen.setBounds(quit.getLocation().x - 20, 3, 15,15);
-						reduce.setBounds(fullscreen.getLocation().x - 20, 3, 15,15);
-						topPanel.setBounds(0, 0, frame.getSize().width, 51);	
-						
-						topImage.setLocation(frame.getSize().width / 2 - 200, 0);						
+						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);					
 					}
+					
+					resizeAll();
 				}
 			}
 
@@ -690,7 +623,6 @@ import settings.FunctionUtils;
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.setRowHeight(17);
-		table.setBounds(10, 62, 580, 250);
 		table.setOpaque(true);
 
 		table.addKeyListener(new KeyListener() {
@@ -732,7 +664,6 @@ import settings.FunctionUtils;
 		
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(table);
-		scrollPane.setBounds(10, 62, 580, 250);	
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
@@ -759,13 +690,12 @@ import settings.FunctionUtils;
 	            super.paintComponent(g);
 	         }
 		};
-		zebra.setBounds(10, 67, 580, 245);	
+
 		frame.getContentPane().add(zebra);
 		
 		btnStartRender = new JButton(Shutter.language.getProperty("btnStartRender"));
 		btnStartRender.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnStartRender.setEnabled(false);
-		btnStartRender.setBounds(11, 319, 577, 21);
 		frame.getContentPane().add(btnStartRender);
 		
 		btnStartRender.addActionListener(new ActionListener(){
@@ -877,8 +807,27 @@ import settings.FunctionUtils;
 			}			
 		});      		
 
+		resizeAll();
 	}	
 
+	private void resizeAll() {
+		
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		
+		btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
+		
+		scrollPane.setBounds(10, 38, frame.getWidth() - 20, frame.getHeight() - 74);
+		
+		zebra.setBounds(10, 43, frame.getWidth() - 20, frame.getHeight() - 79);
+		
+		quit.setBounds(frame.getSize().width - 20, 4, 15,15);	
+		fullscreen.setBounds(quit.getLocation().x - 20, 4, 15,15);
+		reduce.setBounds(fullscreen.getLocation().x - 20, 4, 15,15);
+		topPanel.setBounds(0, 0, frame.getSize().width, 28);	
+		
+		topImage.setLocation(frame.getSize().width / 2 - 200, 0);
+	}
+	
 	private static void lastActions(int item, String file, File fileOut) {
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
@@ -1076,7 +1025,7 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 
 	    setHorizontalAlignment(JLabel.CENTER);
 	    setFont(new Font("SansSerif", Font.PLAIN, 12));
-	    setBackground(new Color(50,50,50));
+	    setBackground(new Color(45, 45, 45));
 	    setForeground(Color.BLACK);
 	      
 	    if (isSelected)

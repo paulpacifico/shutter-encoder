@@ -48,14 +48,14 @@ public class GOP {
 		frame.setModal(true);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());			
 				
 		scrollBar = new JScrollBar();
 		scrollBar.setOrientation(JScrollBar.HORIZONTAL);
 		scrollBar.setVisible(true);
-		scrollBar.setBackground(new Color(50,50,50));
+		scrollBar.setBackground(new Color(45, 45, 45));
 		frame.getContentPane().add(scrollBar);
 		
 		scrollBar.addAdjustmentListener(new AdjustmentListener(){

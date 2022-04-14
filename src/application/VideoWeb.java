@@ -102,18 +102,18 @@ public class VideoWeb {
 	private static int MousePositionY;
 
 	public VideoWeb() {	
+		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(420, 247);
+		frame.setSize(420, 219);
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setAlwaysOnTop(true);
-		
-		
+				
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
@@ -136,13 +136,14 @@ public class VideoWeb {
 	}
 			
 	private void topPanel() {	
+		
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBounds(0, 0, 420, 52);
+		topPanel.setBounds(0, 0, 420, 28);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 		topPanel.add(quit);
 		
 		quit.addMouseListener(new MouseListener(){
@@ -186,7 +187,7 @@ public class VideoWeb {
 	
 		help = new JLabel(new FlatSVGIcon("contents/help.svg", 15, 15));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(quit.getLocation().x - 20, 3, 15, 15);
+		help.setBounds(quit.getLocation().x - 20, 4, 15, 15);
 		topPanel.add(help);
 		
 		help.addMouseListener(new MouseListener(){
@@ -228,8 +229,8 @@ public class VideoWeb {
 		
 		JLabel title = new JLabel(Shutter.language.getProperty("panelWebVideo"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -284,12 +285,13 @@ public class VideoWeb {
 	}
 
 	private void grpURL() {
+		
 		grpURL = new JPanel();
 		grpURL.setLayout(null);
-		grpURL.setLocation(6, 56);
+		grpURL.setLocation(6, 28);
 		grpURL.setSize(408, 185);
-		grpURL.setBackground(new Color(50,50,50));
-		grpURL.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(70,70,70), 1, 5, true), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpURL.setBackground(new Color(45, 45, 45));
+		grpURL.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		
 		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);

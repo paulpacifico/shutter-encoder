@@ -116,12 +116,12 @@ public class SubtitlesEmbed {
 	public SubtitlesEmbed() {	
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameAddSubtitles"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(600, 390);
+		frame.setSize(600, 366);
 		frame.setResizable(false);
 		frame.setAlwaysOnTop(true);	
 		
@@ -181,9 +181,9 @@ public class SubtitlesEmbed {
 				
 				if (subtitlesFile1.getText().equals(Shutter.language.getProperty("aucun")))
 				{
-					Shutter.caseSubtitles.setSelected(false);
+					VideoPlayer.caseAddSubtitles.setSelected(false);
 				}
-				
+								
 				frame.dispose();
 			}
 			
@@ -199,9 +199,9 @@ public class SubtitlesEmbed {
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 		topPanel.add(quit);
-		topPanel.setBounds(0, 0, 1000, 52);
+		topPanel.setBounds(0, 0, 1000, 28);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -221,7 +221,7 @@ public class SubtitlesEmbed {
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{					
-					Shutter.caseSubtitles.setSelected(false);
+					VideoPlayer.caseAddSubtitles.setSelected(false);
 		            
 		            Utils.changeDialogVisibility(frame, true);
 	            	Shutter.frame.setOpacity(1.0f);
@@ -245,8 +245,8 @@ public class SubtitlesEmbed {
 	
 		JLabel title = new JLabel(Shutter.language.getProperty("frameAddSubtitles"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -256,7 +256,7 @@ public class SubtitlesEmbed {
 		topImage.setBounds(title.getBounds());
 		
 		topPanel.add(topImage);
-		topPanel.setBounds(0, 0, 1000, 52);
+		topPanel.setBounds(0, 0, 1000, 28);
 		frame.getContentPane().add(topPanel);
 		
 		topImage.addMouseListener(new MouseListener() {
@@ -381,7 +381,7 @@ public class SubtitlesEmbed {
 				c.setForeground(Utils.themeColor);
 				((JTextField) c).setBorder(BorderFactory.createLineBorder(new Color(75,75,75)));
 				c.setFont(new Font("SansSerif", Font.BOLD, 13));
-				c.setBackground(new Color(50, 50, 50));
+				c.setBackground(new Color(45, 45, 45));
 				if (((JTextField) c).getText() == null || ((JTextField) c).getText() == "" || ((JTextField) c).getText().isEmpty())
 				{
 					((JTextField) c).setText(Shutter.language.getProperty("aucun"));

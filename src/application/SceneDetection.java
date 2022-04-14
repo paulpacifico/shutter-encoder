@@ -98,13 +98,15 @@ import javax.swing.JScrollPane;
 	private static int complete;
 
 	public SceneDetection(boolean runAnalyse) {
+		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameDetectionCoupe"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(400, 600);
+		frame.setSize(400, 584);
+		frame.setMinimumSize(new Dimension(400, 138));
 		frame.setResizable(false);
 		frame.setAlwaysOnTop(true);	
 		
@@ -130,21 +132,25 @@ import javax.swing.JScrollPane;
  			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				if (drag && frame.getSize().height > 90)
+				
+				if (drag)
 		       	{	
 			        frame.setSize(frame.getSize().width, e.getY() + 10);	
-			        scrollPane.setSize(scrollPane.getSize().width, frame.getSize().height - 160);
+			        scrollPane.setSize(scrollPane.getSize().width, frame.getSize().height - 136);
 			    	lblBottomArrow.setLocation(0, frame.getSize().height - lblBottomArrow.getSize().height);		
-					btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
-					lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 89 + scrollPane.getHeight() + 31);
+					btnEDL.setBounds(9, 65 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
+					lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 65 + scrollPane.getHeight() + 31);
 		       	}	
 			}
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
+				
 				if ((MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y) > frame.getSize().height - 20)
-					 frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-				 else 
+				{
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+				}
+				else 
 				{
 					if (drag == false)
 					 frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -213,23 +219,24 @@ import javax.swing.JScrollPane;
 	}
 		
 	private void topPanel() {	
+		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 				
 		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_SMOOTH);
 		ImageIcon header = new ImageIcon(scaledImage);
 		bottomImage = new JLabel(header);
-		bottomImage.setBounds(0 ,0, frame.getSize().width, 51);
+		bottomImage.setBounds(0 ,0, frame.getSize().width, 28);
 			
 		JLabel title = new JLabel(Shutter.language.getProperty("frameDetectionCoupe"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -239,8 +246,8 @@ import javax.swing.JScrollPane;
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
-			
+		reduce.setBounds(quit.getLocation().x - 20, 4, 15, 15);
+		
 		reduce.addMouseListener(new MouseListener(){
 			
 			private boolean accept = false;
@@ -330,7 +337,7 @@ import javax.swing.JScrollPane;
 						
 		});
 		
-		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		frame.getContentPane().add(topPanel);						
 
 		bottomImage.addMouseListener(new MouseListener() {
@@ -378,26 +385,26 @@ import javax.swing.JScrollPane;
 	private void content() {
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(9, 89, 380, frame.getSize().height - 160);
+		scrollPane.setBounds(9, 65, 380, frame.getSize().height - 136);
 		frame.getContentPane().add(scrollPane);
 			
-		JLabel lblSensibilit = new JLabel(Shutter.language.getProperty("lblSensibility"));
-		lblSensibilit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblSensibilit.setBounds(10, 62, lblSensibilit.getPreferredSize().width, 15);
-		frame.getContentPane().add(lblSensibilit);
+		JLabel lblSensibility = new JLabel(Shutter.language.getProperty("lblSensibility"));
+		lblSensibility.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblSensibility.setBounds(10, 38, lblSensibility.getPreferredSize().width, 15);
+		frame.getContentPane().add(lblSensibility);
 		
 		tolerance = new JSpinner(new SpinnerNumberModel(80, 0, 100, 10));
-		tolerance.setBounds(lblSensibilit.getX() + lblSensibilit.getWidth() + 4, 59, 55, 21);
+		tolerance.setBounds(lblSensibility.getX() + lblSensibility.getWidth() + 4, lblSensibility.getY() - 3, 55, 21);
 		frame.getContentPane().add(tolerance);	
 		
 		JLabel lblPourcentage = new JLabel("%");
 		lblPourcentage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblPourcentage.setBounds(tolerance.getX() + tolerance.getWidth() + 4, 62, 11, 15);
+		lblPourcentage.setBounds(tolerance.getX() + tolerance.getWidth() + 4, lblSensibility.getY(), 11, 15);
 		frame.getContentPane().add(lblPourcentage);
 		
 		btnAnalyze = new JButton(Shutter.language.getProperty("btnAnalyse"));
 		btnAnalyze.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnAnalyze.setLocation(lblPourcentage.getX() + lblPourcentage.getWidth() + 7, 59);
+		btnAnalyze.setLocation(lblPourcentage.getX() + lblPourcentage.getWidth() + 7, lblSensibility.getY() - 3);
 		btnAnalyze.setSize(frame.getWidth() - (tolerance.getX() + tolerance.getWidth()) - 34, 21);
 		frame.getContentPane().add(btnAnalyze);
 		
@@ -432,7 +439,7 @@ import javax.swing.JScrollPane;
 		btnEDL = new JButton(Shutter.language.getProperty("btnEDL"));
 		btnEDL.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnEDL.setEnabled(false);
-		btnEDL.setBounds(9, 89 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
+		btnEDL.setBounds(9, 65 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
 		frame.getContentPane().add(btnEDL);
 		
 		btnEDL.addActionListener(new ActionListener(){
@@ -580,7 +587,7 @@ import javax.swing.JScrollPane;
 		lblEdit.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEdit.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
 		lblEdit.setSize(lblEdit.getPreferredSize().width, 15);
-		lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 89 + scrollPane.getHeight() + 31);
+		lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 65 + scrollPane.getHeight() + 31);
 		lblEdit.setVisible(false);
 		frame.getContentPane().add(lblEdit);
 									
@@ -588,6 +595,7 @@ import javax.swing.JScrollPane;
 	
 	@SuppressWarnings("serial")
 	private static void newTable() {
+		
 		ImageIcon imageIcon = new ImageIcon(SceneDetection.outputFolder.toString() + "/0.png");
 		ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(142, 80, Image.SCALE_DEFAULT));			
 		Object[][] firstImage = {{"1", icon, "00:00:00:00"}};
@@ -617,7 +625,7 @@ import javax.swing.JScrollPane;
 		table.setRowHeight(80);
 		table.getColumnModel().getColumn(0).setPreferredWidth(18);
 		table.getColumnModel().getColumn(1).setPreferredWidth(table.getColumnModel().getColumn(1).getPreferredWidth());
-		table.setBounds(9, 89, 380, frame.getHeight() - 134);
+		table.setBounds(9, 65, 380, frame.getHeight() - 134);
 		scrollPane.setViewportView(table);
 		
 		table.addKeyListener(new KeyListener() {

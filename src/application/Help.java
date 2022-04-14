@@ -55,7 +55,7 @@ public class Help {
 			frame.setSize(640, 74);
 		frame.setTitle(Shutter.language.getProperty("frameAstuces"));
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
@@ -147,7 +147,7 @@ public class Help {
 		txtFonctions.setLocation(10, 38);
 		txtFonctions.setForeground(Color.WHITE);
 		txtFonctions.setSize(572, txtFonctions.getPreferredSize().height);
-		txtFonctions.setBackground(new Color(50,50,50));
+		txtFonctions.setBackground(new Color(45, 45, 45));
 		txtFonctions.setEditable(false);
 		frame.getContentPane().add(txtFonctions);
 		

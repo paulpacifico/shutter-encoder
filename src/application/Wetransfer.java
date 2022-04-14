@@ -101,13 +101,14 @@ public class Wetransfer {
 	private static int MousePositionY;
 
 	public Wetransfer() {
+		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameWetransfer"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(267, 340);
+		frame.setSize(267, 320);
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setAlwaysOnTop(true);		
@@ -141,9 +142,9 @@ public class Wetransfer {
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 		topPanel.add(quit);
-		topPanel.setBounds(0, 0, 267, 44);
+		topPanel.setBounds(0, 0, 267, 28);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -183,8 +184,8 @@ public class Wetransfer {
 
 		JLabel title = new JLabel("WeTransfer");
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 44);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, -2, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 16));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -239,8 +240,9 @@ public class Wetransfer {
 	}
 
 	private void grpWetransfer() {
+		
 		lblYourMail = new JLabel(Shutter.language.getProperty("lblYourMail"));
-		lblYourMail.setBounds(7, 56, 94, 16);
+		lblYourMail.setBounds(7, 36, 94, 16);
 		lblYourMail.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYourMail.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblYourMail);		

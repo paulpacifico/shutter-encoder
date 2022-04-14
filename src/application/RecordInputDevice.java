@@ -42,7 +42,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -67,6 +66,7 @@ public class RecordInputDevice {
 	public static String inputDeviceResolution = "";
 
 	public RecordInputDevice() {
+		
 		frame = new JDialog();
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
@@ -78,7 +78,7 @@ public class RecordInputDevice {
 		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
 		
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
@@ -293,7 +293,7 @@ public class RecordInputDevice {
 				g2.draw(new Line2D.Float(1, 18, 14, 18));
 			}
 		};
-		screenLines.setBackground(new Color(50, 50, 50));
+		screenLines.setBackground(new Color(45, 45, 45));
 		screenLines.setBounds(comboScreenVideo.getX() + comboScreenVideo.getWidth() + 2, iconScreenPreview.getY() + iconScreenPreview.getHeight() + 2, 30, 30);
 		frame.getContentPane().add(screenLines);
 		
@@ -439,7 +439,7 @@ public class RecordInputDevice {
 				g2.draw(new Line2D.Float(1, 18, 14, 18));
 			}
 		};
-		devicesLines.setBackground(new Color(50, 50, 50));
+		devicesLines.setBackground(new Color(45, 45, 45));
 		devicesLines.setBounds(comboInputVideo.getX() + comboInputVideo.getWidth() + 2, iconDevicePreview.getY() + iconDevicePreview.getHeight() + 2, 30, 30);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(devicesLines);
@@ -522,21 +522,12 @@ public class RecordInputDevice {
 				
 				//Watermark
 				if (comboInputVideo.getSelectedIndex() > 0)
-				{
-					if (Shutter.caseLogo.isSelected() == false)
-						Shutter.caseLogo.setSelected(true);
-					
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					Shutter.caseLogo.setSelected(true);
-					
-					if (WatermarkWindow.frame == null)
-						new WatermarkWindow();
-					else {
-						WatermarkWindow.loadImage("0", "0", "0", true, -1);
-						Utils.changeDialogVisibility(WatermarkWindow.frame, false);
+				{								
+					if (Shutter.caseInAndOut.isSelected() == false)
+					{
+						Shutter.caseInAndOut.doClick();					
 					}
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
+				}	
 								
 				//Set options
 				Shutter.addToList.setVisible(false);
@@ -556,11 +547,7 @@ public class RecordInputDevice {
 				
 				Shutter.changeFilters();
 				
-				frame.dispose();
-				
-				JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("chooseFunction"),
-						Shutter.language.getProperty("menuItemInputDevice"), JOptionPane.PLAIN_MESSAGE,
-						JOptionPane.INFORMATION_MESSAGE);
+				frame.dispose();				
 			}
 			
 		});
@@ -614,18 +601,8 @@ public class RecordInputDevice {
 		
 		if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
 		{
-	        CropVideo.ImageWidth = screenWidth;
-	        CropVideo.ImageHeight = screenHeigth;
-	        CropImage.ImageWidth = screenWidth;
-	        CropImage.ImageHeight = screenHeigth;
-	    	WatermarkWindow.ImageWidth = screenWidth;
-	    	WatermarkWindow.ImageHeight = screenHeigth;
-	    	OverlayWindow.ImageWidth = screenWidth;
-	    	OverlayWindow.ImageHeight = screenHeigth;
-	    	SubtitlesWindow.ImageWidth = screenWidth;
-	    	SubtitlesWindow.ImageHeight = screenHeigth;
-	    	ColorImage.ImageWidth = screenWidth;
-	    	ColorImage.ImageHeight = screenHeigth;
+	        FFPROBE.imageWidth = screenWidth;
+	        FFPROBE.imageHeight = screenHeigth;
 	        	
 			FFPROBE.imageResolution = screenWidth + "x" + screenHeigth;
 			FFPROBE.entrelaced = "0";
@@ -685,8 +662,8 @@ public class RecordInputDevice {
 	        int deviceWidth = Integer.parseInt(splitx[0]);
 	        int deviceHeight = Integer.parseInt(splitx[1]);
 			        
-	    	WatermarkWindow.ImageWidth = deviceWidth;
-	    	WatermarkWindow.ImageHeight = deviceHeight;
+	        FFPROBE.imageWidth = deviceWidth;
+	        FFPROBE.imageHeight = deviceHeight;
 		}		
 		
 		FFPROBE.audioOnly = false;

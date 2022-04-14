@@ -69,6 +69,7 @@ public class Update {
 	private static int MousePositionY;
 	
 	private Update() {
+		
 		frame = new JDialog();
 		frame.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.setResizable(false);
@@ -76,7 +77,7 @@ public class Update {
 		frame.setAlwaysOnTop(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setSize(346, 59);
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setTitle(Shutter.language.getProperty("frameUpdate"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
@@ -116,7 +117,7 @@ public class Update {
 	private void content() {
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(50,50,50));
+		topPanel.setBackground(new Color(45, 45, 45));
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);

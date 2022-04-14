@@ -76,12 +76,12 @@ import library.MEDIAINFO;
 	public Informations() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(600, 670);
+		frame.setSize(600, 654);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
@@ -230,7 +230,7 @@ import library.MEDIAINFO;
 	
 	public static void addTabControl() {		
 		tabPanel = new JPanel();			
-		tabPanel.setBackground(new Color(50,50,50));
+		tabPanel.setBackground(new Color(45, 45, 45));
 		tabPanel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		tabPanel.setLayout(null);
 		tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);				
@@ -243,16 +243,17 @@ import library.MEDIAINFO;
 	}
 		
 	private void topPanel() {	
+		
 		topPanel	= new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
+		reduce.setBounds(quit.getLocation().x - 20, 4, 15, 15);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -295,12 +296,12 @@ import library.MEDIAINFO;
 		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_SMOOTH);
 		ImageIcon header = new ImageIcon(scaledImage);
 		bottomImage = new JLabel(header);
-		bottomImage.setBounds(0 ,0, frame.getSize().width, 51);
+		bottomImage.setBounds(0 ,0, frame.getSize().width, 28);
 			
 		JLabel title = new JLabel(Shutter.language.getProperty("frameInformations"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -349,7 +350,7 @@ import library.MEDIAINFO;
 
 						
 		});
-		topPanel.setBounds(0, 0, frame.getSize().width, 51);
+		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		frame.getContentPane().add(topPanel);						
 		
 		bottomImage.addMouseListener(new MouseListener() {

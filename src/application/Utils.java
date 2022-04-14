@@ -71,7 +71,6 @@ import com.formdev.flatlaf.extras.FlatInspector;
 
 import library.BMXTRANSWRAP;
 import library.DCRAW;
-import library.DECKLINK;
 import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.FFPLAY;
@@ -80,6 +79,7 @@ import library.MKVMERGE;
 import library.TSMUXER;
 import library.XPDF;
 import library.YOUTUBEDL;
+import settings.Colorimetry;
 
 public class Utils extends Shutter {
 	
@@ -113,29 +113,41 @@ public class Utils extends Shutter {
 	}
 
 	public static void setLanguage() {
-		// Langue
+		
+		//Language
 		InputStream input = null;
 		try {
+			
 			pathToLanguages = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			if (System.getProperty("os.name").contains("Windows"))
+			{
 				pathToLanguages = pathToLanguages.substring(1, pathToLanguages.length() - 1);
+			}
 			else
 				pathToLanguages = pathToLanguages.substring(0, pathToLanguages.length() - 1);
 
 			pathToLanguages = pathToLanguages.substring(0, (int) (pathToLanguages.lastIndexOf("/"))).replace("%20", " ")
-					+ "/Languages/";
-
+					+ "/Languages/";		
+			
 			// Library/Preferences sur Mac
 			try {
+				
 				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 				{
 					if (new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder").exists())
+					{
 						Shutter.documents = new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder");
+						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");;
+					}
 					else if (new File("/Library/Preferences/Shutter Encoder").exists())
+					{
 						Shutter.documents = new File("/Library/Preferences/Shutter Encoder");
+						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+					}
 				}
+				
 			} catch (Exception e) {}
-			
+						
 			// Dossier Temporaire Linux
 			if (System.getProperty("os.name").contains("Linux"))
 			{
@@ -249,7 +261,9 @@ public class Utils extends Shutter {
 			language.load(input);	
 			input.close();														
 			
-		} catch (IOException ex) {}	
+		} catch (IOException ex) {
+			System.out.println(ex);
+		}	
 	}
 	
 	private static FileInputStream defaultLanguage(String pathToLanguages) throws FileNotFoundException {
@@ -738,52 +752,43 @@ public class Utils extends Shutter {
 				
 				if (caseInAndOut.isSelected())
 				{
-					for (Component c : VideoPlayer.frame.getContentPane().getComponents())
+					for (Component p : VideoPlayer.frame.getContentPane().getComponents())
 					{
-						if (c instanceof JPanel)
+						if (p.getName() != "" && p.getName() != null)
 						{
-							for (Component p : ((JPanel) c).getComponents())
+							if (p instanceof JRadioButton)
 							{
-								if (p.getName() != "" && p.getName() != null)
-								{
-									if (p.getName().contains("caseIn") && VideoPlayer.sliderIn.getValue() > 0 || p.getName().contains("caseOut") && VideoPlayer.sliderOut.getValue() != VideoPlayer.sliderOut.getMaximum())
-									{
-										if (p instanceof JTextField)
-										{
-											//Component
-											Element component = document.createElement("Component");
-											
-											//Type
-											Element cType = document.createElement("Type");
-											cType.appendChild(document.createTextNode("JTextField"));
-											component.appendChild(cType);
-											
-											//Name
-											Element cName = document.createElement("Name");
-											cName.appendChild(document.createTextNode(p.getName()));
-											component.appendChild(cName);
-											
-											//Value
-											Element cValue = document.createElement("Value");
-											cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
-											component.appendChild(cValue);
-											
-											//State
-											Element cState = document.createElement("Enable");
-											cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-											component.appendChild(cState);
-											
-											//Visible
-											Element cVisible = document.createElement("Visible");
-											cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-											component.appendChild(cVisible);		
-											
-											player.appendChild(component);
-										}
-									}
-								}								
+								//Component
+								Element component = document.createElement("Component");
+								
+								//Type
+								Element cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JRadioButton"));
+								component.appendChild(cType);
+								
+								//Name
+								Element cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(p.getName()));
+								component.appendChild(cName);
+								
+								//Value
+								Element cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								component.appendChild(cValue);
+								
+								//State
+								Element cState = document.createElement("Enable");
+								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+								component.appendChild(cState);
+								
+								//Visible
+								Element cVisible = document.createElement("Visible");
+								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+								component.appendChild(cVisible);		
+								
+								settings.appendChild(component);
 							}
-						}						
+						}				
 					}
 					
 				root.appendChild(player);
@@ -791,9 +796,9 @@ public class Utils extends Shutter {
 				
 				Element color = document.createElement("Color");
 				
-				if (caseColor.isSelected())
+				if (VideoPlayer.caseEnableColorimetry.isSelected())
 				{
-					for (Component p : ColorImage.frame.getContentPane().getComponents())
+					for (Component p : VideoPlayer.panelColorimetryComponents.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{	
@@ -864,7 +869,7 @@ public class Utils extends Shutter {
 						}												
 					}
 					
-					//Sauvegarde des valeurs	
+					//Saving values	
 						
 					//allR
 					Element componentallR = document.createElement("Component");
@@ -881,7 +886,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValueallR = document.createElement("Value");
-					cValueallR.appendChild(document.createTextNode(String.valueOf(ColorImage.allR)));
+					cValueallR.appendChild(document.createTextNode(String.valueOf(Colorimetry.allR)));
 					componentallR.appendChild(cValueallR);
 	
 					color.appendChild(componentallR);
@@ -901,7 +906,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValueallG = document.createElement("Value");
-					cValueallG.appendChild(document.createTextNode(String.valueOf(ColorImage.allG)));
+					cValueallG.appendChild(document.createTextNode(String.valueOf(Colorimetry.allG)));
 					componentallG.appendChild(cValueallG);
 	
 					color.appendChild(componentallG);
@@ -921,7 +926,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValueallB = document.createElement("Value");
-					cValueallB.appendChild(document.createTextNode(String.valueOf(ColorImage.allB)));
+					cValueallB.appendChild(document.createTextNode(String.valueOf(Colorimetry.allB)));
 					componentallB.appendChild(cValueallB);
 	
 					color.appendChild(componentallB);
@@ -941,7 +946,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuehighR = document.createElement("Value");
-					cValuehighR.appendChild(document.createTextNode(String.valueOf(ColorImage.highR)));
+					cValuehighR.appendChild(document.createTextNode(String.valueOf(Colorimetry.highR)));
 					componenthighR.appendChild(cValuehighR);
 	
 					color.appendChild(componenthighR);
@@ -961,7 +966,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuehighG = document.createElement("Value");
-					cValuehighG.appendChild(document.createTextNode(String.valueOf(ColorImage.highG)));
+					cValuehighG.appendChild(document.createTextNode(String.valueOf(Colorimetry.highG)));
 					componenthighG.appendChild(cValuehighG);
 	
 					color.appendChild(componenthighG);
@@ -981,7 +986,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuehighB = document.createElement("Value");
-					cValuehighB.appendChild(document.createTextNode(String.valueOf(ColorImage.highB)));
+					cValuehighB.appendChild(document.createTextNode(String.valueOf(Colorimetry.highB)));
 					componenthighB.appendChild(cValuehighB);
 	
 					color.appendChild(componenthighB);
@@ -1001,7 +1006,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuemediumR = document.createElement("Value");
-					cValuemediumR.appendChild(document.createTextNode(String.valueOf(ColorImage.mediumR)));
+					cValuemediumR.appendChild(document.createTextNode(String.valueOf(Colorimetry.mediumR)));
 					componentmediumR.appendChild(cValuemediumR);
 	
 					color.appendChild(componentmediumR);
@@ -1021,7 +1026,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuemediumG = document.createElement("Value");
-					cValuemediumG.appendChild(document.createTextNode(String.valueOf(ColorImage.mediumG)));
+					cValuemediumG.appendChild(document.createTextNode(String.valueOf(Colorimetry.mediumG)));
 					componentmediumG.appendChild(cValuemediumG);
 	
 					color.appendChild(componentmediumG);
@@ -1041,7 +1046,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuemediumB = document.createElement("Value");
-					cValuemediumB.appendChild(document.createTextNode(String.valueOf(ColorImage.mediumB)));
+					cValuemediumB.appendChild(document.createTextNode(String.valueOf(Colorimetry.mediumB)));
 					componentmediumB.appendChild(cValuemediumB);
 	
 					color.appendChild(componentmediumB);										
@@ -1061,7 +1066,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuelowR = document.createElement("Value");
-					cValuelowR.appendChild(document.createTextNode(String.valueOf(ColorImage.lowR)));
+					cValuelowR.appendChild(document.createTextNode(String.valueOf(Colorimetry.lowR)));
 					componentlowR.appendChild(cValuelowR);
 	
 					color.appendChild(componentlowR);
@@ -1081,7 +1086,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuelowG = document.createElement("Value");
-					cValuelowG.appendChild(document.createTextNode(String.valueOf(ColorImage.lowG)));
+					cValuelowG.appendChild(document.createTextNode(String.valueOf(Colorimetry.lowG)));
 					componentlowG.appendChild(cValuelowG);
 	
 					color.appendChild(componentlowG);
@@ -1101,7 +1106,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuelowB = document.createElement("Value");
-					cValuelowB.appendChild(document.createTextNode(String.valueOf(ColorImage.lowB)));
+					cValuelowB.appendChild(document.createTextNode(String.valueOf(Colorimetry.lowB)));
 					componentlowB.appendChild(cValuelowB);
 	
 					color.appendChild(componentlowB);
@@ -1121,7 +1126,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuevibranceValue = document.createElement("Value");
-					cValuevibranceValue.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceValue)));
+					cValuevibranceValue.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceValue)));
 					componentvibranceValue.appendChild(cValuevibranceValue);
 	
 					color.appendChild(componentvibranceValue);
@@ -1141,7 +1146,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuevibranceR = document.createElement("Value");
-					cValuevibranceR.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceR)));
+					cValuevibranceR.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceR)));
 					componentvibranceR.appendChild(cValuevibranceR);
 	
 					color.appendChild(componentvibranceR);
@@ -1161,7 +1166,7 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuevibranceG = document.createElement("Value");
-					cValuevibranceG.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceG)));
+					cValuevibranceG.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceG)));
 					componentvibranceG.appendChild(cValuevibranceG);
 	
 					color.appendChild(componentvibranceG);
@@ -1181,55 +1186,23 @@ public class Utils extends Shutter {
 					
 					//Value
 					Element cValuevibranceB = document.createElement("Value");
-					cValuevibranceB.appendChild(document.createTextNode(String.valueOf(ColorImage.vibranceB)));
+					cValuevibranceB.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceB)));
 					componentvibranceB.appendChild(cValuevibranceB);
 	
 					color.appendChild(componentvibranceB);
 					
 				root.appendChild(color);
-				}
+				}				
 				
-				Element videoCropping = document.createElement("Video");
+				Element imageCropping = document.createElement("Crop");
 				
-				if (caseRognage.isSelected())
+				if (VideoPlayer.caseEnableCrop.isSelected())
 				{
-					for (Component p : CropVideo.frame.getContentPane().getComponents())
-					{					
+					for (Component p : VideoPlayer.grpCrop.getComponents())
+					{
 						if (p.getName() != "" && p.getName() != null)
 						{
-							if (p instanceof JLabel)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JLabel"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								videoCropping.appendChild(component);
-							}
-							else if (p instanceof JRadioButton)
+							if (p instanceof JRadioButton)
 							{
 								//Component
 								Element component = document.createElement("Component");
@@ -1259,55 +1232,9 @@ public class Utils extends Shutter {
 								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
 								component.appendChild(cVisible);		
 								
-								videoCropping.appendChild(component);
+								settings.appendChild(component);
 							}
-							else if (p instanceof JComboBox && CropVideo.comboPreset.isEnabled())
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JComboBox"));
-								component.appendChild(cType);
-																	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								videoCropping.appendChild(component);
-							}									
-						}
-					}
-					
-				root.appendChild(videoCropping);
-				}
-				
-				Element imageCropping = document.createElement("Image");
-				
-				if (caseRognerImage.isSelected())
-				{
-					for (Component p : CropImage.frame.getContentPane().getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null)
-						{
-							if (p instanceof JTextField)
+							else if (p instanceof JTextField)
 							{
 								//Component
 								Element component = document.createElement("Component");
@@ -1344,12 +1271,12 @@ public class Utils extends Shutter {
 					
 				root.appendChild(imageCropping);
 				}
-							
+				
 				Element overlay = document.createElement("Overlay");
 				
-				if (caseAddOverlay.isSelected())
+				if (VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseShowFileName.isSelected())
 				{
-					for (Component p : OverlayWindow.frame.getContentPane().getComponents())
+					for (Component p : VideoPlayer.grpOverlay.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{									
@@ -1556,13 +1483,45 @@ public class Utils extends Shutter {
 							
 				Element subtitles = document.createElement("Subtitles");
 				
-				if (caseSubtitles.isSelected())
+				if (VideoPlayer.caseAddSubtitles.isSelected())
 				{
-					for (Component p : SubtitlesWindow.frame.getContentPane().getComponents())
+					for (Component p : VideoPlayer.grpSubtitles.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
-							if (p instanceof JButton)
+							if (p instanceof JRadioButton)
+							{
+								//Component
+								Element component = document.createElement("Component");
+								
+								//Type
+								Element cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JRadioButton"));
+								component.appendChild(cType);
+								
+								//Name
+								Element cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(p.getName()));
+								component.appendChild(cName);
+								
+								//Value
+								Element cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								component.appendChild(cValue);
+								
+								//State
+								Element cState = document.createElement("Enable");
+								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+								component.appendChild(cState);
+								
+								//Visible
+								Element cVisible = document.createElement("Visible");
+								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+								component.appendChild(cVisible);		
+								
+								settings.appendChild(component);
+							}
+							else if (p instanceof JButton)
 							{
 								//Component
 								Element component = document.createElement("Component");
@@ -1762,13 +1721,45 @@ public class Utils extends Shutter {
 								
 				Element watermark = document.createElement("Watermark");
 				
-				if (caseLogo.isSelected())
+				if (VideoPlayer.caseAddWatermark.isSelected())
 				{
-					for (Component p : WatermarkWindow.frame.getContentPane().getComponents())
+					for (Component p : VideoPlayer.grpWatermark.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
-							if (p instanceof JTextField)
+							if (p instanceof JRadioButton)
+							{
+								//Component
+								Element component = document.createElement("Component");
+								
+								//Type
+								Element cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JRadioButton"));
+								component.appendChild(cType);
+								
+								//Name
+								Element cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(p.getName()));
+								component.appendChild(cName);
+								
+								//Value
+								Element cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								component.appendChild(cValue);
+								
+								//State
+								Element cState = document.createElement("Enable");
+								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+								component.appendChild(cState);
+								
+								//Visible
+								Element cVisible = document.createElement("Visible");
+								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+								component.appendChild(cVisible);		
+								
+								settings.appendChild(component);
+							}
+							else if (p instanceof JTextField)
 							{
 								//Component
 								Element component = document.createElement("Component");
@@ -1862,7 +1853,8 @@ public class Utils extends Shutter {
 
 			NodeList nList = doc.getElementsByTagName("Component");
 			
-			for (int temp = 0; temp < nList.getLength(); temp++) {
+			for (int temp = 0; temp < nList.getLength(); temp++)
+			{
 				Node nNode = nList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element eElement = (Element) nNode;
@@ -1892,39 +1884,9 @@ public class Utils extends Shutter {
 										
 										if (p.getName().equals("caseInAndOut") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 										{
-											caseInAndOut.doClick();
+											caseInAndOut.doClick();											
 											VideoPlayer.loadSettings(encFile);
-										}
-										else if (p.getName().equals("caseRognage") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-										{
-											caseRognage.doClick();
-											CropVideo.loadSettings(encFile);
-										}											
-										else if (p.getName().equals("caseRognerImage") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-										{
-											caseRognerImage.doClick();
-											CropImage.loadSettings(encFile);
-										}											
-										else if (p.getName().equals("caseAddOverlay") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-										{
-											caseAddOverlay.doClick();
-											OverlayWindow.loadSettings(encFile);
-										}
-										else if (p.getName().equals("caseSubtitles") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-										{
-											caseSubtitles.doClick();
-											SubtitlesWindow.loadSettings(encFile);
 										}										
-										else if (p.getName().equals("caseLogo") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-										{
-											caseLogo.doClick();
-											WatermarkWindow.loadSettings(encFile);
-										}
-										else if (p.getName().equals("caseColor") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-										{
-											caseColor.doClick();
-											ColorImage.loadSettings(encFile);
-										}	
 										else
 										{
 											//Value
@@ -2177,7 +2139,7 @@ public class Utils extends Shutter {
 			UIManager.put("FormattedTextField.selectionBackground", new Color(100,100,100));
 			UIManager.put("Spinner.buttonBackground", new Color(60,60,60));
 						
-			UIManager.put("ScrollBar.background", new Color(50,50,50));
+			UIManager.put("ScrollBar.background", new Color(45, 45, 45));
 			UIManager.put("ScrollBar.thumb", new Color(80,80,80));
 						
 			UIManager.put("MenuBar.foreground", new Color(245,245,245));
@@ -2253,16 +2215,16 @@ public class Utils extends Shutter {
 		UIManager.put("ComboBox.selectionForeground", Color.WHITE);
 		UIManager.put("Menu.selectionForeground", Color.WHITE);
 										
-		UIManager.put("TabbedPane.focusColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.focusColor", new Color(45, 45, 45));
 		UIManager.put("TabbedPane.tabHeight", 22);
 		UIManager.put("TabbedPane.tabInsets", new Insets(0,5,0,5));
 		UIManager.put("TabbedPane.background", new Color(40,40,40));
-		UIManager.put("TabbedPane.selectedBackground", new Color(50,50,50));
-		UIManager.put("TabbedPane.hoverColor", new Color(50,50,50));
-		UIManager.put("TabbedPane.highlight", new Color(50,50,50));
-		UIManager.put("TabbedPane.underlineColor", new Color(50,50,50));
-		UIManager.put("TabbedPane.disabledUnderlineColor", new Color(50,50,50));
-		UIManager.put("TabbedPane.contentAreaColor", new Color(50,50,50));
+		UIManager.put("TabbedPane.selectedBackground", new Color(45, 45, 45));
+		UIManager.put("TabbedPane.hoverColor", new Color(45, 45, 45));
+		UIManager.put("TabbedPane.highlight", new Color(45, 45, 45));
+		UIManager.put("TabbedPane.underlineColor", new Color(45, 45, 45));
+		UIManager.put("TabbedPane.disabledUnderlineColor", new Color(45, 45, 45));
+		UIManager.put("TabbedPane.contentAreaColor", new Color(45, 45, 45));
 		UIManager.put("TabbedPane.foreground", new Color(245,245,245));
 		
 		UIManager.put("CheckBox.icon.checkmarkColor", themeColor);	
@@ -2287,7 +2249,7 @@ public class Utils extends Shutter {
 		UIManager.put("RadioButton.foreground" , new Color(245,245,245));
 		UIManager.put("RadioButton.background" , new Color(50,50,50,0));	
 		
-		UIManager.put("ColorChooser.background", new Color(50,50,50));
+		UIManager.put("ColorChooser.background", new Color(45, 45, 45));
 		UIManager.put("ColorChooser.foreground", new Color(245,245,245));
 		        
 		UIManager.put("TextPane.foreground", Color.BLACK);
@@ -2308,7 +2270,7 @@ public class Utils extends Shutter {
 				
 		UIManager.put("Spinner.padding", new Insets(2,2,2,0));
 		
-		UIManager.put("Panel.background", new Color(50,50,50));
+		UIManager.put("Panel.background", new Color(45, 45, 45));
 		
 		UIManager.put("TextField.margin", new Insets(0,0,0,0));
 				
@@ -2316,7 +2278,7 @@ public class Utils extends Shutter {
 		
 		UIManager.put("Label.foreground", new Color(245,245,245));		
 		
-		UIManager.put("OptionPane.background", new Color(50,50,50));
+		UIManager.put("OptionPane.background", new Color(45, 45, 45));
 		
 		UIManager.put("TitledBorder.titleColor", new Color(245,245,245));
 		
@@ -2347,15 +2309,15 @@ public class Utils extends Shutter {
 			else
 				textH.setBackground(new Color(60,60,60));
 			
-			if (textMin.isEnabled())
-				textMin.setBackground(new Color(80,80,80));
+			if (textM.isEnabled())
+				textM.setBackground(new Color(80,80,80));
 			else
-				textMin.setBackground(new Color(60,60,60));
+				textM.setBackground(new Color(60,60,60));
 			
-			if (textSec.isEnabled())
-				textSec.setBackground(new Color(80,80,80));
+			if (textS.isEnabled())
+				textS.setBackground(new Color(80,80,80));
 			else
-				textSec.setBackground(new Color(60,60,60));
+				textS.setBackground(new Color(60,60,60));
 			
 			if (taille.isEnabled())
 				taille.setBackground(new Color(80,80,80));
@@ -2436,9 +2398,6 @@ public class Utils extends Shutter {
 			if (FFPLAY.isRunning)
 				FFPLAY.process.destroy();
 
-			if (DECKLINK.isRunning)
-				DECKLINK.process.destroy();
-
 			if (BMXTRANSWRAP.isRunning)
 				BMXTRANSWRAP.process.destroy();
 
@@ -2502,6 +2461,11 @@ public class Utils extends Shutter {
 		
 		//Suppression du media offline
 		File file = new File(dirTemp + "offline.png");
+		if (file.exists())
+			file.delete();
+		
+		//Delete preview file
+		file = VideoPlayer.preview;
 		if (file.exists())
 			file.delete();
 		

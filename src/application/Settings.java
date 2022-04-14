@@ -178,13 +178,13 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 		comboTheme.setName("comboTheme");
 		
-		frame.setSize(370, 670);
+		frame.setSize(370, 642);
 		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
 		}
 		
-		frame.getContentPane().setBackground(new Color(50,50,50));
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
@@ -203,8 +203,8 @@ public class Settings {
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(90);
-		scrollBar.setBackground(new Color(50,50,50));
+		scrollBar.setMaximum(94);
+		scrollBar.setBackground(new Color(45, 45, 45));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
 		scrollBar.setLocation(frame.getWidth() - scrollBar.getWidth() - 2, topPanel.getHeight());
@@ -237,14 +237,14 @@ public class Settings {
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setName("backgroundPanel");
 		backgroundPanel.setLayout(null);
-		backgroundPanel.setBackground(new Color(50, 50, 50));
+		backgroundPanel.setBackground(new Color(45, 45, 45));
 		backgroundPanel.setOpaque(true);
 		backgroundPanel.setSize(frame.getWidth(), 50);
 		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
 		frame.getContentPane().add(backgroundPanel);
 		
 		btnHidePath.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnHidePath.setBounds(12, 56, btnHidePath.getPreferredSize().width, 16);
+		btnHidePath.setBounds(12, 34, btnHidePath.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnHidePath);
 		
 		btnHidePath.addActionListener(new ActionListener(){
@@ -601,13 +601,13 @@ public class Settings {
 			
 		comboLanguage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboLanguage.setEditable(false);
-
+		
 		//load languages
 		String[] data = new String[new File(Utils.pathToLanguages).listFiles().length]; 
 				
 		int d = 0;
 		for (File f : new File(Utils.pathToLanguages).listFiles())
-		{
+		{			
 			if (f.isHidden() == false)
 			{
 				String l[] = f.getName().split("\\.");
@@ -678,7 +678,7 @@ public class Settings {
 			lblDestination1.setForeground(Utils.themeColor);
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination1.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination1.setBackground(new Color(50, 50, 50));
+		lblDestination1.setBackground(new Color(45, 45, 45));
 		if (lblDestination1.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -805,7 +805,7 @@ public class Settings {
 			lblDestination2.setForeground(Utils.themeColor);
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination2.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination2.setBackground(new Color(50, 50, 50));
+		lblDestination2.setBackground(new Color(45, 45, 45));
 		if (lblDestination2.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -924,7 +924,7 @@ public class Settings {
 			lblDestination3.setForeground(Utils.themeColor);
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination3.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination3.setBackground(new Color(50, 50, 50));
+		lblDestination3.setBackground(new Color(45, 45, 45));
 		if (lblDestination3.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -1201,7 +1201,7 @@ public class Settings {
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -1247,7 +1247,7 @@ public class Settings {
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
+		reduce.setBounds(quit.getLocation().x - 20, 4, 15, 15);
 			
 		reduce.addMouseListener(new MouseListener(){
 			
@@ -1288,7 +1288,7 @@ public class Settings {
 
 		help = new JLabel(new FlatSVGIcon("contents/help.svg", 15, 15));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(reduce.getLocation().x - 20, 3, 15, 15);
+		help.setBounds(reduce.getLocation().x - 20, 4, 15, 15);
 		topPanel.add(help);
 
 		help.addMouseListener(new MouseListener() {
@@ -1331,12 +1331,12 @@ public class Settings {
 		topPanel.add(quit);
 		topPanel.add(reduce);
 		topPanel.add(help);
-		topPanel.setBounds(0, 0, frame.getWidth(), 44);
+		topPanel.setBounds(0, 0, frame.getWidth(), 28);
 		
 		JLabel title = new JLabel(Shutter.language.getProperty("frameSettings"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 44);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();

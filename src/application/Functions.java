@@ -94,10 +94,11 @@ public class Functions {
 
 	@SuppressWarnings("serial")
 	public Functions() {
+		
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setSize(333,333);
-		frame.setBackground(new Color(50,50,50));
+		frame.setSize(333,317);
+		frame.setBackground(new Color(45, 45, 45));
 		frame.setTitle(Shutter.language.getProperty("frameFonctions"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
@@ -227,7 +228,7 @@ public class Functions {
 		listeDeFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		listeDeFonctions.setCellRenderer(new FonctionsRenderer());
 		listeDeFonctions.setFixedCellHeight(17);
-		listeDeFonctions.setBounds(0, 52, 333, 261);
+		listeDeFonctions.setBounds(0, 28, 333, 269);
 		
 		listeDeFonctions.setTransferHandler(new FonctionsTransferHandler());   	
 		
@@ -235,7 +236,7 @@ public class Functions {
 		scrollPane.getViewport().add(listeDeFonctions);
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
-		scrollPane.setBounds(0, 52, 333, 261);
+		scrollPane.setBounds(0, 28, 333, 269);
 		
 		frame.getContentPane().add(scrollPane);
 		
@@ -466,11 +467,11 @@ public class Functions {
 				
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBounds(0, 0, 333, 52);
+		topPanel.setBounds(0, 0, 333, 28);
 	
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 20, 3, 15, 15);
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 		topPanel.add(quit);
 		
 		quit.addMouseListener(new MouseListener(){
@@ -523,7 +524,7 @@ public class Functions {
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(quit.getLocation().x - 20, 3, 15, 15);
+		reduce.setBounds(quit.getLocation().x - 20, 4, 15, 15);
 		topPanel.add(reduce);
 		
 		reduce.addMouseListener(new MouseListener(){
@@ -565,7 +566,7 @@ public class Functions {
 				
 		newInstance = new JLabel(new FlatSVGIcon("contents/new.svg", 15, 15));
 		newInstance.setHorizontalAlignment(SwingConstants.CENTER);
-		newInstance.setBounds(reduce.getLocation().x - 20, 3, 15, 15);
+		newInstance.setBounds(reduce.getLocation().x - 20, 4, 15, 15);
 		newInstance.setToolTipText(Shutter.language.getProperty("btnSave"));
 		topPanel.add(newInstance);
 
@@ -612,8 +613,8 @@ public class Functions {
 				
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFonctions"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 52);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 26));
+		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
