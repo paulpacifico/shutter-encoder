@@ -50,7 +50,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import application.ColorImage;
 import application.Console;
 import application.RenderQueue;
 import application.Shutter;
@@ -143,6 +142,7 @@ public static Process process;
 	}
 	
 	public static void toFFPLAY(final String filter) {
+		
 		error = false;		
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -159,30 +159,22 @@ public static Process process;
 						file = new File(liste.firstElement());
 					else							
 						file = new File(fileList.getSelectedValue());
-				
-					String fullscreen = "";
-					if (ColorImage.frame != null)
-					{
-						if (ColorImage.frame.isVisible())							
-							fullscreen = " -fs";							
-					}
-						
 					
 					if (System.getProperty("os.name").contains("Windows"))
 					{						
 						PathToDCRAW = "Library\\dcraw.exe";						
-						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + fullscreen + " -i -" + filter + " -window_title " + '"' + file + '"'});
+						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'});
 					}
 					else
 					{
 						PathToDCRAW = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToDCRAW = PathToDCRAW.substring(0,PathToDCRAW.length()-1);
 						PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw";
-						processDCRAW = new ProcessBuilder("/bin/bash", "-c" , PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + fullscreen + " -i -" + filter + " -window_title " + '"' + file + '"');	
+						processDCRAW = new ProcessBuilder("/bin/bash", "-c" , PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"');	
 						process = processDCRAW.start();
 					}
 									
-					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + fullscreen + " -i -" + filter + " -window_title " + '"' + file + '"'
+					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'
 					+  System.lineSeparator() + System.lineSeparator());
 						
 					isRunning = true;

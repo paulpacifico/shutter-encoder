@@ -29,19 +29,12 @@ import java.text.NumberFormat;
 
 import javax.swing.JOptionPane;
 
-import application.BlackMagicOutput;
-import application.ColorImage;
 import application.Console;
-import application.CropImage;
-import application.CropVideo;
 import application.GOP;
-import application.OverlayWindow;
 import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
-import application.SubtitlesWindow;
 import application.VideoPlayer;
-import application.WatermarkWindow;
 
 public class FFPROBE extends Shutter {
 	
@@ -69,8 +62,9 @@ private static boolean videoStream = false;
 public static String pixelformat = "";
 public static int imageDepth = 8;
 public static String imageResolution;
-public static int cropWidth;
-public static int cropHeight;
+public static int imageWidth;
+public static int imageHeight;
+public static float imageRatio = 1.777777f;
 public static int cropPixelsWidth;
 public static int cropPixelsHeight;
 public static boolean dropFrameTC = false;
@@ -123,14 +117,14 @@ public static int gopSpace = 124;
 		hasAudio = false; 		
 		btnStart.setEnabled(false);
 		
-		VideoPlayer.ratio = 1.777777f;
+		imageRatio = 1.777777f;
 		
-		if (OverlayWindow.caseAddTimecode.isSelected())
+		if (VideoPlayer.caseAddTimecode.isSelected())
 		{
-			timecode1 = OverlayWindow.TC1.getText();
-			timecode2 = OverlayWindow.TC2.getText();			
-        	timecode3 = OverlayWindow.TC3.getText();		    
-			timecode4 = OverlayWindow.TC4.getText();
+			timecode1 = VideoPlayer.TC1.getText();
+			timecode2 = VideoPlayer.TC2.getText();			
+        	timecode3 = VideoPlayer.TC3.getText();		    
+			timecode4 = VideoPlayer.TC4.getText();
 		}
 		else
 		{			
@@ -263,15 +257,17 @@ public static int gopSpace = 124;
 				         	if (grpH264.isVisible() && totalLength != 0)
 							{     						         		
 					        	 NumberFormat formatter = new DecimalFormat("00");
-					             int secondes = ((totalLength) / 1000) % 60;
-					             int minutes =  ((totalLength) / 60000) % 60;
-					             int heures = ((totalLength) / 3600000);
+					        	 int hours = ((totalLength) / 3600000);
+					        	 int min =  ((totalLength) / 60000) % 60;
+					             int sec = ((totalLength) / 1000) % 60;
+					             int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
 					             
-					             textH.setText(formatter.format(heures));
-					             textMin.setText(formatter.format(minutes));
-					             textSec.setText(formatter.format(secondes));
+					             textH.setText(formatter.format(hours));
+					             textM.setText(formatter.format(min));
+					             textS.setText(formatter.format(sec));
+					             textF.setText(formatter.format(frames));
 					             
-					      		if (caseInAndOut.isSelected() && VideoPlayer.playerLeftVideo != null)	
+					      		if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
 					     			VideoPlayer.totalDuration();
 
 					             setFilesize();
@@ -315,8 +311,8 @@ public static int gopSpace = 124;
 			                String splitx[]= height.split("x");
 			                String getHeight[] =  splitx[1].split(" ");
 
-				            int imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
-				            int imageHeight = Integer.parseInt(splitr[0]);
+				            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
+				            imageHeight = Integer.parseInt(splitr[0]);
 			                imageResolution = imageWidth + "x" + getHeight[0];
 			                
 			                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
@@ -325,37 +321,6 @@ public static int gopSpace = 124;
 			                	imageWidth = RecordInputDevice.screenWidth;
 			                	imageHeight = RecordInputDevice.screenHeigth;
 			                }
-			                
-			                if (caseRognage.isSelected() || Shutter.inputDeviceIsRunning)
-			                {
-			                    CropVideo.ImageWidth = imageWidth;
-			                    CropVideo.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }	
-			                if (caseRognerImage.isSelected() || Shutter.inputDeviceIsRunning)
-			                {
-			                    CropImage.ImageWidth = imageWidth;
-			                    CropImage.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }					                
-			                if (caseLogo.isSelected() || Shutter.inputDeviceIsRunning)
-			                {
-			                	WatermarkWindow.ImageWidth = imageWidth;
-			                	WatermarkWindow.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }
-			                if (caseAddOverlay.isSelected() || Shutter.inputDeviceIsRunning)
-			                {
-			                	OverlayWindow.ImageWidth = imageWidth;
-			                	OverlayWindow.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }
-			                if (caseSubtitles.isSelected())
-			                {
-			                	SubtitlesWindow.ImageWidth = imageWidth;
-			                	SubtitlesWindow.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }
-			                if (caseColor.isSelected() || Shutter.inputDeviceIsRunning)
-			                {
-			                	ColorImage.ImageWidth = imageWidth;
-			                	ColorImage.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }
 			                			               			                
 			                //Ratio du lecteur
 			                if (line.contains("DAR"))
@@ -363,12 +328,12 @@ public static int gopSpace = 124;
 			                	String[] splitDAR = line.split("DAR");
 			                	String[] splitDAR2 = splitDAR[1].split(",");
 			                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
-			                	int ratioLargeur = Integer.parseInt(splitDAR3[0]);
-			                	int ratioHauteur = Integer.parseInt(splitDAR3[1]);
-			                	VideoPlayer.ratio = (float) ratioLargeur / ratioHauteur;
+			                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
+			                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
+			                	imageRatio = (float) ratioWidth / ratioHeight;
 			                }
 			                else
-			                	VideoPlayer.ratio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);
+			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);
 			              	
 			                /*
 			              	if (VideoPlayer.ratio < 1.76f)
@@ -376,22 +341,7 @@ public static int gopSpace = 124;
 			                
 			                // Crop Form
 			                int largeur = 0;
-			                int hauteur = 0;
-		                	if (caseRognage.isSelected())
-		                	{
-		                		if (ratioFinal < ((float) imageWidth / imageHeight))
-		                		{
-		                			hauteur = (int) ((float) imageHeight * ratioFinal);
-		                			cropWidth = imageHeight;	
-		                			cropHeight = hauteur;
-		                		}
-		                		else
-		                		{
-		                			largeur = (int) ((float) imageWidth / ratioFinal);
-		                			cropWidth = largeur;	
-		                			cropHeight = imageWidth;
-		                		}
-		                	}				               
+			                int hauteur = 0;			               
 		                	
 			                // Pixels cropés
 			                if (ratioFinal < ((float) imageWidth / imageHeight))
@@ -513,7 +463,7 @@ public static int gopSpace = 124;
 			            	else
 			            		dropFrameTC = false;
 			            	
-			            	if (OverlayWindow.caseShowTimecode.isSelected()
+			            	if (VideoPlayer.caseShowTimecode.isSelected()
 		            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")
 		            		|| comboFonctions.getSelectedItem().equals("XAVC")
 		            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
@@ -526,7 +476,7 @@ public static int gopSpace = 124;
 		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
 		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))
 			            			
-	            			|| (caseInAndOut.isSelected() && VideoPlayer.caseTcInterne != null && VideoPlayer.caseTcInterne.isSelected()))
+	            			|| (caseInAndOut.isSelected() && VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
 				            {
 			            		if (FFPROBE.timecode1 == "")
 				                {			            					            			
@@ -536,14 +486,6 @@ public static int gopSpace = 124;
 				                	timecode3 = str[3];
 				                	timecode4 = str[4];
 				                }
-				            }
-				            
-				            if (BlackMagicOutput.frame != null && BlackMagicOutput.frame.isVisible())
-				            {
-				                BlackMagicOutput.timecode1 = Integer.parseInt(timecode1);
-				                BlackMagicOutput.timecode2 = Integer.parseInt(timecode2);
-				                BlackMagicOutput.timecode3 = Integer.parseInt(timecode3);
-				                BlackMagicOutput.timecode4 = Integer.parseInt(timecode4);
 				            }
 			            }
 			            
@@ -1053,15 +995,17 @@ public static int gopSpace = 124;
     		    }	
          		
 	        	 NumberFormat formatter = new DecimalFormat("00");
-	             int secondes = ((totalLength) / 1000) % 60;
-	             int minutes =  ((totalLength) / 60000) % 60;
-	             int heures = ((totalLength) / 3600000);
+	        	 int hours = ((totalLength) / 3600000);
+	        	 int min =  ((totalLength) / 60000) % 60;
+	             int sec = ((totalLength) / 1000) % 60;
+	             int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
+
+	             textH.setText(formatter.format(hours));
+	             textM.setText(formatter.format(min));
+	             textS.setText(formatter.format(sec));
+	             textF.setText(formatter.format(frames));
 	             
-	             textH.setText(formatter.format(heures));
-	             textMin.setText(formatter.format(minutes));
-	             textSec.setText(formatter.format(secondes));
-	             
-	             if (caseInAndOut.isSelected() && VideoPlayer.playerLeftVideo != null)	
+	             if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
 		     			VideoPlayer.totalDuration();
 	             
 	             setFilesize();
@@ -1109,8 +1053,8 @@ public static int gopSpace = 124;
 			{
 				 //Injection du débit
 				int h = Integer.parseInt(textH.getText());
-				int min = Integer.parseInt(textMin.getText());
-				int sec = Integer.parseInt(textSec.getText());
+				int min = Integer.parseInt(textM.getText());
+				int sec = Integer.parseInt(textS.getText());
 				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
 				int tailleFinale = Integer.parseInt(taille.getText());
 				float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec);
@@ -1122,8 +1066,8 @@ public static int gopSpace = 124;
 			{
 		        //Injection de la taille
 				int h = Integer.parseInt(textH.getText());
-				int min = Integer.parseInt(textMin.getText());
-				int sec = Integer.parseInt(textSec.getText());
+				int min = Integer.parseInt(textM.getText());
+				int sec = Integer.parseInt(textS.getText());
 				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
 				int video =  Integer.parseInt(debitVideo.getSelectedItem().toString());
 				float resultVideo = (float) video / 8 / 1024;

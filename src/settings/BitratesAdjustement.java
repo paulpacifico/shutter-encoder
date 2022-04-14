@@ -20,6 +20,7 @@
 package settings;
 
 import application.Shutter;
+import application.VideoPlayer;
 import library.FFPROBE;
 
 public class BitratesAdjustement extends Shutter {
@@ -29,19 +30,9 @@ public class BitratesAdjustement extends Shutter {
 	
 	public static String setResolution() {		
 				
-        if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) && caseRognage.isSelected() == false)
+        if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")))
         {
         	return "";
-        }
-        else if (caseRognage.isSelected() && lblPad.getText().equals(language.getProperty("lblPad")))
-        {
-        	String s[] = comboH264Taille.getSelectedItem().toString().split("x");
-        	String i[] = FFPROBE.imageResolution.split("x");
-        	int ow = Integer.parseInt(s[0]);
-        	int iw = Integer.parseInt(i[0]);
-        	int ih = Integer.parseInt(i[1]);        	
-        	
-        	return " -s " + s[0] + "x" + (int) ((float)ow/((float)iw/ih));	
         }
         else
         {
@@ -72,21 +63,13 @@ public class BitratesAdjustement extends Shutter {
 	}
 	
 	public static String setCrop(String filterComplex) {		
-		
-		if (caseRognage.isSelected())
-		{
-			if (filterComplex != "")
-				filterComplex += "[w];[w]";
-	
-			filterComplex += "crop=" + FFPROBE.cropHeight + ":" + FFPROBE.cropWidth + ":" + FFPROBE.cropPixelsWidth + ":" + FFPROBE.cropPixelsHeight;
-		}
-    	
-    	if (caseRognerImage.isSelected())
+		    	
+    	if (VideoPlayer.caseEnableCrop.isSelected())
 		{
 			if (filterComplex != "")
 				filterComplex += "[w];[w]";
 			
-    		filterComplex += Shutter.cropFinal;
+    		filterComplex += Shutter.croppingValues;
 		}
     	
     	return filterComplex;

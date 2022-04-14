@@ -188,7 +188,7 @@ public class FunctionUtils extends Shutter {
 			} catch (InterruptedException e) {}
 
 		} while ((fileSize != file.length() || FFMPEG.isReadable(file) == false) && cancelled == false && file.exists());
-		
+				
 		progressBar1.setIndeterminate(false);
 		btnCancel.setEnabled(false);
 		
@@ -240,7 +240,9 @@ public class FunctionUtils extends Shutter {
 			for (File file : dir.listFiles()) // Récupère chaque fichier du dossier
 			{
 				if (file.isHidden() || file.isFile() == false)
+				{
 					continue;
+				}
 				else if (Settings.btnExclude.isSelected())
 				{							
 					boolean allowed = true;
@@ -648,7 +650,7 @@ public class FunctionUtils extends Shutter {
 	public static String setMapSubtitles() {
 		
 		int i = 0;
-		if (caseLogo.isSelected())
+		if (VideoPlayer.caseAddWatermark.isSelected())
 			i = 1;
 		
 		String subsMapping = "";
@@ -671,7 +673,7 @@ public class FunctionUtils extends Shutter {
 	        	String[] languages = Locale.getISOLanguages();			
 				Locale loc = new Locale(languages[((JComboBox) c).getSelectedIndex()]);
 				
-				if (caseLogo.isSelected())
+				if (VideoPlayer.caseAddWatermark.isSelected())
 				{
 					subsMapping += " -map " + i + ":s -metadata:s:s:" + (i - 2) + " language=" + loc.getISO3Language().replace("zho", "chi"); //For chinese compatibility			
 				}
@@ -724,7 +726,7 @@ public class FunctionUtils extends Shutter {
         if (filterComplex != "")
         {	   	   
         	//Si une des cases est sélectionnée alors il y a déjà [0:v]
-        	if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
+        	if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
         		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
         	else
         		filterComplex = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]";
@@ -795,7 +797,7 @@ public class FunctionUtils extends Shutter {
         }
         
 		//On map les sous-titres que l'on intègre        
-        if (caseSubtitles.isSelected() && subtitlesBurn == false)
+        if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
         {			        	
         	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
         		filterComplex += " -c:s srt" + setMapSubtitles();
@@ -872,7 +874,7 @@ public class FunctionUtils extends Shutter {
 		&& comboAudio7.getSelectedIndex() == 16
 		&& comboAudio8.getSelectedIndex() == 16)
 		{
-			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
+			if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
 			else if (filterComplex != "")
 				mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
@@ -880,7 +882,7 @@ public class FunctionUtils extends Shutter {
 				mapping += " -map v:0" + audio;
 			
 			//On map les sous-titres que l'on intègre        
-			if (caseSubtitles.isSelected() && subtitlesBurn == false)
+			if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
 			{
 				mapping += " -c:s mov_text" + setMapSubtitles();
 			}
@@ -916,7 +918,7 @@ public class FunctionUtils extends Shutter {
 						if (transitions != "")
 				    		transitions = transitions + ",";
 						
-						if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
+						if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
 							mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]" + transitions + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
 						else if (filterComplex != "")
 							mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out];[0:a]" + transitions + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
@@ -951,9 +953,9 @@ public class FunctionUtils extends Shutter {
 					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422"))
 						silentTrack += " -shortest -map_metadata -1";
 					
-					if (caseLogo.isSelected() && (caseSubtitles.isSelected() && subtitlesBurn))
+					if (VideoPlayer.caseAddWatermark.isSelected() && (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
 						mapping += " -map 3";	
-					else if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
+					else if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
 						mapping += " -map 2";
 					else
 						mapping += " -map 1";	
@@ -966,7 +968,7 @@ public class FunctionUtils extends Shutter {
 			if (transitions != "")
 	    		transitions = " -filter:a " + '"' + transitions + '"';
 			
-			if (caseLogo.isSelected() || (caseSubtitles.isSelected() && subtitlesBurn))
+			if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
 				mapping = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + transitions + mapping + audio;
 			else if (filterComplex != "")
 				mapping = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + transitions + mapping + audio;
@@ -975,7 +977,7 @@ public class FunctionUtils extends Shutter {
 		}		
 		
 		//On map les sous-titres que l'on intègre        
-        if (caseSubtitles.isSelected() && subtitlesBurn == false)
+        if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
         {        				
 			mapping += " -c:s mov_text" + setMapSubtitles();
         }
@@ -1042,16 +1044,20 @@ public class FunctionUtils extends Shutter {
 
 	public static void addFileForMail(final String file)
 	{		
+		String text = Shutter.language.getProperty("isEncoded");
+		if (FFMPEG.error)
+			text = Shutter.language.getProperty("notEncoded");
+		
 		if (caseChangeFolder3.isSelected())
 		{
-			mailFileList.append(file + " " + Shutter.language.getProperty("isEncoded") + " " + lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText()  + System.lineSeparator());
+			mailFileList.append(file + " " + text + " " + lblDestination1.getText() + " | " + lblDestination2.getText() + " | " + lblDestination3.getText()  + System.lineSeparator());
 		}
 		else if (caseChangeFolder2.isSelected())
 		{
-			mailFileList.append(file + " " + Shutter.language.getProperty("isEncoded") + " " + lblDestination1.getText() + " | " + lblDestination2.getText()  + System.lineSeparator());
+			mailFileList.append(file + " " + text + " " + lblDestination1.getText() + " | " + lblDestination2.getText()  + System.lineSeparator());
 		}
 		else
-			mailFileList.append(file + " " + Shutter.language.getProperty("isEncoded") + " " + lblDestination1.getText()  + System.lineSeparator());
+			mailFileList.append(file + " " + text + " " + lblDestination1.getText()  + System.lineSeparator());
 	}
 	
 	public static void sendMail() {
@@ -1076,8 +1082,14 @@ public class FunctionUtils extends Shutter {
 				
 				Message message = new MimeMessage(session);
 				message.setFrom(new InternetAddress(Utils.username));
-				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(textMail.getText()));						
-				message.setSubject(Shutter.language.getProperty("shutterEncodingCompleted"));
+				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(textMail.getText()));			
+				if (FFMPEG.error)
+				{
+					message.setSubject(Shutter.language.getProperty("shutterEncodingError"));
+				}
+				else
+					message.setSubject(Shutter.language.getProperty("shutterEncodingCompleted"));
+				
 				message.setText(mailFileList.toString());
 
 				Transport.send(message);						
@@ -1248,7 +1260,7 @@ public class FunctionUtils extends Shutter {
 			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
 			if (caseInAndOut.isSelected())
-				millisecondsToTc = timecodeToMs + VideoPlayer.dureeHeures * 3600000 + VideoPlayer.dureeMinutes * 60000 + VideoPlayer.dureeSecondes * 1000 + VideoPlayer.dureeImages * (int) (1000 / FFPROBE.currentFPS);
+				millisecondsToTc = timecodeToMs + VideoPlayer.durationH * 3600000 + VideoPlayer.durationM * 60000 + VideoPlayer.durationS * 1000 + VideoPlayer.durationF * (int) (1000 / FFPROBE.currentFPS);
 			
 			if (caseEnableSequence.isSelected())
 				millisecondsToTc = Shutter.liste.getSize() * (int) (1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString()));

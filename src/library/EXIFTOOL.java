@@ -28,9 +28,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
-import application.ColorImage;
 import application.Console;
-import application.CropImage;
 import application.Shutter;
 
 public class EXIFTOOL extends Shutter {
@@ -145,32 +143,14 @@ private static Boolean horizontal = true;
 						if (horizontal)
 						{
 							FFPROBE.imageResolution = exifWidth + "x" + exifHeight; 
-						    if (caseRognerImage.isSelected())
-			                {
-								CropImage.ImageWidth = Integer.parseInt(exifWidth);
-								CropImage.ImageHeight = Integer.parseInt(exifHeight);
-			                }
-							
-							if (caseColor.isSelected())
-			                {
-								ColorImage.ImageWidth = Integer.parseInt(exifWidth);
-								ColorImage.ImageHeight = Integer.parseInt(exifHeight);
-			                }
+							FFPROBE.imageWidth = Integer.parseInt(exifWidth);
+							FFPROBE.imageHeight = Integer.parseInt(exifHeight);
 						}
 						else
 						{
 							FFPROBE.imageResolution = exifHeight + "x" + exifWidth; 
-						    if (caseRognerImage.isSelected())
-			                {
-						    	CropImage.ImageWidth = Integer.parseInt(exifHeight);
-						    	CropImage.ImageHeight = Integer.parseInt(exifWidth);
-			                }
-							
-						    if (caseColor.isSelected())
-			                {
-						    	ColorImage.ImageWidth = Integer.parseInt(exifHeight);
-						    	ColorImage.ImageHeight = Integer.parseInt(exifWidth);
-			                }
+					    	FFPROBE.imageWidth = Integer.parseInt(exifHeight);
+					    	FFPROBE.imageHeight = Integer.parseInt(exifWidth);
 						}
 
 					}

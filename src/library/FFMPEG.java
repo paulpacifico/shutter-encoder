@@ -52,7 +52,6 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import application.ColorImage;
 import application.Console;
 import application.Functions;
 import application.RecordInputDevice;
@@ -62,7 +61,6 @@ import application.Settings;
 import application.Shutter;
 import application.Utils;
 import application.VideoPlayer;
-import application.WatermarkWindow;
 import functions.VideoEncoders;
 import settings.BitratesAdjustement;
 import settings.Colorimetry;
@@ -178,8 +176,8 @@ private static StringBuilder getAll;
 							else if (cmd.contains("pipe:stab") || cmd.contains("image2pipe") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 									|| comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG") ||
 									(caseForcerDAR.isSelected() && grpAdvanced.isVisible()
-									|| caseAddOverlay.isSelected() && grpOverlay.isVisible() 
-									|| caseColor.isSelected() && grpColorimetry.isVisible()
+									|| VideoPlayer.caseAddTimecode.isSelected()
+									|| VideoPlayer.caseEnableColorimetry.isSelected()
 									|| caseLUTs.isSelected() && grpColorimetry.isVisible()
 									|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpColorimetry.isVisible()
 									|| caseDeflicker.isSelected() && grpCorrections.isVisible()) && caseDisplay.isSelected() == false)
@@ -333,30 +331,22 @@ private static StringBuilder getAll;
 						if (fileList.getSelectedIndices().length == 0)
 							file = new File(liste.firstElement());
 						else							
-							file = new File(fileList.getSelectedValue());
-					
-						String fullscreen = "";
-						if (ColorImage.frame != null)
-						{
-							if (ColorImage.frame.isVisible())							
-								fullscreen = " -fs";							
-						}
-							
+							file = new File(fileList.getSelectedValue());							
 						
 						if (System.getProperty("os.name").contains("Windows"))
 						{
 							PathToFFMPEG = "Library\\ffmpeg.exe";
-							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');
+							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -fs -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');
 						}
 						else
 						{
 							PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');	
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -fs -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');	
 						}		
 										
-						Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + fullscreen + " -i " + '"' + "pipe:play" +  '"' + " -window_title " + '"' + file.getName() + '"'
+						Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -fs -i " + '"' + "pipe:play" +  '"' + " -window_title " + '"' + file.getName() + '"'
 						+  System.lineSeparator() + System.lineSeparator());
 						
 						process = processFFMPEG.start();
@@ -527,18 +517,17 @@ private static StringBuilder getAll;
 			
 			if (inputDeviceIsRunning && overlayDeviceIsRunning)
 			{	     
-				
 				if (RecordInputDevice.audioDeviceIndex > 0)
 				{
-					videoOutput = "[2:v]scale=iw*" + ((float)  Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) +			
-	        				",lut=a=val*" + ((float) Integer.parseInt(WatermarkWindow.textOpacity.getText()) / 100) + 
-	        				"[scaledwatermark];[1:v][scaledwatermark]overlay=" + WatermarkWindow.textPosX.getText() + ":" + WatermarkWindow.textPosY.getText() + ",scale=1080:-1[v]";			
+					videoOutput = "[2:v]scale=iw*" + ((float)  Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) +			
+	        				",lut=a=val*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkOpacity.getText()) / 100) + 
+	        				"[scaledwatermark];[1:v][scaledwatermark]overlay=" + VideoPlayer.textWatermarkPosX.getText() + ":" + VideoPlayer.textWatermarkPosY.getText() + ",scale=1080:-1[v]";			
 				}
 				else
 				{
-					videoOutput = "[1:v]scale=iw*" + ((float)  Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(WatermarkWindow.textSize.getText()) / 100) +			
-	        				",lut=a=val*" + ((float) Integer.parseInt(WatermarkWindow.textOpacity.getText()) / 100) + 
-	        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + WatermarkWindow.textPosX.getText() + ":" + WatermarkWindow.textPosY.getText() + ",scale=1080:-1[v]";	
+					videoOutput = "[1:v]scale=iw*" + ((float)  Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) +			
+	        				",lut=a=val*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkOpacity.getText()) / 100) + 
+	        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + VideoPlayer.textWatermarkPosX.getText() + ":" + VideoPlayer.textWatermarkPosY.getText() + ",scale=1080:-1[v]";	
 				}
 					
 				if (audioOutput != "")
@@ -759,8 +748,8 @@ private static StringBuilder getAll;
 
 				String filter = "";
 				String frameSize = "";
-				if (caseRognerImage.isSelected())
-					filter = " -vf " + cropFinal;
+				if (VideoPlayer.caseEnableCrop.isSelected())
+					filter = " -vf " + croppingValues;
 				
 				if (comboResolution.getSelectedItem().toString().contains(":"))
 				{					
@@ -841,7 +830,7 @@ private static StringBuilder getAll;
 				}
 
 				//EXR gamma
-				String EXRGamma = Colorimetry.setEXRGamma(extension);
+				String EXRGamma = Colorimetry.setInputCodec(extension);
 				
 				String compression = "";
 				int fileSize = 0;
@@ -1269,7 +1258,7 @@ private static StringBuilder getAll;
 				PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 												
-				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hide_banner -i " + '"' + file + '"' + " -f null -" + '"');
+				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -" + '"');
 				process = processFFMPEG.start();
 			}
 			else
@@ -1279,12 +1268,12 @@ private static StringBuilder getAll;
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
 	
 				
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -i " + '"' + file + '"' + " -f null -");							
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -");							
 				process = processFFMPEG.start();
 			}		
 			
 			
-			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hide_banner -i " + '"' + file + '"' + " -f null -" + System.lineSeparator() + System.lineSeparator());
+			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -" + System.lineSeparator() + System.lineSeparator());
 			
 			String line;
 	
@@ -1381,7 +1370,7 @@ private static StringBuilder getAll;
 			}
 			else if (caseInAndOut.isSelected())
 			{
-				dureeTotale = VideoPlayer.dureeHeures * 3600 + VideoPlayer.dureeMinutes * 60 + VideoPlayer.dureeSecondes;
+				dureeTotale = VideoPlayer.durationH * 3600 + VideoPlayer.durationM * 60 + VideoPlayer.durationS;
 			}
 			else
 				dureeTotale = (getTimeToSeconds(ffmpegTime));
@@ -1441,13 +1430,14 @@ private static StringBuilder getAll;
     			progressBar1.setStringPainted(false);
     		else
     			progressBar1.setStringPainted(true);
-    		
+    		    		
 			if (pass2)
 			{
 				progressBar1.setValue((dureeTotale / 2) + getTimeToSeconds(ffmpegTime));
 			}
 			else
 				progressBar1.setValue(getTimeToSeconds(ffmpegTime));
+			
 	  }
 	  
 		//Temps écoulé		

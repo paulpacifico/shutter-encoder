@@ -28,9 +28,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import application.ColorImage;
 import application.Console;
-import application.CropImage;
 import application.RenderQueue;
 import application.Shutter;
 
@@ -217,30 +215,22 @@ public static int pagesCount = 1;
 						file = new File(liste.firstElement());
 					else							
 						file = new File(fileList.getSelectedValue());
-				
-					String fullscreen = "";
-					if (ColorImage.frame != null)
-					{
-						if (ColorImage.frame.isVisible())							
-							fullscreen = " -fs";							
-					}
-						
 					
 					if (System.getProperty("os.name").contains("Windows"))
 					{						
 						PathToXPDF = "Library\\pdftoppm.exe";						
-						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + fullscreen  + " -i -" + filter + " -window_title " + '"' + file + '"'});
+						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'});
 					}
 					else
 					{
 						PathToXPDF = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToXPDF = PathToXPDF.substring(0,PathToXPDF.length()-1);
 						PathToXPDF = PathToXPDF.substring(0,(int) (PathToXPDF.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/pdftoppm";
-						processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + fullscreen  + " -i -" + filter + " -window_title " + '"' + file + '"');	
+						processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"');	
 						process = processToXPDF.start();
 					}
 									
-					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + fullscreen  + " -i -" + filter + " -window_title " + '"' + file + '"'
+					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'
 					+  System.lineSeparator() + System.lineSeparator());
 										
 					isRunning = true;
@@ -286,6 +276,7 @@ public static int pagesCount = 1;
 	}
 
 	public static void toFFPROBE(String file) {
+		
 		error = false;		
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -355,17 +346,10 @@ public static int pagesCount = 1;
 			                
 			                int imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
 			                FFPROBE.imageResolution = imageWidth + "x" + getHeight[0];
-			                
-			                if (caseRognerImage.isSelected()) {
-			                    CropImage.ImageWidth = imageWidth;
-			                    CropImage.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }	
-			                
-			                if (caseColor.isSelected())
-			                {
-			                	ColorImage.ImageWidth = imageWidth;
-			                	ColorImage.ImageHeight = Integer.parseInt(getHeight[0]);
-			                }
+		                	FFPROBE.imageWidth = imageWidth;
+		                	FFPROBE.imageHeight = Integer.parseInt(getHeight[0]);
+		                	FFPROBE.imageRatio = (float) imageWidth / Integer.parseInt(getHeight[0]);
+
 						 }
 							 
 						 if (line.contains("frame"))

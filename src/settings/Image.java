@@ -22,6 +22,7 @@ package settings;
 import javax.swing.JComboBox;
 
 import application.Shutter;
+import application.VideoPlayer;
 import library.FFPROBE;
 
 public class Image extends Shutter {
@@ -29,21 +30,13 @@ public class Image extends Shutter {
 	public static String setCrop(String filterComplex) {		
 		
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
-		{
-			if (caseRognage.isSelected())
-			{
-				if (filterComplex != "")
-					filterComplex += "[w];[w]";
-		
-				filterComplex += "crop=" + FFPROBE.cropHeight + ":" + FFPROBE.cropWidth + ":" + FFPROBE.cropPixelsWidth + ":" + FFPROBE.cropPixelsHeight;
-			}
-	    	
-	    	if (caseRognerImage.isSelected())
+		{	    	
+	    	if (VideoPlayer.caseEnableCrop.isSelected())
 			{
 				if (filterComplex != "")
 					filterComplex += "[w];[w]";
 				
-	    		filterComplex += Shutter.cropFinal;
+	    		filterComplex += Shutter.croppingValues;
 			}
 		}
     	
@@ -115,24 +108,18 @@ public class Image extends Shutter {
 					filterComplex += "[c];[c]";
 				
 				String s[] = FFPROBE.imageResolution.split("x");	
-				if (caseRognage.isSelected())
+				if (comboH264Taille.getSelectedItem().toString().contains("%"))
 				{
-					filterComplex += "pad=" + FFPROBE.imageResolution.replace("x", ":") + ":(ow-iw)*0.5:(oh-ih)*0.5";
-				}
-				else
-				{
-					if (comboH264Taille.getSelectedItem().toString().contains("%"))
-					{
-						double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
-						
-						s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
-						s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
-					}					
-					else		
-						s = comboH264Taille.getSelectedItem().toString().split("x");
+					double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
 					
-					filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad="+s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
-				}
+					s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+					s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+				}					
+				else		
+					s = comboH264Taille.getSelectedItem().toString().split("x");
+					
+				filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad="+s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+				
 			}
 			
 			return filterComplex;

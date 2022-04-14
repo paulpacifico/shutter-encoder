@@ -28,9 +28,9 @@ import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
 import application.Utils;
+import application.VideoPlayer;
 import application.Wetransfer;
 import library.DCRAW;
-import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.XPDF;
@@ -43,7 +43,7 @@ import settings.Overlay;
 
 public class Picture extends Shutter {
 	
-	public static void main(boolean encode) {
+	public static void main(boolean encode, boolean videoPlayerCapture) {
 
 		Thread thread = new Thread(new Runnable(){			
 			@Override
@@ -71,6 +71,7 @@ public class Picture extends Shutter {
 						//Erreur FFPROBE avec les fileNames RAW
 						boolean isRaw = false;
 						switch (extension.toLowerCase()) { 
+						
 							case ".3fr":
 							case ".arw":
 							case ".crw":
@@ -118,14 +119,17 @@ public class Picture extends Shutter {
 						//Color
 						filterComplex = Colorimetry.setColor(filterComplex);
 						
-						//Display
-						filterComplex = setDisplay(filterComplex, fileName);
+						//Overlay
+						filterComplex = Overlay.setOverlay(filterComplex, comboResolution, false);										
 												
-		            	//Logo
-				        String logo = Overlay.setLogo();	
-						
+						//Logo
+				        String logo = Overlay.setLogo();	            			            
+										
 				    	//Watermark
-				        filterComplex = Overlay.setWatermark(filterComplex);				        
+						filterComplex = Overlay.setWatermark(filterComplex);
+						
+		            	//Timecode
+						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""));			        
 						
 						//Crop
 				        filterComplex = Image.setCrop(filterComplex);
@@ -145,6 +149,11 @@ public class Picture extends Shutter {
 						//InOut		
 						InputAndOutput.getInputAndOutput();
 						
+						if (videoPlayerCapture)
+						{
+							InputAndOutput.inPoint = " -ss " + VideoPlayer.roundSliderValue(VideoPlayer.slider.getValue()) + "ms ";
+						}
+						
 						//Flags
 			    		String flags = setFlags();
 						
@@ -152,7 +161,7 @@ public class Picture extends Shutter {
 			            String colorspace = Colorimetry.setColorspace();
 			            
 						//EXR gamma
-						String EXRGamma = Colorimetry.setEXRGamma(extension);
+						String inputCodec = Colorimetry.setInputCodec(extension);
 						
 						//Compression
 						String compression = setCompression();
@@ -218,7 +227,7 @@ public class Picture extends Shutter {
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
 						else
-							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + EXRGamma + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
+							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
 	
 						if (isRaw)
 						{
@@ -226,7 +235,7 @@ public class Picture extends Shutter {
 							{
 								Thread.sleep(100);
 							}
-							while(DCRAW.runProcess.isAlive());
+							while (DCRAW.runProcess.isAlive());
 							
 							btnStart.setEnabled(true);	
 						}
@@ -288,23 +297,6 @@ public class Picture extends Shutter {
 		
 		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 	}
-		
-	private static String setDisplay(String filterComplex, String fileName) {
-		
-		if (caseShowDate.isSelected())
-      	{
-			if (filterComplex != "") filterComplex += ",";
-      			filterComplex += "drawtext=fontfile=" + Shutter.pathToFont + ":text='" + EXIFTOOL.exifDate.replace(":", "-") + "':r=" + FFPROBE.currentFPS + ":'x=(w-tw)*0.5:y=h-(2*lh)':fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
-      	}
-      	
-	   	if (caseShowFileName.isSelected())
-	   	{
-	   		if (filterComplex != "") filterComplex += ",";
-	   			filterComplex += "drawtext=fontfile=" + Shutter.pathToFont + ":text='" + fileName + "':r=" + FFPROBE.currentFPS + ":'x=(w-tw)*0.5:y=lh':fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
-      	}
-	   
-		return filterComplex;
-	}
 
 	private static String setCompression() {
 		
@@ -361,8 +353,8 @@ public class Picture extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(output);				
-			Picture.main(true);
+			FunctionUtils.moveScannedFiles(fileName);				
+			Picture.main(true, false);
 			return true;
 		}
 		return false;

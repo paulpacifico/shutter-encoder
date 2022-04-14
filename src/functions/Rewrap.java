@@ -82,21 +82,23 @@ public class Rewrap extends Shutter {
 						String newExtension = extension;
 						String subtitles = "";
 						String mapSubtitles = "";
+						
+						//InOut		
+						InputAndOutput.getInputAndOutput();	
+						
+						//Subtitles
+						subtitles = setSubtitles();
+						
+						//Map subtitles
+						mapSubtitles = setMapSubtitles();
+						
 						if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut")))
-						{
-							//InOut		
-							InputAndOutput.getInputAndOutput();	
-							
+						{							
 							//File output name
 							extensionName = "_" + Shutter.language.getProperty("cutUpper");
 						}
 						else
-						{
-							//Subtitles
-							subtitles = setSubtitles();
-							
-							//Map subtitles
-							mapSubtitles = setMapSubtitles();	
+						{	
 							
 							//Output extension
 							newExtension = comboFilter.getSelectedItem().toString();
@@ -288,8 +290,8 @@ public class Rewrap extends Shutter {
 	}
 	
 	private static String setSubtitles() {
-		
-		if (caseSubtitles.isSelected())
+				
+		if (VideoPlayer.caseAddSubtitles.isSelected())
     	{		
 			String subsFiles = "";
 			for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
@@ -311,7 +313,7 @@ public class Rewrap extends Shutter {
 	
 	private static String setMapSubtitles() {
 
-		if (caseSubtitles.isSelected())
+		if (VideoPlayer.caseAddSubtitles.isSelected())
 		{			
 			if (comboFilter.getSelectedItem().toString().equals(".mkv"))
 				return " -c:s srt" + FunctionUtils.setMapSubtitles();

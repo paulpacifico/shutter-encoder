@@ -514,7 +514,12 @@ public class AdvancedFeatures extends Shutter {
 		}
 		else if (caseForcerEntrelacement.isSelected() && caseConform.isSelected() && comboFPS.getSelectedItem().toString().equals("59,94"))
 		{
-			return " -r 29.97";
+			if (mxfCompatible)
+			{
+				return " -r 30000/1001";
+			}
+			else
+				return " -r 29.97";
 		}
 		else if (caseForcerEntrelacement.isSelected() && caseConform.isSelected() && comboFPS.getSelectedItem().toString().equals("60"))
 		{
@@ -526,6 +531,22 @@ public class AdvancedFeatures extends Shutter {
 		}
 		else if (caseConform.isSelected())
 		{
+			if (mxfCompatible)
+			{
+				if (comboFPS.getSelectedItem().toString().equals("59,94"))
+				{
+					return " -r 60000/1001";
+				}
+				else if (comboFPS.getSelectedItem().toString().equals("29,97"))
+				{
+					return " -r 30000/1001";
+				}
+				else if (comboFPS.getSelectedItem().toString().equals("23,976"))
+				{
+					return " -r 24000/1001";
+				}
+			}
+						
 			return " -r " + Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));            
 		}
 		else if (inputDeviceIsRunning)
@@ -536,11 +557,17 @@ public class AdvancedFeatures extends Shutter {
 		if (mxfCompatible)
 		{
 			if (FFPROBE.currentFPS == 59.94f)
+			{
 				return " -r 60000/1001";
+			}
 			else if (FFPROBE.currentFPS == 29.97f)
+			{
 				return " -r 30000/1001";
+			}
 			else if (FFPROBE.currentFPS == 23.976f)
+			{
 				return " -r 24000/1001";
+			}
 		}
 		
 		return "";
