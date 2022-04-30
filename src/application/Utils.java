@@ -68,6 +68,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatInspector;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.BMXTRANSWRAP;
 import library.DCRAW;
@@ -247,7 +248,10 @@ public class Utils extends Shutter {
 				Shutter.montserratFont = "Noto Sans SC Medium";
 				Shutter.freeSansFont = "Noto Sans SC Medium";
 			}
-			else if (getLanguage.contains(new Locale("ja").getDisplayLanguage()) || getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage())) //use system default font
+			else if (getLanguage.contains(new Locale("ja").getDisplayLanguage())
+			|| getLanguage.equals(new Locale("ru").getDisplayLanguage())
+			|| getLanguage.equals(new Locale("uk").getDisplayLanguage())
+			|| getLanguage.contains(new Locale("vi").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "";
@@ -565,9 +569,12 @@ public class Utils extends Shutter {
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");
-									cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
-									component.appendChild(cValue);
+									if (p.getName().equals("lock") == false && p.getName().equals("unlock") == false)
+									{
+										Element cValue = document.createElement("Value");
+										cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
+										component.appendChild(cValue);
+									}
 									
 									//State
 									Element cState = document.createElement("Enable");
@@ -1865,11 +1872,22 @@ public class Utils extends Shutter {
 						if (c instanceof JPanel)
 						{
 							for (Component p : ((JPanel) c).getComponents())
-							{
+							{								
+								//For lock icon only
+								if (p.getName() != "" && p.getName() != null)
+								{
+									if ((p.getName().equals("lock") || p.getName().equals("unlock")) && eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lock"))
+									{
+										lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+										isLocked = true;
+										lock.setName("lock");
+									}
+								}
+								
 								if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 								{
 									if (p instanceof JLabel)
-									{
+									{										
 										//Value
 										((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																			
@@ -1877,7 +1895,7 @@ public class Utils extends Shutter {
 										((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 										
 										//Visible
-										((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));																			
+										((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
 									}
 									else if (p instanceof JRadioButton)
 									{

@@ -600,21 +600,30 @@ public class Settings {
 		frame.getContentPane().add(lblLanguage);
 			
 		comboLanguage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
-		comboLanguage.setEditable(false);
+		comboLanguage.setEditable(false);		
 		
 		//load languages
-		String[] data = new String[new File(Utils.pathToLanguages).listFiles().length]; 
-				
+		int count = 0;
+		for (File f : new File(Utils.pathToLanguages).listFiles())
+		{
+			if (f.isHidden() == false)
+			{
+				count++;
+			}
+		}
+		
+		String[] data = new String[count]; //Avoid any hidden file which freeze the startup
+
 		int d = 0;
 		for (File f : new File(Utils.pathToLanguages).listFiles())
-		{			
+		{
 			if (f.isHidden() == false)
 			{
 				String l[] = f.getName().split("\\.");
 				
 				String language = new Locale(l[0]).getDisplayLanguage();
 				String country = "";
-							
+											
 				//Country
 				if (l[0].contains("_"))
 				{				
@@ -623,8 +632,8 @@ public class Settings {
 					country = " (" + new Locale(c[0], c[1]).getDisplayCountry() + ")";
 				}
 				
-				data[d] = (language + country);				
-				d++;
+				data[d] = (language + country);	
+				d++;				
 			}
 		}
 		
@@ -634,7 +643,7 @@ public class Settings {
 		//Add to comboLanguage
 		for (int i = 0 ; i < data.length ; i++) 
         {
-        	comboLanguage.addItem(data[i].toString());
+			comboLanguage.addItem(data[i].toString());
 	    }
 		
 		//Set comboItem
@@ -1416,7 +1425,7 @@ public class Settings {
 
 						if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 						{								
-							if (p instanceof JPanel)
+							if (p instanceof JPanel && p.getName().equals("backgroundPanel") == false)
 							{						
 								//Value
 								String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
@@ -1659,7 +1668,7 @@ public class Settings {
 						cName.appendChild(document.createTextNode(p.getName()));
 						component.appendChild(cName);
 						
-						//Value
+						//Value						
 						Element cValue = document.createElement("Value");
 						cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
 						component.appendChild(cValue);

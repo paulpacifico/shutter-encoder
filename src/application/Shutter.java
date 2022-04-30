@@ -233,6 +233,7 @@ public class Shutter {
 	public static JList<String> fileList;
 	static JLabel addToList = new JLabel();
 	public static JComboBox<String[]> comboFonctions;
+	public static String[] functionsList;
 
 	protected static JButton btnBrowse;
 	protected static JButton btnEmptyList;
@@ -2583,7 +2584,16 @@ public class Shutter {
 									JOptionPane.showMessageDialog(frame, language.getProperty("chooseInOutPoint"),
 											language.getProperty("noInOuPoint"), JOptionPane.INFORMATION_MESSAGE);
 									caseInAndOut.setSelected(true);
-									new VideoPlayer();									
+
+									if (VideoPlayer.frame == null)
+									{
+										new VideoPlayer();									
+									}
+									else
+									{
+										VideoPlayer.setMedia();
+										Utils.changeFrameVisibility(VideoPlayer.frame, false);
+									}							
 								}	
 							}
 							else if ("WAV".equals(fonction)
@@ -2658,12 +2668,18 @@ public class Shutter {
 										ReplaceAudio.main();
 								}
 							} else if (language.getProperty("functionSubtitles").equals(fonction)) {
+								
 								if (inputDeviceIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
 								else if (scanIsRunning)
 									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else {
+									if (caseInAndOut.isSelected())
+									{
+										caseInAndOut.setSelected(false);
+									}
+									
 									caseInAndOut.doClick();
 									Utils.changeFrameVisibility(frame, true);
 								}
@@ -2801,11 +2817,15 @@ public class Shutter {
 				else 
 				{ // Fonctions n'ayant pas de fichiers dans la liste
 					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) {
+						
 							try {
 								frame.setOpacity(0.5f);
 							} catch (Exception er) {}
+							
 							new VideoWeb();
+							
 							frame.setOpacity(1.0f);
+							
 					} else if (comboFonctions.getSelectedItem().equals("DVD Rip")
 							&& btnStart.getText().equals(language.getProperty("btnStartFunction"))) {
 						if (inputDeviceIsRunning)
@@ -2867,7 +2887,8 @@ public class Shutter {
 			}
 		});
 		
-		String items[] = { 
+		functionsList = new String[]{ 
+				
 				language.getProperty("itemNoConversion"),
 				language.getProperty("functionCut"),
 				language.getProperty("functionReplaceAudio"),
@@ -2927,7 +2948,7 @@ public class Shutter {
 
 		comboFonctions = new JComboBox<String[]>();
 		comboFonctions.setName("comboFonctions");
-		comboFonctions.setModel(new DefaultComboBoxModel(items));				
+		comboFonctions.setModel(new DefaultComboBoxModel(functionsList));				
 		comboFonctions.setSelectedItem(null);		
 		comboFonctions.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		comboFonctions.setEditable(true);
@@ -3083,6 +3104,7 @@ public class Shutter {
 		});
 		
 		comboFonctions.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
+			
 			String text = "";
 
 			@Override
@@ -3112,15 +3134,15 @@ public class Shutter {
 						text = String.valueOf(e.getKeyChar()).toLowerCase();
 
 					if (Character.isLetterOrDigit(e.getKeyChar())) {
-						comboFonctions.setModel(new DefaultComboBoxModel(items));
+						comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
 						text += String.valueOf(e.getKeyChar()).toLowerCase();
 
 						ArrayList<String> newList = new ArrayList<String>();
 						for (int i = 0; i < comboFonctions.getItemCount(); i++) {
-							if (items[i].toString().length() >= text.length()) {
-								if (items[i].toString().toLowerCase().substring(0, text.length()).contains(text)
-										&& items[i].toString().contains(":") == false) {
-									newList.add(items[i].toString());
+							if (functionsList[i].toString().length() >= text.length()) {
+								if (functionsList[i].toString().toLowerCase().substring(0, text.length()).contains(text)
+										&& functionsList[i].toString().contains(":") == false) {
+									newList.add(functionsList[i].toString());
 								}
 							}
 						}
@@ -3136,7 +3158,7 @@ public class Shutter {
 						}
 
 					} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						comboFonctions.setModel(new DefaultComboBoxModel(items));
+						comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
 						comboFonctions.getEditor().setItem("");
 						comboFonctions.hidePopup();
 						changeFilters();
@@ -6437,7 +6459,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (liste.getSize() == 0 && VideoPlayer.frame != null && VideoPlayer.frame.isVisible() == false)
+				if (liste.getSize() == 0)
 				{
 					caseInAndOut.setSelected(false);
 					JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"), language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
@@ -6465,6 +6487,11 @@ public class Shutter {
 						}
 						else
 						{
+							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+							{
+								VideoPlayer.lblVideo.setText("");//Needed to refresh sections
+							}
+							
 							VideoPlayer.setMedia();
 							Utils.changeFrameVisibility(VideoPlayer.frame, false);
 						}
@@ -10713,6 +10740,7 @@ public class Shutter {
 		grpH264.add(taille);
 				
 		lock = new JLabel(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+		lock.setName("unlock");
 		lock.setHorizontalAlignment(SwingConstants.CENTER);
 		lock.setBounds(taille.getX() - 21 - 3, taille.getY(), 21, 21);
 		grpH264.add(lock);
@@ -10726,11 +10754,13 @@ public class Shutter {
 				{
 					lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
 					isLocked = false;
+					lock.setName("unlock");
 				}
 				else
 				{
 					lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
 					isLocked = true;
+					lock.setName("lock");
 				}
 
 			}

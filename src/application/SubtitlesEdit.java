@@ -84,7 +84,7 @@ public class SubtitlesEdit {
 		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		if (VideoPlayer.frame.getX() == dim.width/2-VideoPlayer.frame.getSize().width/2)
+		/*if (VideoPlayer.frame.getX() == dim.width/2-VideoPlayer.frame.getSize().width/2)
 		{
 			VideoPlayer.frame.setLocation(VideoPlayer.frame.getX() - frame.getWidth() / 2, VideoPlayer.frame.getY());
 		}
@@ -93,7 +93,7 @@ public class SubtitlesEdit {
 		{
 			frame.setLocation(VideoPlayer.frame.getX() + VideoPlayer.frame.getWidth() + 20, VideoPlayer.frame.getY());
 		}
-		else
+		else*/
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);	
 		
 		scrollBar = new JScrollBar();
@@ -396,13 +396,13 @@ public class SubtitlesEdit {
 							else
 							{
 								SubtitlesTimeline.cursor.setLocation(c.getX(), SubtitlesTimeline.cursor.getLocation().y);
-								VideoPlayer.slider.setValue((int) ((c.getX())/SubtitlesTimeline.zoom));	
+								VideoPlayer.slider.setValue((int) ((c.getX())/SubtitlesTimeline.zoom/VideoPlayer.inputFramerateMS));	
 							}
 							
 							VideoPlayer.sliderChange = false;						
 
 							//Then refresh the slider position
-							VideoPlayer.getTimePoint(VideoPlayer.playerTime - VideoPlayer.inputFramerateMS);
+							VideoPlayer.getTimePoint(VideoPlayer.playerCurrentFrame - 1);
 							
 							break;
 						}

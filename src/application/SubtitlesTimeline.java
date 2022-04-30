@@ -188,7 +188,6 @@ public class SubtitlesTimeline {
 			if (VideoPlayer.playerVideo != null)
 				VideoPlayer.playerStop();
 			
-			VideoPlayer.frame.getContentPane().removeAll();
 			Shutter.caseInAndOut.setSelected(false);
 			
 			Utils.changeFrameVisibility(Shutter.frame, false);						
@@ -1112,12 +1111,12 @@ public class SubtitlesTimeline {
 	
 					if (e.getKeyCode() == KeyEvent.VK_J)
 					{
-						setVideoPosition((int) (VideoPlayer.playerTime - ((1000 /FFPROBE.currentFPS) * 11)));
+						setVideoPosition((int) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS - ((1000 /FFPROBE.currentFPS) * 11)));
 	  				}
 						
 					if (e.getKeyCode() == KeyEvent.VK_L)
 					{
-						setVideoPosition((int) (VideoPlayer.playerTime + ((1000 /FFPROBE.currentFPS) * 9)));
+						setVideoPosition((int) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS + ((1000 /FFPROBE.currentFPS) * 9)));
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -1207,15 +1206,15 @@ public class SubtitlesTimeline {
 					if (zoom < 0.1)
 						numberFormat = new DecimalFormat("0.00");
 					
-					if ((int) (VideoPlayer.slider.getMaximum() - (float)frame.getWidth()/zoom) > 0)
+					if ((int) (VideoPlayer.slider.getMaximum() * VideoPlayer.inputFramerateMS - (float)frame.getWidth()/zoom) > 0)
 						zoom = Double.parseDouble(numberFormat.format(zoom).replace(",", "."));		
 					else
 						zoom = actualZoom;												
 
-					timeline.setSize((int) ((VideoPlayer.slider.getMaximum()-(1000/FFPROBE.currentFPS)*2)*zoom), timeline.getHeight());
+					timeline.setSize((int) (((VideoPlayer.slider.getMaximum() - 2) * VideoPlayer.inputFramerateMS)*zoom), timeline.getHeight());
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 										
-					cursor.setLocation((int) (setTime(VideoPlayer.slider.getValue())*zoom), cursor.getY());
+					cursor.setLocation((int) (setTime((int) (VideoPlayer.slider.getValue() * VideoPlayer.inputFramerateMS))*zoom), cursor.getY());
 					
 					enableAutoScroll = true;
 					
@@ -1290,7 +1289,7 @@ public class SubtitlesTimeline {
 		
 		timeline.setBackground(new Color(45, 45, 45));
 		timeline.setLayout(null);
-		timeline.setBounds(0, 15, (int) ((VideoPlayer.slider.getMaximum()-(1000/FFPROBE.currentFPS)*2)*zoom), timelineBackround.getHeight() - 20);
+		timeline.setBounds(0, 15, (int) (((VideoPlayer.slider.getMaximum() - 2) * VideoPlayer.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
 		timelineBackround.add(timeline);
 				
 		timeline.addMouseListener(new MouseListener() {
@@ -1316,7 +1315,7 @@ public class SubtitlesTimeline {
 				
 				cursor.setLocation(e.getX(), cursor.getLocation().y);
 				
-				VideoPlayer.slider.setValue((int) ((e.getX()-2)/zoom));	
+				VideoPlayer.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayer.inputFramerateMS));	
 				
 				if (selectedSubs.size() != 0)
 				{
@@ -1337,7 +1336,7 @@ public class SubtitlesTimeline {
 				VideoPlayer.sliderChange = false;						
 
 				//Then refresh the slider position
-				VideoPlayer.getTimePoint(VideoPlayer.playerTime - VideoPlayer.inputFramerateMS);
+				VideoPlayer.getTimePoint(VideoPlayer.playerCurrentFrame - 1);
 			}				
 			
 		});
@@ -1348,17 +1347,25 @@ public class SubtitlesTimeline {
 			public void mouseDragged(MouseEvent e) {
 
 				VideoPlayer.sliderChange = true;	
-
-				if (e.getX() <= 0)
-				{
+				
+				if (e.getX() >= 0 && e.getX() <= timeline.getWidth() - 12)
+				{				
+					cursor.setLocation(e.getX(), cursor.getLocation().y);		
+					VideoPlayer.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayer.inputFramerateMS));
+					VideoPlayer.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayer.waveformContainer.getSize().width * VideoPlayer.slider.getValue()) / VideoPlayer.slider.getMaximum()), VideoPlayer.cursorWaveform.getLocation().y);			
+				}
+				else if (e.getX() < 0)
+				{				
 					cursor.setLocation(0, cursor.getLocation().y);
-					VideoPlayer.slider.setValue(0);	
+					VideoPlayer.cursorWaveform.setLocation(0, VideoPlayer.cursorWaveform.getLocation().y);		
+					VideoPlayer.slider.setValue(0);
 				}
-				else
-				{
-					cursor.setLocation(e.getX(), cursor.getLocation().y);
-					VideoPlayer.slider.setValue((int) ((e.getX()-2)/zoom));	
+				else if (e.getX() > timeline.getWidth() - 12)
+				{				
+					cursor.setLocation(timeline.getWidth() - 12, cursor.getLocation().y);
+					VideoPlayer.cursorWaveform.setLocation(timeline.getWidth() - 2, VideoPlayer.cursorWaveform.getLocation().y);	
 				}
+
 			}
 
 			@Override
@@ -1433,7 +1440,7 @@ public class SubtitlesTimeline {
             		txtSubtitles.setBounds(10, 36, frame.getWidth() - 24, 36); 
             	
             	timelineBackround.setBounds(0, 80, frame.getWidth(), frame.getContentPane().getHeight() - 97);
-            	timeline.setBounds(0, 15, (int) ((VideoPlayer.slider.getMaximum()-(1000/FFPROBE.currentFPS)*2)*zoom), timelineBackround.getHeight() - 20);
+            	timeline.setBounds(0, 15, (int) (((VideoPlayer.slider.getMaximum()) * VideoPlayer.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
             	timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
             	        		            	
             	scrollBarPanel.setBounds(0, frame.getContentPane().getHeight() - 17, frame.getContentPane().getWidth(), 17);
@@ -1487,14 +1494,14 @@ public class SubtitlesTimeline {
 		{	
 			if (enableAutoScroll)
 			{	
-				int posX = VideoPlayer.slider.getValue();
+				int posX = (int) (VideoPlayer.slider.getValue() * VideoPlayer.inputFramerateMS);
 				cursor.setLocation((int) (setTime(posX)*zoom), cursor.getY());				
 			}
 			
 			//Permet d'afficher le sub en cours dès que timeIn change
 			if (txtSubtitles.hasFocus() == false)
 			{				
-				timeIn = (long) VideoPlayer.playerTime;
+				timeIn = (long) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS);
 				txtSubtitles.setText("");
 				btnDelete.setEnabled(false);
 				btnCut.setEnabled(false);
@@ -1599,6 +1606,7 @@ public class SubtitlesTimeline {
     }
 	
 	private static JTextPane addText(String subContent, int x, int size) {
+		
 		JTextPane text = new JTextPane();
 		text.setBackground(new Color(45, 45, 45, 120));
 		text.setForeground(Color.WHITE);
@@ -1690,7 +1698,7 @@ public class SubtitlesTimeline {
 					
 					zoom = (double) 0.1;	
 					
-					timeline.setSize((int) ((VideoPlayer.slider.getMaximum()-(1000/FFPROBE.currentFPS)*2)*zoom), timeline.getHeight());		
+					timeline.setSize((int) (((VideoPlayer.slider.getMaximum() - 2) * VideoPlayer.inputFramerateMS)*zoom), timeline.getHeight());		
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 					
 					cursor.setLocation((int) (setTime(VideoPlayer.slider.getValue())*zoom), cursor.getY());
@@ -1984,8 +1992,8 @@ public class SubtitlesTimeline {
 		    				int outS = Integer.parseInt(tcOutPoint[2]) * 1000;
 		    				int outF = Integer.parseInt(tcOutPoint[3]);
 							
-							int inPoint = (int) ((float) (inH + inM + inS + inF) * zoom);
-							int outPoint = (int) ((float) (outH + outM + outS + outF) * zoom);
+							int inPoint = (int) ((inH + inM + inS + inF) * zoom);
+							int outPoint = (int) ((outH + outM + outS + outF) * zoom);
 							
 							StringBuilder subContent = new StringBuilder();
 							
@@ -2442,7 +2450,7 @@ public class SubtitlesTimeline {
 
 	private static void setVideoPosition(int time) {
 		
-		VideoPlayer.playerSetTime(time);						
+		VideoPlayer.playerSetTime(time/VideoPlayer.inputFramerateMS);						
 	}
 	
 	public static int setTime(int rawTime) {
