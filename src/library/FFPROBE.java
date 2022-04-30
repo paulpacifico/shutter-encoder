@@ -858,7 +858,7 @@ public static int gopSpace = 124;
 							{
 								if (keyPTS > inputTime)
 								{
-									keyFrame = keyPTS;	
+									keyFrame = keyPTS / VideoPlayer.inputFramerateMS;	
 									process.destroy();
 									break;
 								}
@@ -867,7 +867,7 @@ public static int gopSpace = 124;
 							{				
 								if (keyPTS < inputTime && keyPTS > keyFrame)
 								{
-									keyFrame = keyPTS;	
+									keyFrame = keyPTS / VideoPlayer.inputFramerateMS;	
 								}
 								else if (keyPTS >= inputTime)
 								{
@@ -995,15 +995,11 @@ public static int gopSpace = 124;
     		    }	
          		
 	        	 NumberFormat formatter = new DecimalFormat("00");
-	        	 int hours = ((totalLength) / 3600000);
-	        	 int min =  ((totalLength) / 60000) % 60;
-	             int sec = ((totalLength) / 1000) % 60;
-	             int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
 
-	             textH.setText(formatter.format(hours));
-	             textM.setText(formatter.format(min));
-	             textS.setText(formatter.format(sec));
-	             textF.setText(formatter.format(frames));
+	             textH.setText(formatter.format((totalLength) / 3600000));
+	             textM.setText(formatter.format(((totalLength) / 60000) % 60) );
+	             textS.setText(formatter.format((totalLength / 1000) % 60));				        
+	             textF.setText(formatter.format((totalLength % 1000 / 1000 * FFPROBE.currentFPS)));
 	             
 	             if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
 		     			VideoPlayer.totalDuration();

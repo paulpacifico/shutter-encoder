@@ -61,6 +61,9 @@ public class Picture extends Shutter {
 					if (file == null)
 						break;
 		            
+					if (videoPlayerCapture)
+						file =  new File(VideoPlayer.videoPath);
+					
 					try {
 						
 						String fileName = file.getName();
@@ -141,7 +144,7 @@ public class Picture extends Shutter {
 						filterComplex = Image.setRotate(filterComplex);
 						
 						//filterComplex
-						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, null);		
+						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, "");		
 						
 						//Hardware decoding
 						String hardwareDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
@@ -151,7 +154,7 @@ public class Picture extends Shutter {
 						
 						if (videoPlayerCapture)
 						{
-							InputAndOutput.inPoint = " -ss " + VideoPlayer.roundSliderValue(VideoPlayer.slider.getValue()) + "ms ";
+							InputAndOutput.inPoint = " -ss " + (VideoPlayer.slider.getValue() - 1) * VideoPlayer.inputFramerateMS + "ms ";
 						}
 						
 						//Flags
@@ -250,7 +253,7 @@ public class Picture extends Shutter {
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							if (lastActions(fileName, extension, fileOut, labelOutput))
+							if (lastActions(fileName, extension, fileOut, labelOutput) || videoPlayerCapture)
 								break;
 						}
 						

@@ -38,7 +38,7 @@ public class InputAndOutput extends Shutter {
 			int h = Integer.parseInt(VideoPlayer.caseInH.getText());
 			int m = Integer.parseInt(VideoPlayer.caseInM.getText());
 			int s = Integer.parseInt(VideoPlayer.caseInS.getText());
-			int f = (int) (Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));	
+			int f = (int) (Integer.parseInt(VideoPlayer.caseInF.getText()) * VideoPlayer.inputFramerateMS);	
 			
 			NumberFormat formatter = new DecimalFormat("00");
 			NumberFormat formatFrame = new DecimalFormat("000");
@@ -57,12 +57,13 @@ public class InputAndOutput extends Shutter {
 			
 			if (timeOut < (FFPROBE.totalLength - VideoPlayer.inputFramerateMS))
 	        {
-	        	if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG"))
+	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG"))
+	        	&& caseCreateSequence.isSelected())
 	        	{
 		        	String frames[] = VideoPlayer.lblDuration.getText().split(" ");
 		    		float outputFPS = FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 		    		
-		    		outPoint = " -vframes " + Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
+		    		outPoint = " -vframes " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
 	        	}
 	        	else
 	        		outPoint = " -t " + formatter.format(VideoPlayer.durationH) + ":" + formatter.format(VideoPlayer.durationM) + ":" + formatter.format(VideoPlayer.durationS) + "." + formatFrame.format((int) (VideoPlayer.durationF * (1000 / FFPROBE.currentFPS)));
