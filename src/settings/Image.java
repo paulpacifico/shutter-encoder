@@ -75,7 +75,9 @@ public class Image extends Shutter {
 				rotate = transpose;
 			}
 			else if (caseMiror.isSelected())
+			{
 				rotate = "hflip";
+			}
 						
 			if (rotate != "")
 			{

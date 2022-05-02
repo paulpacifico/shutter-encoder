@@ -394,7 +394,12 @@ public class Overlay extends Shutter {
         	int ImageWidth = Integer.parseInt(i[0]);
         	
         	int posX = ((int) (ImageWidth - Integer.parseInt(VideoPlayer.textSubsWidth.getText())) / 2);
-        	        	
+
+        	if (VideoPlayer.caseEnableCrop.isSelected())
+        	{
+        		posX -= Integer.parseInt(VideoPlayer.textCropPosX.getText());
+        	}
+        	
         	if (limitToFHD)
         	{
         		String s[] = "1920x1080".split("x");

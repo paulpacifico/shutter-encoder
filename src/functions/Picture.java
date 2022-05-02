@@ -152,9 +152,9 @@ public class Picture extends Shutter {
 						//InOut		
 						InputAndOutput.getInputAndOutput();
 						
-						if (videoPlayerCapture)
+						if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())
 						{
-							InputAndOutput.inPoint = " -ss " + (VideoPlayer.slider.getValue() - 1) * VideoPlayer.inputFramerateMS + "ms ";
+							InputAndOutput.inPoint = " -ss " + VideoPlayer.slider.getValue() * VideoPlayer.inputFramerateMS + "ms ";
 						}
 						
 						//Flags

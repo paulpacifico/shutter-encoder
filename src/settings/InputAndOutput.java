@@ -33,7 +33,7 @@ public class InputAndOutput extends Shutter {
 	
 	public static void getInputAndOutput() {
 
-		if (caseInAndOut.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.waveformContainer.isVisible())
 		{		
 			int h = Integer.parseInt(VideoPlayer.caseInH.getText());
 			int m = Integer.parseInt(VideoPlayer.caseInM.getText());
@@ -50,8 +50,7 @@ public class InputAndOutput extends Shutter {
 				inPoint = " -ss " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f);
 		    }
 		    else
-		        inPoint = "";
-			
+		        inPoint = "";			
 				
 			float timeOut = (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * VideoPlayer.inputFramerateMS - VideoPlayer.inputFramerateMS);
 			
