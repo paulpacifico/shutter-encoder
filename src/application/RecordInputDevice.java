@@ -501,7 +501,8 @@ public class RecordInputDevice {
 				//Permet d'injecter la resolution à FFPROBE
 				if (comboInputVideo.getSelectedIndex() > 0 || comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen") == false)
 				{	
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));		
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
+					
 					try {
 					 
 						FFPROBE.Data("Capture.input.device");	
@@ -512,6 +513,7 @@ public class RecordInputDevice {
 						while (FFPROBE.isRunning);
 					
 					} catch (InterruptedException er) {}
+					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 				

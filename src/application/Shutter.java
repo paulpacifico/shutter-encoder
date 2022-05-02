@@ -4485,10 +4485,17 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseRotate.isSelected())
+				{
 					comboRotate.setEnabled(true);
+				}
 				else
 					comboRotate.setEnabled(false);
+				
+				{
+					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+				}			
 			}
 
 		});
@@ -4504,11 +4511,38 @@ public class Shutter {
 		comboRotate.setMaximumRowCount(20);
 		grpResolution.add(comboRotate);
 
+		comboRotate.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible() && VideoPlayer.caseEnableColorimetry.isSelected())
+				{					
+					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+				}
+			}
+
+			
+		});
+		
 		caseMiror = new JRadioButton(language.getProperty("caseMiror"));
 		caseMiror.setName("caseMiror");
 		caseMiror.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		caseMiror.setBounds(comboRotate.getWidth() + comboRotate.getLocation().x + 6, caseRotate.getLocation().y, caseMiror.getPreferredSize().width,	23);
 		grpResolution.add(caseMiror);
+
+		caseMiror.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseRotate.isSelected() && VideoPlayer.frame != null && VideoPlayer.frame.isVisible() && VideoPlayer.caseEnableColorimetry.isSelected())
+				{
+					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+				}			
+			}
+
+		});
 
 		caseCreateSequence = new JRadioButton(language.getProperty("caseCreateSequence"));
 		caseCreateSequence.setName("caseCreateSequence");
@@ -4573,14 +4607,14 @@ public class Shutter {
 		lblIsInterpret.setSize(20, 16);
 		lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
 		grpResolution.add(lblIsInterpret);		
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()))
+		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()) || getLanguage.equals(new Locale("vi").getDisplayLanguage()))
 		{
 			lblIsInterpret.setVisible(false);
 		}				
 		
 		iconTVInterpret = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconTVInterpret.setHorizontalAlignment(SwingConstants.CENTER);
-		iconTVInterpret.setBounds(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY(), 16, 16);
+		iconTVInterpret.setBounds(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY() + 1, 16, 16);
 		iconTVInterpret.setToolTipText(language.getProperty("preview"));
 		grpResolution.add(iconTVInterpret);
 		
@@ -6083,23 +6117,13 @@ public class Shutter {
 										else
 											i ++;
 
-										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))) 
+										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
+										|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
 										{
 											grpSetTimecode.setSize(312, i);
 											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
 											grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-										}
-										else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
-										{
-											grpSetTimecode.setSize(312, i);
-											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
-											btnReset.setLocation(336, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
-										}
-										else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut")))
-										{
-											grpSetTimecode.setSize(312, i);
-											btnReset.setLocation(336, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
 										}
 										else
 										{
@@ -6163,18 +6187,13 @@ public class Shutter {
 										else
 											i --;
 										
-										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))) 
+										if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
+										|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
 										{
 											grpSetTimecode.setSize(312, i);
 											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
 											grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 											btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-										}
-										else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
-										{
-											grpSetTimecode.setSize(312, i);
-											grpSetAudio.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
-											btnReset.setLocation(336, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 										}
 										else
 										{
@@ -6623,16 +6642,12 @@ public class Shutter {
 												i ++;
 	
 											if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
+											|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
 											|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionMerge"))) 
 											{
 												grpSetAudio.setSize(312, i);
 												grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-											}
-											else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
-											{
-												grpSetAudio.setSize(312, i);
-												btnReset.setLocation(336, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 											}
 											else if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 											{
@@ -6733,16 +6748,12 @@ public class Shutter {
 												i --;
 											
 											if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
+											|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
 											|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionMerge"))) 
 											{
 												grpSetAudio.setSize(312, i);
 												grpAdvanced.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 												btnReset.setLocation(336, grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
-											}
-											else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))) 
-											{
-												grpSetAudio.setSize(312, i);
-												btnReset.setLocation(336, grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 											}
 											else if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 											{
@@ -10283,7 +10294,7 @@ public class Shutter {
 		
 		lblDureH264 = new JLabel(language.getProperty("lblDureH264"));
 		lblDureH264.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblDureH264.setBounds(40, 45, 46, 16);
+		lblDureH264.setBounds(40, 45, lblDureH264.getPreferredSize().width, 16);
 		grpH264.add(lblDureH264);
 	
 		textH = new JTextField();
@@ -10830,12 +10841,12 @@ public class Shutter {
 
 		lblVideoBitrate = new JLabel(language.getProperty("lblVideoBitrate"));
 		lblVideoBitrate.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblVideoBitrate.setBounds(40, 100, 78, 16);
+		lblVideoBitrate.setBounds(40, 100, 80, 16);
 		grpH264.add(lblVideoBitrate);
 
 		lblAudioBitrate = new JLabel(language.getProperty("lblAudioBitrate"));
 		lblAudioBitrate.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblAudioBitrate.setBounds(40, 127, 76, 16);
+		lblAudioBitrate.setBounds(40, 127, 80, 16);
 		grpH264.add(lblAudioBitrate);
 
 		KeyListener keyListener = new KeyListener() {
@@ -14742,8 +14753,13 @@ public class Shutter {
 							comboInterpret.setLocation(lblInterpretation.getX() + lblInterpretation.getWidth() + 4, lblInterpretation.getLocation().y);
 							grpResolution.add(comboInterpret);							
 							lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
-							grpResolution.add(lblIsInterpret);							
-							iconTVInterpret.setLocation(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY());
+							grpResolution.add(lblIsInterpret);	
+							if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()) || getLanguage.equals(new Locale("vi").getDisplayLanguage()))
+							{
+								iconTVInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblIsInterpret.getY() + 1);
+							}
+							else
+								iconTVInterpret.setLocation(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY() + 1);
 							grpResolution.add(iconTVInterpret);
 
 							// Ajout case miroir
