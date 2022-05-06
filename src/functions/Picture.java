@@ -35,6 +35,7 @@ import library.FFMPEG;
 import library.FFPROBE;
 import library.XPDF;
 import settings.Colorimetry;
+import settings.Corrections;
 import settings.Filter;
 import settings.FunctionUtils;
 import settings.Image;
@@ -121,6 +122,21 @@ public class Picture extends Shutter {
 						
 						//Color
 						filterComplex = Colorimetry.setColor(filterComplex);
+						
+						//Deflicker
+						filterComplex = Corrections.setDeflicker(filterComplex);
+						
+						//Deband
+						filterComplex = Corrections.setDeband(filterComplex);
+							 
+						//Details
+		            	filterComplex = Corrections.setDetails(filterComplex);				
+														            	
+						//Denoise
+			    		filterComplex = Corrections.setDenoiser(filterComplex);
+			    		
+			    		//Exposure
+						filterComplex = Corrections.setSmoothExposure(filterComplex);	
 						
 						//Overlay
 						filterComplex = Overlay.setOverlay(filterComplex, comboResolution, false);										
