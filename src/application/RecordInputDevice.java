@@ -519,8 +519,8 @@ public class RecordInputDevice {
 				
 				//Important
 				inputDeviceResolution = FFPROBE.imageResolution;	
-				if (FFPROBE.entrelaced == null)
-				  	FFPROBE.entrelaced = "0";
+				if (FFPROBE.interlaced == null)
+				  	FFPROBE.interlaced = "0";
 				
 				//Watermark
 				if (comboInputVideo.getSelectedIndex() > 0)
@@ -607,7 +607,7 @@ public class RecordInputDevice {
 	        FFPROBE.imageHeight = screenHeigth;
 	        	
 			FFPROBE.imageResolution = screenWidth + "x" + screenHeigth;
-			FFPROBE.entrelaced = "0";
+			FFPROBE.interlaced = "0";
 		}
 			
 		FFPROBE.audioOnly = false;

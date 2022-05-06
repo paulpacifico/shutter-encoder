@@ -78,6 +78,7 @@ public class Console extends JFrame {
 	private JCheckBoxMenuItem followLine;
 
 	public Console() {	
+		
 		frmConsole = new JFrame();
 		frmConsole.setTitle("Console");
 		frmConsole.setLayout(null);

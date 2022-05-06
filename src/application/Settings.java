@@ -124,6 +124,8 @@ public class Settings {
 	public static JRadioButton btnExtension = new JRadioButton(Shutter.language.getProperty("btnExtension"));
 	public static JRadioButton btnExclude = new JRadioButton(Shutter.language.getProperty("btnExclude"));
 	public static JRadioButton btnHidePath = new JRadioButton(Shutter.language.getProperty("btnHidePath"));
+	public static JRadioButton btnLoadPreset = new JRadioButton(Shutter.language.getProperty("btnLoadPreset"));
+	public static JComboBox<String> comboLoadPreset = new JComboBox<String>();
 	public static JRadioButton btnWaitFileComplete = new JRadioButton(Shutter.language.getProperty("btnWaitFileComplete"));
 	public static JRadioButton btnEmptyListAtEnd = new JRadioButton(Shutter.language.getProperty("btnEmptyListAtEnd"));
 	public static JRadioButton btnEndingAction = new JRadioButton(Shutter.language.getProperty("btnEndingAction"));
@@ -157,6 +159,8 @@ public class Settings {
 		btnExclude.setName("btnExclude");
 		txtExclude.setName("txtExclude");
 		btnHidePath.setName("btnHidePath");
+		btnLoadPreset.setName("btnLoadPreset");
+		comboLoadPreset.setName("comboLoadPreset");
 		btnWaitFileComplete.setName("btnWaitFileComplete");
 		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
@@ -203,7 +207,7 @@ public class Settings {
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(94);
+		scrollBar.setMaximum(120);
 		scrollBar.setBackground(new Color(45, 45, 45));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
@@ -257,8 +261,71 @@ public class Settings {
 			
 		});
 		
+		btnLoadPreset.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnLoadPreset.setBounds(12, btnHidePath.getLocation().y + btnHidePath.getHeight() + 10, btnLoadPreset.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnLoadPreset);
+		
+		btnLoadPreset.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (btnLoadPreset.isSelected())
+				{
+					comboLoadPreset.setEnabled(true);
+					
+					if (Functions.functionsFolder.exists())
+					{
+						if (Functions.functionsFolder.listFiles().length != 0)
+						{
+							for (File f : Functions.functionsFolder.listFiles())
+							{
+								if (f.getName().toString().equals(".DS_Store") == false)
+								{
+									comboLoadPreset.addItem(f.getName());
+								}
+							}
+						}
+						else
+						{
+							btnLoadPreset.setSelected(false);
+							comboLoadPreset.setEnabled(false);
+						}
+					}
+					else
+					{
+						btnLoadPreset.setSelected(false);
+						comboLoadPreset.setEnabled(false);
+					}
+				}
+				else
+					comboLoadPreset.setEnabled(false);
+			}
+			
+		});
+			
+		if (Functions.functionsFolder.exists())
+		{
+			if (Functions.functionsFolder.listFiles().length != 0)
+			{
+				for (File f : Functions.functionsFolder.listFiles())
+				{
+					if (f.getName().toString().equals(".DS_Store") == false)
+					{
+						comboLoadPreset.addItem(f.getName());
+					}
+				}
+			}
+		}
+		comboLoadPreset.setEnabled(false);
+		comboLoadPreset.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboLoadPreset.setEditable(false);
+		comboLoadPreset.setBounds(btnLoadPreset.getX() + btnLoadPreset.getWidth() + 6, btnLoadPreset.getLocation().y - 4,  frame.getWidth() - (btnLoadPreset.getLocation().x + btnLoadPreset.getWidth()) - 32, 22);
+		comboLoadPreset.setMaximumRowCount(10);	
+		frame.getContentPane().add(comboLoadPreset);
+		
 		btnWaitFileComplete.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnWaitFileComplete.setBounds(12, btnHidePath.getLocation().y + btnHidePath.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
+		btnWaitFileComplete.setBounds(12, btnLoadPreset.getLocation().y + btnLoadPreset.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnWaitFileComplete);
 		
 		btnExtension.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -1481,7 +1548,7 @@ public class Settings {
 								
 							}
 							else if (p instanceof JComboBox)
-							{
+							{															
 								//Value
 								if (p.getName().equals(comboTheme.getName()))
 								{									
@@ -1687,6 +1754,12 @@ public class Settings {
 					}
 					else if (p instanceof JComboBox)
 					{
+						if (p.getName().equals(comboLoadPreset.getName()))
+						{
+							if (comboLoadPreset.getItemCount() == 0)
+								continue;
+						}
+						
 						//Component
 						Element component = document.createElement("Component");
 						
@@ -1880,7 +1953,7 @@ public class Settings {
 			//FTP
 			Element ftp = document.createElement("Ftp");
 			
-			if (Ftp.textFtp.getText().length() > 0)
+			if (Ftp.textFtp != null && Ftp.textFtp.getText().length() > 0)
 			{
 				//Component
 				component = document.createElement("Component");
@@ -1903,7 +1976,7 @@ public class Settings {
 				ftp.appendChild(component);
 			}
 			
-			if (Ftp.textUser.getText().length() > 0)
+			if (Ftp.textUser != null && Ftp.textUser.getText().length() > 0)
 			{
 				//Component
 				component = document.createElement("Component");
@@ -1926,13 +1999,13 @@ public class Settings {
 				ftp.appendChild(component);		
 			}
 			
-			if (Ftp.textFtp.getText().length() > 0 || Ftp.textUser.getText().length() > 0)
+			if (Ftp.textFtp != null && Ftp.textFtp.getText().length() > 0 || Ftp.textUser != null && Ftp.textUser.getText().length() > 0)
 				root.appendChild(ftp);
 			
 			//Wetransfer
 			Element wetransfer = document.createElement("Wetransfer");
 			
-			if (Wetransfer.textFrom.getText().length() > 0)
+			if (Wetransfer.textFrom != null && Wetransfer.textFrom.getText().length() > 0)
 			{
 				//Component
 				component = document.createElement("Component");
@@ -1955,7 +2028,7 @@ public class Settings {
 				wetransfer.appendChild(component);
 			}
 			
-			if (Wetransfer.textTo.getText().length() > 0)
+			if (Wetransfer.textTo != null && Wetransfer.textTo.getText().length() > 0)
 			{
 				//Component
 				component = document.createElement("Component");
@@ -2003,7 +2076,7 @@ public class Settings {
 			
 			wetransfer.appendChild(component);
 			
-			if (Wetransfer.textUser.getText().length() > 0)
+			if (Wetransfer.textUser != null && Wetransfer.textUser.getText().length() > 0)
 			{
 				//Component
 				component = document.createElement("Component");
@@ -2034,7 +2107,7 @@ public class Settings {
 			}
 			
 			//CaseSendMail	
-			if (Shutter.textMail.getText().length() > 0 && Shutter.textMail.getText().equals(Shutter.language.getProperty("textMail")) == false)
+			if (Shutter.textMail != null && Shutter.textMail.getText().length() > 0 && Shutter.textMail.getText().equals(Shutter.language.getProperty("textMail")) == false)
 			{
 				Element sendMail = document.createElement("caseSendMail");
 				
@@ -2062,7 +2135,7 @@ public class Settings {
 			}
 			
 			//caseStream	
-			if (Shutter.textStream.getText().length() > 0 && Shutter.textStream.getText().equals("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx") == false)
+			if (Shutter.textStream != null && Shutter.textStream.getText().length() > 0 && Shutter.textStream.getText().equals("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx") == false)
 			{
 				Element stream = document.createElement("caseStream");
 				

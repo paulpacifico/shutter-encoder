@@ -250,12 +250,17 @@ public class Utils extends Shutter {
 			}
 			else if (getLanguage.contains(new Locale("ja").getDisplayLanguage())
 			|| getLanguage.equals(new Locale("ru").getDisplayLanguage())
-			|| getLanguage.equals(new Locale("uk").getDisplayLanguage())
-			|| getLanguage.contains(new Locale("vi").getDisplayLanguage())) //use system default font
+			|| getLanguage.equals(new Locale("uk").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "";
 				Shutter.freeSansFont = "";
+			}
+			else if (getLanguage.contains(new Locale("vi").getDisplayLanguage())
+			|| getLanguage.contains(new Locale("pl").getDisplayLanguage())) //use system default font
+			{
+				Shutter.magnetoFont = "";
+				Shutter.montserratFont = "FreeSans";
 			}
 			else if (getLanguage.equals(new Locale("sl").getDisplayLanguage()))
 			{
@@ -536,6 +541,7 @@ public class Utils extends Shutter {
 		 if (dialog.getFile() != null)
 		 { 
 			try {
+				
 				DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
 				Document document = documentBuilder.newDocument();
@@ -1200,6 +1206,84 @@ public class Utils extends Shutter {
 					
 				root.appendChild(color);
 				}				
+				
+				Element corrections = document.createElement("Corrections");
+				
+				if (VideoPlayer.grpCorrections != null)
+				{
+					for (Component p : VideoPlayer.grpCorrections.getComponents())
+					{
+						if (p.getName() != "" && p.getName() != null)
+						{	
+							if (p instanceof JRadioButton)
+							{
+								//Component
+								Element component = document.createElement("Component");
+								
+								//Type
+								Element cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JRadioButton"));
+								component.appendChild(cType);
+								
+								//Name
+								Element cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(p.getName()));
+								component.appendChild(cName);
+								
+								//Value
+								Element cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								component.appendChild(cValue);
+								
+								//State
+								Element cState = document.createElement("Enable");
+								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+								component.appendChild(cState);
+								
+								//Visible
+								Element cVisible = document.createElement("Visible");
+								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+								component.appendChild(cVisible);		
+								
+								settings.appendChild(component);
+							}
+							else if (p instanceof JSlider)
+							{
+								//Component
+								Element component = document.createElement("Component");
+								
+								//Type
+								Element cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JSlider"));
+								component.appendChild(cType);
+	
+								//Name
+								Element cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(p.getName()));
+								component.appendChild(cName);
+								
+								//Value
+								Element cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(String.valueOf(((JSlider) p).getValue())));
+								component.appendChild(cValue);
+								
+								//State
+								Element cState = document.createElement("Enable");
+								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+								component.appendChild(cState);
+								
+								//Visible
+								Element cVisible = document.createElement("Visible");
+								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+								component.appendChild(cVisible);		
+								
+								color.appendChild(component);
+							}
+						}		
+						
+					root.appendChild(corrections);
+					}
+				}
 				
 				Element imageCropping = document.createElement("Crop");
 				
@@ -2013,7 +2097,11 @@ public class Utils extends Shutter {
 				
 		} catch (Exception e) {}
 		finally {
-			Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			
+			if (Functions.frame != null)
+				Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			
+			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
 }
@@ -2337,10 +2425,10 @@ public class Utils extends Shutter {
 			else
 				textS.setBackground(new Color(60,60,60));
 			
-			if (taille.isEnabled())
-				taille.setBackground(new Color(80,80,80));
+			if (bitrateSize.isEnabled())
+				bitrateSize.setBackground(new Color(80,80,80));
 			else
-				taille.setBackground(new Color(60,60,60));
+				bitrateSize.setBackground(new Color(60,60,60));
 			
 			if (gopSize.isEnabled() && caseGOP.isSelected())
 				gopSize.setBackground(new Color(80,80,80));

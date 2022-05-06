@@ -621,7 +621,9 @@ public class VideoWeb {
 	}
 	
 	private void startDownload() {
+		
 			Thread downloadProcess = new Thread(new Runnable() {
+				
 				public void run(){ 
 						
 				complete = 0;

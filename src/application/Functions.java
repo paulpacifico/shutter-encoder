@@ -669,7 +669,8 @@ public class Functions {
 		
 	}
 
-	public static void addFonctions(){
+	public static void addFonctions() {
+		
 		liste.clear();
 		
 		File oldFolder = new File(functionsFolder.toString().replace("Functions", "Fonctions"));
