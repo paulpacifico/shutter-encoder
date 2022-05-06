@@ -5303,6 +5303,12 @@ public class VideoPlayer {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
+				//Avoid undesired selection
+				if (grpCorrections.getHeight() <= 17)
+				{
+					caseStabilisation.setSelected(false);
+				}
+				
 				if (caseStabilisation.isSelected() && Shutter.inputDeviceIsRunning == false && FFPROBE.totalLength > 40)
 				{
 					Thread t = new Thread(new Runnable() {
@@ -5812,7 +5818,6 @@ public class VideoPlayer {
 					selection.setBounds(player.getWidth() / 4, player.getHeight() / 4, player.getWidth() / 2, player.getHeight() / 2);
 					anchorRight = selection.getLocation().x + selection.getWidth();
 					anchorBottom = selection.getLocation().y + selection.getHeight();	
-					checkSelection();
 				}				
 				else if (comboPreset.getSelectedItem().toString().isEmpty() == false)
 				{
@@ -5882,6 +5887,8 @@ public class VideoPlayer {
 			        	}
 			        }	
 				}
+				
+				checkSelection();
 			}
 			
 		});
