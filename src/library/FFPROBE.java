@@ -55,8 +55,8 @@ public static int audioStreams = 0;
 public static int totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
-public static float currentFPS = 25.0f; //Utilisé pour lire l'audio avec le lecteur vidéo
-public static String entrelaced;
+public static float currentFPS = 25.0f; //Used to play audio with the Video Player
+public static String interlaced;
 public static String fieldOrder;
 private static boolean videoStream = false;
 public static String pixelformat = "";
@@ -233,13 +233,13 @@ public static int gopSpace = 124;
 						//Entrelacement
 						if (line.contains("top first") || line.contains("top coded first"))
 						{
-							entrelaced = "1";
+							interlaced = "1";
 							if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
 								fieldOrder = "0";
 						}
 						else if (line.contains("bottom first") || line.contains("bottom coded first"))
 						{
-							entrelaced = "1";
+							interlaced = "1";
 							if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
 								fieldOrder = "1";
 						}
@@ -254,7 +254,7 @@ public static int gopSpace = 124;
 				    		getVideoLengthTC = ffmpegTime;
 				    		totalLength = (getTimeToMS(ffmpegTime));
 				    		
-				         	if (grpH264.isVisible() && totalLength != 0)
+				         	if (grpBitrate.isVisible() && totalLength != 0)
 							{     						         		
 					        	 NumberFormat formatter = new DecimalFormat("00");
 					        	 int hours = ((totalLength) / 3600000);
@@ -516,9 +516,14 @@ public static int gopSpace = 124;
 	public static void FrameData(final String file) {	
 		
 		if (caseForcerEntrelacement.isSelected() == false)
-			entrelaced = null;
+		{
+			interlaced = null;
+		}
+		
 		if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+		{
 			fieldOrder = null;
+		}
 		
 		videoStream = false;
 		pixelformat = "";
@@ -581,7 +586,7 @@ public static int gopSpace = 124;
 					  if (line.contains("interlaced_frame"))
 					  {
 						  String interlace = line.substring(line.indexOf("interlaced_frame") + 17);
-						  entrelaced = interlace;
+						  interlaced = interlace;
 					  }
 					  if (line.contains("top_field_first")) 
 					  {
@@ -652,13 +657,7 @@ public static int gopSpace = 124;
 					}
 					
 					process.waitFor();					
-					
-					 if (entrelaced == null)
-					  	entrelaced = "0";
-					 
-					 if (fieldOrder == null)
-						 fieldOrder = "0";
-								
+													
 					} catch (Exception e) {		
 						FFMPEG.error = true;
 					} finally {
@@ -1052,7 +1051,7 @@ public static int gopSpace = 124;
 				int min = Integer.parseInt(textM.getText());
 				int sec = Integer.parseInt(textS.getText());
 				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-				int tailleFinale = Integer.parseInt(taille.getText());
+				int tailleFinale = Integer.parseInt(bitrateSize.getText());
 				float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec);
 				float resultAudio = (float) (audio*multi) / 8 / 1024;
 				float resultatdebit = (result - resultAudio) * 8 * 1024;
@@ -1069,11 +1068,11 @@ public static int gopSpace = 124;
 				float resultVideo = (float) video / 8 / 1024;
 				float resultAudio =  (float) (audio*multi) / 8 / 1024;
 				float resultatdebit = (resultVideo  + resultAudio) * ( (h * 3600)+(min * 60)+sec);
-				taille.setText(String.valueOf((int)resultatdebit));	
+				bitrateSize.setText(String.valueOf((int)resultatdebit));	
 			}
 		}
 		else
-			taille.setText("-");
+			bitrateSize.setText("-");
 		
 	}
 	

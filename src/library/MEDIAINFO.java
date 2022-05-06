@@ -81,7 +81,8 @@ public static Thread runProcess;
 					while ((line = br.readLine()) != null)
 					{		
 					   infoData.append(line);
-					   
+					   					  
+					   //Timecode
 					   if (line.contains("Time code of first frame") && FFPROBE.timecode1 == "")
 					   {
 						   infoData.append(System.lineSeparator());
@@ -98,7 +99,45 @@ public static Thread runProcess;
 			    		   FFPROBE.timecode3 = str[2];
 			    		   FFPROBE.timecode4 = str[3];
 			    	   }
-			    	   
+			    	  
+					   //Interlaced
+					   if (line.contains("Scan type :") && FFPROBE.interlaced == null)
+					   {
+						   infoData.append(System.lineSeparator());
+						   
+						   line = br.readLine();
+						   infoData.append(line);
+						   
+						   String s[] = line.split(">");
+						   String s2[] = s[1].split("<");	
+
+						   if (s2[0].equals("Interlaced"))
+						   {
+							   FFPROBE.interlaced = "1";
+						   }
+						   else
+							   FFPROBE.interlaced = "0";						   
+					   }					
+					   
+					   //Field order
+					   if (line.contains("Scan order :") && FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder == null)
+					   {
+						   infoData.append(System.lineSeparator());
+						   
+						   line = br.readLine();
+						   infoData.append(line);
+						   
+						   String s[] = line.split(">");
+						   String s2[] = s[1].split("<");	
+
+						   if (s2[0].equals("Bottom Field First"))
+						   {
+							   FFPROBE.fieldOrder = "1";
+						   }
+						   else
+							   FFPROBE.fieldOrder = "0";
+					   }					  
+					   
 			    	   infoData.append(System.lineSeparator());
 					}
 									    
@@ -112,6 +151,8 @@ public static Thread runProcess;
 					
 					StrTotal = infoData.substring(infoData.indexOf("<head>") + (x + 3));
 				  
+					Console.consoleMEDIAINFO.append("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + StrTotal.toString());	
+					
 					if (showInformationsFrame)
 					{
 			           //Adding tab	           	

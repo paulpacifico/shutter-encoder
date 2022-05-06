@@ -287,7 +287,7 @@ public class Picture extends Shutter {
 		}
 		else
 		{
-			if (FFPROBE.entrelaced.equals("1"))
+			if (FFPROBE.interlaced.equals("1"))
 			{
 				return "yadif=0:" + FFPROBE.fieldOrder + ":0";		
 			}

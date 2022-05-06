@@ -35,8 +35,8 @@ public class AdvancedFeatures extends Shutter {
 			
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
 		}
-		else if (FFPROBE.entrelaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
-		|| FFPROBE.entrelaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
+		else if (FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
+		|| FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
 		|| caseForcerDesentrelacement.isSelected())
 		{
 			int doubler = 0;
@@ -175,17 +175,17 @@ public class AdvancedFeatures extends Shutter {
 		    			profile = "high10";
 		            
 		        	String s[] = FFPROBE.imageResolution.split("x");
-		        	if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+		        	if (comboBitrateSize.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		        	{
-		        		if (comboH264Taille.getSelectedItem().toString().contains("%"))
+		        		if (comboBitrateSize.getSelectedItem().toString().contains("%"))
 						{
-							double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
+							double value = (double) Integer.parseInt(comboBitrateSize.getSelectedItem().toString().replace("%", "")) / 100;
 							
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
 						else					
-							s = comboH264Taille.getSelectedItem().toString().split("x");
+							s = comboBitrateSize.getSelectedItem().toString().split("x");
 		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);
@@ -244,17 +244,17 @@ public class AdvancedFeatures extends Shutter {
 		        	}
 		        	
 		        	String s[] = FFPROBE.imageResolution.split("x");
-		        	if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+		        	if (comboBitrateSize.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		        	{
-		        		if (comboH264Taille.getSelectedItem().toString().contains("%"))
+		        		if (comboBitrateSize.getSelectedItem().toString().contains("%"))
 						{
-							double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
+							double value = (double) Integer.parseInt(comboBitrateSize.getSelectedItem().toString().replace("%", "")) / 100;
 							
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
 						else					
-							s = comboH264Taille.getSelectedItem().toString().split("x");
+							s = comboBitrateSize.getSelectedItem().toString().split("x");
 		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);
@@ -313,9 +313,9 @@ public class AdvancedFeatures extends Shutter {
 			case "MPEG-1":
 			case "MPEG-2":
 		
-				if (FFPROBE.entrelaced.equals("1") && caseForcerDesentrelacement.isSelected() == false && comboFilter.getSelectedIndex() == 1)
+				if (FFPROBE.interlaced.equals("1") && caseForcerDesentrelacement.isSelected() == false && comboFilter.getSelectedIndex() == 1)
 		        {               
-		            if (FFPROBE.entrelaced.equals("1") && FFPROBE.fieldOrder.equals("1")) //Invert fields
+		            if (FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) //Invert fields
 		            	return " -field_order bt -flags +ildct -top 1";                    	
 		            else
 		            	return " -flags +ildct -top 1";	
@@ -332,9 +332,9 @@ public class AdvancedFeatures extends Shutter {
 				{
 		        	return " -field_order progressive";  
 		    	}
-		        else if (FFPROBE.entrelaced.equals("1") || caseForcerEntrelacement.isSelected())
+		        else if (FFPROBE.interlaced.equals("1") || caseForcerEntrelacement.isSelected())
 		        {               	
-		          if ((FFPROBE.entrelaced.equals("1") && FFPROBE.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
+		          if ((FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
 		        	  return " -field_order bt";                    	
 		          else
 		        	  return " -field_order tt"; 
@@ -344,7 +344,7 @@ public class AdvancedFeatures extends Shutter {
 	        		        
 			case "DNxHD":
 				
-				if (FFPROBE.entrelaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
+				if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
 		        {               
 		            //Interlacing only for 50i          	 
 		            switch (comboFilter.getSelectedItem().toString())
@@ -352,7 +352,7 @@ public class AdvancedFeatures extends Shutter {
 		            	case "120":
 		            	case "185":
 		            	case "185 X":	
-		                    if ((FFPROBE.entrelaced.equals("1") && FFPROBE.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
+		                    if ((FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
 		                    	return " -field_order bt -flags +ildct -top 1";                    	
 		                    else
 		                    	return " -flags +ildct -top 1";			                   	
@@ -367,7 +367,7 @@ public class AdvancedFeatures extends Shutter {
 			case "XAVC":
 			case "XDCAM HD422":
 				
-				if (FFPROBE.entrelaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
+				if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
 				{
 					return " -flags +ildct+ilme -top 1";
 				}

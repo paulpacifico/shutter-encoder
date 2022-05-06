@@ -180,7 +180,7 @@ private static StringBuilder getAll;
 									|| VideoPlayer.caseEnableColorimetry.isSelected()
 									|| caseLUTs.isSelected() && grpColorimetry.isVisible()
 									|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpColorimetry.isVisible()
-									|| caseDeflicker.isSelected() && grpCorrections.isVisible()) && caseDisplay.isSelected() == false)
+									|| VideoPlayer.caseDeflicker.isSelected()) && caseDisplay.isSelected() == false)
 							{
 								PathToFFMPEG = "Library\\ffmpeg.exe";
 								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG)});

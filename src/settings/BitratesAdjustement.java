@@ -30,7 +30,7 @@ public class BitratesAdjustement extends Shutter {
 	
 	public static String setResolution() {		
 				
-        if (comboH264Taille.getSelectedItem().toString().equals(language.getProperty("source")))
+        if (comboBitrateSize.getSelectedItem().toString().equals(language.getProperty("source")))
         {
         	return "";
         }
@@ -38,14 +38,14 @@ public class BitratesAdjustement extends Shutter {
         {
         	String s[] = FFPROBE.imageResolution.split("x");
     		
-        	if (comboH264Taille.getSelectedItem().toString().contains("%"))
+        	if (comboBitrateSize.getSelectedItem().toString().contains("%"))
 			{
-				double value = (double) Integer.parseInt(comboH264Taille.getSelectedItem().toString().replace("%", "")) / 100;
+				double value = (double) Integer.parseInt(comboBitrateSize.getSelectedItem().toString().replace("%", "")) / 100;
 				
 				return " -s " + (int) (Integer.parseInt(s[0]) * value) + "x" + (int) (Integer.parseInt(s[1]) * value);
 			}
 			else										
-				return " -s " + comboH264Taille.getSelectedItem().toString();
+				return " -s " + comboBitrateSize.getSelectedItem().toString();
         }
 	}
 	

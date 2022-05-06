@@ -277,9 +277,9 @@ public class VideoEncoders extends Shutter {
 							
 						//Subtitles
 						String subtitles = "";
-						if (grpH264.isVisible())
+						if (grpBitrate.isVisible())
 						{
-							subtitles = Overlay.setSubtitles(comboH264Taille, false);
+							subtitles = Overlay.setSubtitles(comboBitrateSize, false);
 						}
 						else if (grpResolution.isVisible())
 						{
@@ -332,7 +332,7 @@ public class VideoEncoders extends Shutter {
 				        
 						//Resolution
 						String resolution = "";						
-						if (grpH264.isVisible())
+						if (grpBitrate.isVisible())
 						{
 							resolution = BitratesAdjustement.setResolution();	
 						}
@@ -430,7 +430,7 @@ public class VideoEncoders extends Shutter {
 							case "Blu-ray":
 							case "DVD":
 								
-								if (FFPROBE.entrelaced.equals("1") && caseForcerProgressif.isSelected())
+								if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected())
 								{
 									filterComplex = "yadif=0:" + FFPROBE.fieldOrder + ":0"; 
 								}
@@ -472,7 +472,7 @@ public class VideoEncoders extends Shutter {
 			    		filterComplex = Corrections.setDenoiser(filterComplex);
 			    		
 			    		//Exposure
-						filterComplex = Corrections.setExposure(filterComplex);	
+						filterComplex = Corrections.setSmoothExposure(filterComplex);	
 						
 						//Decimate
 						filterComplex = AdvancedFeatures.setDecimate(filterComplex);
@@ -508,9 +508,9 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Image.setDAR(filterComplex);
 						
 						//Padding
-						if (grpH264.isVisible())
+						if (grpBitrate.isVisible())
 						{
-							filterComplex = Image.setPad(filterComplex, true, comboH264Taille, false);
+							filterComplex = Image.setPad(filterComplex, true, comboBitrateSize, false);
 						}
 						else if (grpResolution.isVisible())
 						{
@@ -544,9 +544,9 @@ public class VideoEncoders extends Shutter {
 						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);	
 								
 						//Overlay
-						if (grpH264.isVisible())
+						if (grpBitrate.isVisible())
 						{
-							filterComplex = Overlay.setOverlay(filterComplex, comboH264Taille, false);
+							filterComplex = Overlay.setOverlay(filterComplex, comboBitrateSize, false);
 						}
 						else if (grpResolution.isVisible())
 						{							
@@ -578,7 +578,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Transitions.setVideoFade(filterComplex);
 						
 		            	//Audio
-			            if (grpH264.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
+			            if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{
 			            	audio = AudioSettings.setAudioOutputCodecs(filterComplex, comboAudioCodec.getSelectedItem().toString());	
 						}
@@ -605,7 +605,7 @@ public class VideoEncoders extends Shutter {
 			            }
 			            
 		            	//filterComplex
-						if (grpH264.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
+						if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{
 							filterComplex = FunctionUtils.setFilterComplex(filterComplex, true, audio);		
 						}
@@ -765,7 +765,7 @@ public class VideoEncoders extends Shutter {
 						}
 						while(FFMPEG.runProcess.isAlive());
 						
-						if (grpH264.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
+						if (grpBitrate.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
 							if (FFMPEG.cancelled == false)
 								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	

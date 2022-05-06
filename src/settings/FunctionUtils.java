@@ -141,8 +141,8 @@ public class FunctionUtils extends Shutter {
 			 					 		 
 			if (analyzeError(file.toString()))
 				return false;
-			
-			if (FFPROBE.timecode1 == "")
+									
+			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
 			{
 				MEDIAINFO.run(file.toString(), false);
 				
@@ -151,6 +151,20 @@ public class FunctionUtils extends Shutter {
 					Thread.sleep(100);
 				}
 				while (MEDIAINFO.isRunning);
+				
+				if (FFPROBE.interlaced == null)
+				{
+					FFPROBE.interlaced = "0";
+					FFPROBE.fieldOrder = "0";
+				}
+			}
+		}
+		else
+		{
+			if (FFPROBE.interlaced == null)
+			{
+				FFPROBE.interlaced = "0";
+				FFPROBE.fieldOrder = "0";
 			}
 		}
 
@@ -404,8 +418,10 @@ public class FunctionUtils extends Shutter {
 				
 				writer.close();
 				
-			} catch (FileNotFoundException | UnsupportedEncodingException e) {				
+			} catch (FileNotFoundException | UnsupportedEncodingException e) {	
+				
 				FFMPEG.error  = true;
+				
 				if (concatFile.exists())
 					concatFile.delete();
 			}	
@@ -462,7 +478,7 @@ public class FunctionUtils extends Shutter {
 				else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 				{
 					FFPROBE.currentFPS = 25.0f; //Important
-					mergeDuration = (int) (Shutter.liste.getSize() * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString())));
+					mergeDuration = (int) (Shutter.liste.getSize() * ((float) 1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
 				}
 				
 				writer.println("file '" + liste.getElementAt(i) + "'");

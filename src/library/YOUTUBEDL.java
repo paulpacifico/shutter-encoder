@@ -42,6 +42,7 @@ public static StringBuilder formatsOutput;
 public static String format = "";
 
 	public static void run(final String cmd, final String options) {
+		
         lblCurrentEncoding.setText(language.getProperty("getVideoName"));
 		error = false;
 		Shutter.cancelled  = false;
@@ -84,15 +85,27 @@ public static String format = "";
 						String youtubedl = "yt-dlp";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
+							String macVersion = System.getProperty("os.version").replace(".", "");
+							if (macVersion.length() < 4)
+							{
+								macVersion = macVersion + "0";
+							}
+							else if (macVersion.length() > 4)
+							{
+								macVersion = macVersion.substring(0,4);
+							}
+							System.out.println(macVersion);
+							
 							youtubedl = "yt-dlp_macos";
-							if (Integer.parseInt(System.getProperty("os.version").replace(".", "")) < 1015)
+							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
 							{
 								youtubedl = "youtube-dl";
 							}
 						}
 
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
-						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace(youtubedl, "ffmpeg") + " --no-part -o " + '"' + outputFile + '"');		
+						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace(youtubedl, "ffmpeg") + " --no-part -o " + '"' + outputFile + '"');	
+						
 					}
 									
 					isRunning = true;	
@@ -103,7 +116,8 @@ public static String format = "";
 			        String lineOutput;
 			        					
 					do {
-						lineOutput = br.readLine();		
+												
+						lineOutput = br.readLine();
 																		
 					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());
 		                
@@ -134,15 +148,18 @@ public static String format = "";
 						}
 						          						        		
 					} while(lineOutput != null && Shutter.cancelled == false);	
+					
 					process.waitFor();
 								     	
                     if (Shutter.cancelled)
                     	outputFile.delete();					
 														
 					} catch (IOException | InterruptedException e) {
+						
 	                    JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("downloadError"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	                    error = true;
 	                    Shutter.cancelled = true;
+	                    
 					} finally {
 						isRunning = false;
 					}

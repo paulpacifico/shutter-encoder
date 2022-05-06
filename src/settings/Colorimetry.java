@@ -496,22 +496,7 @@ public class Colorimetry extends Shutter {
 	public static String setEQ(boolean finalEQ) {
 		
 		String eq = "";
-		
-		if (finalEQ == false)
-		{
-			//LUTs
-			eq = setLUT(eq);	
-			
-			//Levels
-			eq = setLevels(eq);
-			
-			//Colormatrix
-			eq = setColormatrix(eq);
-			
-			//Rotate
-			eq = Image.setRotate(eq);	
-		}
-		
+
 		//Exposure
 		eq = setExposure(eq);
 		
