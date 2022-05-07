@@ -5888,7 +5888,8 @@ public class VideoPlayer {
 			        }	
 				}
 				
-				checkSelection();
+				//IMPORTANT
+				Shutter.croppingValues = "crop=" + textCropWidth.getText() + ":" + textCropHeight.getText()  + ":" + textCropPosX.getText()  + ":" + textCropPosY.getText() ;
 			}
 			
 		});
@@ -11326,7 +11327,7 @@ public class VideoPlayer {
 		eq = Colorimetry.setColormatrix(eq);
 		
 		//Rotate
-		if (Shutter.caseRotate.isSelected())
+		if (Shutter.caseRotate.isSelected() || Shutter.caseMiror.isSelected())
 			eq = settings.Image.setRotate(eq);
 		
 		//Colorimetry
