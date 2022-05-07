@@ -455,6 +455,9 @@ public class VideoEncoders extends Shutter {
 										
 						//Colormatrix
 						filterComplex = Colorimetry.setColormatrix(filterComplex);	
+
+						//Rotate
+						filterComplex = Image.setRotate(filterComplex);
 						
 						//Color
 						filterComplex = Colorimetry.setColor(filterComplex);		
@@ -500,9 +503,6 @@ public class VideoEncoders extends Shutter {
 				        
 				    	//Crop
 				        filterComplex = Image.setCrop(filterComplex);
-						
-						//Rotate
-						filterComplex = Image.setRotate(filterComplex);
 						
 						//DAR
 						filterComplex = Image.setDAR(filterComplex);

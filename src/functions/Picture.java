@@ -119,6 +119,9 @@ public class Picture extends Shutter {
 						
 						//Colormatrix
 						filterComplex = Colorimetry.setColormatrix(filterComplex);	
+												
+						//Rotate
+						filterComplex = Image.setRotate(filterComplex);
 						
 						//Color
 						filterComplex = Colorimetry.setColor(filterComplex);
@@ -155,9 +158,6 @@ public class Picture extends Shutter {
 						
 				        //Padding
 						filterComplex = Image.setPad(filterComplex, false, comboResolution, false);	           				
-	
-						//Rotate
-						filterComplex = Image.setRotate(filterComplex);
 						
 						//filterComplex
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, "");		
