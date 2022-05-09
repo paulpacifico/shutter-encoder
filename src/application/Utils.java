@@ -2425,6 +2425,11 @@ public class Utils extends Shutter {
 			else
 				textS.setBackground(new Color(60,60,60));
 			
+			if (textF.isEnabled())
+				textF.setBackground(new Color(80,80,80));
+			else
+				textF.setBackground(new Color(60,60,60));
+			
 			if (bitrateSize.isEnabled())
 				bitrateSize.setBackground(new Color(80,80,80));
 			else

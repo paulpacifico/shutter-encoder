@@ -4502,7 +4502,7 @@ public class Shutter {
 				else
 					comboRotate.setEnabled(false);
 				
-				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible() && VideoPlayer.caseEnableColorimetry.isSelected())
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
 					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
 				}			
@@ -4526,7 +4526,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible() && VideoPlayer.caseEnableColorimetry.isSelected())
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{					
 					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
 				}
@@ -4546,7 +4546,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (caseRotate.isSelected() && VideoPlayer.frame != null && VideoPlayer.frame.isVisible() && VideoPlayer.caseEnableColorimetry.isSelected())
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
 					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
 				}			
@@ -6468,8 +6468,41 @@ public class Shutter {
 
 				if (liste.getSize() == 0)
 				{
-					caseInAndOut.setSelected(false);
-					JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"), language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
+					if (VideoPlayer.frame == null || VideoPlayer.frame.isVisible() == false)
+					{
+						caseInAndOut.setSelected(false);
+						JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"), language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
+					}
+					else
+					{
+						Utils.changeFrameVisibility(VideoPlayer.frame, true);
+						
+						if (VideoPlayer.playerVideo != null)
+							VideoPlayer.playerStop();
+						
+						switch (Shutter.comboFonctions.getSelectedItem().toString()) {
+						case "H.264":
+						case "H.265":
+						case "WMV":
+						case "MPEG-1":
+						case "MPEG-2":
+						case "VP8":
+						case "VP9":
+						case "AV1":
+						case "OGV":
+						case "MJPEG":
+						case "Xvid":
+						case "Blu-ray":
+							FFPROBE.setLength();
+							break;
+						}
+						
+						if (FFMPEG.isRunning)
+							FFMPEG.process.destroy();
+						
+						// VideoPlayer
+						VideoPlayer.setMedia();
+					}					
 				}
 				else
 				{

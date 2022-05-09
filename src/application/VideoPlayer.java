@@ -7840,9 +7840,9 @@ public class VideoPlayer {
 				{	
 					int value = MouseTcPosition.offsetX + (e.getX() - MouseTcPosition.mouseX);
 					
-					if (value < 1)
+					if (value < 5)
 					{
-						textTcSize.setText("1");
+						textTcSize.setText("5");
 					}
 					else
 						textTcSize.setText(String.valueOf(value));
@@ -8565,9 +8565,9 @@ public class VideoPlayer {
 				{	
 					int value = MouseNamePosition.offsetX + (e.getX() - MouseNamePosition.mouseX);
 					
-					if (value < 1)
+					if (value < 5)
 					{
-						textNameSize.setText("1");
+						textNameSize.setText("5");
 					}
 					else
 						textNameSize.setText(String.valueOf(value));
@@ -11721,8 +11721,8 @@ public class VideoPlayer {
 			slider.setValue(slider.getMaximum());
 			sliderChange = false;    		
 		}
-		
-    	if (playerVideo != null && time - offset < totalFrames)
+				
+    	if (playerVideo != null && time - offset < totalFrames - 1)
     	{    					    			 		
 			String h = formatter.format(Math.floor(time / FFPROBE.currentFPS / 3600));
 			String m =  formatter.format(Math.floor(time / FFPROBE.currentFPS / 60) % 60);
@@ -11766,6 +11766,11 @@ public class VideoPlayer {
     				}
     			}
     		}    
+    	}
+    	
+    	if (time - offset >= totalFrames - 2)
+    	{
+    		btnPlay.setText(Shutter.language.getProperty("btnPlay"));
     	}
     		
     }
