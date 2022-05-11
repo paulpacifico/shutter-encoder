@@ -5227,6 +5227,10 @@ public class VideoPlayer {
 										{
 											grpColorimetry.setSize(grpColorimetry.getWidth(), grpColorimetry.getHeight() - 1);
 											panelColorimetryComponents.setSize(grpColorimetry.getWidth() - 18, grpColorimetry.getHeight() - 25);
+											if (scrollBarColorimetry.isVisible() == false)
+											{
+												scrollBarColorimetry.setVisible(true);
+											}													
 											scrollBarColorimetry.setValue(0);	
 											scrollBarColorimetry.setSize(11, grpColorimetry.getHeight() - 11);
 											scrollBarColorimetry.setMaximum((btnReset.getY() + btnReset.getHeight() + 15) - panelColorimetryComponents.getHeight());
