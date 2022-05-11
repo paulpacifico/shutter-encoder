@@ -1082,7 +1082,7 @@ public class VideoPlayer {
 	}
 	
 	public static void playerSetTime(float time) {
-							
+
 		if (setTime == null || setTime.isAlive() == false)
 		{
 			setTime = new Thread(new Runnable() {
@@ -1127,10 +1127,16 @@ public class VideoPlayer {
 							
 							playerLoop = true;
 							
+							long time = System.currentTimeMillis();
+							
 							do {
 								try {
 									Thread.sleep(4);
-								} catch (InterruptedException e) {}										
+								} catch (InterruptedException e) {}
+								
+								if (System.currentTimeMillis() - time > 1000)
+									break;
+								
 							} while (frameVideo == null);
 							
 							playerLoop = false;
@@ -1478,9 +1484,9 @@ public class VideoPlayer {
 					}
 					
 					inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);		
-					totalFrames = FFPROBE.totalLength / 1000 * FFPROBE.currentFPS;
+					totalFrames = (float) Math.round(FFPROBE.totalLength / inputFramerateMS);
 					playerCurrentFrame = 0;
-					
+	
 					caseInternalTc.setEnabled(true);	
 					caseShowTimecode.setEnabled(true);
 					caseShowTimecode.setSelected(false);
@@ -3839,7 +3845,7 @@ public class VideoPlayer {
 			caseOutH.setText(formatter.format((FFPROBE.totalLength) / 3600000));
 	        caseOutM.setText(formatter.format(((FFPROBE.totalLength) / 60000) % 60) );
 	        caseOutS.setText(formatter.format((FFPROBE.totalLength / 1000) % 60));				        
-	        caseOutF.setText(formatter.format((FFPROBE.totalLength % 1000 / 1000 * FFPROBE.currentFPS)));
+	        caseOutF.setText(formatter.format((FFPROBE.totalLength % 1000 / (1000 / FFPROBE.currentFPS))));
 		}
 	}
 	
@@ -11723,7 +11729,7 @@ public class VideoPlayer {
 			slider.setValue(slider.getMaximum());
 			sliderChange = false;    		
 		}
-				
+
     	if (playerVideo != null && time - offset < totalFrames - 1)
     	{    					    			 		
 			String h = formatter.format(Math.floor(time / FFPROBE.currentFPS / 3600));
