@@ -1671,7 +1671,7 @@ public class VideoPlayer {
 			else
 				speed += "setpts=4*PTS";				
 		}	
-						
+		
 		if (FFPROBE.audioOnly)
 		{			
 			//Important
@@ -11296,18 +11296,16 @@ public class VideoPlayer {
 		//Deinterlacer
 		if (yadif != "")
 		{
-			filter += " -vf " + yadif;
+			filter += " -vf " + '"' + yadif;
 		}		
 		
 		//Speed
 		if (speed != "")
 		{
 			if (filter != "")
-				filter += ",";
+				filter += "," + speed;
 			else
-				filter += " -vf ";
-			
-			filter += speed;
+				filter += " -vf " + '"' + speed;
 		}			
 		
 		//EQ
@@ -11333,13 +11331,7 @@ public class VideoPlayer {
 		//Colorimetry
 		if (caseEnableColorimetry.isSelected())
 		{			
-			String color = "";
-			if (caseAddSubtitles.isSelected() && Shutter.subtitlesBurn && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt")) //Important
-			{
-				color = Colorimetry.setEQ(false);
-			}
-			else
-				color = Colorimetry.setEQ(false).replace("'", "\"");
+			String color = Colorimetry.setEQ(false);
 						
 			if (eq != "" && color != "")
 			{
@@ -11367,15 +11359,21 @@ public class VideoPlayer {
 		//Exposure
 		if (preview.exists() == false) //Show only on playing
 			eq = Corrections.setSmoothExposure(eq);	
+		
+		//Limiter
+		eq = Corrections.setLimiter(eq);
 				
 		if (eq.isEmpty() == false)
 		{
 			if (filter != "")
-				filter += ",";
+				filter += "," + eq;
 			else
-				filter += " -vf ";
-			
-			filter += eq;
+				filter += " -vf " + '"' + eq;
+		}
+		
+		if (filter != "")
+		{
+			filter += '"';
 		}
 		
 		if (caseAddSubtitles.isSelected() && Shutter.subtitlesBurn && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt") && filter == "") //Important
@@ -11389,7 +11387,7 @@ public class VideoPlayer {
 		{						
 			return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + textSubsWidth.getText() + ":" + scale[1] + "+" + textSubtitlesPosition.getText()
           			+ ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + comboSubsFont.getSelectedItem().toString() + ",FontSize=" + textSubsSize.getText() + ",PrimaryColour=&H" + subsHex + "&" + background + "'" + '"'
-          			+ " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "") + "[v];[v][1:v]overlay=x=" + ((int) (Integer.parseInt(scale[0]) - Integer.parseInt(textSubsWidth.getText()))/2) + ",scale=" + player.getWidth() + ":" + player.getHeight() + '"'; 
+          			+ " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "").replace("\"", "") + "[v];[v][1:v]overlay=x=" + ((int) (Integer.parseInt(scale[0]) - Integer.parseInt(textSubsWidth.getText()))/2) + ",scale=" + player.getWidth() + ":" + player.getHeight() + '"'; 
 		}
 		else
 		{
