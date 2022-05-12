@@ -1191,7 +1191,7 @@ public class VideoPlayer {
     		    	
     	if (Shutter.caseInAndOut.isSelected())
     	{
-	    	//Mise à jour du fichier vidéo
+	    	//Updating video file
 			if (Shutter.liste.getSize() != 0)
 			{
 				if (Shutter.fileList.getSelectedIndices().length == 0)

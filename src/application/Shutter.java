@@ -1435,11 +1435,14 @@ public class Shutter {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (scanIsRunning == false) {
+				
+				if (scanIsRunning == false)
+				{					
 					if ((e.getKeyCode() == KeyEvent.VK_A) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0))
 						fileList.setSelectionInterval(0, liste.getSize() - 1);
 
-					if (e.getKeyCode() == 127 && liste.getSize() > 0 || e.getKeyCode() == 8 && liste.getSize() > 0) {
+					if (e.getKeyCode() == 127 && liste.getSize() > 0 || e.getKeyCode() == 8 && liste.getSize() > 0)
+					{
 						do {
 							liste.remove(fileList.getSelectedIndex());
 						} while (fileList.getSelectedIndices().length > 0);
@@ -1448,7 +1451,6 @@ public class Shutter {
 							addToList.setVisible(true);
 						
 						lblFiles.setText(Utils.filesNumber());
-						FFPROBE.setLength();
 
 						// VideoPlayer
 						VideoPlayer.setMedia();
@@ -1458,6 +1460,8 @@ public class Shutter {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				
+				FFPROBE.setLength();				
 			}
 
 		});
@@ -2136,6 +2140,11 @@ public class Shutter {
 				fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 0));
 			}
 
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				FFPROBE.setLength();
+			}
+			
 		});
 
 		fileList.addMouseMotionListener(new MouseMotionListener() {
