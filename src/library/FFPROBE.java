@@ -943,78 +943,92 @@ public static int gopSpace = 124;
 	
 	public static void setLength() {
 		
-	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	
-	processSetLength = new Thread(new Runnable()  {
-		@Override
-		public void run() { 
-			try {
-				calcul = true;
-				lblH264.setVisible(true);
+		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
+		processSetLength = new Thread(new Runnable()  {
+			
+			@Override
+			public void run() { 
 				
-				if (Shutter.scanIsRunning)
-				{
-		            File dir = new File(Shutter.liste.firstElement());
-		            for (File f : dir.listFiles())
-		            {
-		            	if (f.isHidden() == false && f.isFile())
-		            	{    
-		                 	lblH264.setText(f.getName());
-		                 	
-		    				//Envoi dans Data()
-		                 	FFPROBE.Data(f.toString());
-		            		break;
-		            	}
-		            }
-				}
-				else
-				{
-					lblH264.setText(new File(liste.getElementAt(0).toString()).getName());
+				try {
 					
-					//Envoi dans Data()
-					if (inputDeviceIsRunning == false)					
-						FFPROBE.Data(liste.getElementAt(0).toString());
+					calcul = true;
+										
+					//Updating video file
+					if (Shutter.liste.getSize() != 0)
+					{
+						if (Shutter.scanIsRunning)
+						{
+							File dir = new File(Shutter.liste.firstElement());
+							for (File f : dir.listFiles())
+							{
+								if (f.isHidden() == false && f.isFile())
+								{
+									//Sending to Data()
+									FFPROBE.Data(f.toString());
+									lblH264.setText(new File(f.toString()).getName());
+									
+							        do {
+										Thread.sleep(100);
+									} while (processData.isAlive()); 
+							        
+									break;
+								}
+							}
+						} 
+						else
+						{	
+							if (Shutter.fileList.getSelectedIndices().length == 0)
+				      		{
+								Shutter.fileList.setSelectedIndex(0);
+				      		}
+							
+							lblH264.setText(new File(Shutter.fileList.getSelectedValue()).getName());
+							
+							//Sending to Data()
+							if (inputDeviceIsRunning == false)					
+								FFPROBE.Data(Shutter.fileList.getSelectedValue());
+							
+							do {
+								Thread.sleep(100);
+							} while (processData.isAlive()); 
+						}
+						
+						if (totalLength != 0 && inputDeviceIsRunning == false)
+						{           		
+			    		    if (Shutter.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+			    		    {
+			    				float debit = (float) ((float) 23000000 / FFPROBE.totalLength) * 8;
+			    				
+			    				if (debit > 38)
+			    					Shutter.debitVideo.setSelectedItem(38000);
+			    				else
+			    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+			    		    }	
+			         		
+				        	 NumberFormat formatter = new DecimalFormat("00");
+			
+				             textH.setText(formatter.format((totalLength) / 3600000));
+				             textM.setText(formatter.format(((totalLength) / 60000) % 60) );
+				             textS.setText(formatter.format((totalLength / 1000) % 60));				        
+				             textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
+				             			             
+				             if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
+					     			VideoPlayer.totalDuration();
+				             
+				             setFilesize();
+				             lblH264.setVisible(true);
+						}
+					}
+					
+				} catch (Exception e) {}
+				finally {
+					calcul = false;
+					frame.setCursor(Cursor.getDefaultCursor());
 				}
-				
-				//Attente d'analyse
-		         do {
-						Thread.sleep(100);
-		         } while(processData.isAlive());         
-		         
-         	if (totalLength != 0)
-			{           		
-    		    if (Shutter.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
-    		    {
-    				float debit = (float) ((float) 23000000 / FFPROBE.totalLength) * 8;
-    				
-    				if (debit > 38)
-    					Shutter.debitVideo.setSelectedItem(38000);
-    				else
-    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
-    		    }	
-         		
-	        	 NumberFormat formatter = new DecimalFormat("00");
-
-	             textH.setText(formatter.format((totalLength) / 3600000));
-	             textM.setText(formatter.format(((totalLength) / 60000) % 60) );
-	             textS.setText(formatter.format((totalLength / 1000) % 60));				        
-	             textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
-	             
-	             
-	             if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
-		     			VideoPlayer.totalDuration();
-	             
-	             setFilesize();
-			}
-         	
-		 } catch (Exception e) {}
-			finally {
-				calcul = false;
-				frame.setCursor(Cursor.getDefaultCursor());
-			}
-		}//Run
-	});
-	processSetLength.start();
+			}//Run
+		});
+		processSetLength.start();
 	
 	}
 	
