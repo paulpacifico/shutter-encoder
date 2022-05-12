@@ -998,7 +998,8 @@ public static int gopSpace = 124;
 	             textH.setText(formatter.format((totalLength) / 3600000));
 	             textM.setText(formatter.format(((totalLength) / 60000) % 60) );
 	             textS.setText(formatter.format((totalLength / 1000) % 60));				        
-	             textF.setText(formatter.format((totalLength % 1000 / (1000 / FFPROBE.currentFPS))));
+	             textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
+	             
 	             
 	             if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
 		     			VideoPlayer.totalDuration();
