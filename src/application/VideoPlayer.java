@@ -3845,7 +3845,7 @@ public class VideoPlayer {
 			caseOutH.setText(formatter.format((FFPROBE.totalLength) / 3600000));
 	        caseOutM.setText(formatter.format(((FFPROBE.totalLength) / 60000) % 60) );
 	        caseOutS.setText(formatter.format((FFPROBE.totalLength / 1000) % 60));				        
-	        caseOutF.setText(formatter.format((FFPROBE.totalLength % 1000 / (1000 / FFPROBE.currentFPS))));
+	        caseOutF.setText(formatter.format(((int) Math.floor((float) FFPROBE.totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
 		}
 	}
 	
