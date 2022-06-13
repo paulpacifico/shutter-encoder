@@ -1594,79 +1594,6 @@ public class VideoPlayer {
 			}
 			
 			waveformContainer.requestFocus();
-						
-			//Players 		
-			float ratio = FFPROBE.imageRatio;
-			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
-			{
-				ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
-			}
-			
-			if (ratio < 1.3f)
-			{
-				int maxHeigth = frame.getHeight() - (frame.getHeight() - lblPosition.getY()) - btnCapture.getY() - btnCapture.getHeight() - 64;
-				
-				if (FFPROBE.totalLength <= 40) //Image
-				{
-					maxHeigth = frame.getHeight() - btnCapture.getY() - btnCapture.getHeight() - 24;
-				}
-				
-				player.setSize((int) (maxHeigth * ratio), maxHeigth);
-			}
-			else
-			{
-				int maxWidth = frame.getWidth() - grpCrop.getWidth() * 2 - 24;
-				
-				player.setSize(maxWidth, (int) (maxWidth / ratio));			
-			}
-			
-			if (FFPROBE.totalLength <= 40) //Image
-			{
-				player.setLocation((frame.getSize().width - player.getSize().width) / 2, frame.getHeight() / 2 - player.getHeight() / 2 + 28);
-			}
-			else
-				player.setLocation((frame.getSize().width - player.getSize().width) / 2, frame.getHeight() / 2 - player.getHeight() / 2 - 32);
-			
-			//IMPORTANT video canvas must be a multiple of 4!
-			player.setSize(player.getWidth() - (player.getWidth() % 4), player.getHeight());	
-
-			imageRatio = (float) FFPROBE.imageWidth / player.getWidth();
-			
-			if (Shutter.inputDeviceIsRunning || FFPROBE.totalLength <= 40)
-			{
-				loadImage(false);
-				
-				if (Shutter.inputDeviceIsRunning && Shutter.overlayDeviceIsRunning)
-				{
-					Thread t = new Thread(new Runnable() {
-	
-						@Override
-						public void run() {
-							
-							do {
-								try {
-									Thread.sleep(100);
-								} catch (InterruptedException e) {}
-							} while (frameVideo == null);
-							
-							if (caseAddWatermark.isSelected() == false)
-							{
-								caseAddWatermark.doClick();						
-							}
-						}
-						
-					});
-					t.start();
-				}
-			}
-			else
-			{				
-				//Waveforms
-				addWaveform(false);	
-	
-				if (btnPlay.isEnabled())
-					playerFreeze();	
-			}	
     	}
 	}
      
@@ -11539,7 +11466,7 @@ public class VideoPlayer {
 			
 			player.setSize(maxWidth, (int) (maxWidth / ratio));			
 		}	
-		
+				
 		if (FFPROBE.totalLength <= 40) //Image
 		{
 			player.setLocation((frame.getSize().width - player.getSize().width) / 2, frame.getHeight() / 2 - player.getHeight() / 2 + 28);
