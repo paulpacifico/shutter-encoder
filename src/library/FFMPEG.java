@@ -1416,8 +1416,10 @@ private static StringBuilder getAll;
 		}	    	    
 	    
 	  //Progression
-	  if (line.contains("time="))
-	  {
+	  if (line.contains("time=") && lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
+								 && lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
+								 && lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
+	  {		  
 		  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
 		  	error = false;
 		  	
