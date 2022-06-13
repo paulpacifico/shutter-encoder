@@ -164,7 +164,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "16.0";
+	public static String actualVersion = "16.1";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
@@ -1132,12 +1132,12 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				
 				if (accept) {
-					if (Help.frame != null) {
-						if (Help.frame.isVisible() == false)
-							new Help();
-					} else
-						new Help();
+					
+					try {
+						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation.html"));
+					} catch (IOException | URISyntaxException er) {}
 				}
 			}
 
@@ -1237,7 +1237,7 @@ public class Shutter {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-					Desktop.getDesktop().browse(new URI("http://www.shutterencoder.com/changelog.html"));
+					Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/changelog.html"));
 				} catch (IOException | URISyntaxException e) {
 				}
 			}
@@ -12487,7 +12487,9 @@ public class Shutter {
 
 								grpAdvanced.setVisible(true);
 								grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
-								caseOpenGop.setLocation(7, 14);													
+								casePreserveMetadata.setLocation(7, 14);
+								grpAdvanced.add(casePreserveMetadata);	
+								caseOpenGop.setLocation(7, casePreserveMetadata.getLocation().y + 17);													
 								grpAdvanced.add(caseOpenGop);	
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
 							}
@@ -13490,7 +13492,7 @@ public class Shutter {
 							grpAdvanced.add(caseForceTune);
 							comboForceTune.setLocation(caseForceTune.getLocation().x + caseForceTune.getWidth() + 4, caseForceTune.getLocation().y + 4);
 							grpAdvanced.add(comboForceTune);									
-							
+							/*
 							if (System.getProperty("os.name").contains("Mac"))
 							{
 								if (comboFonctions.getSelectedItem().equals("H.265"))
@@ -13511,11 +13513,15 @@ public class Shutter {
 								{
 									caseFastStart.setLocation(7, caseForceTune.getLocation().y + 17);
 								}
+								
+								caseFastStart.setLocation(7, caseForceTune.getLocation().y + 17);
 							}
 							else
 							{
 								caseFastStart.setLocation(7, caseForceTune.getLocation().y + 17);
-							}
+							}*/
+							
+							caseFastStart.setLocation(7, caseForceTune.getLocation().y + 17);
 
 							grpAdvanced.add(caseFastStart);
 							caseGOP.setLocation(7, caseFastStart.getLocation().y + 17);
@@ -15726,7 +15732,15 @@ class ListeFileTransferHandler extends TransferHandler {
 					}
 
 					// VideoPlayer
-					VideoPlayer.setMedia();
+					if (Shutter.caseInAndOut.isSelected())
+					{
+						if (Shutter.fileList.getSelectedIndices().length == 0)
+						{
+							Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);
+						}
+						
+						VideoPlayer.setMedia();
+					}
 					
 					// Filtre
 					Shutter.changeFilters();

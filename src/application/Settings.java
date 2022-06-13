@@ -460,6 +460,48 @@ public class Settings {
 		comboGPU.setMaximumRowCount(10);
 		frame.getContentPane().add(comboGPU);
 		
+		JLabel btnHelpGPU = new JLabel(new FlatSVGIcon("contents/help.svg", 15, 15));
+		btnHelpGPU.setHorizontalAlignment(SwingConstants.CENTER);
+		btnHelpGPU.setBounds(comboGPU.getLocation().x + comboGPU.getWidth() + 7, lblGpuDecoding.getY() - 1, 15, 15);
+		frame.getContentPane().add(btnHelpGPU);
+
+		btnHelpGPU.addMouseListener(new MouseListener() {
+
+			private boolean accept = false;
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				btnHelpGPU.setIcon(new FlatSVGIcon("contents/help_pressed.svg", 15, 15));
+				accept = true;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (accept)
+				{
+					try {
+						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation.html#Set-GPU-decoding"));
+					}catch(Exception er){}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnHelpGPU.setIcon(new FlatSVGIcon("contents/help_hover.svg", 15, 15));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnHelpGPU.setIcon(new FlatSVGIcon("contents/help.svg", 15, 15));
+				accept = false;
+			}
+
+		});
+	
 		lblScaleMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblScaleMode.setBounds(12, lblGpuDecoding.getLocation().y + lblGpuDecoding.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblScaleMode);

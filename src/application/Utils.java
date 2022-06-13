@@ -1973,7 +1973,10 @@ public class Utils extends Shutter {
 									if (p instanceof JLabel)
 									{										
 										//Value
-										((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										if (p.getName().equals("lock") == false && p.getName().equals("unlock") == false)
+										{
+											((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										}
 																			
 										//State
 										((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
@@ -2095,7 +2098,10 @@ public class Utils extends Shutter {
 				lblPad.setText(language.getProperty("lblCrop"));
 			}
 				
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			
+			System.out.println(e);
+		}
 		finally {
 			
 			if (Functions.frame != null)

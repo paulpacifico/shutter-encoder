@@ -672,31 +672,40 @@ public class VideoPlayer {
 	        	if (caseAddWatermark.isSelected())
 	        	{
 	        		if (e.getID() == KeyEvent.KEY_PRESSED)
-	        		{           	  						
+	        		{          	  	
+	        			boolean update = false;
+	        			
 						if (e.getKeyCode() == KeyEvent.VK_UP)
 						{
 							logo.setLocation(logo.getLocation().x, logo.getLocation().y - 1);
+							update = true;
 						}
 						
 						if (e.getKeyCode() == KeyEvent.VK_DOWN)
 						{
 							logo.setLocation(logo.getLocation().x, logo.getLocation().y + 1);
+							update = true;
 						}
 						
 						if (e.getKeyCode() == KeyEvent.VK_LEFT)
 						{
 							logo.setLocation(logo.getLocation().x - 1, logo.getLocation().y);
+							update = true;
 						}
 						
 						if (e.getKeyCode() == KeyEvent.VK_RIGHT)
 						{
 							logo.setLocation(logo.getLocation().x + 1, logo.getLocation().y);
+							update = true;
 						} 
 
-						textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-						textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
-						logoLocX = logo.getLocation().x;
-						logoLocY = logo.getLocation().y;
+						if (update)
+						{
+							textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
+							textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+							logoLocX = logo.getLocation().x;
+							logoLocY = logo.getLocation().y;
+						}
 	        		}
 	        	}
 	        	else
@@ -778,8 +787,11 @@ public class VideoPlayer {
 				
 				
 				if (e.getKeyCode() == KeyEvent.VK_K || e.getKeyCode() == KeyEvent.VK_SPACE)
+				{
+					e.consume();
 					btnPlay.doClick();
-
+				}
+				
 				if (e.getKeyCode() == KeyEvent.VK_J)
 				{
 					playerSetTime((float) (VideoPlayer.playerCurrentFrame - 11));
@@ -1083,7 +1095,7 @@ public class VideoPlayer {
 	
 	public static void playerSetTime(float time) {
 
-		if (setTime == null || setTime.isAlive() == false)
+		if (setTime == null || setTime.isAlive() == false && frameVideo != null)
 		{
 			setTime = new Thread(new Runnable() {
 
@@ -1489,7 +1501,6 @@ public class VideoPlayer {
 	
 					caseInternalTc.setEnabled(true);	
 					caseShowTimecode.setEnabled(true);
-					caseShowTimecode.setSelected(false);
 					
 					//Reset boxes
 					updateGrpIn(0);
@@ -1682,6 +1693,9 @@ public class VideoPlayer {
 		{			
 			//Important
 			FFPROBE.currentFPS = 25.0f;
+			
+			if (speed != "")
+				speed = " -af " + speed;
 			
 			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -f lavfi -i " + '"' + "color=c=black:r=25:s="
 					+ width + "x" + height + '"' + speed + " -c:v bmp -an -f image2pipe pipe:-";		
@@ -4563,7 +4577,7 @@ public class VideoPlayer {
 		comboRGB.setEditable(false);
 		comboRGB.setSelectedIndex(0);
 		comboRGB.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
-		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 7, lblRGB.getY() - 3, 70, 22);		
+		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 7, lblRGB.getY() - 3, 100, 22);		
 		panelColorimetryComponents.add(comboRGB);
 		
 		comboRGB.addActionListener(new ActionListener() {
@@ -4830,9 +4844,56 @@ public class VideoPlayer {
 		
 		panelColorimetryComponents.add(sliderBLUE);
 		
+		JLabel lblSaturation = new JLabel(Shutter.language.getProperty("lblSaturation"));
+		lblSaturation.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblSaturation.setBounds(6, sliderBLUE.getY() + sliderBLUE.getHeight() + 4, lblExposure.getSize().width, 16);		
+		panelColorimetryComponents.add(lblSaturation);
+		
+		panelColorimetryComponents.add(lblSaturation);
+		
+		sliderSaturation.setName("sliderSaturation");
+		sliderSaturation.setMaximum(100);
+		sliderSaturation.setMinimum(-100);
+		sliderSaturation.setValue(0);		
+		sliderSaturation.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		sliderSaturation.setBounds(4, lblSaturation.getY() + lblSaturation.getHeight(), sliderExposure.getWidth(), 22);	
+		
+		sliderSaturation.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderSaturation.setValue(0);	
+					lblSaturation.setText(Shutter.language.getProperty("lblSaturation"));
+				}
+			}
+
+		});
+		
+		sliderSaturation.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				if (sliderSaturation.getValue() == 0)
+				{
+					lblSaturation.setText(Shutter.language.getProperty("lblSaturation"));
+				}
+				else
+				{
+					lblSaturation.setText(Shutter.language.getProperty("lblSaturation") + " " + sliderSaturation.getValue());
+				}
+				
+				loadImage(false);
+			}
+			
+		});
+		
+		panelColorimetryComponents.add(sliderSaturation);
+			
 		JLabel lblVibrance = new JLabel(Shutter.language.getProperty("lblVibrance"));
 		lblVibrance.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblVibrance.setBounds(6, sliderBLUE.getY() + sliderBLUE.getHeight() + 4, lblExposure.getSize().width, 16);		
+		lblVibrance.setBounds(6, sliderSaturation.getY() + sliderSaturation.getHeight() + 4, lblExposure.getSize().width, 16);		
 		panelColorimetryComponents.add(lblVibrance);
 		
 		panelColorimetryComponents.add(lblVibrance);
@@ -4941,56 +5002,9 @@ public class VideoPlayer {
 			
 		});
 				
-		JLabel lblSaturation = new JLabel(Shutter.language.getProperty("lblSaturation"));
-		lblSaturation.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblSaturation.setBounds(6, sliderVibrance.getY() + sliderVibrance.getHeight() + 4, lblExposure.getSize().width, 16);		
-		panelColorimetryComponents.add(lblSaturation);
-		
-		panelColorimetryComponents.add(lblSaturation);
-		
-		sliderSaturation.setName("sliderSaturation");
-		sliderSaturation.setMaximum(100);
-		sliderSaturation.setMinimum(-100);
-		sliderSaturation.setValue(0);		
-		sliderSaturation.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		sliderSaturation.setBounds(4, lblSaturation.getY() + lblSaturation.getHeight(), sliderExposure.getWidth(), 22);	
-		
-		sliderSaturation.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2)
-				{
-					sliderSaturation.setValue(0);	
-					lblSaturation.setText(Shutter.language.getProperty("lblSaturation"));
-				}
-			}
-
-		});
-		
-		sliderSaturation.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				if (sliderSaturation.getValue() == 0)
-				{
-					lblSaturation.setText(Shutter.language.getProperty("lblSaturation"));
-				}
-				else
-				{
-					lblSaturation.setText(Shutter.language.getProperty("lblSaturation") + " " + sliderSaturation.getValue());
-				}
-				
-				loadImage(false);
-			}
-			
-		});
-		
-		panelColorimetryComponents.add(sliderSaturation);
-			
 		JLabel lblGrain = new JLabel(Shutter.language.getProperty("lblGrain"));
 		lblGrain.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblGrain.setBounds(6, sliderSaturation.getY() + sliderSaturation.getHeight() + 4, lblExposure.getSize().width, 16);		
+		lblGrain.setBounds(6, sliderVibrance.getY() + sliderVibrance.getHeight() + 4, lblExposure.getSize().width, 16);		
 		panelColorimetryComponents.add(lblGrain);
 		
 		panelColorimetryComponents.add(lblGrain);
@@ -6323,7 +6337,8 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textCropPosX.getText().length() > 0)
+				
+				if (textCropPosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					int value = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * player.getHeight()) / FFPROBE.imageHeight);	
 					selection.setLocation(value, selection.getLocation().y);
@@ -6409,7 +6424,8 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textCropPosY.getText().length() > 0)
+				
+				if (textCropPosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					int value = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * player.getWidth()) / FFPROBE.imageWidth);	
 					selection.setLocation(selection.getLocation().x, value);
@@ -6500,7 +6516,8 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textCropWidth.getText().length() > 0)
+				
+				if (textCropWidth.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					int value = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
 					selection.setSize(value, selection.getHeight());
@@ -6592,7 +6609,8 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textCropHeight.getText().length() > 0)
+				
+				if (textCropHeight.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					int value = (int) Math.round((float) (Integer.valueOf(textCropHeight.getText()) * player.getWidth()) / FFPROBE.imageWidth);
 					selection.setSize(selection.getWidth(), value);
@@ -7597,7 +7615,7 @@ public class VideoPlayer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				
-				if (textTcPosX.getText().length() > 0)
+				if (textTcPosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 					timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
 				
 				tcLocX = timecode.getLocation().x;
@@ -7691,7 +7709,7 @@ public class VideoPlayer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				
-				if (textTcPosY.getText().length() > 0)
+				if (textTcPosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 					timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
 				
 				tcLocY = timecode.getLocation().y;
@@ -7818,13 +7836,16 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+
 				if (textTcSize.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
-				{					
+				{			
+					if (Integer.parseInt(textTcSize.getText()) < 5)
+					{
+						textTcSize.setText("5");
+					}
+					
 					timecode.repaint();
 				}
-				
-				frame.requestFocus();
 			}
 
 			@Override
@@ -7835,8 +7856,6 @@ public class VideoPlayer {
 					e.consume(); 
 				else if (textTcSize.getText().length() >= 3)
 					textTcSize.setText("");						
-			
-				timecode.repaint();
 			}			
 			
 		});
@@ -7948,8 +7967,6 @@ public class VideoPlayer {
 					e.consume(); 
 				else if (textTcOpacity.getText().length() >= 3)
 					textTcOpacity.setText("");	
-				
-				timecode.repaint();
 			}			
 			
 		});
@@ -8319,7 +8336,7 @@ public class VideoPlayer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
-				if (textNamePosX.getText().length() > 0)
+				if (textNamePosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 					fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);
 				
 				fileLocX = fileName.getLocation().x;
@@ -8415,7 +8432,7 @@ public class VideoPlayer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
-				if (textNamePosY.getText().length() > 0)
+				if (textNamePosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
 				
 				fileLocY = fileName.getLocation().y;
@@ -8468,6 +8485,7 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
+				
 				if (textNamePosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textNamePosY.setText(String.valueOf(MouseNamePosition.offsetY + (e.getY() - MouseNamePosition.mouseY)));
@@ -8543,13 +8561,17 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+								
 				if (textNameSize.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
-				{										
+				{			
+					if (Integer.parseInt(textNameSize.getText()) < 5)
+					{
+						textNameSize.setText("5");
+					}
+					
 					fileName.repaint();
 				}
-				
-				frame.requestFocus();
+								
 			}
 
 			@Override
@@ -8560,8 +8582,6 @@ public class VideoPlayer {
 					e.consume(); 
 				else if (textNameSize.getText().length() >= 3)
 					textNameSize.setText("");	
-					
-				fileName.repaint();
 			}			
 			
 		});
@@ -8673,8 +8693,6 @@ public class VideoPlayer {
 					e.consume(); 
 				else if (textNameOpacity.getText().length() >= 3)
 					textNameOpacity.setText("");	
-				
-				fileName.repaint();
 			}			
 			
 		});
@@ -10470,10 +10488,13 @@ public class VideoPlayer {
 			public void paintComponent(Graphics g) {
 				
 				super.paintComponent(g);
-				g.setColor(Color.WHITE);					
+				g.setColor(new Color(200,200,200));					
 				
+				//Action safe
+				g.drawRect(player.getX() + (int) ((float) ((float) player.getWidth() * 0.07) / 2), player.getY() +  (int) ((float) ((float) player.getHeight() * 0.07) / 2), (int) ((float) player.getWidth() * 0.93), (int) ((float) player.getHeight() * 0.93));
+				
+				//Title safe
 				g.drawRect(player.getX() + (int) ((float) ((float) player.getWidth() * 0.1) / 2), player.getY() +  (int) ((float) ((float) player.getHeight() * 0.1) / 2), (int) ((float) player.getWidth() * 0.9), (int) ((float) player.getHeight() * 0.9));
-				g.drawRect(player.getX() + (int) ((float) ((float) player.getWidth() * 0.2) / 2), player.getY() +  (int) ((float) ((float) player.getHeight() * 0.2) / 2), (int) ((float) player.getWidth() * 0.8), (int) ((float) player.getHeight() * 0.8));
 			}
 		};
 		
@@ -10529,7 +10550,7 @@ public class VideoPlayer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				
-				if (textWatermarkPosX.getText().length() > 0)
+				if (textWatermarkPosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / imageRatio), logo.getLocation().y);
 					logoLocX = logo.getLocation().x;
@@ -10617,31 +10638,8 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (textWatermarkPosY.getText().length() > 0)
-					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
-			}
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (textWatermarkPosY.getText().length() >= 4)
-					textWatermarkPosY.setText("");				
-			}			
-			
-		});
-	
-		textWatermarkPosY.addKeyListener(new KeyListener(){
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
 				
-				if (textWatermarkPosY.getText().length() > 0)
+				if (textWatermarkPosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
 					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
 					logoLocX = logo.getLocation().x;
@@ -10651,6 +10649,7 @@ public class VideoPlayer {
 
 			@Override
 			public void keyTyped(KeyEvent e) {	
+				
 				char caracter = e.getKeyChar();											
 				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
 					e.consume(); 
@@ -10770,9 +10769,14 @@ public class VideoPlayer {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				
-				if (textWatermarkSize.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
+				if (textWatermarkSize.getText().length() > 0)
 				{	
-					loadWatermark(Integer.parseInt(textWatermarkSize.getText()));			
+					loadWatermark(Integer.parseInt(textWatermarkSize.getText()));	
+					
+					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
+					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+					logoLocX = logo.getLocation().x;
+					logoLocY = logo.getLocation().y;
 				}
 			}
 
@@ -10874,6 +10878,7 @@ public class VideoPlayer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				
 				if (textWatermarkSize.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR) && textWatermarkOpacity.getText().length() > 0)
 				{
 					if (Integer.valueOf(textWatermarkOpacity.getText()) > 100)
@@ -11173,7 +11178,7 @@ public class VideoPlayer {
 							else if (isRaw)
 							{	
 								frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
+								DCRAW.run(" -v -w -c -q 0 -o 1 -h -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
 							}
 							else if (Shutter.inputDeviceIsRunning) //Screen capture		
 							{						
