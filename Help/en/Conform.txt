@@ -1,1 +1,0 @@
-Allows you to change the playback speed of your file without video compression.

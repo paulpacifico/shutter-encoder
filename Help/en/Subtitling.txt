@@ -1,1 +1,0 @@
-Add a video file to the list and then start the function to create a .srt file with the same name as the video file and in the same location, and then add subtitles.

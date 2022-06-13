@@ -1,3 +1,0 @@
-Create a file ready to burn to DVD format in direct reading without menu.
-The bitrate is automatically adjusts for a 4.7GB DVD.
-When the bitrate is low, or equal to 6000k, two pass encoding will be automatically generated for better rendering.

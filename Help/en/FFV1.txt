@@ -1,1 +1,0 @@
-The video stream is compressed losslessly.

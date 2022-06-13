@@ -1,7 +1,0 @@
-U kunt enkele van de audiokanalen gebruiken of stille audiosporen toevoegen.
-Als er slechts een stereo audiokanaal is, wordt deze gescheiden in twee monokanalen in 1 en 2.
-
-
-
-
-

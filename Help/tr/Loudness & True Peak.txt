@@ -1,2 +1,0 @@
-Ilk deger 'I:', LUFS'deki ses siddeti degerinizdir.
-Analizinizi kaydedin ve -16 LUFS'nin üzerindeki kisa vadeli degerleri kurtarin.

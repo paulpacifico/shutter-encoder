@@ -1,2 +1,0 @@
-Vous pouvez utiliser une partie des canaux audio, ou en rajouter des silencieux.
-S'il y a un seul canal audio stéréo, il sera séparé dans deux canaux mono en 1 et 2.

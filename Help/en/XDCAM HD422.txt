@@ -1,2 +1,0 @@
-You can use some of the audio channels, or add silent audio tracks.
-If there is only one stereo audio channel, it will be separated into two mono channels in 1 and 2.
