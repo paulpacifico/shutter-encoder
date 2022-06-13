@@ -32,7 +32,7 @@ public class Timecode extends Shutter {
 			String dropFrame = ":";
 	   		if (caseConform.isSelected() == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || caseConform.isSelected() && (comboFPS.getSelectedItem().toString().equals("29,97") || comboFPS.getSelectedItem().toString().equals("59,94")))
 	   			dropFrame = ";";
-			
+	   		
 			if (caseGenerateFromDate.isSelected())
 			{
 				String s[] = EXIFTOOL.creationHours.split(":");
@@ -43,7 +43,12 @@ public class Timecode extends Shutter {
 				return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"';
 			}
 			else if (FFPROBE.timecode1 != "")
-			{
+			{		
+				if (FFPROBE.dropFrameTC != "")
+				{
+					dropFrame = FFPROBE.dropFrameTC;
+				}
+				
 				return " -timecode " + '"' + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + dropFrame + FFPROBE.timecode4 + '"';
 			}
 		}

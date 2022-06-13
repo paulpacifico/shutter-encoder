@@ -232,7 +232,7 @@ public class Picture extends Shutter {
 						else if (isRaw)
 						{
 							btnStart.setEnabled(false);	
-							DCRAW.run(" -v -w -c -q 0 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
+							DCRAW.run(" -v -w -c -q 3 -o 1 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
 						}
 						else if (inputDeviceIsRunning)
 						{	

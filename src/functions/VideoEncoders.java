@@ -1251,10 +1251,10 @@ public class VideoEncoders extends Shutter {
 			
 				if (lblVBR.getText().equals("CQ"))
 		        {
-		        	return " -rc cqp -qp " + debitVideo.getSelectedItem().toString();  
+		        	return " -crf " + debitVideo.getSelectedItem().toString();  
 		        }
 		        else
-		        	return " -rc vbr -b:v " + debitVideo.getSelectedItem().toString() + "k";
+		        	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
 
 			case "DVD":
 				

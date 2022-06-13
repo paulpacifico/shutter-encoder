@@ -100,6 +100,9 @@ public class Merge extends Shutter {
 											
 						lblCurrentEncoding.setText(Shutter.language.getProperty("babEncoding"));
 				
+						//Metadatas
+			    		String metadatas = FunctionUtils.setMetadatas();
+						
 						//Output Name
 						File fileOut = new File(fileOutputName);							
 						
@@ -112,7 +115,7 @@ public class Merge extends Shutter {
 							openGOP = " -copyinkf";
 						
 						//Command
-						String cmd = " -timecode 00:00:00:00" + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + " -map s? -y ";
+						String cmd = " -timecode 00:00:00:00" + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + metadatas + " -map s? -y ";
 						FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
 				
 						do

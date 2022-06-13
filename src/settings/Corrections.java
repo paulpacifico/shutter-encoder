@@ -32,7 +32,7 @@ public class Corrections extends Shutter {
 	
 	public static String setStabilisation(String filterComplex, File file, String fichier, String concat) throws InterruptedException {
 				
-		if (VideoPlayer.caseStabilisation.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseStabilisation.isSelected())
 		{
 			if (System.getProperty("os.name").contains("Windows"))
 				vidstab = new File("vidstab.trf");
@@ -70,7 +70,7 @@ public class Corrections extends Shutter {
 	
 	public static String setDeflicker(String filterComplex) {
 		
-		if (VideoPlayer.caseDeflicker.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseDeflicker.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -82,7 +82,7 @@ public class Corrections extends Shutter {
 		
 	public static String setDeband(String filterComplex) {
 		
-		if (VideoPlayer.caseBanding.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseBanding.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -94,7 +94,7 @@ public class Corrections extends Shutter {
 	
 	public static String setLimiter(String filterComplex) {
 		
-		if (VideoPlayer.caseLimiter.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseLimiter.isSelected())
 		{			
 			if (filterComplex != "") filterComplex += ",";
 
@@ -113,7 +113,7 @@ public class Corrections extends Shutter {
 	
 	public static String setDetails(String filterComplex) {
 		
-		if (VideoPlayer.caseDetails.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseDetails.isSelected())
 		{
 			float value = (0 - (float) VideoPlayer.sliderDetails.getValue() / 10);
 			
@@ -127,7 +127,7 @@ public class Corrections extends Shutter {
 	
 	public static String setDenoiser(String filterComplex) {
 		
-		if (VideoPlayer.caseDenoise.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseDenoise.isSelected())
 		{
 			int value = VideoPlayer.sliderDenoise.getValue();
 			
@@ -141,7 +141,7 @@ public class Corrections extends Shutter {
 	
 	public static String setSmoothExposure(String filterComplex) {
 		
-		if (VideoPlayer.caseSmoothExposure.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseSmoothExposure.isSelected())
 		{
 			int value = VideoPlayer.sliderSmoothExposure.getValue();
 			

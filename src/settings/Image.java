@@ -31,7 +31,7 @@ public class Image extends Shutter {
 		
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 		{	    	
-	    	if (VideoPlayer.caseEnableCrop.isSelected())
+	    	if (caseInAndOut.isSelected() && VideoPlayer.caseEnableCrop.isSelected())
 			{
 				if (filterComplex != "")
 					filterComplex += "[w];[w]";

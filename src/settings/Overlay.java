@@ -36,7 +36,7 @@ public class Overlay extends Shutter {
 
 	public static String showTimecode(String filterComplex, String file) {
 		
-		if (VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseAddText.isSelected() || VideoPlayer.caseShowFileName.isSelected())
+		if (caseInAndOut.isSelected() && (VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseAddText.isSelected() || VideoPlayer.caseShowFileName.isSelected()))
 		{
 			 String tc1 = FFPROBE.timecode1;
 			 String tc2 = FFPROBE.timecode2;
@@ -244,7 +244,7 @@ public class Overlay extends Shutter {
 
 	public static String setSubtitles(JComboBox<String> comboScale, boolean limitToFHD) {
 		
-    	if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
+    	if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    	
 			if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
     		{	
@@ -330,7 +330,7 @@ public class Overlay extends Shutter {
 					return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
 			}
 		}
-		else if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+		else if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
     	{	
 			String subsFiles = "";
 			for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
@@ -352,11 +352,11 @@ public class Overlay extends Shutter {
 	
 	public static String setLogo() {
 		
-		if (VideoPlayer.caseAddWatermark.isSelected() && Shutter.overlayDeviceIsRunning)
+		if (caseInAndOut.isSelected() && VideoPlayer.caseAddWatermark.isSelected() && Shutter.overlayDeviceIsRunning)
 		{
 			return " " + RecordInputDevice.setOverlayDevice(); 
 		}
-		else if (VideoPlayer.caseAddWatermark.isSelected())
+		else if (caseInAndOut.isSelected() && VideoPlayer.caseAddWatermark.isSelected())
 		{
 			return " -i " + '"' + VideoPlayer.logoFile + '"'; 
 		}
@@ -366,7 +366,7 @@ public class Overlay extends Shutter {
 	
 	public static String setWatermark(String filterComplex) {
 		
-		if (VideoPlayer.caseAddWatermark.isSelected())
+		if (caseInAndOut.isSelected() && VideoPlayer.caseAddWatermark.isSelected())
         {		        	
         	if (filterComplex != "") 	
         	{
@@ -387,7 +387,7 @@ public class Overlay extends Shutter {
 	
 	public static String setOverlay(String filterComplex, JComboBox<String> comboScale, boolean limitToFHD) {
 		
-		if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
+		if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    		
         	String i[] = FFPROBE.imageResolution.split("x");
 

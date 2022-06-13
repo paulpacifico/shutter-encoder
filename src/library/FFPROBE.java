@@ -67,7 +67,7 @@ public static int imageHeight;
 public static float imageRatio = 1.777777f;
 public static int cropPixelsWidth;
 public static int cropPixelsHeight;
-public static boolean dropFrameTC = false;
+public static String dropFrameTC = "";
 public static String timecode1 = "";
 public static String timecode2 = "";
 public static String timecode3 = "";
@@ -98,7 +98,7 @@ public static int gopSpace = 124;
 			stereo = false;	
 		}
 		
-		dropFrameTC = false;
+		dropFrameTC = "";
 		surround = false;
 		totalLength = 0;
 		qantization = 16;
@@ -458,10 +458,10 @@ public static int gopSpace = 124;
 			            	//Drop frame / non drop frame
 			            	if (line.contains(";"))
 			            	{
-			            		dropFrameTC = true;
+			            		dropFrameTC = ";";
 			            	}
 			            	else
-			            		dropFrameTC = false;
+			            		dropFrameTC = ":";
 			            	
 			            	if (VideoPlayer.caseShowTimecode.isSelected()
 		            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")

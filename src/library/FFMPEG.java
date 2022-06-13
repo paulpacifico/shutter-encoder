@@ -1368,7 +1368,7 @@ private static StringBuilder getAll;
 			{
 				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
 			}
-			else if (caseInAndOut.isSelected())
+			else if (caseInAndOut.isSelected() && VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 			{
 				dureeTotale = VideoPlayer.durationH * 3600 + VideoPlayer.durationM * 60 + VideoPlayer.durationS;
 			}

@@ -51,10 +51,8 @@ public class InputAndOutput extends Shutter {
 		    }
 		    else
 		        inPoint = "";			
-				
-			float timeOut = (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * VideoPlayer.inputFramerateMS - VideoPlayer.inputFramerateMS);
-			
-			if (timeOut < (FFPROBE.totalLength - VideoPlayer.inputFramerateMS))
+
+			if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 	        {
 	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG"))
 	        	&& caseCreateSequence.isSelected())

@@ -52,7 +52,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setColor(String filterComplex) {
 				
-		if (grpColorimetry.isVisible() && VideoPlayer.caseEnableColorimetry.isSelected() && setEQ(true).equals("") == false)
+		if (grpColorimetry.isVisible() && caseInAndOut.isSelected() && VideoPlayer.caseEnableColorimetry.isSelected() && setEQ(true).equals("") == false)
 		{			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -496,7 +496,16 @@ public class Colorimetry extends Shutter {
 	public static String setEQ(boolean finalEQ) {
 		
 		String eq = "";
-
+		
+		//Highlights 
+		eq = setHighlights(eq);
+		
+		//Mediums 
+		eq = setMediums(eq);
+		
+		//Shadows 
+		eq = setShadows(eq);
+		
 		//Exposure
 		eq = setExposure(eq);
 		
@@ -511,15 +520,6 @@ public class Colorimetry extends Shutter {
 
 		//Black
 		eq = setBlack(eq);
-		
-		//Highlights 
-		eq = setHighlights(eq);
-		
-		//Mediums 
-		eq = setMediums(eq);
-		
-		//Shadows 
-		eq = setShadows(eq);
 				
 		//White Balance 
 		eq = setWB(eq);
@@ -530,12 +530,12 @@ public class Colorimetry extends Shutter {
 		//Balance
 		eq = setBalance(eq);
 		
-		//Vibrance
-		eq = setVibrance(eq);
-		
 		//Saturation
 		eq = setSaturation(eq);
 		
+		//Vibrance
+		eq = setVibrance(eq);
+				
 		//Grain
 		eq = setGrain(eq);
 		
