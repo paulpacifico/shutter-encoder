@@ -1630,7 +1630,7 @@ public class VideoPlayer {
 		else
 		{
 			return " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"'
-					+ setFilter(yadif, speed) + " -c:v bmp -an -s " + width + "x" + height + " -sws_flags fast_bilinear -f image2pipe pipe:-";			
+					+ setFilter(yadif, speed) + " -c:v bmp -an -s " + width + "x" + height + " -sws_flags neighbor -f image2pipe pipe:-";			
 		}
 	}
 	
@@ -11086,10 +11086,10 @@ public class VideoPlayer {
 							inputPoint = "";
 												
 						//Creating preview file																
-						String cmd = deinterlace + " -vframes 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags fast_bilinear -y ";	
+						String cmd = deinterlace + " -vframes 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
 						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
 						{
-							cmd = deinterlace + " -vframes 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags fast_bilinear -y ";
+							cmd = deinterlace + " -vframes 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
 						}
 	
 						//EXR gamma
@@ -11139,11 +11139,11 @@ public class VideoPlayer {
 							if (caseAddSubtitles.isSelected())
 							{
 								writeCurrentSubs(playerCurrentFrame);
-								FFMPEG.run(EXRGamma + " -v quiet" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","") + " -vframes 1 -c:v bmp -sws_flags fast_bilinear -f image2pipe pipe:-"); 
+								FFMPEG.run(EXRGamma + " -v quiet" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","") + " -vframes 1 -c:v bmp -sws_flags neighbor -f image2pipe pipe:-"); 
 							}
 							else
 							{
-								FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"'  + " -s " + player.getWidth() + "x" + player.getHeight() + setFilter("","") + " -vframes 1 -c:v bmp -sws_flags fast_bilinear -f image2pipe pipe:-"); 							    	
+								FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"'  + " -s " + player.getWidth() + "x" + player.getHeight() + setFilter("","") + " -vframes 1 -c:v bmp -sws_flags neighbor -f image2pipe pipe:-"); 							    	
 							}
 						}
 
