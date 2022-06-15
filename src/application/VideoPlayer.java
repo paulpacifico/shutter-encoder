@@ -874,26 +874,6 @@ public class VideoPlayer {
 		
 		Utils.changeFrameVisibility(frame, false);
 		
-		Thread t = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				
-				if (FFPROBE.audioOnly == false)
-				{
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {}
-					} while (frame == null);
-				}
-				
-				resizeAll();
-			}
-			
-		});
-		t.start();
-		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
@@ -11340,6 +11320,8 @@ public class VideoPlayer {
 	
 	private void resizeAll() {
 				
+		System.out.println("ok");
+		
 		if (preview.exists())
 			preview.delete();
 		
