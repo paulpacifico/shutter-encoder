@@ -68,7 +68,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -116,32 +116,30 @@ public class Settings {
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});
 	private JLabel lblLanguage = new JLabel(Shutter.language.getProperty("lblLanguage"));
 	private JLabel lblTheme = new JLabel(Shutter.language.getProperty("lblTheme"));
-	private JLabel lblColor = new JLabel(Shutter.language.getProperty("lblColor"));
 	private static JPanel accentColor = new JPanel();
 	public static JComboBox<String> comboLanguage = new JComboBox<String>();
-	public static JComboBox<String> comboTheme = new JComboBox<String>(new String [] {Shutter.language.getProperty("clearTheme"), Shutter.language.getProperty("darkTheme")});
-	public static JRadioButton btnSetBab = new JRadioButton(Shutter.language.getProperty("btnSetBab"));
-	public static JRadioButton btnExtension = new JRadioButton(Shutter.language.getProperty("btnExtension"));
-	public static JRadioButton btnExclude = new JRadioButton(Shutter.language.getProperty("btnExclude"));
-	public static JRadioButton btnHidePath = new JRadioButton(Shutter.language.getProperty("btnHidePath"));
-	public static JRadioButton btnLoadPreset = new JRadioButton(Shutter.language.getProperty("btnLoadPreset"));
+	public static JCheckBox btnSetBab = new JCheckBox(Shutter.language.getProperty("btnSetBab"));
+	public static JCheckBox btnExtension = new JCheckBox(Shutter.language.getProperty("btnExtension"));
+	public static JCheckBox btnExclude = new JCheckBox(Shutter.language.getProperty("btnExclude"));
+	public static JCheckBox btnHidePath = new JCheckBox(Shutter.language.getProperty("btnHidePath"));
+	public static JCheckBox btnLoadPreset = new JCheckBox(Shutter.language.getProperty("btnLoadPreset"));
 	public static JComboBox<String> comboLoadPreset = new JComboBox<String>();
-	public static JRadioButton btnWaitFileComplete = new JRadioButton(Shutter.language.getProperty("btnWaitFileComplete"));
-	public static JRadioButton btnEmptyListAtEnd = new JRadioButton(Shutter.language.getProperty("btnEmptyListAtEnd"));
-	public static JRadioButton btnEndingAction = new JRadioButton(Shutter.language.getProperty("btnEndingAction"));
+	public static JCheckBox btnWaitFileComplete = new JCheckBox(Shutter.language.getProperty("btnWaitFileComplete"));
+	public static JCheckBox btnEmptyListAtEnd = new JCheckBox(Shutter.language.getProperty("btnEmptyListAtEnd"));
+	public static JCheckBox btnEndingAction = new JCheckBox(Shutter.language.getProperty("btnEndingAction"));
 	public static JComboBox<String> comboAction = new JComboBox<String>();
-	public static JRadioButton btnDisableAnimations = new JRadioButton(Shutter.language.getProperty("btnDisableAnimations"));
-	public static JRadioButton btnDisableSound = new JRadioButton(Shutter.language.getProperty("btnDisableSound"));
-	public static JRadioButton btnDisableUpdate = new JRadioButton(Shutter.language.getProperty("btnDisableUpdate"));
-	public static JRadioButton btnDisableMinimizedWindow = new JRadioButton(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
+	public static JCheckBox btnDisableAnimations = new JCheckBox(Shutter.language.getProperty("btnDisableAnimations"));
+	public static JCheckBox btnDisableSound = new JCheckBox(Shutter.language.getProperty("btnDisableSound"));
+	public static JCheckBox btnDisableUpdate = new JCheckBox(Shutter.language.getProperty("btnDisableUpdate"));
+	public static JCheckBox btnDisableMinimizedWindow = new JCheckBox(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
 	public static JTextField txtExtension = new JTextField();
 	public static JTextField txtExclude = new JTextField();
 	private JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1 " + Shutter.language.getProperty("toDefault"));
 	private JLabel defaultOutput2 = new JLabel(Shutter.language.getProperty("output") + "2 " + Shutter.language.getProperty("toDefault"));
 	private JLabel defaultOutput3 = new JLabel(Shutter.language.getProperty("output") + "3 " + Shutter.language.getProperty("toDefault"));
-	public static JRadioButton lastUsedOutput1 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
-	public static JRadioButton lastUsedOutput2 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
-	public static JRadioButton lastUsedOutput3 = new JRadioButton(Shutter.language.getProperty("lastUsed"));
+	public static JCheckBox lastUsedOutput1 = new JCheckBox(Shutter.language.getProperty("lastUsed"));
+	public static JCheckBox lastUsedOutput2 = new JCheckBox(Shutter.language.getProperty("lastUsed"));
+	public static JCheckBox lastUsedOutput3 = new JCheckBox(Shutter.language.getProperty("lastUsed"));
 	public static JLabel lblDestination1 = new JLabel(); 
 	public static JLabel lblDestination2 = new JLabel(); 
 	public static JLabel lblDestination3 = new JLabel(); 
@@ -180,8 +178,7 @@ public class Settings {
 		txtInputDevice.setName("txtInputDevice");
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
-		comboTheme.setName("comboTheme");
-		
+
 		frame.setSize(370, 642);
 		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(new Locale("uk").getDisplayLanguage()))
 		{
@@ -615,47 +612,12 @@ public class Settings {
 		lblTheme.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblTheme.setBounds(12, lblSec.getLocation().y + lblSec.getHeight() + 10, lblTheme.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblTheme);
-			
-		comboTheme.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
-		comboTheme.setEditable(false);
-		comboTheme.setBounds(lblTheme.getX() + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, comboTheme.getPreferredSize().width, 22);
-		comboTheme.setMaximumRowCount(10);
-		frame.getContentPane().add(comboTheme);
-		
-		comboTheme.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (frame.isVisible())
-				{			
-					saveSettings();
-					
-					if (FFMPEG.isRunning)
-						Shutter.btnCancel.doClick();
-					
-					if (FFMPEG.isRunning == false)
-					{
-						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("restart"), Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
-						
-						if (reply == JOptionPane.YES_OPTION) 
-						{													
-							Utils.restartApp();
-						}
-					}
-				}
-			}
-			
-		});
-		
-		lblColor.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblColor.setBounds(comboTheme.getX() + comboTheme.getWidth() + 12, lblTheme.getLocation().y, lblColor.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
-		frame.getContentPane().add(lblColor);
-		
 		accentColor = new JPanel();
 		accentColor.setName("accentColor");
 		accentColor.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.BLACK));
 		accentColor.setBackground(Utils.themeColor);
-		accentColor.setBounds(lblColor.getLocation().x + lblColor.getWidth() + 12, lblColor.getLocation().y - 4, 41, 22);
+		accentColor.setBounds(lblTheme.getLocation().x + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, 41, 22);
 		frame.getContentPane().add(accentColor);
 		
 		accentColor.addMouseListener(new MouseListener(){
@@ -1544,25 +1506,25 @@ public class Settings {
 								if (p.getName().equals("accentColor"))
 									Utils.themeColor = accentColor.getBackground();
 							}
-							else if (p instanceof JRadioButton)
+							else if (p instanceof JCheckBox)
 							{
 								//Value
 								if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 								{
-									if (((JRadioButton) p).isSelected() == false)
-										((JRadioButton) p).doClick();
+									if (((JCheckBox) p).isSelected() == false)
+										((JCheckBox) p).doClick();
 								}
 								else
 								{
-									if (((JRadioButton) p).isSelected())
-										((JRadioButton) p).doClick();
+									if (((JCheckBox) p).isSelected())
+										((JCheckBox) p).doClick();
 								}
 																	
 								//State
-								((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+								((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 								
 								//Visible
-								((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+								((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 							}
 							else if (p instanceof JLabel 
 									&& p.getName().equals("backgroundPanel") == false
@@ -1592,17 +1554,7 @@ public class Settings {
 							else if (p instanceof JComboBox)
 							{															
 								//Value
-								if (p.getName().equals(comboTheme.getName()))
-								{									
-									if (eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(Shutter.language.getProperty("clearTheme")))
-										((JComboBox) p).setSelectedIndex(0);
-									else if (eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(Shutter.language.getProperty("darkTheme")))	
-										((JComboBox) p).setSelectedIndex(1);
-									else
-										((JComboBox) p).setSelectedIndex(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-								}
-								else
-									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+								((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 								
 								//State
 								((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
@@ -1730,14 +1682,14 @@ public class Settings {
 			{
 				if (p.getName() != "" && p.getName() != null)
 				{
-					if (p instanceof JRadioButton)
+					if (p instanceof JCheckBox)
 					{
 						//Component
 						Element component = document.createElement("Component");
 						
 						//Type
 						Element cType = document.createElement("Type");
-						cType.appendChild(document.createTextNode("JRadioButton"));
+						cType.appendChild(document.createTextNode("JCheckBox"));
 						component.appendChild(cType);
 						
 						//Name
@@ -1747,7 +1699,7 @@ public class Settings {
 						
 						//Value
 						Element cValue = document.createElement("Value");
-						cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+						cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 						component.appendChild(cValue);
 						
 						//State
@@ -1817,10 +1769,7 @@ public class Settings {
 						
 						//Value
 						Element cValue = document.createElement("Value");						
-						if (p.getName().equals(comboTheme.getName()))
-							cValue.appendChild(document.createTextNode(String.valueOf(((JComboBox) p).getSelectedIndex())));
-						else
-							cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));						
+						cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));						
 						component.appendChild(cValue);
 						
 						//State
@@ -1908,7 +1857,7 @@ public class Settings {
 			
 			//Type
 			Element cType = document.createElement("Type");
-			cType.appendChild(document.createTextNode("JRadioButton"));
+			cType.appendChild(document.createTextNode("JCheckBox"));
 			component.appendChild(cType);
 			
 			//Name
@@ -1929,7 +1878,7 @@ public class Settings {
 			
 			//Type
 			cType = document.createElement("Type");
-			cType.appendChild(document.createTextNode("JRadioButton"));
+			cType.appendChild(document.createTextNode("JCheckBox"));
 			component.appendChild(cType);
 			
 			//Name
@@ -1974,7 +1923,7 @@ public class Settings {
 			
 			//Type
 			cType = document.createElement("Type");
-			cType.appendChild(document.createTextNode("JRadioButton"));
+			cType.appendChild(document.createTextNode("JCheckBox"));
 			component.appendChild(cType);
 			
 			//Name
@@ -2098,7 +2047,7 @@ public class Settings {
 			
 			//Type
 			cType = document.createElement("Type");
-			cType.appendChild(document.createTextNode("JRadioButton"));
+			cType.appendChild(document.createTextNode("JCheckBox"));
 			component.appendChild(cType);
 			
 			//Name

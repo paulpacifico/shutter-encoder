@@ -72,7 +72,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -127,7 +127,7 @@ public class SubtitlesTimeline {
 	public static JButton btnEnd;
 	private JButton btnI = new JButton("I");
 	private JButton btnG = new JButton(Shutter.language.getProperty("btnG"));
-	private static JRadioButton caseShowWaveform = new JRadioButton(Shutter.language.getProperty("caseShowWaveform"));
+	private static JCheckBox caseShowWaveform = new JCheckBox(Shutter.language.getProperty("caseShowWaveform"));
 	private static JLabel lblOffset = new JLabel(Shutter.language.getProperty("lblOffset"));
 	public static JTextField textOffset = new JTextField("0");
 	public final static JPanel timeline = new JPanel();

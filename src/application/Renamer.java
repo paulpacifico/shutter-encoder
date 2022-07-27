@@ -39,7 +39,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -54,17 +54,17 @@ public class Renamer {
 	private JTextField txtBy;
 	private JButton Rename;
 	private JLabel lblExample;
-	private JRadioButton btnLimit;
+	private JCheckBox btnLimit;
 	private JSpinner spinnerLimit;
-	private JRadioButton btnIncrement;
+	private JCheckBox btnIncrement;
 	private JSpinner spinnerIncrement;
-	private JRadioButton btnAddBefore;
+	private JCheckBox btnAddBefore;
 	private JTextField txtAddBefore;
-	private JRadioButton btnAddAfter;
+	private JCheckBox btnAddAfter;
 	private JTextField txtAddAfter;
-	private JRadioButton convertToLower;
-	private JRadioButton convertToUpper;
-	private JRadioButton removeSpecialCharacters;
+	private JCheckBox convertToLower;
+	private JCheckBox convertToUpper;
+	private JCheckBox removeSpecialCharacters;
 	
 	private static StringBuilder errorList;
 	
@@ -93,7 +93,7 @@ public class Renamer {
 		ext = fullName.substring(fullName.lastIndexOf("."));	
 		fichier = new File(fullName).getName().replace(ext, "");
 		
-		btnLimit = new JRadioButton(Shutter.language.getProperty("btnLimit"));
+		btnLimit = new JCheckBox(Shutter.language.getProperty("btnLimit"));
 		btnLimit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnLimit.setBounds(7, 12, 211, 16);
 		frame.getContentPane().add(btnLimit);
@@ -117,7 +117,7 @@ public class Renamer {
 		spinnerLimit.setBounds(226, 10, 46, 20);
 		frame.getContentPane().add(spinnerLimit);
 		
-		btnIncrement = new JRadioButton(Shutter.language.getProperty("btnIncrementer"));
+		btnIncrement = new JCheckBox(Shutter.language.getProperty("btnIncrementer"));
 		btnIncrement.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnIncrement.setBounds(7, 34, btnIncrement.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnIncrement);
@@ -175,7 +175,7 @@ public class Renamer {
 		Rename.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		frame.getContentPane().add(Rename);
 		
-		btnAddBefore = new JRadioButton(Shutter.language.getProperty("btnAjouterAvant"));
+		btnAddBefore = new JCheckBox(Shutter.language.getProperty("btnAjouterAvant"));
 		btnAddBefore.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnAddBefore.setBounds(280, 12, 130, 16);
 		frame.getContentPane().add(btnAddBefore);
@@ -200,7 +200,7 @@ public class Renamer {
 		txtAddBefore.setBounds(410, 10, 108, 21);
 		frame.getContentPane().add(txtAddBefore);
 		
-		btnAddAfter = new JRadioButton(Shutter.language.getProperty("btnAjouterApres"));
+		btnAddAfter = new JCheckBox(Shutter.language.getProperty("btnAjouterApres"));
 		btnAddAfter.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnAddAfter.setBounds(280, 34, 130, 16);
 		frame.getContentPane().add(btnAddAfter);
@@ -225,7 +225,7 @@ public class Renamer {
 		txtAddAfter.setBounds(410, 32, 108, 21);
 		frame.getContentPane().add(txtAddAfter);
 		
-		convertToLower = new JRadioButton(Shutter.language.getProperty("convertToLower"));
+		convertToLower = new JCheckBox(Shutter.language.getProperty("convertToLower"));
 		convertToLower.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		convertToLower.setBounds(7, 57, convertToLower.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToLower);
@@ -242,7 +242,7 @@ public class Renamer {
 			
 		});
 		
-		convertToUpper = new JRadioButton(Shutter.language.getProperty("convertToUpper"));
+		convertToUpper = new JCheckBox(Shutter.language.getProperty("convertToUpper"));
 		convertToUpper.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		convertToUpper.setBounds(convertToLower.getWidth() + convertToLower.getLocation().x + 7, 57, convertToUpper.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToUpper);
@@ -259,7 +259,7 @@ public class Renamer {
 			
 		});
 		
-		removeSpecialCharacters = new JRadioButton(Shutter.language.getProperty("removeSpecialCharacters"));
+		removeSpecialCharacters = new JCheckBox(Shutter.language.getProperty("removeSpecialCharacters"));
 		removeSpecialCharacters.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		removeSpecialCharacters.setBounds(convertToUpper.getWidth() + convertToUpper.getLocation().x + 7, 57, removeSpecialCharacters.getPreferredSize().width, 16);
 		frame.getContentPane().add(removeSpecialCharacters);

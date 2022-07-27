@@ -43,7 +43,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -85,7 +85,6 @@ import settings.Colorimetry;
 public class Utils extends Shutter {
 	
 	static String pathToLanguages;
-	public static String getTheme = null;
 	public static Color themeColor = new Color(71, 163, 236);
 	public static Color highlightColor = new Color(129, 198, 253);
 	public static boolean yesToAll = false;
@@ -594,14 +593,14 @@ public class Utils extends Shutter {
 									
 									settings.appendChild(component);
 								}
-								else if (p instanceof JRadioButton)
+								else if (p instanceof JCheckBox)
 								{
 									//Component
 									Element component = document.createElement("Component");
 									
 									//Type
 									Element cType = document.createElement("Type");
-									cType.appendChild(document.createTextNode("JRadioButton"));
+									cType.appendChild(document.createTextNode("JCheckBox"));
 									component.appendChild(cType);
 									
 									//Name
@@ -611,7 +610,7 @@ public class Utils extends Shutter {
 									
 									//Value
 									Element cValue = document.createElement("Value");
-									cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+									cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 									component.appendChild(cValue);
 									
 									//State
@@ -769,14 +768,14 @@ public class Utils extends Shutter {
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
-							if (p instanceof JRadioButton)
+							if (p instanceof JCheckBox)
 							{
 								//Component
 								Element component = document.createElement("Component");
 								
 								//Type
 								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JRadioButton"));
+								cType.appendChild(document.createTextNode("JCheckBox"));
 								component.appendChild(cType);
 								
 								//Name
@@ -786,7 +785,7 @@ public class Utils extends Shutter {
 								
 								//Value
 								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 								component.appendChild(cValue);
 								
 								//State
@@ -1215,14 +1214,14 @@ public class Utils extends Shutter {
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{	
-							if (p instanceof JRadioButton)
+							if (p instanceof JCheckBox)
 							{
 								//Component
 								Element component = document.createElement("Component");
 								
 								//Type
 								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JRadioButton"));
+								cType.appendChild(document.createTextNode("JCheckBox"));
 								component.appendChild(cType);
 								
 								//Name
@@ -1232,7 +1231,7 @@ public class Utils extends Shutter {
 								
 								//Value
 								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 								component.appendChild(cValue);
 								
 								//State
@@ -1293,14 +1292,14 @@ public class Utils extends Shutter {
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
-							if (p instanceof JRadioButton)
+							if (p instanceof JCheckBox)
 							{
 								//Component
 								Element component = document.createElement("Component");
 								
 								//Type
 								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JRadioButton"));
+								cType.appendChild(document.createTextNode("JCheckBox"));
 								component.appendChild(cType);
 								
 								//Name
@@ -1310,7 +1309,7 @@ public class Utils extends Shutter {
 								
 								//Value
 								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 								component.appendChild(cValue);
 								
 								//State
@@ -1371,14 +1370,14 @@ public class Utils extends Shutter {
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{									
-							if (p instanceof JRadioButton)
+							if (p instanceof JCheckBox)
 							{
 								//Component
 								Element component = document.createElement("Component");
 								
 								//Type
 								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JRadioButton"));
+								cType.appendChild(document.createTextNode("JCheckBox"));
 								component.appendChild(cType);
 								
 								//Name
@@ -1388,7 +1387,7 @@ public class Utils extends Shutter {
 								
 								//Value
 								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 								component.appendChild(cValue);
 								
 								//State
@@ -1580,14 +1579,14 @@ public class Utils extends Shutter {
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
-							if (p instanceof JRadioButton)
+							if (p instanceof JCheckBox)
 							{
 								//Component
 								Element component = document.createElement("Component");
 								
 								//Type
 								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JRadioButton"));
+								cType.appendChild(document.createTextNode("JCheckBox"));
 								component.appendChild(cType);
 								
 								//Name
@@ -1597,7 +1596,7 @@ public class Utils extends Shutter {
 								
 								//Value
 								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 								component.appendChild(cValue);
 								
 								//State
@@ -1818,14 +1817,14 @@ public class Utils extends Shutter {
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
-							if (p instanceof JRadioButton)
+							if (p instanceof JCheckBox)
 							{
 								//Component
 								Element component = document.createElement("Component");
 								
 								//Type
 								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JRadioButton"));
+								cType.appendChild(document.createTextNode("JCheckBox"));
 								component.appendChild(cType);
 								
 								//Name
@@ -1835,7 +1834,7 @@ public class Utils extends Shutter {
 								
 								//Value
 								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JRadioButton) p).isSelected())));
+								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 								component.appendChild(cValue);
 								
 								//State
@@ -1984,7 +1983,7 @@ public class Utils extends Shutter {
 										//Visible
 										((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
 									}
-									else if (p instanceof JRadioButton)
+									else if (p instanceof JCheckBox)
 									{
 										
 										if (p.getName().equals("caseInAndOut") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
@@ -1997,21 +1996,21 @@ public class Utils extends Shutter {
 											//Value
 											if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 											{
-												if (((JRadioButton) p).isSelected() == false)
-													((JRadioButton) p).doClick();
+												if (((JCheckBox) p).isSelected() == false)
+													((JCheckBox) p).doClick();
 											}
 											else
 											{
-												if (((JRadioButton) p).isSelected())
-													((JRadioButton) p).doClick();
+												if (((JCheckBox) p).isSelected())
+													((JCheckBox) p).doClick();
 											}
 										}
 																												
 										//State
-										((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+										((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 										
 										//Visible
-										((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+										((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 									}
 									else if (p instanceof JComboBox)
 									{		
@@ -2131,17 +2130,6 @@ public class Utils extends Shutter {
 					
 					if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 						Element eElement = (Element) nNode;
-
-						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboTheme"))
-						{
-							getTheme = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();		
-							
-							if (getTheme.equals("0"))
-								getTheme = Shutter.language.getProperty("clearTheme");
-							else if (getTheme.equals("1"))
-								getTheme = Shutter.language.getProperty("darkTheme");
-							
-						}
 						
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("accentColor"))
 						{					
@@ -2153,10 +2141,7 @@ public class Utils extends Shutter {
 					}
 				}	
 								
-				if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
-					FlatLaf.setup( new FlatDarkLaf() );
-				else
-					FlatLaf.setup( new FlatLightLaf() );
+				FlatLaf.setup( new FlatDarkLaf() );
 				
 			} catch (Exception e) {
 				try {
@@ -2177,145 +2162,89 @@ public class Utils extends Shutter {
 
 		highlightColor = new Color(R, G, B);
 		
-		UIManager.put("Component.focusWidth", 0 );
-		UIManager.put("Component.innerFocusWidth", 0 );
+		UIManager.put("Component.focusWidth", 0);
+		UIManager.put("Component.innerFocusWidth", 0);
+		UIManager.put("Button.innerFocusWidth", 0);
 		UIManager.put("ScrollBar.thumbArc", 999);
-		UIManager.put("Button.arc", 6);
-		UIManager.put("TextField.arc", 6);
-		UIManager.put("ProgressBar.arc", 6);
-		UIManager.put("TextComponent.arc", 6);
-		UIManager.put("Component.arc", 6);
+		UIManager.put("Button.arc", 15);
+		UIManager.put("CheckBox.arc", 15);
+		UIManager.put("TextField.arc", 10);		
+		UIManager.put("ProgressBar.arc", 10);
+		UIManager.put("TextComponent.arc", 10);
+		UIManager.put("Component.arc", 10);
 		
-		if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
-		{
-			UIManager.put("Component.borderColor", new Color(40,40,40));
-			UIManager.put("Component.disabledBorderColor", new Color(40,40,40));
-			
-			UIManager.put("Button.startBorderColor", new Color(40,40,40));
-			UIManager.put("Button.endBorderColor", new Color(40,40,40));
-			UIManager.put("Button.startBackground", new Color(100,100,100));
-			UIManager.put("Button.endBackground", new Color(80,80,80));
-			UIManager.put("Button.disabledBorderColor", new Color(40,40,40));
-			UIManager.put("Button.disabledBackground", new Color(60,60,60));
-			UIManager.put("Button.foreground", new Color(245,245,245));
-			UIManager.put("Button.default.foreground", new Color(245,245,245));
-			UIManager.put("Button.default.startBackground", new Color(100,100,100));
-			UIManager.put("Button.default.endBackground", new Color(80,80,80));
-			UIManager.put("Button.default.borderColor", new Color(40,40,40));
-							
-			UIManager.put("ComboBox.background", new Color(80,80,80));		
-			UIManager.put("ComboBox.foreground", new Color(245,245,245));
-			UIManager.put("ComboBox.disabledBackground", new Color(60,60,60));
-			UIManager.put("ComboBox.selectionBackground", new Color(100,100,100));
-			UIManager.put("ComboBox.disabledForeground", new Color(120,120,120));
-			UIManager.put("ComboBox.buttonBackground", new Color(80,80,80));	
-			UIManager.put("ComboBox.buttonEditableBackground", new Color(60,60,60));	
-			
-			UIManager.put("MenuItem.background", new Color(80,80,80));		
-			UIManager.put("MenuItem.foreground", new Color(245,245,245));
-			UIManager.put("MenuItem.selectionBackground", new Color(100,100,100));
-			
-			UIManager.put("CheckBoxMenuItem.background", new Color(80,80,80));		
-			UIManager.put("CheckBoxMenuItem.foreground", new Color(245,245,245));
-			UIManager.put("CheckBoxMenuItem.selectionBackground", new Color(100,100,100));
-			
-			UIManager.put("CheckBox.icon.borderColor", new Color(40,40,40));		
-			UIManager.put("CheckBox.icon.background", new Color(80,80,80));
-			UIManager.put("CheckBox.icon.disabledBorderColor", new Color(60,60,60));	
-			UIManager.put("CheckBox.icon.disabledBackground", new Color(60,60,60));	
-			UIManager.put("CheckBox.icon.focusedBorderColor", new Color(40,40,40));
-			UIManager.put("CheckBox.icon.focusedBackground", new Color(80,80,80));
-			
-			UIManager.put("TableHeader.foreground", new Color(245,245,245));
-			UIManager.put("Table.foreground", new Color(245,245,245));
-			UIManager.put("Table.selectionBackground", new Color(100,100,100));
+		UIManager.put("Component.borderColor", new Color(30,30,30));
+		UIManager.put("Component.disabledBorderColor", new Color(30,30,30));
+		
+		UIManager.put("Button.startBorderColor", new Color(30,30,30));
+		UIManager.put("Button.endBorderColor", new Color(30,30,30));
+		UIManager.put("Button.startBackground", new Color(60,60,60));
+		UIManager.put("Button.endBackground", new Color(60,60,60));
+		UIManager.put("Button.disabledBorderColor", new Color(30,30,30));
+		UIManager.put("Button.disabledBackground", new Color(60,60,60));
+		UIManager.put("Button.foreground", new Color(245,245,245));
+		UIManager.put("Button.default.foreground", new Color(245,245,245));
+		UIManager.put("Button.default.startBackground", new Color(60,60,60));
+		UIManager.put("Button.default.endBackground", new Color(60,60,60));
+		UIManager.put("Button.default.borderColor", new Color(30,30,30));
 						
-			UIManager.put("TextField.foreground",new Color(245,245,245));
-			UIManager.put("TextField.background", new Color(80,80,80));
-			UIManager.put("TextField.selectionBackground", new Color(100,100,100));
-			UIManager.put("TextField.inactiveForeground", new Color(120,120,120));
-			
-			UIManager.put("TextArea.foreground",new Color(245,245,245));
-			UIManager.put("TextArea.background", new Color(80,80,80));
-			UIManager.put("TextArea.selectionBackground", new Color(100,100,100));
-			UIManager.put("TextArea.inactiveForeground", new Color(120,120,120));
-			
-			UIManager.put("PasswordField.foreground", new Color(245,245,245));
-			UIManager.put("PasswordField.background", new Color(80,80,80));	
-			UIManager.put("PasswordField.selectionBackground", new Color(100,100,100));			
-			UIManager.put("PasswordField.inactiveForeground", new Color(120,120,120));
-			
-			UIManager.put("Spinner.foreground", new Color(245,245,245));
-			UIManager.put("Spinner.disabledBackground", new Color(80,80,80));
-			UIManager.put("Spinner.background", new Color(80,80,80));
-			UIManager.put("FormattedTextField.selectionBackground", new Color(100,100,100));
-			UIManager.put("Spinner.buttonBackground", new Color(60,60,60));
-						
-			UIManager.put("ScrollBar.background", new Color(45, 45, 45));
-			UIManager.put("ScrollBar.thumb", new Color(80,80,80));
-						
-			UIManager.put("MenuBar.foreground", new Color(245,245,245));
-			
-			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(40,40,40)));				
-		}
-		else
-		{
-			UIManager.put("Component.borderColor", new Color(150,150,150));
-			UIManager.put("Component.disabledBorderColor", new Color(150,150,150));
-			
-			UIManager.put("Button.startBorderColor", new Color(150,150,150));
-			UIManager.put("Button.endBorderColor", new Color(150,150,150));
-			UIManager.put("Button.startBackground", new Color(245,245,245));
-			UIManager.put("Button.endBackground", new Color(225,225,225));
-			UIManager.put("Button.disabledBorderColor", new Color(150,150,150));
-			UIManager.put("Button.foreground", Color.BLACK);
-			UIManager.put("Button.default.foreground", Color.BLACK);
-			UIManager.put("Button.default.startBackground", new Color(245,245,245));
-			UIManager.put("Button.default.endBackground", new Color(225,225,225));
-			UIManager.put("Button.default.borderColor", new Color(220,220,220));
-			
-			UIManager.put("ComboBox.background", new Color(245,245,245));		
-			UIManager.put("ComboBox.foreground", Color.BLACK);
-			UIManager.put("ComboBox.disabledBackground", new Color(245,245,245));
-			UIManager.put("ComboBox.selectionBackground", themeColor);
-			
-			UIManager.put("MenuItem.background", new Color(245,245,245));		
-			UIManager.put("MenuItem.foreground", Color.BLACK);
-			UIManager.put("MenuItem.selectionBackground", themeColor);
-			
-			UIManager.put("CheckBoxMenuItem.background", new Color(245,245,245));		
-			UIManager.put("CheckBoxMenuItem.foreground", Color.BLACK);
-			UIManager.put("CheckBoxMenuItem.selectionBackground", themeColor);
-			UIManager.put("CheckBox.icon.focusedBorderColor", new Color(220, 220, 220));
-			UIManager.put("CheckBox.icon.focusedBackground", new Color(245,245,245));
-			
-			UIManager.put("TableHeader.foreground", Color.BLACK);
-			UIManager.put("Table.foreground", Color.BLACK);
-			UIManager.put("Table.selectionBackground", themeColor);
-						
-			UIManager.put("TextField.foreground", Color.BLACK);
-			UIManager.put("TextField.background", new Color(245,245,245));
-			UIManager.put("TextField.selectionBackground", themeColor);
-			
-			UIManager.put("TextArea.foreground", Color.BLACK);
-			UIManager.put("TextArea.background", new Color(245,245,245));
-			UIManager.put("TextArea.selectionBackground", themeColor);
+		UIManager.put("ComboBox.background", new Color(60,60,60));		
+		UIManager.put("ComboBox.foreground", new Color(245,245,245));
+		UIManager.put("ComboBox.disabledBackground", new Color(60,60,60));
+		UIManager.put("ComboBox.disabledForeground", new Color(120,120,120));
+		UIManager.put("ComboBox.buttonBackground", new Color(60,60,60));	
+		UIManager.put("ComboBox.buttonEditableBackground", new Color(60,60,60));	
+		UIManager.put("ComboBox.selectionBackground", themeColor);
 
-			UIManager.put("PasswordField.foreground", Color.BLACK);
-			UIManager.put("PasswordField.background", new Color(245,245,245));	
-			UIManager.put("PasswordField.selectionBackground", themeColor);
-			
-			UIManager.put("Spinner.foreground", Color.BLACK);
-			UIManager.put("Spinner.disabledBackground", new Color(245,245,245));
-			UIManager.put("Spinner.background", new Color(245,245,245));
-			UIManager.put("FormattedTextField.selectionBackground", themeColor);
-									
-			UIManager.put("MenuBar.foreground", Color.BLACK);
-			UIManager.put("CheckBoxMenuItem.foreground", Color.BLACK);
-			
-			UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(150,150,150)));			
-		}
-				
+		UIManager.put("MenuItem.background", new Color(60,60,60));		
+		UIManager.put("MenuItem.foreground", new Color(245,245,245));
+		UIManager.put("MenuItem.selectionBackground", themeColor);
+		
+		UIManager.put("CheckBoxMenuItem.background", new Color(60,60,60));		
+		UIManager.put("CheckBoxMenuItem.foreground", new Color(245,245,245));
+		UIManager.put("CheckBoxMenuItem.selectionBackground", themeColor);
+		
+		UIManager.put("CheckBox.icon.borderColor", new Color(30,30,30));		
+		UIManager.put("CheckBox.icon.background", new Color(60,60,60));
+		UIManager.put("CheckBox.icon.disabledBorderColor", new Color(60,60,60));	
+		UIManager.put("CheckBox.icon.disabledBackground", new Color(60,60,60));	
+		UIManager.put("CheckBox.icon.focusedBorderColor", new Color(30,30,30));
+		UIManager.put("CheckBox.icon.focusedBackground", new Color(60,60,60));
+		UIManager.put("CheckBox.icon.selectedBorderColor", new Color(30,30,30));
+		
+		UIManager.put("TableHeader.foreground", new Color(245,245,245));
+		UIManager.put("Table.foreground", new Color(245,245,245));
+		UIManager.put("Table.selectionBackground", themeColor);
+					
+		UIManager.put("TextField.foreground",new Color(245,245,245));
+		UIManager.put("TextField.background", new Color(60,60,60));
+		UIManager.put("TextField.selectionBackground", themeColor);
+		UIManager.put("TextField.inactiveForeground", new Color(120,120,120));
+		
+		UIManager.put("TextArea.foreground",new Color(245,245,245));
+		UIManager.put("TextArea.background", new Color(60,60,60));
+		UIManager.put("TextArea.selectionBackground", themeColor);
+		UIManager.put("TextArea.inactiveForeground", new Color(120,120,120));
+		
+		UIManager.put("PasswordField.foreground", new Color(245,245,245));
+		UIManager.put("PasswordField.background", new Color(60,60,60));	
+		UIManager.put("PasswordField.selectionBackground", themeColor);			
+		UIManager.put("PasswordField.inactiveForeground", new Color(120,120,120));
+		
+		UIManager.put("Spinner.foreground", new Color(245,245,245));
+		UIManager.put("Spinner.disabledBackground", new Color(60,60,60));
+		UIManager.put("Spinner.background", new Color(60,60,60));
+		UIManager.put("FormattedTextField.selectionBackground", themeColor);
+		UIManager.put("Spinner.buttonBackground", new Color(60,60,60));
+					
+		UIManager.put("ScrollBar.background", new Color(45, 45, 45));
+		UIManager.put("ScrollBar.thumb", new Color(60,60,60));
+					
+		UIManager.put("MenuBar.foreground", new Color(245,245,245));
+
+		UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(30,30,30)));	
+		UIManager.put("PopupMenu.background", new Color(45,45,45));
+		
 		UIManager.put("Panel.selectionForeground", Color.WHITE);
 		UIManager.put("TextPane.selectionForeground", Color.WHITE);
 		UIManager.put("FormattedTextField.selectionForeground",  Color.WHITE);
@@ -2343,6 +2272,8 @@ public class Utils extends Shutter {
 		UIManager.put("CheckBox.icon.hoverBorderColor", highlightColor);
 		UIManager.put("CheckBox.icon.selectedFocusedBorderColor", highlightColor);
 		UIManager.put("CheckBox.icon.disabledCheckmarkColor", new Color(100, 100, 100));	
+		UIManager.put("CheckBox.foreground" , new Color(245,245,245));
+		UIManager.put("CheckBox.background" , new Color(50,50,50,0));
 		UIManager.put("RadioButton.icon.centerDiameter", 9);
 		
 		UIManager.put("ProgressBar.background" , new Color(40, 40, 40));
@@ -2357,9 +2288,6 @@ public class Utils extends Shutter {
 		UIManager.put("Slider.thumbSize", new Dimension(10,10));
 		UIManager.put("Slider.trackWidth", 4);
 		UIManager.put("Slider.focusWidth", 0);	
-		
-		UIManager.put("RadioButton.foreground" , new Color(245,245,245));
-		UIManager.put("RadioButton.background" , new Color(50,50,50,0));	
 		
 		UIManager.put("ColorChooser.background", new Color(45, 45, 45));
 		UIManager.put("ColorChooser.foreground", new Color(245,245,245));
@@ -2399,74 +2327,19 @@ public class Utils extends Shutter {
 	
 	public static void textFieldBackground() {
 		
-		if (getTheme != null && getTheme != "" && getTheme.equals(Shutter.language.getProperty("darkTheme")))
-		{
-			if (Settings.txtExtension.isEnabled())
-				Settings.txtExtension.setBackground(new Color(80,80,80));
-			else
-				Settings.txtExtension.setBackground(new Color(60,60,60));
-			
-			if (Settings.txtExclude.isEnabled())
-				Settings.txtExclude.setBackground(new Color(80,80,80));
-			else
-				Settings.txtExclude.setBackground(new Color(60,60,60));
-			
-			if (txtAudioOffset.isEnabled())
-				txtAudioOffset.setBackground(new Color(80,80,80));
-			else
-				txtAudioOffset.setBackground(new Color(60,60,60));
-			
-			if (textH.isEnabled())
-				textH.setBackground(new Color(80,80,80));
-			else
-				textH.setBackground(new Color(60,60,60));
-			
-			if (textM.isEnabled())
-				textM.setBackground(new Color(80,80,80));
-			else
-				textM.setBackground(new Color(60,60,60));
-			
-			if (textS.isEnabled())
-				textS.setBackground(new Color(80,80,80));
-			else
-				textS.setBackground(new Color(60,60,60));
-			
-			if (textF.isEnabled())
-				textF.setBackground(new Color(80,80,80));
-			else
-				textF.setBackground(new Color(60,60,60));
-			
-			if (bitrateSize.isEnabled())
-				bitrateSize.setBackground(new Color(80,80,80));
-			else
-				bitrateSize.setBackground(new Color(60,60,60));
-			
-			if (gopSize.isEnabled() && caseGOP.isSelected())
-				gopSize.setBackground(new Color(80,80,80));
-			else
-				gopSize.setBackground(new Color(60,60,60));
-			
-			if (spinnerVideoFadeIn.isEnabled())
-				spinnerVideoFadeIn.setBackground(new Color(80,80,80));
-			else
-				spinnerVideoFadeIn.setBackground(new Color(60,60,60));
-			
-			if (spinnerAudioFadeIn.isEnabled())
-				spinnerAudioFadeIn.setBackground(new Color(80,80,80));
-			else
-				spinnerAudioFadeIn.setBackground(new Color(60,60,60));
-			
-			if (spinnerVideoFadeOut.isEnabled())
-				spinnerVideoFadeOut.setBackground(new Color(80,80,80));
-			else
-				spinnerVideoFadeOut.setBackground(new Color(60,60,60));
-			
-			if (spinnerAudioFadeOut.isEnabled())
-				spinnerAudioFadeOut.setBackground(new Color(80,80,80));
-			else
-				spinnerAudioFadeOut.setBackground(new Color(60,60,60));
-			
-		}		
+		Settings.txtExtension.setBackground(new Color(60,60,60));
+		Settings.txtExclude.setBackground(new Color(60,60,60));
+		txtAudioOffset.setBackground(new Color(60,60,60));
+		textH.setBackground(new Color(60,60,60));
+		textM.setBackground(new Color(60,60,60));
+		textS.setBackground(new Color(60,60,60));
+		textF.setBackground(new Color(60,60,60));
+		bitrateSize.setBackground(new Color(60,60,60));
+		gopSize.setBackground(new Color(60,60,60));
+		spinnerVideoFadeIn.setBackground(new Color(60,60,60));
+		spinnerAudioFadeIn.setBackground(new Color(60,60,60));
+		spinnerVideoFadeOut.setBackground(new Color(60,60,60));
+		spinnerAudioFadeOut.setBackground(new Color(60,60,60));	
 	}
 
 	@SuppressWarnings("unused")

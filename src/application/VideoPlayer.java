@@ -101,7 +101,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -168,7 +168,7 @@ public class VideoPlayer {
 	public static JLabel lblPosition;
 	public static JLabel lblDuration;
 	private static JLabel lblMode;
-	public static JComboBox<Object> comboMode = new JComboBox<Object>(new String [] {Shutter.language.getProperty("cutUpper"), Shutter.language.getProperty("removeMode")});
+	public static JComboBox<Object> comboMode = new JComboBox<Object>(new String [] {Shutter.language.getProperty("cutUpper"), Shutter.language.getProperty("removeMode"), Shutter.language.getProperty("splitMode")});
 	private static JLabel lblSpeed;
 	private static JSlider sliderSpeed;
 	private static boolean showInfoMessage = true;
@@ -176,6 +176,8 @@ public class VideoPlayer {
 	//Buttons & Checkboxes
 	private static JButton btnCapture;
 	private static JLabel btnPreview;
+	public static JTextField splitValue;
+	private static JLabel lblSplitSec;
 	private JButton btnApply;
 	public static JButton btnPrevious;
 	public static JButton btnNext;
@@ -188,8 +190,8 @@ public class VideoPlayer {
 	public static JButton btnNextFile;
 	public static JButton btnPreviousFile;
 	public static JSlider slider;
-	public static JRadioButton casePlaySound;
-	public static JRadioButton caseInternalTc;
+	public static JCheckBox casePlaySound;
+	public static JCheckBox caseInternalTc;
 	
 	private static NumberFormat formatter = new DecimalFormat("00");
 	private static NumberFormat formatterToMs = new DecimalFormat("000");
@@ -238,7 +240,7 @@ public class VideoPlayer {
 	private JScrollBar scrollBarColorimetry = new JScrollBar();
 	int scrollColorimetryValue = 0;
 	private static JButton btnReset;
-	public static JRadioButton caseEnableColorimetry = new JRadioButton(Shutter.language.getProperty("enable"));
+	public static JCheckBox caseEnableColorimetry = new JCheckBox(Shutter.language.getProperty("enable"));
 	public static JComboBox<String> comboRGB = new JComboBox<String>();
 	public static JSlider sliderExposure = new JSlider();
 	public static JSlider sliderGamma = new JSlider();
@@ -262,16 +264,16 @@ public class VideoPlayer {
 	
 	//grpCorrections
 	public static JPanel grpCorrections;
-	public static JRadioButton caseStabilisation = new JRadioButton(Shutter.language.getProperty("caseStabilisation"));
+	public static JCheckBox caseStabilisation = new JCheckBox(Shutter.language.getProperty("caseStabilisation"));
 	private static String stabilisation = "";
-	public static JRadioButton caseDeflicker = new JRadioButton(Shutter.language.getProperty("caseDeflicker"));
-	public static JRadioButton caseBanding = new JRadioButton(Shutter.language.getProperty("caseBanding"));
-	public static JRadioButton caseLimiter = new JRadioButton(Shutter.language.getProperty("caseLimiter"));
-	public static JRadioButton caseDetails = new JRadioButton(Shutter.language.getProperty("caseDetails"));
+	public static JCheckBox caseDeflicker = new JCheckBox(Shutter.language.getProperty("caseDeflicker"));
+	public static JCheckBox caseBanding = new JCheckBox(Shutter.language.getProperty("caseBanding"));
+	public static JCheckBox caseLimiter = new JCheckBox(Shutter.language.getProperty("caseLimiter"));
+	public static JCheckBox caseDetails = new JCheckBox(Shutter.language.getProperty("caseDetails"));
 	public static JSlider sliderDetails;
-	public static JRadioButton caseDenoise = new JRadioButton(Shutter.language.getProperty("caseBruit"));
+	public static JCheckBox caseDenoise = new JCheckBox(Shutter.language.getProperty("caseBruit"));
 	public static JSlider sliderDenoise;
-	public static JRadioButton caseSmoothExposure = new JRadioButton(Shutter.language.getProperty("caseExposure"));
+	public static JCheckBox caseSmoothExposure = new JCheckBox(Shutter.language.getProperty("caseExposure"));
 	public static JSlider sliderSmoothExposure;
 	
 	//grpCrop
@@ -287,7 +289,7 @@ public class VideoPlayer {
     private static int frameCropY;
 	private static boolean shift = false;
     private static boolean ctrl = false;
-	public static JRadioButton caseEnableCrop = new JRadioButton(Shutter.language.getProperty("enable"));
+	public static JCheckBox caseEnableCrop = new JCheckBox(Shutter.language.getProperty("enable"));
 	private static JComboBox<String> comboPreset = new JComboBox<String>();
 	private static int mouseCropOffsetX;
 	private static int mouseCropOffsetY;
@@ -317,7 +319,7 @@ public class VideoPlayer {
 	public static JTextField textNameSize;
 	public static JTextField textTcOpacity;
 	public static JTextField textNameOpacity;    
-	public static JRadioButton caseAddTimecode = new JRadioButton(Shutter.language.getProperty("caseAddTimecode"));//IMPORTANT
+	public static JCheckBox caseAddTimecode = new JCheckBox(Shutter.language.getProperty("caseAddTimecode"));//IMPORTANT
 	public static JLabel lblTimecode = new JLabel(Shutter.language.getProperty("lblTimecode"));
 	public static JTextField TC1 = new JTextField("00");
 	public static JTextField TC2 = new JTextField("00");
@@ -326,9 +328,9 @@ public class VideoPlayer {
 	public static JTextField text = new JTextField("");
 	private static long textTime = System.currentTimeMillis();
 	private static Thread changeText;
-	public static JRadioButton caseShowTimecode = new JRadioButton(Shutter.language.getProperty("caseShowTimecode"));
-	public static JRadioButton caseShowFileName = new JRadioButton(Shutter.language.getProperty("caseShowFileName"));
-	public static JRadioButton caseAddText = new JRadioButton(Shutter.language.getProperty("caseShowText"));
+	public static JCheckBox caseShowTimecode = new JCheckBox(Shutter.language.getProperty("caseShowTimecode"));
+	public static JCheckBox caseShowFileName = new JCheckBox(Shutter.language.getProperty("caseShowFileName"));
+	public static JCheckBox caseAddText = new JCheckBox(Shutter.language.getProperty("caseShowText"));
 	public static JComboBox<String> comboOverlayFont;	
 	public static JLabel lblTcBackground; 
 	private static JPanel panelTcColor = new JPanel();
@@ -358,7 +360,7 @@ public class VideoPlayer {
 	
 	//grpSubtitles
 	public static JPanel grpSubtitles;
-	public static JRadioButton caseAddSubtitles = new JRadioButton(Shutter.language.getProperty("caseSubtitles"));
+	public static JCheckBox caseAddSubtitles = new JCheckBox(Shutter.language.getProperty("caseSubtitles"));
 	public static String outline = "1";
 	public static JComboBox<String> comboSubsFont;	
 	public static Color fontSubsColor = Color.WHITE;
@@ -396,12 +398,12 @@ public class VideoPlayer {
 	public static JPanel grpWatermark;
 	public static JPanel logo; 
 	public static Image logoPNG;
-	public static JRadioButton caseAddWatermark = new JRadioButton(Shutter.language.getProperty("frameLogo"));
+	public static JCheckBox caseAddWatermark = new JCheckBox(Shutter.language.getProperty("frameLogo"));
 	public static JTextField textWatermarkPosX;
 	public static JTextField textWatermarkPosY;
     public static JTextField textWatermarkSize;
     public static JTextField textWatermarkOpacity;
-    private static JRadioButton caseSafeArea;
+    private static JCheckBox caseSafeArea;
 	public static String logoFile = new String();
     private int logoPosX = 0;
     private int logoPosY = 0;
@@ -1277,6 +1279,50 @@ public class VideoPlayer {
 									FFPROBE.fieldOrder = "0";
 								}
 							}
+
+							boolean isRaw = false;
+				    		
+							//FFprobe with RAW files
+							switch (extension.toLowerCase()) { 
+								case ".3fr":
+								case ".arw":
+								case ".crw":
+								case ".cr2":
+								case ".cr3":
+								case ".dng":
+								case ".kdc":
+								case ".mrw":
+								case ".nef":
+								case ".nrw":
+								case ".orf":
+								case ".ptx":
+								case ".pef":
+								case ".raf":
+								case ".r3d":
+								case ".rw2":
+								case ".srw":
+								case ".x3f":
+									isRaw = true;
+							}
+							
+							if (extension.toLowerCase().equals(".pdf"))
+							{
+								 XPDF.toFFPROBE(videoPath);	
+								 do
+								 {
+									 Thread.sleep(100);
+								 }
+								 while (XPDF.isRunning);								 
+							}				
+							else if (isRaw)
+							{
+								 EXIFTOOL.run(videoPath);	
+								 do
+								 {
+									 Thread.sleep(100);						 
+								 }
+								 while (EXIFTOOL.isRunning);
+							}
 						}
 						
 					} catch (InterruptedException e) {}
@@ -1304,6 +1350,8 @@ public class VideoPlayer {
 						lblMode.setVisible(false);
 						comboMode.setVisible(false);
 						btnPreview.setVisible(false);
+						splitValue.setVisible(false);
+						lblSplitSec.setVisible(false);
 						btnGoToIn.setVisible(false);
 						btnMarkIn.setVisible(false);
 						btnPlay.setVisible(true);
@@ -1338,6 +1386,8 @@ public class VideoPlayer {
 						lblMode.setVisible(false);
 						comboMode.setVisible(false);
 						btnPreview.setVisible(false);
+						splitValue.setVisible(false);
+						lblSplitSec.setVisible(false);
 						btnGoToIn.setVisible(false);
 						btnMarkIn.setVisible(false);
 						btnPlay.setVisible(false);
@@ -1391,7 +1441,24 @@ public class VideoPlayer {
 						sliderSpeed.setVisible(true);
 						lblMode.setVisible(true);
 						comboMode.setVisible(true);
-						btnPreview.setVisible(true);
+						if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
+						{
+							btnPreview.setVisible(true);
+							splitValue.setVisible(false);
+							lblSplitSec.setVisible(false);
+						}
+						else if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
+						{
+							btnPreview.setVisible(false);
+							splitValue.setVisible(true);
+							lblSplitSec.setVisible(true);
+						}
+						else
+						{
+							btnPreview.setVisible(true);
+							splitValue.setVisible(false);
+							lblSplitSec.setVisible(false);
+						}
 						btnGoToIn.setVisible(true);
 						btnMarkIn.setVisible(true);
 						btnPlay.setVisible(true);
@@ -2269,6 +2336,28 @@ public class VideoPlayer {
 	                
 	                g2.drawRoundRect(playerInMark + 1, 0, playerOutMark - playerInMark, getHeight() - 1, 5, 5);	
 	                
+	                //Splitters
+	                if (comboMode.isVisible() && comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
+	                {
+		                g2.setColor(Utils.themeColor);
+		                int alpha = 255;
+		                int splitTime = playerInMark + Math.round((float) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.currentFPS / totalFrames));
+		                do {
+		                	
+		                	g2.fillRect(splitTime + 1, 0, 1, getHeight() - 1);
+		                	
+		                	splitTime += Math.round((float) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.currentFPS / totalFrames));
+		                	
+		                	g2.setColor(new Color(Utils.themeColor.getRed(), Utils.themeColor.getGreen(), Utils.themeColor.getBlue(), alpha));
+		                	
+		                	alpha -= 10;
+		                	
+		                	if (alpha < 0)
+		                		break;		             
+           	
+		                } while (splitTime < playerOutMark);
+	                }
+	                	                
 	                //Masks
 	                g2.setColor(new Color(45,45,45, 120)); 
 	                if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
@@ -2935,7 +3024,7 @@ public class VideoPlayer {
 
 		btnPreview = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		btnPreview.setHorizontalAlignment(SwingConstants.CENTER);
-		btnPreview.setBounds(frame.getSize().width - 28, frame.getSize().height - 26, 16, 16);
+		btnPreview.setBounds(frame.getSize().width - 36, frame.getSize().height - 26, 16, 16);
 		btnPreview.setToolTipText(Shutter.language.getProperty("preview"));
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			frame.getContentPane().add(btnPreview);
@@ -2969,11 +3058,54 @@ public class VideoPlayer {
 			}        			
 		});
 		
+		splitValue = new JTextField();
+		splitValue.setName("splitValue");
+		splitValue.setText("10");
+		splitValue.setVisible(false);
+		splitValue.setHorizontalAlignment(SwingConstants.RIGHT);
+		splitValue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		splitValue.setColumns(10);
+		splitValue.setBounds(frame.getSize().width - 48, frame.getSize().height - 26, 34, 16);
+		frame.getContentPane().add(splitValue);
+		
+		splitValue.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+				if (splitValue.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					waveformContainer.repaint();
+				}
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (splitValue.getText().length() >= 4)
+					splitValue.setText("");					
+			}
+			
+		});
+		
+		lblSplitSec = new JLabel(Shutter.language.getProperty("lblSec"));
+		lblSplitSec.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblSplitSec.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblSplitSec.setVisible(false);
+		lblSplitSec.setBounds(splitValue.getX() + splitValue.getWidth() + 2, splitValue.getY(), lblSplitSec.getPreferredSize().width, 16);
+		frame.getContentPane().add(lblSplitSec);
+		
 		comboMode.setName("comboMode");
 		comboMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		comboMode.setMaximumRowCount(2);
+		comboMode.setMaximumRowCount(3);
 		comboMode.setSize(76, 22);
-		comboMode.setLocation(btnPreview.getX() - 76 - 5, frame.getSize().height - 16 - 12 - 1);
+		comboMode.setLocation(splitValue.getX() - 74 - 5, frame.getSize().height - 16 - 12 - 1);
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			frame.getContentPane().add(comboMode);
 		
@@ -2982,10 +3114,27 @@ public class VideoPlayer {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")) && showInfoMessage)
 				{
 					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("mayNotWorkWithGOP"), Shutter.language.getProperty("mode") + " " + Shutter.language.getProperty("removeMode"), JOptionPane.INFORMATION_MESSAGE);
 					showInfoMessage = false;
+					
+					btnPreview.setVisible(true);
+					splitValue.setVisible(false);
+					lblSplitSec.setVisible(false);
+				}
+				else if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
+				{
+					btnPreview.setVisible(false);
+					splitValue.setVisible(true);
+					lblSplitSec.setVisible(true);
+				}
+				else
+				{
+					btnPreview.setVisible(true);
+					splitValue.setVisible(false);
+					lblSplitSec.setVisible(false);
 				}
 				
 				waveformContainer.repaint();
@@ -3416,7 +3565,7 @@ public class VideoPlayer {
 		grpOut.setBounds(frame.getWidth() - grpIn.getWidth() - 12, grpIn.getY(), grpIn.getWidth(), grpIn.getHeight());
 		frame.getContentPane().add(grpOut);
 
-		casePlaySound = new JRadioButton(Shutter.language.getProperty("casePlaySound"));
+		casePlaySound = new JCheckBox(Shutter.language.getProperty("casePlaySound"));
 		casePlaySound.setName("casePlaySound");	
 		casePlaySound.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		casePlaySound.setSelected(Settings.videoPlayerCasePlaySound);
@@ -3431,7 +3580,7 @@ public class VideoPlayer {
 
 		});
 			
-		caseInternalTc = new JRadioButton(Shutter.language.getProperty("caseTcInterne"));
+		caseInternalTc = new JCheckBox(Shutter.language.getProperty("caseTcInterne"));
 		caseInternalTc.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		frame.getContentPane().add(caseInternalTc);	
 		
@@ -3960,7 +4109,7 @@ public class VideoPlayer {
 					int scrollIncrement = scrollBarColorimetry.getValue() - scrollColorimetryValue;
 					for (Component c : panelColorimetryComponents.getComponents())
 					{
-						if (c instanceof JLabel || c instanceof JSlider && c.getName() != null || c instanceof JComboBox || c instanceof JButton || c instanceof JRadioButton)
+						if (c instanceof JLabel || c instanceof JSlider && c.getName() != null || c instanceof JComboBox || c instanceof JButton || c instanceof JCheckBox)
 						{
 							c.setLocation(c.getLocation().x, c.getLocation().y - scrollIncrement);
 						}
@@ -5122,7 +5271,7 @@ public class VideoPlayer {
 				
 				int size = 25;
 				for (Component c : grpCorrections.getComponents()) {
-					if (c instanceof JRadioButton)
+					if (c instanceof JCheckBox)
 						size += 17;
 				}
 
@@ -5701,7 +5850,7 @@ public class VideoPlayer {
 				{				
 					for (Component c : grpCrop.getComponents())
 					{
-						if (c instanceof JRadioButton == false)
+						if (c instanceof JCheckBox == false)
 						{
 							c.setEnabled(false);
 						}
@@ -6602,7 +6751,7 @@ public class VideoPlayer {
 		
 		for (Component c : grpCrop.getComponents())
 		{
-			if (c instanceof JRadioButton == false)
+			if (c instanceof JCheckBox == false)
 			{
 				c.setEnabled(false);
 			}
@@ -6936,7 +7085,7 @@ public class VideoPlayer {
 		
 		lblTcBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOn"));
 		lblTcBackground.setName("lblTcBackground");
-		lblTcBackground.setBackground(new Color(80, 80, 80));
+		lblTcBackground.setBackground(new Color(60, 60, 60));
 		lblTcBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTcBackground.setOpaque(true);
 		lblTcBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -7277,7 +7426,7 @@ public class VideoPlayer {
 		});
 				
 		lblTimecode.setName("lblTimecode");
-		lblTimecode.setBackground(new Color(80, 80, 80));
+		lblTimecode.setBackground(new Color(60, 60, 60));
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimecode.setOpaque(true);
 		lblTimecode.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -7796,7 +7945,7 @@ public class VideoPlayer {
 		percent1.setEnabled(false);
 		percent1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		percent1.setForeground(Utils.themeColor);
-		percent1.setBounds(textTcSize.getLocation().x + textTcSize.getWidth() + 2, lblSizeTC.getY(), percent1.getPreferredSize().width, 16);
+		percent1.setBounds(textTcSize.getLocation().x + textTcSize.getWidth() + 2, lblSizeTC.getY(), percent1.getPreferredSize().width + 4, 16);
 		grpOverlay.add(percent1);
 		
 		JLabel lblOpacityTC = new JLabel(Shutter.language.getProperty("lblOpacity"));
@@ -7911,7 +8060,7 @@ public class VideoPlayer {
 		percent2.setEnabled(false);
 		percent2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		percent2.setForeground(Utils.themeColor);
-		percent2.setBounds(textTcOpacity.getLocation().x + textTcOpacity.getWidth() + 2, lblOpacityTC.getY(), percent1.getPreferredSize().width, 16);
+		percent2.setBounds(textTcOpacity.getLocation().x + textTcOpacity.getWidth() + 2, lblOpacityTC.getY(), percent1.getPreferredSize().width + 4, 16);
 		grpOverlay.add(percent2);
 		
 		caseAddText.setName("caseAddText");
@@ -9131,7 +9280,7 @@ public class VideoPlayer {
 										{
 											for (Component c : grpSubtitles.getComponents())
 											{
-												if (c instanceof JRadioButton == false)
+												if (c instanceof JCheckBox == false)
 												{
 													c.setEnabled(false);
 												}
@@ -9187,7 +9336,7 @@ public class VideoPlayer {
 									
 									for (Component c : grpSubtitles.getComponents())
 									{
-										if (c instanceof JRadioButton == false)
+										if (c instanceof JCheckBox == false)
 										{
 											c.setEnabled(false);
 										}
@@ -9220,7 +9369,7 @@ public class VideoPlayer {
 
 					for (Component c : grpSubtitles.getComponents())
 					{
-						if (c instanceof JRadioButton == false)
+						if (c instanceof JCheckBox == false)
 						{
 							c.setEnabled(false);
 						}
@@ -9728,7 +9877,7 @@ public class VideoPlayer {
 		
 		lblSubsBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOff"));
 		lblSubsBackground.setName("lblSubsBackground");
-		lblSubsBackground.setBackground(new Color(80, 80, 80));
+		lblSubsBackground.setBackground(new Color(60, 60, 60));
 		lblSubsBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubsBackground.setOpaque(true);
 		lblSubsBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -9946,7 +10095,7 @@ public class VideoPlayer {
 	
 		for (Component c : grpSubtitles.getComponents())
 		{
-			if (c instanceof JRadioButton == false)
+			if (c instanceof JCheckBox == false)
 			{
 				c.setEnabled(false);
 			}
@@ -10365,7 +10514,7 @@ public class VideoPlayer {
 				{
 					for (Component c : grpWatermark.getComponents())
 					{
-						if (c instanceof JRadioButton == false)
+						if (c instanceof JCheckBox == false)
 						{
 							c.setEnabled(false);
 						}
@@ -10383,7 +10532,7 @@ public class VideoPlayer {
 
 		});
 		
-       	caseSafeArea = new JRadioButton(Shutter.language.getProperty("caseSafeArea"));
+       	caseSafeArea = new JCheckBox(Shutter.language.getProperty("caseSafeArea"));
        	caseSafeArea.setName("caseSafeArea");
 		caseSafeArea.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseSafeArea.setSize(caseSafeArea.getPreferredSize().width, 23);
@@ -10862,7 +11011,7 @@ public class VideoPlayer {
 	
 		for (Component c : grpWatermark.getComponents())
 		{
-			if (c instanceof JRadioButton == false)
+			if (c instanceof JCheckBox == false)
 			{
 				c.setEnabled(false);
 			}
@@ -11319,9 +11468,7 @@ public class VideoPlayer {
 	}
 	
 	private void resizeAll() {
-				
-		System.out.println("ok");
-		
+						
 		if (preview.exists())
 			preview.delete();
 		
@@ -11340,7 +11487,9 @@ public class VideoPlayer {
 		//Buttons		
 		btnCapture.setBounds(9, topPanel.getSize().height + 10, 310, 21);		
 		btnApply.setBounds(frame.getSize().width - 8 - 308 - 2, topPanel.getSize().height + 10, 310, 21);		
-		btnPreview.setBounds(frame.getSize().width - 28, frame.getSize().height - 26, 16, 16);
+		btnPreview.setBounds(frame.getSize().width - 36, frame.getSize().height - 26, 16, 16);
+		splitValue.setBounds(frame.getSize().width - 48, frame.getSize().height - 26, 34, 16);
+		lblSplitSec.setBounds(splitValue.getX() + splitValue.getWidth() + 2, splitValue.getY(), lblSplitSec.getPreferredSize().width, 16);
 		
 		//Group boxes
 		grpIn.setBounds(6, frame.getSize().height - 84, 156, 52);
@@ -11377,7 +11526,7 @@ public class VideoPlayer {
 		else
 			scrollBarColorimetry.setVisible(false);	
 								
-		comboMode.setLocation(btnPreview.getX() - 76 - 5, frame.getSize().height - 16 - 12 - 1);
+		comboMode.setLocation(splitValue.getX() - 74 - 5, frame.getSize().height - 16 - 12 - 1);
 		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);		
 		sliderSpeed.setLocation(lblMode.getX() - 80 - 5, frame.getSize().height - 16 - 12);
 		lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblSpeed.getPreferredSize().width, 16);
@@ -11734,25 +11883,25 @@ public class VideoPlayer {
 						{
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{
-								if (p instanceof JRadioButton)
+								if (p instanceof JCheckBox)
 								{									
 									//Value
 									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 									{
-										if (((JRadioButton) p).isSelected() == false)
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected() == false)
+											((JCheckBox) p).doClick();
 									}
 									else
 									{
-										if (((JRadioButton) p).isSelected())
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected())
+											((JCheckBox) p).doClick();
 									}
 																		
 									//State
-									((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									
 									//Visible
-									((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}										
 							}							
 						}	
@@ -11781,25 +11930,25 @@ public class VideoPlayer {
 						{				
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{	
-								if (p instanceof JRadioButton)
+								if (p instanceof JCheckBox)
 								{									
 									//Value
 									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 									{
-										if (((JRadioButton) p).isSelected() == false)
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected() == false)
+											((JCheckBox) p).doClick();
 									}
 									else
 									{
-										if (((JRadioButton) p).isSelected())
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected())
+											((JCheckBox) p).doClick();
 									}
 																		
 									//State
-									((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									
 									//Visible
-									((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}		
 								else if (p instanceof JSlider)
 								{
@@ -11820,25 +11969,25 @@ public class VideoPlayer {
 						{				
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{			
-								if (p instanceof JRadioButton)
+								if (p instanceof JCheckBox)
 								{									
 									//Value
 									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 									{
-										if (((JRadioButton) p).isSelected() == false)
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected() == false)
+											((JCheckBox) p).doClick();
 									}
 									else
 									{
-										if (((JRadioButton) p).isSelected())
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected())
+											((JCheckBox) p).doClick();
 									}
 																		
 									//State
-									((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									
 									//Visible
-									((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}		
 								else if (p instanceof JTextField)
 								{										
@@ -11901,25 +12050,25 @@ public class VideoPlayer {
 									}
 								}
 								
-								if (p instanceof JRadioButton)
+								if (p instanceof JCheckBox)
 								{									
 									//Value
 									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 									{
-										if (((JRadioButton) p).isSelected() == false)
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected() == false)
+											((JCheckBox) p).doClick();
 									}
 									else
 									{
-										if (((JRadioButton) p).isSelected())
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected())
+											((JCheckBox) p).doClick();
 									}
 																		
 									//State
-									((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									
 									//Visible
-									((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}
 								else if (p instanceof JLabel)
 								{									
@@ -11978,25 +12127,25 @@ public class VideoPlayer {
 						{
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{
-								if (p instanceof JRadioButton)
+								if (p instanceof JCheckBox)
 								{									
 									//Value
 									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 									{
-										if (((JRadioButton) p).isSelected() == false)
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected() == false)
+											((JCheckBox) p).doClick();
 									}
 									else
 									{
-										if (((JRadioButton) p).isSelected())
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected())
+											((JCheckBox) p).doClick();
 									}
 																		
 									//State
-									((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									
 									//Visible
-									((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}		
 								else if (p instanceof JPanel)
 								{
@@ -12069,25 +12218,25 @@ public class VideoPlayer {
 						{			
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{								
-								if (p instanceof JRadioButton)
+								if (p instanceof JCheckBox)
 								{									
 									//Value
 									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 									{
-										if (((JRadioButton) p).isSelected() == false)
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected() == false)
+											((JCheckBox) p).doClick();
 									}
 									else
 									{
-										if (((JRadioButton) p).isSelected())
-											((JRadioButton) p).doClick();
+										if (((JCheckBox) p).isSelected())
+											((JCheckBox) p).doClick();
 									}
 																		
 									//State
-									((JRadioButton) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									
 									//Visible
-									((JRadioButton) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 								}		
 								else if (p instanceof JTextField)
 								{											

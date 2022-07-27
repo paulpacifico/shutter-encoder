@@ -65,7 +65,7 @@ import settings.FunctionUtils;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 /** ATTENTION pour windows les commandes sont sous forme de tableau ["a","b"], sous mac en forme de String... **/
@@ -90,12 +90,12 @@ public class VideoWeb {
 	private JPasswordField textPass;
 	private JLabel lblQualit;
 	private JButton btnOK;
-	private JRadioButton caseMP3;
-	private JRadioButton caseWAV;
-	private JRadioButton caseAuto;
-	private JRadioButton caseUser;
-	private JRadioButton casePass;
-	private JRadioButton caseVideoPass;
+	private JCheckBox caseMP3;
+	private JCheckBox caseWAV;
+	private JCheckBox caseAuto;
+	private JCheckBox caseUser;
+	private JCheckBox casePass;
+	private JCheckBox caseVideoPass;
 	private JComboBox<String> comboFormats;
 	
 	private static int MousePositionX;
@@ -333,10 +333,7 @@ public class VideoWeb {
 				}
 				else
 				{
-					if (Settings.comboTheme.getSelectedItem().equals(Shutter.language.getProperty("darkTheme")))
-						textURL.setForeground(Color.WHITE);
-					else
-						textURL.setForeground(Color.BLACK);
+					textURL.setForeground(Color.WHITE);
 					textURL.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		       		btnOK.setEnabled(true);
 					if (caseAuto.isSelected() == false)
@@ -365,7 +362,7 @@ public class VideoWeb {
         
 		grpURL.add(textURL);
 								
-		caseAuto = new JRadioButton("Auto");
+		caseAuto = new JCheckBox("Auto");
 		caseAuto.setSelected(true);
 		caseAuto.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseAuto.setBounds(66, 52, caseAuto.getPreferredSize().width, 16);	
@@ -470,7 +467,7 @@ public class VideoWeb {
 			}
 		});
 		
-		caseMP3 = new JRadioButton(Shutter.language.getProperty("caseMP3"));
+		caseMP3 = new JCheckBox(Shutter.language.getProperty("caseMP3"));
 		caseMP3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseMP3.setBounds(121, 52, 127, 16);		
 		grpURL.add(caseMP3);
@@ -495,7 +492,7 @@ public class VideoWeb {
 			
 		});
 		
-		caseWAV = new JRadioButton(Shutter.language.getProperty("caseWAV"));
+		caseWAV = new JCheckBox(Shutter.language.getProperty("caseWAV"));
 		caseWAV.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseWAV.setBounds(248, 52, 127, 16);		
 		grpURL.add(caseWAV);
@@ -522,7 +519,7 @@ public class VideoWeb {
 		
 		frame.getContentPane().add(grpURL);			
 		
-		caseVideoPass = new JRadioButton(Shutter.language.getProperty("caseVideoPass"));
+		caseVideoPass = new JCheckBox(Shutter.language.getProperty("caseVideoPass"));
 		caseVideoPass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseVideoPass.setBounds(66, 123, caseVideoPass.getPreferredSize().width, 16);			
 		grpURL.add(caseVideoPass);
@@ -549,7 +546,7 @@ public class VideoWeb {
 		textVideoPass.setColumns(10);	
 		grpURL.add(textVideoPass);
 		
-		caseUser = new JRadioButton(Shutter.language.getProperty("caseUser"));
+		caseUser = new JCheckBox(Shutter.language.getProperty("caseUser"));
 		caseUser.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseUser.setBounds(66, 79, caseUser.getPreferredSize().width, 16);
 		grpURL.add(caseUser);
@@ -577,7 +574,7 @@ public class VideoWeb {
 		textUser.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 76, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		grpURL.add(textUser);
 				
-		casePass = new JRadioButton(Shutter.language.getProperty("casePass"));
+		casePass = new JCheckBox(Shutter.language.getProperty("casePass"));
 		casePass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		casePass.setBounds(66, 101, casePass.getPreferredSize().width, 16);
 		grpURL.add(casePass);
@@ -774,11 +771,7 @@ public class VideoWeb {
 		if (textURL.getText().equals(Shutter.language.getProperty("textURL")))
 			textURL.setText("");
 		
-
-		if (Settings.comboTheme.getSelectedItem().equals(Shutter.language.getProperty("darkTheme")))
-			textURL.setForeground(Color.WHITE);
-		else
-			textURL.setForeground(Color.BLACK);
+		textURL.setForeground(Color.WHITE);
 		textURL.setFont(new Font("SansSerif", Font.PLAIN, 13));
 		caseAuto.setEnabled(true);
 		btnOK.setEnabled(true);	

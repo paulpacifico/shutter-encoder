@@ -58,7 +58,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -88,7 +88,7 @@ public class Wetransfer {
 	private JLabel lblRecipient;
 	private JLabel lblMessage;
 	public static JTextField textFrom = new JTextField();
-	public static JRadioButton casePlus = new JRadioButton(Shutter.language.getProperty("casePlus"));
+	public static JCheckBox casePlus = new JCheckBox(Shutter.language.getProperty("casePlus"));
 	private JLabel lblUser;
 	public static JTextField textUser = new JTextField();
 	private JLabel lblMotDePasse;
