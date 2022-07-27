@@ -107,6 +107,12 @@ public class Rewrap extends Shutter {
 						if (Settings.btnExtension.isSelected())
 							extensionName = Settings.txtExtension.getText();
 						
+						//Split video
+						if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						{
+							extensionName = "_%03d" + extensionName;
+						}
+						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + newExtension); 	
 														

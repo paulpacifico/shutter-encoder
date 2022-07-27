@@ -128,7 +128,9 @@ public class AudioNormalization extends Shutter {
 						    	}
 						    	else
 						    		cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
-						    }				
+						    }	
+						    else
+						    	cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy" + audio + " -y ";
 	
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							
 							
@@ -141,7 +143,9 @@ public class AudioNormalization extends Shutter {
 							if (FFMPEG.error)
 							{
 								if (FFPROBE.stereo)
+								{
 									cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
+								}
 							    else if (FFPROBE.channels > 1)	
 							    {
 							    	if (FFPROBE.channels >= 4)	    		
@@ -154,6 +158,8 @@ public class AudioNormalization extends Shutter {
 							    	else
 							    		cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    }	
+							    else
+							    	cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								
 								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
 							}
@@ -188,7 +194,9 @@ public class AudioNormalization extends Shutter {
 	private static String setFilterComplex() {
 	
 		if (FFPROBE.stereo)
+		{
 			return " -filter_complex ebur128=peak=true";
+		}
 	    else if (FFPROBE.channels > 1)	
 	    {
 	    	if (FFPROBE.channels >= 4)	    		

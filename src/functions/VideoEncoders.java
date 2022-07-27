@@ -228,6 +228,12 @@ public class VideoEncoders extends Shutter {
 								
 						}			
 						
+						//Split video
+						if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						{
+							container = "_%03d" + container;
+						}
+						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
 														
@@ -682,12 +688,12 @@ public class VideoEncoders extends Shutter {
 						{
 							output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=flv]" + textStream.getText();
 									
-							if (caseDisplay.isSelected())
+							if (caseDisplay.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
 								output += "|[f=matroska]pipe:play" + '"';
 							else
 								output += '"';
 						}
-						else if (caseDisplay.isSelected())
+						else if (caseDisplay.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
 						{
 							switch (comboFonctions.getSelectedItem().toString())
 							{

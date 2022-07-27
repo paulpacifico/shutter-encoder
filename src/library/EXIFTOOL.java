@@ -144,7 +144,7 @@ private static Boolean horizontal = true;
 						{
 							FFPROBE.imageResolution = exifWidth + "x" + exifHeight; 
 							FFPROBE.imageWidth = Integer.parseInt(exifWidth);
-							FFPROBE.imageHeight = Integer.parseInt(exifHeight);
+							FFPROBE.imageHeight = Integer.parseInt(exifHeight);							
 						}
 						else
 						{
@@ -152,7 +152,8 @@ private static Boolean horizontal = true;
 					    	FFPROBE.imageWidth = Integer.parseInt(exifHeight);
 					    	FFPROBE.imageHeight = Integer.parseInt(exifWidth);
 						}
-
+						
+						FFPROBE.imageRatio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
 					}
 											
 					} catch (IOException | InterruptedException e) {

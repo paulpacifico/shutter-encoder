@@ -336,17 +336,17 @@ private static StringBuilder getAll;
 						if (System.getProperty("os.name").contains("Windows"))
 						{
 							PathToFFMPEG = "Library\\ffmpeg.exe";
-							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -fs -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');
+							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');
 						}
 						else
 						{
 							PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -fs -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');	
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');	
 						}		
 										
-						Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -fs -i " + '"' + "pipe:play" +  '"' + " -window_title " + '"' + file.getName() + '"'
+						Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -i " + '"' + "pipe:play" +  '"' + " -window_title " + '"' + file.getName() + '"'
 						+  System.lineSeparator() + System.lineSeparator());
 						
 						process = processFFMPEG.start();

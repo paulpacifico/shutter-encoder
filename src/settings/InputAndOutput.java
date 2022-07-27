@@ -67,6 +67,11 @@ public class InputAndOutput extends Shutter {
 	        }
 	        else
 	        	outPoint = "";
+			
+			if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+			{
+				outPoint += " -f segment -reset_timestamps 1 -segment_time " + VideoPlayer.splitValue.getText();
+			}
 		}
 		else
 		{

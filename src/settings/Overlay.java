@@ -268,7 +268,7 @@ public class Overlay extends Shutter {
 				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());			
 				VideoPlayer.writeCurrentSubs(timeIn);
 				
-				if (limitToFHD)
+				if (limitToFHD || comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
 					String s[] = "1920x1080".split("x");
 					if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)

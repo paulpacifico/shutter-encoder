@@ -183,6 +183,12 @@ public class AudioEncoders extends Shutter {
 								break;
 						}
 						
+						//Split video
+						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						{
+							container = "_%03d" + container;
+						}
+						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
 						

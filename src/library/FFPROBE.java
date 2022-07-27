@@ -281,7 +281,7 @@ public static int gopSpace = 124;
 							 //Codec vidéo
 							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
 							videoCodec = splitVideo[1];
-							 
+
 							//Création de la waveform pour le lecteur vidéo
 				            audioOnly = false;
 							 

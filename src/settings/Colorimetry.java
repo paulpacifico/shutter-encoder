@@ -131,9 +131,17 @@ public class Colorimetry extends Shutter {
 		{
 			return " -apply_trc iec61966_2_1";
 		}
-		else if (FFPROBE.videoCodec != null && FFPROBE.videoCodec.equals("vp9"))
+		else if (FFPROBE.videoCodec != null)
 		{
-			return " -c:v libvpx-vp9";
+			//Preserve the alpha channel
+			if (FFPROBE.videoCodec.contains("vp9"))
+			{
+				return " -c:v libvpx-vp9";
+			}
+			else if (FFPROBE.videoCodec.contains("vp8"))
+			{
+				return " -c:v libvpx";
+			}
 		}
 		
 		return "";	
