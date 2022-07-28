@@ -11609,7 +11609,7 @@ public class VideoPlayer {
 		player.setSize(player.getWidth() - (player.getWidth() % 4), player.getHeight());	
 
 		imageRatio = (float) FFPROBE.imageWidth / player.getWidth();
-		
+				
 		//grpOverlay
 		grpOverlay.setLocation(frame.getWidth() - grpOverlay.getWidth() - 6, grpCrop.getY() + grpCrop.getHeight() + 6);
 		
