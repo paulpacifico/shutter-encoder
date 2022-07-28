@@ -42,10 +42,12 @@ public static String creationDate;
 public static String creationHours;
 public static String exifWidth;
 public static String exifHeight;
+private static boolean scanOrientation = true;
 private static Boolean horizontal = true;
 
 	public static void run(final String fichier) {
 				
+	 scanOrientation = true;
 	 horizontal = true;
 	 exifDate = "0000:00:00";
 	 exifHours = "00:00:00";
@@ -119,10 +121,14 @@ private static Boolean horizontal = true;
 						  if (line.contains("Image Height"))
 							  exifHeight = line.substring(line.indexOf(":") + 2);	
 						  
-						  if (line.contains("Orientation"))
+						  if (line.contains("Orientation") && scanOrientation)
 						  {
 							  if (line.substring(line.indexOf(":") + 2).contains("Horizontal") == false)
-								  horizontal = false;								  
+							  {
+								  horizontal = false;
+							  }
+							  
+							  scanOrientation = false;
 						  }
 
 					}//While					
