@@ -1326,7 +1326,7 @@ public class VideoPlayer {
 						}
 						
 					} catch (InterruptedException e) {}
-
+					
 					//Displaying section 
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 					{
@@ -1405,7 +1405,7 @@ public class VideoPlayer {
 						for (Component c : grpSubtitles.getComponents())
 						{
 							c.setEnabled(false);
-						}
+						}						
 					}
 					else
 					{
@@ -2032,6 +2032,10 @@ public class VideoPlayer {
 					
 					playerHasBeenStopped = true;
 					playerCurrentFrame = 0;				
+				}
+				else if (FFPROBE.totalLength <= 40) //Image
+				{
+					resizeAll();
 				}
 				
 			}
