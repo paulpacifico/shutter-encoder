@@ -118,6 +118,7 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -395,6 +396,7 @@ public class Shutter {
 	protected static JSlider sliderBlend;
 	protected static JButton btnReset;
 	protected static JLabel statusBar;
+	protected static JLabel lblArrows;
 	protected static boolean drag;
 	protected static JLabel lblYears;
 	protected static JLabel lblBy;
@@ -891,7 +893,8 @@ public class Shutter {
 		Splash.increment();
 		
 		Utils.changeFrameVisibility(frame, false);
-		topPanel.requestFocus();
+		frame.getRootPane().setDefaultButton(btnStart);
+		btnStart.requestFocus();
 		
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)
 		{
@@ -916,7 +919,7 @@ public class Shutter {
 		}
 			
 		if (Settings.btnDisableUpdate.isSelected() == false)
-			Update.newVersion();		
+			Update.newVersion();			
 	}
 	
 	private void topPanel() {
@@ -2546,8 +2549,6 @@ public class Shutter {
 		btnStart.setFont(new Font(montserratFont, Font.PLAIN, 12));
 		btnStart.setMargin(new Insets(0,0,0,0));
 		btnStart.setBounds(8, 46, 168, 21);
-		btnStart.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(Utils.themeColor, 1, 15, true)));		
-		btnStart.setBackground(new Color(45,45,45));
 		grpChooseFunction.add(btnStart);
 
 		btnStart.addActionListener(new ActionListener() {
@@ -2869,8 +2870,10 @@ public class Shutter {
 							JOptionPane.showConfirmDialog(frame, language.getProperty("useBarSpace"), language.getProperty("btnPauseFunction"), JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE);
 
 						tempsRestant.setText(language.getProperty("timePause"));
+						tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
 					} 
 					else if (btnStart.getText().equals(language.getProperty("btnResumeFunction"))) {
+						
 						caseRunInBackground.setEnabled(true);
 
 						FFMPEG.resumeProcess();
@@ -4302,7 +4305,10 @@ public class Shutter {
 										FFMPEG.resumeProcess();
 									running = true;
 								} else {
-									tempsRestant.setText(Shutter.language.getProperty("timePause"));
+									
+									tempsRestant.setText(Shutter.language.getProperty("timePause"));									
+									tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);							
+									
 									if (running == true)
 										FFMPEG.suspendProcess();
 									running = false;
@@ -11526,12 +11532,11 @@ public class Shutter {
 
 	private void StatusBar() {
 		
-		ImageIcon imageIcon = new ImageIcon(new ImageIcon(getClass().getClassLoader().getResource("contents/bouton.jpg")).getImage().getScaledInstance(1000, 22, Image.SCALE_DEFAULT));
-		
 		statusBar = new JLabel();
-		statusBar.setIcon(imageIcon);
-		statusBar.setHorizontalAlignment(SwingConstants.LEFT);
-		statusBar.setBounds(0, frame.getHeight() - 23, 1000, 22);
+		statusBar.setBackground(new Color(40,40,40));
+		statusBar.setOpaque(true);
+		statusBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(65, 65, 65)));
+		statusBar.setBounds(0, frame.getHeight() - 23, 660, 22);
 		
 		statusBar.addMouseListener(new MouseListener() {
 
@@ -11648,9 +11653,15 @@ public class Shutter {
 			}			
 		});
 		
+		lblArrows = new JLabel("▲▼");
+		lblArrows.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 15));
+		lblArrows.setSize(lblArrows.getPreferredSize().width, 20);
+		lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, statusBar.getSize().height - lblArrows.getSize().height);
+		statusBar.add(lblArrows);
+		
 		lblBy = new JLabel(language.getProperty("lblCrParPaul"));
 		lblBy.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblBy.setForeground(Color.BLACK);
+		lblBy.setForeground(Color.WHITE);
 		lblBy.setBounds(6, 4, lblBy.getPreferredSize().width, 15);
 		statusBar.add(lblBy);
 
@@ -11710,7 +11721,6 @@ public class Shutter {
 
 			@Override
 			public void mouseExited(MouseEvent arg0) {
-				lblBy.setForeground(Color.BLACK);
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -11727,8 +11737,8 @@ public class Shutter {
 		tempsRestant = new JLabel(language.getProperty("tempsRestant"));
 		tempsRestant.setVisible(false);
 		tempsRestant.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		tempsRestant.setForeground(Color.BLACK);
-		tempsRestant.setBounds(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY(), 456, 15);
+		tempsRestant.setForeground(Color.WHITE);
+		tempsRestant.setBounds(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY(), tempsRestant.getPreferredSize().width, 15);
 		statusBar.add(tempsRestant);
 		
 		tempsRestant.addComponentListener (new ComponentAdapter ()
@@ -11782,9 +11792,9 @@ public class Shutter {
 		
 		tempsEcoule = new JLabel(language.getProperty("tempsEcoule"));
 		tempsEcoule.setVisible(false);
-		tempsEcoule.setForeground(Color.BLACK);
+		tempsEcoule.setForeground(Color.WHITE);
 		tempsEcoule.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		tempsEcoule.setBounds(tempsRestant.getX(), lblBy.getY(), 456, 15);
+		tempsEcoule.setBounds(tempsRestant.getX(), lblBy.getY(), tempsEcoule.getPreferredSize().width, 15);
 		statusBar.add(tempsEcoule);
 		
 		tempsEcoule.addMouseListener(new MouseListener() {
@@ -11823,7 +11833,7 @@ public class Shutter {
 
 		lblYears = new JLabel("2013-2022");
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblYears.setForeground(Color.BLACK);
+		lblYears.setForeground(Color.WHITE);
 		lblYears.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblYears.setBounds(585, lblBy.getY(), lblYears.getPreferredSize().width, 15);
 		statusBar.add(lblYears);
@@ -11920,7 +11930,6 @@ public class Shutter {
 			}
 
 			public void mouseExited(MouseEvent arg0) {
-				lblYears.setForeground(Color.BLACK);
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 
@@ -12257,10 +12266,12 @@ public class Shutter {
 		if (bigger && frame.getSize().width < 660)
 		{
 			frame.setSize(660, frame.getHeight());
+			lblArrows.setLocation(statusBar.getWidth() / 2 - lblArrows.getWidth() / 2, lblArrows.getY());
 		}
 		else if (bigger == false && frame.getSize().width > 332)
 		{
-			frame.setSize(332, frame.getHeight());		
+			frame.setSize(332, frame.getHeight());	
+			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 		}
 		
 		lblV.setVisible(bigger);
@@ -15270,6 +15281,7 @@ public class Shutter {
 		btnReset.setEnabled(true);
 		btnStart.setEnabled(true);
 		btnCancel.setEnabled(false);
+		lblArrows.setVisible(true);
 		changeFunction(false);
 		
 		// Important
