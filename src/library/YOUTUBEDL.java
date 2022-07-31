@@ -143,7 +143,16 @@ public static String format = "";
 		                            min = "";
 		                        else
 		                            min = time[0].replace("TA", "") + "min ";
+		                        
 		                        tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + min + time[1].replace(" ","") + "s");
+		                        tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
+		                        
+		                        if (tempsRestant.getX() + tempsRestant.getSize().width > lblArrows.getX())
+			       				{
+			       					lblArrows.setVisible(false);
+			       				}
+			       				else
+			       					lblArrows.setVisible(true);
 						    }
 						}
 						          						        		
@@ -236,6 +245,7 @@ public static String format = "";
 	}
 
 	public static void getAvailableFormats(final String cmd, final String options) {
+		
 		lblCurrentEncoding.setText(Shutter.language.getProperty("getAvailableFormats"));
 		error = false;
 		Shutter.cancelled  = false;

@@ -1467,6 +1467,7 @@ private static StringBuilder getAll;
 			secondes = "0sec";
 		
 		tempsEcoule.setText(Shutter.language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
+		tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
 	         
 	  //Temps Restant
 	  if ((line.contains("frame=") || line.contains("time=")) && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
@@ -1578,17 +1579,31 @@ private static StringBuilder getAll;
 					secondes = "";
 				 
 				 tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass);
+				 tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
+				 
+				 if (tempsRestant.getX() + tempsRestant.getSize().width > lblArrows.getX())
+				 {
+					 lblArrows.setVisible(false);
+				 }
+				 else
+					 lblArrows.setVisible(true);
 				 
 				 if (heures != "" || minutes != "" || secondes != "")
-					 tempsRestant.setVisible(true);
+				 {
+					 tempsRestant.setVisible(true);					 
+				 }
 				 else
+				 {
 					 tempsRestant.setVisible(false);	
+				 }
 			 }
 		 }	
 		 		 
 	  }		
 	  else if (line.contains("frame=") && caseDisplay.isSelected() == false) //Pour afficher le temps écoulé
+	  {
 		  tempsEcoule.setVisible(true);
+	  }
 	  
 	  //Détection de coupe
 	  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) && line.contains("pts"))
