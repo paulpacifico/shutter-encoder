@@ -256,9 +256,9 @@ public class Colorimetry extends Shutter {
 				eq += ",";
 
 			if (VideoPlayer.sliderVignette.getValue() > 0)
-				eq += "vignette=PI/" + (float) (100 - VideoPlayer.sliderVignette.getValue()) / 5; 
+				eq += "vignette=PI/" + (float) (100 - VideoPlayer.sliderVignette.getValue()) / 5 + ":mode=backward"; 
 			else
-				eq += "vignette=PI/" + (float) (100 + VideoPlayer.sliderVignette.getValue()) / 5 + ":mode=backward"; 
+				eq += "vignette=PI/" + (float) (100 + VideoPlayer.sliderVignette.getValue()) / 5;				
 		}
 		
 		return eq;
@@ -362,7 +362,7 @@ public class Colorimetry extends Shutter {
 			if (eq != "")
 				eq += ",";
 
-			eq += "colortemperature=" + VideoPlayer.sliderBalance.getValue(); 
+			eq += "colortemperature=" + (int) (13000 - VideoPlayer.sliderBalance.getValue()); 
 		}
 		
 		return eq;
@@ -375,7 +375,7 @@ public class Colorimetry extends Shutter {
 			if (eq != "")
 				eq += ",";
 
-			eq += "hue=h=" + VideoPlayer.sliderHUE.getValue(); 
+			eq += "hue=h=" + (0 - VideoPlayer.sliderHUE.getValue()); 
 		}
 		
 		return eq;

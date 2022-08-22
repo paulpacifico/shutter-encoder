@@ -447,7 +447,7 @@ public class FunctionUtils extends Shutter {
 	public static void setMerge(String fileName, String extension, String output) {
 					
 		File concatFile = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 
-		
+				
 		try {			
 			mergeDuration = 0;
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
@@ -488,9 +488,9 @@ public class FunctionUtils extends Shutter {
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
 			progressBar1.setMaximum((int) (mergeDuration / 1000));
 			
-			FFPROBE.totalLength = progressBar1.getMaximum();
+			FFPROBE.totalLength = mergeDuration;
 			FFMPEG.dureeTotale = progressBar1.getMaximum();
-			
+						
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -646,7 +646,7 @@ public class FunctionUtils extends Shutter {
 	
 	public static String setMetadatas() { 
 		
-		String metadata = " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
+		String metadata = " -strict unofficial -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 				
 		if (casePreserveMetadata.isSelected())
 		{
@@ -760,15 +760,15 @@ public class FunctionUtils extends Shutter {
 				{
 					filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
 				}
-	        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
+	        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.stereo == false)
 	        	{
 	        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
 	        	}
-	        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.surround == false)
+	        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.surround == false)
 	        	{
 	        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
 	        	}
-	        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && debitAudio.getSelectedItem().toString().equals("0") == false)
+	        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")))
 	        	{
 	        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' + "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
 	        	}
@@ -792,15 +792,15 @@ public class FunctionUtils extends Shutter {
 			{
 				filterComplex = " -map v:0" + audio;
 			}
-        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.stereo == false)
+        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.stereo == false)
         	{
         		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
         	}
-        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && debitAudio.getSelectedItem().toString().equals("0") == false && FFPROBE.surround == false)
+        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.surround == false)
         	{
         		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
         	}
-        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && debitAudio.getSelectedItem().toString().equals("0") == false)
+        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")))
         	{
         		filterComplex = audio + " -map v:0 -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
         	}

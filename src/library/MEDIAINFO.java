@@ -170,9 +170,11 @@ public static Thread runProcess;
 					   			
 					   }
 					   
-					   	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + StrTotal.toString().replace(htmlSize, informationsFrameSize));
-				       	content.setBackground(new Color(245,245,245));
-				       	content.setForeground(Color.BLACK);
+					   	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator()
+					   	+ StrTotal.toString().replace(htmlSize, informationsFrameSize).replace("<body>", "<body style=background-color:rgb(45,45,45);>").replace("border:1px solid Navy", "border-bottom:1px solid rgb(65,65,65); border-top:1px solid rgb(65,65,65)"));
+					   	
+				       	content.setBackground(new Color(45,45,45));
+				       	content.setForeground(Color.WHITE);
 				       	content.setOpaque(true);
 				       		
 				       	JScrollPane scrollPane = new JScrollPane();

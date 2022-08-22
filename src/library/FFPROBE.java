@@ -280,7 +280,7 @@ public static int gopSpace = 124;
 
 							 //Codec vidéo
 							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
-							videoCodec = splitVideo[1];
+							videoCodec = splitVideo[1].replace(",", "");
 
 							//Création de la waveform pour le lecteur vidéo
 				            audioOnly = false;
@@ -1079,6 +1079,10 @@ public static int gopSpace = 124;
 				int min = Integer.parseInt(textM.getText());
 				int sec = Integer.parseInt(textS.getText());
 				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
+				
+				if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+					audio = 1536;
+				
 				int video =  Integer.parseInt(debitVideo.getSelectedItem().toString());
 				float resultVideo = (float) video / 8 / 1024;
 				float resultAudio =  (float) (audio*multi) / 8 / 1024;

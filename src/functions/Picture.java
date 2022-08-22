@@ -325,9 +325,17 @@ public class Picture extends Shutter {
 			return " -q:v " + q;
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".webp"))
+		{
 			return " -quality " + comboImageQuality.getSelectedItem().toString().replace("%", "");
+		}
+		else if (comboFilter.getSelectedItem().toString().equals(".avif"))
+		{
+			return " -crf " +  Math.round((float) 63 - (float) ((float) ((float) Integer.valueOf(comboImageQuality.getSelectedItem().toString().replace("%", "")) * 63) / 100));
+		}
 		else
+		{
 			return " -q:v 0";
+		}
 	}
 	
 	private static String setExtension() {			

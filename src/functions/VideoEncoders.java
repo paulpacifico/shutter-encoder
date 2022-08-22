@@ -332,6 +332,9 @@ public class VideoEncoders extends Shutter {
 						
 						//GOP
 						String gop = AdvancedFeatures.setGOP();
+						
+						//CABAC
+						String cabac = AdvancedFeatures.setCABAC();
 												
 						//Interlace
 			            String options = AdvancedFeatures.setOptions();
@@ -736,7 +739,7 @@ public class VideoEncoders extends Shutter {
 						}
 						
 						//Command
-						String cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
+						String cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 										
 						//Screen capture
 						if (inputDeviceIsRunning)

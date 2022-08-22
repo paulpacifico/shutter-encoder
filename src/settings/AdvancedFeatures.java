@@ -410,6 +410,16 @@ public class AdvancedFeatures extends Shutter {
         return "";
 	}
 	
+	public static String setCABAC() {
+		        
+        if (caseCABAC.isSelected())
+        {
+        	return " -coder:v vlc";
+        }
+        
+        return "";
+	}
+	
 	public static String setDecimate(String filterComplex) {
 	
 		switch (comboFonctions.getSelectedItem().toString())
@@ -643,6 +653,11 @@ public class AdvancedFeatures extends Shutter {
 		
 		String flags = " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
 		
+		if (Settings.comboSync.getSelectedItem().equals("auto") == false && caseDecimate.isSelected() == false)
+		{
+			flags += " -vsync " + Settings.comboSync.getSelectedItem();	
+		}
+		
 		switch (comboFonctions.getSelectedItem().toString())
 		{	
 			case "H.265":	
@@ -718,8 +733,10 @@ public class AdvancedFeatures extends Shutter {
 		            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
 		        }
 		        else if (lblVBR.getText().equals("CBR"))
+		        {
 		        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
-	        
+		        }
+		        
 	        	break;
 	        
 			case "H.265":
@@ -742,7 +759,9 @@ public class AdvancedFeatures extends Shutter {
 		            	options += ":strict-cbr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
 		        }
 		        else if (lblVBR.getText().equals("CBR"))
-		    		options = " -x265-params strict-cbr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
+		        {
+		        	options = " -x265-params strict-cbr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
+		        }
 
 				break;
 		}

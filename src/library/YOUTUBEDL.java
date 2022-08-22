@@ -94,7 +94,6 @@ public static String format = "";
 							{
 								macVersion = macVersion.substring(0,4);
 							}
-							System.out.println(macVersion);
 							
 							youtubedl = "yt-dlp_macos";
 							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
@@ -205,8 +204,18 @@ public static String format = "";
 						String youtubedl = "yt-dlp";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
+							String macVersion = System.getProperty("os.version").replace(".", "");
+							if (macVersion.length() < 4)
+							{
+								macVersion = macVersion + "0";
+							}
+							else if (macVersion.length() > 4)
+							{
+								macVersion = macVersion.substring(0,4);
+							}
+							
 							youtubedl = "yt-dlp_macos";
-							if (Integer.parseInt(System.getProperty("os.version").replace(".", "")) < 1015)
+							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
 							{
 								youtubedl = "youtube-dl";
 							}
@@ -284,8 +293,18 @@ public static String format = "";
 						String youtubedl = "yt-dlp";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
+							String macVersion = System.getProperty("os.version").replace(".", "");
+							if (macVersion.length() < 4)
+							{
+								macVersion = macVersion + "0";
+							}
+							else if (macVersion.length() > 4)
+							{
+								macVersion = macVersion.substring(0,4);
+							}
+							
 							youtubedl = "yt-dlp_macos";
-							if (Integer.parseInt(System.getProperty("os.version").replace(".", "")) < 1015)
+							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
 							{
 								youtubedl = "youtube-dl";
 							}
