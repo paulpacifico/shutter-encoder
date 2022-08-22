@@ -2439,7 +2439,7 @@ public class Utils extends Shutter {
 				subs.delete();
 		}	
 		
-		//Suppression de vidstab
+		//Delete vidstab
 		File vidstab;
 		if (System.getProperty("os.name").contains("Windows"))
 			vidstab = new File("vidstab.trf");
@@ -2449,7 +2449,7 @@ public class Utils extends Shutter {
 		if (vidstab.exists())
 			vidstab.delete();
 		
-		//Suppression du media offline
+		//Delete media offline
 		File file = new File(dirTemp + "offline.png");
 		if (file.exists())
 			file.delete();
@@ -2465,6 +2465,11 @@ public class Utils extends Shutter {
 			stats_file = new File("stats_file");					
 		if (stats_file.exists())
 			stats_file.delete();
+		
+		//Image sequence
+		File concat = new File(Shutter.dirTemp + "concat.txt");					
+		if (concat.exists())
+			concat.delete();
 		
 	}
 	

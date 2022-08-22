@@ -94,6 +94,7 @@ import library.MEDIAINFO;
 				
 		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
 		lblWait.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
+		lblWait.setForeground(Color.WHITE);
 		lblWait.setSize(lblWait.getPreferredSize().width, 40);
 		lblWait.setLocation(frame.getSize().width / 2 - lblWait.getSize().width / 2, frame.getSize().height / 2);
 		lblWait.setVisible(true);
@@ -228,7 +229,8 @@ import library.MEDIAINFO;
         	
 	}
 	
-	public static void addTabControl() {		
+	public static void addTabControl() {	
+		
 		tabPanel = new JPanel();			
 		tabPanel.setBackground(new Color(45, 45, 45));
 		tabPanel.setFont(new Font("SansSerif", Font.PLAIN, 12));

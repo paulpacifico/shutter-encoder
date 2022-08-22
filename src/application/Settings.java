@@ -113,7 +113,9 @@ public class Settings {
 	private JLabel lblGpuDecoding = new JLabel(Shutter.language.getProperty("lblGpuDecoding"));
 	public static JComboBox<String> comboGPU = new JComboBox<String>(new String[] {"auto", Shutter.language.getProperty("aucun")} );
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
-	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});
+	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});	
+	private JLabel lblSyncMode = new JLabel(Shutter.language.getProperty("lblSyncMode"));
+	public static JComboBox<String> comboSync = new JComboBox<String>(new String [] {"auto", "passthrough", "cfr", "vfr", "drop"});	
 	private JLabel lblLanguage = new JLabel(Shutter.language.getProperty("lblLanguage"));
 	private JLabel lblTheme = new JLabel(Shutter.language.getProperty("lblTheme"));
 	private static JPanel accentColor = new JPanel();
@@ -145,6 +147,7 @@ public class Settings {
 	public static JLabel lblDestination3 = new JLabel(); 
 	public static int videoPlayerVolume = 50;
 	public static boolean videoPlayerCasePlaySound = true;
+	public static boolean videoPlayerCaseVuMeter = true;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
@@ -173,6 +176,7 @@ public class Settings {
 		lastUsedOutput3.setName("lastUsedOutput3");
 		comboGPU.setName("comboGPU");
 		comboScale.setName("comboScale");
+		comboSync.setName("comboSync");
 		txtThreads.setName("txtThreads");
 		txtScreenRecord.setName("txtScreenRecord");
 		txtInputDevice.setName("txtInputDevice");
@@ -510,8 +514,19 @@ public class Settings {
 		comboScale.setMaximumRowCount(10);
 		frame.getContentPane().add(comboScale);
 		
+		lblSyncMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblSyncMode.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblSyncMode.getPreferredSize().width, 16);
+		frame.getContentPane().add(lblSyncMode);
+		
+		comboSync.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboSync.setEditable(false);
+		comboSync.setSelectedItem("auto");
+		comboSync.setBounds(lblSyncMode.getX() + lblSyncMode.getWidth() + 6, lblSyncMode.getLocation().y - 4, comboSync.getPreferredSize().width, 22);
+		comboSync.setMaximumRowCount(10);
+		frame.getContentPane().add(comboSync);
+		
 		lblScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblScreenRecord.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
+		lblScreenRecord.setBounds(12, lblSyncMode.getLocation().y + lblSyncMode.getHeight() + 10, lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
 		frame.getContentPane().add(lblScreenRecord);
 		
 		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
@@ -749,7 +764,7 @@ public class Settings {
 		});
 					
 		defaultOutput1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		defaultOutput1.setBounds(12,  lblLanguage.getLocation().y + lblLanguage.getHeight() + 14, defaultOutput1.getPreferredSize().width, defaultOutput1.getPreferredSize().height);
+		defaultOutput1.setBounds(12,  lblLanguage.getLocation().y + lblLanguage.getHeight() + 10, defaultOutput1.getPreferredSize().width, defaultOutput1.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput1);
 
 		if (lastUsedOutput1.isSelected())
@@ -1609,6 +1624,12 @@ public class Settings {
 						videoPlayerCasePlaySound = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 					}
 					
+					//caseVuMeter video player
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseVuMeter"))
+					{
+						videoPlayerCaseVuMeter = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}				
+					
 					//FTP
 					if (eElement.getParentNode().getNodeName().equals("Ftp"))
 					{		
@@ -1937,6 +1958,30 @@ public class Settings {
 				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.casePlaySound.isSelected())));
 			else
 				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCasePlaySound)));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//caseVuMeter video player
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("caseVuMeter"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			if (VideoPlayer.caseVuMeter != null)
+				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseVuMeter.isSelected())));
+			else
+				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCaseVuMeter)));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);

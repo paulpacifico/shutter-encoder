@@ -315,6 +315,7 @@ public class Shutter {
 	protected static JCheckBox caseAlpha;
 	protected static JCheckBox caseGOP;
 	protected static JTextField gopSize;
+	protected static JCheckBox caseCABAC;
 	protected static JCheckBox caseForceLevel;
 	protected static JCheckBox caseForcePreset;
 	protected static JCheckBox caseForceTune;
@@ -743,20 +744,75 @@ public class Shutter {
 									{
 										BMXTRANSWRAP.process.destroy();
 									}
+									
 									if (Ftp.isRunning) {
 										try {
 											Ftp.ftp.abort();
-										} catch (IOException e1) {
-											System.out.println(e1);
-										}
+										} catch (IOException e1) {}
 									}
+									
 									if (Wetransfer.isRunning) {
 										try {
 											Wetransfer.process.destroy();
-										} catch (Exception e1) {
-											System.out.println(e1);
-										}
+										} catch (Exception e1) {}
 									}
+									
+									if (SceneDetection.outputFolder != null && SceneDetection.outputFolder.exists())
+										SceneDetection.deleteDirectory(SceneDetection.outputFolder);
+
+									// Suppression des SRT temporaires
+									String rootPath = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();					
+									if (System.getProperty("os.name").contains("Windows"))
+									{
+										rootPath = rootPath.substring(1,rootPath.length()-1);
+										rootPath = rootPath.substring(0,(int) (rootPath.lastIndexOf("/"))).replace("%20", " ");
+									}
+									else
+									{
+										rootPath = dirTemp;
+									}
+									
+									for (File subs : new File(rootPath).listFiles())
+									{
+										if (subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("srt")
+										|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("vtt")
+										|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("ssa")
+										|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("ass")
+										|| subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("scc"))
+											subs.delete();
+									}	
+									
+									//Delete vidstab
+									File vidstab;
+									if (System.getProperty("os.name").contains("Windows"))
+										vidstab = new File("vidstab.trf");
+									else							    		
+										vidstab = new File(Shutter.dirTemp + "vidstab.trf");
+									
+									if (vidstab.exists())
+										vidstab.delete();
+									
+									//Delete media offline
+									File file = new File(dirTemp + "offline.png");
+									if (file.exists())
+										file.delete();
+									
+									//Delete preview file
+									file = VideoPlayer.preview;
+									if (file.exists())
+										file.delete();
+									
+									//Stats_file
+									File stats_file = new File(Shutter.dirTemp + "stats_file");					
+									if (System.getProperty("os.name").contains("Windows"))
+										stats_file = new File("stats_file");					
+									if (stats_file.exists())
+										stats_file.delete();
+									
+									//Image sequence
+									File concat = new File(Shutter.dirTemp + "concat.txt");					
+									if (concat.exists())
+										concat.delete();
 					            }
 					        });
 						}
@@ -1727,6 +1783,7 @@ public class Shutter {
 					new Informations();
 				else
 					Informations.frame.setVisible(true);
+				
 				if (Informations.infoTabbedPane.getTabCount() == 0)
 					Utils.changeFrameVisibility(Informations.frame, false);
 
@@ -2590,7 +2647,7 @@ public class Shutter {
 					} else {
 
 						//Scan dossier
-						if(scan.getText().equals(language.getProperty("menuItemStopScan")) && scanIsRunning == false)
+						if (scan.getText().equals(language.getProperty("menuItemStopScan")) && scanIsRunning == false)
 								JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("dragFolderToDestination"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.INFORMATION_MESSAGE);
 						else
 						{
@@ -3197,7 +3254,7 @@ public class Shutter {
 		});
 
 		String AllFilters[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4", ".mov",
-				".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp"};
+				".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp", ".avif" };
 		comboFilter = new JComboBox<Object>(AllFilters);
 		comboFilter.setVisible(false);
 		comboFilter.setName("comboFilter");
@@ -3224,10 +3281,10 @@ public class Shutter {
 							caseFastStart.setEnabled(false);
 					}
 										
-					// Add quality selection for .webp
+					// Add quality selection for .webp .avif
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 					{
-						if (comboFilter.getSelectedItem().toString().equals(".webp"))
+						if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
 						{
 							grpResolution.add(lblImageQuality);
 							grpResolution.add(comboImageQuality);
@@ -6472,7 +6529,7 @@ public class Shutter {
 			public void actionPerformed(ActionEvent e) {
 
 				if (liste.getSize() == 0)
-				{
+				{										
 					if (VideoPlayer.frame == null || VideoPlayer.frame.isVisible() == false)
 					{
 						caseInAndOut.setSelected(false);
@@ -6511,8 +6568,38 @@ public class Shutter {
 				}
 				else
 				{
+					//Scan dossier
+					if (scan.getText().equals(language.getProperty("menuItemStopScan")))
+					{
+						if (scanIsRunning)
+						{
+							boolean isFile = false;
+							
+							File dir = new File(Shutter.liste.firstElement());
+							for (File f : dir.listFiles())
+							{
+								if (f.isHidden() == false && f.isFile())
+								{
+									isFile = true;
+									break;
+								}
+							}
+							
+							if (isFile == false)
+							{
+								caseInAndOut.setSelected(false);
+								JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+							}
+						}
+						else
+						{
+							caseInAndOut.setSelected(false);
+							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("dragFolderToDestination"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.INFORMATION_MESSAGE);	
+						}
+					}
+					
 					if (caseInAndOut.isSelected())
-					{						
+					{								
 						if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString()) 
 						|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString()))
 						{
@@ -7385,8 +7472,17 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (comboAudioCodec.getSelectedItem().toString().contains("PCM") || comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+				if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
 				{
+					lblAudioBitrate.setText(language.getProperty("lblValue"));
+					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] {"0","1","2","3","4","5","6","7","8","9","10","11","12"}));
+					comboAudioBitrate.setSelectedIndex(5);	
+					debitAudio.setModel(comboAudioBitrate.getModel());
+					debitAudio.setSelectedIndex(5);
+				}
+				else if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
+				{
+					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] {"1536"}));
 					comboAudioBitrate.setSelectedIndex(0);
 					if (comboFonctions.getSelectedItem().toString().equals("MJPEG") || comboFonctions.getSelectedItem().toString().contains("H.26"))
@@ -7397,6 +7493,7 @@ public class Shutter {
 				}
 				else if (comboAudioCodec.getSelectedItem().toString().equals("AAC") || comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 				{
+					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64"}));
 					comboAudioBitrate.setSelectedIndex(1);
 					debitAudio.setModel(comboAudioBitrate.getModel());
@@ -7404,6 +7501,7 @@ public class Shutter {
 				}
 				else if (comboAudioCodec.getSelectedItem().toString().equals("AC3") || comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 				{
+					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "640", "448", "384", "320", "256", "192", "128", "96", "64"}));					
 					comboAudioBitrate.setSelectedIndex(2);
 					debitAudio.setModel(comboAudioBitrate.getModel());
@@ -7411,6 +7509,7 @@ public class Shutter {
 				}
 				else if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
 				{
+					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] {"0"}));					
 					comboAudioBitrate.setSelectedIndex(0);
 					debitAudio.setModel(comboAudioBitrate.getModel());
@@ -7418,6 +7517,7 @@ public class Shutter {
 				}	
 				else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
 				{
+					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "256", "192", "128", "96", "64"}));
 					comboAudioBitrate.setSelectedIndex(1);
 					debitAudio.setModel(comboAudioBitrate.getModel());
@@ -7425,6 +7525,7 @@ public class Shutter {
 				}
 				else //Codecs de sortie
 				{
+					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64"}));
 					comboAudioBitrate.setSelectedIndex(1);
 					debitAudio.setModel(comboAudioBitrate.getModel());
@@ -7434,7 +7535,13 @@ public class Shutter {
 				if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 				{
 					if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
+					{
 						comboFilter.setSelectedIndex(1);
+					}
+					else if (comboAudioCodec.getSelectedItem().toString().contains("FLAC"))
+					{
+						comboFilter.setSelectedIndex(2);
+					}
 				}
 			}
 			
@@ -9590,6 +9697,11 @@ public class Shutter {
 			}
 		});
 		
+		caseCABAC = new JCheckBox(language.getProperty("caseCABAC"));
+		caseCABAC.setName("caseCABAC");
+		caseCABAC.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseCABAC.setSize(caseCABAC.getPreferredSize().width + 4, 23);
+		
 		caseForceLevel = new JCheckBox(language.getProperty("caseForceLevel"));
 		caseForceLevel.setName("caseForceLevel");
 		caseForceLevel.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -11416,6 +11528,7 @@ public class Shutter {
 				caseAlpha.setSelected(false);
 				caseGOP.setSelected(false);
 				gopSize.setEnabled(false);
+				caseCABAC.setSelected(false);
 				gopSize.setText("250");
 				caseChunks.setSelected(false);
 				chunksSize.setEnabled(false);
@@ -11655,7 +11768,8 @@ public class Shutter {
 		
 		lblArrows = new JLabel("▲▼");
 		lblArrows.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 15));
-		lblArrows.setSize(lblArrows.getPreferredSize().width, 20);
+		lblArrows.setSize(lblArrows.getPreferredSize().width + 4, 20);
+		lblArrows.setHorizontalAlignment(SwingConstants.CENTER);
 		lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, statusBar.getSize().height - lblArrows.getSize().height);
 		statusBar.add(lblArrows);
 		
@@ -13529,8 +13643,19 @@ public class Shutter {
 							gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
 							grpAdvanced.add(gopSize);
 							
-							caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
-							grpAdvanced.add(caseDecimate);
+							if ("H.264".equals(function))
+							{
+								caseCABAC.setLocation(7, caseGOP.getLocation().y + 17);
+								grpAdvanced.add(caseCABAC);
+								
+								caseDecimate.setLocation(7, caseCABAC.getLocation().y + 17);
+								grpAdvanced.add(caseDecimate);
+							}
+							else
+							{
+								caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
+								grpAdvanced.add(caseDecimate);
+							}
 									
 							caseConform.setLocation(7, caseDecimate.getLocation().y + 17);
 							grpAdvanced.add(caseConform);
@@ -14125,8 +14250,8 @@ public class Shutter {
 										"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
 							}
 							
-							// Ajout de la quality pour l'extension .webp
-							if (comboFilter.getSelectedItem().toString().equals(".webp"))
+							// Ajout de la quality pour l'extension .webp & .avif
+							if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
 							{
 								grpResolution.add(lblImageQuality);
 								grpResolution.add(comboImageQuality);
@@ -14294,7 +14419,7 @@ public class Shutter {
 			lblFilter.setIcon(null);
 			
 			final String types[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
-					".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
+					".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp", ".avif" };
 			final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 			comboFilter.setModel(model);
 			comboFilter.setSelectedIndex(0);
@@ -14724,7 +14849,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".bmp", ".ico", ".webp" };
+				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".bmp", ".ico", ".webp", ".avif" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -14762,7 +14887,7 @@ public class Shutter {
 				}
 				
 				final String types[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",
-						".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp" };
+						".mov", ".mkv", ".mts", ".mxf", ".mpg", ".jpg", ".png", ".tif", ".cr2", ".nef", ".psd", ".webm", ".webp", ".avif" };
 				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);				
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false)
 				{
@@ -15077,7 +15202,7 @@ public class Shutter {
 				components[i].setEnabled(true);
 		}		
 		
-		//.webp
+		//.webp .avif
 		comboImageQuality.setEnabled(true);
 		
 		if (caseCreateSequence.isSelected())
@@ -15396,7 +15521,6 @@ public class Shutter {
 		{
 			RenderQueue.tableRow.setRowCount(0);
 		}
-
 						
 		enableAll();
 		Utils.yesToAll = false;
