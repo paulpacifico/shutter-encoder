@@ -86,6 +86,27 @@ public class Rewrap extends Shutter {
 						//InOut		
 						InputAndOutput.getInputAndOutput();	
 						
+						//Framerate
+						String frameRate = "";						
+						if (comboFilter.getSelectedItem().toString().equals(".mxf"))
+						{
+							if (FFPROBE.currentFPS == 59.94f)
+							{
+								frameRate = " -r 60000/1001";
+							}
+							else if (FFPROBE.currentFPS == 29.97f)
+							{
+								frameRate = " -r 30000/1001";
+							}
+							else if (FFPROBE.currentFPS == 23.976f)
+							{
+								frameRate = " -r 24000/1001";
+							}
+							else
+								frameRate = " -r " + FFPROBE.currentFPS;
+																	
+						}
+						
 						//Subtitles
 						subtitles = setSubtitles();
 						
@@ -98,8 +119,7 @@ public class Rewrap extends Shutter {
 							extensionName = "_" + Shutter.language.getProperty("cutUpper");
 						}
 						else
-						{	
-							
+						{								
 							//Output extension
 							newExtension = comboFilter.getSelectedItem().toString();
 						}
@@ -164,7 +184,7 @@ public class Rewrap extends Shutter {
 								concat = " -noaccurate_seek";
 														
 							//Command
-							String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
+							String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 							
 							do
