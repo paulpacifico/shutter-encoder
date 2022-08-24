@@ -52,7 +52,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
-import javax.swing.border.LineBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
@@ -65,7 +64,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.ListSelectionModel;
@@ -92,7 +90,6 @@ public class Functions {
 	
 	public static File functionsFolder = new File(Shutter.documents + "/Functions");
 
-	@SuppressWarnings("serial")
 	public Functions() {
 		
 		frame = new JFrame();
@@ -203,26 +200,8 @@ public class Functions {
 		lblDrop.setVisible(false);
 		frame.getContentPane().add(lblDrop);
 		
-		listeDeFonctions = new JList<String>(liste)
-		{
-			 Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra.jpg")).getImage();
-	         {
-	            setOpaque(false);
-	         }
-	         public void paintComponent(Graphics g) {
-	        	 super.paintComponent(g);
-	             int iw = image.getWidth(this);
-	             int ih = image.getHeight(this);
-	             if (iw > 0 && ih > 0) {
-	                 for (int x = 0; x < getWidth(); x += iw) {
-	                     for (int y = 0; y < getHeight(); y += ih) {
-	                         g.drawImage(image, x, y, iw, ih, this);
-	                     }
-	                 }
-	             }
-	            super.paintComponent(g);
-	         }
-		};
+		listeDeFonctions = new JList<String>(liste);
+		listeDeFonctions.setBackground(new Color(185,185,185));
 		listeDeFonctions.setForeground(Color.BLACK);
 		listeDeFonctions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listeDeFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
@@ -719,30 +698,31 @@ public class Functions {
 	    }
 }
 
-//Modifications de la liste de fonctions
+// Editing functions list
 @SuppressWarnings("serial")
 class FonctionsRenderer extends DefaultListCellRenderer {
   @Override
-  public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
-          int index, boolean isSelected, boolean cellHasFocus) {
-      super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);   
-	      ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png"));
-	      ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(15, 15 , Image.SCALE_SMOOTH));		
-	      setIcon(icon);
-	      setFont(new Font("SansSerif", Font.PLAIN, 12));
-	      setForeground(Color.BLACK);
-	      
-	      if (isSelected)
-	      {
-	    	  setBackground(new Color(215,215,215));  
-	    	  setBorder(new LineBorder(Utils.highlightColor));
-	    	  setOpaque(true);
-	      }
-	      else
-	      {
-	    	  setBorder(new LineBorder(new Color(204,204,204,0)));
-	    	  setOpaque(false);
-	      }
+  public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+  {
+      	super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);   
+	    ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png"));
+	    ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(15, 15 , Image.SCALE_SMOOTH));		
+	    setIcon(icon);
+	    setFont(new Font("SansSerif", Font.PLAIN, 12));
+	    setForeground(Color.BLACK);
+		setOpaque(true);
+			
+		if (isSelected)
+		{
+			setBackground(new Color(215, 215, 215));
+		}
+		else
+		{			
+			if (index % 2 == 1)
+				setBackground(new Color(185, 185, 185));
+			else
+				setBackground(new Color(191, 191, 191));
+		}
       return this;
   }
 }

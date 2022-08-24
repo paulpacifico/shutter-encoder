@@ -117,7 +117,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.TransferHandler;
-import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -1376,28 +1375,8 @@ public class Shutter {
 	@SuppressWarnings("unchecked")
 	private void grpChooseFiles() {
 			
-		fileList = new JList<String>(liste) {
-			Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra.jpg")).getImage();
-			{
-				setOpaque(false);
-			}
-			
-			public void paintComponent(Graphics g) {
-
-				super.paintComponent(g);
-				int iw = image.getWidth(this);
-				int ih = image.getHeight(this);
-				if (iw > 0 && ih > 0) {
-					for (int x = 0; x < getWidth(); x += iw) {
-						for (int y = 0; y < getHeight(); y += ih) {
-							g.drawImage(image, x, y, iw, ih, this);
-						}
-					}
-				}
-				super.paintComponent(g);
-			}
-		};
-		fileList.setForeground(Color.BLACK);
+		fileList = new JList<String>(liste);
+		fileList.setBackground(new Color(185,185,185));
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
 		fileList.setBounds(10, 50, 292, 255);
@@ -1405,7 +1384,7 @@ public class Shutter {
 				
 		addToList.setText(language.getProperty("dropFilesHere"));
 		addToList.setSize(fileList.getSize());
-		addToList.setForeground(new Color(150,150,150));
+		addToList.setForeground(new Color(120,120,120));
 		addToList.setBackground(new Color(0,0,0,0));
 		addToList.setFont(new Font(freeSansFont, Font.PLAIN, 16));
 		addToList.setHorizontalAlignment(SwingConstants.CENTER);
@@ -15657,18 +15636,21 @@ class FilesCellRenderer extends JLabel implements ListCellRenderer {
 		
 		setFont(new Font("SansSerif", Font.PLAIN, 12));
 		setForeground(Color.BLACK);
+		setOpaque(true);
 		
-		if (isSelected) {
+		if (isSelected)
+		{
 			setBackground(new Color(215, 215, 215));
-			setBorder(new LineBorder(Utils.highlightColor));
-			setOpaque(true);
-		} else {
-			setBorder(new LineBorder(new Color(204,204,204,0)));
-			setOpaque(false);
+		}
+		else
+		{			
+			if (index % 2 == 1)
+				setBackground(new Color(185, 185, 185));
+			else
+				setBackground(new Color(191, 191, 191));
 		}
 		return this;
 	}
-
 }
 
 // Editing functions list
@@ -15772,6 +15754,23 @@ class ListeFileTransferHandler extends TransferHandler {
 								{
 									if (file.isHidden() == false)
 									{			
+										boolean allowed = true;
+										if (Settings.btnExclude.isSelected())
+										{	
+											for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
+											{
+												if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+												{
+													allowed = false;
+													break;
+												}
+											}	
+											
+											if (allowed == false)
+											{
+												continue;//Next
+											}
+										}	
 										
 										if (file.getCanonicalPath().toString().contains("\"") || file.getCanonicalPath().toString().contains("\'") || file.getName().contains("/") || file.getName().contains("\\"))
 										{
@@ -15785,29 +15784,10 @@ class ListeFileTransferHandler extends TransferHandler {
 											else if (q == 2) //Cancel
 												break;
 										}
-																				
-										if (Settings.btnExclude.isSelected())
-										{		
-											boolean allowed = true;
-											for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
-											{
-												if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
-													allowed = false;
-											}
-											
-											if (allowed)
-											{
-												Shutter.liste.addElement(file.getCanonicalPath().toString());	
-												Shutter.addToList.setVisible(false);
-												Shutter.lblFiles.setText(Utils.filesNumber());
-											}
-										}
-										else
-										{
-											Shutter.liste.addElement(file.getCanonicalPath().toString());
-											Shutter.addToList.setVisible(false);
-											Shutter.lblFiles.setText(Utils.filesNumber());
-										}
+										
+										Shutter.liste.addElement(file.getCanonicalPath().toString());	
+										Shutter.addToList.setVisible(false);
+										Shutter.lblFiles.setText(Utils.filesNumber());
 									}
 								}
 							}

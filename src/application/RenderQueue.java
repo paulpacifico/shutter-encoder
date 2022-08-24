@@ -24,7 +24,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -90,7 +89,6 @@ import settings.FunctionUtils;
 	private JLabel reduce;
 	private JLabel topImage;
 	private JLabel bottomImage;
-	private JPanel zebra;
 	public static JButton btnStartRender;
 	public static JTable table;
 	public static DefaultTableModel tableRow;
@@ -664,34 +662,11 @@ import settings.FunctionUtils;
 		
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(table);
-		scrollPane.setOpaque(false);
+		scrollPane.setBackground(new Color(185,185,185));
+		scrollPane.setOpaque(true);
 		scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
 		frame.getContentPane().add(scrollPane);
-		
-		zebra = new JPanel()
-		{
-            Image image = new ImageIcon(getClass().getClassLoader().getResource("contents/zebra.jpg")).getImage();
-	         {
-	            setOpaque(false);
-	         }
-	         
-	         public void paintComponent(Graphics g) {
-	        	 super.paintComponent(g);
-	             int iw = image.getWidth(this);
-	             int ih = image.getHeight(this);
-	             if (iw > 0 && ih > 0) {
-	                 for (int x = 0; x < getWidth(); x += iw) {
-	                     for (int y = 0; y < getHeight(); y += ih) {
-	                         g.drawImage(image, x, y, iw, ih, this);
-	                     }
-	                 }
-	             }
-	            super.paintComponent(g);
-	         }
-		};
-
-		frame.getContentPane().add(zebra);
 		
 		btnStartRender = new JButton(Shutter.language.getProperty("btnStartRender"));
 		btnStartRender.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -817,9 +792,7 @@ import settings.FunctionUtils;
 		btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
 		
 		scrollPane.setBounds(10, 38, frame.getWidth() - 20, frame.getHeight() - 74);
-		
-		zebra.setBounds(10, 43, frame.getWidth() - 20, frame.getHeight() - 79);
-		
+
 		quit.setBounds(frame.getSize().width - 20, 4, 15,15);	
 		fullscreen.setBounds(quit.getLocation().x - 20, 4, 15,15);
 		reduce.setBounds(fullscreen.getLocation().x - 20, 4, 15,15);
@@ -1019,28 +992,28 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 
 	private static final long serialVersionUID = 1L;
 
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) {
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
 
 	    Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 	    setHorizontalAlignment(JLabel.CENTER);
 	    setFont(new Font("SansSerif", Font.PLAIN, 12));
-	    setBackground(new Color(45, 45, 45));
 	    setForeground(Color.BLACK);
-	      
+		setOpaque(true);
+		
 	    if (isSelected)
 	    {
-	    	setBackground(new Color(215,215,215));  
-	    	setBorder(new LineBorder(Utils.highlightColor));
-	    	setOpaque(true);
-	    }
+			setBackground(new Color(215, 215, 215));
+		} 
 	    else
-	    {
-	    	setBackground(new Color(185,185,185));  
-	    	setBorder(new LineBorder(Color.LIGHT_GRAY));
-	    	setOpaque(true);
-	    }
+		{			
+			if (row % 2 == 1)
+				setBackground(new Color(185, 185, 185));
+			else
+				setBackground(new Color(191, 191, 191));
+		}
 
+	    setBorder(new LineBorder(new Color(0,0,0,0)));	    
 	    return c;
 	}
 }
