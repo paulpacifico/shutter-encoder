@@ -175,17 +175,17 @@ public class AdvancedFeatures extends Shutter {
 		    			profile = "high10";
 		            
 		        	String s[] = FFPROBE.imageResolution.split("x");
-		        	if (comboBitrateSize.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+		        	if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		        	{
-		        		if (comboBitrateSize.getSelectedItem().toString().contains("%"))
+		        		if (comboResolution.getSelectedItem().toString().contains("%"))
 						{
-							double value = (double) Integer.parseInt(comboBitrateSize.getSelectedItem().toString().replace("%", "")) / 100;
+							double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 							
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
 						else					
-							s = comboBitrateSize.getSelectedItem().toString().split("x");
+							s = comboResolution.getSelectedItem().toString().split("x");
 		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);
@@ -244,17 +244,17 @@ public class AdvancedFeatures extends Shutter {
 		        	}
 		        	
 		        	String s[] = FFPROBE.imageResolution.split("x");
-		        	if (comboBitrateSize.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+		        	if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		        	{
-		        		if (comboBitrateSize.getSelectedItem().toString().contains("%"))
+		        		if (comboResolution.getSelectedItem().toString().contains("%"))
 						{
-							double value = (double) Integer.parseInt(comboBitrateSize.getSelectedItem().toString().replace("%", "")) / 100;
+							double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 							
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
 						else					
-							s = comboBitrateSize.getSelectedItem().toString().split("x");
+							s = comboResolution.getSelectedItem().toString().split("x");
 		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);

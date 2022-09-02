@@ -32,15 +32,16 @@ import settings.FunctionUtils;
 
 public class Extract extends Shutter {
 	
-	private static int subStream = 0;	
-	private static boolean extractSubsComplete = false;
-	
+	private static int subStream = 0;		
 	private static int audioStream = 0;
-	private static boolean extractAudioComplete = false;
+	private static boolean extractComplete = false;
 	
 	public static void main() {
 		
-		Thread thread = new Thread(new Runnable(){			
+		extractComplete = false;
+		
+		Thread thread = new Thread(new Runnable() {			
+			
 			@Override
 			public void run() {
 				
@@ -49,6 +50,9 @@ public class Extract extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
+				audioStream = 0;				
+				subStream = 0;
+				
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
 					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
@@ -57,11 +61,11 @@ public class Extract extends Shutter {
 						break;
 		            
 					try {		
-					
+						
 						//Data analyze
 						if (FunctionUtils.analyze(file, false) == false)
-							continue;	
-
+							continue;
+						
 						String fileName = file.getName();
 						String extension =  fileName.substring(fileName.lastIndexOf("."));
 						
@@ -121,15 +125,42 @@ public class Extract extends Shutter {
 							Thread.sleep(100);
 						}
 						while(FFMPEG.runProcess.isAlive());
-						
-						
+																		
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
 						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 						{
 							if (lastActions(fileName, fileOut, labelOutput))
 								break;
 						}
-					
+						
+						//Loop the same file until the last audioStream				
+						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
+						{
+							if (audioStream < (FFPROBE.audioStreams - 1))
+							{
+								audioStream ++;
+								i --;
+							}
+							else
+							{
+								audioStream = 0;
+							}
+						}								
+						
+						//Loop the same file until the last subStream				
+						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
+						{
+							if (subStream < (FFPROBE.subtitleStreams - 1))
+							{
+								subStream ++;
+								i --;
+							}
+							else
+							{
+								subStream = 0;
+							}
+						}	
+				
 					} catch (InterruptedException e) {
 						FFMPEG.error  = true;
 					}
@@ -137,6 +168,8 @@ public class Extract extends Shutter {
 				
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 					enfOfFunction();
+				
+				extractComplete = true;
 			}
 			
 		});
@@ -150,108 +183,56 @@ public class Extract extends Shutter {
 		{
 			@Override
 			public void run() {
+				
+				//Extract video
 				comboFilter.setSelectedItem(language.getProperty("video"));
-				btnStart.doClick();
-				
-				FFMPEG.isRunning = true;
-				
+				Extract.main();			
+
 				if (cancelled == false && FFMPEG.error == false)
 				{
 					do {
 						try {
-							Thread.sleep(500);
+							Thread.sleep(100);
 						} catch (InterruptedException e1) {}
-					} while ((FFMPEG.isRunning || btnStart.isEnabled() == false) && cancelled == false && FFMPEG.error == false);
+					} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
 				}
 				
+				//Extract audio
 				if (FFPROBE.audioStreams > 0 && cancelled == false && FFMPEG.error == false)
 				{
 					comboFilter.setSelectedItem(language.getProperty("audio"));
-					extractAudio();
+					Extract.main();	
 					
-					do {
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException e1) {}
-					} while (extractAudioComplete == false);	
+					if (cancelled == false && FFMPEG.error == false)
+					{
+						do {
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e1) {}
+						} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
+					}
 				}
 
+				//Extract subs
 				if (FFPROBE.subtitleStreams > 0 && cancelled == false && FFMPEG.error == false)
 				{
 					comboFilter.setSelectedItem(language.getProperty("subtitles"));
-					extractSubs();
-					
-					do {
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException e1) {}
-					} while (extractSubsComplete == false);	
-				}
+					Extract.main();
+
+					if (cancelled == false && FFMPEG.error == false)
+					{
+						do {
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e1) {}
+						} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
+					}
+				}	
 				
-				comboFilter.setSelectedItem(language.getProperty("setAll"));				
+				comboFilter.setSelectedItem(language.getProperty("setAll"));
 			}										
 		});
 		wait.start();	
-	}
-	
-	public static void extractAudio() 
-	{
-		Thread wait = new Thread(new Runnable()
-		{
-			@Override
-			public void run() {
-								
-				audioStream = 0;
-				extractAudioComplete = false;
-				
-				do {
-					Extract.main();		
-					
-					do {
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException e1) {}
-					} while ((FFMPEG.isRunning || btnStart.isEnabled() == false) && cancelled == false && FFMPEG.error == false);
-					
-					audioStream ++;
-					
-				} while (audioStream < FFPROBE.audioStreams && cancelled == false && cancelled == false && FFMPEG.error == false);
-				
-				extractAudioComplete = true;				
-			}	
-			
-		});
-		wait.start();
-	}
-	
-	public static void extractSubs() 
-	{
-		Thread wait = new Thread(new Runnable()
-		{
-			@Override
-			public void run() {
-								
-				subStream = 0;
-				extractSubsComplete = false;
-				
-				do {
-					Extract.main();		
-					
-					do {
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException e1) {}
-					} while ((FFMPEG.isRunning || btnStart.isEnabled() == false) && cancelled == false && FFMPEG.error == false);
-					
-					subStream ++;
-					
-				} while (subStream < FFPROBE.subtitleStreams && cancelled == false && cancelled == false && FFMPEG.error == false);
-				
-				extractSubsComplete = true;				
-			}	
-			
-		});
-		wait.start();
 	}
 	
 	private static String setMapping() {

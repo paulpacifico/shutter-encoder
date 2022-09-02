@@ -285,7 +285,7 @@ public class VideoEncoders extends Shutter {
 						String subtitles = "";
 						if (grpBitrate.isVisible())
 						{
-							subtitles = Overlay.setSubtitles(comboBitrateSize, false);
+							subtitles = Overlay.setSubtitles(false);
 						}
 						else if (grpResolution.isVisible())
 						{
@@ -296,20 +296,20 @@ public class VideoEncoders extends Shutter {
 								case "DNxHD":
 								case "XDCAM HD422":
 									
-									subtitles = Overlay.setSubtitles(comboResolution, true);
+									subtitles = Overlay.setSubtitles(true);
 									
 									break;
 									
 								default:
 									
-									subtitles = Overlay.setSubtitles(comboResolution, false);
+									subtitles = Overlay.setSubtitles(false);
 									
 									break;
 							}
 						}
 						else if (comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{	
-							subtitles = Overlay.setSubtitles(null, false);	
+							subtitles = Overlay.setSubtitles(false);	
 						}
 						
 						//Interlace
@@ -341,27 +341,20 @@ public class VideoEncoders extends Shutter {
 				        
 						//Resolution
 						String resolution = "";						
-						if (grpBitrate.isVisible())
+						switch (comboFonctions.getSelectedItem().toString())
 						{
-							resolution = BitratesAdjustement.setResolution();	
-						}
-						else
-						{
-				            switch (comboFonctions.getSelectedItem().toString())
-							{
-				            	//Limit to Full HD
-								case "AVC-Intra 100":
-								case "DNxHD":
-								case "XDCAM HD422":
-									
-									resolution = Image.limitToFHD();									
-									break;
+			            	//Limit to Full HD
+							case "AVC-Intra 100":
+							case "DNxHD":
+							case "XDCAM HD422":
 								
-								case "DV PAL":
-									
-									resolution = " -s 720x576";									
-									break;
-							}
+								resolution = Image.limitToFHD();									
+								break;
+							
+							case "DV PAL":
+								
+								resolution = " -s 720x576";									
+								break;
 						}
 						
 			            //Colorspace
@@ -517,33 +510,26 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Image.setDAR(filterComplex);
 						
 						//Padding
-						if (grpBitrate.isVisible())
+						switch (comboFonctions.getSelectedItem().toString())
 						{
-							filterComplex = Image.setPad(filterComplex, true, comboBitrateSize, false);
-						}
-						else if (grpResolution.isVisible())
-						{
-							switch (comboFonctions.getSelectedItem().toString())
-							{
-								//Limit to Full HD
-								case "AVC-Intra 100":
-								case "DNxHD":
-								case "XDCAM HD422":
-									
-									if (FFPROBE.imageResolution.equals("1440x1080"))
-									{
-										filterComplex = Image.setPad(filterComplex, false, comboResolution, false);									
-									}
-									else
-										filterComplex = Image.setPad(filterComplex, false, comboResolution, true);			
-									
-									break;
-									
-								default:
-									
-									filterComplex = Image.setPad(filterComplex, false, comboResolution, false);									
-									break;
-							}
+							//Limit to Full HD
+							case "AVC-Intra 100":
+							case "DNxHD":
+							case "XDCAM HD422":
+								
+								if (FFPROBE.imageResolution.equals("1440x1080"))
+								{
+									filterComplex = Image.setPad(filterComplex, false);									
+								}
+								else
+									filterComplex = Image.setPad(filterComplex, true);			
+								
+								break;
+								
+							default:
+								
+								filterComplex = Image.setPad(filterComplex, false);									
+								break;
 						}										
 						
 						//Interlace50p
@@ -555,7 +541,7 @@ public class VideoEncoders extends Shutter {
 						//Overlay
 						if (grpBitrate.isVisible())
 						{
-							filterComplex = Overlay.setOverlay(filterComplex, comboBitrateSize, false);
+							filterComplex = Overlay.setOverlay(filterComplex, false);
 						}
 						else if (grpResolution.isVisible())
 						{							
@@ -566,18 +552,18 @@ public class VideoEncoders extends Shutter {
 								case "DNxHD":
 								case "XDCAM HD422":
 									
-									filterComplex = Overlay.setOverlay(filterComplex, comboResolution, true);									
+									filterComplex = Overlay.setOverlay(filterComplex, true);									
 									break;
 									
 								default:
 									
-									filterComplex = Overlay.setOverlay(filterComplex, comboResolution, false);									
+									filterComplex = Overlay.setOverlay(filterComplex, false);									
 									break;
 							}							
 						}
 						else if (comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{
-							filterComplex = Overlay.setOverlay(filterComplex, null, false);	 
+							filterComplex = Overlay.setOverlay(filterComplex, false);	 
 						}						
 						
 						//Limiter

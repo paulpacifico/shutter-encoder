@@ -21,33 +21,11 @@ package settings;
 
 import application.Shutter;
 import application.VideoPlayer;
-import library.FFPROBE;
 
 public class BitratesAdjustement extends Shutter {
 	
 	public static boolean DVD2Pass;
 	public static int DVDBitrate;
-	
-	public static String setResolution() {		
-				
-        if (comboBitrateSize.getSelectedItem().toString().equals(language.getProperty("source")))
-        {
-        	return "";
-        }
-        else
-        {
-        	String s[] = FFPROBE.imageResolution.split("x");
-    		
-        	if (comboBitrateSize.getSelectedItem().toString().contains("%"))
-			{
-				double value = (double) Integer.parseInt(comboBitrateSize.getSelectedItem().toString().replace("%", "")) / 100;
-				
-				return " -s " + (int) (Integer.parseInt(s[0]) * value) + "x" + (int) (Integer.parseInt(s[1]) * value);
-			}
-			else										
-				return " -s " + comboBitrateSize.getSelectedItem().toString();
-        }
-	}
 	
 	public static String setPass(String outputFile) {
 						

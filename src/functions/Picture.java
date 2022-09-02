@@ -142,7 +142,7 @@ public class Picture extends Shutter {
 						filterComplex = Corrections.setSmoothExposure(filterComplex);	
 						
 						//Overlay
-						filterComplex = Overlay.setOverlay(filterComplex, comboResolution, false);										
+						filterComplex = Overlay.setOverlay(filterComplex, false);										
 												
 						//Logo
 				        String logo = Overlay.setLogo();	            			            
@@ -157,7 +157,7 @@ public class Picture extends Shutter {
 				        filterComplex = Image.setCrop(filterComplex);
 						
 				        //Padding
-						filterComplex = Image.setPad(filterComplex, false, comboResolution, false);	           				
+						filterComplex = Image.setPad(filterComplex, false);	           				
 						
 						//filterComplex
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, "");		

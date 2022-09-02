@@ -19,8 +19,6 @@
 
 package settings;
 
-import javax.swing.JComboBox;
-
 import application.Shutter;
 import application.VideoPlayer;
 import library.FFPROBE;
@@ -100,122 +98,95 @@ public class Image extends Shutter {
 			return " -s 1920x1080";
 	}
 	
-	public static String setPad(String filterComplex, boolean isOutputCodec, JComboBox<String> comboScale, boolean limitToFHD) {	
+	public static String setPad(String filterComplex, boolean limitToFHD) {	
 		
-		if (isOutputCodec)
+		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
-			if (lblPad.getText().equals(language.getProperty("lblPad")) && comboBitrateSize.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+			String s[] = FFPROBE.imageResolution.split("x");	
+			
+			if (comboResolution.getSelectedItem().toString().contains("%"))
 			{
-				if (filterComplex != "")
-					filterComplex += "[c];[c]";
+				double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 				
-				String s[] = FFPROBE.imageResolution.split("x");	
-				if (comboBitrateSize.getSelectedItem().toString().contains("%"))
+				s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
+				s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+			}					
+			else
+				s = comboResolution.getSelectedItem().toString().split("x");
+			
+        	if (filterComplex != "") filterComplex += ",";
+			
+			if (lblPad.getText().equals(language.getProperty("lblCrop"))
+			|| comboFonctions.getSelectedItem().toString().equals("JPEG")
+			|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+			{
+				if (comboResolution.getSelectedItem().toString().contains(":"))
+		        {
+		        	if (comboResolution.getSelectedItem().toString().contains("auto"))
+		        	{
+		        		s = comboResolution.getSelectedItem().toString().split(":");
+		        		if (s[0].toString().equals("auto"))
+		        			filterComplex = "scale=-1:" + s[1];
+		        		else
+		        			filterComplex = "scale="+s[0]+":-1";
+		        	}
+		        	else
+		        	{
+			            s = comboResolution.getSelectedItem().toString().split(":");
+			    		float number =  (float) 1 / Integer.parseInt(s[0]);
+			    		filterComplex = "scale=iw*" + number + ":ih*" + number;
+		        	}
+		        }
+				else
+				{					
+					String i[] = FFPROBE.imageResolution.split("x");        	
+		
+		        	int iw = Integer.parseInt(i[0]);
+		        	int ih = Integer.parseInt(i[1]);          	
+		        	int ow = Integer.parseInt(s[0]);
+		        	int oh = Integer.parseInt(s[1]);        	
+		        	float ir = (float) iw / ih;
+		        	        	
+		        	//Original sup. à la sortie
+		        	if (iw > ow || ih > oh)
+		        	{
+		        		//Si la hauteur calculée est > à la hauteur de sortie
+		        		if ( (float) ow / ir >= oh)
+		        			filterComplex += "scale=" + ow + ":-1,crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
+		        		else
+		        			filterComplex += "scale=-1:" + oh + ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
+		        	}
+		        	else
+		        		filterComplex += "scale=" + ow + ":" + oh;
+				}
+			}
+			else
+			{
+				if (lblPad.getText().equals(language.getProperty("lblPad")))
 				{
-					double value = (double) Integer.parseInt(comboBitrateSize.getSelectedItem().toString().replace("%", "")) / 100;
-					
-					s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
-					s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
-				}					
-				else		
-					s = comboBitrateSize.getSelectedItem().toString().split("x");
-					
-				filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad="+s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
-				
+					filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad=" +s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+				}
+				else
+					filterComplex += "scale="+s[0]+":"+s[1];	
 			}
 			
-			return filterComplex;
 		}
-		else
+		else if (limitToFHD)
 		{
-			if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-			{
-				String s[] = FFPROBE.imageResolution.split("x");	
-				
-				if (comboScale.getSelectedItem().toString().contains("%"))
-				{
-					double value = (double) Integer.parseInt(comboScale.getSelectedItem().toString().replace("%", "")) / 100;
-					
-					s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
-					s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
-				}					
-				else
-					s = comboScale.getSelectedItem().toString().split("x");
-				
-	        	if (filterComplex != "") filterComplex += ",";
-				
-				if (lblPad.getText().equals(language.getProperty("lblCrop"))
-				|| comboFonctions.getSelectedItem().toString().equals("JPEG")
-				|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
-				{
-					if (comboScale.getSelectedItem().toString().contains(":"))
-			        {
-			        	if (comboScale.getSelectedItem().toString().contains("auto"))
-			        	{
-			        		s = comboScale.getSelectedItem().toString().split(":");
-			        		if (s[0].toString().equals("auto"))
-			        			filterComplex = "scale=-1:" + s[1];
-			        		else
-			        			filterComplex = "scale="+s[0]+":-1";
-			        	}
-			        	else
-			        	{
-				            s = comboScale.getSelectedItem().toString().split(":");
-				    		float number =  (float) 1 / Integer.parseInt(s[0]);
-				    		filterComplex = "scale=iw*" + number + ":ih*" + number;
-			        	}
-			        }
-					else
-					{					
-						String i[] = FFPROBE.imageResolution.split("x");        	
+			String s[] = "1920x1080".split("x");
 			
-			        	int iw = Integer.parseInt(i[0]);
-			        	int ih = Integer.parseInt(i[1]);          	
-			        	int ow = Integer.parseInt(s[0]);
-			        	int oh = Integer.parseInt(s[1]);        	
-			        	float ir = (float) iw / ih;
-			        	        	
-			        	//Original sup. à la sortie
-			        	if (iw > ow || ih > oh)
-			        	{
-			        		//Si la hauteur calculée est > à la hauteur de sortie
-			        		if ( (float) ow / ir >= oh)
-			        			filterComplex += "scale=" + ow + ":-1,crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
-			        		else
-			        			filterComplex += "scale=-1:" + oh + ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
-			        	}
-			        	else
-			        		filterComplex += "scale=" + ow + ":" + oh;
-					}
-				}
-				else
-				{
-					if (lblPad.getText().equals(language.getProperty("lblPad")))
-					{
-						filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad=" +s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
-					}
-					else
-						filterComplex += "scale="+s[0]+":"+s[1];	
-				}
-				
-			}
-			else if (limitToFHD)
+			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{
-				String s[] = "1920x1080".split("x");
-				
-				if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-				{
-					s = comboScale.getSelectedItem().toString().split("x");
-				}
-				
-				if (filterComplex != "") filterComplex += ",";
-				
-				filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad=" +s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+				s = comboResolution.getSelectedItem().toString().split("x");
 			}
-			else if (comboFilter.getSelectedItem().toString().equals(".ico"))
-			{
-				filterComplex = "scale=256x256";
-			}
+			
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad=" +s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+		}
+		else if (comboFilter.getSelectedItem().toString().equals(".ico"))
+		{
+			filterComplex = "scale=256x256";
 		}
 		
 		return filterComplex;

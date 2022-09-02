@@ -22,8 +22,9 @@ package settings;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
 import application.VideoPlayer;
@@ -49,6 +50,28 @@ public class Overlay extends Shutter {
 				 tc2 = VideoPlayer.TC2.getText();			
 				 tc3 = VideoPlayer.TC3.getText();		    
 				 tc4 = VideoPlayer.TC4.getText();
+			}
+			else if (VideoPlayer.caseShowTimecode.isSelected())
+			{
+				float tcH = Integer.valueOf(FFPROBE.timecode1);
+				float tcM = Integer.valueOf(FFPROBE.timecode2);
+				float tcS = Integer.valueOf(FFPROBE.timecode3);
+				float tcF = Integer.valueOf(FFPROBE.timecode4);
+				
+				tcH = tcH * 3600 * FFPROBE.currentFPS;
+				tcM = tcM * 60 * FFPROBE.currentFPS;
+				tcS = tcS * FFPROBE.currentFPS;
+				
+				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
+								
+				float offset = timeIn + (tcH + tcM + tcS + tcF);
+				
+				NumberFormat formatter = new DecimalFormat("00");
+				
+				tc1 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
+				tc2 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
+				tc3 = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
+				tc4 = formatter.format(Math.floor(offset % FFPROBE.currentFPS));
 			}
 			
 			String rate = String.valueOf(FFPROBE.currentFPS);
@@ -242,7 +265,7 @@ public class Overlay extends Shutter {
 		return filterComplex;
 	}
 
-	public static String setSubtitles(JComboBox<String> comboScale, boolean limitToFHD) {
+	public static String setSubtitles(boolean limitToFHD) {
 		
     	if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    	
@@ -262,39 +285,42 @@ public class Overlay extends Shutter {
 				if (VideoPlayer.btnI.getForeground() != Color.BLACK)
 					background += ",Italic=1";
 				
-				String i[] = FFPROBE.imageResolution.split("x");
+				String i[] = FFPROBE.imageResolution.split("x"); 
 				
 				//Set the input seeking
 				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());			
 				VideoPlayer.writeCurrentSubs(timeIn);
 				
-				if (limitToFHD || comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				if (limitToFHD || comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
 					String s[] = "1920x1080".split("x");
-					if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-						s = comboScale.getSelectedItem().toString().split("x");
-						
+					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+						s = comboResolution.getSelectedItem().toString().split("x");						
+
 					int iw = Integer.parseInt(i[0]);
 					int ih = Integer.parseInt(i[1]);
 					int ow = Integer.parseInt(s[0]);
-					int oh = Integer.parseInt(s[1]);      
-
+					int oh = Integer.parseInt(s[1]);  
+					
 					int width = (int) ((float) Integer.parseInt(VideoPlayer.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
 					int height = (int) ((float) (ih + Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText())) / ((float) ih/oh));
-					
-					if (VideoPlayer.caseEnableCrop.isSelected())
-						height -= Integer.parseInt(VideoPlayer.textCropPosY.getText());
-
+															
 					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + VideoPlayer.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + VideoPlayer.textSubsSize.getText() + ",PrimaryColour=&H" + VideoPlayer.subsHex + "&" + background + "'" + '"';
 				}		
 				else
-				{
+				{					
+					int fontSize = Integer.parseInt(VideoPlayer.textSubsSize.getText());
 					int height = Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText());
 					
 					if (VideoPlayer.caseEnableCrop.isSelected())
+					{
+						int ih = Integer.parseInt(i[1]);
+						int oh = Integer.parseInt(VideoPlayer.textCropHeight.getText());
 						height -= Integer.parseInt(VideoPlayer.textCropPosY.getText());
-					
-					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + VideoPlayer.textSubsWidth.getText() + ":" + i[1] + "+" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + VideoPlayer.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + VideoPlayer.textSubsSize.getText() + ",PrimaryColour=&H" + VideoPlayer.subsHex + "&" + background + "'" + '"';		
+						fontSize = (int) ((float) fontSize * ((float) ih/oh));
+					}
+										
+					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + VideoPlayer.textSubsWidth.getText() + ":" + i[1] + "+" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + VideoPlayer.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + fontSize + ",PrimaryColour=&H" + VideoPlayer.subsHex + "&" + background + "'" + '"';		
 				}
 			}
 			else // ASS or SSA
@@ -302,19 +328,19 @@ public class Overlay extends Shutter {
 				String i[] = FFPROBE.imageResolution.split("x");
 				VideoPlayer.textSubsWidth.setText(i[0]); //IMPORTANT
 				
-				if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
 					String s[] = FFPROBE.imageResolution.split("x");	
 					
-					if (comboScale.getSelectedItem().toString().contains("%"))
+					if (comboResolution.getSelectedItem().toString().contains("%"))
 					{
-						double value = (double) Integer.parseInt(comboScale.getSelectedItem().toString().replace("%", "")) / 100;
+						double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 						
 						s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 						s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 					}					
 					else					
-						s = comboScale.getSelectedItem().toString().split("x");
+						s = comboResolution.getSelectedItem().toString().split("x");
 					
 		        	int iw = Integer.parseInt(i[0]);
 		        	int ih = Integer.parseInt(i[1]);
@@ -385,7 +411,7 @@ public class Overlay extends Shutter {
 		return filterComplex;
 	}
 	
-	public static String setOverlay(String filterComplex, JComboBox<String> comboScale, boolean limitToFHD) {
+	public static String setOverlay(String filterComplex, boolean limitToFHD) {
 		
 		if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    		
@@ -403,26 +429,26 @@ public class Overlay extends Shutter {
         	if (limitToFHD)
         	{
         		String s[] = "1920x1080".split("x");
-            	if (comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-            		s = comboScale.getSelectedItem().toString().split("x");
+            	if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+            		s = comboResolution.getSelectedItem().toString().split("x");
             	
             	int iw = Integer.parseInt(i[0]);
             	int ow = Integer.parseInt(s[0]);  
             	posX =  (int) (posX / ((float) iw/ow));
         	}
-        	else if (comboScale != null && comboScale.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+        	else if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
         	{
         		String s[] = FFPROBE.imageResolution.split("x");	
 				
-        		if (comboScale.getSelectedItem().toString().contains("%"))
+        		if (comboResolution.getSelectedItem().toString().contains("%"))
 				{
-					double value = (double) Integer.parseInt(comboScale.getSelectedItem().toString().replace("%", "")) / 100;
+					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 					
 					s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 					s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 				}					
 				else					
-					s = comboScale.getSelectedItem().toString().split("x");
+					s = comboResolution.getSelectedItem().toString().split("x");
 	        		        	
 	        	int iw = Integer.parseInt(i[0]);
 	        	int ow = Integer.parseInt(s[0]);  
