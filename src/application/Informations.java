@@ -81,7 +81,7 @@ import library.MEDIAINFO;
 		frame.setTitle(Shutter.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(600, 654);
+		frame.setSize(600, 642);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));

@@ -870,12 +870,9 @@ public class Shutter {
 						//Pré calcul
 						if (top.getY() + i >= grpChooseFiles.getY() && i > 0)
 						{
-							if (i < grpChooseFiles.getY())
-								i = grpChooseFiles.getY() - top.getY();	
-							else
-								i = 0;
+							i = grpChooseFiles.getY() - top.getY();	
 						}
-
+						
 						if (frame.getSize().getHeight() - (btnReset.getLocation().y + i + btnReset.getHeight()) >= 31 && i < 0)						
 						{
 							if (i < frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()))
@@ -11591,10 +11588,7 @@ public class Shutter {
 					//Pré calcul
 					if (top.getY() + i >= grpChooseFiles.getY() && i > 0)
 					{
-						if (i < grpChooseFiles.getY())
-							i = grpChooseFiles.getY() - top.getY();	
-						else
-							i = 0;
+						i = grpChooseFiles.getY() - top.getY();	
 					}
 					
 					if (frame.getWidth() > 332 && top.getY() < 30) 
