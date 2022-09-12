@@ -1555,18 +1555,23 @@ public class Shutter {
 		tempsTotal.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				int dureeTotale = 0;
-				for (String file : fileList.getSelectedValuesList()) {
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				FFPROBE.totalLength = 0;
+				
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
+				
+				for (String file : fileList.getSelectedValuesList())
+				{					
 					FFPROBE.Data(file);
 					do {
 						try {
 							Thread.sleep(10);
-						} catch (InterruptedException e1) {
-						}
+						} catch (InterruptedException e1) {}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 					dureeTotale += FFPROBE.totalLength;
 				}
+				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 				// Formatage
