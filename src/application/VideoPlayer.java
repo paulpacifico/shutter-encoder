@@ -1149,7 +1149,7 @@ public class VideoPlayer {
 	
 	public static void playerSetTime(float time) {
 
-		if ((float) slider.getValue() != playerCurrentFrame && (setTime == null || setTime.isAlive() == false && frameVideo != null))
+		if (setTime == null || setTime.isAlive() == false && frameVideo != null)
 		{
 			setTime = new Thread(new Runnable() {
 
@@ -10547,13 +10547,15 @@ public class VideoPlayer {
 	            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(Shutter.subtitlesFile.toString()),  StandardCharsets.UTF_8);
 	
 	            String line;
+	            int subNumber = 0;
 	            while ((line = bufferedReader.readLine()) != null)
 	            {
 	            	//Removes UTF-8 with BOM
 	            	line = line.replace("\uFEFF", "");
-	
+		            	
 	            	if (line.matches("[0-9]+"))
 	             	{
+	            		subNumber = Integer.parseInt(line);
 	             		bufferedWriter.write(line);
 	             		bufferedWriter.newLine();
 	             	}
@@ -10563,12 +10565,20 @@ public class VideoPlayer {
 	            		String split[] = line.split("-->");				
 	            		String inTimecode[] = split[0].replace(",", ":").replace(" ","").split(":");
 	            		String outTimecode[] = split[1].replace(",", ":").replace(" ","").split(":");
-	
+		            		
 	    				int inH = Integer.parseInt(inTimecode[0]) * 3600;
 	    				int inM = Integer.parseInt(inTimecode[1]) * 60;
 	    				int inS = Integer.parseInt(inTimecode[2]);
 	    				int inF = Integer.parseInt(inTimecode[3]);
 	    				float subsInTime = (inH + inM + inS) * FFPROBE.currentFPS + inF / inputFramerateMS;
+	    				
+	    				if (subNumber == 1)
+	            		{
+	    					sliderChange = true;
+	    					slider.setValue((int) subsInTime);
+	    					sliderChange = false;
+	    					waveformContainer.repaint();
+	            		}
 	    				
 	    				int outH = Integer.parseInt(outTimecode[0]) * 3600;
 	    				int outM = Integer.parseInt(outTimecode[1]) * 60;
@@ -11640,7 +11650,8 @@ public class VideoPlayer {
 								DCRAW.run(" -v -w -c -q 0 -o 1 -h -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
 							}
 							else if (Shutter.inputDeviceIsRunning) //Screen capture		
-							{						
+							{					
+								showFPS.setVisible(false);
 								frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 								frame.setVisible(false);
 								FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');								
