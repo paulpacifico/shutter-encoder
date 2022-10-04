@@ -665,6 +665,12 @@ public class AdvancedFeatures extends Shutter {
 				flags += " -tag:v hvc1";
 						
 			case "AV1":
+				
+				if (caseFastDecode.isSelected())
+				{
+					flags += " -svtav1-params fast-decode=1";
+				}
+				
 			case "H.264":
 			case "VP8":
 			case "VP9":

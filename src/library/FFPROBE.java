@@ -215,8 +215,8 @@ public static int gopSpace = 124;
 					Console.consoleFFPROBE.append(System.lineSeparator());
 					
 					while ((line = input.readLine()) != null) {
-						//// Analyse des données	
 						
+						// Analyse des données							
 						Console.consoleFFPROBE.append(line + System.lineSeparator());		
 																
 						//Erreurs
@@ -245,7 +245,8 @@ public static int gopSpace = 124;
 						}
 						
 		                // Durée
-			            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false) {
+			            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false)
+			            {
 				    		String str = line.substring(line.indexOf(":") + 2);
 				    		String s[] = str.split(",");	 
 				    						    		
@@ -275,8 +276,8 @@ public static int gopSpace = 124;
 			            }
  
 			            // Détection YUVJ
-						 if (line.contains("Video:"))
-						 {							
+						if (line.contains("Video:"))
+						{							
 
 							 //Codec vidéo
 							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
@@ -367,11 +368,14 @@ public static int gopSpace = 124;
 			            	}
 			                else
 			                {
-					            if (line.contains("fps")) 
+					            if (line.contains("tbr")) 
 					            {
-					                String str[]= line.split("fps");
-					                currentFPS = Float.parseFloat(str[0].substring(str[0].lastIndexOf(",")).replace("s,", "").replace(", ", ""));
+					                String str[]= line.split("tbr");
 					                
+					                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+					                
+					                currentFPS = Float.parseFloat(str[1]);
+
 					                if (currentFPS == 23.98f)
 					                	currentFPS = 23.976f;
 					            } 
@@ -1105,7 +1109,7 @@ public static int gopSpace = 124;
 		int images = (int) (Integer.parseInt(t[3]) * 10);
 		
 		int totalMiliSecondes = (heures * 3600000) + (minutes * 60000) + (secondes * 1000) + images;  
-				
+		
 		return totalMiliSecondes;
 		
 	}
