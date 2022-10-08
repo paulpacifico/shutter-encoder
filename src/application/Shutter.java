@@ -244,6 +244,9 @@ public class Shutter {
 	protected static JComboBox<Object> comboInColormatrix;
 	protected static JComboBox<Object> comboOutColormatrix;
 	protected static JComboBox<Object> comboColorspace;
+	protected static JLabel lblHDR;
+	protected static JComboBox<String> comboHDRvalue;
+	protected static JButton btnLUTs;
 	protected static JButton btnStart;
 	protected static JButton btnCancel;
 	protected static JCheckBox caseOpenFolderAtEnd1;
@@ -5767,7 +5770,7 @@ public class Shutter {
 			}
 			
 		});	
-		
+				
 		caseColorspace = new JCheckBox(language.getProperty("caseColorspace"));
 		caseColorspace.setName("caseColorspace");
 		caseColorspace.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -5799,6 +5802,19 @@ public class Shutter {
 								comboFilter.setModel(model);
 							}
 						}
+					}
+					
+					if (comboColorspace.getSelectedItem().toString().contains("HDR"))
+					{
+						btnLUTs.setVisible(false);
+						comboHDRvalue.setVisible(true);
+						lblHDR.setVisible(true);
+					}
+					else
+					{
+						btnLUTs.setVisible(true);
+						comboHDRvalue.setVisible(false);
+						lblHDR.setVisible(false);
 					}
 				} 
 				else
@@ -5853,6 +5869,10 @@ public class Shutter {
 							}
 						}
 					}
+					
+					btnLUTs.setVisible(true);
+					comboHDRvalue.setVisible(false);
+					lblHDR.setVisible(false);
 				}
 			}
 			
@@ -5867,6 +5887,21 @@ public class Shutter {
 		comboColorspace.setMaximumRowCount(20);
 		comboColorspace.setBounds(grpColorimetry.getWidth() - 160 - 7, caseColorspace.getLocation().y + 4, 160, 16);
 		grpColorimetry.add(comboColorspace);
+				
+		comboHDRvalue = new JComboBox<String>(new String[] {"auto", "400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
+		comboHDRvalue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboHDRvalue.setEditable(true);
+		comboHDRvalue.setVisible(false);
+		comboHDRvalue.setSelectedIndex(0);
+		comboHDRvalue.setBounds(comboColorspace.getX() + comboColorspace.getWidth() - 80, comboColorspace.getLocation().y + comboColorspace.getHeight() + 2, 80, 16);
+		comboHDRvalue.setMaximumRowCount(10);
+		grpColorimetry.add(comboHDRvalue);
+		
+		lblHDR = new JLabel("HDR" + language.getProperty("colon"));
+		lblHDR.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblHDR.setBounds(comboHDRvalue.getX() - lblHDR.getPreferredSize().width - 4, comboHDRvalue.getY(), lblHDR.getPreferredSize().width, lblHDR.getPreferredSize().height);
+		lblHDR.setVisible(false);
+		grpColorimetry.add(lblHDR);
 		
 		comboColorspace.addActionListener(new ActionListener() {
 
@@ -5941,10 +5976,23 @@ public class Shutter {
 					}					
 					
 				}
+				
+				if (comboColorspace.getSelectedItem().toString().contains("HDR"))
+				{
+					btnLUTs.setVisible(false);
+					comboHDRvalue.setVisible(true);
+					lblHDR.setVisible(true);
+				}
+				else
+				{
+					btnLUTs.setVisible(true);
+					comboHDRvalue.setVisible(false);
+					lblHDR.setVisible(false);
+				}
 			}
 		
 		});
-		
+				
 		caseLUTs = new JCheckBox(language.getProperty("caseLUTs"));
 		caseLUTs.setName("caseLUTs");
 		caseLUTs.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -5982,7 +6030,7 @@ public class Shutter {
 		    }
 		}
 
-		JButton btnLUTs = new JButton(language.getProperty("btnManage"));
+		btnLUTs = new JButton(language.getProperty("btnManage"));
 		btnLUTs.setFont(new Font(montserratFont, Font.PLAIN, 12));
 		btnLUTs.setBounds(comboColorspace.getX(), caseLUTs.getY() + 1, grpColorimetry.getWidth() - comboColorspace.getX() - 6, 21);
 		grpColorimetry.add(btnLUTs);
@@ -12831,7 +12879,13 @@ public class Shutter {
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(), grpImageSequence.getSize().height + grpImageSequence.getLocation().y + 6);
 							if (comboColorspace.getItemCount() != 3)
+							{
 								comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+								
+								btnLUTs.setVisible(true);
+								comboHDRvalue.setVisible(false);
+								lblHDR.setVisible(false);
+							}
 							grpTransitions.setVisible(true);
 							grpTransitions.setLocation(grpTransitions.getX(), grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							caseVideoFadeIn.setEnabled(true);
@@ -13005,12 +13059,24 @@ public class Shutter {
 							if ("Uncompressed".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 4)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits"}));
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else
 							{
 								if (comboColorspace.getItemCount() != 3)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 	
 							grpTransitions.setVisible(true);
@@ -13384,12 +13450,24 @@ public class Shutter {
 							if ("H.264".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 4)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits"}));
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else
 							{
 								if (comboColorspace.getItemCount() != 7)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							
 							grpTransitions.setVisible(true);
@@ -13733,17 +13811,35 @@ public class Shutter {
 							if ("VP9".equals(function) || "AV1".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 7)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));							
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else if ("MPEG-2".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 6)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 4:2:2", "Rec. 2020 PQ", "Rec. 2020 PQ 4:2:2", "Rec. 2020 HLG", "Rec. 2020 HLG 4:2:2"}));	
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else
 							{
 								if (comboColorspace.getItemCount() != 3)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 
 							grpTransitions.setVisible(true);
@@ -14173,7 +14269,13 @@ public class Shutter {
 							grpColorimetry.setLocation(grpColorimetry.getX(), grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);
 							
 							if (comboColorspace.getItemCount() != 3)
+							{
 								comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+
+								btnLUTs.setVisible(true);
+								comboHDRvalue.setVisible(false);
+								lblHDR.setVisible(false);
+							}
 							
 							grpSetAudio.setVisible(false);
 							grpAudio.setVisible(false);
