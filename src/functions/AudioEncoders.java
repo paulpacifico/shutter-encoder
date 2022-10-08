@@ -312,7 +312,11 @@ public class AudioEncoders extends Shutter {
 			audioFilter += "," + Transitions.setAudioSpeed();
 		}
 		
-		if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")))						
+		if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")) && FFPROBE.surround)		
+		{
+			audio += "-af " + '"' + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " ";
+		}
+		else if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")))						
 		{
 			for (int n = 1 ; n < liste.size() ; n++)
 			{
@@ -539,7 +543,7 @@ public class AudioEncoders extends Shutter {
 			return true;
 		
 		//MixAudio
-		if (caseMixAudio.isSelected())
+		if (caseMixAudio.isSelected() && FFPROBE.surround == false)
 			return true;
 		
 		//Watch folder
