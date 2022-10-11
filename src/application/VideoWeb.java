@@ -469,7 +469,7 @@ public class VideoWeb {
 		
 		caseMP3 = new JCheckBox(Shutter.language.getProperty("caseMP3"));
 		caseMP3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseMP3.setBounds(121, 52, 127, 16);		
+		caseMP3.setBounds(121, 52, caseMP3.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseMP3);
 		
 		caseMP3.addActionListener(new ActionListener(){
@@ -494,7 +494,7 @@ public class VideoWeb {
 		
 		caseWAV = new JCheckBox(Shutter.language.getProperty("caseWAV"));
 		caseWAV.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseWAV.setBounds(248, 52, 127, 16);		
+		caseWAV.setBounds(caseMP3.getX() + caseMP3.getWidth(), 52, caseWAV.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseWAV);
 		
 		caseWAV.addActionListener(new ActionListener(){

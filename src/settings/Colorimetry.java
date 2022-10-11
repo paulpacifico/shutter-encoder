@@ -184,6 +184,11 @@ public class Colorimetry extends Shutter {
 			if (comboColorspace.getSelectedItem().toString().contains("HLG"))
 				PQorHLG = "18";
 			
+			if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
+			{
+				FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+			}
+			
 			String cmd = " --colour-matrix 0:9 --colour-range 0:1 --colour-transfer-characteristics 0:" + PQorHLG + " --colour-primaries 0:9 --max-luminance 0:" + (int) FFPROBE.HDRmax + " --min-luminance 0:" + FFPROBE.HDRmin + " --chromaticity-coordinates 0:0.68,0.32,0.265,0.690,0.15,0.06 --white-colour-coordinates 0:0.3127,0.3290";
 			MKVMERGE.run(cmd + " " + '"' + tempHDR + '"' + " -o " + '"'  + HDRmkv + '"');	
 			

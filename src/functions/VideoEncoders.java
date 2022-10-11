@@ -99,9 +99,9 @@ public class VideoEncoders extends Shutter {
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
-				{
+				{					
 					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
-					
+									
 					if (file == null)
 						break;
 					

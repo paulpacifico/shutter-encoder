@@ -164,7 +164,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "16.3";
+	public static String actualVersion = "16.4";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
@@ -244,6 +244,9 @@ public class Shutter {
 	protected static JComboBox<Object> comboInColormatrix;
 	protected static JComboBox<Object> comboOutColormatrix;
 	protected static JComboBox<Object> comboColorspace;
+	protected static JLabel lblHDR;
+	protected static JComboBox<String> comboHDRvalue;
+	protected static JButton btnLUTs;
 	protected static JButton btnStart;
 	protected static JButton btnCancel;
 	protected static JCheckBox caseOpenFolderAtEnd1;
@@ -311,6 +314,7 @@ public class Shutter {
 	protected static JComboBox<String> comboForcerDesentrelacement;
 	protected static JCheckBox caseForceOutput;
 	protected static JCheckBox caseFastStart;
+	protected static JCheckBox caseFastDecode;
 	protected static JCheckBox caseAlpha;
 	protected static JCheckBox caseGOP;
 	protected static JTextField gopSize;
@@ -1556,29 +1560,38 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				int dureeTotale = 0;
+				int totalLength = 0;
 				FFPROBE.totalLength = 0;
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
 				
 				for (String file : fileList.getSelectedValuesList())
-				{					
+				{			
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(1);
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
-					dureeTotale += FFPROBE.totalLength;
+					
+					// IMPORTANT
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+					
+					totalLength += FFPROBE.totalLength;
+					FFPROBE.totalLength = 0;
 				}
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 				// Formatage
-				int h = (dureeTotale / 3600000);
-				int m = (dureeTotale / 60000) % 60;
-				int s = (dureeTotale) / 1000 % 60;
-				int f = (int) (dureeTotale / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
+				int h = (totalLength / 3600000);
+				int m = (totalLength / 60000) % 60;
+				int s = (totalLength) / 1000 % 60;
+				int f = (int) (totalLength / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
 
 				String dureeFinale;
 				if (h > 0)
@@ -5757,7 +5770,7 @@ public class Shutter {
 			}
 			
 		});	
-		
+				
 		caseColorspace = new JCheckBox(language.getProperty("caseColorspace"));
 		caseColorspace.setName("caseColorspace");
 		caseColorspace.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -5789,6 +5802,19 @@ public class Shutter {
 								comboFilter.setModel(model);
 							}
 						}
+					}
+					
+					if (comboColorspace.getSelectedItem().toString().contains("HDR"))
+					{
+						btnLUTs.setVisible(false);
+						comboHDRvalue.setVisible(true);
+						lblHDR.setVisible(true);
+					}
+					else
+					{
+						btnLUTs.setVisible(true);
+						comboHDRvalue.setVisible(false);
+						lblHDR.setVisible(false);
 					}
 				} 
 				else
@@ -5843,6 +5869,10 @@ public class Shutter {
 							}
 						}
 					}
+					
+					btnLUTs.setVisible(true);
+					comboHDRvalue.setVisible(false);
+					lblHDR.setVisible(false);
 				}
 			}
 			
@@ -5857,6 +5887,21 @@ public class Shutter {
 		comboColorspace.setMaximumRowCount(20);
 		comboColorspace.setBounds(grpColorimetry.getWidth() - 160 - 7, caseColorspace.getLocation().y + 4, 160, 16);
 		grpColorimetry.add(comboColorspace);
+				
+		comboHDRvalue = new JComboBox<String>(new String[] {"auto", "400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
+		comboHDRvalue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboHDRvalue.setEditable(true);
+		comboHDRvalue.setVisible(false);
+		comboHDRvalue.setSelectedIndex(0);
+		comboHDRvalue.setBounds(comboColorspace.getX() + comboColorspace.getWidth() - 80, comboColorspace.getLocation().y + comboColorspace.getHeight() + 2, 80, 16);
+		comboHDRvalue.setMaximumRowCount(10);
+		grpColorimetry.add(comboHDRvalue);
+		
+		lblHDR = new JLabel("HDR" + language.getProperty("colon"));
+		lblHDR.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblHDR.setBounds(comboHDRvalue.getX() - lblHDR.getPreferredSize().width - 4, comboHDRvalue.getY(), lblHDR.getPreferredSize().width, lblHDR.getPreferredSize().height);
+		lblHDR.setVisible(false);
+		grpColorimetry.add(lblHDR);
 		
 		comboColorspace.addActionListener(new ActionListener() {
 
@@ -5931,10 +5976,23 @@ public class Shutter {
 					}					
 					
 				}
+				
+				if (comboColorspace.getSelectedItem().toString().contains("HDR"))
+				{
+					btnLUTs.setVisible(false);
+					comboHDRvalue.setVisible(true);
+					lblHDR.setVisible(true);
+				}
+				else
+				{
+					btnLUTs.setVisible(true);
+					comboHDRvalue.setVisible(false);
+					lblHDR.setVisible(false);
+				}
 			}
 		
 		});
-		
+				
 		caseLUTs = new JCheckBox(language.getProperty("caseLUTs"));
 		caseLUTs.setName("caseLUTs");
 		caseLUTs.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -5972,7 +6030,7 @@ public class Shutter {
 		    }
 		}
 
-		JButton btnLUTs = new JButton(language.getProperty("btnManage"));
+		btnLUTs = new JButton(language.getProperty("btnManage"));
 		btnLUTs.setFont(new Font(montserratFont, Font.PLAIN, 12));
 		btnLUTs.setBounds(comboColorspace.getX(), caseLUTs.getY() + 1, grpColorimetry.getWidth() - comboColorspace.getX() - 6, 21);
 		grpColorimetry.add(btnLUTs);
@@ -6933,12 +6991,12 @@ public class Shutter {
 				}
 				else if (comboAudioCodec.getSelectedItem().toString().equals("AAC") || comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 				{
-					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64"}));
+					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64", "32"}));
 					comboAudioBitrate.setSelectedIndex(1);
 				}
 				else if (comboAudioCodec.getSelectedItem().toString().equals("AC3") || comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 				{
-					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "640", "448", "384", "320", "256", "192", "128", "96", "64"}));					
+					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "640", "448", "384", "320", "256", "192", "128", "96", "64", "32"}));					
 					comboAudioBitrate.setSelectedIndex(2);
 				}
 				else if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
@@ -7457,7 +7515,7 @@ public class Shutter {
 				else if (comboAudioCodec.getSelectedItem().toString().equals("AAC") || comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 				{
 					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
-					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64"}));
+					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64", "32"}));
 					comboAudioBitrate.setSelectedIndex(1);
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);
@@ -7465,7 +7523,7 @@ public class Shutter {
 				else if (comboAudioCodec.getSelectedItem().toString().equals("AC3") || comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 				{
 					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
-					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "640", "448", "384", "320", "256", "192", "128", "96", "64"}));					
+					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "640", "448", "384", "320", "256", "192", "128", "96", "64", "32"}));					
 					comboAudioBitrate.setSelectedIndex(2);
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(2);
@@ -7481,7 +7539,7 @@ public class Shutter {
 				else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
 				{
 					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
-					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "256", "192", "128", "96", "64"}));
+					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "256", "192", "128", "96", "64", "32"}));
 					comboAudioBitrate.setSelectedIndex(1);
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);
@@ -7489,7 +7547,7 @@ public class Shutter {
 				else //Codecs de sortie
 				{
 					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
-					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64"}));
+					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64", "32"}));
 					comboAudioBitrate.setSelectedIndex(1);
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(1);				
@@ -9606,6 +9664,11 @@ public class Shutter {
 		caseFastStart.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		caseFastStart.setSize(caseFastStart.getPreferredSize().width, 23);
 		
+		caseFastDecode = new JCheckBox(language.getProperty("caseFastDecode"));
+		caseFastDecode.setName("caseFastDecode");
+		caseFastDecode.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseFastDecode.setSize(caseFastDecode.getPreferredSize().width, 23);
+		
 		caseAlpha = new JCheckBox(language.getProperty("caseAlpha"));
 		caseAlpha.setName("caseAlpha");
 		caseAlpha.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -10207,7 +10270,7 @@ public class Shutter {
 		
 		debitAudio = new JComboBox<String>();
 		debitAudio.setName("debitAudio");
-		debitAudio.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64"}));
+		debitAudio.setModel(new DefaultComboBoxModel<String>(new String[] { "320", "256", "192", "128", "96", "64", "32"}));
 		debitAudio.setSelectedIndex(1);
 		debitAudio.setMaximumRowCount(20);
 		debitAudio.setFont(new Font(freeSansFont, Font.PLAIN, 11));
@@ -11394,6 +11457,7 @@ public class Shutter {
 				caseOpenGop.setSelected(false);
 				caseForceOutput.setSelected(false);
 				caseFastStart.setSelected(false);
+				caseFastDecode.setSelected(false);
 				caseAlpha.setSelected(false);
 				caseGOP.setSelected(false);
 				gopSize.setEnabled(false);
@@ -12815,7 +12879,13 @@ public class Shutter {
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(), grpImageSequence.getSize().height + grpImageSequence.getLocation().y + 6);
 							if (comboColorspace.getItemCount() != 3)
+							{
 								comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+								
+								btnLUTs.setVisible(true);
+								comboHDRvalue.setVisible(false);
+								lblHDR.setVisible(false);
+							}
 							grpTransitions.setVisible(true);
 							grpTransitions.setLocation(grpTransitions.getX(), grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							caseVideoFadeIn.setEnabled(true);
@@ -12989,12 +13059,24 @@ public class Shutter {
 							if ("Uncompressed".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 4)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits"}));
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else
 							{
 								if (comboColorspace.getItemCount() != 3)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 	
 							grpTransitions.setVisible(true);
@@ -13368,12 +13450,24 @@ public class Shutter {
 							if ("H.264".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 4)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits"}));
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else
 							{
 								if (comboColorspace.getItemCount() != 7)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							
 							grpTransitions.setVisible(true);
@@ -13717,17 +13811,35 @@ public class Shutter {
 							if ("VP9".equals(function) || "AV1".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 7)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));							
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else if ("MPEG-2".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 6)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 4:2:2", "Rec. 2020 PQ", "Rec. 2020 PQ 4:2:2", "Rec. 2020 HLG", "Rec. 2020 HLG 4:2:2"}));	
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 							else
 							{
 								if (comboColorspace.getItemCount() != 3)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+
+									btnLUTs.setVisible(true);
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
 							}
 
 							grpTransitions.setVisible(true);
@@ -13847,8 +13959,10 @@ public class Shutter {
 								comboForceSpeed.setLocation(caseForceSpeed.getLocation().x + caseForceSpeed.getWidth() + 4, caseForceSpeed.getLocation().y + 4);
 								grpAdvanced.add(comboForceSpeed);
 								caseFastStart.setLocation(7, caseForceSpeed.getLocation().y + 17);
-								grpAdvanced.add(caseFastStart);
-								caseGOP.setLocation(7, caseFastStart.getLocation().y + 17);
+								grpAdvanced.add(caseFastStart);								
+								caseFastDecode.setLocation(7, caseFastStart.getLocation().y + 17);
+								grpAdvanced.add(caseFastDecode);
+								caseGOP.setLocation(7, caseFastDecode.getLocation().y + 17);
 								grpAdvanced.add(caseGOP);
 								gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
 								grpAdvanced.add(gopSize);								
@@ -14155,7 +14269,13 @@ public class Shutter {
 							grpColorimetry.setLocation(grpColorimetry.getX(), grpInAndOut.getSize().height + grpInAndOut.getLocation().y + 6);
 							
 							if (comboColorspace.getItemCount() != 3)
+							{
 								comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
+
+								btnLUTs.setVisible(true);
+								comboHDRvalue.setVisible(false);
+								lblHDR.setVisible(false);
+							}
 							
 							grpSetAudio.setVisible(false);
 							grpAudio.setVisible(false);
@@ -14480,7 +14600,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { "320", "256", "192", "128", "96", "64" };
+				String types[] = { "320", "256", "192", "128", "96", "64", "32" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -14495,7 +14615,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { "640", "448", "384", "320", "256", "192", "128", "96", "64" };
+				String types[] = { "640", "448", "384", "320", "256", "192", "128", "96", "64", "32" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -14510,7 +14630,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { "256", "192", "128", "96", "64" };
+				String types[] = { "256", "192", "128", "96", "64", "32" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
