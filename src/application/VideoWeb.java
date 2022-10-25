@@ -19,6 +19,7 @@
 
 package application;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -53,6 +54,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -84,7 +87,7 @@ public class VideoWeb {
 	private JLabel topImage;	
 	private JPanel grpURL;
 	private JLabel lblURL;
-	private JTextField textURL;
+	private JTextArea textURL;
 	private JTextField textVideoPass;
 	private JTextField textUser;
 	private JPasswordField textPass;
@@ -109,7 +112,7 @@ public class VideoWeb {
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(420, 219);
+		frame.setSize(420, 282);
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setAlwaysOnTop(true);
@@ -289,7 +292,7 @@ public class VideoWeb {
 		grpURL = new JPanel();
 		grpURL.setLayout(null);
 		grpURL.setLocation(6, 28);
-		grpURL.setSize(408, 185);
+		grpURL.setSize(408, 248);
 		grpURL.setBackground(new Color(45, 45, 45));
 		grpURL.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
 		
@@ -299,13 +302,12 @@ public class VideoWeb {
 		lblURL.setBounds(26, 25, 35, 16);			
 		grpURL.add(lblURL);
 		
-		textURL = new JTextField();
+		textURL = new JTextArea();
 		textURL.setForeground(Color.LIGHT_GRAY);
 		textURL.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		textURL.setText(Shutter.language.getProperty("textURL"));
-		textURL.setBounds(66, 22, 270, 21);
-		textURL.setColumns(10);	
-		
+		textURL.setBounds(66, 22, 270, 80);
+				
         final JPopupMenu menu = new JPopupMenu();
         JMenuItem coller = new JMenuItem(Shutter.language.getProperty("MenuItemPaste"));
         coller.addActionListener(new ActionListener(){
@@ -324,6 +326,7 @@ public class VideoWeb {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
+				
 				if (textURL.getText().equals("") || textURL.getText().equals(Shutter.language.getProperty("textURL")))
 				{
 					btnOK.setEnabled(false);
@@ -336,14 +339,21 @@ public class VideoWeb {
 					textURL.setForeground(Color.WHITE);
 					textURL.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		       		btnOK.setEnabled(true);
-					if (caseAuto.isSelected() == false)
-						caseAuto.doClick();
-					caseAuto.setEnabled(true);
+					
+		       		if (textURL.getLineCount() == 1)
+					{
+						caseAuto.setEnabled(true);
+					}
+					else
+					{
+						caseAuto.setEnabled(false);
+					}
 				}
 			}
 
 			@Override
-			public void keyPressed(KeyEvent e) {				
+			public void keyPressed(KeyEvent e) {
+				
 					//CTRL + V coller
 			        if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
 			        	PasteFromClipBoard(false);
@@ -360,12 +370,14 @@ public class VideoWeb {
 			
 		});
         
-		grpURL.add(textURL);
+		JScrollPane scrollBar = new JScrollPane(textURL);
+		scrollBar.setBounds(textURL.getBounds());
+		grpURL.add(scrollBar, BorderLayout.CENTER);
 								
 		caseAuto = new JCheckBox("Auto");
 		caseAuto.setSelected(true);
 		caseAuto.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseAuto.setBounds(66, 52, caseAuto.getPreferredSize().width, 16);	
+		caseAuto.setBounds(66, 111, caseAuto.getPreferredSize().width, 16);	
 		caseAuto.setEnabled(false);
 		grpURL.add(caseAuto);
 				
@@ -422,7 +434,7 @@ public class VideoWeb {
 		comboFormats.addItem("bestvideo+bestaudio");
 		comboFormats.addItem("bestvideo");
 		comboFormats.addItem("bestaudio");
-		comboFormats.setLocation(16, 153);	
+		comboFormats.setLocation(16, 216);	
 		comboFormats.setSize(380, 22);
 		comboFormats.setMaximumRowCount(10);
 		grpURL.add(comboFormats);
@@ -450,7 +462,7 @@ public class VideoWeb {
 		lblQualit.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblQualit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblQualit.setSize(lblQualit.getPreferredSize().width, 16);
-		lblQualit.setLocation(textURL.getX() - lblQualit.getWidth() - 5, 51);		
+		lblQualit.setLocation(textURL.getX() - lblQualit.getWidth() - 5, 110);		
 		grpURL.add(lblQualit);
 		
 		btnOK = new JButton("OK");
@@ -469,7 +481,7 @@ public class VideoWeb {
 		
 		caseMP3 = new JCheckBox(Shutter.language.getProperty("caseMP3"));
 		caseMP3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseMP3.setBounds(121, 52, caseMP3.getPreferredSize().width + 4, 16);		
+		caseMP3.setBounds(121, caseAuto.getY(), caseMP3.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseMP3);
 		
 		caseMP3.addActionListener(new ActionListener(){
@@ -494,7 +506,7 @@ public class VideoWeb {
 		
 		caseWAV = new JCheckBox(Shutter.language.getProperty("caseWAV"));
 		caseWAV.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseWAV.setBounds(caseMP3.getX() + caseMP3.getWidth(), 52, caseWAV.getPreferredSize().width + 4, 16);		
+		caseWAV.setBounds(caseMP3.getX() + caseMP3.getWidth(), caseAuto.getY(), caseWAV.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseWAV);
 		
 		caseWAV.addActionListener(new ActionListener(){
@@ -521,7 +533,7 @@ public class VideoWeb {
 		
 		caseVideoPass = new JCheckBox(Shutter.language.getProperty("caseVideoPass"));
 		caseVideoPass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseVideoPass.setBounds(66, 123, caseVideoPass.getPreferredSize().width, 16);			
+		caseVideoPass.setBounds(66, 182, caseVideoPass.getPreferredSize().width, 16);			
 		grpURL.add(caseVideoPass);
 			
 		caseVideoPass.addActionListener(new ActionListener() {
@@ -541,14 +553,14 @@ public class VideoWeb {
 		
 		textVideoPass = new JTextField();
 		textVideoPass.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		textVideoPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 120, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
+		textVideoPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 179, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		textVideoPass.setEnabled(false);
 		textVideoPass.setColumns(10);	
 		grpURL.add(textVideoPass);
 		
 		caseUser = new JCheckBox(Shutter.language.getProperty("caseUser"));
 		caseUser.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseUser.setBounds(66, 79, caseUser.getPreferredSize().width, 16);
+		caseUser.setBounds(66, 138, caseUser.getPreferredSize().width, 16);
 		grpURL.add(caseUser);
 		
 		caseUser.addActionListener(new ActionListener() {
@@ -571,12 +583,12 @@ public class VideoWeb {
 		textUser.setText((String) null);
 		textUser.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textUser.setColumns(10);
-		textUser.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 76, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
+		textUser.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 135, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		grpURL.add(textUser);
 				
 		casePass = new JCheckBox(Shutter.language.getProperty("casePass"));
 		casePass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		casePass.setBounds(66, 101, casePass.getPreferredSize().width, 16);
+		casePass.setBounds(66, 160, casePass.getPreferredSize().width, 16);
 		grpURL.add(casePass);
 		
 		casePass.addActionListener(new ActionListener() {
@@ -600,7 +612,7 @@ public class VideoWeb {
 		textPass.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPass.setColumns(10);
 		textPass.setEchoChar('•');
-		textPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 98, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
+		textPass.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, 157, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		grpURL.add(textPass);
 		
 	}
@@ -636,105 +648,108 @@ public class VideoWeb {
 	        			YOUTUBEDL.update();
 	        			Shutter.progressBar1.setIndeterminate(true);
 	        			        			
-	        			do 
-	        			{
+	        			do {
 	        				Thread.sleep(100);
-	        			}while(YOUTUBEDL.isRunning);
+	        			} while(YOUTUBEDL.isRunning);
 	        			
 	        			Shutter.progressBar1.setIndeterminate(false);
 	        			FFMPEG.enableAll();	 
 	        			FFMPEG.enfOfFunction();	     
 	        		}
 	        		else 
-	        		{		        	
-		        		//Choix du format
-						if (caseAuto.isSelected()) 
-						{				
-							YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
-						}
-						else
-						{
-							String[] f = comboFormats.getSelectedItem().toString().split(" ");
-							
-							if (comboFormats.getSelectedItem().toString().contains("audio only"))
-								YOUTUBEDL.format = "-f " + f[0];
+	        		{	
+	        			//Loop each line
+	        			for (String line : textURL.getText().split("\n"))
+	        			{	        				        			
+			        		//Format checking
+							if (caseAuto.isSelected()) 
+							{				
+								YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
+							}
 							else
-								YOUTUBEDL.format = "-f " + f[0]+"+bestaudio";
-						}
-
-						FFMPEG.disableAll();
-						Shutter.btnStart.setEnabled(false);
-					
-					    //Téléchargement	    
-						YOUTUBEDL.run(textURL.getText(), options());
+							{
+								String[] f = comboFormats.getSelectedItem().toString().split(" ");
+								
+								if (comboFormats.getSelectedItem().toString().contains("audio only"))
+									YOUTUBEDL.format = "-f " + f[0];
+								else
+									YOUTUBEDL.format = "-f " + f[0]+"+bestaudio";
+							}
+	
+							FFMPEG.disableAll();
+							Shutter.btnStart.setEnabled(false);
 						
-					       do { 
-					    	   Thread.sleep(100);		
-					       }while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
-					       
-					       if (Shutter.cancelled)
-					       {
-						    	 if (YOUTUBEDL.outputFile.exists()) 
-						    		 YOUTUBEDL.outputFile.delete();
-					       }
-					       else //Conversions Audio
-					       {
-					    	   Shutter.tempsRestant.setVisible(false);
-					    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
-					    	   if (caseWAV.isSelected())
-					    	   {		
-					    		   	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToWAV")); 
-									String cmd = " -vn -y ";
-									FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
-								
-								       do { 
-											Thread.sleep(100);		
-							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+						    //Download	    
+							YOUTUBEDL.run(line, options());
+							
+						       do { 
+						    	   Thread.sleep(100);		
+						       }while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
+						       
+						       if (Shutter.cancelled)
+						       {
+							    	 if (YOUTUBEDL.outputFile.exists()) 
+							    		 YOUTUBEDL.outputFile.delete();
+						       }
+						       else //Audio conversion
+						       {
+						    	   Shutter.tempsRestant.setVisible(false);
+						    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
+						    	   if (caseWAV.isSelected())
+						    	   {		
+						    		   	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToWAV")); 
+										String cmd = " -vn -y ";
+										FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
 									
-							       //Suppression du fichier audio si processus annulé
-							       if (Shutter.cancelled)
-							       {
-							    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".wav"));
-							    	   audioFile.delete();
-							       }
-					    	   }
-					    	   else if (caseMP3.isSelected())
-					    	   {
-					    		   Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToMP3"));  
-					    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
-					    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
-								
-							       do { 
-											Thread.sleep(100);		
-							       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
-							       
-							       //Suppression du fichier audio si processus annulé
-							       if (Shutter.cancelled)
-							       {
-							    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".mp3"));
-							    	   audioFile.delete();
-							       }
-					    	   }		    	   			       
-					       }
-					       					       
-					       if (Shutter.cancelled == false)
-					       {
-								complete++;
-								Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
-								
-								//Ouverture du dossier
-								if (Shutter.caseOpenFolderAtEnd1.isSelected())
-								{
-									try {
-										Desktop.getDesktop().open(new File(Shutter.lblDestination1.getText()));
-									} catch (IOException e) {
-										e.printStackTrace();
+									       do { 
+												Thread.sleep(100);		
+								       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+										
+								       //Suppression du fichier audio si processus annulé
+								       if (Shutter.cancelled)
+								       {
+								    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".wav"));
+								    	   audioFile.delete();
+								       }
+						    	   }
+						    	   else if (caseMP3.isSelected())
+						    	   {
+						    		   Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToMP3"));  
+						    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
+						    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
+									
+								       do { 
+												Thread.sleep(100);		
+								       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+								       
+								       //Suppression du fichier audio si processus annulé
+								       if (Shutter.cancelled)
+								       {
+								    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".mp3"));
+								    	   audioFile.delete();
+								       }
+						    	   }		    	   			       
+						       }
+						       					       
+						       if (Shutter.cancelled == false)
+						       {
+									complete++;
+									Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
+									
+									//Ouverture du dossier
+									if (Shutter.caseOpenFolderAtEnd1.isSelected())
+									{
+										try {
+											Desktop.getDesktop().open(new File(Shutter.lblDestination1.getText()));
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
 									}
-								}
-					       }
-							FFMPEG.enableAll();
-							FFMPEG.enfOfFunction();							
-		        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		        			
+						       }
+								FFMPEG.enableAll();
+								FFMPEG.enfOfFunction();							
+			        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
+	        				}
 	        			}
 					       				        
 					} catch (InterruptedException e1) {}
@@ -746,14 +761,25 @@ public class VideoWeb {
 	}
 
 	private void PasteFromClipBoard(boolean mouse){
+		
 		if (textURL.getText().equals(Shutter.language.getProperty("textURL")))
 			textURL.setText("");
 		
-			textURL.setFont(new Font("SansSerif", Font.PLAIN, 13));
-       		btnOK.setEnabled(true);
-			if (caseAuto.isSelected() == false)
-				caseAuto.doClick();
+		textURL.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		textURL.setForeground(Color.WHITE);
+   		btnOK.setEnabled(true);
+   		
+   		if (caseAuto.isSelected() == false)
+			caseAuto.doClick();
+   		
+   		if (textURL.getLineCount() == 1)
+		{
 			caseAuto.setEnabled(true);
+		}
+		else
+		{
+			caseAuto.setEnabled(false);
+		}
 		
 		if (mouse)
 		{
@@ -767,13 +793,7 @@ public class VideoWeb {
                }
            }
 		}       
-        
-		if (textURL.getText().equals(Shutter.language.getProperty("textURL")))
-			textURL.setText("");
 		
-		textURL.setForeground(Color.WHITE);
-		textURL.setFont(new Font("SansSerif", Font.PLAIN, 13));
-		caseAuto.setEnabled(true);
-		btnOK.setEnabled(true);	
+
 	}
 }

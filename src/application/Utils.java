@@ -2168,7 +2168,7 @@ public class Utils extends Shutter {
 		UIManager.put("ScrollBar.thumbArc", 999);
 		UIManager.put("Button.arc", 15);
 		UIManager.put("CheckBox.arc", 15);
-		UIManager.put("TextField.arc", 10);		
+		UIManager.put("TextField.arc", 10);			
 		UIManager.put("ProgressBar.arc", 10);
 		UIManager.put("TextComponent.arc", 10);
 		UIManager.put("Component.arc", 10);

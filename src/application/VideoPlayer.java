@@ -6261,7 +6261,7 @@ public class VideoPlayer {
 		lblPresets.setBounds(caseEnableCrop.getX() + caseEnableCrop.getWidth() + 7, caseEnableCrop.getY() + 3, lblPresets.getPreferredSize().width, 16);		
 		grpCrop.add(lblPresets);
 		
-		final String presetsList[] = { Shutter.language.getProperty("aucun"), "2.75", "2.55", "2.39", "2.35", "2.33", "1.91", "1.85", "1.77", "1.33", "1", "0.8"};
+		final String presetsList[] = { Shutter.language.getProperty("aucun"), "auto", "2.75", "2.55", "2.39", "2.35", "2.33", "1.91", "1.85", "16/9", "4/3", "1", "9/16"};
 		
 		comboPreset.setName("comboPreset");
 		comboPreset.setModel(new DefaultComboBoxModel<String>(presetsList));
@@ -6285,7 +6285,69 @@ public class VideoPlayer {
 					anchorBottom = selection.getLocation().y + selection.getHeight();	
 					
 					checkSelection();
-				}				
+				}	
+				else if (comboPreset.getSelectedIndex() == 1) //Auto
+				{	
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
+					Thread t = new Thread(new Runnable() {
+
+						@Override
+						public void run() {							
+							
+							File file = new File(videoPath);
+							
+							String cmd;
+							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+								cmd =  " -an -t 1 -vf cropdetect -f null -";					
+							else
+								cmd =  " -an -t 1 -vf cropdetect -f null -" + '"';	
+							
+							FFMPEG.cropdetect = "";
+							
+							//Input point
+							String inputPoint = " -ss " + (float) (playerCurrentFrame - 1) * inputFramerateMS + "ms";
+							if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
+								inputPoint = "";
+							
+							FFMPEG.run(inputPoint + " -i " + '"' + file + '"' + cmd);	
+							
+							try {
+								do {
+									Thread.sleep(100);
+								} while(FFMPEG.runProcess.isAlive());
+							} catch (Exception er) {}	
+								
+							Shutter.enableAll();
+													
+							if (FFMPEG.cropdetect != "")
+							{
+								String c[] = FFMPEG.cropdetect.split(":");
+								
+								textCropPosX.setText(c[2]);						
+								textCropWidth.setText(c[0]);
+								textCropHeight.setText(c[1]);
+								textCropPosY.setText(c[3]);
+								
+								int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * player.getHeight()) / FFPROBE.imageHeight);	
+								int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * player.getWidth()) / FFPROBE.imageWidth);
+								int width = (int) Math.floor((float)  (Integer.valueOf(textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
+								int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * player.getWidth()) / FFPROBE.imageWidth);
+								
+								if (width > player.getWidth())
+									width = player.getWidth();
+								
+								if (height > player.getWidth())
+									height = player.getHeight();
+								
+								selection.setBounds(x, y, width, height);
+							}	
+							
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						}						
+					});
+					t.start();							
+				}
 				else if (comboPreset.getSelectedItem().toString().isEmpty() == false)
 				{
 					try {
@@ -6299,8 +6361,15 @@ public class VideoPlayer {
 						if (inputRatio.length() > 4)
 							inputRatio = inputRatio.substring(0,4);		
 						
-						float outputRatio = Float.parseFloat(comboPreset.getSelectedItem().toString());
-								
+						float outputRatio;
+						if (comboPreset.getSelectedItem().toString().contains("/"))
+						{
+							String d[] = comboPreset.getSelectedItem().toString().split("/");
+							outputRatio = (float) Integer.parseInt(d[0]) / Integer.parseInt(d[1]);
+						}
+						else
+							outputRatio = Float.parseFloat(comboPreset.getSelectedItem().toString());
+						
 						if (outputRatio == 1.33f)
 						{
 							outputRatio = 4/3f;

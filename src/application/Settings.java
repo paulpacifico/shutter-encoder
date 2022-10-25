@@ -208,7 +208,7 @@ public class Settings {
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(120);
+		scrollBar.setMaximum(140);
 		scrollBar.setBackground(new Color(45, 45, 45));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());

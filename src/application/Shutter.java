@@ -188,6 +188,7 @@ public class Shutter {
 	public static boolean scanIsRunning = false;
 	public static JMenuItem menuDisplay;
 	public static JMenuItem inputDevice;
+	public static JMenuItem informations;
 	public static boolean inputDeviceIsRunning = false;
 	public static boolean overlayDeviceIsRunning = false;
 	public static boolean sendMailIsRunning = false;
@@ -817,6 +818,7 @@ public class Shutter {
 					        });
 						}
 						
+						//Save settings
 						if ((ke.getKeyCode() == KeyEvent.VK_S) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
 						|| (ke.getKeyCode() == KeyEvent.VK_S)
 						&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
@@ -830,9 +832,20 @@ public class Shutter {
 							}
 						}
 						
+						//Informations
+						if ((ke.getKeyCode() == KeyEvent.VK_I) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
+								|| (ke.getKeyCode() == KeyEvent.VK_I)
+								&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
+								{
+									if (fileList.getSelectedIndices().length > 0) 
+									{
+										informations.doClick();
+									}
+								}
+						
 					}
 					
-				} // End sous titres
+				}
 				
 			}
 		}, AWTEvent.KEY_EVENT_MASK);
@@ -1276,7 +1289,7 @@ public class Shutter {
 
 		JLabel panelShutter = new JLabel(language.getProperty("panelShutter"));
 		panelShutter.setFont(new Font("Magneto", Font.PLAIN, 17));
-		panelShutter.setBounds((320 - panelShutter.getPreferredSize().width) / 2 - 26, 0, panelShutter.getPreferredSize().width + 5, 28);
+		panelShutter.setBounds((320 - panelShutter.getPreferredSize().width) / 2 - 26, 0, panelShutter.getPreferredSize().width + 10, 28);
 		topPanel.add(panelShutter);
 		
 		lblV = new JLabel();
@@ -1504,7 +1517,7 @@ public class Shutter {
 		menuDisplay = new JMenuItem(language.getProperty("menuItemVisualiser"));
 		final JMenuItem silentTrack = new JMenuItem(language.getProperty("menuItemSilentTrack"));
 		final JMenuItem menuOpenFolder = new JMenuItem(language.getProperty("menuItemOuvrirDossier"));
-		final JMenuItem info = new JMenuItem(language.getProperty("menuItemInfo"));
+		informations = new JMenuItem(language.getProperty("menuItemInfo"));
 		final JMenuItem rename = new JMenuItem(language.getProperty("menuItemRename"));
 		inputDevice = new JMenuItem(Shutter.language.getProperty("menuItemInputDevice"));
 		final JMenuItem arborescence = new JMenuItem(language.getProperty("menuItemArborescence"));
@@ -1612,51 +1625,63 @@ public class Shutter {
 		poids.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int dureeTotale = 0;
+				
+				int totalLength = 0;
+				FFPROBE.totalLength = 0;
+				
 				for (String file : fileList.getSelectedValuesList()) {
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					FFPROBE.Data(file);
 					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(1);
 						} catch (InterruptedException e1) {
 						}
-					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning == true);
-					dureeTotale += FFPROBE.totalLength;
+					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+					
+					// IMPORTANT
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+					
+					totalLength += FFPROBE.totalLength;
+					FFPROBE.totalLength = 0;
 				}
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-				int poidsFinal = 0;
+				int finalSize = 0;
 				String codec = "";
-				int debit = 0;
+				int bitrate = 0;
 				switch (comboFonctions.getSelectedItem().toString()) {
 				case "DNxHD":
 					codec = "DNxHD " + comboFilter.getSelectedItem().toString();
-					debit = Integer.parseInt(comboFilter.getSelectedItem().toString().replace(" X", ""));
+					bitrate = Integer.parseInt(comboFilter.getSelectedItem().toString().replace(" X", ""));
 					break;
 				case "Apple ProRes":
 					codec = "Apple ProRes " + comboFilter.getSelectedItem().toString();
 					switch (comboFilter.getSelectedItem().toString()) {
 					case "Proxy":
-						debit = (int) ((float) 1.52 * FFPROBE.currentFPS);
+						bitrate = (int) ((float) 1.52 * FFPROBE.currentFPS);
 						break;
 					case "LT":
-						debit = (int) ((float) 3.4 * FFPROBE.currentFPS);
+						bitrate = (int) ((float) 3.4 * FFPROBE.currentFPS);
 						break;
 					case "422":
-						debit = (int) ((float) 4.88 * FFPROBE.currentFPS);
+						bitrate = (int) ((float) 4.88 * FFPROBE.currentFPS);
 						break;
 					case "422 HQ":
-						debit = (int) ((float) 7.4 * FFPROBE.currentFPS);
+						bitrate = (int) ((float) 7.4 * FFPROBE.currentFPS);
 						break;
 					case "444":
-						debit = (int) ((float) 11 * FFPROBE.currentFPS);
+						bitrate = (int) ((float) 11 * FFPROBE.currentFPS);
 						break;
 					case "4444":
-						debit = (int) ((float) 11 * FFPROBE.currentFPS);
+						bitrate = (int) ((float) 11 * FFPROBE.currentFPS);
 						break;
 					case "4444 XQ":
-						debit = (int) ((float) 16.5 * FFPROBE.currentFPS);
+						bitrate = (int) ((float) 16.5 * FFPROBE.currentFPS);
 						break;
 					}
 					break;
@@ -1683,32 +1708,32 @@ public class Shutter {
 					case "LB":
 						switch (resolution) {
 						case 4096:
-							debit = (int) ((float) 0.7616 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.7616 * 8 * FFPROBE.currentFPS);
 							break;
 						case 3840:
-							debit = (int) ((float) 0.7148 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.7148 * 8 * FFPROBE.currentFPS);
 							break;
 						case 2048:
-							debit = (int) ((float) 0.1916 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.1916 * 8 * FFPROBE.currentFPS);
 							break;
 						case 1920:
-							debit = (int) ((float) 0.1796 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.1796 * 8 * FFPROBE.currentFPS);
 							break;
 						}
 						break;
 					case "SQ":
 						switch (resolution) {
 						case 4096:
-							debit = (int) ((float) 2.4492 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 2.4492 * 8 * FFPROBE.currentFPS);
 							break;
 						case 3840:
-							debit = (int) ((float) 2.2968 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 2.2968 * 8 * FFPROBE.currentFPS);
 							break;
 						case 2048:
-							debit = (int) ((float) 0.6132 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.6132 * 8 * FFPROBE.currentFPS);
 							break;
 						case 1920:
-							debit = (int) ((float) 0.5744 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.5744 * 8 * FFPROBE.currentFPS);
 							break;
 						}
 						break;
@@ -1716,32 +1741,32 @@ public class Shutter {
 					case "HQX":
 						switch (resolution) {
 						case 4096:
-							debit = (int) ((float) 3.7072 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 3.7072 * 8 * FFPROBE.currentFPS);
 							break;
 						case 3840:
-							debit = (int) ((float) 3.4728 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 3.4728 * 8 * FFPROBE.currentFPS);
 							break;
 						case 2048:
-							debit = (int) ((float) 0.9256 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.9256 * 8 * FFPROBE.currentFPS);
 							break;
 						case 1920:
-							debit = (int) ((float) 0.8672 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 0.8672 * 8 * FFPROBE.currentFPS);
 							break;
 						}
 						break;
 					case "444":
 						switch (resolution) {
 						case 4096:
-							debit = (int) ((float) 7.41 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 7.41 * 8 * FFPROBE.currentFPS);
 							break;
 						case 3840:
-							debit = (int) ((float) 6.9492 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 6.9492 * 8 * FFPROBE.currentFPS);
 							break;
 						case 2048:
-							debit = (int) ((float) 1.8516 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 1.8516 * 8 * FFPROBE.currentFPS);
 							break;
 						case 1920:
-							debit = (int) ((float) 1.7384 * 8 * FFPROBE.currentFPS);
+							bitrate = (int) ((float) 1.7384 * 8 * FFPROBE.currentFPS);
 							break;
 						}
 						break;
@@ -1749,23 +1774,23 @@ public class Shutter {
 					break;
 				}
 
-				poidsFinal = (int) (((float) dureeTotale / 1000) * ((float) debit / 8));
-
-				String taille;
-				if (poidsFinal >= 1000)
-					taille = String.valueOf(((float) poidsFinal / 1024)).substring(0, 4) + " Go";
+				finalSize = (int) (((float) totalLength / 1000) * ((float) bitrate / 8));
+				
+				String fileSize;
+				if (finalSize >= 1000)
+					fileSize = String.valueOf(Math.round((float) finalSize / 1024)) + " Go";
 				else
-					taille = poidsFinal + " Mo";
+					fileSize = finalSize + " Mo";
 
 				JOptionPane.showMessageDialog(frame,
 						fileList.getSelectedIndices().length + " " + language.getProperty("selectedFiles")
-								+ System.lineSeparator() + System.lineSeparator() + taille + " "
+								+ System.lineSeparator() + System.lineSeparator() + fileSize + " "
 								+ language.getProperty("to") + " " + codec,
 						language.getProperty("approximativeWeight"), JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 
-		info.addActionListener(new ActionListener() {
+		informations.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (Informations.frame == null)
@@ -2121,7 +2146,7 @@ public class Shutter {
 								popupList.add(poids);
 								break;
 							}
-							popupList.add(info);
+							popupList.add(informations);
 							popupList.add(rename);
 							popupList.add(inputDevice);
 							popupList.add(arborescence);
@@ -2167,7 +2192,7 @@ public class Shutter {
 								popupList.add(poids);
 								break;
 							}
-							popupList.add(info);
+							popupList.add(informations);
 							popupList.add(inputDevice);
 							popupList.add(arborescence);
 							popupList.add(gop);
@@ -2723,12 +2748,12 @@ public class Shutter {
 									if (liste.getSize() < 2)
 									{
 										if (caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
-											ReplaceAudio.main();
+											ReplaceAudio.setStreams();
 										else
 											JOptionPane.showMessageDialog(frame, language.getProperty("replaceAudioMissing"), language.getProperty("missingElement"), JOptionPane.ERROR_MESSAGE);
 									}
 									else
-										ReplaceAudio.main();
+										ReplaceAudio.setStreams();
 								}
 							} else if (language.getProperty("functionSubtitles").equals(fonction)) {
 								
@@ -2877,20 +2902,19 @@ public class Shutter {
 						}
 					}
 				}
-				else 
-				{ // Fonctions n'ayant pas de fichiers dans la liste
-					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) {
+				else // Fonctions n'ayant pas de fichiers dans la liste
+				{ 	
+					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")))
+					{
+						try {
+							frame.setOpacity(0.5f);
+						} catch (Exception er) {}
 						
-							try {
-								frame.setOpacity(0.5f);
-							} catch (Exception er) {}
-							
-							new VideoWeb();
-							
-							frame.setOpacity(1.0f);
-							
-					} else if (comboFonctions.getSelectedItem().equals("DVD Rip")
-							&& btnStart.getText().equals(language.getProperty("btnStartFunction"))) {
+						new VideoWeb();		
+						frame.setOpacity(1.0f);
+					}
+					else if (comboFonctions.getSelectedItem().equals("DVD Rip") && btnStart.getText().equals(language.getProperty("btnStartFunction")))
+					{						
 						if (inputDeviceIsRunning)
 							JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
 						else if (scanIsRunning)
@@ -2901,7 +2925,9 @@ public class Shutter {
 							DVDRIP.main();
 						}
 					}
-					if (btnStart.getText().equals(language.getProperty("btnPauseFunction"))) {
+					
+					if (btnStart.getText().equals(language.getProperty("btnPauseFunction")))
+					{
 						caseRunInBackground.setEnabled(false);
 						caseRunInBackground.setSelected(false);
 
@@ -2914,8 +2940,8 @@ public class Shutter {
 						tempsRestant.setText(language.getProperty("timePause"));
 						tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
 					} 
-					else if (btnStart.getText().equals(language.getProperty("btnResumeFunction"))) {
-						
+					else if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
+					{
 						caseRunInBackground.setEnabled(true);
 
 						FFMPEG.resumeProcess();
@@ -11873,7 +11899,7 @@ public class Shutter {
 			
 		});
 
-		lblYears = new JLabel("2013-2022");
+		lblYears = new JLabel("2013-2023");
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYears.setForeground(Color.WHITE);
 		lblYears.setFont(new Font(freeSansFont, Font.PLAIN, 12));
