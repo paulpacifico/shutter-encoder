@@ -34,136 +34,202 @@ import settings.InputAndOutput;
 
 public class ReplaceAudio extends Shutter {
 	
-	public static void main() {
+	private static void main(String audioFiles, String audioExt, File videoFile) throws InterruptedException {
 		
-		Thread thread = new Thread(new Runnable(){			
-			@Override
-			public void run() {
-				String audioFiles;	
-				String audioExt = "";
-				File videoFile;
-				
-				if (scanIsRunning == false)
-					FunctionUtils.completed = 0;
-				
-				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));				
+		if (scanIsRunning == false)
+			FunctionUtils.completed = 0;
+		
+		lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));				
 
-			try {
-					
-				if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) == false || caseChangeAudioCodec.isSelected() == false)
-				{
-					//Stream analyze		
-					if (FFPROBE.FindStreams(liste.getElementAt(1)))
-					{
-						videoFile = new File(liste.getElementAt(1));
-						audioFiles = " -i " + '"' + liste.getElementAt(0)  + '"';
-						audioExt = liste.getElementAt(0).substring(liste.getElementAt(0).lastIndexOf("."));
-						FFPROBE.FindStreams(liste.getElementAt(0));
-					}
-					else
-					{
-						videoFile = new File(liste.getElementAt(0));		
-						audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
-						audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));
-					}			
-					
-					float offset = 0;
-					
-					if (caseAudioOffset.isSelected() || caseInAndOut.isSelected())
-					{
-						FFPROBE.Data(videoFile.toString());
-						
-						do {
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e1) {
-							}
-						} while (FFPROBE.isRunning);
-						
-						if (caseAudioOffset.isSelected())
-							offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
-						else
-							offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
-						
-						audioFiles = " -itsoffset " + offset + audioFiles;
-					}
-					
-					audioFiles += " -map 0:v -map 1:a";
-					
-					if (liste.getSize() > 2)
-						audioFiles = setMulipleAudioFiles(videoFile, "", offset);
-													
-					do {
-						Thread.sleep(100);
-					} while (FFPROBE.isRunning);	
-				}
-				else
-				{
-					videoFile = new File(liste.getElementAt(0));
-					audioFiles = " -map v:0?";
-				}				
-					String fileName = videoFile.getName();
-					String extension =  fileName.substring(fileName.lastIndexOf("."));
-					
-					lblCurrentEncoding.setText(fileName);			
-					
-					//InOut	
-					InputAndOutput.getInputAndOutput();		
-					
-					//Output folder
-					String labelOutput = FunctionUtils.setOutputDestination("", videoFile);
-					
-					//File output name
-					String extensionName = "_MIX";
-					
-					if (Settings.btnExtension.isSelected())
-						extensionName = Settings.txtExtension.getText();
-
-					
-					//Output name
-					String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 
-	
-					//File output
-					File fileOut = new File(fileOutputName);
-					if(fileOut.exists())
-					{
-						fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", extension);
-					}
-							
-					String audio = setAudio(extension, audioExt);
-					String shortest = " -shortest";
-					if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")))
-						shortest = "";
-										
-					//Command				
-					String cmd = shortest + " -c:v copy -c:s copy" + audio + " -map s? -y ";
-					FFMPEG.run(InputAndOutput.outPoint + " -i " + '"' + videoFile.toString() + '"' + audioFiles + cmd + '"'  + fileOut + '"');		
-							
-					do
-					{
-						Thread.sleep(100);
-					}
-					while(FFMPEG.runProcess.isAlive());
-					
-					
-					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					{
-						lastActions(fileName, fileOut, labelOutput);
-					}
-					
-				} catch (InterruptedException e) {
-					FFMPEG.error  = true;
-				}
-				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-					enfOfFunction();
-			}
+		String fileName = videoFile.getName();
+		String extension =  fileName.substring(fileName.lastIndexOf("."));
+		
+		lblCurrentEncoding.setText(fileName);			
+		
+		//InOut	
+		InputAndOutput.getInputAndOutput();		
+		
+		//Output folder
+		String labelOutput = FunctionUtils.setOutputDestination("", videoFile);
+		
+		//File output name
+		String extensionName = "_MIX";
+		
+		if (Settings.btnExtension.isSelected())
+			extensionName = Settings.txtExtension.getText();
 			
-		});
-		thread.start();
+		//Output name
+		String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 
+
+		//File output
+		File fileOut = new File(fileOutputName);
+		if(fileOut.exists())
+		{
+			fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", extension);
+		}
+		
+		if (fileOut != null)
+		{					
+			String audio = setAudio(extension, audioExt);
+			String shortest = " -shortest";
+			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")))
+				shortest = "";
+								
+			//Command				
+			String cmd = shortest + " -c:v copy -c:s copy" + audio + " -map s? -y ";
+			FFMPEG.run(InputAndOutput.outPoint + " -i " + '"' + videoFile.toString() + '"' + audioFiles + cmd + '"'  + fileOut + '"');		
+					
+			do {
+				Thread.sleep(100);
+			} while(FFMPEG.runProcess.isAlive());
+		
+			if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+			{
+				lastActions(fileName, fileOut, labelOutput);
+			}
+					
+		}
+		
+		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+			enfOfFunction();
 		
     }
 
+	public static void setStreams() {
+		
+		Thread thread = new Thread(new Runnable() {	
+			
+			@Override
+			public void run() {
+				
+				try {
+				
+					String audioFiles = null;	
+					String audioExt = "";
+					File videoFile = null;
+					
+					//Batch replace video analyze
+					int videoStream = 0;							
+					if (liste.getSize() > 2)
+					{								
+						for (int i = 0 ; i < liste.getSize() ; i++)
+						{
+							if (FFPROBE.FindStreams(liste.getElementAt(i)))
+							{
+								videoStream ++;
+							}
+						}		
+						
+						//Start batch replace
+						if (videoStream > 1)
+						{
+							for (int i = 0 ; i < liste.getSize() ; i++)
+							{
+								if (i % 2 == 0)
+								{
+									videoFile = new File(liste.getElementAt(i));
+									
+									if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) && caseChangeAudioCodec.isSelected())
+									{
+										audioFiles = " -map v:0?";
+									}								
+									else if (caseChangeAudioCodec.isSelected())
+									{
+										audioFiles = " -map 0:v -map 0:a?";
+									}
+									else
+									{
+										audioFiles = " -i " + '"' + liste.getElementAt(i + 1)  + '"' + " -map 0:v -map 1:a";
+										audioExt = liste.getElementAt(i + 1).substring(liste.getElementAt(i + 1).lastIndexOf("."));
+									}
+								}	
+								else
+								{
+									if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) && caseChangeAudioCodec.isSelected() || caseChangeAudioCodec.isSelected())
+									{
+										videoFile = new File(liste.getElementAt(i));
+									}
+									else									
+									{
+										continue;
+									}
+								}
+
+								//Start replacement
+								main(audioFiles, audioExt, videoFile);
+								
+								if (FFMPEG.error || Shutter.cancelled)
+								{
+									break;
+								}
+							}
+						}
+					}
+					
+					if (liste.getSize() <= 2 || videoStream == 1) //Replace one video file
+					{
+						if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) == false || caseChangeAudioCodec.isSelected() == false)
+						{						
+							//Stream analyze		
+							if (FFPROBE.FindStreams(liste.getElementAt(1)))
+							{
+								videoFile = new File(liste.getElementAt(1));
+								audioFiles = " -i " + '"' + liste.getElementAt(0)  + '"';
+								audioExt = liste.getElementAt(0).substring(liste.getElementAt(0).lastIndexOf("."));
+								FFPROBE.FindStreams(liste.getElementAt(0));
+							}
+							else
+							{
+								videoFile = new File(liste.getElementAt(0));		
+								audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
+								audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));
+							}	
+						
+							float offset = 0;
+							
+							if (caseAudioOffset.isSelected() || caseInAndOut.isSelected())
+							{
+								FFPROBE.Data(videoFile.toString());
+								
+								do {
+									Thread.sleep(100);
+								} while (FFPROBE.isRunning);
+								
+								if (caseAudioOffset.isSelected())
+									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
+								else
+									offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+								
+								audioFiles = " -itsoffset " + offset + audioFiles;
+							}
+							
+							audioFiles += " -map 0:v -map 1:a";
+							
+							if (liste.getSize() > 2)
+								audioFiles = setMulipleAudioFiles(videoFile, "", offset);
+															
+							do {
+								Thread.sleep(100);
+							} while (FFPROBE.isRunning);	
+						}
+						else
+						{
+							videoFile = new File(liste.getElementAt(0));
+							audioFiles = " -map v:0?";
+						}	
+						
+						//Start replacement
+						main(audioFiles, audioExt, videoFile);
+					}
+					
+				} catch (InterruptedException e1) {
+					FFMPEG.error  = true;
+				}
+			}
+		});
+		thread.start();
+	}
+	
 	private static String setMulipleAudioFiles(File videoFile, String audioFiles, Float offset) {
 		
 		for (int i = 0 ; i < liste.getSize() ; i++)
@@ -239,12 +305,12 @@ public class ReplaceAudio extends Shutter {
 			{
 				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
-			else //Sans audio
+			else //No audio
 			{
 				return " -an";
 			}
 		}
-		else //Mode Auto
+		else //Auto mode
 		{
 			if (audioExt.equals(".thd"))
 			{

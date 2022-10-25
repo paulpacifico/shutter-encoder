@@ -156,16 +156,28 @@ public class Transitions extends Shutter {
 	        	{
 	        		newFPS = Float.parseFloat((caseSequenceFPS.getSelectedItem().toString()).replace(",", "."));
 	        	}
+	        	 
+	        	float value = (float) (newFPS / FFPROBE.currentFPS);
 	        	
-	        	float value = (float) (newFPS/ FFPROBE.currentFPS);
-	        	
-	        	if (value < 0.5f || value > 2.0f)
+	        	if (value >= 0.5f && value <= 2.0f)
 	        	{
-	        		return " -an";
+	        		audioFilter = "atempo=" + value;      
+	        	}
+	        	else if (value <= 0.5f && value >= 0.25f)
+	        	{
+	        		audioFilter = "atempo=" + ((float) value * 2);
+	        		audioFilter += ",";
+	        		audioFilter += "atempo=" + ((float) value * 2);
+	        	}
+	        	else if (value >= 2.0f && value <= 4.0f)
+	        	{
+	        		audioFilter = "atempo=" + ((float) value / 2);
+	        		audioFilter += ",";
+	        		audioFilter += "atempo=" + ((float) value / 2);
 	        	}
 	        	else
 	        	{
-	        		audioFilter = "atempo=" + value;      
+	        		return " -an";
 	        	}
 	        }
 			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))

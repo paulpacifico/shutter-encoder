@@ -81,6 +81,7 @@ public static float newVolume;
 public static StringBuilder shortTermValues;
 public static StringBuilder blackFrame;
 public static StringBuilder mediaOfflineFrame;
+public static String cropdetect;
 private static boolean firstInput = true;
 public static int firstScreenIndex = -1;
 public static StringBuilder videoDevices;
@@ -166,7 +167,7 @@ private static StringBuilder getAll;
 							{								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
 
-								String aspect ="";
+								String aspect = "";
 								if (caseForcerDAR.isSelected())
 									aspect = ",setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
 							
@@ -201,7 +202,7 @@ private static StringBuilder getAll;
 							String pipe = "";								
 							if (cmd.contains("pipe:play"))
 							{
-								String aspect ="";
+								String aspect = "";
 								if (caseForcerDAR.isSelected())
 									aspect = ",setdar=" + comboDAR.getSelectedItem().toString().replace(":", "/");
 								
@@ -1356,7 +1357,7 @@ private static StringBuilder getAll;
 		if (line.contains("Input #1"))
 			firstInput = false;
 				
-		//Calcul de la durée
+		//Get the duration
 	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && firstInput)
 		{	    	
 			String str = line.substring(line.indexOf(":") + 2);
@@ -1442,7 +1443,7 @@ private static StringBuilder getAll;
 			
 	  }
 	  
-		//Temps écoulé		
+		//Elapsed time
 		previousElapsedTime = (int) (System.currentTimeMillis() - elapsedTime);
 
 		int timeH = (previousElapsedTime / 3600000) % 60;
@@ -1469,7 +1470,7 @@ private static StringBuilder getAll;
 		tempsEcoule.setText(Shutter.language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
 		tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
 	         
-	  //Temps Restant
+	  //Remaining time
 	  if ((line.contains("frame=") || line.contains("time=")) && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
 	  {
 		 String[] split = line.split("=");	
@@ -1605,7 +1606,7 @@ private static StringBuilder getAll;
 		  tempsEcoule.setVisible(true);
 	  }
 	  
-	  //Détection de coupe
+	  //Cut detection
 	  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) && line.contains("pts"))
 	  {
 		  NumberFormat formatter = new DecimalFormat("00");
@@ -1636,11 +1637,17 @@ private static StringBuilder getAll;
           SceneDetection.table.repaint();
 	  }
 	  
-	}//End Progression
+	  //autocrop detection
+	  if (line.contains("Parsed_cropdetect"))
+	  {
+		  cropdetect = line.substring(line.indexOf("crop=") + 5);
+	  }
+	  
+	}
 
 	private static void postAnalyse() {
 		
-		//Loudness & Normalisation
+		 //Loudness & Normalization
 	     if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")))
 	     {
                analyseLufs = null;
@@ -1714,7 +1721,7 @@ private static StringBuilder getAll;
                }
 	     }	
 	     	     
-	     //Détection de noir
+	     //Black detection
 	     if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionBlackDetection")))
 	     {
 	    	 	blackFrame = new StringBuilder();
@@ -1757,7 +1764,7 @@ private static StringBuilder getAll;
 	    	 	}
 	     }
 	     
-	     //Détection de media offline
+	     //Media offline detection
 	     if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionOfflineDetection")))
 	     {
 	    	 mediaOfflineFrame = new StringBuilder();

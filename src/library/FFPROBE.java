@@ -937,7 +937,7 @@ public static int gopSpace = 124;
 			process.waitFor();
 			
 			} catch (Exception e) {}
-			finally{
+			finally {
 				isRunning = false;
 			}
 		
