@@ -600,7 +600,7 @@ import javax.swing.JScrollPane;
 		ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(142, 80, Image.SCALE_DEFAULT));			
 		Object[][] firstImage = {{"1", icon, "00:00:00:00"}};
 
-		tableRow = new DefaultTableModel(firstImage, new String[] {"N\u00B0", "Plans", "Timecode"});
+		tableRow = new DefaultTableModel(firstImage, new String[] {"N\u00B0", Shutter.language.getProperty("cut"), Shutter.language.getProperty("lblTimecode")});
 		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
 		dtcr.setHorizontalAlignment(SwingConstants.CENTER);
         table = new JTable(tableRow)

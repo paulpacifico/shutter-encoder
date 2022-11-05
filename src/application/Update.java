@@ -398,9 +398,9 @@ public class Update {
 		public void run() {
 		
 			//Téléchargement
-			HTTPDownload("https://www.shutterencoder.com/" + newVersion, System.getProperty("user.home") + "/Desktop/" + newVersion);
+			HTTPDownload("https://www.shutterencoder.com/" + newVersion, System.getProperty("user.home") + "/Downloads/" + newVersion);
 	
-			File app = new File(System.getProperty("user.home") + "/Desktop/" + newVersion);
+			File app = new File(System.getProperty("user.home") + "/Downloads/" + newVersion);
 			
 			if (cancelled == false)
 			{
@@ -409,14 +409,16 @@ public class Update {
 				if (q == JOptionPane.YES_OPTION)
 				{
 					try {
-						Desktop.getDesktop().open(new File(System.getProperty("user.home") + "/Desktop/" + newVersion) );
+						Desktop.getDesktop().open(new File(System.getProperty("user.home") + "/Downloads/" + newVersion) );
 					} catch (IOException e) {}
 										
 					System.exit(0);
 				}	
 				else
 				{	    	
-					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("newVersionOnDesktop") , Shutter.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
+					JOptionPane.showMessageDialog(Shutter.frame, '"' + app.toString() + '"', Shutter.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
+				
+					frame.dispose();
 				}
 			}
 			else
@@ -425,6 +427,8 @@ public class Update {
 				
 				if (app.exists())
 					app.delete();
+				
+				frame.dispose();
 			}
  
 		}

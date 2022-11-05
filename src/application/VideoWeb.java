@@ -788,7 +788,7 @@ public class VideoWeb {
            if (clipTf != null) {
                if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
                    try {
-                	   	textURL.setText((String) clipTf.getTransferData(DataFlavor.stringFlavor));
+                	   	textURL.setText(textURL.getText() + (String) clipTf.getTransferData(DataFlavor.stringFlavor));
                    } catch (Exception er) {}
                }
            }
