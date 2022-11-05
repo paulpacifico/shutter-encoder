@@ -470,10 +470,19 @@ public class FunctionUtils extends Shutter {
 					FFPROBE.Data(liste.getElementAt(i));
 					do {
 						try {
-							Thread.sleep(100);
+							Thread.sleep(1);
 						} catch (InterruptedException e1) {}
-					} while (FFPROBE.isRunning == true);
+					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+					
+					// IMPORTANT
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+					
 					mergeDuration += FFPROBE.totalLength;
+					FFPROBE.totalLength = 0;
 				}
 				else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 				{

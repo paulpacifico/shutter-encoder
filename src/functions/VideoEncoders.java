@@ -928,7 +928,7 @@ public class VideoEncoders extends Shutter {
 				if (FFPROBE.currentFPS != 24.0 && FFPROBE.currentFPS != 23.98 && caseForcerProgressif.isSelected() == false)
 		        	interlace = ":tff=1";
 				
-				return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + debitVideo.getSelectedItem().toString() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709 -r " + FFPROBE.currentFPS;
+				return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + debitVideo.getSelectedItem().toString() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";
 				
 			case "DVD":
 				

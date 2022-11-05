@@ -608,6 +608,7 @@ public class AdvancedFeatures extends Shutter {
 			case "HAP":
 			case "QT Animation":
 			case "Uncompressed":
+			case "Blu-ray":
 				
 				if (caseForcerEntrelacement.isSelected())
 				{			
