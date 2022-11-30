@@ -439,6 +439,29 @@ public class VideoEncoders extends Shutter {
 								
 								break;
 						}
+						
+						//Padding
+						switch (comboFonctions.getSelectedItem().toString())
+						{
+							//Limit to Full HD
+							case "AVC-Intra 100":
+							case "DNxHD":
+							case "XDCAM HD422":
+								
+								if (FFPROBE.imageResolution.equals("1440x1080"))
+								{
+									filterComplex = Image.setPad(filterComplex, false);									
+								}
+								else
+									filterComplex = Image.setPad(filterComplex, true);			
+								
+								break;
+								
+							default:
+								
+								filterComplex = Image.setPad(filterComplex, false);									
+								break;
+						}	
 											
 						//Blend
 						filterComplex = ImageSequence.setBlend(filterComplex);
@@ -508,30 +531,7 @@ public class VideoEncoders extends Shutter {
 						
 						//DAR
 						filterComplex = Image.setDAR(filterComplex);
-						
-						//Padding
-						switch (comboFonctions.getSelectedItem().toString())
-						{
-							//Limit to Full HD
-							case "AVC-Intra 100":
-							case "DNxHD":
-							case "XDCAM HD422":
-								
-								if (FFPROBE.imageResolution.equals("1440x1080"))
-								{
-									filterComplex = Image.setPad(filterComplex, false);									
-								}
-								else
-									filterComplex = Image.setPad(filterComplex, true);			
-								
-								break;
-								
-							default:
-								
-								filterComplex = Image.setPad(filterComplex, false);									
-								break;
-						}										
-						
+
 						//Interlace50p
 			            filterComplex = AdvancedFeatures.setInterlace50p(filterComplex);
 			            
@@ -920,7 +920,19 @@ public class VideoEncoders extends Shutter {
 		{
 			case "AV1":
 		
-				return " -c:v libsvtav1";
+				if (caseAccel.isSelected())
+				{
+					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					{
+						return " -c:v av1_nvenc";	
+					}
+					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+					{
+						return " -c:v av1_qsv";	
+					}				
+				}
+		    	else
+		        	return " -c:v libsvtav1";
 				
 			case "Blu-ray":
 				

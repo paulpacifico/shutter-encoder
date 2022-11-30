@@ -33,8 +33,27 @@ public class Image extends Shutter {
 			{
 				if (filterComplex != "")
 					filterComplex += "[w];[w]";
+
+				//IMPORTANT
+				float imageRatio = 1.0f;
 				
-	    		filterComplex += Shutter.croppingValues;
+				int ow = FFPROBE.imageWidth;  
+				
+				if (Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
+				{
+					String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");
+					
+		        	ow = Integer.parseInt(s[0]);   
+		        	
+					imageRatio = (float) FFPROBE.imageWidth / ow;
+				}
+				
+				int cropWidth = Math.round((float) Integer.parseInt(VideoPlayer.textCropWidth.getText()) / imageRatio);
+				int cropHeight = Math.round((float) Integer.parseInt(VideoPlayer.textCropHeight.getText()) / imageRatio);
+				int cropX = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosX.getText()) / imageRatio);
+				int cropY = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosY.getText()) / imageRatio);
+
+	    		filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
 			}
 		}
     	
@@ -108,8 +127,8 @@ public class Image extends Shutter {
 			{
 				double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 				
-				s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
-				s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+				s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * value));
+				s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
 			}					
 			else
 				s = comboResolution.getSelectedItem().toString().split("x");

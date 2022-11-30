@@ -237,6 +237,9 @@ private static StringBuilder getAll;
 									|| line.contains("matches no streams")
 									|| line.contains("Error while opening encoder")
 									|| line.contains("Decoder (codec none) not found")
+									|| line.contains("hwaccel initialisation returned error")
+									|| line.contains("No device available for decoder")
+									|| line.contains("Error while decoding stream")
 									|| line.contains("Unknown encoder")
 									|| line.contains("Could not set video options")
 									|| line.contains("Input/output error")
@@ -750,7 +753,28 @@ private static StringBuilder getAll;
 				String filter = "";
 				String frameSize = "";
 				if (VideoPlayer.caseEnableCrop.isSelected())
-					filter = " -vf " + croppingValues;
+				{			
+					//IMPORTANT
+					float imageRatio = 1.0f;
+					
+					int ow = FFPROBE.imageWidth;  
+					
+					if (Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
+					{
+						String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");
+						
+			        	ow = Integer.parseInt(s[0]);   
+			        	
+						imageRatio = (float) FFPROBE.imageWidth / ow;
+					}
+					
+					int cropWidth = Math.round((float) Integer.parseInt(VideoPlayer.textCropWidth.getText()) / imageRatio);
+					int cropHeight = Math.round((float) Integer.parseInt(VideoPlayer.textCropHeight.getText()) / imageRatio);
+					int cropX = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosX.getText()) / imageRatio);
+					int cropY = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosY.getText()) / imageRatio);
+
+					filter = " -vf crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;;
+				}
 				
 				if (comboResolution.getSelectedItem().toString().contains(":"))
 				{					

@@ -183,7 +183,6 @@ public class Shutter {
 	private static int taskBarHeight;
 	public static boolean cancelled = false;
 	public static float ratioFinal = 0; // CropVideo
-	public static String croppingValues = null; // CropImage
 	public static String colorimetryValues = null; // ColorImage
 	public static boolean scanIsRunning = false;
 	public static JMenuItem menuDisplay;
@@ -9474,6 +9473,27 @@ public class Shutter {
 									graphicsAccel.add("OSX VideoToolbox");
 							}*/
 						}
+						else if ("AV1".equals(comboFonctions.getSelectedItem().toString()))
+						{
+							if (System.getProperty("os.name").contains("Windows"))
+							{
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -s 640x360 -f null -" + '"');
+								do {
+									Thread.sleep(10);
+								} while (FFMPEG.runProcess.isAlive());
+		
+								if (FFMPEG.error == false)
+									graphicsAccel.add("Nvidia NVENC");
+		
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_qsv -s 640x360 -f null -" + '"');
+								do {
+									Thread.sleep(10);
+								} while (FFMPEG.runProcess.isAlive());
+		
+								if (FFMPEG.error == false)
+									graphicsAccel.add("Intel Quick Sync");
+							}
+						}
 						else
 						{							
 							String codec = "h264";
@@ -13976,7 +13996,7 @@ public class Shutter {
 							grpAdvanced.removeAll();
 
 							// grpAdvanced	
-							if ("VP9".equals(function))
+							if (System.getProperty("os.name").contains("Windows") && ("VP9".equals(function) || "AV1".equals(function)))
 							{
 								caseAccel.setLocation(7, 14);
 								grpAdvanced.add(caseAccel);

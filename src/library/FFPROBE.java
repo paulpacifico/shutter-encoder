@@ -87,6 +87,9 @@ public static float HDRmax = 0;
 public static float keyFrame = 0;
 public static int gopCount = 0;
 public static int gopSpace = 124;
+public static boolean isGPUCompatible = false;
+public static boolean cudaAvailable = false;
+public static boolean qsvAvailable = false;
 
 	public static void Data(final String file) {	
 		
@@ -114,6 +117,9 @@ public static int gopSpace = 124;
 		audioCodec = null;
 		audioBitrate = null;
 		FFMPEG.error = false;
+		isGPUCompatible = false;
+		cudaAvailable = false;
+		qsvAvailable = false;
 		hasAudio = false; 		
 		btnStart.setEnabled(false);
 		
@@ -334,11 +340,7 @@ public static int gopSpace = 124;
 			                	imageRatio = (float) ratioWidth / ratioHeight;
 			                }
 			                else
-			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);
-			              	
-			                /*
-			              	if (VideoPlayer.ratio < 1.76f)
-			              		VideoPlayer.ratio = 1.777777f;*/		         
+			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);       
 			                
 			                // Crop Form
 			                int largeur = 0;
@@ -504,6 +506,81 @@ public static int gopSpace = 124;
 				}//While			
 				process.waitFor();		
 					
+				//Check is GPU can decode				
+				if (System.getProperty("os.name").contains("Windows") &&  Settings.comboGPU.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
+				{
+					String vcodec = "";
+					if (videoCodec != null && totalLength > 40)
+					{
+						vcodec = FFPROBE.videoCodec.replace("video", "");
+						for (String s : Shutter.functionsList)
+						{
+							if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
+							|| s.toLowerCase().contains(vcodec.toLowerCase()))
+							{
+								vcodec = s;
+								break;
+							}
+							else
+								vcodec = vcodec.toUpperCase();
+						}
+					}
+					
+					if (vcodec.equals("H.264") || vcodec.equals("HEVC") || vcodec.equals("VP8") || vcodec.equals("VP9") || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2"))
+					{
+						isGPUCompatible = true;
+					}
+					
+					if (imageDepth > 10)
+					{
+						isGPUCompatible = false;
+					}
+					
+					if (isGPUCompatible)
+					{
+						//Check for Nvidia or Intel GPU
+						if (Settings.comboGPU.getSelectedItem().toString().equals("auto"))
+						{
+							//Cuda
+							FFMPEG.run(" -hwaccel cuda -i " + '"' + file + '"' + " -an -t 1 -f null -" + '"');
+							
+							do {
+								Thread.sleep(10);
+							} while(FFMPEG.runProcess.isAlive());
+							
+							if (FFMPEG.error == false)
+								cudaAvailable = true;
+							
+							//QSV
+							FFMPEG.run(" -hwaccel qsv -i " + '"' + file + '"' + " -an -t 1 -f null -" + '"');
+							
+							do {
+								Thread.sleep(10);
+							} while(FFMPEG.runProcess.isAlive());
+							
+							if (FFMPEG.error == false)
+								qsvAvailable = true;
+							
+							//Disable GPU if both are not available
+							if (cudaAvailable == false && qsvAvailable == false)
+								isGPUCompatible = false;
+						}
+						else //Check the current selection
+						{
+							FFMPEG.run(" -hwaccel " + Settings.comboGPU.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -an -t 1 -f null -" + '"');
+							
+							do {
+								Thread.sleep(10);
+							} while(FFMPEG.runProcess.isAlive());
+														
+							if (FFMPEG.error)
+								isGPUCompatible = false;
+						}
+						
+						Shutter.enableAll();
+					}
+				}
+				
 				} catch (IOException | InterruptedException e) {
 					FFMPEG.error = true;
 				} finally {
