@@ -79,7 +79,7 @@ public static Process process;
 							Console.consoleFFPLAY.append(line + System.lineSeparator() );	
 						 }
 						 
-					}//While			
+					}		
 					
 					process.waitFor();
 					

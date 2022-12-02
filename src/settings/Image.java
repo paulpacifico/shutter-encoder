@@ -19,9 +19,11 @@
 
 package settings;
 
+import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
 import library.FFPROBE;
+import library.FFMPEG;
 
 public class Image extends Shutter {
 
@@ -121,17 +123,25 @@ public class Image extends Shutter {
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
-			String s[] = FFPROBE.imageResolution.split("x");	
-			
+			String i[] = FFPROBE.imageResolution.split("x");        
+			String o[] = FFPROBE.imageResolution.split("x");
+						
 			if (comboResolution.getSelectedItem().toString().contains("%"))
 			{
 				double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 				
-				s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * value));
-				s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
+				o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+				o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
 			}					
 			else
-				s = comboResolution.getSelectedItem().toString().split("x");
+				o = comboResolution.getSelectedItem().toString().split("x");
+			
+			int iw = Integer.parseInt(i[0]);
+        	int ih = Integer.parseInt(i[1]);          	
+        	int ow = Integer.parseInt(o[0]);
+        	int oh = Integer.parseInt(o[1]);        	
+        	float ir = (float) iw / ih;
+        	float or = (float) ow / oh;
 			
         	if (filterComplex != "") filterComplex += ",";
 			
@@ -143,29 +153,21 @@ public class Image extends Shutter {
 		        {
 		        	if (comboResolution.getSelectedItem().toString().contains("auto"))
 		        	{
-		        		s = comboResolution.getSelectedItem().toString().split(":");
-		        		if (s[0].toString().equals("auto"))
-		        			filterComplex = "scale=-1:" + s[1];
+		        		o = comboResolution.getSelectedItem().toString().split(":");
+		        		if (o[0].toString().equals("auto"))
+		        			filterComplex = "scale=-1:" + o[1];
 		        		else
-		        			filterComplex = "scale="+s[0]+":-1";
+		        			filterComplex = "scale="+o[0]+":-1";
 		        	}
 		        	else
 		        	{
-			            s = comboResolution.getSelectedItem().toString().split(":");
-			    		float number =  (float) 1 / Integer.parseInt(s[0]);
+			            o = comboResolution.getSelectedItem().toString().split(":");
+			    		float number =  (float) 1 / Integer.parseInt(o[0]);
 			    		filterComplex = "scale=iw*" + number + ":ih*" + number;
 		        	}
 		        }
 				else
-				{					
-					String i[] = FFPROBE.imageResolution.split("x");        	
-		
-		        	int iw = Integer.parseInt(i[0]);
-		        	int ih = Integer.parseInt(i[1]);          	
-		        	int ow = Integer.parseInt(s[0]);
-		        	int oh = Integer.parseInt(s[1]);        	
-		        	float ir = (float) iw / ih;
-		        	        	
+				{					       	
 		        	//Original sup. à la sortie
 		        	if (iw > ow || ih > oh)
 		        	{
@@ -181,31 +183,83 @@ public class Image extends Shutter {
 			}
 			else
 			{
-				if (lblPad.getText().equals(language.getProperty("lblPad")))
+				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or)
 				{
-					filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad=" +s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease,pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
 				}
 				else
-					filterComplex += "scale="+s[0]+":"+s[1];	
+					filterComplex += "scale="+o[0]+":"+o[1];	
 			}
 			
 		}
 		else if (limitToFHD)
 		{
-			String s[] = "1920x1080".split("x");
+			String i[] = FFPROBE.imageResolution.split("x");    
+			String o[] = "1920x1080".split("x");
 			
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{
-				s = comboResolution.getSelectedItem().toString().split("x");
+				o = comboResolution.getSelectedItem().toString().split("x");
 			}
 			
 			if (filterComplex != "") filterComplex += ",";
 			
-			filterComplex += "scale="+s[0]+":"+s[1]+":force_original_aspect_ratio=decrease,pad=" +s[0]+":"+s[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+			int iw = Integer.parseInt(i[0]);
+        	int ih = Integer.parseInt(i[1]);          	
+        	int ow = Integer.parseInt(o[0]);
+        	int oh = Integer.parseInt(o[1]);        	
+        	float ir = (float) iw / ih;
+        	float or = (float) ow / oh;
+			
+			if (ir != or)
+			{
+				filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease,pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+			}
+			else
+				filterComplex += "scale="+o[0]+":"+o[1];			
+			
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".ico"))
 		{
 			filterComplex = "scale=256x256";
+		}
+		
+		//GPU Scaling
+		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale"))
+		{
+			//Scaling
+			String bitDepth = "nv12";
+			if (FFPROBE.imageDepth == 10)
+			{
+				bitDepth = "p010";
+			}			
+			
+			//Auto GPU selection
+			boolean autoQSV = false;
+			boolean autoCUDA = false;
+			if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+			{
+				if (FFMPEG.cudaAvailable)
+				{
+					autoCUDA = true;
+				}
+				else if (FFMPEG.qsvAvailable)
+				{
+					autoQSV = true;
+				}
+			}
+			
+			if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
+			{
+				filterComplex = filterComplex.replace("scale", "scale_qsv");
+				filterComplex += ",hwdownload,format=" + bitDepth;
+			}
+			else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
+			{
+				filterComplex = filterComplex.replace("yadif", "yadif_cuda");			
+				filterComplex = filterComplex.replace("scale", "scale_cuda");
+				filterComplex += ",hwdownload,format=" + bitDepth;
+			}
 		}
 		
 		return filterComplex;

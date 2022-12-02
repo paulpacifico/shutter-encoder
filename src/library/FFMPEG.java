@@ -86,6 +86,9 @@ private static boolean firstInput = true;
 public static int firstScreenIndex = -1;
 public static StringBuilder videoDevices;
 public static StringBuilder audioDevices;
+public static boolean isGPUCompatible = false;
+public static boolean cudaAvailable = false;
+public static boolean qsvAvailable = false;
 
 public static int differenceMax;
 
@@ -97,6 +100,7 @@ public static int previousElapsedTime = 0;
 private static int fps = 0;
 
 private static StringBuilder getAll;
+public static StringBuilder errorLog = new StringBuilder();
 
 	public static void run(String cmd) {
 			
@@ -106,7 +110,7 @@ private static StringBuilder getAll;
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
 		firstInput = true;
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd + System.lineSeparator());
 	    
 	    getAll = new StringBuilder();
 
@@ -220,33 +224,17 @@ private static StringBuilder getAll;
 						OutputStream stdin = process.getOutputStream();
 				        writer = new BufferedWriter(new OutputStreamWriter(stdin));				        
 				        
+				        Console.consoleFFMPEG.append(System.lineSeparator());
+				        
 						while ((line = input.readLine()) != null) {
+							
 							getAll.append(line);
 							getAll.append(System.lineSeparator());							
 							
-							Console.consoleFFMPEG.append(line + System.lineSeparator() );		
+							Console.consoleFFMPEG.append(line + System.lineSeparator());		
 							
-							//Erreurs
-							if (line.contains("Invalid data found when processing input") 
-									|| line.contains("No such file or directory")
-									|| line.contains("Invalid data found")
-									|| line.contains("No space left")
-									|| line.contains("does not contain any stream")
-									|| line.contains("Invalid argument")
-									|| line.contains("Error opening filters!")
-									|| line.contains("matches no streams")
-									|| line.contains("Error while opening encoder")
-									|| line.contains("Decoder (codec none) not found")
-									|| line.contains("hwaccel initialisation returned error")
-									|| line.contains("No device available for decoder")
-									|| line.contains("Error while decoding stream")
-									|| line.contains("Unknown encoder")
-									|| line.contains("Could not set video options")
-									|| line.contains("Input/output error")
-									|| line.contains("Operation not permitted"))
-							{
-								error = true;
-							} 
+							//Errors
+							checkForErrors(line);						
 																	
 							if (cancelled == false)
 							{
@@ -280,7 +268,37 @@ private static StringBuilder getAll;
 			
 	}
 			
-	private static String checkList(String cmd) {
+	public static void checkForErrors(String line) {
+		
+		if (line.contains("Invalid data found when processing input") 
+				|| line.contains("No such file or directory")
+				|| line.contains("Invalid data found")
+				|| line.contains("No space left")
+				|| line.contains("does not contain any stream")
+				|| line.contains("Invalid argument")
+				|| line.contains("Error opening filters!")
+				|| line.contains("Error reinitializing filters!")
+				|| line.contains("matches no streams")
+				|| line.contains("Error while opening encoder")
+				|| line.contains("Decoder (codec none) not found")
+				|| line.contains("hwaccel initialisation returned error")
+				|| line.contains("Device setup failed for decoder")
+				|| line.contains("No device available for decoder")
+				|| line.contains("Error while decoding stream")
+				|| line.contains("Current pixel format is unsupported")
+				|| line.contains("Unknown encoder")
+				|| line.contains("Could not set video options")
+				|| line.contains("Could not find tag for codec")
+				|| line.contains("Input/output error")
+				|| line.contains("Operation not permitted")
+				|| line.contains("Permission denied"))
+		{
+			errorLog.append(line + System.lineSeparator());
+			error = true;
+		} 				
+	}
+	
+ 	private static String checkList(String cmd) {
 		
 		if (cmd.contains("pass 2"))
 			return RenderQueue.tableRow.getValueAt(RenderQueue.tableRow.getRowCount() - 1, 1).toString().replace("ffmpeg", "").replace("pass 1", "pass 2");
@@ -362,26 +380,9 @@ private static StringBuilder getAll;
 							
 							Console.consoleFFPLAY.append(line + System.lineSeparator() );		
 						
-							//Erreurs
-							if (line.contains("Invalid data found when processing input") 
-									|| line.contains("No such file or directory")
-									|| line.contains("Invalid data found")
-									|| line.contains("No space left")
-									|| line.contains("does not contain any stream")
-									|| line.contains("Invalid argument")
-									|| line.contains("Error opening filters!")
-									|| line.contains("matches no streams")
-									|| line.contains("Error while opening encoder")
-									|| line.contains("Decoder (codec none) not found")
-									|| line.contains("Unknown encoder")
-									|| line.contains("Could not set video options")
-									|| line.contains("Input/output error")
-									|| line.contains("Operation not permitted"))
-							{
-								error = true;
-								//break;
-							} 								
-								 
+							//Errors
+							checkForErrors(line);
+
 							 if (line.contains("frame"))
 								frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));		
 							
@@ -950,12 +951,14 @@ private static StringBuilder getAll;
 	public static void hwaccel(final String cmd) {
 		
 		error = false;		
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator());
 			
 		runProcess = new Thread(new Runnable()  {
 			@Override
 			public void run() {
+				
 				try {
+					
 					String PathToFFMPEG;
 					ProcessBuilder processFFMPEG;
 					if (System.getProperty("os.name").contains("Windows"))
@@ -988,6 +991,8 @@ private static StringBuilder getAll;
 				        
 				        hwaccels.append("auto" + System.lineSeparator());
 				        
+				        Console.consoleFFMPEG.append(System.lineSeparator());
+				        
 				        while ((line = br.readLine()) != null) 
 				        {				        	
 				        	
@@ -1005,32 +1010,16 @@ private static StringBuilder getAll;
 					else
 					{
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
-											
+									
+						Console.consoleFFMPEG.append(System.lineSeparator());
+						
 						while ((line = input.readLine()) != null) {						
 							
 							Console.consoleFFMPEG.append(line + System.lineSeparator() );		
 							
-							//Erreurs
-							if (line.contains("Invalid data found when processing input") 
-									|| line.contains("No such file or directory")
-									|| line.contains("Invalid data found")
-									|| line.contains("No space left")
-									|| line.contains("does not contain any stream")
-									|| line.contains("Invalid argument")
-									|| line.contains("Error opening filters!")
-									|| line.contains("matches no streams")
-									|| line.contains("Error while opening encoder")
-									|| line.contains("Decoder (codec none) not found")
-									|| line.contains("Unknown encoder")
-									|| line.contains("Could not set video options")
-									|| line.contains("Input/output error")
-									|| line.contains("Operation not permitted"))
-							{
-								error = true;
-								//break;
-							} 
-																			
-						}//While			
+							//Errors
+							checkForErrors(line);																										
+						}			
 					}
 					
 					process.waitFor();					
@@ -1045,12 +1034,166 @@ private static StringBuilder getAll;
 		runProcess.start();
 	}
 
+	public static void checkGPUCapabilities(String file) {
+		
+		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
+		isGPUCompatible = false;
+		cudaAvailable = false;
+		qsvAvailable = false;
+		
+		//Check is GPU can decode				
+		if (System.getProperty("os.name").contains("Windows")
+		&& Settings.comboGPU.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
+		&& Settings.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
+		{
+			String vcodec = "";
+			if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
+			{
+				vcodec = FFPROBE.videoCodec.replace("video", "");
+				for (String s : Shutter.functionsList)
+				{
+					if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
+					|| s.toLowerCase().contains(vcodec.toLowerCase()))
+					{
+						vcodec = s;
+						break;
+					}
+					else
+						vcodec = vcodec.toUpperCase();
+				}
+			}
+			
+			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || vcodec.equals("VP8") || vcodec.equals("VP9") || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2"))
+			{
+				isGPUCompatible = true;
+			}
+			
+			if (FFPROBE.imageDepth > 10)
+			{
+				isGPUCompatible = false;
+			}
+			
+			if (isGPUCompatible)
+			{
+				try {	
+					
+					//Check for Nvidia or Intel GPU
+					if (Settings.comboGPU.getSelectedItem().toString().equals("auto"))
+					{
+						//Cuda
+						FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360 -an -t 1 -f null -" + '"');
+						
+						do {
+							Thread.sleep(10);
+						} while(FFMPEG.runProcess.isAlive());
+						
+						if (FFMPEG.error == false)
+							cudaAvailable = true;
+						
+						//QSV
+						FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -i " + '"' + file + '"' + " -vf scale_qsv=640:360 -an -t 1 -f null -" + '"');
+						
+						do {
+							Thread.sleep(10);
+						} while(FFMPEG.runProcess.isAlive());
+						
+						if (FFMPEG.error == false)
+							qsvAvailable = true;
+						
+						//Disable GPU if both are not available
+						if (cudaAvailable == false && qsvAvailable == false)
+							isGPUCompatible = false;
+					}
+					else //Check the current selection
+					{
+						FFMPEG.gpuFilter(" -hwaccel " + Settings.comboGPU.getSelectedItem().toString() + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Settings.comboGPUFilter.getSelectedItem().toString() + "=640:360 -an -t 1 -f null -" + '"');
+						
+						do {
+							Thread.sleep(10);
+						} while(FFMPEG.runProcess.isAlive());
+													
+						if (FFMPEG.error)
+							isGPUCompatible = false;
+					}
+					
+				} catch (InterruptedException e) {}
+				
+				FFMPEG.error = false;
+				FFMPEG.errorLog.setLength(0);
+				
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		}
+		
+	}
+	
+	public static void gpuFilter(final String cmd) {
+		
+		error = false;	
+		
+	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd + System.lineSeparator());
+	    
+		runProcess = new Thread(new Runnable()  {
+			
+			@Override
+			public void run() {
+				
+			try {
+					
+					String PathToFFMPEG;
+					ProcessBuilder processFFMPEG;
+
+					if (System.getProperty("os.name").contains("Windows"))
+					{							
+						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
+						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+														
+						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
+						process = processFFMPEG.start();
+					}
+					else
+					{
+						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
+						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
+
+						
+						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
+						process = processFFMPEG.start();
+					}	
+						
+					String line;
+					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
+					
+			        Console.consoleFFMPEG.append(System.lineSeparator());
+			        
+					while ((line = input.readLine()) != null) {
+						
+						Console.consoleFFMPEG.append(line + System.lineSeparator());		
+						
+						//Errors
+						checkForErrors(line);					
+																		
+					}					
+					process.waitFor();					
+						
+				} catch (IOException io) {//Bug Linux							
+				} catch (InterruptedException e) {
+					error = true;
+				}				
+			}				
+		});		
+		runProcess.start();
+	}
+	
 	public static void devices(final String cmd) {
 		
 		error = false;		
 		isRunning = true;
 		
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + cmd + System.lineSeparator());
 			
 		runProcess = new Thread(new Runnable()  {
 			@Override
@@ -1092,6 +1235,8 @@ private static StringBuilder getAll;
 					
 					audioDevices = new StringBuilder();
 					audioDevices.append(language.getProperty("noAudio"));
+					
+					Console.consoleFFMPEG.append(System.lineSeparator());
 					
 					while ((line = input.readLine()) != null) {						
 						
@@ -1176,26 +1321,9 @@ private static StringBuilder getAll;
 							}
 						}
 
-						//Erreurs
-						if (line.contains("Invalid data found when processing input") 
-								|| line.contains("No such file or directory")
-								|| line.contains("Invalid data found")
-								|| line.contains("No space left")
-								|| line.contains("does not contain any stream")
-								|| line.contains("Invalid argument")
-								|| line.contains("Error opening filters!")
-								|| line.contains("matches no streams")
-								|| line.contains("Error while opening encoder")
-								|| line.contains("Decoder (codec none) not found")
-								|| line.contains("Unknown encoder")
-								|| line.contains("Could not set video options")
-								|| line.contains("Input/output error")
-								|| line.contains("Operation not permitted"))
-						{
-							error = true;
-						} 
-																		
-					}//While			
+						//Errors
+						checkForErrors(line);																		
+					}			
 					
 					process.waitFor();					
 				   					     																		
@@ -1296,14 +1424,15 @@ private static StringBuilder getAll;
 				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -");							
 				process = processFFMPEG.start();
 			}		
-			
-			
-			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -" + System.lineSeparator() + System.lineSeparator());
+						
+			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -" + System.lineSeparator());
 			
 			String line;
 	
 			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
 								
+			Console.consoleFFMPEG.append(System.lineSeparator());
+			
 			while ((line = input.readLine()) != null) {						
 				
 				Console.consoleFFMPEG.append(line + System.lineSeparator() );		

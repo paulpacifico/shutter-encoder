@@ -15543,11 +15543,7 @@ public class Shutter {
 	}
 
 	public static void enfOfFunction() {	
-		
-		//Affichage des erreurs
-		String[] FFPROBESplit = Console.consoleFFPROBE.getText().split(System.lineSeparator());
-		String[] FFMPEGSplit = Console.consoleFFMPEG.getText().split(System.lineSeparator());
-		
+
 		if (errorList.length() != 0)
 		{
 			if (Settings.btnDisableSound.isSelected() == false) {
@@ -15566,9 +15562,7 @@ public class Shutter {
 				Taskbar.getTaskbar().setWindowProgressState(frame, Taskbar.State.ERROR);
 			} 	
 			
-			JTextArea errorText = new JTextArea(errorList.toString() + '\n' +
-					Shutter.language.getProperty("ffprobe") + " " + FFPROBESplit[FFPROBESplit.length - 1] + '\n' +
-					Shutter.language.getProperty("ffmpeg") + " " + FFMPEGSplit[FFMPEGSplit.length - 1]);  
+			JTextArea errorText = new JTextArea(errorList.toString());  
 			errorText.setWrapStyleWord(true);
 			
 			JScrollPane scrollPane = new JScrollPane(errorText);  
@@ -15636,6 +15630,7 @@ public class Shutter {
 				}
 			}
 			
+			FFMPEG.errorLog.setLength(0);
 			errorList.setLength(0);
 		}
 		else if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && Shutter.cancelled == false)

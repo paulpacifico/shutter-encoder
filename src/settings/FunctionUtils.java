@@ -92,6 +92,9 @@ public class FunctionUtils extends Shutter {
 				return false;
 		}
 		
+		//Check GPU
+		FFMPEG.checkGPUCapabilities(file.toString());
+		
 		//inputDeviceIsRunning is already analyzed
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
@@ -175,8 +178,7 @@ public class FunctionUtils extends Shutter {
 	{
 		 if (FFMPEG.error)
 		 {
-				FFMPEG.errorList.append(file);
-			    FFMPEG.errorList.append(System.lineSeparator());
+			 	errorList = new StringBuilder(file + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
 				return true;
 		 }
 		 return false;
@@ -731,15 +733,13 @@ public class FunctionUtils extends Shutter {
 			case "VP9":
 				
 				if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
-				{
-					if (filterComplex != "") filterComplex += ",";
-						
+				{						
 					if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
 					{
-						filterComplex += "format=p010,hwupload";
+						filterComplex += ",format=p010,hwupload";
 					}
 					else
-						filterComplex += "format=nv12,hwupload";
+						filterComplex += ",format=nv12,hwupload";
 				}
 				
 				break;
@@ -749,7 +749,7 @@ public class FunctionUtils extends Shutter {
 			audio = "";
 		
         if (filterComplex != "")
-        {	   	   
+        {	          	
         	//Si une des cases est sélectionnée alors il y a déjà [0:v]
         	if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
         		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
@@ -900,9 +900,13 @@ public class FunctionUtils extends Shutter {
 		&& comboAudio8.getSelectedIndex() == 16)
 		{
 			if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+			{
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
+			}
 			else if (filterComplex != "")
+			{
 				mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
+			}
 			else
 				mapping += " -map v:0" + audio;
 			
@@ -1234,8 +1238,8 @@ public class FunctionUtils extends Shutter {
 		//Errors
 		if (FFMPEG.error || fileOut.exists() && fileOut.length() == 0 && caseCreateSequence.isSelected() == false && extension.equals(".pdf") == false)
 		{
-			FFMPEG.errorList.append(fileName);
-			FFMPEG.errorList.append(System.lineSeparator());
+			errorList.append(fileName + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
+			FFMPEG.errorLog.setLength(0);
 			
 			try {
 				fileOut.delete();

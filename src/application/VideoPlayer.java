@@ -1333,6 +1333,8 @@ public class VideoPlayer {
 							} 
 							while (FFPROBE.isRunning);
 							
+							FFMPEG.checkGPUCapabilities(videoPath);
+							
 							if (FFPROBE.interlaced == null)
 							{
 								MEDIAINFO.run(videoPath, false);
@@ -1887,15 +1889,15 @@ public class VideoPlayer {
 			
 			String gpuDecoding = "";
 			
-			if (FFPROBE.isGPUCompatible)
+			if (FFMPEG.isGPUCompatible)
 			{
 				if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 				{
-					if (FFPROBE.cudaAvailable)
+					if (FFMPEG.cudaAvailable)
 					{
 						gpuDecoding = " -hwaccel cuda";
 					}
-					else if (FFPROBE.qsvAvailable)
+					else if (FFMPEG.qsvAvailable)
 					{
 						gpuDecoding = " -hwaccel qsv";
 					}
@@ -1924,15 +1926,15 @@ public class VideoPlayer {
 
 			String gpuDecoding = "";
 			
-			if (FFPROBE.isGPUCompatible)
+			if (FFMPEG.isGPUCompatible)
 			{
 				if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 				{
-					if (FFPROBE.cudaAvailable)
+					if (FFMPEG.cudaAvailable)
 					{
 						gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
 					}
-					else if (FFPROBE.qsvAvailable)
+					else if (FFMPEG.qsvAvailable)
 					{
 						gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
 					}
@@ -11864,21 +11866,21 @@ public class VideoPlayer {
 		boolean autoCUDA = false;
 		if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 		{
-			if (FFPROBE.cudaAvailable)
+			if (FFMPEG.cudaAvailable)
 			{
 				autoCUDA = true;
 			}
-			else if (FFPROBE.qsvAvailable)
+			else if (FFMPEG.qsvAvailable)
 			{
 				autoQSV = true;
 			}
 		}
 		
-		if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFPROBE.isGPUCompatible) && yadif == "")
+		if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && yadif == "")
 		{
 			filter += "scale_qsv=" + player.getWidth() + ":" + player.getHeight() + ",hwdownload,format=" + bitDepth;
 		}
-		else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFPROBE.isGPUCompatible)
+		else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
 		{
 			filter = filter.replace("yadif", "yadif_cuda");			
 			filter += "scale_cuda=" + player.getWidth() + ":" + player.getHeight() + ",hwdownload,format=" + bitDepth;

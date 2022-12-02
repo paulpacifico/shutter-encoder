@@ -260,14 +260,7 @@ public class VideoEncoders extends Shutter {
 							if (fileOut == null)
 								continue;						
 						}
-						
-						//Hardware decoding
-						String hardwareDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
-						if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
-						{
-							hardwareDecoding += " -vaapi_device /dev/dri/renderD128";
-						}
-						
+												
 						//Concat mode or Image sequence
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
 						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
@@ -319,10 +312,7 @@ public class VideoEncoders extends Shutter {
 						String codec = setCodec();
 						
 						//Bitrate
-						String bitrate = setBitrate();						
-						 
-						//PixelFormat
-						String pixelFormat = setPixelFormat();					
+						String bitrate = setBitrate();					
 
 						//Level
 						String profile = AdvancedFeatures.setProfile();
@@ -634,6 +624,9 @@ public class VideoEncoders extends Shutter {
 						//Timecode
 						String timecode = Timecode.setTimecode();
 			            
+						//PixelFormat
+						String pixelFormat = setPixelFormat(filterComplex);
+						
 			            //Flags
 			    		String flags = AdvancedFeatures.setFlags(fileName);
 			    		
@@ -724,6 +717,51 @@ public class VideoEncoders extends Shutter {
 							}	
 						}
 						
+						//GPU decoding
+						String gpuDecoding = "";						
+						if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+						{
+							if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+							{
+								if (FFMPEG.cudaAvailable)
+								{
+									gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
+								}
+								else if (FFMPEG.qsvAvailable)
+								{
+									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
+								}
+							}
+							else
+								gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+						}
+						else
+						{
+							gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+						}							
+
+						if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
+						{
+							gpuDecoding += " -vaapi_device /dev/dri/renderD128";
+						}
+												
+						//GPU filtering
+			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
+			    		{
+			    			//Input bitDepth
+			    			String bitDepth = "nv12";
+			    			if (FFPROBE.imageDepth == 10)
+			    			{
+			    				bitDepth = "p010";
+			    			}	
+			    			
+			    			//When there is no filter AND it's 8bit only
+			    			if (filterComplex.contains("format=" + bitDepth + "[out]") && caseAccel.isSelected() && caseColorspace.isSelected() == false)
+			    			{
+			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, "");
+			    			}
+			    		}
+						
 						//Command
 						String cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 										
@@ -747,11 +785,11 @@ public class VideoEncoders extends Shutter {
 						}
 						else if (encode) //Encoding
 						{
-							FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
+							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
 						}
 						else //Preview
 						{						
-							FFMPEG.toFFPLAY(hardwareDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
+							FFMPEG.toFFPLAY(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
 						}
 
 						do
@@ -763,7 +801,7 @@ public class VideoEncoders extends Shutter {
 						if (grpBitrate.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
 							if (FFMPEG.cancelled == false)
-								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 							
 							do
 							{
@@ -1170,7 +1208,7 @@ public class VideoEncoders extends Shutter {
 		return "";		
 	}
 
-	private static String setPixelFormat() {
+	private static String setPixelFormat(String filterComplex) {
 		
 		switch (comboFonctions.getSelectedItem().toString())
 		{
@@ -1214,8 +1252,14 @@ public class VideoEncoders extends Shutter {
 						yuv += "12le";
 					}
 				}
-		        
-		        return " -pix_fmt " + yuv;
+				
+				//Switching to GPU nv12 or p010 to avoid useless pix_fmt conversion
+				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+				{
+					return "";				
+				}
+				else		        
+					return " -pix_fmt " + yuv;
 			
 			case "VP8":
 
@@ -1224,7 +1268,15 @@ public class VideoEncoders extends Shutter {
 					return " -auto-alt-ref 0 -pix_fmt yuva420p";
 		        }
 				else				
-					return " -pix_fmt yuv420p";
+				{
+					//Switching to GPU nv12 to avoid useless pix_fmt conversion
+					if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+					{
+						return "";				
+					}
+					else
+						return " -pix_fmt yuv420p";
+				}
 		        
 			case "MPEG-2":
 				
@@ -1238,7 +1290,13 @@ public class VideoEncoders extends Shutter {
 			case "WMV":
 			case "Xvid":
 				
-				return " -pix_fmt yuv420p";
+				//Switching to GPU nv12 to avoid useless pix_fmt conversion
+				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+				{
+					return "";				
+				}
+				else		        
+					return " -pix_fmt yuv420p";
 				
 			case "MJPEG":
 				
