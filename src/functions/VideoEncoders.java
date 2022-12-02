@@ -429,29 +429,32 @@ public class VideoEncoders extends Shutter {
 								
 								break;
 						}
-						
-						//Padding
-						switch (comboFonctions.getSelectedItem().toString())
-						{
-							//Limit to Full HD
-							case "AVC-Intra 100":
-							case "DNxHD":
-							case "XDCAM HD422":
-								
-								if (FFPROBE.imageResolution.equals("1440x1080"))
-								{
-									filterComplex = Image.setPad(filterComplex, false);									
-								}
-								else
-									filterComplex = Image.setPad(filterComplex, true);			
-								
-								break;
-								
-							default:
-								
-								filterComplex = Image.setPad(filterComplex, false);									
-								break;
-						}	
+												
+						//Scaling									
+			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
+			        	{
+							switch (comboFonctions.getSelectedItem().toString())
+							{
+								//Limit to Full HD
+								case "AVC-Intra 100":
+								case "DNxHD":
+								case "XDCAM HD422":
+									
+									if (FFPROBE.imageResolution.equals("1440x1080"))
+									{
+										filterComplex = Image.setScale(filterComplex, false);									
+									}
+									else
+										filterComplex = Image.setScale(filterComplex, true);			
+									
+									break;
+									
+								default:
+									
+									filterComplex = Image.setScale(filterComplex, false);									
+									break;
+							}	
+			        	}
 											
 						//Blend
 						filterComplex = ImageSequence.setBlend(filterComplex);
@@ -519,15 +522,35 @@ public class VideoEncoders extends Shutter {
 				    	//Crop
 				        filterComplex = Image.setCrop(filterComplex);
 						
+				        //Scaling
+				        if (setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode		
+			        	{
+							switch (comboFonctions.getSelectedItem().toString())
+							{
+								//Limit to Full HD
+								case "AVC-Intra 100":
+								case "DNxHD":
+								case "XDCAM HD422":
+									
+									if (FFPROBE.imageResolution.equals("1440x1080"))
+									{
+										filterComplex = Image.setScale(filterComplex, false);									
+									}
+									else
+										filterComplex = Image.setScale(filterComplex, true);			
+									
+									break;
+									
+								default:
+									
+									filterComplex = Image.setScale(filterComplex, false);									
+									break;
+							}	
+			        	}
+				        
 						//DAR
 						filterComplex = Image.setDAR(filterComplex);
 
-						//Interlace50p
-			            filterComplex = AdvancedFeatures.setInterlace50p(filterComplex);
-			            
-						//Force TFF
-						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);	
-								
 						//Overlay
 						if (grpBitrate.isVisible())
 						{
@@ -554,14 +577,20 @@ public class VideoEncoders extends Shutter {
 						else if (comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{
 							filterComplex = Overlay.setOverlay(filterComplex, false);	 
-						}						
+						}	
+						
+						//Interlace50p
+			            filterComplex = AdvancedFeatures.setInterlace50p(filterComplex);
+			            
+						//Force TFF
+						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);																				
 						
 						//Limiter
 						filterComplex = Corrections.setLimiter(filterComplex);
 			            
 						//Fade-in Fade-out
 						filterComplex = Transitions.setVideoFade(filterComplex);
-						
+										
 		            	//Audio
 			            if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{
@@ -952,6 +981,49 @@ public class VideoEncoders extends Shutter {
 		
     }
 
+	public static boolean setScalingFirst() {
+		
+		//Set scaling before or after depending on using a pad or stretch mode
+		String i[] = FFPROBE.imageResolution.split("x");        
+		String o[] = FFPROBE.imageResolution.split("x");
+					
+		if (comboResolution.getSelectedItem().toString().contains("%"))
+		{
+			double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+			
+			o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+			o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
+		}					
+		else if (comboResolution.getSelectedItem().toString().contains("x"))
+		{
+			o = comboResolution.getSelectedItem().toString().split("x");
+		}
+		else
+			return false;
+		
+		int iw = Integer.parseInt(i[0]);
+    	int ih = Integer.parseInt(i[1]);          	
+    	int ow = Integer.parseInt(o[0]);
+    	int oh = Integer.parseInt(o[1]);        	
+    	float ir = (float) iw / ih;
+    	float or = (float) ow / oh;
+
+    	//Ratio comparison
+    	if (ir != or && caseInAndOut.isSelected() 
+    	&& (VideoPlayer.caseAddTimecode.isSelected()
+    	|| VideoPlayer.caseShowTimecode.isSelected()
+    	|| VideoPlayer.caseAddText.isSelected()
+    	|| VideoPlayer.caseShowFileName.isSelected()    	
+    	|| VideoPlayer.caseAddWatermark.isSelected()))
+    	{
+    		FFMPEG.isGPUCompatible = false;
+    		return false;
+    	}
+    	else
+    		return true;
+		
+	}
+	
 	private static String setCodec() {
 		
 		switch (comboFonctions.getSelectedItem().toString())

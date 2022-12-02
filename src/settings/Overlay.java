@@ -28,6 +28,7 @@ import java.text.NumberFormat;
 import javax.swing.JTextField;
 
 import application.VideoPlayer;
+import functions.VideoEncoders;
 import application.RecordInputDevice;
 import application.Shutter;
 import application.SubtitlesEmbed;
@@ -242,7 +243,10 @@ public class Overlay extends Shutter {
 				
 	        	ow = Integer.parseInt(s[0]);   
 	        	
-				imageRatio = (float) FFPROBE.imageWidth / ow;
+	        	if (VideoEncoders.setScalingFirst())
+				{
+	        		imageRatio = (float) FFPROBE.imageWidth / ow;
+				}
 			}
 
 	      	if (VideoPlayer.caseShowFileName.isSelected())
@@ -417,7 +421,10 @@ public class Overlay extends Shutter {
 				
 	        	ow = Integer.parseInt(s[0]);   
 	        	
-				imageRatio = (float) FFPROBE.imageWidth / ow;
+	        	if (VideoEncoders.setScalingFirst())
+				{
+	        		imageRatio = (float) FFPROBE.imageWidth / ow;
+				}
 			}
 
 			float size = (float) Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100;			

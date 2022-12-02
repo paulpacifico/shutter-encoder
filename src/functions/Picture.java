@@ -110,7 +110,13 @@ public class Picture extends Shutter {
 						
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
-							
+
+						//Scaling									
+			        	if (VideoEncoders.setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
+			        	{
+			        		filterComplex = Image.setScale(filterComplex, false);		
+			        	}
+						
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
 						
@@ -151,13 +157,16 @@ public class Picture extends Shutter {
 						filterComplex = Overlay.setWatermark(filterComplex);
 						
 		            	//Timecode
-						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""));			        
-						
+						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""));			         
+	
 						//Crop
 				        filterComplex = Image.setCrop(filterComplex);
-						
-				        //Padding
-						filterComplex = Image.setPad(filterComplex, false);	           				
+				        
+				        //Scaling
+				        if (VideoEncoders.setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode		
+			        	{
+				        	filterComplex = Image.setScale(filterComplex, false);
+			        	}
 						
 						//filterComplex
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, "");		

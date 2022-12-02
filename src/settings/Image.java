@@ -22,6 +22,7 @@ package settings;
 import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
+import functions.VideoEncoders;
 import library.FFPROBE;
 import library.FFMPEG;
 
@@ -47,7 +48,10 @@ public class Image extends Shutter {
 					
 		        	ow = Integer.parseInt(s[0]);   
 		        	
-					imageRatio = (float) FFPROBE.imageWidth / ow;
+		        	if (VideoEncoders.setScalingFirst())
+					{
+		        		imageRatio = (float) FFPROBE.imageWidth / ow;
+					}
 				}
 				
 				int cropWidth = Math.round((float) Integer.parseInt(VideoPlayer.textCropWidth.getText()) / imageRatio);
@@ -119,7 +123,7 @@ public class Image extends Shutter {
 			return " -s 1920x1080";
 	}
 	
-	public static String setPad(String filterComplex, boolean limitToFHD) {	
+	public static String setScale(String filterComplex, boolean limitToFHD) {	
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
@@ -133,8 +137,14 @@ public class Image extends Shutter {
 				o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
 				o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
 			}					
-			else
+			else if (comboResolution.getSelectedItem().toString().contains("x"))
+			{
 				o = comboResolution.getSelectedItem().toString().split("x");
+			}
+			else if (comboResolution.getSelectedItem().toString().contains(":"))
+			{
+				o = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+			}
 			
 			int iw = Integer.parseInt(i[0]);
         	int ih = Integer.parseInt(i[1]);          	
@@ -155,15 +165,15 @@ public class Image extends Shutter {
 		        	{
 		        		o = comboResolution.getSelectedItem().toString().split(":");
 		        		if (o[0].toString().equals("auto"))
-		        			filterComplex = "scale=-1:" + o[1];
+		        			filterComplex += "scale=-1:" + o[1];
 		        		else
-		        			filterComplex = "scale="+o[0]+":-1";
+		        			filterComplex += "scale="+o[0]+":-1";
 		        	}
 		        	else
 		        	{
 			            o = comboResolution.getSelectedItem().toString().split(":");
 			    		float number =  (float) 1 / Integer.parseInt(o[0]);
-			    		filterComplex = "scale=iw*" + number + ":ih*" + number;
+			    		filterComplex += "scale=iw*" + number + ":ih*" + number;
 		        	}
 		        }
 				else
@@ -221,7 +231,7 @@ public class Image extends Shutter {
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".ico"))
 		{
-			filterComplex = "scale=256x256";
+			filterComplex += "scale=256x256";
 		}
 		
 		//GPU Scaling
