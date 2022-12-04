@@ -94,6 +94,13 @@ public class AudioEncoders extends Shutter {
 						else if (caseMixAudio.isSelected())	
 							extensionName +=  "_MIX";
 						
+						//DRC
+						String DRC = "";
+						if (FFPROBE.audioCodec !=  null && FFPROBE.audioCodec.equals("ac3") && caseDRC.isSelected() == false)
+						{
+							DRC = " -drc_scale 0";
+						}
+
 						//Audio codec
 						String audioCodec = "";
 						String container = "";
@@ -218,7 +225,7 @@ public class AudioEncoders extends Shutter {
 								if (lblSplit.getText().equals(language.getProperty("mono")))
 								{								
 									String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -vn -y ";
-									FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd
+									FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd
 									+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FL" + container) + '"'
 									+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FR" + container) + '"'
 									+ " -map " + '"' + "[FC]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FC" + container) + '"'
@@ -229,39 +236,39 @@ public class AudioEncoders extends Shutter {
 								else if (lblSplit.getText().equals(language.getProperty("stereo")))
 								{		
 									String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -vn -y ";
-									FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
+									FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
 								}
 							}
 							else 
 							{
-								splitAudio(audioCodec, fileName, extension, file, labelOutput, container);		
+								splitAudio(audioCodec, fileName, extension, file, labelOutput, container, DRC);		
 							}
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("2.1"))
 						{
 							String cmd = " " + audio + "-vn -y ";
-							FFMPEG.run(InputAndOutput.inPoint + concat +
-									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint +
-									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint +
+							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
+									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
 									" -i " + '"' + liste.getElementAt(2) + '"' + InputAndOutput.outPoint +
 									cmd + '"'  + fileOut + '"');
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 						{
 							String cmd = " " + audio + "-vn -y ";
-							FFMPEG.run(InputAndOutput.inPoint + concat +
-									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint +
-									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint +
-									" -i " + '"' + liste.getElementAt(2) + '"' + InputAndOutput.outPoint +
-									" -i " + '"' + liste.getElementAt(3) + '"' + InputAndOutput.outPoint +
-									" -i " + '"' + liste.getElementAt(4) + '"' + InputAndOutput.outPoint +
+							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
+									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + liste.getElementAt(2) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + liste.getElementAt(3) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + liste.getElementAt(4) + '"' + InputAndOutput.outPoint + DRC +
 									" -i " + '"' + liste.getElementAt(5) + '"' + InputAndOutput.outPoint +
 									cmd + '"'  + fileOut + '"');
 						}
 						else
 						{
 							String cmd = " " + audio + "-vn -y ";
-							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
+							FFMPEG.run(InputAndOutput.inPoint + concat + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
 						}								
 						
 						do
@@ -401,7 +408,7 @@ public class AudioEncoders extends Shutter {
 		return audio;
 	}
 	
-	private static void splitAudio(String codec, String fileName, String extension, File file, String output, String container) throws InterruptedException {
+	private static void splitAudio(String codec, String fileName, String extension, File file, String output, String container, String DRC) throws InterruptedException {
 		
 		String audioFilter = "";	
 		
@@ -436,7 +443,7 @@ public class AudioEncoders extends Shutter {
 				}
 				
 				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFilter + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + " -vn" + yesno;
-				FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
 					Thread.sleep(100);
@@ -472,7 +479,7 @@ public class AudioEncoders extends Shutter {
 					audioFilter = audioFilter.replaceFirst(",", " -filter_complex ");
 				
 				String cmd = audioFilter + " -map a:" + (i - 1) + " -c:a " + codec + " -vn" + yesno;
-				FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
 					Thread.sleep(100);
@@ -504,7 +511,7 @@ public class AudioEncoders extends Shutter {
 				}
 				
 				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + " -vn" + yesno;
-				FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
 					Thread.sleep(100);

@@ -983,45 +983,53 @@ public class VideoEncoders extends Shutter {
 
 	public static boolean setScalingFirst() {
 		
-		//Set scaling before or after depending on using a pad or stretch mode
-		String i[] = FFPROBE.imageResolution.split("x");        
-		String o[] = FFPROBE.imageResolution.split("x");
-					
-		if (comboResolution.getSelectedItem().toString().contains("%"))
-		{
-			double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+		try {
+			//Set scaling before or after depending on using a pad or stretch mode
+			String i[] = FFPROBE.imageResolution.split("x");        
+			String o[] = FFPROBE.imageResolution.split("x");
+						
+			if (comboResolution.getSelectedItem().toString().contains("%"))
+			{
+				double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+				
+				o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+				o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
+			}					
+			else if (comboResolution.getSelectedItem().toString().contains("x"))
+			{
+				o = comboResolution.getSelectedItem().toString().split("x");
+			}
+			else
+				return false;
 			
-			o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
-			o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
-		}					
-		else if (comboResolution.getSelectedItem().toString().contains("x"))
-		{
-			o = comboResolution.getSelectedItem().toString().split("x");
+			int iw = Integer.parseInt(i[0]);
+	    	int ih = Integer.parseInt(i[1]);          	
+	    	int ow = Integer.parseInt(o[0]);
+	    	int oh = Integer.parseInt(o[1]);        	
+	    	float ir = (float) iw / ih;
+	    	float or = (float) ow / oh;
+	
+	    	//Ratio comparison
+	    	if (ir != or && caseInAndOut.isSelected() 
+	    	&& (VideoPlayer.caseAddTimecode.isSelected()
+	    	|| VideoPlayer.caseShowTimecode.isSelected()
+	    	|| VideoPlayer.caseAddText.isSelected()
+	    	|| VideoPlayer.caseShowFileName.isSelected()    	
+	    	|| VideoPlayer.caseAddWatermark.isSelected()))
+	    	{
+	    		FFMPEG.isGPUCompatible = false;
+	    		return false;
+	    	}
+	    	else
+	    		return true;
+	    	
 		}
-		else
-			return false;
-		
-		int iw = Integer.parseInt(i[0]);
-    	int ih = Integer.parseInt(i[1]);          	
-    	int ow = Integer.parseInt(o[0]);
-    	int oh = Integer.parseInt(o[1]);        	
-    	float ir = (float) iw / ih;
-    	float or = (float) ow / oh;
-
-    	//Ratio comparison
-    	if (ir != or && caseInAndOut.isSelected() 
-    	&& (VideoPlayer.caseAddTimecode.isSelected()
-    	|| VideoPlayer.caseShowTimecode.isSelected()
-    	|| VideoPlayer.caseAddText.isSelected()
-    	|| VideoPlayer.caseShowFileName.isSelected()    	
-    	|| VideoPlayer.caseAddWatermark.isSelected()))
+		catch (Exception e)
     	{
     		FFMPEG.isGPUCompatible = false;
     		return false;
     	}
-    	else
-    		return true;
-		
+	
 	}
 	
 	private static String setCodec() {
