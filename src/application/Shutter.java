@@ -95,6 +95,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -107,7 +108,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
-import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -342,6 +342,7 @@ public class Shutter {
 	protected static JCheckBox caseOPATOM;
 	protected static JCheckBox caseAS10;
 	protected static JCheckBox caseChunks;
+	protected static JCheckBox caseDRC;
 	protected static JComboBox<String> chunksSize;
 	protected static JComboBox<String> comboConform;
 	protected static JComboBox<String> comboFPS;
@@ -4527,9 +4528,11 @@ public class Shutter {
 				}
 				
 				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != 'x' && caracter != '%'
-						|| String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume();
+				if (caracter != 'x' && caracter != '%' && caracter != ':')
+				{
+					if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+						e.consume();
+				}
 			}
 
 			@Override
@@ -10104,6 +10107,11 @@ public class Shutter {
 		chunksSize.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		chunksSize.setEditable(false);
 		chunksSize.setSize(40, 16);
+		
+		caseDRC = new JCheckBox(language.getProperty("caseDRC"));
+		caseDRC.setName("caseDRC");
+		caseDRC.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseDRC.setSize(caseDRC.getPreferredSize().width + 4, 23);
 
 	}
 
@@ -11594,6 +11602,7 @@ public class Shutter {
 				caseChunks.setSelected(false);
 				chunksSize.setEnabled(false);
 				chunksSize.setSelectedIndex(3);
+				caseDRC.setSelected(false);
 				caseForceLevel.setSelected(false);
 				comboForceProfile.setEnabled(false);
 				comboForceLevel.setEnabled(false);
@@ -12825,7 +12834,10 @@ public class Shutter {
 							grpAdvanced.setVisible(true);
 							caseCreateTree.setLocation(7, 14);
 							grpAdvanced.add(caseCreateTree);
+							caseDRC.setLocation(7, caseCreateTree.getLocation().y + 17);
+							grpAdvanced.add(caseDRC);						
 							grpAdvanced.setLocation(grpAdvanced.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+							
 							btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 							
 						} else if ("Loudness & True Peak".equals(function)

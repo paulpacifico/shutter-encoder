@@ -2914,7 +2914,7 @@ public class VideoPlayer {
 		
 		lblVolume = new JLabel(Shutter.language.getProperty("volume") + " ");
 		lblVolume.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblVolume.setSize(lblVolume.getPreferredSize().width, 16);			
+		lblVolume.setSize(lblVolume.getPreferredSize().width + 3, 16);			
 		lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, lblSpeed.getY());	
 		
 		frame.getContentPane().add(lblVolume);
@@ -12255,7 +12255,7 @@ public class VideoPlayer {
 		lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);
 					
 		lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, lblSpeed.getY());	
-		sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() + 4, sliderSpeed.getY(), sliderSpeed.getWidth(), 22);	
+		sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() + 1, sliderSpeed.getY(), sliderSpeed.getWidth(), 22);	
 		
 		title.setBounds(0, 0, frame.getWidth(), 28);
 				
