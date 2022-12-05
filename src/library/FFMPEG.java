@@ -1078,44 +1078,54 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				try {	
 					
-					//Check for Nvidia or Intel GPU
-					if (Settings.comboGPU.getSelectedItem().toString().equals("auto"))
+					//Scaling
+					String bitDepth = "nv12";
+					if (FFPROBE.imageDepth == 10)
 					{
-						//Cuda
-						FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360 -an -t 1 -f null -" + '"');
-						
-						do {
-							Thread.sleep(10);
-						} while(FFMPEG.runProcess.isAlive());
-						
-						if (FFMPEG.error == false)
-							cudaAvailable = true;
-						
-						//QSV
-						FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -i " + '"' + file + '"' + " -vf scale_qsv=640:360 -an -t 1 -f null -" + '"');
-						
-						do {
-							Thread.sleep(10);
-						} while(FFMPEG.runProcess.isAlive());
-						
-						if (FFMPEG.error == false)
-							qsvAvailable = true;
-						
-						//Disable GPU if both are not available
-						if (cudaAvailable == false && qsvAvailable == false)
-							isGPUCompatible = false;
-					}
-					else //Check the current selection
+						bitDepth = "p010";
+					}	
+					
+					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 					{
-						FFMPEG.gpuFilter(" -hwaccel " + Settings.comboGPU.getSelectedItem().toString() + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Settings.comboGPUFilter.getSelectedItem().toString() + "=640:360 -an -t 1 -f null -" + '"');
-						
-						do {
-							Thread.sleep(10);
-						} while(FFMPEG.runProcess.isAlive());
-													
-						if (FFMPEG.error)
-							isGPUCompatible = false;
-					}
+						//Check for Nvidia or Intel GPU
+						if (Settings.comboGPU.getSelectedItem().toString().equals("auto"))
+						{
+							//Cuda
+							FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+							
+							do {
+								Thread.sleep(10);
+							} while(FFMPEG.runProcess.isAlive());
+							
+							if (FFMPEG.error == false)
+								cudaAvailable = true;
+							
+							//QSV
+							FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+							
+							do {
+								Thread.sleep(10);
+							} while(FFMPEG.runProcess.isAlive());
+							
+							if (FFMPEG.error == false)
+								qsvAvailable = true;
+							
+							//Disable GPU if both are not available
+							if (cudaAvailable == false && qsvAvailable == false)
+								isGPUCompatible = false;
+						}
+						else //Check the current selection
+						{
+							FFMPEG.gpuFilter(" -hwaccel " + Settings.comboGPU.getSelectedItem().toString() + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Settings.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+							
+							do {
+								Thread.sleep(10);
+							} while(FFMPEG.runProcess.isAlive());
+														
+							if (FFMPEG.error)
+								isGPUCompatible = false;
+						}
+					}						
 					
 				} catch (InterruptedException e) {}
 				

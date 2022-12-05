@@ -259,7 +259,9 @@ public class Image extends Shutter {
 		}
 		
 		//GPU Scaling
-		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale"))
+		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=")
+		&& comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false
+		&& FFPROBE.videoCodec.contains("vp9") == false && FFPROBE.videoCodec.contains("vp8") == false)
 		{
 			//Scaling
 			String bitDepth = "nv12";
@@ -285,13 +287,13 @@ public class Image extends Shutter {
 			
 			if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
-				filterComplex = filterComplex.replace("scale", "scale_qsv");
+				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
 			else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
 			{
-				filterComplex = filterComplex.replace("yadif", "yadif_cuda");			
-				filterComplex = filterComplex.replace("scale", "scale_cuda");
+				filterComplex = filterComplex.replace("yadif=", "yadif_cuda=");			
+				filterComplex = filterComplex.replace("scale=", "scale_cuda=");
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
 		}

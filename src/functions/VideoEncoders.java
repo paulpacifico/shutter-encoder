@@ -984,6 +984,14 @@ public class VideoEncoders extends Shutter {
 	public static boolean setScalingFirst() {
 		
 		try {
+			
+			//Crop need to be before scaling
+			if (VideoPlayer.caseEnableCrop.isSelected())
+			{
+				FFMPEG.isGPUCompatible = false;
+				return false;
+			}			
+			
 			//Set scaling before or after depending on using a pad or stretch mode
 			String i[] = FFPROBE.imageResolution.split("x");        
 			String o[] = FFPROBE.imageResolution.split("x");

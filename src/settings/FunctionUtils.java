@@ -91,10 +91,7 @@ public class FunctionUtils extends Shutter {
 			if (analyzeError(file.toString()))
 				return false;
 		}
-		
-		//Check GPU
-		FFMPEG.checkGPUCapabilities(file.toString());
-		
+				
 		//inputDeviceIsRunning is already analyzed
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
@@ -131,6 +128,9 @@ public class FunctionUtils extends Shutter {
 			 if (analyzeError(file.toString()))
 				 return false;
 		}
+		
+		//Check GPU
+		FFMPEG.checkGPUCapabilities(file.toString());
 		
 		if (isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
