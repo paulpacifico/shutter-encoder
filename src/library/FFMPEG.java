@@ -239,9 +239,9 @@ public static StringBuilder errorLog = new StringBuilder();
 							if (cancelled == false)
 							{
 								if (cmd.contains("-pass 2"))	
-									setProgress(line,true);
+									setProgress(line, true, cmd);
 								else
-									setProgress(line,false);	
+									setProgress(line, false, cmd);	
 							}
 							else
 								break;
@@ -1505,7 +1505,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		} catch (SecurityException | IllegalArgumentException | IOException e1) {	}
 	}
 
-	private static void setProgress(String line, final boolean pass2) {				
+	private static void setProgress(String line, final boolean pass2, String cmd) {				
 									
 		if (line.contains("Input #1"))
 			firstInput = false;
@@ -1565,8 +1565,16 @@ public static StringBuilder errorLog = new StringBuilder();
 					&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
 				dureeTotale = (dureeTotale * 2);
 				
-			if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) ==  false)			
+			
+			if (cmd.contains("-loop"))
+			{
+				progressBar1.setMaximum(Integer.parseInt(Settings.txtImageDuration.getText()));
+			}
+			else if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) ==  false)			
+			{
 				progressBar1.setMaximum(dureeTotale);	
+			}
+			
 		}	    	    
 	    
 	  //Progression
@@ -1592,7 +1600,9 @@ public static StringBuilder errorLog = new StringBuilder();
 				progressBar1.setValue((dureeTotale / 2) + getTimeToSeconds(ffmpegTime));
 			}
 			else
+			{
 				progressBar1.setValue(getTimeToSeconds(ffmpegTime));
+			}
 			
 	  }
 	  
@@ -1997,7 +2007,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		images = (images / 40);
 		
 		int totalSecondes = (heures * 3600) + (minutes * 60) +  secondes;  
-				
+						
 		return totalSecondes;
 		
 	}

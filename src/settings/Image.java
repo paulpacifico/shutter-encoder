@@ -37,17 +37,41 @@ public class Image extends Shutter {
 				if (filterComplex != "")
 					filterComplex += "[w];[w]";
 
-				//IMPORTANT
 				float imageRatio = 1.0f;
 				
 				int ow = FFPROBE.imageWidth;  
 				
-				if (Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
+				if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
-					String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");
-					
-		        	ow = Integer.parseInt(s[0]);   
-		        	
+					if (comboResolution.getSelectedItem().toString().contains("%"))
+					{
+						double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+						
+						ow = (int) Math.round(ow * value);
+					}					
+					else if (comboResolution.getSelectedItem().toString().contains("x"))
+					{
+						String s[] = comboResolution.getSelectedItem().toString().split("x");					
+			        	ow = Integer.parseInt(s[0]);   
+					}
+					else if (comboResolution.getSelectedItem().toString().contains(":"))
+					{
+						String s[] = comboResolution.getSelectedItem().toString().split(":");
+						
+						if (s[0].equals("auto"))
+						{
+							ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+						}
+						else if (s[1].equals("auto"))
+						{
+							ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+						}
+						else //ratio like 4:1 etc...
+						{
+							ow = Integer.parseInt(s[0]);
+						}
+					}
+
 		        	if (VideoEncoders.setScalingFirst())
 					{
 		        		imageRatio = (float) FFPROBE.imageWidth / ow;

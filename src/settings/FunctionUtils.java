@@ -626,7 +626,6 @@ public class FunctionUtils extends Shutter {
 				case ".bmp":
 				case ".psd":
 					
-					Shutter.progressBar1.setMaximum(Integer.parseInt(Settings.txtImageDuration.getText()));
 					return " -loop 1 -t " + Settings.txtImageDuration.getText();
 			}
 		}

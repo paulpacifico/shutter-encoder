@@ -239,10 +239,35 @@ public class Overlay extends Shutter {
 			
 			if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{
-				String s[] = comboResolution.getSelectedItem().toString().split("x");
-				
-	        	ow = Integer.parseInt(s[0]);   
-	        	
+				if (comboResolution.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					ow = (int) Math.round(ow * value);
+				}					
+				else if (comboResolution.getSelectedItem().toString().contains("x"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");					
+		        	ow = Integer.parseInt(s[0]);   
+				}
+				else if (comboResolution.getSelectedItem().toString().contains(":"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split(":");
+					
+					if (s[0].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+					}
+					else if (s[1].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+					}
+					else //ratio like 4:1 etc...
+					{
+						ow = Integer.parseInt(s[0]);
+					}
+				}
+
 	        	if (VideoEncoders.setScalingFirst())
 				{
 	        		imageRatio = (float) FFPROBE.imageWidth / ow;
@@ -310,10 +335,17 @@ public class Overlay extends Shutter {
 				
 				if (limitToFHD || comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
-					String s[] = "1920x1080".split("x");
-					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-						s = comboResolution.getSelectedItem().toString().split("x");						
-
+					String s[] = "1920x1080".split("x");					
+					if (comboResolution.getSelectedItem().toString().contains("%"))
+					{
+						double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+						
+						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * value));
+						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
+					}					
+					else					
+						s = comboResolution.getSelectedItem().toString().split("x");
+					
 					int iw = Integer.parseInt(i[0]);
 					int ih = Integer.parseInt(i[1]);
 					int ow = Integer.parseInt(s[0]);
@@ -417,10 +449,35 @@ public class Overlay extends Shutter {
 			
 			if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{
-				String s[] = comboResolution.getSelectedItem().toString().split("x");
-				
-	        	ow = Integer.parseInt(s[0]);   
-	        	
+				if (comboResolution.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					ow = (int) Math.round(ow * value);
+				}					
+				else if (comboResolution.getSelectedItem().toString().contains("x"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");					
+		        	ow = Integer.parseInt(s[0]);   
+				}
+				else if (comboResolution.getSelectedItem().toString().contains(":"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split(":");
+					
+					if (s[0].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+					}
+					else if (s[1].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+					}
+					else //ratio like 4:1 etc...
+					{
+						ow = Integer.parseInt(s[0]);
+					}
+				}
+
 	        	if (VideoEncoders.setScalingFirst())
 				{
 	        		imageRatio = (float) FFPROBE.imageWidth / ow;
