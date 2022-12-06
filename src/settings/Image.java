@@ -207,9 +207,9 @@ public class Image extends Shutter {
 		        	{
 		        		//Si la hauteur calculée est > à la hauteur de sortie
 		        		if ( (float) ow / ir >= oh)
-		        			filterComplex += "scale=" + ow + ":-1,crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
+		        			filterComplex += "scale=" + ow + ":-1";
 		        		else
-		        			filterComplex += "scale=-1:" + oh + ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
+		        			filterComplex += "scale=-1:" + oh;
 		        	}
 		        	else
 		        		filterComplex += "scale=" + ow + ":" + oh;
@@ -219,7 +219,7 @@ public class Image extends Shutter {
 			{
 				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or)
 				{
-					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease,pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
 				}
 				else
 					filterComplex += "scale="+o[0]+":"+o[1];	
@@ -247,7 +247,7 @@ public class Image extends Shutter {
 			
 			if (ir != or)
 			{
-				filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease,pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+				filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
 			}
 			else
 				filterComplex += "scale="+o[0]+":"+o[1];			
@@ -285,17 +285,103 @@ public class Image extends Shutter {
 				}
 			}
 			
-			if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
+			if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
 			else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
 			{
-				filterComplex = filterComplex.replace("yadif=", "yadif_cuda=");			
-				filterComplex = filterComplex.replace("scale=", "scale_cuda=");
-				filterComplex += ",hwdownload,format=" + bitDepth;
+				if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && filterComplex.contains("yadif"))
+				{
+					filterComplex = filterComplex.replace("yadif=", "yadif_cuda=");			
+					filterComplex = filterComplex.replace("scale=", "scale_cuda=");
+					filterComplex += ",hwdownload,format=" + bitDepth;
+				}
 			}
+		}
+		
+		return filterComplex;
+	}
+	
+	public static String setPad(String filterComplex, boolean limitToFHD) {	
+		
+		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+		{
+			String i[] = FFPROBE.imageResolution.split("x");        
+			String o[] = FFPROBE.imageResolution.split("x");
+						
+			if (comboResolution.getSelectedItem().toString().contains("%"))
+			{
+				double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+				
+				o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+				o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
+			}					
+			else if (comboResolution.getSelectedItem().toString().contains("x"))
+			{
+				o = comboResolution.getSelectedItem().toString().split("x");
+			}
+			else if (comboResolution.getSelectedItem().toString().contains(":"))
+			{
+				o = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+			}
+			
+			int iw = Integer.parseInt(i[0]);
+        	int ih = Integer.parseInt(i[1]);          	
+        	int ow = Integer.parseInt(o[0]);
+        	int oh = Integer.parseInt(o[1]);        	
+        	float ir = (float) iw / ih;
+        	float or = (float) ow / oh;
+			
+			if (lblPad.getText().equals(language.getProperty("lblCrop"))
+			|| comboFonctions.getSelectedItem().toString().equals("JPEG")
+			|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+			{
+				if (comboResolution.getSelectedItem().toString().contains(":") == false)		       
+				{					       	
+		        	//Original sup. à la sortie
+		        	if (iw > ow || ih > oh)
+		        	{
+		        		//Si la hauteur calculée est > à la hauteur de sortie
+		        		if ( (float) ow / ir >= oh)
+		        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
+		        		else
+		        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
+		        	}
+				}
+			}
+			else
+			{
+				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or)
+				{
+					filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+				}
+			}
+			
+		}
+		else if (limitToFHD)
+		{
+			String i[] = FFPROBE.imageResolution.split("x");    
+			String o[] = "1920x1080".split("x");
+			
+			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+			{
+				o = comboResolution.getSelectedItem().toString().split("x");
+			}
+
+			int iw = Integer.parseInt(i[0]);
+        	int ih = Integer.parseInt(i[1]);          	
+        	int ow = Integer.parseInt(o[0]);
+        	int oh = Integer.parseInt(o[1]);        	
+        	float ir = (float) iw / ih;
+        	float or = (float) ow / oh;
+			
+			if (ir != or)
+			{
+				filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+			}		
+			
 		}
 		
 		return filterComplex;

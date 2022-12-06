@@ -442,16 +442,21 @@ public class VideoEncoders extends Shutter {
 									
 									if (FFPROBE.imageResolution.equals("1440x1080"))
 									{
-										filterComplex = Image.setScale(filterComplex, false);									
+										filterComplex = Image.setScale(filterComplex, false);	
+										filterComplex = Image.setPad(filterComplex, false);			
 									}
 									else
-										filterComplex = Image.setScale(filterComplex, true);			
+									{
+										filterComplex = Image.setScale(filterComplex, true);	
+										filterComplex = Image.setPad(filterComplex, true);		
+									}
 									
 									break;
 									
 								default:
 									
-									filterComplex = Image.setScale(filterComplex, false);									
+									filterComplex = Image.setScale(filterComplex, false);	
+									filterComplex = Image.setPad(filterComplex, false);			
 									break;
 							}	
 			        	}
@@ -522,8 +527,8 @@ public class VideoEncoders extends Shutter {
 				    	//Crop
 				        filterComplex = Image.setCrop(filterComplex);
 						
-				        //Scaling
-				        if (setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode		
+				        //Scaling									
+			        	if (setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
 							switch (comboFonctions.getSelectedItem().toString())
 							{
@@ -534,16 +539,21 @@ public class VideoEncoders extends Shutter {
 									
 									if (FFPROBE.imageResolution.equals("1440x1080"))
 									{
-										filterComplex = Image.setScale(filterComplex, false);									
+										filterComplex = Image.setScale(filterComplex, false);	
+										filterComplex = Image.setPad(filterComplex, false);			
 									}
 									else
-										filterComplex = Image.setScale(filterComplex, true);			
+									{
+										filterComplex = Image.setScale(filterComplex, true);	
+										filterComplex = Image.setPad(filterComplex, true);		
+									}
 									
 									break;
 									
 								default:
 									
-									filterComplex = Image.setScale(filterComplex, false);									
+									filterComplex = Image.setScale(filterComplex, false);	
+									filterComplex = Image.setPad(filterComplex, false);			
 									break;
 							}	
 			        	}
@@ -986,7 +996,7 @@ public class VideoEncoders extends Shutter {
 		try {
 			
 			//Crop need to be before scaling
-			if (VideoPlayer.caseEnableCrop.isSelected())
+			if (Shutter.caseInAndOut.isSelected() && VideoPlayer.caseEnableCrop.isSelected())
 			{
 				FFMPEG.isGPUCompatible = false;
 				return false;
@@ -1340,14 +1350,23 @@ public class VideoEncoders extends Shutter {
 						yuv += "12le";
 					}
 				}
-				
-				//Switching to GPU nv12 or p010 to avoid useless pix_fmt conversion
-				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+				else
 				{
-					return "";				
+					//Switching to GPU nv12 or p010 to avoid useless pix_fmt conversion
+					if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+					{
+						if (filterComplex.contains("format=p010"))
+						{
+							return " -pix_fmt " + yuv;
+						}
+						else
+							return "";				
+					}
+					else		        
+						return " -pix_fmt " + yuv;
 				}
-				else		        
-					return " -pix_fmt " + yuv;
+				
+				return " -pix_fmt " + yuv;
 			
 			case "VP8":
 

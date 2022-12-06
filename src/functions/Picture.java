@@ -111,10 +111,14 @@ public class Picture extends Shutter {
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
 
+						//No GPU acceleration when using this function
+						FFMPEG.isGPUCompatible = false;
+						
 						//Scaling									
 			        	if (VideoEncoders.setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
-			        		filterComplex = Image.setScale(filterComplex, false);		
+			        		filterComplex = Image.setScale(filterComplex, false);	
+			        		filterComplex = Image.setPad(filterComplex, false);		
 			        	}
 						
 						//LUTs
@@ -166,6 +170,7 @@ public class Picture extends Shutter {
 				        if (VideoEncoders.setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode		
 			        	{
 				        	filterComplex = Image.setScale(filterComplex, false);
+				        	filterComplex = Image.setPad(filterComplex, false);		
 			        	}
 						
 						//filterComplex

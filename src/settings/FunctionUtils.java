@@ -102,6 +102,9 @@ public class FunctionUtils extends Shutter {
 			 }
 			 while (FFPROBE.isRunning);
 			 
+			//Check GPU
+			FFMPEG.checkGPUCapabilities(file.toString());
+			 
 			 if (analyzeError(file.toString()))
 				 return false;
 			 
@@ -128,9 +131,6 @@ public class FunctionUtils extends Shutter {
 			 if (analyzeError(file.toString()))
 				 return false;
 		}
-		
-		//Check GPU
-		FFMPEG.checkGPUCapabilities(file.toString());
 		
 		if (isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
