@@ -1888,7 +1888,7 @@ public class VideoPlayer {
 			}
 			
 			String gpuDecoding = "";
-			
+			/*
 			if (FFMPEG.isGPUCompatible)
 			{
 				if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
@@ -1908,7 +1908,7 @@ public class VideoPlayer {
 			else if (System.getProperty("os.name").contains("Mac"))
 			{
 				gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
-			}
+			}*/
 			
 			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v bmp -an -f image2pipe pipe:-";
 		}
@@ -1925,7 +1925,7 @@ public class VideoPlayer {
 			}	
 
 			String gpuDecoding = "";
-			
+			/*
 			if (FFMPEG.isGPUCompatible)
 			{
 				if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
@@ -1946,7 +1946,7 @@ public class VideoPlayer {
 			{
 				gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
 			}
-
+			 */
 			Console.consoleFFMPEG.append(System.lineSeparator() + gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed) + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
 		    			
 			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed) + " -c:v bmp -an -f image2pipe pipe:-";		
@@ -11855,6 +11855,9 @@ public class VideoPlayer {
 		}	
 		
 		//Scaling
+		filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=neighbor";
+		
+		/*
 		String bitDepth = "nv12";
 		if (FFPROBE.imageDepth == 10)
 		{
@@ -11875,20 +11878,20 @@ public class VideoPlayer {
 				autoQSV = true;
 			}
 		}
-		
+
 		if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && yadif == "")
 		{
-			filter += "scale_qsv=" + player.getWidth() + ":" + player.getHeight() + ",hwdownload,format=" + bitDepth;
+			filter += "scale_qsv=" + player.getWidth() + ":" + player.getHeight() + ":mode=low_power,hwdownload,format=" + bitDepth;
 		}
 		else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
 		{
 			filter = filter.replace("yadif", "yadif_cuda");			
-			filter += "scale_cuda=" + player.getWidth() + ":" + player.getHeight() + ",hwdownload,format=" + bitDepth;
+			filter += "scale_cuda=" + player.getWidth() + ":" + player.getHeight() + ":interp_algo=nearest,hwdownload,format=" + bitDepth;
 		}
 		else
 		{
 			filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=neighbor";
-		}
+		}*/
 
 		//Speed
 		if (speed != "")

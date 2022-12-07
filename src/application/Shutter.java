@@ -957,7 +957,6 @@ public class Shutter {
 		Splash.increment();
 		
 		Utils.changeFrameVisibility(frame, false);
-		frame.getRootPane().setDefaultButton(btnStart);
 		btnStart.requestFocus();
 		
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)
