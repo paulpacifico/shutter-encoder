@@ -76,7 +76,7 @@ public class FunctionUtils extends Shutter {
 		btnStart.setEnabled(false);	
 		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
-		
+				
 		if (caseGenerateFromDate.isSelected()
 		|| comboFonctions.getSelectedItem().toString().equals("JPEG")
 		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
@@ -87,9 +87,9 @@ public class FunctionUtils extends Shutter {
 				Thread.sleep(100);
 			}						 
 			while (EXIFTOOL.isRunning);
-			
+			/*
 			if (analyzeError(file.toString()))
-				return false;
+				return false;*/
 		}
 				
 		//inputDeviceIsRunning is already analyzed
@@ -175,11 +175,11 @@ public class FunctionUtils extends Shutter {
 	}
 
 	public  static boolean analyzeError(String file)
-	{
-		 if (FFMPEG.error)
+	{						
+		 if (FFMPEG.error)// || EXIFTOOL.error || DCRAW.error || DVDAUTHOR.error || MKVMERGE.error || TSMUXER.error || XPDF.error)
 		 {
-			 	errorList = new StringBuilder(file + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
-				return true;
+		 	errorList = new StringBuilder(file + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
+			return true;
 		 }
 		 return false;
 	}
@@ -1228,7 +1228,7 @@ public class FunctionUtils extends Shutter {
 	public static boolean cleanFunction(String fileName, File fileOut, String output) {
 		
 		String extension = "";
-		
+
 		if (fileName != null && fileName != "" && fileName.contains("."))
 		{
 			extension = fileName.substring(fileName.lastIndexOf("."));

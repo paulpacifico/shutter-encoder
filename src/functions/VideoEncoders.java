@@ -1626,6 +1626,7 @@ public class VideoEncoders extends Shutter {
 			Wetransfer.addFile(new File(output + "/" + fileName.replace(fileName.substring(fileName.lastIndexOf(".")), "_AS11" + comboFilter.getSelectedItem().toString())));
 		else
 			Wetransfer.addFile(fileOut);
+		
 		Ftp.sendToFtp(fileOut);
 		FunctionUtils.copyFile(fileOut);
 		

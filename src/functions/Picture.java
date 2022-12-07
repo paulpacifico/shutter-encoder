@@ -58,7 +58,7 @@ public class Picture extends Shutter {
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
 					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
-					
+									
 					if (file == null)
 						break;
 		            

@@ -20,7 +20,6 @@
 package library;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -45,8 +44,9 @@ public static String exifHeight;
 private static boolean scanOrientation = true;
 private static Boolean horizontal = true;
 
-	public static void run(final String fichier) {
+	public static void run(final String file) {
 				
+	 error = false;
 	 scanOrientation = true;
 	 horizontal = true;
 	 exifDate = "0000:00:00";
@@ -59,7 +59,9 @@ private static Boolean horizontal = true;
 		runProcess = new Thread(new Runnable()  {
 			@Override
 			public void run() {
+				
 				try {
+					
 					String PathToEXIFTOOL;
 					ProcessBuilder processEXIFTOOL;
 					if (System.getProperty("os.name").contains("Windows"))
@@ -67,14 +69,14 @@ private static Boolean horizontal = true;
 						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToEXIFTOOL = PathToEXIFTOOL.substring(1,PathToEXIFTOOL.length()-1);
 						PathToEXIFTOOL = '"' + PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/exiftool.exe" + '"';
-						processEXIFTOOL = new ProcessBuilder(PathToEXIFTOOL + " " + '"' + fichier + '"');
+						processEXIFTOOL = new ProcessBuilder(PathToEXIFTOOL + " " + '"' + file + '"');
 					}
 					else
 					{
 						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,PathToEXIFTOOL.length()-1);
 						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/exiftool";
-						processEXIFTOOL = new ProcessBuilder("/bin/bash", "-c" , PathToEXIFTOOL + " " + '"' + fichier + '"');
+						processEXIFTOOL = new ProcessBuilder("/bin/bash", "-c" , PathToEXIFTOOL + " " + '"' + file + '"');
 					}
 											
 					isRunning = true;	
@@ -90,6 +92,11 @@ private static Boolean horizontal = true;
 						
 						  Console.consoleEXIFTOOL.append(line + System.lineSeparator());		
 					    
+						  if (line.contains("Error"))
+						  {
+							  error = true;							  
+						  }
+						  
 						  if (line.contains("Date/Time Original"))
 						  {
 							  String l = line.substring(line.indexOf(":") + 2);
@@ -162,7 +169,7 @@ private static Boolean horizontal = true;
 						FFPROBE.imageRatio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
 					}
 											
-					} catch (IOException | InterruptedException e) {
+					} catch (Exception e) {
 						error = true;
 					} finally {
 						isRunning = false;

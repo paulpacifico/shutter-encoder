@@ -42,6 +42,8 @@ public static Thread runProcess;
 
 	public static void run(final String file, boolean showInformationsFrame) {
 				
+		error = false;
+		
 	    Console.consoleMEDIAINFO.append(System.lineSeparator() + Shutter.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"' + System.lineSeparator() + System.lineSeparator());
 		
 		runProcess = new Thread(new Runnable()  {
