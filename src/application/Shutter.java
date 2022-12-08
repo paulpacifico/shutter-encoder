@@ -15987,11 +15987,8 @@ class ListeFileTransferHandler extends TransferHandler {
 
 					// VideoPlayer
 					if (Shutter.caseInAndOut.isSelected())
-					{
-						if (Shutter.fileList.getSelectedIndices().length == 0)
-						{
-							Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);
-						}
+					{						
+						Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);					
 						
 						VideoPlayer.setMedia();
 					}

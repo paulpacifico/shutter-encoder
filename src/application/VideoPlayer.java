@@ -308,6 +308,7 @@ public class VideoPlayer {
     //grpOverlay
     public static JPanel grpOverlay;	
 	public static float imageRatio = 3;
+	private static boolean ratioChanged = false;
     private int tcPosX = 0;
     private int tcPosY = 0;
     private static int tcLocX = 0;
@@ -2600,6 +2601,9 @@ public class VideoPlayer {
          	   return (p - distance);
          }
         };
+        
+        // Drag & Drop
+ 		player.setTransferHandler(new ListeFileTransferHandler());
         
 		player.setLayout(null);
 		player.setBackground(Color.BLACK);
@@ -6215,9 +6219,40 @@ public class VideoPlayer {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+	
 				if (caseEnableCrop.isSelected())
 				{
+					//Make sure the crop is accurate to pixel resolution
+					float squareRatio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
+					if (Shutter.inputDeviceIsRunning == false && FFPROBE.imageRatio != squareRatio)
+					{
+						ratioChanged = true;
+						FFPROBE.imageRatio = squareRatio;  
+						resizeAll();
+						
+						frameIsComplete = false;
+						
+						playerSetTime(playerCurrentFrame - 1);
+						
+						long time = System.currentTimeMillis();
+						
+						do {
+							
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {}
+							
+							if (System.currentTimeMillis() - time > 1000)
+								frameIsComplete = true;
+														
+						} while (frameIsComplete == false);	
+					}
+					
+					//Important
+					selection.setBounds(player.getWidth() / 4, player.getHeight() / 4, player.getWidth() / 2, player.getHeight() / 2);	
+					anchorRight = selection.getLocation().x + selection.getWidth();
+					anchorBottom = selection.getLocation().y + selection.getHeight();
+					
 					for (Component c : grpCrop.getComponents())
 					{
 						c.setEnabled(true);
@@ -6234,7 +6269,37 @@ public class VideoPlayer {
 					player.add(overImage);
 				}
 				else
-				{				
+				{			
+					//Come back to original DAR
+					if (Shutter.inputDeviceIsRunning == false && ratioChanged)
+					{
+						FFPROBE.Data(videoPath);					
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {}
+						} while (FFPROBE.isRunning);
+						resizeAll();
+						
+						frameIsComplete = false;
+						
+						playerSetTime(playerCurrentFrame - 1);
+						
+						long time = System.currentTimeMillis();
+						
+						do {
+							
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {}
+							
+							if (System.currentTimeMillis() - time > 1000)
+								frameIsComplete = true;
+														
+						} while (frameIsComplete == false);	
+					}
+					ratioChanged = false;	
+					
 					for (Component c : grpCrop.getComponents())
 					{
 						if (c instanceof JCheckBox == false)
@@ -6247,7 +6312,7 @@ public class VideoPlayer {
 					player.remove(overImage);	
 					
 					comboPreset.setSelectedIndex(0);
-				}				
+				}		
 
 				if (frameVideo != null)
 				{
@@ -6814,12 +6879,7 @@ public class VideoPlayer {
 			}
 			
 		});
-		
-		//Important
-		selection.setBounds(player.getWidth() / 4, player.getHeight() / 4, player.getWidth() / 2, player.getHeight() / 2);	
-		anchorRight = selection.getLocation().x + selection.getWidth();
-		anchorBottom = selection.getLocation().y + selection.getHeight();
-		
+
 		JLabel cropPosX = new JLabel(Shutter.language.getProperty("posX"));
 		cropPosX.setHorizontalAlignment(SwingConstants.RIGHT);
 		cropPosX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -11701,7 +11761,11 @@ public class VideoPlayer {
 						}
 	
 						//EXR gamma
-						String EXRGamma = Colorimetry.setInputCodec(extension);
+						String EXRGamma = "";						
+						if (extension.toLowerCase().equals(".exr"))
+						{
+							EXRGamma = Colorimetry.setInputCodec(extension);
+						}
 						
 						if (new File(Shutter.dirTemp + "preview.bmp").exists() == false && caseAddSubtitles.isSelected() == false)
 						{											   		
@@ -11937,6 +12001,17 @@ public class VideoPlayer {
 				eq += color;
 			}
 			
+			if (sliderAngle.getValue() != 0)
+			{
+				if (eq.contains("scale"))
+				{
+					eq = eq.replace("scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight,  "scale=" + player.getWidth() + ":" + player.getHeight());
+				}
+				else
+				{
+					eq += ",scale=" + player.getWidth() + ":" + player.getHeight();
+				}
+			}
 		}
 				
 		//Deflicker			
