@@ -222,7 +222,7 @@ public class Colorimetry extends Shutter {
 	}
 		
 	public static String setAngle(String eq) {
-		
+
 		if (VideoPlayer.sliderAngle.getValue() != 0)
 		{
 			if (eq != "")
@@ -246,8 +246,13 @@ public class Colorimetry extends Shutter {
 			
 			w = (float) (2 - ((float) FFPROBE.imageWidth / w));
 			h = (float) (2 - ((float) FFPROBE.imageHeight / h));			
-			
-			eq += "rotate=" + ((float) VideoPlayer.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight; 
+						
+			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+			{
+				eq += "rotate=" + ((float) VideoPlayer.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight; 
+			}
+			else
+				eq += "rotate=" + ((float) VideoPlayer.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
 		}
 		
 		return eq;

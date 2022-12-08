@@ -326,7 +326,7 @@ public static int gopSpace = 124;
 			                	imageRatio = (float) ratioWidth / ratioHeight;
 			                }
 			                else
-			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);       
+			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
 			                
 			                // Crop Form
 			                int largeur = 0;
