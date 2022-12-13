@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -218,17 +218,9 @@ public static int gopSpace = 124;
 						
 						// Analyse des données							
 						Console.consoleFFPROBE.append(line + System.lineSeparator());		
-																
-						//Erreurs
-						if (line.contains("Invalid data found when processing input") 
-								|| line.contains("No such file or directory")
-								|| line.contains("Invalid data found")
-								|| line.contains("No space left")
-								|| line.contains("does not contain any stream")
-								|| line.contains("Invalid argument"))
-						{
-							FFMPEG.error = true;
-						}
+									
+						//Errors
+						FFMPEG.checkForErrors(line);
 												
 						//Entrelacement
 						if (line.contains("top first") || line.contains("top coded first"))
@@ -334,11 +326,7 @@ public static int gopSpace = 124;
 			                	imageRatio = (float) ratioWidth / ratioHeight;
 			                }
 			                else
-			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);
-			              	
-			                /*
-			              	if (VideoPlayer.ratio < 1.76f)
-			              		VideoPlayer.ratio = 1.777777f;*/		         
+			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
 			                
 			                // Crop Form
 			                int largeur = 0;
@@ -501,9 +489,9 @@ public static int gopSpace = 124;
 		                	creationTime = s[0];
 		                }
 			            
-				}//While			
-				process.waitFor();		
-					
+				}		
+				process.waitFor();	
+							
 				} catch (IOException | InterruptedException e) {
 					FFMPEG.error = true;
 				} finally {
@@ -511,8 +499,8 @@ public static int gopSpace = 124;
 					btnStart.setEnabled(true);
 				}
 						
-			}//RUN				
-		});//THREAD		
+			}			
+		});
 		processData.start();
 		
 	}
@@ -576,16 +564,8 @@ public static int gopSpace = 124;
 			        	
 						Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
-						//Erreurs
-						if (line.contains("Invalid data found when processing input") 
-								|| line.contains("No such file or directory")
-								|| line.contains("Invalid data found")
-								|| line.contains("No space left")
-								|| line.contains("does not contain any stream")
-								|| line.contains("Invalid argument"))
-						{
-							FFMPEG.error = true;
-						}
+						//Errors
+						FFMPEG.checkForErrors(line);
 																		
 					  if (line.contains("interlaced_frame"))
 					  {
@@ -841,16 +821,8 @@ public static int gopSpace = 124;
 				        	
 						Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
-						//Erreurs
-						if (line.contains("Invalid data found when processing input") 
-								|| line.contains("No such file or directory")
-								|| line.contains("Invalid data found")
-								|| line.contains("No space left")
-								|| line.contains("does not contain any stream")
-								|| line.contains("Invalid argument"))
-						{
-							FFMPEG.error = true;
-						}
+						//Errors
+						FFMPEG.checkForErrors(line);
 
 						if (line.equals("") == false && line.contains("K"))
 						{						

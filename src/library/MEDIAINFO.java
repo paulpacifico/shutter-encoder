@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@ public static Thread runProcess;
 
 	public static void run(final String file, boolean showInformationsFrame) {
 				
+		error = false;
+		
 	    Console.consoleMEDIAINFO.append(System.lineSeparator() + Shutter.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"' + System.lineSeparator() + System.lineSeparator());
 		
 		runProcess = new Thread(new Runnable()  {

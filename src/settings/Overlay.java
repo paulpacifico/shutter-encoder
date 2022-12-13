@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import java.text.NumberFormat;
 import javax.swing.JTextField;
 
 import application.VideoPlayer;
+import functions.VideoEncoders;
 import application.RecordInputDevice;
 import application.Shutter;
 import application.SubtitlesEmbed;
@@ -232,16 +233,57 @@ public class Overlay extends Shutter {
 			else
 				overlayFont = "font=" + VideoPlayer.comboOverlayFont.getSelectedItem().toString();
 	      
+			float imageRatio = 1.0f;
+			
+			int ow = FFPROBE.imageWidth;  
+			
+			if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+			{
+				if (comboResolution.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					ow = (int) Math.round(ow * value);
+				}					
+				else if (comboResolution.getSelectedItem().toString().contains("x"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");					
+		        	ow = Integer.parseInt(s[0]);   
+				}
+				else if (comboResolution.getSelectedItem().toString().contains(":"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split(":");
+					
+					if (s[0].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+					}
+					else if (s[1].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+					}
+					else //ratio like 4:1 etc...
+					{
+						ow = Integer.parseInt(s[0]);
+					}
+				}
+
+	        	if (VideoEncoders.setScalingFirst())
+				{
+	        		imageRatio = (float) FFPROBE.imageWidth / ow;
+				}
+			}
+
 	      	if (VideoPlayer.caseShowFileName.isSelected())
 	      	{
 	      		if (filterComplex != "") filterComplex += ",";
-	      			filterComplex += "drawtext=" + overlayFont + ":text='" + file + "':r=" + rate + ":x=" + VideoPlayer.textNamePosX.getText() + ":y=" + VideoPlayer.textNamePosY.getText() + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundNameAlpha + ":fontsize=" + VideoPlayer.textNameSize.getText() + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundNameAlpha;
+	      			filterComplex += "drawtext=" + overlayFont + ":text='" + file + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundNameAlpha;
 	      	}
 	      	
 	      	if (VideoPlayer.caseAddText.isSelected())
 	      	{
 	      		if (filterComplex != "") filterComplex += ",";
-	      			filterComplex += "drawtext=" + overlayFont + ":text='" + VideoPlayer.text.getText() + "':r=" + rate + ":x=" + VideoPlayer.textNamePosX.getText() + ":y=" + VideoPlayer.textNamePosY.getText() + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundNameAlpha + ":fontsize=" + VideoPlayer.textNameSize.getText() + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundNameAlpha;
+	      			filterComplex += "drawtext=" + overlayFont + ":text='" + VideoPlayer.text.getText() + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundNameAlpha;
 	      	}
 	      	
 		   	if ((VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected()))
@@ -255,10 +297,10 @@ public class Overlay extends Shutter {
 		   		if (VideoPlayer.caseAddTimecode.isSelected() && VideoPlayer.lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
 		   		{
 		   			String startNumber = String.format("%.0f", Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS + Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS + Integer.parseInt(tc3) * FFPROBE.currentFPS + Integer.parseInt(tc4));
-		   			filterComplex += "drawtext=" + overlayFont + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + VideoPlayer.textTcPosX.getText() + ":y=" + VideoPlayer.textTcPosY.getText() + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundTcAlpha + ":fontsize=" + VideoPlayer.textTcSize.getText() + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundTcAlpha;
+		   			filterComplex += "drawtext=" + overlayFont + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundTcAlpha;
 		   		}
 		   		else
-		   			filterComplex += "drawtext=" + overlayFont + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + VideoPlayer.textTcPosX.getText() + ":y=" + VideoPlayer.textTcPosY.getText() + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundTcAlpha + ":fontsize=" + VideoPlayer.textTcSize.getText() + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundTcAlpha + ":tc24hmax=1";	      
+		   			filterComplex += "drawtext=" + overlayFont + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundTcAlpha + ":tc24hmax=1";	      
 		   	}   
 		}
 		
@@ -293,17 +335,24 @@ public class Overlay extends Shutter {
 				
 				if (limitToFHD || comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
-					String s[] = "1920x1080".split("x");
-					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-						s = comboResolution.getSelectedItem().toString().split("x");						
-
+					String s[] = "1920x1080".split("x");					
+					if (comboResolution.getSelectedItem().toString().contains("%"))
+					{
+						double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+						
+						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * value));
+						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
+					}					
+					else					
+						s = comboResolution.getSelectedItem().toString().split("x");
+					
 					int iw = Integer.parseInt(i[0]);
 					int ih = Integer.parseInt(i[1]);
 					int ow = Integer.parseInt(s[0]);
 					int oh = Integer.parseInt(s[1]);  
 					
-					int width = (int) ((float) Integer.parseInt(VideoPlayer.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
-					int height = (int) ((float) (ih + Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText())) / ((float) ih/oh));
+					int width = Math.round((float) Integer.parseInt(VideoPlayer.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
+					int height = Math.round((float) (ih + Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText())) / ((float) ih/oh));
 															
 					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + VideoPlayer.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + VideoPlayer.textSubsSize.getText() + ",PrimaryColour=&H" + VideoPlayer.subsHex + "&" + background + "'" + '"';
 				}		
@@ -336,8 +385,8 @@ public class Overlay extends Shutter {
 					{
 						double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 						
-						s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
-						s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * value));
+						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
 					}					
 					else					
 						s = comboResolution.getSelectedItem().toString().split("x");
@@ -347,8 +396,8 @@ public class Overlay extends Shutter {
 		        	int ow = Integer.parseInt(s[0]);
 		        	int oh = Integer.parseInt(s[1]);        	
 		        	
-		        	int width = (int) ((float) Integer.parseInt(VideoPlayer.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
-		        	int height = (int) ((float) (ih + Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText())) / ((float) ih/oh));
+		        	int width = Math.round((float) Integer.parseInt(VideoPlayer.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
+		        	int height = Math.round((float) (ih + Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText())) / ((float) ih/oh));
 		        	
 		        	return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
 				}
@@ -393,19 +442,63 @@ public class Overlay extends Shutter {
 	public static String setWatermark(String filterComplex) {
 		
 		if (caseInAndOut.isSelected() && VideoPlayer.caseAddWatermark.isSelected())
-        {		        	
+        {		     
+			float imageRatio = 1.0f;
+			
+			int ow = FFPROBE.imageWidth;  
+			
+			if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+			{
+				if (comboResolution.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					ow = (int) Math.round(ow * value);
+				}					
+				else if (comboResolution.getSelectedItem().toString().contains("x"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");					
+		        	ow = Integer.parseInt(s[0]);   
+				}
+				else if (comboResolution.getSelectedItem().toString().contains(":"))
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split(":");
+					
+					if (s[0].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+					}
+					else if (s[1].equals("auto"))
+					{
+						ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+					}
+					else //ratio like 4:1 etc...
+					{
+						ow = Integer.parseInt(s[0]);
+					}
+				}
+
+	        	if (VideoEncoders.setScalingFirst())
+				{
+	        		imageRatio = (float) FFPROBE.imageWidth / ow;
+				}
+			}
+
+			float size = (float) Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100;			
+
         	if (filterComplex != "") 	
         	{
-            	filterComplex = "[0:v]" + filterComplex + "[v];[1:v]scale=iw*" + ((float)  Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) +			
+            	filterComplex = "[0:v]" + filterComplex + "[v];[1:v]scale=iw*" + ((double) 1 / imageRatio) * size + ":ih*" + ((double) 1 / imageRatio) * size +			
         				",lut=a=val*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkOpacity.getText()) / 100) + 
-        				"[scaledwatermark];[v][scaledwatermark]overlay=" + VideoPlayer.textWatermarkPosX.getText() + ":" + VideoPlayer.textWatermarkPosY.getText();
+        				"[scaledwatermark];[v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosY.getText()) / imageRatio);
         	}
         	else
         	{	
-            	filterComplex = "[1:v]scale=iw*" + ((float)  Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100) +			
+            	filterComplex = "[1:v]scale=iw*" + ((double) 1 / imageRatio) * size + ":ih*" + ((double) 1 / imageRatio) * size +
         				",lut=a=val*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkOpacity.getText()) / 100) + 
-        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + VideoPlayer.textWatermarkPosX.getText() + ":" + VideoPlayer.textWatermarkPosY.getText();
+        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosY.getText()) / imageRatio);
         	}
+
         }
         
 		return filterComplex;
@@ -419,7 +512,7 @@ public class Overlay extends Shutter {
 
         	int ImageWidth = Integer.parseInt(i[0]);
         	
-        	int posX = ((int) (ImageWidth - Integer.parseInt(VideoPlayer.textSubsWidth.getText())) / 2);
+        	int posX = (Math.round(ImageWidth - Integer.parseInt(VideoPlayer.textSubsWidth.getText())) / 2);
 
         	if (VideoPlayer.caseEnableCrop.isSelected())
         	{
@@ -434,7 +527,10 @@ public class Overlay extends Shutter {
             	
             	int iw = Integer.parseInt(i[0]);
             	int ow = Integer.parseInt(s[0]);  
-            	posX =  (int) (posX / ((float) iw/ow));
+            	
+            	float imageRatio = (float) iw/ow;
+            	
+            	posX =  Math.round(posX / imageRatio);
         	}
         	else if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
         	{
@@ -444,15 +540,18 @@ public class Overlay extends Shutter {
 				{
 					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 					
-					s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
-					s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
+					s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * value));
+					s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
 				}					
 				else					
 					s = comboResolution.getSelectedItem().toString().split("x");
 	        		        	
 	        	int iw = Integer.parseInt(i[0]);
 	        	int ow = Integer.parseInt(s[0]);  
-	        	posX =  (int) (posX / ((float) iw/ow));
+	        		   
+	        	float imageRatio = (float) iw/ow;
+	        		        		        	
+	        	posX = Math.round(posX / imageRatio);
         	}
     		
     		if (VideoPlayer.caseAddWatermark.isSelected())

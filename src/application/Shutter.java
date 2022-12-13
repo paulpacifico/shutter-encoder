@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -107,7 +108,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
-import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -164,7 +164,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "16.4";
+	public static String actualVersion = "16.6";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
@@ -183,7 +183,6 @@ public class Shutter {
 	private static int taskBarHeight;
 	public static boolean cancelled = false;
 	public static float ratioFinal = 0; // CropVideo
-	public static String croppingValues = null; // CropImage
 	public static String colorimetryValues = null; // ColorImage
 	public static boolean scanIsRunning = false;
 	public static JMenuItem menuDisplay;
@@ -343,6 +342,7 @@ public class Shutter {
 	protected static JCheckBox caseOPATOM;
 	protected static JCheckBox caseAS10;
 	protected static JCheckBox caseChunks;
+	protected static JCheckBox caseDRC;
 	protected static JComboBox<String> chunksSize;
 	protected static JComboBox<String> comboConform;
 	protected static JComboBox<String> comboFPS;
@@ -957,7 +957,6 @@ public class Shutter {
 		Splash.increment();
 		
 		Utils.changeFrameVisibility(frame, false);
-		frame.getRootPane().setDefaultButton(btnStart);
 		btnStart.requestFocus();
 		
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)
@@ -4528,9 +4527,11 @@ public class Shutter {
 				}
 				
 				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != 'x' && caracter != '%'
-						|| String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume();
+				if (caracter != 'x' && caracter != '%' && caracter != ':')
+				{
+					if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+						e.consume();
+				}
 			}
 
 			@Override
@@ -9474,6 +9475,27 @@ public class Shutter {
 									graphicsAccel.add("OSX VideoToolbox");
 							}*/
 						}
+						else if ("AV1".equals(comboFonctions.getSelectedItem().toString()))
+						{
+							if (System.getProperty("os.name").contains("Windows"))
+							{
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -s 640x360 -f null -" + '"');
+								do {
+									Thread.sleep(10);
+								} while (FFMPEG.runProcess.isAlive());
+		
+								if (FFMPEG.error == false)
+									graphicsAccel.add("Nvidia NVENC");
+		
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_qsv -s 640x360 -f null -" + '"');
+								do {
+									Thread.sleep(10);
+								} while (FFMPEG.runProcess.isAlive());
+		
+								if (FFMPEG.error == false)
+									graphicsAccel.add("Intel Quick Sync");
+							}
+						}
 						else
 						{							
 							String codec = "h264";
@@ -10084,6 +10106,11 @@ public class Shutter {
 		chunksSize.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		chunksSize.setEditable(false);
 		chunksSize.setSize(40, 16);
+		
+		caseDRC = new JCheckBox(language.getProperty("caseDRC"));
+		caseDRC.setName("caseDRC");
+		caseDRC.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseDRC.setSize(caseDRC.getPreferredSize().width + 4, 23);
 
 	}
 
@@ -11574,6 +11601,7 @@ public class Shutter {
 				caseChunks.setSelected(false);
 				chunksSize.setEnabled(false);
 				chunksSize.setSelectedIndex(3);
+				caseDRC.setSelected(false);
 				caseForceLevel.setSelected(false);
 				comboForceProfile.setEnabled(false);
 				comboForceLevel.setEnabled(false);
@@ -12805,7 +12833,10 @@ public class Shutter {
 							grpAdvanced.setVisible(true);
 							caseCreateTree.setLocation(7, 14);
 							grpAdvanced.add(caseCreateTree);
+							caseDRC.setLocation(7, caseCreateTree.getLocation().y + 17);
+							grpAdvanced.add(caseDRC);						
 							grpAdvanced.setLocation(grpAdvanced.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+							
 							btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 							
 						} else if ("Loudness & True Peak".equals(function)
@@ -13976,7 +14007,7 @@ public class Shutter {
 							grpAdvanced.removeAll();
 
 							// grpAdvanced	
-							if ("VP9".equals(function))
+							if (System.getProperty("os.name").contains("Windows") && ("VP9".equals(function) || "AV1".equals(function)))
 							{
 								caseAccel.setLocation(7, 14);
 								grpAdvanced.add(caseAccel);
@@ -15523,11 +15554,7 @@ public class Shutter {
 	}
 
 	public static void enfOfFunction() {	
-		
-		//Affichage des erreurs
-		String[] FFPROBESplit = Console.consoleFFPROBE.getText().split(System.lineSeparator());
-		String[] FFMPEGSplit = Console.consoleFFMPEG.getText().split(System.lineSeparator());
-		
+
 		if (errorList.length() != 0)
 		{
 			if (Settings.btnDisableSound.isSelected() == false) {
@@ -15546,9 +15573,7 @@ public class Shutter {
 				Taskbar.getTaskbar().setWindowProgressState(frame, Taskbar.State.ERROR);
 			} 	
 			
-			JTextArea errorText = new JTextArea(errorList.toString() + '\n' +
-					Shutter.language.getProperty("ffprobe") + " " + FFPROBESplit[FFPROBESplit.length - 1] + '\n' +
-					Shutter.language.getProperty("ffmpeg") + " " + FFMPEGSplit[FFMPEGSplit.length - 1]);  
+			JTextArea errorText = new JTextArea(errorList.toString());  
 			errorText.setWrapStyleWord(true);
 			
 			JScrollPane scrollPane = new JScrollPane(errorText);  
@@ -15616,6 +15641,7 @@ public class Shutter {
 				}
 			}
 			
+			FFMPEG.errorLog.setLength(0);
 			errorList.setLength(0);
 		}
 		else if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && Shutter.cancelled == false)
@@ -15961,11 +15987,8 @@ class ListeFileTransferHandler extends TransferHandler {
 
 					// VideoPlayer
 					if (Shutter.caseInAndOut.isSelected())
-					{
-						if (Shutter.fileList.getSelectedIndices().length == 0)
-						{
-							Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);
-						}
+					{						
+						Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);					
 						
 						VideoPlayer.setMedia();
 					}

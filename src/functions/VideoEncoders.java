@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -260,14 +260,7 @@ public class VideoEncoders extends Shutter {
 							if (fileOut == null)
 								continue;						
 						}
-						
-						//Hardware decoding
-						String hardwareDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
-						if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
-						{
-							hardwareDecoding += " -vaapi_device /dev/dri/renderD128";
-						}
-						
+												
 						//Concat mode or Image sequence
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
 						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
@@ -319,10 +312,7 @@ public class VideoEncoders extends Shutter {
 						String codec = setCodec();
 						
 						//Bitrate
-						String bitrate = setBitrate();						
-						 
-						//PixelFormat
-						String pixelFormat = setPixelFormat();					
+						String bitrate = setBitrate();					
 
 						//Level
 						String profile = AdvancedFeatures.setProfile();
@@ -439,6 +429,37 @@ public class VideoEncoders extends Shutter {
 								
 								break;
 						}
+												
+						//Scaling									
+			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
+			        	{
+							switch (comboFonctions.getSelectedItem().toString())
+							{
+								//Limit to Full HD
+								case "AVC-Intra 100":
+								case "DNxHD":
+								case "XDCAM HD422":
+									
+									if (FFPROBE.imageResolution.equals("1440x1080"))
+									{
+										filterComplex = Image.setScale(filterComplex, false);	
+										filterComplex = Image.setPad(filterComplex, false);			
+									}
+									else
+									{
+										filterComplex = Image.setScale(filterComplex, true);	
+										filterComplex = Image.setPad(filterComplex, true);		
+									}
+									
+									break;
+									
+								default:
+									
+									filterComplex = Image.setScale(filterComplex, false);	
+									filterComplex = Image.setPad(filterComplex, false);			
+									break;
+							}	
+			        	}
 											
 						//Blend
 						filterComplex = ImageSequence.setBlend(filterComplex);
@@ -506,38 +527,40 @@ public class VideoEncoders extends Shutter {
 				    	//Crop
 				        filterComplex = Image.setCrop(filterComplex);
 						
+				        //Scaling									
+			        	if (setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode			
+			        	{
+							switch (comboFonctions.getSelectedItem().toString())
+							{
+								//Limit to Full HD
+								case "AVC-Intra 100":
+								case "DNxHD":
+								case "XDCAM HD422":
+									
+									if (FFPROBE.imageResolution.equals("1440x1080"))
+									{
+										filterComplex = Image.setScale(filterComplex, false);	
+										filterComplex = Image.setPad(filterComplex, false);			
+									}
+									else
+									{
+										filterComplex = Image.setScale(filterComplex, true);	
+										filterComplex = Image.setPad(filterComplex, true);		
+									}
+									
+									break;
+									
+								default:
+									
+									filterComplex = Image.setScale(filterComplex, false);	
+									filterComplex = Image.setPad(filterComplex, false);			
+									break;
+							}	
+			        	}
+				        
 						//DAR
 						filterComplex = Image.setDAR(filterComplex);
-						
-						//Padding
-						switch (comboFonctions.getSelectedItem().toString())
-						{
-							//Limit to Full HD
-							case "AVC-Intra 100":
-							case "DNxHD":
-							case "XDCAM HD422":
-								
-								if (FFPROBE.imageResolution.equals("1440x1080"))
-								{
-									filterComplex = Image.setPad(filterComplex, false);									
-								}
-								else
-									filterComplex = Image.setPad(filterComplex, true);			
-								
-								break;
-								
-							default:
-								
-								filterComplex = Image.setPad(filterComplex, false);									
-								break;
-						}										
-						
-						//Interlace50p
-			            filterComplex = AdvancedFeatures.setInterlace50p(filterComplex);
-			            
-						//Force TFF
-						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);	
-								
+
 						//Overlay
 						if (grpBitrate.isVisible())
 						{
@@ -564,14 +587,20 @@ public class VideoEncoders extends Shutter {
 						else if (comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{
 							filterComplex = Overlay.setOverlay(filterComplex, false);	 
-						}						
+						}	
+						
+						//Interlace50p
+			            filterComplex = AdvancedFeatures.setInterlace50p(filterComplex);
+			            
+						//Force TFF
+						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);																				
 						
 						//Limiter
 						filterComplex = Corrections.setLimiter(filterComplex);
 			            
 						//Fade-in Fade-out
 						filterComplex = Transitions.setVideoFade(filterComplex);
-						
+										
 		            	//Audio
 			            if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{
@@ -634,6 +663,9 @@ public class VideoEncoders extends Shutter {
 						//Timecode
 						String timecode = Timecode.setTimecode();
 			            
+						//PixelFormat
+						String pixelFormat = setPixelFormat(filterComplex);
+						
 			            //Flags
 			    		String flags = AdvancedFeatures.setFlags(fileName);
 			    		
@@ -724,6 +756,51 @@ public class VideoEncoders extends Shutter {
 							}	
 						}
 						
+						//GPU decoding
+						String gpuDecoding = "";						
+						if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+						{
+							if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+							{
+								if (FFMPEG.cudaAvailable)
+								{
+									gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
+								}
+								else if (FFMPEG.qsvAvailable)
+								{
+									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
+								}
+							}
+							else
+								gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+						}
+						else
+						{
+							gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+						}							
+
+						if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
+						{
+							gpuDecoding += " -vaapi_device /dev/dri/renderD128";
+						}
+												
+						//GPU filtering
+			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
+			    		{
+			    			//Input bitDepth
+			    			String bitDepth = "nv12";
+			    			if (FFPROBE.imageDepth == 10)
+			    			{
+			    				bitDepth = "p010";
+			    			}	
+			    			
+			    			//When there is no filter AND it's 8bit only
+			    			if (filterComplex.contains("format=" + bitDepth + "[out]") && caseAccel.isSelected() && caseColorspace.isSelected() == false)
+			    			{
+			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, "");
+			    			}
+			    		}
+						
 						//Command
 						String cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 										
@@ -747,11 +824,11 @@ public class VideoEncoders extends Shutter {
 						}
 						else if (encode) //Encoding
 						{
-							FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
+							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
 						}
 						else //Preview
 						{						
-							FFMPEG.toFFPLAY(hardwareDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
+							FFMPEG.toFFPLAY(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
 						}
 
 						do
@@ -763,7 +840,7 @@ public class VideoEncoders extends Shutter {
 						if (grpBitrate.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
 							if (FFMPEG.cancelled == false)
-								FFMPEG.run(hardwareDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 							
 							do
 							{
@@ -914,13 +991,84 @@ public class VideoEncoders extends Shutter {
 		
     }
 
+	public static boolean setScalingFirst() {
+		
+		try {
+			
+			//Crop need to be before scaling
+			if (Shutter.caseInAndOut.isSelected() && VideoPlayer.caseEnableCrop.isSelected())
+			{
+				FFMPEG.isGPUCompatible = false;
+				return false;
+			}			
+			
+			//Set scaling before or after depending on using a pad or stretch mode
+			String i[] = FFPROBE.imageResolution.split("x");        
+			String o[] = FFPROBE.imageResolution.split("x");
+						
+			if (comboResolution.getSelectedItem().toString().contains("%"))
+			{
+				double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+				
+				o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+				o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
+			}					
+			else if (comboResolution.getSelectedItem().toString().contains("x"))
+			{
+				o = comboResolution.getSelectedItem().toString().split("x");
+			}
+			else
+				return false;
+			
+			int iw = Integer.parseInt(i[0]);
+	    	int ih = Integer.parseInt(i[1]);          	
+	    	int ow = Integer.parseInt(o[0]);
+	    	int oh = Integer.parseInt(o[1]);        	
+	    	float ir = (float) iw / ih;
+	    	float or = (float) ow / oh;
+	
+	    	//Ratio comparison
+	    	if (ir != or && caseInAndOut.isSelected() 
+	    	&& (VideoPlayer.caseAddTimecode.isSelected()
+	    	|| VideoPlayer.caseShowTimecode.isSelected()
+	    	|| VideoPlayer.caseAddText.isSelected()
+	    	|| VideoPlayer.caseShowFileName.isSelected()    	
+	    	|| VideoPlayer.caseAddWatermark.isSelected()))
+	    	{
+	    		FFMPEG.isGPUCompatible = false;
+	    		return false;
+	    	}
+	    	else
+	    		return true;
+	    	
+		}
+		catch (Exception e)
+    	{
+    		FFMPEG.isGPUCompatible = false;
+    		return false;
+    	}
+	
+	}
+	
 	private static String setCodec() {
 		
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "AV1":
 		
-				return " -c:v libsvtav1";
+				if (caseAccel.isSelected())
+				{
+					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					{
+						return " -c:v av1_nvenc";	
+					}
+					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+					{
+						return " -c:v av1_qsv";	
+					}				
+				}
+		    	else
+		        	return " -c:v libsvtav1";
 				
 			case "Blu-ray":
 				
@@ -1158,7 +1306,7 @@ public class VideoEncoders extends Shutter {
 		return "";		
 	}
 
-	private static String setPixelFormat() {
+	private static String setPixelFormat(String filterComplex) {
 		
 		switch (comboFonctions.getSelectedItem().toString())
 		{
@@ -1202,8 +1350,23 @@ public class VideoEncoders extends Shutter {
 						yuv += "12le";
 					}
 				}
-		        
-		        return " -pix_fmt " + yuv;
+				else
+				{
+					//Switching to GPU nv12 or p010 to avoid useless pix_fmt conversion
+					if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+					{
+						if (filterComplex.contains("format=p010"))
+						{
+							return " -pix_fmt " + yuv;
+						}
+						else
+							return "";				
+					}
+					else		        
+						return " -pix_fmt " + yuv;
+				}
+				
+				return " -pix_fmt " + yuv;
 			
 			case "VP8":
 
@@ -1212,7 +1375,15 @@ public class VideoEncoders extends Shutter {
 					return " -auto-alt-ref 0 -pix_fmt yuva420p";
 		        }
 				else				
-					return " -pix_fmt yuv420p";
+				{
+					//Switching to GPU nv12 to avoid useless pix_fmt conversion
+					if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+					{
+						return "";				
+					}
+					else
+						return " -pix_fmt yuv420p";
+				}
 		        
 			case "MPEG-2":
 				
@@ -1226,7 +1397,13 @@ public class VideoEncoders extends Shutter {
 			case "WMV":
 			case "Xvid":
 				
-				return " -pix_fmt yuv420p";
+				//Switching to GPU nv12 to avoid useless pix_fmt conversion
+				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+				{
+					return "";				
+				}
+				else		        
+					return " -pix_fmt yuv420p";
 				
 			case "MJPEG":
 				
@@ -1449,6 +1626,7 @@ public class VideoEncoders extends Shutter {
 			Wetransfer.addFile(new File(output + "/" + fileName.replace(fileName.substring(fileName.lastIndexOf(".")), "_AS11" + comboFilter.getSelectedItem().toString())));
 		else
 			Wetransfer.addFile(fileOut);
+		
 		Ftp.sendToFtp(fileOut);
 		FunctionUtils.copyFile(fileOut);
 		

@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ public class Picture extends Shutter {
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
 					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
-					
+									
 					if (file == null)
 						break;
 		            
@@ -110,7 +110,17 @@ public class Picture extends Shutter {
 						
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
-							
+
+						//No GPU acceleration when using this function
+						FFMPEG.isGPUCompatible = false;
+						
+						//Scaling									
+			        	if (VideoEncoders.setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
+			        	{
+			        		filterComplex = Image.setScale(filterComplex, false);	
+			        		filterComplex = Image.setPad(filterComplex, false);		
+			        	}
+						
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
 						
@@ -151,13 +161,17 @@ public class Picture extends Shutter {
 						filterComplex = Overlay.setWatermark(filterComplex);
 						
 		            	//Timecode
-						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""));			        
-						
+						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""));			         
+	
 						//Crop
 				        filterComplex = Image.setCrop(filterComplex);
-						
-				        //Padding
-						filterComplex = Image.setPad(filterComplex, false);	           				
+				        
+				        //Scaling
+				        if (VideoEncoders.setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode		
+			        	{
+				        	filterComplex = Image.setScale(filterComplex, false);
+				        	filterComplex = Image.setPad(filterComplex, false);		
+			        	}
 						
 						//filterComplex
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, "");		

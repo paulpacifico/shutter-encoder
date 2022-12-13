@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package settings;
 
 import application.Shutter;
 import application.VideoPlayer;
+import library.FFPROBE;
 
 public class BitratesAdjustement extends Shutter {
 	
@@ -47,7 +48,26 @@ public class BitratesAdjustement extends Shutter {
 			if (filterComplex != "")
 				filterComplex += "[w];[w]";
 			
-    		filterComplex += Shutter.croppingValues;
+			//IMPORTANT
+			float imageRatio = 1.0f;
+			
+			int ow = FFPROBE.imageWidth;  
+			
+			if (Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
+			{
+				String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");
+				
+	        	ow = Integer.parseInt(s[0]);   
+	        	
+				imageRatio = (float) FFPROBE.imageWidth / ow;
+			}
+			
+			int cropWidth = Math.round((float) Integer.parseInt(VideoPlayer.textCropWidth.getText()) / imageRatio);
+			int cropHeight = Math.round((float) Integer.parseInt(VideoPlayer.textCropHeight.getText()) / imageRatio);
+			int cropX = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosX.getText()) / imageRatio);
+			int cropY = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosY.getText()) / imageRatio);
+
+    		filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
 		}
     	
     	return filterComplex;

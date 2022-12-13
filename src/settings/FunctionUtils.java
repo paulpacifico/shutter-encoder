@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2022 PACIFICO PAUL
+* Copyright (C) 2023 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ public class FunctionUtils extends Shutter {
 		btnStart.setEnabled(false);	
 		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
-		
+				
 		if (caseGenerateFromDate.isSelected()
 		|| comboFonctions.getSelectedItem().toString().equals("JPEG")
 		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
@@ -87,11 +87,11 @@ public class FunctionUtils extends Shutter {
 				Thread.sleep(100);
 			}						 
 			while (EXIFTOOL.isRunning);
-			
+			/*
 			if (analyzeError(file.toString()))
-				return false;
+				return false;*/
 		}
-		
+				
 		//inputDeviceIsRunning is already analyzed
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
@@ -101,6 +101,9 @@ public class FunctionUtils extends Shutter {
 			 	Thread.sleep(100);
 			 }
 			 while (FFPROBE.isRunning);
+			 
+			//Check GPU
+			FFMPEG.checkGPUCapabilities(file.toString());
 			 
 			 if (analyzeError(file.toString()))
 				 return false;
@@ -172,12 +175,11 @@ public class FunctionUtils extends Shutter {
 	}
 
 	public  static boolean analyzeError(String file)
-	{
-		 if (FFMPEG.error)
+	{						
+		 if (FFMPEG.error)// || EXIFTOOL.error || DCRAW.error || DVDAUTHOR.error || MKVMERGE.error || TSMUXER.error || XPDF.error)
 		 {
-				FFMPEG.errorList.append(file);
-			    FFMPEG.errorList.append(System.lineSeparator());
-				return true;
+		 	errorList = new StringBuilder(file + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
+			return true;
 		 }
 		 return false;
 	}
@@ -624,7 +626,6 @@ public class FunctionUtils extends Shutter {
 				case ".bmp":
 				case ".psd":
 					
-					Shutter.progressBar1.setMaximum(10);
 					return " -loop 1 -t " + Settings.txtImageDuration.getText();
 			}
 		}
@@ -731,15 +732,13 @@ public class FunctionUtils extends Shutter {
 			case "VP9":
 				
 				if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
-				{
-					if (filterComplex != "") filterComplex += ",";
-						
+				{						
 					if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
 					{
-						filterComplex += "format=p010,hwupload";
+						filterComplex += ",format=p010,hwupload";
 					}
 					else
-						filterComplex += "format=nv12,hwupload";
+						filterComplex += ",format=nv12,hwupload";
 				}
 				
 				break;
@@ -749,7 +748,7 @@ public class FunctionUtils extends Shutter {
 			audio = "";
 		
         if (filterComplex != "")
-        {	   	   
+        {	          	
         	//Si une des cases est sélectionnée alors il y a déjà [0:v]
         	if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
         		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
@@ -900,9 +899,13 @@ public class FunctionUtils extends Shutter {
 		&& comboAudio8.getSelectedIndex() == 16)
 		{
 			if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+			{
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
+			}
 			else if (filterComplex != "")
+			{
 				mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
+			}
 			else
 				mapping += " -map v:0" + audio;
 			
@@ -1225,7 +1228,7 @@ public class FunctionUtils extends Shutter {
 	public static boolean cleanFunction(String fileName, File fileOut, String output) {
 		
 		String extension = "";
-		
+
 		if (fileName != null && fileName != "" && fileName.contains("."))
 		{
 			extension = fileName.substring(fileName.lastIndexOf("."));
@@ -1234,8 +1237,8 @@ public class FunctionUtils extends Shutter {
 		//Errors
 		if (FFMPEG.error || fileOut.exists() && fileOut.length() == 0 && caseCreateSequence.isSelected() == false && extension.equals(".pdf") == false)
 		{
-			FFMPEG.errorList.append(fileName);
-			FFMPEG.errorList.append(System.lineSeparator());
+			errorList.append(fileName + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
+			FFMPEG.errorLog.setLength(0);
 			
 			try {
 				fileOut.delete();
