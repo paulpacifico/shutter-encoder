@@ -139,7 +139,9 @@ public class Rewrap extends Shutter {
 						//Audio
 						String audio = setAudio();
 						String audioMapping = setAudioMapping();
-						
+
+						//Must be transcoded
+						String mustTranscode = setTranscode();
 						//InOut		
 						InputAndOutput.getInputAndOutput();
 																
@@ -184,7 +186,7 @@ public class Rewrap extends Shutter {
 								concat = " -noaccurate_seek";
 														
 							//Command
-							String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
+							String cmd = " -avoid_negative_ts make_zero "+ mustTranscode + audio + timecode + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 							
 							do
@@ -195,7 +197,7 @@ public class Rewrap extends Shutter {
 							
 							if (FFMPEG.error)
 							{
-								cmd = " -avoid_negative_ts make_zero -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
+								cmd = " -avoid_negative_ts make_zero "+ mustTranscode + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
 								FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 								
 								do
@@ -336,7 +338,20 @@ public class Rewrap extends Shutter {
 		
 		return "";
 	}
-	
+
+	private static String setTranscode() {
+		//Certain image formats that cannot be simply rewrap directly,
+		//They should not use -c:v copy parameter.
+
+		if (comboFilter.getSelectedItem().toString().equals(".jpg")
+		|| comboFilter.getSelectedItem().toString().equals(".png")
+		|| comboFilter.getSelectedItem().toString().equals(".webp")
+		|| comboFilter.getSelectedItem().toString().equals(".psd") ){
+			return "";
+		}
+		else
+			return " -c:v copy";
+	}
 	private static String setMapSubtitles() {
 
 		if (VideoPlayer.caseAddSubtitles.isSelected())
