@@ -22,7 +22,6 @@ package library;
 import java.awt.Cursor;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -274,7 +273,12 @@ public static int gopSpace = 124;
 							 //Codec vidéo
 							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
 							videoCodec = splitVideo[1].replace(",", "");
-
+						
+							if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
+							{
+								videoCodec = "dnxhr";
+							}
+							
 							//Création de la waveform pour le lecteur vidéo
 				            audioOnly = false;
 							 
@@ -356,7 +360,7 @@ public static int gopSpace = 124;
 			            	}
 			                else
 			                {
-					            if (line.contains("tbr")) 
+					            if (line.contains("tbr") && line.contains("attached pic") == false) 
 					            {
 					                String str[]= line.split("tbr");
 					                
@@ -492,7 +496,7 @@ public static int gopSpace = 124;
 				}		
 				process.waitFor();	
 							
-				} catch (IOException | InterruptedException e) {
+				} catch (Exception e) {					
 					FFMPEG.error = true;
 				} finally {
 					isRunning = false;
@@ -649,8 +653,8 @@ public static int gopSpace = 124;
 						btnStart.setEnabled(true);
 					}
 						
-			}//RUN				
-		});//THREAD		
+			}			
+		});
 		processFrameData.start();
 	}
 	

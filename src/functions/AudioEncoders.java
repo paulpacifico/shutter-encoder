@@ -276,7 +276,7 @@ public class AudioEncoders extends Shutter {
 							Thread.sleep(100);
 						}
 						while(FFMPEG.runProcess.isAlive());
-	
+							
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
 						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())

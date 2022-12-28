@@ -64,7 +64,16 @@ public class AdvancedFeatures extends Shutter {
 					 return " -preset " + Shutter.comboForceSpeed.getSelectedItem().toString();
 				 }
 				 else
-					 return " -preset 8";		
+				 {
+					 if (caseAccel.isSelected())
+					 {
+						 return " -preset 4";
+					 }
+					 else
+					 {
+						 return " -preset 8";
+					 }
+				 }
 			
 			case "H.264":
 			case "H.265":
@@ -670,6 +679,15 @@ public class AdvancedFeatures extends Shutter {
 				if (caseFastDecode.isSelected())
 				{
 					flags += " -svtav1-params fast-decode=1";
+					
+					if (caseForceTune.isSelected())
+					{
+						flags += ",tune=" + comboForceTune.getSelectedIndex();
+					}
+				}
+				else if (caseForceTune.isSelected())
+				{
+					flags += " -svtav1-params tune=" + comboForceTune.getSelectedIndex();
 				}
 				
 			case "H.264":

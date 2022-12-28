@@ -92,45 +92,65 @@ public class AudioNormalization extends Shutter {
 							if (fileOut == null)
 								continue;						
 						}
-															
-						//Command
+								
+						//Loudness analysis
 						String cmd;
-						if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-							cmd =  " -vn" + filterComplex + " -f null -";					
-						else
-							cmd =  " -vn" + filterComplex + " -f null -" + '"';	
-						
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd);		
-						
-						do
-						{
-							Thread.sleep(100);
+						if (caseTruePeak.isSelected() == false && caseLRA.isSelected() == false)
+						{							
+							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+								cmd =  " -vn" + filterComplex + " -f null -";					
+							else
+								cmd =  " -vn" + filterComplex + " -f null -" + '"';	
+							
+							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd);		
+							
+							do
+							{
+								Thread.sleep(100);
+							}
+							while(FFMPEG.runProcess.isAlive());
 						}
-						while(FFMPEG.runProcess.isAlive());
 						
 						lblCurrentEncoding.setText(fileName);	
 						
 						if (cancelled == false)
 						{
+							//Simple volume compensation
+							String normalization = "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";		
+							
+							//Using LoudNorm filter
+							if (caseTruePeak.isSelected() && caseLRA.isSelected())
+							{
+								normalization = "loudnorm=i=" + comboFilter.getSelectedItem().toString().replace(" LUFS", "") + ":tp=" + comboTruePeak.getSelectedItem().toString().replace(" dBFS", "") + ":lra=" + comboLRA.getSelectedItem().toString().replace(" LU", "");
+							}
+							else if (caseTruePeak.isSelected())
+							{
+								normalization = "loudnorm=i=" + comboFilter.getSelectedItem().toString().replace(" LUFS", "") + ":tp=" + comboTruePeak.getSelectedItem().toString().replace(" dBFS", "");
+							}
+							else if (caseLRA.isSelected())
+							{
+								normalization = "loudnorm=i=" + comboFilter.getSelectedItem().toString().replace(" LUFS", "") + ":lra=" + comboLRA.getSelectedItem().toString().replace(" LU", "");
+							}
+							
 							//Command
 							if (FFPROBE.stereo)
 							{
-								cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy" + audio + " -y ";
+								cmd = " -af " + normalization + " -c:v copy -c:s copy" + audio + " -y ";
 							}
 						    else if (FFPROBE.channels > 1)	
 						    {
 						    	if (FFPROBE.channels >= 4)	    		
 						    	{
 									if (audioTracks == 0)
-										cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
+										cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
 							    	else
-							    		cmd = " -filter_complex " + '"' + "[0:a:2]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a3];[0:a:3]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a4]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
+							    		cmd = " -filter_complex " + '"' + "[0:a:2]" + normalization + "[a3];[0:a:3]" + normalization + "[a4]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
 						    	}
 						    	else
-						    		cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
+						    		cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
 						    }	
 						    else
-						    	cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy" + audio + " -y ";
+						    	cmd = " -af " + normalization + " -c:v copy -c:s copy" + audio + " -y ";
 	
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							
 							
@@ -144,22 +164,22 @@ public class AudioNormalization extends Shutter {
 							{
 								if (FFPROBE.stereo)
 								{
-									cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
+									cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								}
 							    else if (FFPROBE.channels > 1)	
 							    {
 							    	if (FFPROBE.channels >= 4)	    		
 							    	{
 										if (audioTracks == 0)
-											cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+											cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 								    	else
-								    		cmd = " -filter_complex " + '"' + "[0:a:2]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a3];[0:a:3]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a4]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+								    		cmd = " -filter_complex " + '"' + "[0:a:2]" + normalization + "[a3];[0:a:3]" + normalization + "[a4]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    	}
 							    	else
-							    		cmd = " -filter_complex " + '"' + "[0:a:0]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a1];[0:a:1]volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB[a2]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+							    		cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    }	
 							    else
-							    	cmd = " -filter_complex volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
+							    	cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								
 								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
 							}
@@ -195,7 +215,7 @@ public class AudioNormalization extends Shutter {
 	
 		if (FFPROBE.stereo)
 		{
-			return " -filter_complex ebur128=peak=true";
+			return " -af ebur128=peak=true";
 		}
 	    else if (FFPROBE.channels > 1)	
 	    {
@@ -212,7 +232,7 @@ public class AudioNormalization extends Shutter {
 	    		return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
 	    }
 	    else
-	    	return " -filter_complex ebur128=peak=true";
+	    	return " -af ebur128=peak=true";
 	}
 
 	private static String setAudio(String ext) {		

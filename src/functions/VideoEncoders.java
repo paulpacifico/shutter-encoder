@@ -891,6 +891,7 @@ public class VideoEncoders extends Shutter {
 								switch (comboFonctions.getSelectedItem().toString())
 								{
 									case "DNxHD":
+									case "XDCAM HD422":
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																												

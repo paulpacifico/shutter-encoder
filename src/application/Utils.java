@@ -66,7 +66,6 @@ import org.w3c.dom.NodeList;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatInspector;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
@@ -2140,21 +2139,11 @@ public class Utils extends Shutter {
 						}
 					}
 				}	
-								
-				FlatLaf.setup( new FlatDarkLaf() );
-				
-			} catch (Exception e) {
-				try {
-				    FlatLaf.setup( new FlatLightLaf() );
-				} catch( Exception ex ) {}
-			}
+
+			} catch (Exception e) {}
 		}
-		else
-		{
-			try {
-				FlatLaf.setup( new FlatLightLaf() );
-			} catch( Exception ex ) {}
-		}
+		
+		FlatLaf.setup( new FlatDarkLaf() );
 		
 		int R = Math.max(0, Math.min(255, themeColor.getRed() + 25));
 		int G = Math.max(0, Math.min(255, themeColor.getGreen() + 25));
@@ -2173,20 +2162,20 @@ public class Utils extends Shutter {
 		UIManager.put("TextComponent.arc", 10);
 		UIManager.put("Component.arc", 10);
 		
-		UIManager.put("Component.borderColor", new Color(30,30,30));
-		UIManager.put("Component.disabledBorderColor", new Color(30,30,30));
+		UIManager.put("Component.borderColor", new Color(35,35,35));
+		UIManager.put("Component.disabledBorderColor", new Color(35,35,35));
 		
-		UIManager.put("Button.startBorderColor", new Color(30,30,30));
-		UIManager.put("Button.endBorderColor", new Color(30,30,30));
+		UIManager.put("Button.startBorderColor", new Color(35,35,35));
+		UIManager.put("Button.endBorderColor", new Color(35,35,35));
 		UIManager.put("Button.startBackground", new Color(60,60,60));
 		UIManager.put("Button.endBackground", new Color(60,60,60));
-		UIManager.put("Button.disabledBorderColor", new Color(30,30,30));
+		UIManager.put("Button.disabledBorderColor", new Color(35,35,35));
 		UIManager.put("Button.disabledBackground", new Color(60,60,60));
 		UIManager.put("Button.foreground", new Color(245,245,245));
 		UIManager.put("Button.default.foreground", new Color(245,245,245));
 		UIManager.put("Button.default.startBackground", new Color(60,60,60));
 		UIManager.put("Button.default.endBackground", new Color(60,60,60));
-		UIManager.put("Button.default.borderColor", new Color(30,30,30));
+		UIManager.put("Button.default.borderColor", new Color(35,35,35));
 						
 		UIManager.put("ComboBox.background", new Color(60,60,60));		
 		UIManager.put("ComboBox.foreground", new Color(245,245,245));
@@ -2195,7 +2184,9 @@ public class Utils extends Shutter {
 		UIManager.put("ComboBox.buttonBackground", new Color(60,60,60));	
 		UIManager.put("ComboBox.buttonEditableBackground", new Color(60,60,60));	
 		UIManager.put("ComboBox.selectionBackground", themeColor);
-
+		UIManager.put("ComboBox.popupBackground", new Color(50,50,50));
+		UIManager.put("ComboBox.buttonArrowColor", new Color(245,245,245));
+		
 		UIManager.put("MenuItem.background", new Color(60,60,60));		
 		UIManager.put("MenuItem.foreground", new Color(245,245,245));
 		UIManager.put("MenuItem.selectionBackground", themeColor);
@@ -2204,13 +2195,13 @@ public class Utils extends Shutter {
 		UIManager.put("CheckBoxMenuItem.foreground", new Color(245,245,245));
 		UIManager.put("CheckBoxMenuItem.selectionBackground", themeColor);
 		
-		UIManager.put("CheckBox.icon.borderColor", new Color(30,30,30));		
+		UIManager.put("CheckBox.icon.borderColor", new Color(35,35,35));		
 		UIManager.put("CheckBox.icon.background", new Color(60,60,60));
 		UIManager.put("CheckBox.icon.disabledBorderColor", new Color(60,60,60));	
 		UIManager.put("CheckBox.icon.disabledBackground", new Color(60,60,60));	
-		UIManager.put("CheckBox.icon.focusedBorderColor", new Color(30,30,30));
+		UIManager.put("CheckBox.icon.focusedBorderColor", new Color(35,35,35));
 		UIManager.put("CheckBox.icon.focusedBackground", new Color(60,60,60));
-		UIManager.put("CheckBox.icon.selectedBorderColor", new Color(30,30,30));
+		UIManager.put("CheckBox.icon.selectedBorderColor", new Color(35,35,35));
 		
 		UIManager.put("TableHeader.foreground", new Color(245,245,245));
 		UIManager.put("Table.foreground", new Color(245,245,245));
@@ -2242,7 +2233,7 @@ public class Utils extends Shutter {
 					
 		UIManager.put("MenuBar.foreground", new Color(245,245,245));
 
-		UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(30,30,30)));	
+		UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(35,35,35)));	
 		UIManager.put("PopupMenu.background", new Color(45,45,45));
 		
 		UIManager.put("Panel.selectionForeground", Color.WHITE);
@@ -2264,16 +2255,20 @@ public class Utils extends Shutter {
 		UIManager.put("TabbedPane.hoverColor", new Color(45, 45, 45));
 		UIManager.put("TabbedPane.highlight", new Color(45, 45, 45));
 		UIManager.put("TabbedPane.underlineColor", new Color(45, 45, 45));
+		UIManager.put("TabbedPane.inactiveUnderlineColor", new Color(45, 45, 45));
 		UIManager.put("TabbedPane.disabledUnderlineColor", new Color(45, 45, 45));
 		UIManager.put("TabbedPane.contentAreaColor", new Color(45, 45, 45));
-		UIManager.put("TabbedPane.foreground", new Color(245,245,245));
+		UIManager.put("TabbedPane.foreground", new Color(245,245,245));	
 		
+		
+		UIManager.put("CheckBox.icon.focusWidth", 0);
 		UIManager.put("CheckBox.icon.checkmarkColor", themeColor);	
 		UIManager.put("CheckBox.icon.hoverBorderColor", highlightColor);
 		UIManager.put("CheckBox.icon.selectedFocusedBorderColor", highlightColor);
 		UIManager.put("CheckBox.icon.disabledCheckmarkColor", new Color(100, 100, 100));	
 		UIManager.put("CheckBox.foreground" , new Color(245,245,245));
 		UIManager.put("CheckBox.background" , new Color(50,50,50,0));
+		UIManager.put("CheckBox.icon.focusedBackground", "null");
 		UIManager.put("RadioButton.icon.centerDiameter", 9);
 		
 		UIManager.put("ProgressBar.background" , new Color(40, 40, 40));
