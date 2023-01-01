@@ -294,11 +294,29 @@ public class AudioSettings extends Shutter {
 		    	{			    	
 			    	if (lblAudioMapping.getText().equals("Multi"))
 			    	{
+			    		String mapping = "";
+			    		if (comboAudio1.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
+						if (comboAudio2.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
+						if (comboAudio3.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
+						if (comboAudio4.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
+						if (comboAudio5.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
+						if (comboAudio6.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
+						if (comboAudio7.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
+						if (comboAudio8.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+						
 			    		if (transitions != "")
-				    		transitions = " -filter:a " + '"' + transitions + '"';
+			    			transitions = " -filter:a " + '"' + transitions + '"';
 			    		
 				    	FFPROBE.stereo = false; //permet de contourner le split audio				    	
-				    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + transitions + " -map a:0";
+				    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + transitions + mapping;
 			    	}
 			    	else
 			    	{			    		

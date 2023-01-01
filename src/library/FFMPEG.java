@@ -1532,13 +1532,13 @@ public static StringBuilder errorLog = new StringBuilder();
 			firstInput = false;
 				
 		//Get the duration
-	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && firstInput)
+	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && line.contains("Segment-Durations-Ms") == false && firstInput)
 		{	    	
 			String str = line.substring(line.indexOf(":") + 2);
 			String[] split = str.split(",");	 
 	
 			String ffmpegTime = split[0].replace(".", ":");	  
-					
+			
 			if (caseEnableSequence.isSelected())
 			{
 				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
