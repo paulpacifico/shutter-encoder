@@ -4515,6 +4515,7 @@ public class Shutter {
 				}	
 				
 				changeFilters();
+				FFPROBE.setFilesize();
 			}
 		  }
 			
@@ -5954,6 +5955,8 @@ public class Shutter {
 					comboHDRvalue.setVisible(false);
 					lblHDR.setVisible(false);
 				}
+				
+				FFPROBE.setFilesize();
 			}
 			
 		});
@@ -6070,6 +6073,7 @@ public class Shutter {
 					lblHDR.setVisible(false);
 				}
 
+				FFPROBE.setFilesize();
 			}
 		
 		});
@@ -9312,6 +9316,8 @@ public class Shutter {
 					comboConform.setEnabled(false);
 					comboFPS.setEnabled(false);
 				}
+				
+				FFPROBE.setFilesize();
 			}
 
 		});
@@ -9345,6 +9351,15 @@ public class Shutter {
 		comboFPS.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		comboFPS.setEditable(true);
 		comboFPS.setSize(50, 16);
+		
+		comboFPS.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FFPROBE.setFilesize();				
+			}
+			
+		});
 		
 		lblIsConform = new JLabel(Shutter.language.getProperty("fps"));
 		lblIsConform.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -9615,8 +9630,8 @@ public class Shutter {
 							if (lblVBR.getText().equals("CBR") || lblVBR.getText().equals("CQ") && comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.arch").equals("amd64"))
 							{								
 								lblVBR.setText("VBR");
-								debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500" }));
-								debitVideo.setSelectedIndex(9);
+								debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", "auto" }));
+								debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);
 								lblVideoBitrate.setText(language.getProperty("lblVideoBitrate"));
 								lblKbsH264.setVisible(true);
 								h264lines.setVisible(true);
@@ -10464,8 +10479,8 @@ public class Shutter {
 		debitVideo = new JComboBox<String>();
 		debitVideo.setName("debitVideo");
 		debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000",
-				"15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500" }));
-		debitVideo.setSelectedIndex(9);
+				"15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", "auto" }));
+		debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);
 		debitVideo.setMaximumRowCount(20);
 		debitVideo.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		debitVideo.setEditable(true);
@@ -10796,8 +10811,8 @@ public class Shutter {
 				else
 				{
 					lblVBR.setText("VBR");
-					debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500" }));
-					debitVideo.setSelectedIndex(9);
+					debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", "auto" }));
+					debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);
 					lblVideoBitrate.setText(language.getProperty("lblVideoBitrate"));
 					lblKbsH264.setVisible(true);
 					h264lines.setVisible(true);
@@ -10878,8 +10893,8 @@ public class Shutter {
 				textF.setEnabled(true);
 				comboResolution.setEnabled(true);
 				debitVideo.setEnabled(true);
-				debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500" }));
-				debitVideo.setSelectedIndex(9);
+				debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", "auto" }));
+				debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);
 				bitrateSize.setEnabled(true);
 				bitrateSize.setText("2000");
 				lblVBR.setText("VBR");
@@ -13492,18 +13507,6 @@ public class Shutter {
 							grpAdvanced.add(caseOPATOM);
 							
 						} else if ("H.264".equals(function) || "H.265".equals(function)) {
-
-							if (action)
-							{
-								if ("H.264".equals(function))
-								{
-									debitVideo.setSelectedIndex(8);
-								}
-								else if ("H.265".equals(function))
-								{
-									debitVideo.setSelectedIndex(9);
-								}
-							}
 							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));			
 							if (subtitlesBurn)
@@ -13890,27 +13893,7 @@ public class Shutter {
 							
 						} else if ("WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function) || "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function) || "OGV".equals(function)
 								|| "MJPEG".equals(function) || "Xvid".equals(function)) {
-							
-							if (action)
-							{
-								if ("WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function) || "Xvid".equals(function) || "MJPEG".equals(function) || "OGV".equals(function))
-								{
-									debitVideo.setSelectedIndex(7);
-								}
-								else if ("VP8".equals(function))
-								{
-									debitVideo.setSelectedIndex(8);
-								}
-								else if ("VP9".equals(function))
-								{
-									debitVideo.setSelectedIndex(9);
-								}
-								else if ("AV1".equals(function))
-								{
-									debitVideo.setSelectedIndex(10);
-								}
-							}
-							
+														
 							addToList.setText(language.getProperty("filesVideoOrPicture"));	
 							
 							if (subtitlesBurn)
@@ -13978,8 +13961,8 @@ public class Shutter {
 								
 								if (lblVBR.getText().equals("CQ")) //Si la fonction ne prend pas en charge CQ
 								{
-									debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500" }));
-									debitVideo.setSelectedIndex(9);
+									debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", "auto" }));
+									debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);
 									lblVideoBitrate.setText(language.getProperty("lblVideoBitrate"));
 									lblKbsH264.setVisible(true);
 									h264lines.setVisible(true);
