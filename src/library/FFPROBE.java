@@ -34,6 +34,7 @@ import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
+import settings.FunctionUtils;
 
 public class FFPROBE extends Shutter {
 	
@@ -973,6 +974,24 @@ public static int gopSpace = 124;
 								Thread.sleep(100);
 							} while (processData.isAlive()); 
 						}
+												
+						if (caseEnableSequence.isSelected() == false)
+						{
+							String extension =  lblH264.getText().substring(lblH264.getText().lastIndexOf("."));
+							switch (extension)
+							{
+								case ".jpg":
+								case ".jpeg":
+								case ".png":
+								case ".tif":
+								case ".tiff":
+								case ".tga":
+								case ".bmp":
+								case ".psd":
+									
+									totalLength = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
+							}
+						}
 						
 						if (totalLength != 0 && inputDeviceIsRunning == false)
 						{           		
@@ -984,24 +1003,25 @@ public static int gopSpace = 124;
 			    					Shutter.debitVideo.setSelectedItem(38000);
 			    				else
 			    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
-			    		    }	
+		    		    	}	
 			         		
-				        	 NumberFormat formatter = new DecimalFormat("00");
+				        	NumberFormat formatter = new DecimalFormat("00");
 			
-				             textH.setText(formatter.format((totalLength) / 3600000));
-				             textM.setText(formatter.format(((totalLength) / 60000) % 60) );
-				             textS.setText(formatter.format((totalLength / 1000) % 60));				        
-				             textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
+				            textH.setText(formatter.format((totalLength) / 3600000));
+				            textM.setText(formatter.format(((totalLength) / 60000) % 60) );
+				            textS.setText(formatter.format((totalLength / 1000) % 60));				        
+				            textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
 				             			             
-				             if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
-					     			VideoPlayer.totalDuration();
+				            if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
+					     		VideoPlayer.totalDuration();
 				             
-				             setFilesize();
-				             lblH264.setVisible(true);
+				            setFilesize();
+				            lblH264.setVisible(true);
 						}
 					}
 					
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					System.out.println(e);				}
 				finally {
 					calcul = false;
 					frame.setCursor(Cursor.getDefaultCursor());
@@ -1041,7 +1061,7 @@ public static int gopSpace = 124;
 		{
 			if (isLocked)
 			{
-				 //Injection du débit
+				 //Set Bitrate
 				int h = Integer.parseInt(textH.getText());
 				int min = Integer.parseInt(textM.getText());
 				int sec = Integer.parseInt(textS.getText());
@@ -1054,7 +1074,7 @@ public static int gopSpace = 124;
 			}
 			else
 			{
-		        //Injection de la taille
+		        //Set Filesize
 				int h = Integer.parseInt(textH.getText());
 				int min = Integer.parseInt(textM.getText());
 				int sec = Integer.parseInt(textS.getText());
@@ -1063,7 +1083,13 @@ public static int gopSpace = 124;
 				if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
 					audio = 1536;
 				
-				int video =  Integer.parseInt(debitVideo.getSelectedItem().toString());
+				Integer video = FunctionUtils.setVideoBitrate();
+				
+				if (debitVideo.getSelectedItem().equals("auto") == false)
+				{
+					video = Integer.parseInt(debitVideo.getSelectedItem().toString());
+				}
+								
 				float resultVideo = (float) video / 8 / 1024;
 				float resultAudio =  (float) (audio*multi) / 8 / 1024;
 				float resultatdebit = (resultVideo  + resultAudio) * ( (h * 3600)+(min * 60)+sec);

@@ -2021,10 +2021,10 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		String[] t = time.split(":");
 
-		int heures =Integer.parseInt(t[0]);
-		int minutes =Integer.parseInt(t[1]);
-		int secondes =Integer.parseInt(t[2]);
-		int images =Integer.parseInt(t[3]);
+		int heures = Integer.parseInt(t[0]);
+		int minutes = Integer.parseInt(t[1]);
+		int secondes = Integer.parseInt(t[2]);
+		int images = Integer.parseInt(t[3]);
 		images = (images / 40);
 		
 		int totalSecondes = (heures * 3600) + (minutes * 60) +  secondes;  
