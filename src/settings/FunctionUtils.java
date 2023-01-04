@@ -699,7 +699,7 @@ public class FunctionUtils extends Shutter {
 				framerate = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
 			}
 			
-			int bitDepth = FFPROBE.imageDepth;
+			int bitDepth = 8;
 			if (caseColorspace.isSelected())
 			{
 				if (comboColorspace.getSelectedItem().toString().contains("10bits"))
@@ -710,8 +710,6 @@ public class FunctionUtils extends Shutter {
 				{
 					bitDepth = 12;
 				}
-				else
-					bitDepth = 8;
 			}
 			
 			return (int) Math.round((float) (pixels * framerate * bitDepth * 2) / compValue);
