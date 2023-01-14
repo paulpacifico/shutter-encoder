@@ -69,6 +69,7 @@ public class FunctionUtils extends Shutter {
 	public static File OPAtomFolder;
 	public static String silentTrack = "";
 	public static int mergeDuration = 0;
+	public static boolean autoBitrateMode;
 	private static StringBuilder mailFileList = new StringBuilder();
 	
 	public static boolean analyze(File file, boolean isRaw) throws InterruptedException {
@@ -105,8 +106,8 @@ public class FunctionUtils extends Shutter {
 			//Check GPU
 			FFMPEG.checkGPUCapabilities(file.toString());
 			 
-			 if (analyzeError(file.toString()))
-				 return false;
+			if (analyzeError(file.toString()))
+				return false;
 			 
 		}	 
 		else if (extension.toLowerCase().equals(".pdf"))
@@ -141,7 +142,7 @@ public class FunctionUtils extends Shutter {
 				Thread.sleep(100);
 			}
 			while (FFPROBE.isRunning);
-			 					 		 
+			 						
 			if (analyzeError(file.toString()))
 				return false;
 									
@@ -631,6 +632,93 @@ public class FunctionUtils extends Shutter {
 		}
 		
 		return "";
+	}
+	
+	public static int setVideoBitrate() {
+		
+		if (debitVideo.getSelectedItem().equals("auto"))
+		{
+			autoBitrateMode = true;
+			
+			//Compression ratio
+			//Setup: (1920*1080*25*8*2)/5000kbps = 165888	
+			String function = comboFonctions.getSelectedItem().toString();
+			Integer compValue = 165888; //5000kbps default
+			
+			if ("MJPEG".equals(function))
+			{
+				compValue = 16588; //50000kbps
+			}
+			else if ("MPEG-1".equals(function))
+			{
+				compValue = 33177; //250000kbps
+			}
+			else if ("WMV".equals(function))
+			{
+				compValue = 41472; //20000kbps
+			} 			 
+			else if ("MPEG-2".equals(function) || "Xvid".equals(function) || "OGV".equals(function))
+			{
+				compValue = 103680; //8000kbps
+			}
+			else if ("H.265".equals(function) || "VP9".equals(function))
+			{
+				compValue = 331776; //2500kbps
+			}
+			else if ("AV1".equals(function))
+			{
+				compValue = 414720; //2000kbps
+			}		
+						
+			int pixels = FFPROBE.imageWidth * FFPROBE.imageHeight;
+			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+			{  
+				String o[] = FFPROBE.imageResolution.split("x");
+							
+				if (comboResolution.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+					o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
+				}					
+				else if (comboResolution.getSelectedItem().toString().contains("x"))
+				{
+					o = comboResolution.getSelectedItem().toString().split("x");
+				}
+				         	
+	        	int ow = Integer.parseInt(o[0]);
+	        	int oh = Integer.parseInt(o[1]);        	
+
+				pixels = ow * oh;					
+			}		
+			
+			float framerate = FFPROBE.currentFPS;
+			if (caseConform.isSelected())
+			{
+				framerate = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
+			}
+			
+			int bitDepth = 8;
+			if (caseColorspace.isSelected())
+			{
+				if (comboColorspace.getSelectedItem().toString().contains("10bits"))
+				{
+					bitDepth = 10;
+				}
+				else if (comboColorspace.getSelectedItem().toString().contains("12bits"))
+				{
+					bitDepth = 12;
+				}
+			}
+			
+			return (int) Math.round((float) (pixels * framerate * bitDepth * 2) / compValue);
+		}
+		else
+		{
+			autoBitrateMode = false;
+			return Integer.parseInt(debitVideo.getSelectedItem().toString());
+		}
 	}
 	
 	public static String setStream() {

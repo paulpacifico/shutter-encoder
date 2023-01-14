@@ -85,7 +85,7 @@ import settings.Transitions;
  */
 
 public class VideoEncoders extends Shutter {
-
+	
 	public static void main(boolean encode) {
 		
 		Thread thread = new Thread(new Runnable() {	
@@ -312,7 +312,7 @@ public class VideoEncoders extends Shutter {
 						String codec = setCodec();
 						
 						//Bitrate
-						String bitrate = setBitrate();					
+						String bitrate = setBitrate();						
 
 						//Level
 						String profile = AdvancedFeatures.setProfile();
@@ -329,6 +329,12 @@ public class VideoEncoders extends Shutter {
 						//Interlace
 			            String options = AdvancedFeatures.setOptions();
 				        
+			            //Used with "options" string
+			            if (FunctionUtils.autoBitrateMode == true)
+						{
+							debitVideo.setSelectedItem("auto");
+						}
+			            
 						//Resolution
 						String resolution = "";						
 						switch (comboFonctions.getSelectedItem().toString())
@@ -891,6 +897,7 @@ public class VideoEncoders extends Shutter {
 								switch (comboFonctions.getSelectedItem().toString())
 								{
 									case "DNxHD":
+									case "XDCAM HD422":
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																												
@@ -1076,7 +1083,7 @@ public class VideoEncoders extends Shutter {
 				if (FFPROBE.currentFPS != 24.0 && FFPROBE.currentFPS != 23.98 && caseForcerProgressif.isSelected() == false)
 		        	interlace = ":tff=1";
 				
-				return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + debitVideo.getSelectedItem().toString() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";
+				return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";
 				
 			case "DVD":
 				
@@ -1417,16 +1424,18 @@ public class VideoEncoders extends Shutter {
 	
 	private static String setBitrate() {
 		
+		FunctionUtils.setVideoBitrate();
+		
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "AV1":
 			
 				if (lblVBR.getText().equals("CQ"))
 		        {
-		        	return " -crf " + debitVideo.getSelectedItem().toString();  
+		        	return " -crf " + FunctionUtils.setVideoBitrate();  
 		        }
 		        else
-		        	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
+		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k";
 
 			case "DVD":
 				
@@ -1462,35 +1471,35 @@ public class VideoEncoders extends Shutter {
 		    		String gpu = "";
 					if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
-						gpu = " -qp " + debitVideo.getSelectedItem().toString();
+						gpu = " -qp " + FunctionUtils.setVideoBitrate();
 					}
 					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{
-						gpu = " -global_quality " + debitVideo.getSelectedItem().toString();
+						gpu = " -global_quality " + FunctionUtils.setVideoBitrate();
 					}
 					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 					{
-						gpu = " -qp_i " + debitVideo.getSelectedItem().toString() + " -qp_p " + debitVideo.getSelectedItem().toString() + " -qp_b " + debitVideo.getSelectedItem().toString();        			
+						gpu = " -qp_i " + FunctionUtils.setVideoBitrate() + " -qp_p " + FunctionUtils.setVideoBitrate() + " -qp_b " + FunctionUtils.setVideoBitrate();        			
 					}
 					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 					{
-						gpu = " -q:v " + (31 - (int) Math.ceil((Integer.parseInt(debitVideo.getSelectedItem().toString()) * 31) / 51));
+						gpu = " -q:v " + (31 - (int) Math.ceil((FunctionUtils.setVideoBitrate() * 31) / 51));
 					}
 						
-		    		return " -crf " + debitVideo.getSelectedItem().toString() + gpu;          
+		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu;          
 		        }
 		        else
-		        	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
+		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k";
 				
 			case "VP8":
 			case "VP9":
 				
 				if (lblVBR.getText().equals("CQ"))
 		        {
-		        	return " -crf " + debitVideo.getSelectedItem().toString();   
+		        	return " -crf " + FunctionUtils.setVideoBitrate();   
 		        }
 		        else
-		        	return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
+		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k";
 				
 			case "MPEG-1":
 			case "MPEG-2":
@@ -1499,7 +1508,7 @@ public class VideoEncoders extends Shutter {
 			case "WMV":
 			case "Xvid":
 				
-			       return " -b:v " + debitVideo.getSelectedItem().toString() + "k";
+			       return " -b:v " + FunctionUtils.setVideoBitrate() + "k";
 				
 			case "DNxHD":
 				

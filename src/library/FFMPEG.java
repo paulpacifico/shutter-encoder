@@ -270,28 +270,27 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 	public static void checkForErrors(String line) {
 		
-		if (line.contains("Invalid data found when processing input") 
-				|| line.contains("No such file or directory")
-				|| line.contains("Invalid data found")
-				|| line.contains("No space left")
-				|| line.contains("does not contain any stream")
-				|| line.contains("Invalid argument")
-				|| line.contains("Error opening filters!")
-				|| line.contains("Error reinitializing filters!")
-				|| line.contains("matches no streams")
-				|| line.contains("Error while opening encoder")
-				|| line.contains("Decoder (codec none) not found")
-				|| line.contains("hwaccel initialisation returned error")
-				|| line.contains("Device setup failed for decoder")
-				|| line.contains("No device available for decoder")
-				|| line.contains("Error while decoding stream")
-				|| line.contains("Current pixel format is unsupported")
-				|| line.contains("Unknown encoder")
-				|| line.contains("Could not set video options")
-				|| line.contains("Could not find tag for codec")
-				|| line.contains("Input/output error")
-				|| line.contains("Operation not permitted")
-				|| line.contains("Permission denied"))
+		if (line.contains("No such file or directory")
+		|| line.contains("Invalid data found when processing input") && line.contains("unable to decode APP fields") == false //attached picture of an audio file
+		|| line.contains("No space left")
+		|| line.contains("does not contain any stream")
+		|| line.contains("Invalid argument")
+		|| line.contains("Error opening filters!")
+		|| line.contains("Error reinitializing filters!")
+		|| line.contains("matches no streams")
+		|| line.contains("Error while opening encoder")
+		|| line.contains("Decoder (codec none) not found")
+		|| line.contains("hwaccel initialisation returned error")
+		|| line.contains("Device setup failed for decoder")
+		|| line.contains("No device available for decoder")
+		|| line.contains("Error while decoding stream")
+		|| line.contains("Current pixel format is unsupported")
+		|| line.contains("Unknown encoder")
+		|| line.contains("Could not set video options")
+		|| line.contains("Could not find tag for codec")
+		|| line.contains("Input/output error")
+		|| line.contains("Operation not permitted")
+		|| line.contains("Permission denied"))
 		{
 			errorLog.append(line + System.lineSeparator());
 			error = true;
@@ -1110,6 +1109,18 @@ public static StringBuilder errorLog = new StringBuilder();
 							if (FFMPEG.error == false)
 								qsvAvailable = true;
 							
+							if (caseAccel.isSelected())
+							{								
+								if (comboAccel.getSelectedItem().equals("Intel Quick Sync")) //Cannot use CUDA decoding with QSV encoding
+								{
+									cudaAvailable = false;
+								}
+								else if (comboAccel.getSelectedItem().equals("Nvidia NVENC")) //Cannot use QSV decoding with NVENC encoding
+								{
+									qsvAvailable = false;
+								}
+							}								
+							
 							//Disable GPU if both are not available
 							if (cudaAvailable == false && qsvAvailable == false)
 								isGPUCompatible = false;
@@ -1521,13 +1532,13 @@ public static StringBuilder errorLog = new StringBuilder();
 			firstInput = false;
 				
 		//Get the duration
-	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && firstInput)
+	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && line.contains("Segment-Durations-Ms") == false && firstInput)
 		{	    	
 			String str = line.substring(line.indexOf(":") + 2);
 			String[] split = str.split(",");	 
 	
 			String ffmpegTime = split[0].replace(".", ":");	  
-					
+			
 			if (caseEnableSequence.isSelected())
 			{
 				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
@@ -2010,10 +2021,10 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		String[] t = time.split(":");
 
-		int heures =Integer.parseInt(t[0]);
-		int minutes =Integer.parseInt(t[1]);
-		int secondes =Integer.parseInt(t[2]);
-		int images =Integer.parseInt(t[3]);
+		int heures = Integer.parseInt(t[0]);
+		int minutes = Integer.parseInt(t[1]);
+		int secondes = Integer.parseInt(t[2]);
+		int images = Integer.parseInt(t[3]);
 		images = (images / 40);
 		
 		int totalSecondes = (heures * 3600) + (minutes * 60) +  secondes;  

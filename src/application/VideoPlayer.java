@@ -5007,7 +5007,7 @@ public class VideoPlayer {
 		
 		JLabel lblRGB = new JLabel(Shutter.language.getProperty("lblRGB"));
 		lblRGB.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
-		lblRGB.setBounds(6, sliderHUE.getY() + sliderHUE.getHeight() + 6, lblRGB.getPreferredSize().width, 16);		
+		lblRGB.setBounds(6, sliderHUE.getY() + sliderHUE.getHeight() + 6, lblRGB.getPreferredSize().width + 4, 16);		
 		panelColorimetryComponents.add(lblRGB);
 		
 		panelColorimetryComponents.add(lblRGB);
@@ -5018,7 +5018,7 @@ public class VideoPlayer {
 		comboRGB.setEditable(false);
 		comboRGB.setSelectedIndex(0);
 		comboRGB.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
-		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 7, lblRGB.getY() - 3, 100, 22);		
+		comboRGB.setBounds(lblRGB.getX() + lblRGB.getWidth() + 3, lblRGB.getY() - 3, 100, 22);		
 		panelColorimetryComponents.add(comboRGB);
 		
 		comboRGB.addActionListener(new ActionListener() {

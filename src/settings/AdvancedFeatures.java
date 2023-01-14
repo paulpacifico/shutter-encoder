@@ -64,7 +64,12 @@ public class AdvancedFeatures extends Shutter {
 					 return " -preset " + Shutter.comboForceSpeed.getSelectedItem().toString();
 				 }
 				 else
-					 return " -preset 8";		
+				 {
+					 if (caseAccel.isSelected() == false)
+					 {
+						 return " -preset 8";
+					 }
+				 }
 			
 			case "H.264":
 			case "H.265":
@@ -670,6 +675,15 @@ public class AdvancedFeatures extends Shutter {
 				if (caseFastDecode.isSelected())
 				{
 					flags += " -svtav1-params fast-decode=1";
+					
+					if (caseForceTune.isSelected())
+					{
+						flags += ",tune=" + comboForceTune.getSelectedIndex();
+					}
+				}
+				else if (caseForceTune.isSelected())
+				{
+					flags += " -svtav1-params tune=" + comboForceTune.getSelectedIndex();
 				}
 				
 			case "H.264":
@@ -737,11 +751,11 @@ public class AdvancedFeatures extends Shutter {
 		        {
 		        	options = " -x264opts tff=1";
 		            if (lblVBR.getText().equals("CBR"))
-		            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
+		            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
 		        }
 		        else if (lblVBR.getText().equals("CBR"))
 		        {
-		        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
+		        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
 		        }
 		        
 	        	break;
@@ -756,18 +770,18 @@ public class AdvancedFeatures extends Shutter {
 		        		options += ":keyint=" + Shutter.gopSize.getText();
 		        	
 		            if (lblVBR.getText().equals("CBR"))
-		            	options += ":strict-cbr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
+		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
 		        }
 		        else if (caseGOP.isSelected())
 		        {
 		    		options = " -x265-params keyint=" + Shutter.gopSize.getText();
 		    		
 		            if (lblVBR.getText().equals("CBR"))
-		            	options += ":strict-cbr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
+		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
 		        }
 		        else if (lblVBR.getText().equals("CBR"))
 		        {
-		        	options = " -x265-params strict-cbr=1 -minrate " + debitVideo.getSelectedItem().toString() + "k -maxrate " + debitVideo.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(debitVideo.getSelectedItem().toString()) * 2)) + "k";
+		        	options = " -x265-params strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
 		        }
 
 				break;

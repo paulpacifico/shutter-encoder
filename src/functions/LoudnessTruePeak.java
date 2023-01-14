@@ -111,7 +111,7 @@ public class LoudnessTruePeak extends Shutter {
 		
 		if (FFPROBE.stereo)
 		{
-			return " -filter_complex ebur128=peak=true";
+			return " -af ebur128=peak=true";
 		}
 	    else if (FFPROBE.channels > 1)	
 	    {
@@ -128,7 +128,7 @@ public class LoudnessTruePeak extends Shutter {
 	    		return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
 	    }
 	    else
-	    	return " -filter_complex ebur128=peak=true";
+	    	return " -af ebur128=peak=true";
 	}
 
 	private static void showDetection(String fichier) {
