@@ -69,6 +69,8 @@ public class FunctionUtils extends Shutter {
 	public static File OPAtomFolder;
 	public static String silentTrack = "";
 	public static int mergeDuration = 0;
+	public static boolean bestBitrateMode;
+	public static boolean goodBitrateMode;
 	public static boolean autoBitrateMode;
 	private static StringBuilder mailFileList = new StringBuilder();
 	
@@ -636,10 +638,12 @@ public class FunctionUtils extends Shutter {
 	
 	public static int setVideoBitrate() {
 		
-		if (debitVideo.getSelectedItem().equals("auto"))
-		{
-			autoBitrateMode = true;
-			
+		bestBitrateMode = false;
+		goodBitrateMode = false;
+		autoBitrateMode = false;
+		
+		if (debitVideo.getSelectedItem().equals(language.getProperty("lblBest").toLowerCase()) || debitVideo.getSelectedItem().equals(language.getProperty("lblGood").toLowerCase()) || debitVideo.getSelectedItem().equals("auto"))
+		{			
 			//Compression ratio
 			//Setup: (1920*1080*25*8*2)/5000kbps = 165888	
 			String function = comboFonctions.getSelectedItem().toString();
@@ -712,11 +716,25 @@ public class FunctionUtils extends Shutter {
 				}
 			}
 			
-			return (int) Math.round((float) (pixels * framerate * bitDepth * 2) / compValue);
+			Integer videoBitrate = (int) Math.round((float) (pixels * framerate * bitDepth * 2) / compValue);
+			
+			if (debitVideo.getSelectedItem().equals(language.getProperty("lblBest").toLowerCase()))
+			{
+				bestBitrateMode = true;
+				videoBitrate = videoBitrate * 4;
+			}
+			else if (debitVideo.getSelectedItem().equals(language.getProperty("lblGood").toLowerCase()))
+			{
+				goodBitrateMode = true;
+				videoBitrate = videoBitrate * 2;
+			}
+			else
+				autoBitrateMode = true;				
+			
+			return videoBitrate;
 		}
 		else
-		{
-			autoBitrateMode = false;
+		{			
 			return Integer.parseInt(debitVideo.getSelectedItem().toString());
 		}
 	}

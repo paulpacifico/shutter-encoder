@@ -330,10 +330,18 @@ public class VideoEncoders extends Shutter {
 			            String options = AdvancedFeatures.setOptions();
 				        
 			            //Used with "options" string
-			            if (FunctionUtils.autoBitrateMode == true)
+			            if (FunctionUtils.bestBitrateMode == true)
+						{
+							debitVideo.setSelectedItem(language.getProperty("lblBest").toLowerCase());
+						}
+			            else if (FunctionUtils.goodBitrateMode == true)
+						{
+							debitVideo.setSelectedItem(language.getProperty("lblGood").toLowerCase());
+						}
+			            else if (FunctionUtils.autoBitrateMode == true)
 						{
 							debitVideo.setSelectedItem("auto");
-						}
+						}			            
 			            
 						//Resolution
 						String resolution = "";						
@@ -1432,7 +1440,17 @@ public class VideoEncoders extends Shutter {
 			
 				if (lblVBR.getText().equals("CQ"))
 		        {
-		        	return " -crf " + FunctionUtils.setVideoBitrate();  
+					String gpu = "";
+					if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					{
+						gpu = " -qp " + FunctionUtils.setVideoBitrate();
+					}
+					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+					{
+						gpu = " -global_quality " + FunctionUtils.setVideoBitrate();
+					}
+						
+		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu;          
 		        }
 		        else
 		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k";

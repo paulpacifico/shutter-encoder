@@ -346,6 +346,10 @@ public class Picture extends Shutter {
 		{
 			return " -crf " +  Math.round((float) 63 - (float) ((float) ((float) Integer.valueOf(comboImageQuality.getSelectedItem().toString().replace("%", "")) * 63) / 100));
 		}
+		else if (comboFilter.getSelectedItem().toString().equals(".png"))
+		{
+			return " -pix_fmt rgba"; //Keep alpha and set depth to 8bit
+		}
 		else
 		{
 			return " -q:v 0";

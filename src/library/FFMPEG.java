@@ -81,6 +81,7 @@ public static float newVolume;
 public static StringBuilder shortTermValues;
 public static StringBuilder blackFrame;
 public static StringBuilder mediaOfflineFrame;
+public static String VMAFScore;
 public static String cropdetect;
 private static boolean firstInput = true;
 public static int firstScreenIndex = -1;
@@ -1543,7 +1544,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
 			}
-			else if (caseInAndOut.isSelected() && VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+			else if (caseInAndOut.isSelected() && (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2))
 			{
 				dureeTotale = VideoPlayer.durationH * 3600 + VideoPlayer.durationM * 60 + VideoPlayer.durationS;
 			}
@@ -1573,20 +1574,21 @@ public static StringBuilder errorLog = new StringBuilder();
 				dureeTotale = 1;
 			
 			if ((comboFonctions.getSelectedItem().toString().equals("H.264")
-					|| comboFonctions.getSelectedItem().toString().equals("H.265")
-					|| comboFonctions.getSelectedItem().toString().equals("WMV")
-					|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
-					|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
-					|| comboFonctions.getSelectedItem().toString().equals("WebM")
-					|| comboFonctions.getSelectedItem().toString().equals("AV1")
-					|| comboFonctions.getSelectedItem().toString().equals("OGV")
-					|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
-					|| comboFonctions.getSelectedItem().toString().equals("Xvid")
-					|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
-					&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
+			|| comboFonctions.getSelectedItem().toString().equals("H.265")
+			|| comboFonctions.getSelectedItem().toString().equals("WMV")
+			|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
+			|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
+			|| comboFonctions.getSelectedItem().toString().equals("WebM")
+			|| comboFonctions.getSelectedItem().toString().equals("AV1")
+			|| comboFonctions.getSelectedItem().toString().equals("OGV")
+			|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
+			|| comboFonctions.getSelectedItem().toString().equals("Xvid")
+			|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+			&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
+			{
 				dureeTotale = (dureeTotale * 2);
-				
-			
+			}	
+
 			if (cmd.contains("-loop"))
 			{
 				progressBar1.setMaximum(Integer.parseInt(Settings.txtImageDuration.getText()));
@@ -1953,66 +1955,81 @@ public static StringBuilder errorLog = new StringBuilder();
 	     {
 	    	 mediaOfflineFrame = new StringBuilder();
 	    	 	
-				//Stats_file
-				File stats_file;
-				if (System.getProperty("os.name").contains("Windows"))
-					stats_file = new File("stats_file");
-				else		    		
-					stats_file = new File(Shutter.dirTemp + "stats_file");
+			//Stats_file
+			File stats_file;
+			if (System.getProperty("os.name").contains("Windows"))
+				stats_file = new File("stats_file");
+			else		    		
+				stats_file = new File(Shutter.dirTemp + "stats_file");
+    	 	
+    	 	if (stats_file.exists())	    	 
+    	 	{	    	 		
+    			try {
+    				BufferedReader reader = new BufferedReader(new FileReader(stats_file.toString()));
+    				
+    				boolean offline = false; 
+					Float mseValue = 0f;
+					
+    				String line = reader.readLine();
+    				while (line != null) {
+    						    					
+    					if (line.contains("mse_avg"))
+		    	 		{
+		    	 			String s[] = line.split(":");
+		    	 			String m[] = s[2].split(" ");
+		    	 			Float mse = Float.parseFloat(m[0]);	    	 		
+		    	 		
+		    	 			String f[] = s[1].split(" ");
+		    	 			String frame = f[0]; 
+		    	 			
+	    	 				int frameNumber = (Integer.parseInt(frame) - 2);
+	    	 				
+	    	 				if (mse <= mseSensibility && offline == false)
+	    	 				{			
+	    	 					//Pemet de vérifier sur 2 images pour ne pas confondre avec un fondu
+	    	 					if ((float) mseValue == (float) mse)
+	    	 					{
+	    	 						offline = true;
+	    	 					
+		    	 					NumberFormat formatter = new DecimalFormat("00");
+					    			String tcOfflineFrame = (formatter.format(Math.floor(frameNumber / FFPROBE.currentFPS) / 3600)) 
+					    					+ ":" + (formatter.format(Math.floor((frameNumber / FFPROBE.currentFPS) / 60) % 60))
+					    					+ ":" + (formatter.format(Math.floor(frameNumber / FFPROBE.currentFPS) % 60)
+					    					+ ":" + (formatter.format(frameNumber % FFPROBE.currentFPS))); 	
+				    			
+				    				mediaOfflineFrame.append(tcOfflineFrame + System.lineSeparator());
+	    	 					}
+	    	 					
+	    	 					mseValue = mse;
+	    	 				}
+	    	 				else if (mse > mseSensibility)
+	    	 				{
+	    	 					offline = false;
+	    	 					mseValue = 0f;
+	    	 				}
+		    	 		}
+    				
+    					line = reader.readLine();
+    				}
+    				reader.close();
+    			} catch (IOException e) {}
+    			
+    			stats_file.delete();
+    	 	}
+     	}
+	     
+	     //VMAF
+	     if (comboFonctions.getSelectedItem().toString().equals("VMAF"))
+	     {
+	    	 	VMAFScore = "";
 	    	 	
-	    	 	if (stats_file.exists())	    	 
-	    	 	{	    	 		
-	    			try {
-	    				BufferedReader reader = new BufferedReader(new FileReader(stats_file.toString()));
-	    				
-	    				boolean offline = false; 
-    					Float mseValue = 0f;
-    					
-	    				String line = reader.readLine();
-	    				while (line != null) {
-	    						    					
-	    					if (line.contains("mse_avg"))
-			    	 		{
-			    	 			String s[] = line.split(":");
-			    	 			String m[] = s[2].split(" ");
-			    	 			Float mse = Float.parseFloat(m[0]);	    	 		
-			    	 		
-			    	 			String f[] = s[1].split(" ");
-			    	 			String frame = f[0]; 
-			    	 			
-		    	 				int frameNumber = (Integer.parseInt(frame) - 2);
-		    	 				
-		    	 				if (mse <= mseSensibility && offline == false)
-		    	 				{			
-		    	 					//Pemet de vérifier sur 2 images pour ne pas confondre avec un fondu
-		    	 					if ((float) mseValue == (float) mse)
-		    	 					{
-		    	 						offline = true;
-		    	 					
-			    	 					NumberFormat formatter = new DecimalFormat("00");
-						    			String tcOfflineFrame = (formatter.format(Math.floor(frameNumber / FFPROBE.currentFPS) / 3600)) 
-						    					+ ":" + (formatter.format(Math.floor((frameNumber / FFPROBE.currentFPS) / 60) % 60))
-						    					+ ":" + (formatter.format(Math.floor(frameNumber / FFPROBE.currentFPS) % 60)
-						    					+ ":" + (formatter.format(frameNumber % FFPROBE.currentFPS))); 	
-					    			
-					    				mediaOfflineFrame.append(tcOfflineFrame + System.lineSeparator());
-		    	 					}
-		    	 					
-		    	 					mseValue = mse;
-		    	 				}
-		    	 				else if (mse > mseSensibility)
-		    	 				{
-		    	 					offline = false;
-		    	 					mseValue = 0f;
-		    	 				}
-			    	 		}
-	    				
-	    					line = reader.readLine();
-	    				}
-	    				reader.close();
-	    			} catch (IOException e) {}
-	    			
-	    			stats_file.delete();
+	    	 	for (String vmafLine : getAll.toString().split(System.lineSeparator()))
+	    	 	{
+	    	 		if (vmafLine.contains("VMAF score"))
+	    	 		{	    	 			
+	    	 			String s[] = vmafLine.split("\\]");
+	    	 			VMAFScore = s[1].substring(1);
+	    	 		}
 	    	 	}
 	     }
 	}

@@ -24,16 +24,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-
 import javax.swing.JOptionPane;
 
 import application.Shutter;
 import library.FFMPEG;
-import library.FFPROBE;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 
-public class LoudnessTruePeak extends Shutter {
+public class VMAF extends Shutter {
+	
+	boolean warningSourceFile = true;
 	
 	public static void main() {
 		
@@ -52,6 +52,20 @@ public class LoudnessTruePeak extends Shutter {
 					
 					if (file == null)
 						break;
+					
+					JOptionPane.showMessageDialog(frame, language.getProperty("sourceFile") + language.getProperty("colon") + System.lineSeparator() + file.getName(), "VMAF", JOptionPane.INFORMATION_MESSAGE);
+					
+					FileDialog dialog = new FileDialog(frame, language.getProperty("source"), FileDialog.LOAD);
+					dialog.setDirectory(new File(file.toString()).getParent());
+					dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
+					dialog.setAlwaysOnTop(true);
+					dialog.setMultipleMode(false);
+					dialog.setVisible(true);
+
+					if (dialog.getFile() == null)
+					{
+						continue;
+					}
 		            
 					try {
 						
@@ -65,17 +79,14 @@ public class LoudnessTruePeak extends Shutter {
 						//InOut		
 						InputAndOutput.getInputAndOutput();	
 						
-		            	//Audio
-						String audio = setAudio();	
-						
 						//Sending command
 						String cmd;
 						if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-							cmd =  " -vn" + audio + " -f null -";					
+							cmd =  " -filter_complex libvmaf -an -f null -";					
 						else
-							cmd =  " -vn" + audio + " -f null -" + '"';	
+							cmd =  " -filter_complex libvmaf -an -f null -" + '"';	
 						
-						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
+						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.inPoint + " -i " + '"' + dialog.getDirectory() + dialog.getFile().toString() + '"' + InputAndOutput.outPoint + cmd);		
 						
 						do
 						{
@@ -107,35 +118,11 @@ public class LoudnessTruePeak extends Shutter {
 		
     }
 
-	private static String setAudio() {
-		
-		if (FFPROBE.stereo)
-		{
-			return " -af ebur128=peak=true";
-		}
-	    else if (FFPROBE.channels > 1)	
-	    {
-	    	if (FFPROBE.channels >= 4)	    		
-	    	{
-	    		String[] options = {"A1 & A2", "A3 & A4"};
-	    		int q = JOptionPane.showOptionDialog(frame, language.getProperty("ChooseMultitrack"), language.getProperty("multitrack"), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-	    		if (q == 0)
-		    		return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
-		    	else
-		    		return " -filter_complex " + '"' + "[0:a:2][0:a:3]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
-	    	}
-	    	else
-	    		return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
-	    }
-	    else
-	    	return " -af ebur128=peak=true";
-	}
-
 	private static void showDetection(String file) {
 		
-		if (FFMPEG.analyseLufs != null && Shutter.cancelled == false && FFMPEG.error == false)
+		if (FFMPEG.VMAFScore != null && Shutter.cancelled == false && FFMPEG.error == false)
 		{
-			 JOptionPane.showMessageDialog(frame, FFMPEG.analyseLufs, "Loudness & True Peak", JOptionPane.INFORMATION_MESSAGE);
+			 JOptionPane.showMessageDialog(frame, file + System.lineSeparator() + FFMPEG.VMAFScore, "VMAF", JOptionPane.INFORMATION_MESSAGE);
 			 int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("saveResult") , Shutter.language.getProperty("analyzeEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 			 
 			 if (q == JOptionPane.YES_OPTION)
@@ -150,8 +137,7 @@ public class LoudnessTruePeak extends Shutter {
 						PrintWriter writer = new PrintWriter(dialog.getDirectory() + dialog.getFile().replace(".txt", "") + ".txt", "UTF-8");
 						writer.println(Shutter.language.getProperty("analyzeOf") + " " + file);
 						writer.println("");
-						writer.println(FFMPEG.analyseLufs + System.lineSeparator() + System.lineSeparator()
-									 + FFMPEG.shortTermValues);
+						writer.println(FFMPEG.VMAFScore);
 						writer.close();
 					} catch (FileNotFoundException | UnsupportedEncodingException e) {}
 	
@@ -193,7 +179,7 @@ public class LoudnessTruePeak extends Shutter {
 		if (Shutter.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(fileName);
-			LoudnessTruePeak.main();
+			VMAF.main();
 			return true;
 		}
 		return false;

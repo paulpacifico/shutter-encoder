@@ -214,9 +214,8 @@ public static int gopSpace = 124;
 					
 					Console.consoleFFPROBE.append(System.lineSeparator());
 					
-					while ((line = input.readLine()) != null) {
-						
-						// Analyse des données							
+					while ((line = input.readLine()) != null)
+					{
 						Console.consoleFFPROBE.append(line + System.lineSeparator());		
 									
 						//Errors
@@ -238,12 +237,12 @@ public static int gopSpace = 124;
 						
 		                // Durée
 			            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false)
-			            {
+			            {			            	 
 				    		String str = line.substring(line.indexOf(":") + 2);
 				    		String s[] = str.split(",");	 
-				    						    		
+				    		
 				    		String ffmpegTime = s[0].replace(".", ":");	  
-				    					    		
+				    					    					    		
 				    		getVideoLengthTC = ffmpegTime;
 				    		totalLength = (getTimeToMS(ffmpegTime));
 				    		
@@ -266,18 +265,22 @@ public static int gopSpace = 124;
 					             setFilesize();
 							}
 			            }
- 
+ 			            
 			            // Détection YUVJ
 						if (line.contains("Video:"))
-						{							
-
-							 //Codec vidéo
+						{						
+							//Codec vidéo
 							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
 							videoCodec = splitVideo[1].replace(",", "");
 						
 							if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
 							{
 								videoCodec = "dnxhr";
+							}
+							
+							if (videoCodec.equals("qtrle"))
+							{
+								videoCodec = "qt animation";
 							}
 							
 							//Création de la waveform pour le lecteur vidéo
@@ -294,84 +297,95 @@ public static int gopSpace = 124;
 			                ligne = line.substring(ligne.indexOf("Video:"));
 
 			                // Timecode Size
-			                String split[]= ligne.split(",");
+			                String split[] = ligne.split(",");
 			                int i = 0;
-			                do
-			                {
+			                do {
 			                    i ++;
-			                } while (split[i].contains("x") == false || split[i].contains("xyz"));
+			                } while ((split[i].contains("x") == false || split[i].contains("xyz")) && i < split.length - 1);
 			                
-			                String resolution = split[i].substring(split[i].indexOf("x") + 1);
-			              	String splitr[] = resolution.split(" ");
-			                
-			              	// Crop Image
-			                String height = split[i];
-			                String splitx[]= height.split("x");
-			                String getHeight[] =  splitx[1].split(" ");
-
-				            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
-				            imageHeight = Integer.parseInt(splitr[0]);
-			                imageResolution = imageWidth + "x" + getHeight[0];
-			                
-			                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
+			                if (split[i].contains("["))
 			                {
-			                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
-			                	imageWidth = RecordInputDevice.screenWidth;
-			                	imageHeight = RecordInputDevice.screenHeigth;
+			                	String s[] = split[i].split("\\[");
+			                	split[i] = s[0].replace(" ","");
 			                }
-			                			               			                
-			                //Ratio du lecteur
-			                if (line.contains("DAR"))
-			                {
-			                	String[] splitDAR = line.split("DAR");
-			                	String[] splitDAR2 = splitDAR[1].split(",");
-			                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
-			                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
-			                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
-			                	imageRatio = (float) ratioWidth / ratioHeight;
-			                }
-			                else
-			                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
-			                
-			                // Crop Form
-			                int largeur = 0;
-			                int hauteur = 0;			               
-		                	
-			                // Pixels cropés
-			                if (ratioFinal < ((float) imageWidth / imageHeight))
-			                {
-				                int pixelsWidth = (imageWidth - hauteur);
-				                cropPixelsWidth =  (int) (float) pixelsWidth / 2;
-				                cropPixelsHeight = 0;
-			                }
-			                else 
-			                {
-				                int pixelsHeight = (imageHeight - largeur);
-				                cropPixelsHeight = (int) (float) pixelsHeight / 2;
-				                cropPixelsWidth = 0;
-			                }			              
-			                
-			                // FPS
-			                if (inputDeviceIsRunning)
-			            	{
-			            		if (file.equals("Capture.current.screen"))
-			            			currentFPS = Float.parseFloat(Settings.txtScreenRecord.getText());
-			            		else
-			            			currentFPS = Float.parseFloat(Settings.txtInputDevice.getText());
-			            	}
-			                else
-			                {
-					            if (line.contains("tbr") && line.contains("attached pic") == false) 
-					            {
-					                String str[]= line.split("tbr");
-					                
-					                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-					                
-					                currentFPS = Float.parseFloat(str[1]);
-
-					                if (currentFPS == 23.98f)
-					                	currentFPS = 23.976f;
-					            } 
+		
+			                //Bug workaround when it shows "unspecified size" && is a scale form like 1920x1080
+			                if (split[i].contains("unspecified size") == false && split[i].contains("x"))
+			                {		
+				                String resolution = split[i].substring(split[i].indexOf("x") + 1);
+				              	String splitr[] = resolution.split(" ");
+	
+				              	// Crop Image
+				                String height = split[i];
+				                
+				                String splitx[]= height.split("x");
+				                
+				                String getHeight[] =  splitx[1].split(" ");
+	
+					            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
+					            imageHeight = Integer.parseInt(splitr[0]);
+				                imageResolution = imageWidth + "x" + getHeight[0];
+	              			               
+				                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
+				                {
+				                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
+				                	imageWidth = RecordInputDevice.screenWidth;
+				                	imageHeight = RecordInputDevice.screenHeigth;
+				                }
+				                			               			                
+				                //Ratio du lecteur
+				                if (line.contains("DAR"))
+				                {
+				                	String[] splitDAR = line.split("DAR");
+				                	String[] splitDAR2 = splitDAR[1].split(",");
+				                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
+				                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
+				                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
+				                	imageRatio = (float) ratioWidth / ratioHeight;
+				                }
+				                else
+				                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
+				                			                
+				                // Crop Form
+				                int largeur = 0;
+				                int hauteur = 0;			               
+			                	
+				                // Pixels cropés
+				                if (ratioFinal < ((float) imageWidth / imageHeight))
+				                {
+					                int pixelsWidth = (imageWidth - hauteur);
+					                cropPixelsWidth =  (int) (float) pixelsWidth / 2;
+					                cropPixelsHeight = 0;
+				                }
+				                else 
+				                {
+					                int pixelsHeight = (imageHeight - largeur);
+					                cropPixelsHeight = (int) (float) pixelsHeight / 2;
+					                cropPixelsWidth = 0;
+				                }	
+				                
+				                // FPS
+				                if (inputDeviceIsRunning)
+				            	{
+				            		if (file.equals("Capture.current.screen"))
+				            			currentFPS = Float.parseFloat(Settings.txtScreenRecord.getText());
+				            		else
+				            			currentFPS = Float.parseFloat(Settings.txtInputDevice.getText());
+				            	}
+				                else
+				                {
+						            if (line.contains("tbr") && line.contains("attached pic") == false) 
+						            {
+						                String str[]= line.split("tbr");
+						                
+						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+						                
+						                currentFPS = Float.parseFloat(str[1]);
+	
+						                if (currentFPS == 23.98f)
+						                	currentFPS = 23.976f;
+						            } 
+				                }
 			                }
 						 }
 						 
@@ -497,7 +511,7 @@ public static int gopSpace = 124;
 				}		
 				process.waitFor();	
 							
-				} catch (Exception e) {					
+				} catch (Exception e) {	
 					FFMPEG.error = true;
 				} finally {
 					isRunning = false;
@@ -565,8 +579,8 @@ public static int gopSpace = 124;
 			        Console.consoleFFPROBE.append(System.lineSeparator());
 			        
 					//Analyse des données	
-			        while ((line = br.readLine()) != null) {		
-			        	
+			        while ((line = br.readLine()) != null)
+			        {		
 						Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
 						//Errors
@@ -647,7 +661,7 @@ public static int gopSpace = 124;
 					
 					process.waitFor();					
 													
-					} catch (Exception e) {		
+					} catch (Exception e) {	
 						FFMPEG.error = true;
 					} finally {
 						isRunning = false;
@@ -822,8 +836,7 @@ public static int gopSpace = 124;
 			        
 					//Analyse des données	
 			        while ((line = br.readLine()) != null) 
-			        {		
-				        	
+			        {	
 						Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
 						//Errors
@@ -1083,14 +1096,9 @@ public static int gopSpace = 124;
 				if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
 					audio = 1536;
 				
-				Integer video = FunctionUtils.setVideoBitrate();
-				
-				if (debitVideo.getSelectedItem().equals("auto") == false)
-				{
-					video = Integer.parseInt(debitVideo.getSelectedItem().toString());
-				}
-								
-				float resultVideo = (float) video / 8 / 1024;
+				Integer videoBitrate = FunctionUtils.setVideoBitrate();
+											
+				float resultVideo = (float) videoBitrate / 8 / 1024;
 				float resultAudio =  (float) (audio*multi) / 8 / 1024;
 				float resultatdebit = (resultVideo  + resultAudio) * ( (h * 3600)+(min * 60)+sec);
 				bitrateSize.setText(String.valueOf((int)resultatdebit));	
