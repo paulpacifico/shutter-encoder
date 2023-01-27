@@ -395,49 +395,55 @@ public class Update {
 	private static void runProcess(final String newVersion) {
 		
 		Thread download = new Thread(new Runnable()  {
-		public void run() {
-		
-			//Téléchargement
-			HTTPDownload("https://www.shutterencoder.com/" + newVersion, System.getProperty("user.home") + "/Downloads/" + newVersion);
-	
-			File app = new File(System.getProperty("user.home") + "/Downloads/" + newVersion);
 			
-			if (cancelled == false)
-			{
-				int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("installNewVersion"), Shutter.language.getProperty("downloadEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-		 
-				if (q == JOptionPane.YES_OPTION)
-				{
-					try {
-						Desktop.getDesktop().open(new File(System.getProperty("user.home") + "/Downloads/" + newVersion) );
-					} catch (IOException e) {}
-										
-					System.exit(0);
-				}	
-				else
-				{	    	
-					JOptionPane.showMessageDialog(Shutter.frame, '"' + app.toString() + '"', Shutter.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
+			public void run() {			
 				
+				File appPath = new File(System.getProperty("user.home") + "/Downloads/" + newVersion);
+				if (new File(System.getProperty("user.home") + "/Downloads").exists() == false)
+				{
+					appPath = new File(System.getProperty("user.home") + "/Desktop/" + newVersion);
+				}
+				
+				//Download
+				HTTPDownload("https://www.shutterencoder.com/" + newVersion, appPath.toString());
+	
+				if (cancelled == false)
+				{
+					int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("installNewVersion"), Shutter.language.getProperty("downloadEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			 
+					if (q == JOptionPane.YES_OPTION)
+					{
+						try {
+							Desktop.getDesktop().open(appPath);
+						} catch (IOException e) {}
+											
+						System.exit(0);
+					}	
+					else
+					{	    	
+						JOptionPane.showMessageDialog(Shutter.frame, '"' + appPath.toString() + '"', Shutter.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
+					
+						frame.dispose();
+					}
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadStopped"), Shutter.language.getProperty("downloadCancelled"), JOptionPane.ERROR_MESSAGE);
+					
+					if (appPath.exists())
+						appPath.delete();
+					
 					frame.dispose();
 				}
-			}
-			else
-			{
-				JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadStopped"), Shutter.language.getProperty("downloadCancelled"), JOptionPane.ERROR_MESSAGE);
-				
-				if (app.exists())
-					app.delete();
-				
-				frame.dispose();
-			}
- 
-		}
-	});
-	download.start();
+	 
+				}
+			});
+			download.start();
 
 	}
 	
 	private static void HTTPDownload(String adresse, String destination) {
+	
 		OutputStream out = null;
         URLConnection conn = null;
         InputStream in = null;
