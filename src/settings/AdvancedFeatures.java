@@ -614,6 +614,8 @@ public class AdvancedFeatures extends Shutter {
 			case "QT Animation":
 			case "Uncompressed":
 			case "Blu-ray":
+			case "H.264":
+			case "H.265":
 				
 				if (caseForcerEntrelacement.isSelected())
 				{			
@@ -672,18 +674,32 @@ public class AdvancedFeatures extends Shutter {
 						
 			case "AV1":
 				
+				String av1Flags = "";
+				
 				if (caseFastDecode.isSelected())
 				{
-					flags += " -svtav1-params fast-decode=1";
-					
-					if (caseForceTune.isSelected())
-					{
-						flags += ",tune=" + comboForceTune.getSelectedIndex();
-					}
+					av1Flags += "fast-decode=1";
 				}
-				else if (caseForceTune.isSelected())
+				
+				if (caseForceTune.isSelected())
 				{
-					flags += " -svtav1-params tune=" + comboForceTune.getSelectedIndex();
+					if (av1Flags != "")
+						av1Flags += ",";
+						
+					av1Flags += "tune=" + comboForceTune.getSelectedIndex();
+				}
+				
+				if (caseFilmGrain.isSelected())
+				{
+					if (av1Flags != "")
+						av1Flags += ",";
+					
+					av1Flags += "film-grain=" + comboFilmGrain.getSelectedIndex();
+				}
+				
+				if (av1Flags != "")
+				{
+					flags += " -svtav1-params " + av1Flags;
 				}
 				
 			case "H.264":

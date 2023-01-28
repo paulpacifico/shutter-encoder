@@ -280,28 +280,42 @@ public class AudioNormalization extends Shutter {
 		}
 		else //Mode Auto
 		{
-			switch (ext.toLowerCase()) {
+			switch (ext.toLowerCase())
+			{			
 				case ".mp4":
+					
 					return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					
 				case ".mp3":
+					
 					return " -c:a mp3 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					
 				case ".wmv":
+					
 					return " -c:a wmav2 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					
 				case ".mpg":
+					
 					return " -c:a mp2 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					
 				case ".ogv":
 				case ".av1":
 				case ".webm":
+					
 					return " -c:a libopus -ar " + lbl48k.getText() + " -b:a 192k -map v:0? -map a? -map s?";
 			}
 		}
 		
 		if (FFPROBE.qantization == 24)
-			return " -c:a pcm_s24le -map v:0? -map a? -map s?";
+		{
+			return " -c:a pcm_s24le -ar " + FFPROBE.audioSampleRate + " -map v:0? -map a? -map s?";
+		}
 		else if (FFPROBE.qantization == 32)
-			return " -c:a pcm_s32le -map v:0? -map a? -map s?";
+		{
+			return " -c:a pcm_s32le -ar " + FFPROBE.audioSampleRate + " -map v:0? -map a? -map s?";
+		}
 		else
-			return " -c:a pcm_s16le -map v:0? -map a? -map s?";
+			return " -c:a pcm_s16le -ar " + FFPROBE.audioSampleRate + " -map v:0? -map a? -map s?";
 	}
 	
 	private static boolean lastActions(String fileName, File fileOut, String output) {
