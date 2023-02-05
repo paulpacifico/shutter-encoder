@@ -77,7 +77,7 @@ public class AdvancedFeatures extends Shutter {
 		        if (caseQMax.isSelected())
 		        {
 		        	if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-		        		return " -preset slow";
+		        		return " -preset p7";
 		        	else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 		        		return " -quality quality";
 			        else
