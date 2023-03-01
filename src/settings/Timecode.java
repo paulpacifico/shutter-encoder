@@ -20,6 +20,7 @@
 package settings;
 
 import application.Shutter;
+import application.VideoPlayer;
 import library.EXIFTOOL;
 import library.FFPROBE;
 
@@ -29,10 +30,22 @@ public class Timecode extends Shutter {
 		
 		if (grpSetTimecode.isVisible())
 		{
-			String dropFrame = ":";
-	   		if (caseConform.isSelected() == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || caseConform.isSelected() && (comboFPS.getSelectedItem().toString().equals("29,97") || comboFPS.getSelectedItem().toString().equals("59,94")))
-	   			dropFrame = ";";
-	   		
+	   		String dropFrame = ":";
+	        if (isDropFrame())
+        	{
+	        	dropFrame = ";";
+        	}
+	        
+	   		if (Shutter.caseConform.isSelected())
+	   		{
+	   			if (Shutter.comboFPS.getSelectedItem().toString().equals("23,98") || Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+	   			{
+	   				dropFrame = ";";
+	   			}
+	   			else 
+	   				dropFrame = ":";
+	   		}
+
 			if (caseGenerateFromDate.isSelected())
 			{
 				String s[] = EXIFTOOL.creationHours.split(":");
@@ -43,12 +56,7 @@ public class Timecode extends Shutter {
 				return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"';
 			}
 			else if (FFPROBE.timecode1 != "")
-			{		
-				if (FFPROBE.dropFrameTC != "")
-				{
-					dropFrame = FFPROBE.dropFrameTC;
-				}
-				
+			{						
 				return " -timecode " + '"' + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + dropFrame + FFPROBE.timecode4 + '"';
 			}
 		}
@@ -56,4 +64,73 @@ public class Timecode extends Shutter {
 		return "";
 	}
 	
+	public static boolean isDropFrame() {
+		
+		if (FFPROBE.dropFrameTC.equals(":") == false && (FFPROBE.currentFPS == 23.98f || FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+     	{
+			return true;
+     	}
+		else
+			return false;
+	}
+	
+	public static boolean isNonDropFrame() {
+		
+		if (FFPROBE.dropFrameTC.equals(":") && (FFPROBE.currentFPS == 23.98f || FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+     	{
+			return true;
+     	}
+		else
+			return false;
+	}
+	
+	public static float setNonDropFrameTC(float currentFrame) {
+		
+		//NTSC framerates && non drop frame timecode => remove a frame to reach round framerate
+		if (isNonDropFrame() && currentFrame > 0)
+		{							
+			float currentTime = VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS;
+			
+			if (FFPROBE.currentFPS == 23.98f)
+			{				
+				currentFrame -= (currentTime * 0.024 / 1000) - 1;
+			}
+			else if (FFPROBE.currentFPS == 29.97f)
+			{
+				currentFrame -= (currentTime * 0.03 / 1000) - 1;
+			}
+			else if (FFPROBE.currentFPS == 59.94f)
+			{
+				currentFrame -= (currentTime * 0.06 / 1000) - 1;
+			}
+		}
+		
+		return currentFrame;
+	}
+	
+	public static float getNonDropFrameTC(float currentFrame) {
+		
+		//Allows to set the current seeking values
+		if (isNonDropFrame())
+		{				
+			float currentTime = currentFrame * VideoPlayer.inputFramerateMS;
+						
+			if (FFPROBE.currentFPS == 23.98f)
+			{				
+				currentFrame += (currentTime * 0.024 / 1000);
+			}
+			else if (FFPROBE.currentFPS == 29.97f)
+			{
+				currentFrame += (currentTime * 0.03 / 1000);
+			}
+			else if (FFPROBE.currentFPS == 59.94f)
+			{
+				currentFrame += (currentTime * 0.06 / 1000);
+			}
+			
+			return (float) Math.floor(currentFrame);	
+		}
+
+		return currentFrame;		
+	}
 }

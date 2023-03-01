@@ -189,8 +189,30 @@ public class AdvancedFeatures extends Shutter {
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
-						else					
+		        		else if (comboResolution.getSelectedItem().toString().contains("x"))		
+						{
 							s = comboResolution.getSelectedItem().toString().split("x");
+						}
+		        		else if (comboResolution.getSelectedItem().toString().contains(":"))
+						{
+		        			String i[] = FFPROBE.imageResolution.split("x");
+							s = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+							
+							int iw = Integer.parseInt(i[0]);
+				        	int ih = Integer.parseInt(i[1]);          	
+				        	int ow = Integer.parseInt(s[0]);
+				        	int oh = Integer.parseInt(s[1]);        	
+				        	float ir = (float) iw / ih;
+									        	
+							if (s[0].toString().equals("1")) // = auto
+							{
+								s[0] = String.valueOf((int) Math.round((float) oh * ir));
+							}
+			        		else
+			        		{
+			        			s[1] = String.valueOf((int) Math.round((float) ow / ir));
+			        		}
+						}
 		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);
@@ -258,8 +280,30 @@ public class AdvancedFeatures extends Shutter {
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
-						else					
+		        		else if (comboResolution.getSelectedItem().toString().contains("x"))		
+						{
 							s = comboResolution.getSelectedItem().toString().split("x");
+						}
+		        		else if (comboResolution.getSelectedItem().toString().contains(":"))
+						{
+		        			String i[] = FFPROBE.imageResolution.split("x");
+							s = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+							
+							int iw = Integer.parseInt(i[0]);
+				        	int ih = Integer.parseInt(i[1]);          	
+				        	int ow = Integer.parseInt(s[0]);
+				        	int oh = Integer.parseInt(s[1]);        	
+				        	float ir = (float) iw / ih;
+									        	
+							if (s[0].toString().equals("1")) // = auto
+							{
+								s[0] = String.valueOf((int) Math.round((float) oh * ir));
+							}
+			        		else
+			        		{
+			        			s[1] = String.valueOf((int) Math.round((float) ow / ir));
+			        		}
+						}
 		        	}
 		        			
 		            int width = Integer.parseInt(s[0]);
@@ -546,20 +590,17 @@ public class AdvancedFeatures extends Shutter {
 		}
 		else if (caseConform.isSelected())
 		{
-			if (mxfCompatible)
+			if (comboFPS.getSelectedItem().toString().equals("59,94"))
 			{
-				if (comboFPS.getSelectedItem().toString().equals("59,94"))
-				{
-					return " -r 60000/1001";
-				}
-				else if (comboFPS.getSelectedItem().toString().equals("29,97"))
-				{
-					return " -r 30000/1001";
-				}
-				else if (comboFPS.getSelectedItem().toString().equals("23,976"))
-				{
-					return " -r 24000/1001";
-				}
+				return " -r 60000/1001";
+			}
+			else if (comboFPS.getSelectedItem().toString().equals("29,97"))
+			{
+				return " -r 30000/1001";
+			}
+			else if (comboFPS.getSelectedItem().toString().equals("23,98"))
+			{
+				return " -r 24000/1001";
 			}
 						
 			return " -r " + Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));            
@@ -569,20 +610,17 @@ public class AdvancedFeatures extends Shutter {
 			return " -vsync vfr";
 		}
 		
-		if (mxfCompatible)
+		if (FFPROBE.currentFPS == 59.94f)
 		{
-			if (FFPROBE.currentFPS == 59.94f)
-			{
-				return " -r 60000/1001";
-			}
-			else if (FFPROBE.currentFPS == 29.97f)
-			{
-				return " -r 30000/1001";
-			}
-			else if (FFPROBE.currentFPS == 23.976f)
-			{
-				return " -r 24000/1001";
-			}
+			return " -r 60000/1001";
+		}
+		else if (FFPROBE.currentFPS == 29.97f)
+		{
+			return " -r 30000/1001";
+		}
+		else if (FFPROBE.currentFPS == 23.98f)
+		{
+			return " -r 24000/1001";
 		}
 		
 		return "";

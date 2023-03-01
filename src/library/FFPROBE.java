@@ -89,7 +89,7 @@ public static int gopCount = 0;
 public static int gopSpace = 124;
 
 	public static void Data(final String file) {	
-		
+				
 		getVideoLengthTC = null;
 		
 		if (inputDeviceIsRunning == false)
@@ -119,20 +119,10 @@ public static int gopSpace = 124;
 		
 		imageRatio = 1.777777f;
 		
-		if (VideoPlayer.caseAddTimecode.isSelected())
-		{
-			timecode1 = VideoPlayer.TC1.getText();
-			timecode2 = VideoPlayer.TC2.getText();			
-        	timecode3 = VideoPlayer.TC3.getText();		    
-			timecode4 = VideoPlayer.TC4.getText();
-		}
-		else
-		{			
-			timecode1 = "";
-			timecode2 = "";
-			timecode3 = "";
-			timecode4 = "";
-		}
+		timecode1 = "";
+		timecode2 = "";
+		timecode3 = "";
+		timecode4 = "";
 		
 		processData = new Thread(new Runnable() {
 			@Override
@@ -262,7 +252,7 @@ public static int gopSpace = 124;
 					      		if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
 					     			VideoPlayer.totalDuration();
 
-					             setFilesize();
+					            setFilesize();
 							}
 			            }
  			            
@@ -381,9 +371,6 @@ public static int gopSpace = 124;
 						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
 						                
 						                currentFPS = Float.parseFloat(str[1]);
-	
-						                if (currentFPS == 23.98f)
-						                	currentFPS = 23.976f;
 						            } 
 				                }
 			                }
@@ -485,8 +472,7 @@ public static int gopSpace = 124;
 							|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
 		            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
 		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
-		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))
-			            			
+		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))			            			
 	            			|| (caseInAndOut.isSelected() && VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
 				            {
 			            		if (FFPROBE.timecode1 == "")
@@ -1047,65 +1033,69 @@ public static int gopSpace = 124;
 	
 	public static void setFilesize() {
 		
-		int multi = 0;
-		if (lblAudioMapping.getText().equals("Multi"))
-		{
-			if (comboAudio1.getSelectedIndex() != 16)
-				multi += 1;
-			if (comboAudio2.getSelectedIndex() != 16)
-				multi += 1;
-			if (comboAudio3.getSelectedIndex() != 16)
-				multi += 1;
-			if (comboAudio4.getSelectedIndex() != 16)
-				multi += 1;
-			if (comboAudio5.getSelectedIndex() != 16)
-				multi += 1;
-			if (comboAudio6.getSelectedIndex() != 16)
-				multi += 1;
-			if (comboAudio7.getSelectedIndex() != 16)
-				multi += 1;
-			if (comboAudio8.getSelectedIndex() != 16)
-				multi += 1;
-		}
-		else
-			multi = 1;
-				
-		if (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false)
-		{
-			if (isLocked)
+		if (grpBitrate.isVisible())
+        {
+			int multi = 0;
+			if (lblAudioMapping.getText().equals("Multi"))
 			{
-				 //Set Bitrate
-				int h = Integer.parseInt(textH.getText());
-				int min = Integer.parseInt(textM.getText());
-				int sec = Integer.parseInt(textS.getText());
-				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-				int tailleFinale = Integer.parseInt(bitrateSize.getText());
-				float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec);
-				float resultAudio = (float) (audio*multi) / 8 / 1024;
-				float resultatdebit = (result - resultAudio) * 8 * 1024;
-				debitVideo.getModel().setSelectedItem((int) resultatdebit);
+				if (comboAudio1.getSelectedIndex() != 16)
+					multi += 1;
+				if (comboAudio2.getSelectedIndex() != 16)
+					multi += 1;
+				if (comboAudio3.getSelectedIndex() != 16)
+					multi += 1;
+				if (comboAudio4.getSelectedIndex() != 16)
+					multi += 1;
+				if (comboAudio5.getSelectedIndex() != 16)
+					multi += 1;
+				if (comboAudio6.getSelectedIndex() != 16)
+					multi += 1;
+				if (comboAudio7.getSelectedIndex() != 16)
+					multi += 1;
+				if (comboAudio8.getSelectedIndex() != 16)
+					multi += 1;
 			}
 			else
+				multi = 1;
+					
+			if (Shutter.liste.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
 			{
-		        //Set Filesize
-				int h = Integer.parseInt(textH.getText());
-				int min = Integer.parseInt(textM.getText());
-				int sec = Integer.parseInt(textS.getText());
-				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-				
-				if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
-					audio = 1536;
-				
-				Integer videoBitrate = FunctionUtils.setVideoBitrate();
-											
-				float resultVideo = (float) videoBitrate / 8 / 1024;
-				float resultAudio =  (float) (audio*multi) / 8 / 1024;
-				float resultatdebit = (resultVideo  + resultAudio) * ( (h * 3600)+(min * 60)+sec);
-				bitrateSize.setText(String.valueOf((int)resultatdebit));	
+				if (isLocked)
+				{
+					 //Set Bitrate
+					int h = Integer.parseInt(textH.getText());
+					int min = Integer.parseInt(textM.getText());
+					int sec = Integer.parseInt(textS.getText());
+					int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
+					int tailleFinale = Integer.parseInt(bitrateSize.getText());
+					float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec);
+					float resultAudio = (float) (audio*multi) / 8 / 1024;
+					float resultatdebit = (result - resultAudio) * 8 * 1024;
+					debitVideo.getModel().setSelectedItem((int) resultatdebit);
+				}
+				else
+				{
+			        //Set Filesize
+					int h = Integer.parseInt(textH.getText());
+					int min = Integer.parseInt(textM.getText());
+					int sec = Integer.parseInt(textS.getText());
+					int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
+					
+					if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+						audio = 1536;
+					
+					Integer videoBitrate = FunctionUtils.setVideoBitrate();
+												
+					float resultVideo = (float) videoBitrate / 8 / 1024;
+					float resultAudio =  (float) (audio*multi) / 8 / 1024;
+					float resultatdebit = (resultVideo  + resultAudio) * ( (h * 3600)+(min * 60)+sec);
+					bitrateSize.setText(String.valueOf((int)resultatdebit));	
+				}
 			}
-		}
-		else
-			bitrateSize.setText("-");
+			else
+				bitrateSize.setText("-");
+		
+        }
 		
 	}
 	

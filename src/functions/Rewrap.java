@@ -98,7 +98,7 @@ public class Rewrap extends Shutter {
 							{
 								frameRate = " -r 30000/1001";
 							}
-							else if (FFPROBE.currentFPS == 23.976f)
+							else if (FFPROBE.currentFPS == 23.98f)
 							{
 								frameRate = " -r 24000/1001";
 							}
@@ -146,6 +146,13 @@ public class Rewrap extends Shutter {
 		            	//Timecode
 						String timecode = Timecode.setTimecode();
 						
+						//DAR
+						String aspect = "";
+						if (caseForcerDAR.isSelected())
+						{
+							aspect = " -aspect " + comboDAR.getSelectedItem().toString();
+						}
+						
 						//File output
 						File fileOut = new File(fileOutputName);				
 						if (fileOut.exists())		
@@ -184,7 +191,7 @@ public class Rewrap extends Shutter {
 								concat = " -noaccurate_seek";
 														
 							//Command
-							String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
+							String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 							
 							do

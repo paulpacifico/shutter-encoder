@@ -258,6 +258,16 @@ public class AudioSettings extends Shutter {
 				
 				audioBitrate = " -compression_level " + debitAudio.getSelectedItem().toString();	
 			}
+			else if (audioCodec.equals("ALAC 16Bits"))
+			{
+				audioCodec = "alac";
+				audioBitrate = " -sample_fmt s16p";
+			}
+			else if (audioCodec.equals("ALAC 24Bits"))
+			{
+				audioCodec = "alac";
+				audioBitrate = " -sample_fmt s32p";
+			}
 			else
 				audioCodec = "aac";
 			
@@ -290,59 +300,44 @@ public class AudioSettings extends Shutter {
 			
 		    if (FFPROBE.stereo)
 		    {
-		    	if (FFPROBE.surround)
-		    	{			    	
-			    	if (lblAudioMapping.getText().equals("Multi"))
-			    	{
-			    		String mapping = "";
-			    		if (comboAudio1.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-						if (comboAudio2.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-						if (comboAudio3.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-						if (comboAudio4.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-						if (comboAudio5.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-						if (comboAudio6.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-						if (comboAudio7.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-						if (comboAudio8.getSelectedIndex() != 16)
-							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
-						
-			    		if (transitions != "")
-			    			transitions = " -filter:a " + '"' + transitions + '"';
-			    		
-				    	FFPROBE.stereo = false; //permet de contourner le split audio				    	
-				    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + transitions + mapping;
-			    	}
-			    	else
-			    	{			    		
-			    		if (transitions != "")
-				    		transitions = transitions + ",";
-				    	
-			    		String mono = "";
-			    		if (lblAudioMapping.getText().equals(language.getProperty("mono")))
-			    		{
-			    			mono = " -ac1";
-			    		}
-			    		
-				    	audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getText() + audioBitrate + " -filter:a " + '"' + transitions + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " -map a?";
-			    	}
+		    	if (FFPROBE.surround && lblAudioMapping.getText().equals("Multi") == false)
+		    	{			    			    		
+		    		if (transitions != "")
+			    		transitions = transitions + ",";
+			    	
+		    		String mono = "";
+		    		if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+		    		{
+		    			mono = " -ac 1";
+		    		}
+		    		
+			    	audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getText() + audioBitrate + " -filter:a " + '"' + transitions + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " -map a?";
 			    }
 		    	else if (lblAudioMapping.getText().equals("Multi"))
-		    	{
-		    		if (transitions != "") 
-			    		transitions = "," + transitions;
-			    	
-				    if (filterComplex != "")
-				    	audio += ";";
-				    else
-				    	audio += " -filter_complex " + '"';	
-				    
-				    audio += "[a:0]pan=1c|c0=c" + comboAudio1.getSelectedIndex() + transitions + "[a1];[a:0]pan=1c|c0=c" + comboAudio2.getSelectedIndex() + transitions + "[a2]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate;
+		    	{				    
+				    String mapping = "";
+		    		if (comboAudio1.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
+					if (comboAudio2.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
+					if (comboAudio3.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
+					if (comboAudio4.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
+					if (comboAudio5.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
+					if (comboAudio6.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
+					if (comboAudio7.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
+					if (comboAudio8.getSelectedIndex() != 16)
+						mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+					
+		    		if (transitions != "")
+		    			transitions = " -filter:a " + '"' + transitions + '"';
+		    		
+		    		FFPROBE.stereo = false; //permet de contourner le split audio	
+		    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + transitions + mapping;
 		    	}
 		    	else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
 		    	{

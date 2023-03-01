@@ -278,11 +278,11 @@ public static Process process;
 				String output = FunctionUtils.setOutputDestination("", f);
 				
 				//Concat file
-				String concat = FunctionUtils.setConcat(f, output);		
+				FunctionUtils.setConcat(f, output);		
 				
 				File concatList = new File(output.replace("\\", "/") + "/" + f.getName().replace(extension, ".txt"));				
 	
-				FFPLAY.run(option + flags + concat + " -i " + '"' + concatList + '"' + filter);
+				FFPLAY.run(option + flags + " -safe 0 -f concat -i " + '"' + concatList + '"' + filter);
 				
 				do {
 					try {

@@ -64,6 +64,7 @@ import library.XPDF;
 public class FunctionUtils extends Shutter {
 
 	public static int completed;
+	public static boolean allowsInvalidCharacters = false;
 	public static boolean yesToAll = false;
 	public static boolean noToAll = false;
 	public static File OPAtomFolder;
@@ -641,7 +642,7 @@ public class FunctionUtils extends Shutter {
 		bestBitrateMode = false;
 		goodBitrateMode = false;
 		autoBitrateMode = false;
-		
+				
 		if (debitVideo.getSelectedItem().equals(language.getProperty("lblBest").toLowerCase()) || debitVideo.getSelectedItem().equals(language.getProperty("lblGood").toLowerCase()) || debitVideo.getSelectedItem().equals("auto"))
 		{			
 			//Compression ratio
@@ -677,6 +678,7 @@ public class FunctionUtils extends Shutter {
 			int pixels = FFPROBE.imageWidth * FFPROBE.imageHeight;
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{  
+				String i[] = FFPROBE.imageResolution.split("x");
 				String o[] = FFPROBE.imageResolution.split("x");
 							
 				if (comboResolution.getSelectedItem().toString().contains("%"))
@@ -690,10 +692,29 @@ public class FunctionUtils extends Shutter {
 				{
 					o = comboResolution.getSelectedItem().toString().split("x");
 				}
-				         	
+				else if (comboResolution.getSelectedItem().toString().contains(":"))
+				{
+					o = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+					
+					int iw = Integer.parseInt(i[0]);
+		        	int ih = Integer.parseInt(i[1]);          	
+		        	int ow = Integer.parseInt(o[0]);
+		        	int oh = Integer.parseInt(o[1]);        	
+		        	float ir = (float) iw / ih;
+							        	
+					if (o[0].toString().equals("1")) // = auto
+					{
+						o[0] = String.valueOf((int) Math.round((float) oh * ir));
+					}
+	        		else
+	        		{
+	        			o[1] = String.valueOf((int) Math.round((float) ow / ir));
+	        		}
+				}
+				
 	        	int ow = Integer.parseInt(o[0]);
-	        	int oh = Integer.parseInt(o[1]);        	
-
+	        	int oh = Integer.parseInt(o[1]);	        	
+	        		        	
 				pixels = ow * oh;					
 			}		
 			
@@ -955,7 +976,7 @@ public class FunctionUtils extends Shutter {
         	}
         	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
         	{
-        		if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle"))
+        		if (FFPROBE.subtitlesCodec != "" && (FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle") || FFPROBE.subtitlesCodec.equals("ass")))
         		{
         			filterComplex += " -c:s copy -map s?";
         		}

@@ -289,8 +289,20 @@ public class Overlay extends Shutter {
 		   	if ((VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected()))
 		   	{
 		   		String dropFrame = ":";
-		   		if (caseConform.isSelected() == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || caseConform.isSelected() && (comboFPS.getSelectedItem().toString().equals("29,97") || comboFPS.getSelectedItem().toString().equals("59,94")))
+		   		if (FFPROBE.dropFrameTC.equals(":") == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		   		{
 		   			dropFrame = ";";
+		   		}
+		        
+		   		if (Shutter.caseConform.isSelected())
+		   		{
+		   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+		   			{
+		   				dropFrame = ";";
+		   			}
+		   			else 
+		   				dropFrame = ":";
+		   		}
 		   			
 		   		if (filterComplex != "") filterComplex += ",";
 		   		
@@ -343,8 +355,10 @@ public class Overlay extends Shutter {
 						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * value));
 						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
 					}					
-					else					
+					else if (comboResolution.getSelectedItem().toString().contains("x"))				
+					{
 						s = comboResolution.getSelectedItem().toString().split("x");
+					}
 					
 					int iw = Integer.parseInt(i[0]);
 					int ih = Integer.parseInt(i[1]);

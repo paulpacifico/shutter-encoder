@@ -141,6 +141,13 @@ public class AudioEncoders extends Shutter {
 								stereoOutput = true;
 								break;
 								
+							case "ALAC":
+								
+								audioCodec = "alac -sample_fmt s" + comboFilter.getSelectedItem().toString().replace(" Bits", "").replace("24", "32") + "p";	
+								container = ".m4a";
+								stereoOutput = true;
+								break;
+								
 							case "OGG":	
 								
 								audioCodec = "libvorbis -b:a " + comboFilter.getSelectedItem().toString() + "k";									

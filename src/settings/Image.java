@@ -168,6 +168,21 @@ public class Image extends Shutter {
 			else if (comboResolution.getSelectedItem().toString().contains(":"))
 			{
 				o = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+				
+				int iw = Integer.parseInt(i[0]);
+	        	int ih = Integer.parseInt(i[1]);          	
+	        	int ow = Integer.parseInt(o[0]);
+	        	int oh = Integer.parseInt(o[1]);        	
+	        	float ir = (float) iw / ih;
+						        	
+				if (o[0].toString().equals("1")) // = auto
+				{
+					o[0] = String.valueOf((int) Math.round((float) oh * ir));
+				}
+        		else
+        		{
+        			o[1] = String.valueOf((int) Math.round((float) ow / ir));
+        		}
 			}
 			
 			int iw = Integer.parseInt(i[0]);
@@ -325,6 +340,21 @@ public class Image extends Shutter {
 			else if (comboResolution.getSelectedItem().toString().contains(":"))
 			{
 				o = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+				
+				int iw = Integer.parseInt(i[0]);
+	        	int ih = Integer.parseInt(i[1]);          	
+	        	int ow = Integer.parseInt(o[0]);
+	        	int oh = Integer.parseInt(o[1]);        	
+	        	float ir = (float) iw / ih;
+						        	
+				if (o[0].toString().equals("1")) // = auto
+				{
+					o[0] = String.valueOf((int) Math.round((float) oh * ir));
+				}
+        		else
+        		{
+        			o[1] = String.valueOf((int) Math.round((float) ow / ir));
+        		}
 			}
 			
 			int iw = Integer.parseInt(i[0]);
