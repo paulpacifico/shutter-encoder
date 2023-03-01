@@ -132,6 +132,7 @@ import library.MEDIAINFO;
 import library.XPDF;
 import settings.Colorimetry;
 import settings.Corrections;
+import settings.Timecode;
 
 public class VideoPlayer {
 	
@@ -906,8 +907,15 @@ public class VideoPlayer {
 				{
 					if (e.getKeyCode() == KeyEvent.VK_LEFT)
 	            		btnPrevious.doClick();	
+					
 					if (e.getKeyCode() == KeyEvent.VK_RIGHT)
 						btnNext.doClick();
+					
+					if (e.getKeyCode() == KeyEvent.VK_UP)
+						btnGoToOut.doClick();	
+					
+					if (e.getKeyCode() == KeyEvent.VK_DOWN)
+						btnGoToIn.doClick();					
 				}				
 				      
 			}
@@ -946,9 +954,9 @@ public class VideoPlayer {
 	}
 	
 	public static void playerProcess(float inputTime) {
-				
-		try {			
 
+		try {			
+			
 			if (System.getProperty("os.name").contains("Windows"))
 			{							
 				String PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -1000,7 +1008,8 @@ public class VideoPlayer {
 						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
 
 						if (playerLoop)
-						{							
+						{		
+							
 							try {	
 								
 								//Audio volume	
@@ -1029,7 +1038,8 @@ public class VideoPlayer {
 										playerCurrentFrame += 1 * 0.25f;
 								}
 								else
-									playerCurrentFrame += 1;		
+									playerCurrentFrame += 1;	
+								
 															
 							} catch (Exception e) {
 								e.printStackTrace();
@@ -1147,7 +1157,7 @@ public class VideoPlayer {
 	}
 	
 	public static void playerSetTime(float time) {
-
+		
 		if (setTime == null || setTime.isAlive() == false && frameVideo != null)
 		{
 			setTime = new Thread(new Runnable() {
@@ -1399,7 +1409,7 @@ public class VideoPlayer {
 						}
 						
 					} catch (InterruptedException e) {}
-					
+
 					//Displaying section 
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 					{
@@ -1705,7 +1715,7 @@ public class VideoPlayer {
 						FunctionUtils.setConcat(new File("concat.txt"), Shutter.dirTemp);						
 						inputFramerateMS = Float.parseFloat(Shutter.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
 					}
-					else
+					else					
 						inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);		
 					
 					totalFrames = (float) Math.round(FFPROBE.totalLength / inputFramerateMS);
@@ -1786,6 +1796,11 @@ public class VideoPlayer {
 				
 				caseInternalTc.setEnabled(false);	
 				caseInternalTc.setSelected(false);				
+			}
+			
+			if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("processEnded")))
+			{
+				Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
 			}
 			
 			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
@@ -1949,9 +1964,8 @@ public class VideoPlayer {
 			}
 			 */
 			Console.consoleFFMPEG.append(System.lineSeparator() + gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed) + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
-		    			
-			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed) + " -c:v bmp -an -f image2pipe pipe:-";		
-			
+
+			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed) + " -c:v bmp -an -f image2pipe pipe:-";			
 		}
 	}
 	
@@ -1995,7 +2009,7 @@ public class VideoPlayer {
 					} while (FFMPEG.isRunning && playerVideo == null && frame.isVisible() == false);
 				}
 				
-				if (FFMPEG.isRunning == false)
+				if (FFMPEG.isRunning == false || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")))
 				{								
 					//Si fichier audio seulement ou Sous titrage								
 					if (FFPROBE.hasAudio)
@@ -2158,7 +2172,7 @@ public class VideoPlayer {
 									if (System.currentTimeMillis() - time > 1000)
 										frameIsComplete = true;
 																
-								} while (frameIsComplete == false);					
+								} while (frameIsComplete == false);												
 								
 								if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 									getTimePoint(playerCurrentFrame - 1);
@@ -2387,8 +2401,12 @@ public class VideoPlayer {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {		
-				
+
 				playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+				
+				//NTSC framerate
+				playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+				
 				playerSetTime(playerCurrentFrame);
 			}
 			
@@ -2423,6 +2441,10 @@ public class VideoPlayer {
 			public void actionPerformed(ActionEvent arg0) {
 
 				playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
+
+				//NTSC framerate
+				playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+				
 				playerSetTime(playerCurrentFrame - 1);
 			}
 			
@@ -2814,15 +2836,26 @@ public class VideoPlayer {
 					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
 					{
 						playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+											
+						//NTSC framerate
+						playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+						
 						playerSetTime(playerCurrentFrame);
 					}
 					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
 					{
 						playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
+						
+						//NTSC framerate
+						playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+						
 						playerSetTime(playerCurrentFrame);
 					}	
 					else
 					{
+						//NTSC framerate
+						playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+						
 						playerSetTime(playerCurrentFrame - 1);
 					}					
 										
@@ -3664,6 +3697,10 @@ public class VideoPlayer {
 						caseInH.setText("0" + caseInH.getText());
 
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					
 					playerSetTime(playerCurrentFrame);
 					
 					playerInMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -3726,6 +3763,10 @@ public class VideoPlayer {
 						caseInM.setText("0" + caseInM.getText());
 
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					
 					playerSetTime(playerCurrentFrame);
 					
 					playerInMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -3788,6 +3829,10 @@ public class VideoPlayer {
 						caseInS.setText("0" + caseInS.getText());				
 
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					
 					playerSetTime(playerCurrentFrame);	
 					
 					playerInMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -3850,6 +3895,10 @@ public class VideoPlayer {
 						caseInF.setText("0" + caseInF.getText());
 
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					
 					playerSetTime(playerCurrentFrame);
 
 					playerInMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -3881,6 +3930,10 @@ public class VideoPlayer {
 	}
 	
 	private static void updateGrpIn(float timeIn) {
+	
+		//NTSC framerate
+		if (timeIn > 0)
+			timeIn = Timecode.setNonDropFrameTC(timeIn);
 		
 		caseInH.setText(formatter.format(Math.floor(timeIn / FFPROBE.currentFPS / 3600)));
 		caseInM.setText(formatter.format(Math.floor(timeIn / FFPROBE.currentFPS / 60) % 60));
@@ -4072,6 +4125,10 @@ public class VideoPlayer {
 						caseOutH.setText("0" + caseOutH.getText());
 					
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					
 					playerSetTime(playerCurrentFrame);
 					
 					playerOutMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -4134,6 +4191,10 @@ public class VideoPlayer {
 						caseOutM.setText("0" + caseOutM.getText());
 
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+										
 					playerSetTime(playerCurrentFrame);
 					
 					playerOutMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -4196,6 +4257,10 @@ public class VideoPlayer {
 						caseOutS.setText("0" + caseOutS.getText());
 
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					
 					playerSetTime(playerCurrentFrame);
 					
 					playerOutMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -4258,6 +4323,10 @@ public class VideoPlayer {
 						caseOutF.setText("0" + caseOutF.getText());
 
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
+
+					//NTSC framerate
+					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					
 					playerSetTime(playerCurrentFrame);
 					
 					playerOutMark = Math.round((float) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
@@ -4290,6 +4359,9 @@ public class VideoPlayer {
 
 		if (playerOutMark < waveformContainer.getWidth() - 2)
 		{
+			//NTSC framerate
+			timeOut = Timecode.setNonDropFrameTC(timeOut);
+
 			caseOutH.setText(formatter.format(Math.floor(timeOut / FFPROBE.currentFPS / 3600)));
 			caseOutM.setText(formatter.format(Math.floor(timeOut / FFPROBE.currentFPS / 60) % 60));
 			caseOutS.setText(formatter.format(Math.floor(timeOut / FFPROBE.currentFPS) % 60));    		
@@ -4399,7 +4471,7 @@ public class VideoPlayer {
 											maxHeight = frame.getHeight();
 										}
 										
-										if (grpCorrections.getY() + grpCorrections.getHeight() > maxHeight - 6 && grpCorrections.getHeight() > 17)
+										if (grpCorrections.getY() + grpCorrections.getHeight() >= maxHeight - 6 && grpCorrections.getHeight() > 17)
 										{
 											grpCorrections.setSize(grpCorrections.getWidth(), grpCorrections.getHeight() - 2);
 										}
@@ -5684,7 +5756,7 @@ public class VideoPlayer {
 											maxHeight = frame.getHeight();
 										}
 										
-										if (grpCorrections.getY() + grpCorrections.getHeight() > maxHeight - 6 && grpCorrections.getHeight() > 17)
+										if (grpCorrections.getY() + grpCorrections.getHeight() >= maxHeight - 6 && grpCorrections.getHeight() > 17)
 										{
 											grpColorimetry.setSize(grpColorimetry.getWidth(), grpColorimetry.getHeight() - 1);
 											panelColorimetryComponents.setSize(grpColorimetry.getWidth() - 18, grpColorimetry.getHeight() - 25);
@@ -5819,6 +5891,10 @@ public class VideoPlayer {
 									btnPlay.setText(Shutter.language.getProperty("btnPause"));
 									
 									float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+									
+									//NTSC framerate
+									timeIn = Timecode.getNonDropFrameTC(timeIn);
+									
 									playerSetTime(timeIn);															
 									
 									do {
@@ -6117,7 +6193,7 @@ public class VideoPlayer {
 										grpSubtitles.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
 										grpWatermark.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getSize().height + grpSubtitles.getLocation().y + 6);
 										
-										if (grpWatermark.getY() + grpWatermark.getHeight() == grpOut.getY() - 6)
+										if (grpWatermark.getY() + grpWatermark.getHeight() >= grpOut.getY() - 6)
 										{		
 											grpOverlay.setSize(grpOverlay.getWidth(), grpOverlay.getHeight() - 1);
 											grpSubtitles.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
@@ -7356,7 +7432,7 @@ public class VideoPlayer {
 										grpSubtitles.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
 										grpWatermark.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getSize().height + grpSubtitles.getLocation().y + 6);
 										
-										if (grpWatermark.getY() + grpWatermark.getHeight() == grpOut.getY() - 6)
+										if (grpWatermark.getY() + grpWatermark.getHeight() >= grpOut.getY() - 6)
 										{		
 											if (grpSubtitles.getHeight() > 17)
 											{
@@ -7777,8 +7853,20 @@ public class VideoPlayer {
 		        g2.setFont(font);
 		        		        
 		        String dropFrame = ":";
-		   		if (Shutter.caseConform.isSelected() == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || Shutter.caseConform.isSelected() && (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94")))
-		   			dropFrame = ";";
+		        if (FFPROBE.dropFrameTC.equals(":") == false  && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+	        	{
+		        	dropFrame = ";";
+	        	}
+		        
+		   		if (Shutter.caseConform.isSelected())
+		   		{
+		   			if (Shutter.comboFPS.getSelectedItem().toString().equals("23,98") || Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+		   			{
+		   				dropFrame = ";";
+		   			}
+		   			else 
+		   				dropFrame = ":";
+		   		}
 		        
 		        String str = "00:00:00" + dropFrame + "00";
 		        
@@ -9430,7 +9518,7 @@ public class VideoPlayer {
 										grpSubtitles.setSize(grpSubtitles.getWidth(), i);	
 										grpWatermark.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getSize().height + grpSubtitles.getLocation().y + 6);
 										
-										if (grpWatermark.getY() + grpWatermark.getHeight() == grpOut.getY() - 6)
+										if (grpWatermark.getY() + grpWatermark.getHeight() >= grpOut.getY() - 6)
 										{		
 											grpOverlay.setSize(grpOverlay.getWidth(), grpOverlay.getHeight() - 1);
 											grpSubtitles.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
@@ -9576,7 +9664,7 @@ public class VideoPlayer {
 							grpSubtitles.setSize(grpSubtitles.getWidth(), 131);	
 							grpWatermark.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getSize().height + grpSubtitles.getLocation().y + 6);
 							
-							if (grpWatermark.getY() + grpWatermark.getHeight() == grpOut.getY() - 6)
+							if (grpWatermark.getY() + grpWatermark.getHeight() >= grpOut.getY() - 6)
 							{		
 								grpOverlay.setSize(grpOverlay.getWidth(), grpOverlay.getHeight() - 1);
 								grpSubtitles.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
@@ -10785,7 +10873,7 @@ public class VideoPlayer {
 										
 										grpWatermark.setSize(grpWatermark.getWidth(), i);									
 										
-										if (grpWatermark.getY() + grpWatermark.getHeight() == grpOut.getY() - 6)
+										if (grpWatermark.getY() + grpWatermark.getHeight() >= grpOut.getY() - 6)
 										{		
 											grpOverlay.setSize(grpOverlay.getWidth(), grpOverlay.getHeight() - 1);
 											grpSubtitles.setLocation(grpOverlay.getLocation().x, grpOverlay.getSize().height + grpOverlay.getLocation().y + 6);
@@ -12161,10 +12249,10 @@ public class VideoPlayer {
 		
 		caseInternalTc.setBounds(grpIn.getX(), frame.getSize().height - 16 - 12, caseInternalTc.getPreferredSize().width, 23);	
 		casePlaySound.setBounds(caseInternalTc.getX() + caseInternalTc.getWidth() + 4, caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
-		
+
 		float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 		float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
-		
+
 		//Sliders
 		if (waveformContainer.isVisible())
 		{
@@ -12365,12 +12453,15 @@ public class VideoPlayer {
 			
 			float totalIn =  (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 			float totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
-			
-			float total = totalOut - totalIn;
+
+			float total = Math.round(totalOut - totalIn);
+
+			//NTSC timecode
+			total = Timecode.getNonDropFrameTC(total);
 						
 			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 				total = totalFrames - total;	
-						
+
 			durationH = (int) (total / FFPROBE.currentFPS / 3600);
 			durationM = (int) ((total / FFPROBE.currentFPS / 60) % 60);
 			durationS = (int) ((total / FFPROBE.currentFPS) % 60);
@@ -12428,14 +12519,23 @@ public class VideoPlayer {
 			sliderChange = false;    		
 		}
 
+		//NTSC framerate
+		time = Timecode.setNonDropFrameTC(time);
+
     	if (playerVideo != null && time - offset < totalFrames - 1)
     	{    					    			 		
 			String h = formatter.format(Math.floor(time / FFPROBE.currentFPS / 3600));
 			String m =  formatter.format(Math.floor(time / FFPROBE.currentFPS / 60) % 60);
 			String s = formatter.format(Math.floor(time / FFPROBE.currentFPS) % 60);   
 			String f = formatter.format(Math.floor(time % FFPROBE.currentFPS));
-					    		
-			lblPosition.setText(Shutter.language.getProperty("grpTimecode") + Shutter.language.getProperty("colon") + " " + h + ":" + m + ":" + s + ":" + f);	    
+					    	
+			String dropFrame = ":";
+	        if (Timecode.isDropFrame())
+        	{
+	        	dropFrame = ";";
+        	}
+	        
+			lblPosition.setText(Shutter.language.getProperty("grpTimecode") + Shutter.language.getProperty("colon") + " " + h + ":" + m + ":" + s + dropFrame + f);	    
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
 			{
@@ -12730,7 +12830,17 @@ public class VideoPlayer {
 								}
 								else if (p instanceof JTextField)
 								{			
-									Thread.sleep(10);
+									long time = System.currentTimeMillis();
+									
+									do {
+										try {
+											Thread.sleep(100);
+										} catch (InterruptedException er) {}
+										
+										if (System.currentTimeMillis() - time > 1000)
+											frameIsComplete = true;
+																	
+									} while (frameIsComplete == false);
 									
 									//Value
 									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());

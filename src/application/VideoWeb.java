@@ -421,6 +421,7 @@ public class VideoWeb {
 					{
 						if (caseAuto.isSelected() == false)
 							caseAuto.doClick();
+						
 						JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("invalidUrl"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);
 					}
 										
@@ -618,7 +619,8 @@ public class VideoWeb {
 	}
 
 	private String options() {
-		String options = "";
+		
+		String options = " --embed-thumbnail --embed-metadata";
 		if (caseUser.isSelected())
 			options += " --username " + '"' + textUser.getText() + '"';
 		if (casePass.isSelected())
@@ -660,20 +662,34 @@ public class VideoWeb {
 	        		{	
 	        			//Loop each line
 	        			for (String line : textURL.getText().split("\n"))
-	        			{	        				        			
+	        			{	  
 			        		//Format checking
 							if (caseAuto.isSelected()) 
 							{				
-								YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
+								if (line.contains("twitter") == false)
+								{
+									YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
+								}
 							}
 							else
 							{
 								String[] f = comboFormats.getSelectedItem().toString().split(" ");
 								
 								if (comboFormats.getSelectedItem().toString().contains("audio only"))
+								{
 									YOUTUBEDL.format = "-f " + f[0];
+								}
 								else
-									YOUTUBEDL.format = "-f " + f[0]+"+bestaudio";
+								{
+									if (line.contains("twitter"))
+									{
+										YOUTUBEDL.format = "-f " + f[0];
+									}
+									else
+									{
+										YOUTUBEDL.format = "-f " + f[0]+"+bestaudio";
+									}
+								}
 							}
 	
 							FFMPEG.disableAll();
