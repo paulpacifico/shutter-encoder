@@ -283,7 +283,7 @@ public class Picture extends Shutter {
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							if (lastActions(fileName, extension, fileOut, labelOutput) || videoPlayerCapture)
+							if (lastActions(file, fileName, extension, fileOut, labelOutput) || videoPlayerCapture)
 								break;
 						}
 						
@@ -379,7 +379,7 @@ public class Picture extends Shutter {
 			return " -vframes 1";
 	}
 	
-	private static boolean lastActions(String fileName, String extension, File fileOut, String output) {		
+	private static boolean lastActions(File file, String fileName, String extension, File fileOut, String output) {		
 		
 		if (FunctionUtils.cleanFunction(fileName, fileOut, output))
 			return true;
@@ -394,7 +394,7 @@ public class Picture extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(fileName);				
+			FunctionUtils.moveScannedFiles(file);				
 			Picture.main(true, false);
 			return true;
 		}

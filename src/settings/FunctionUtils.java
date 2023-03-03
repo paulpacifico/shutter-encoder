@@ -226,8 +226,9 @@ public class FunctionUtils extends Shutter {
 	public static File setInputFile(File input) {
 		
         if (Shutter.scanIsRunning)
-        {
-        	input = watchFolder(input.toString());
+        {        	
+        	input = watchFolder();
+        	
         	if (input != null)
         		btnStart.setEnabled(true);
         	else
@@ -244,8 +245,8 @@ public class FunctionUtils extends Shutter {
         return input;
 	}
 	
-	public static File watchFolder(String folder) {
-		
+	public static File watchFolder() {
+			
 		progressBar1.setIndeterminate(true);
 		lblCurrentEncoding.setText(language.getProperty("waitingFiles"));
 		tempsRestant.setVisible(false);
@@ -254,46 +255,61 @@ public class FunctionUtils extends Shutter {
 
 		File actualScanningFile = null;
 		do {
-			File dir = new File(folder);
-			btnStart.setEnabled(false);
 
-			for (File file : dir.listFiles()) // Récupère chaque fichier du dossier
-			{
-				if (file.isHidden() || file.isFile() == false)
-				{
-					continue;
-				}
-				else if (Settings.btnExclude.isSelected())
+			if (actualScanningFile == null)
+			{	
+				for (int i = 0 ; i < liste.getSize() ; i ++)
 				{							
-					boolean allowed = true;
-					for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
-					{
-						int s = file.toString().lastIndexOf('.');
-						String ext = file.toString().substring(s);
+					File dir = new File(liste.getElementAt(i));
+					btnStart.setEnabled(false);
+
+					for (File file : dir.listFiles())
+					{		
+						if (file.isDirectory() == false && file.isHidden() == false && file.getName().equals("completed") == false && file.getName().equals("error") == false)
+						{		
+							if (file.getName().contains("."))
+							{					
+								boolean allowed = true;
+								if (Settings.btnExclude.isSelected())
+								{
+									for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
+									{
+										int s = file.toString().lastIndexOf('.');
+										String ext = file.toString().substring(s);
+										
+										if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+											allowed = false;
+									}
+									
+									if (allowed == false)
+									{
+										continue;//Next
+									}
+								}
+							}
+						}
+						else
+						{
+							continue;
+						}
+
+						actualScanningFile = file;
+
+						//While a file is copied
+						progressBar1.setIndeterminate(true);
+										
+						if (waitFileCompleted(file) == false)
+							return null;
+
+						if (actualScanningFile != null)
+							return actualScanningFile;
 						
-						if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
-							allowed = false;
 					}
-					
-					if (allowed == false)
-						continue;
 				}
-
-				actualScanningFile = file;
-
-				// Lorque un fichier est entrain d'être copié
-				progressBar1.setIndeterminate(true);
-				
-				if (waitFileCompleted(file) == false)
-					return null;
-
-				if (actualScanningFile != null)
-					return actualScanningFile;
-				
-			} // End for
+			}
+									
 		} while (scanIsRunning);
-
-		// Action de fin
+						
 		progressBar1.setIndeterminate(false);
 		enableAll();
 		btnEmptyList.doClick();
@@ -301,44 +317,33 @@ public class FunctionUtils extends Shutter {
 		return null;
 	}
 
-	public static void moveScannedFiles(String file)
+	public static void moveScannedFiles(File file)
 	{
-		File folder = new File(liste.getElementAt(0) + "completed");
+		File folder = new File(file.getParent() + "/completed");
 		
 		//Si erreur
 		if (FFMPEG.error || cancelled)
-			folder = new File(liste.getElementAt(0) + "error");
+			folder = new File(file.getParent() + "/error");
 		
 		if (folder.exists() == false)
 			folder.mkdir();
 		
-		File fileToMove = new File(folder + "/" + file);
-		
-		// Récupère le fichier du dossier
-		for (int i = 0 ; i < liste.getSize() ; i++)
-		{						
-			File getFile = new File(liste.getElementAt(i) + file);
+		File fileToMove = new File(folder + "/" + file.getName());
+				
+		if (fileToMove.exists())
+		{
+			int n = 1;
 			
-			if (getFile.exists()) //Si le fichier correspond on le déplace dans le dossier
-			{
-					if (fileToMove.exists()) //Nom identique à la source
-					{
-						int n = 1;
-						
-						String ext =  file.substring(file.lastIndexOf("."));
-						
-						do {
-							fileToMove = new File(folder + "/" + file.replace(ext, "") + "_" + n + ext);
-							n++;
-						} while (fileToMove.exists());
-					}
-					
-					//Déplacement du fichier
-					getFile.renameTo(fileToMove);
-					
-					break;	
-			}
+			String ext =  file.getName().substring(file.getName().lastIndexOf("."));
+			
+			do {
+				fileToMove = new File(folder + "/" + file.getName().replace(ext, "") + "_" + n + ext);
+				n++;
+			} while (fileToMove.exists());
 		}
+		
+		//Moving the file to completed folder
+		file.renameTo(fileToMove);	
 	}
 	
 	public static String completedFiles(int number) {

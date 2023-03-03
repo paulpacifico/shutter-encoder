@@ -104,7 +104,7 @@ public class Command extends Shutter {
 	
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							if (lastActions(fileName, fileOut, labelOutput))
+							if (lastActions(file, fileName, fileOut, labelOutput))
 							break;
 						}
 					
@@ -122,7 +122,7 @@ public class Command extends Shutter {
 		
     }
 		
-	private static boolean lastActions(String fileName, File fileOut, String output) {
+	private static boolean lastActions(File file, String fileName, File fileOut, String output) {
 		
 		if (FunctionUtils.cleanFunction(fileName, fileOut, output))
 			return true;
@@ -137,7 +137,7 @@ public class Command extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(fileName);
+			FunctionUtils.moveScannedFiles(file);
 			Command.main();
 			return true;
 		}

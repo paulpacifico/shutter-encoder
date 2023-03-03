@@ -89,7 +89,7 @@ public class LoudnessTruePeak extends Shutter {
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							if (lastActions(fileName))
+							if (lastActions(file, fileName))
 								break;
 						}
 					
@@ -165,7 +165,7 @@ public class LoudnessTruePeak extends Shutter {
 		}	
 	}
 	
-	private static boolean lastActions(String fileName) {		
+	private static boolean lastActions(File file, String fileName) {		
 		
 		//Errors
 		if (FFMPEG.error)
@@ -192,7 +192,7 @@ public class LoudnessTruePeak extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(fileName);
+			FunctionUtils.moveScannedFiles(file);
 			LoudnessTruePeak.main();
 			return true;
 		}

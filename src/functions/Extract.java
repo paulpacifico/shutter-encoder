@@ -129,7 +129,7 @@ public class Extract extends Shutter {
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
 						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 						{
-							if (lastActions(fileName, fileOut, labelOutput))
+							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
 						}
 						
@@ -253,7 +253,7 @@ public class Extract extends Shutter {
 		return " -c copy -map v:0? -map a? -map s?";
 	}
 
-	private static boolean lastActions(String fileName, File fileOut, String output) {
+	private static boolean lastActions(File file, String fileName, File fileOut, String output) {
 		
 		if (FunctionUtils.cleanFunction(fileName, fileOut, output))
 			return true;
@@ -267,7 +267,7 @@ public class Extract extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(fileName);
+			FunctionUtils.moveScannedFiles(file);
 			Extract.main();
 			return true;
 		}

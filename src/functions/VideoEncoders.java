@@ -986,7 +986,7 @@ public class VideoEncoders extends Shutter {
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
 						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
 						{
-							if (lastActions(fileName, fileOut, labelOutput))
+							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
 						}
 					} catch (InterruptedException | IOException e) {
@@ -1649,7 +1649,7 @@ public class VideoEncoders extends Shutter {
             } while (TSMUXER.isRunning);
 }
 	
-	private static boolean lastActions(String fileName, File fileOut, String output) {
+	private static boolean lastActions(File file, String fileName, File fileOut, String output) {
 		
 		if (FunctionUtils.cleanFunction(fileName, fileOut, output))
 			return true;
@@ -1671,8 +1671,8 @@ public class VideoEncoders extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(fileName);
-			VideoEncoders.main(true);
+			FunctionUtils.moveScannedFiles(file);
+			VideoEncoders.main(true);			
 			return true;
 		}
 		

@@ -193,7 +193,7 @@ public class AudioNormalization extends Shutter {
 	
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							if (lastActions(fileName, fileOut, labelOutput))
+							if (lastActions(file, fileName, fileOut, labelOutput))
 							break;
 						}
 						
@@ -318,7 +318,7 @@ public class AudioNormalization extends Shutter {
 			return " -c:a pcm_s16le -ar " + FFPROBE.audioSampleRate + " -map v:0? -map a? -map s?";
 	}
 	
-	private static boolean lastActions(String fileName, File fileOut, String output) {
+	private static boolean lastActions(File file, String fileName, File fileOut, String output) {
 		
 		if (FunctionUtils.cleanFunction(fileName, fileOut, output))
 			return true;
@@ -333,7 +333,7 @@ public class AudioNormalization extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(fileName);
+			FunctionUtils.moveScannedFiles(file);
 			AudioNormalization.main();
 			return true;
 		}

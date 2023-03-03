@@ -90,7 +90,7 @@ public class BlackDetection extends Shutter {
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							if (lastActions(fileName))
+							if (lastActions(file, fileName))
 								break;
 						}
 					
@@ -143,7 +143,7 @@ public class BlackDetection extends Shutter {
 			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionBlackDetection"), JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	private static boolean lastActions(String fileName) {	
+	private static boolean lastActions(File file, String fileName) {	
 		
 		//Errors
 		if (FFMPEG.error)
@@ -170,7 +170,7 @@ public class BlackDetection extends Shutter {
 		//Watch folder
 		if (Shutter.scanIsRunning)
 		{
-			FunctionUtils.moveScannedFiles(fileName);
+			FunctionUtils.moveScannedFiles(file);
 			BlackDetection.main();
 			return true;
 		}
