@@ -941,7 +941,8 @@ public class Shutter {
 					
 					if (ext.equals(".enc") == false && droppedFiles.isHidden() == false && droppedFiles.getName().contains("."))
 						liste.addElement(droppedFiles.toString());
-				} else
+				} 
+				else
 					Utils.findFiles(droppedFiles.toString());
 			}
 			
@@ -16120,8 +16121,11 @@ public class Shutter {
 		{
 			RenderQueue.tableRow.setRowCount(0);
 		}
-						
-		enableAll();
+		
+		if (scanIsRunning == false)
+		{
+			enableAll();
+		}
 		Utils.yesToAll = false;
 		Utils.noToAll = false;
 
@@ -16305,10 +16309,9 @@ class ListeFileTransferHandler extends TransferHandler {
 		for (int i = 0; i < arg1.length; i++)
 		{
 			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.scanIsRunning == false && Shutter.inputDeviceIsRunning == false
+			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.inputDeviceIsRunning == false
 			&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false)
 			{
-
 				Shutter.fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 1));
 				return true;
 			}
@@ -16319,11 +16322,14 @@ class ListeFileTransferHandler extends TransferHandler {
 	public boolean importData(JComponent comp, Transferable t) {
 
 		DataFlavor[] flavors = t.getTransferDataFlavors();
-		for (int i = 0; i < flavors.length; i++) {
+		
+		for (int i = 0; i < flavors.length; i++)
+		{
 			DataFlavor flavor = flavors[i];
+			
 			try {
-				if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.scanIsRunning == false
-				&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false) {
+				
+				if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false) {
 
 					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					Iterator<?> iter = l.iterator();
@@ -16337,7 +16343,26 @@ class ListeFileTransferHandler extends TransferHandler {
 						
 						if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
 						{
-							if (file.isFile())
+							if (file.isDirectory())
+							{								
+								if (file.toString().contains("completed") == false && file.toString().contains("error") == false)
+								{
+									boolean folderExists = false;
+									for (int f = 0 ; f < Shutter.liste.getSize() ; f++)
+									{							
+										if (Shutter.liste.getElementAt(f).equals(file.toString()))
+										{
+											folderExists = true;
+										}
+									}
+									
+									if (folderExists == false)
+									{
+										Utils.findDirectories(file.toString());						
+									}
+								}
+							}
+							else 
 								file = new File(file.getParent());
 								
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -16348,16 +16373,17 @@ class ListeFileTransferHandler extends TransferHandler {
 							Shutter.addToList.setVisible(false);
 							Shutter.lblFiles.setText(Utils.filesNumber());
 							
-							if (file != null) {
-								if (Shutter.caseChangeFolder1.isSelected()) {
+							if (file != null) 
+							{
+								if (Shutter.caseChangeFolder1.isSelected()) 
+								{
 									Shutter.scanIsRunning = true;
 									Shutter.changeFilters();
 								} 
 								else
 									JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("dragFolderToDestination"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.INFORMATION_MESSAGE);				
 							}
-														
-							break;
+
 						}
 						else
 						{

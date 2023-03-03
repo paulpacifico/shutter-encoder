@@ -507,9 +507,33 @@ public class Utils extends Shutter {
 				}
 			}
 		}
-		lblFiles.setText(filesNumber());
-	}
 		
+		lblFiles.setText(filesNumber());;
+	}
+	
+	public static void findDirectories(String path) {
+	
+		File root = new File(path);
+		File[] list = root.listFiles();
+
+		if (list == null)
+			return;
+
+		for (File f : list) {
+			
+			if (f.isDirectory()) 
+			{
+				Shutter.liste.addElement(f.getAbsoluteFile().toString());
+				Shutter.addToList.setVisible(false);
+				Shutter.lblFiles.setText(Utils.filesNumber());
+				
+				findDirectories(f.getAbsolutePath());
+			}
+		}	
+		
+		lblFiles.setText(filesNumber());;
+	}
+	
 	@SuppressWarnings({"rawtypes"})
 	public static void saveSettings(boolean update) {
 		
