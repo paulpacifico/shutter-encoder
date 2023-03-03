@@ -7897,13 +7897,17 @@ public class VideoPlayer {
 					tcS = tcS * FFPROBE.currentFPS;
 					
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+
+					//NTSC framerate
+					timeIn = Timecode.getNonDropFrameTC(timeIn);
 					
 					if (caseShowTimecode.isSelected())
 					{
 						timeIn = 0;
 					}
 					
-					float offset = (playerCurrentFrame - timeIn) + tcH + tcM + tcS + tcF - 1;
+					float currentTime = Timecode.setNonDropFrameTC(playerCurrentFrame);
+					float offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF - 1;
 					
 					if (offset < 0)
 						offset = 0;
