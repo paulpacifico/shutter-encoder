@@ -2106,16 +2106,7 @@ public class Utils extends Shutter {
 				}
 			}
 			
-			changeFunction(false);							
-			
-			if (lblPad.getText().equals(language.getProperty("lblPad")))
-			{
-				lblPad.setText(language.getProperty("lblPad"));
-			}
-			else
-			{
-				lblPad.setText(language.getProperty("lblCrop"));
-			}
+			changeFunction(false);						
 				
 		} catch (Exception e) {
 			

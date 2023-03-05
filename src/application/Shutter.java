@@ -168,7 +168,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "16.8";
+	public static String actualVersion = "16.9";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
@@ -4518,8 +4518,7 @@ public class Shutter {
 					iconTVResolution.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);	
 				}
 				else
-				{
-					lblPad.setText(language.getProperty("lblPad"));					
+				{				
 					lblPad.setVisible(true);
 					iconTVResolution.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 				}	
@@ -4539,7 +4538,6 @@ public class Shutter {
 				if (comboFonctions.getSelectedItem().toString().equals("JPEG") == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false)
 				{
 					lblPad.setVisible(true);
-					lblPad.setText(language.getProperty("lblPad"));
 					iconTVResolution.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 				}
 				
@@ -7678,15 +7676,6 @@ public class Shutter {
 			public void mouseClicked(MouseEvent e) {
 				switch (lbl48k.getText())
 				{
-					case "8k" :
-						lbl48k.setText("16k");
-						break;
-					case "16k" :
-						lbl48k.setText("32k");
-						break;
-					case "32k" :
-						lbl48k.setText("44.1k");
-						break;
 					case "44.1k" :
 						lbl48k.setText("48k");
 						break;
@@ -7697,7 +7686,7 @@ public class Shutter {
 						lbl48k.setText("192k");
 						break;
 					case "192k" :
-						lbl48k.setText("8k");
+						lbl48k.setText("44.1k");
 						break;
 				}
 			}
@@ -10622,7 +10611,7 @@ public class Shutter {
 				//codecs de sortie
 				if (grpBitrate.isVisible())
 				{
-					if (VideoPlayer.caseEnableCrop.isSelected())
+					if (caseInAndOut.isSelected() && VideoPlayer.caseEnableCrop.isSelected())
 					{
 						if (lblPad.getText().equals(language.getProperty("lblPad")))
 						{
@@ -10635,11 +10624,12 @@ public class Shutter {
 					}
 					else
 					{
+						
 						if (lblPad.getText().equals(language.getProperty("lblPad")))
 						{
 							lblPad.setText(language.getProperty("lblStretch"));
 						}
-						else if (lblPad.getText().equals(language.getProperty("lblStretch")))
+						else
 						{
 							lblPad.setText(language.getProperty("lblPad"));
 						}
@@ -11966,6 +11956,7 @@ public class Shutter {
 				{
 					lblPad.setVisible(true);
 				}
+				lblPad.setText(language.getProperty("lblPad"));
 				
 				caseOpenGop.setSelected(false);
 				caseForceOutput.setSelected(false);
