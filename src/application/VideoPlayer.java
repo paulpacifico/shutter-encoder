@@ -7424,7 +7424,15 @@ public class VideoPlayer {
 			textCropWidth.setText(String.valueOf(outW));
 			textCropHeight.setText(String.valueOf(outH));
 		}	
-
+		/*
+		if (caseEnableCrop.isSelected())
+		{
+			comboPreset.getEditor().setItem((double) Math.round((double) ((double) outW / outH) * 100.0) / 100.0);		
+		}
+		else
+		{
+			comboPreset.getEditor().setItem(Shutter.language.getProperty("aucun"));
+		}*/
 	}
 		
 	@SuppressWarnings("serial")
