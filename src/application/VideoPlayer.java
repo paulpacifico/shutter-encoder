@@ -1397,7 +1397,8 @@ public class VideoPlayer {
 								 }
 								 while (XPDF.isRunning);								 
 							}				
-							else if (isRaw)
+							else if (isRaw || Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG")
+										   || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionPicture")))
 							{
 								 EXIFTOOL.run(videoPath);	
 								 do
