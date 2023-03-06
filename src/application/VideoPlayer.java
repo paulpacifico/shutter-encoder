@@ -1305,7 +1305,7 @@ public class VideoPlayer {
 					if (FFMPEG.isRunning)
 						FFMPEG.process.destroy();
 				}
-								
+												
 				if (lblVideo.isVisible() == false || lblVideo.getText().equals(new File(videoPath).getName()) == false)
 				{
 					String extension = videoPath.substring(videoPath.lastIndexOf("."));	
@@ -1407,6 +1407,13 @@ public class VideoPlayer {
 								 }
 								 while (EXIFTOOL.isRunning);
 							}
+
+							if (FFPROBE.imageRatio < 1.77f)
+							{
+								frame.setMinimumSize(new Dimension(1300, 724));
+							}
+							else
+								frame.setMinimumSize(new Dimension(1300, 624));
 						}
 						
 					} catch (InterruptedException e) {}
@@ -1524,7 +1531,7 @@ public class VideoPlayer {
 						}
 					}
 					else
-					{							
+					{						
 						btnPreviousFile.setVisible(true);
 						btnNextFile.setVisible(true);
 						if (FFPROBE.audioOnly)
@@ -1724,15 +1731,7 @@ public class VideoPlayer {
 	
 					caseInternalTc.setEnabled(true);	
 					caseShowTimecode.setEnabled(true);
-					
-					//Reset boxes
-					updateGrpIn(0);
-					updateGrpOut(FFPROBE.totalLength);
-					slider.setMaximum((int) (totalFrames));
-					
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-						SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
-					
+									
 					textSubsWidth.setText(String.valueOf(FFPROBE.imageWidth));
 					lblVideo.setText(new File(videoPath).getName());
 					lblVideo.setVisible(true);
@@ -1772,6 +1771,14 @@ public class VideoPlayer {
 					playerOutMark = waveformContainer.getWidth() - 2;
 					
 					waveformContainer.repaint();
+					
+					//Reset boxes
+					updateGrpIn(0);
+					updateGrpOut(FFPROBE.totalLength);
+					slider.setMaximum((int) (totalFrames));
+					
+					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+						SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
 				}		
 			}
 			else
@@ -4455,7 +4462,9 @@ public class VideoPlayer {
 									long startTime = System.currentTimeMillis() + 1;
 									
 									if (Settings.btnDisableAnimations.isSelected())
+									{
 										i = sized;
+									}
 									else
 										i += 2;
 
@@ -4475,6 +4484,28 @@ public class VideoPlayer {
 										if (grpCorrections.getY() + grpCorrections.getHeight() >= maxHeight - 6 && grpCorrections.getHeight() > 17)
 										{
 											grpCorrections.setSize(grpCorrections.getWidth(), grpCorrections.getHeight() - 2);
+										}
+									}
+									
+									if (Settings.btnDisableAnimations.isSelected())
+									{
+										if (grpColorimetry.getHeight() > 17)
+										{
+											int grpInSize = (frame.getHeight() - grpIn.getY());
+											if (waveformContainer.isVisible() == false)
+											{
+												grpInSize = 0;
+											}
+											
+											grpColorimetry.setSize(grpColorimetry.getWidth(), frame.getHeight() - grpInSize - grpColorimetry.getY() - grpCorrections.getHeight() - 12);	
+											
+											if (grpColorimetry.getHeight() > btnReset.getY() + btnReset.getHeight() + 30)
+											{
+												grpColorimetry.setSize(grpColorimetry.getWidth(), btnReset.getY() + btnReset.getHeight() + 30);
+											}
+											panelColorimetryComponents.setSize(grpColorimetry.getWidth() - 18, grpColorimetry.getHeight() - 25);
+											
+											grpCorrections.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);			
 										}
 									}
 									
