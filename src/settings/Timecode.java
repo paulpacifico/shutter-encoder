@@ -38,7 +38,7 @@ public class Timecode extends Shutter {
 	        
 	   		if (Shutter.caseConform.isSelected())
 	   		{
-	   			if (Shutter.comboFPS.getSelectedItem().toString().equals("23,98") || Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+	   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
 	   			{
 	   				dropFrame = ";";
 	   			}
@@ -66,7 +66,7 @@ public class Timecode extends Shutter {
 	
 	public static boolean isDropFrame() {
 		
-		if (FFPROBE.dropFrameTC.equals(":") == false && (FFPROBE.currentFPS == 23.98f || FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		if (FFPROBE.dropFrameTC.equals(":") == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
      	{
 			return true;
      	}
@@ -76,7 +76,7 @@ public class Timecode extends Shutter {
 	
 	public static boolean isNonDropFrame() {
 		
-		if (FFPROBE.dropFrameTC.equals(":") && (FFPROBE.currentFPS == 23.98f || FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		if (FFPROBE.dropFrameTC.equals(":") && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
      	{
 			return true;
      	}
@@ -91,11 +91,7 @@ public class Timecode extends Shutter {
 		{							
 			float currentTime = VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS;
 			
-			if (FFPROBE.currentFPS == 23.98f)
-			{				
-				currentFrame -= (currentTime * 0.024 / 1000) - 1;
-			}
-			else if (FFPROBE.currentFPS == 29.97f)
+			if (FFPROBE.currentFPS == 29.97f)
 			{
 				currentFrame -= (currentTime * 0.03 / 1000) - 1;
 			}
@@ -115,11 +111,7 @@ public class Timecode extends Shutter {
 		{				
 			float currentTime = currentFrame * VideoPlayer.inputFramerateMS;
 						
-			if (FFPROBE.currentFPS == 23.98f)
-			{				
-				currentFrame += (currentTime * 0.024 / 1000);
-			}
-			else if (FFPROBE.currentFPS == 29.97f)
+			if (FFPROBE.currentFPS == 29.97f)
 			{
 				currentFrame += (currentTime * 0.03 / 1000);
 			}
