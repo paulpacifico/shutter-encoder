@@ -76,7 +76,7 @@ public class Timecode extends Shutter {
 	
 	public static boolean isNonDropFrame() {
 		
-		if (FFPROBE.dropFrameTC.equals(":") && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		if (FFPROBE.dropFrameTC.equals(":") && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || FFPROBE.currentFPS == 23.98f)
      	{
 			return true;
      	}
@@ -91,6 +91,10 @@ public class Timecode extends Shutter {
 		{							
 			float currentTime = VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS;
 			
+			if (FFPROBE.currentFPS == 23.98f)
+			{
+				currentFrame -= (currentTime * 0.024 / 1000) - 1;
+			}
 			if (FFPROBE.currentFPS == 29.97f)
 			{
 				currentFrame -= (currentTime * 0.03 / 1000) - 1;
@@ -110,8 +114,12 @@ public class Timecode extends Shutter {
 		if (isNonDropFrame())
 		{				
 			float currentTime = currentFrame * VideoPlayer.inputFramerateMS;
-						
-			if (FFPROBE.currentFPS == 29.97f)
+				
+			if (FFPROBE.currentFPS == 23.98f)
+			{
+				currentFrame += (currentTime * 0.024 / 1000);
+			}
+			else if (FFPROBE.currentFPS == 29.97f)
 			{
 				currentFrame += (currentTime * 0.03 / 1000);
 			}
@@ -125,4 +133,5 @@ public class Timecode extends Shutter {
 
 		return currentFrame;		
 	}
+	
 }
