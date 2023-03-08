@@ -7424,7 +7424,7 @@ public class VideoPlayer {
 			textCropWidth.setText(String.valueOf(outW));
 			textCropHeight.setText(String.valueOf(outH));
 		}	
-		/*
+		
 		if (caseEnableCrop.isSelected())
 		{
 			comboPreset.getEditor().setItem((double) Math.round((double) ((double) outW / outH) * 100.0) / 100.0);		
@@ -7432,7 +7432,7 @@ public class VideoPlayer {
 		else
 		{
 			comboPreset.getEditor().setItem(Shutter.language.getProperty("aucun"));
-		}*/
+		}
 	}
 		
 	@SuppressWarnings("serial")
@@ -7900,7 +7900,7 @@ public class VideoPlayer {
 		        
 		   		if (Shutter.caseConform.isSelected())
 		   		{
-		   			if (Shutter.comboFPS.getSelectedItem().toString().equals("23,98") || Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+		   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
 		   			{
 		   				dropFrame = ";";
 		   			}
