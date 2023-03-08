@@ -474,7 +474,7 @@ import javax.swing.JScrollPane;
 				    try {
 						writer = new PrintWriter(dialog.getDirectory() + dialog.getFile().replace(".edl", "") + ".edl", "UTF-8");
 						NumberFormat formatEDL = new DecimalFormat("000000");
-						writer.println("TITLE : " + dialog.getFile());
+						writer.println("TITLE: " + dialog.getFile());
 						
 						int countItemsEDL = 0;
 				    	for (int i = 0 ; i < tableRow.getRowCount(); i++)
