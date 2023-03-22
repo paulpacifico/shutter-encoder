@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Shutter Encoder
+Version=1.0
+Exec=shutter-encoder
+Icon=/usr/share/icons/hicolor/256x256/apps/icon
+Type=Application
+Terminal=false
+StartupNotify=true
+Encoding=UTF-8
+Categories=AudioVideo;Application;Compression;Utility;Video;
