@@ -1,0 +1,3 @@
+MUXOPT --no-pcr-on-video-pid --new-audio-pes --blu-ray --vbr  --auto-chapters=5 --vbv-len=500
+V_MPEG4/ISO/AVC, "file", insertSEI, contSPS, track=1, lang=und
+A_AC3, "file", track=2, lang=und

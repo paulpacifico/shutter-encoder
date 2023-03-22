@@ -1,0 +1,18 @@
+<dvdauthor jumppad="on">
+  <vmgm>
+	<menus>
+			<video format="pal" aspect="16:9" resolution="720x576"/>
+		<pgc>
+			<post>jump titleset 1 title 1;</post>
+		</pgc>
+	</menus>
+  </vmgm>
+  <titleset>
+	<titles>
+		<video format="pal" aspect="16:9" resolution="720x576"/>
+		<pgc>
+			<vob file ="path" chapters="0,5:00,10:00,15:00,20:00,25:00,30:00,35:00,40:00,45:00,50:00,55:00,60:00,65:00,70:00,75:00,80:00,85:00,90:00,95:00,100:00,105:00,110:00,115:00,120:00,125:00,130:00,135:00,140:00,145:00,150:00,155:00,160:00,165:00,170:00,175:00,180:00" />
+		</pgc>
+	</titles>
+  </titleset>
+</dvdauthor>
