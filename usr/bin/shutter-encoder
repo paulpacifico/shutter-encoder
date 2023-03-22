@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Run application
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+"$parent_path/JRE/bin/java" -Dswing.aatext=true -jar "$parent_path/Shutter Encoder.jar" "$@" &>/dev/null & disown
