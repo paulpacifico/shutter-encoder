@@ -346,6 +346,10 @@ public class Picture extends Shutter {
 		{
 			return " -crf " +  Math.round((float) 63 - (float) ((float) ((float) Integer.valueOf(comboImageQuality.getSelectedItem().toString().replace("%", "")) * 63) / 100));
 		}
+		else if (comboFilter.getSelectedItem().toString().equals(".tif"))
+		{
+			return " -compression_algo " + comboImageQuality.getSelectedItem().toString();
+		}
 		else
 		{
 			return " -q:v 0";

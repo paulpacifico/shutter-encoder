@@ -107,7 +107,7 @@ public class FunctionUtils extends Shutter {
 			 while (FFPROBE.isRunning);
 			 
 			//Check GPU
-			FFMPEG.checkGPUCapabilities(file.toString());
+			FFMPEG.checkGPUCapabilities(file.toString(), false);
 			 
 			if (analyzeError(file.toString()))
 				return false;
@@ -829,7 +829,7 @@ public class FunctionUtils extends Shutter {
 			else if (c instanceof JComboBox && addSub)
 			{
 	        	String[] languages = Locale.getISOLanguages();			
-				Locale loc = new Locale(languages[((JComboBox) c).getSelectedIndex()]);
+				Locale loc = Locale.of(languages[((JComboBox) c).getSelectedIndex()]);
 				
 				if (VideoPlayer.caseAddWatermark.isSelected())
 				{

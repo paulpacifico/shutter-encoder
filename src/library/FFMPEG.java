@@ -1034,7 +1034,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		runProcess.start();
 	}
 
-	public static void checkGPUCapabilities(String file) {
+	public static void checkGPUCapabilities(String file, boolean force) {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
@@ -1045,7 +1045,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		//Check is GPU can decode				
 		if (System.getProperty("os.name").contains("Windows")
 		&& Settings.comboGPU.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-		&& Settings.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
+		&& Settings.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
+		|| System.getProperty("os.name").contains("Windows") && force)
 		{
 			String vcodec = "";
 			if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
@@ -1085,10 +1086,10 @@ public static StringBuilder errorLog = new StringBuilder();
 						bitDepth = "p010";
 					}	
 					
-					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false || force)
 					{						
 						//Check for Nvidia or Intel GPU
-						if (Settings.comboGPU.getSelectedItem().toString().equals("auto"))
+						if (Settings.comboGPU.getSelectedItem().toString().equals("auto") || force)
 						{
 							//Cuda
 							FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
@@ -1486,6 +1487,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		return true;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void suspendProcess()
 	{
 		try {
@@ -1506,6 +1508,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		} catch (SecurityException | IllegalArgumentException | IOException e1) {	}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void resumeProcess()
 	{
 		try {	

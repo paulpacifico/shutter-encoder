@@ -82,7 +82,7 @@ public static String format = "";
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
 						
-						String youtubedl = "yt-dlp";
+						String youtubedl = "yt-dlp_linux";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
 							String macVersion = System.getProperty("os.version").replace(".", "");
@@ -201,7 +201,7 @@ public static String format = "";
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
 						
-						String youtubedl = "yt-dlp";
+						String youtubedl = "yt-dlp_linux";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
 							String macVersion = System.getProperty("os.version").replace(".", "");
@@ -290,7 +290,7 @@ public static String format = "";
 						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
 						
-						String youtubedl = "yt-dlp";
+						String youtubedl = "yt-dlp_linux";
 						if (System.getProperty("os.name").contains("Mac"))
 						{
 							String macVersion = System.getProperty("os.version").replace(".", "");

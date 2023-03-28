@@ -46,6 +46,7 @@ public static Process process;
 	    
 		runProcess = new Thread(new Runnable()  {
 
+			@SuppressWarnings("deprecation")
 			public void run() {
 				try {
 					String PathToFFPLAY;

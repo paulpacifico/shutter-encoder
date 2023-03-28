@@ -1082,7 +1082,11 @@ public class VideoEncoders extends Shutter {
 					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{
 						return " -c:v av1_qsv";	
-					}				
+					}	
+					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+					{
+						return " -c:v av1_amf";
+					}
 				}
 		    	else
 		        	return " -c:v libsvtav1";
@@ -1513,8 +1517,14 @@ public class VideoEncoders extends Shutter {
 						
 		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu;          
 		        }
+				else if (lblVBR.getText().equals("CBR") && caseAccel.isSelected())
+		        {
+		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k -rc cbr";
+		        }
 		        else
+		        {
 		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k";
+		        }
 				
 			case "VP8":
 			case "VP9":
