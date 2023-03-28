@@ -442,6 +442,7 @@ public class Update {
 
 	}
 	
+	@SuppressWarnings("deprecation")
 	private static void HTTPDownload(String adresse, String destination) {
 	
 		OutputStream out = null;

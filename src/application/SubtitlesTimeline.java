@@ -180,6 +180,7 @@ public class SubtitlesTimeline {
 			public void windowActivated(WindowEvent arg0) {				
 			}
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void windowClosed(WindowEvent arg0) {				
 

@@ -207,6 +207,7 @@ public class VideoWeb {
 				accept = true;
 			}
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void mouseReleased(MouseEvent e) {			
 				if (accept)
@@ -389,6 +390,7 @@ public class VideoWeb {
 				
 				if (caseAuto.isSelected())
 				{		
+					comboFormats.addItem("default");
 					comboFormats.addItem("bestvideo+bestaudio");
 					comboFormats.addItem("bestvideo");
 					comboFormats.addItem("bestaudio");
@@ -432,6 +434,7 @@ public class VideoWeb {
 		});
 			
 		comboFormats = new JComboBox<String>();
+		comboFormats.addItem("default");
 		comboFormats.addItem("bestvideo+bestaudio");
 		comboFormats.addItem("bestvideo");
 		comboFormats.addItem("bestaudio");
@@ -666,30 +669,18 @@ public class VideoWeb {
 			        		//Format checking
 							if (caseAuto.isSelected()) 
 							{				
-								if (line.contains("twitter") == false)
+								if (comboFormats.getSelectedItem().toString().equals("default"))
 								{
-									YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
+									YOUTUBEDL.format = "";
 								}
+								else
+									YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
 							}
 							else
 							{
-								String[] f = comboFormats.getSelectedItem().toString().split(" ");
+								String[] f = comboFormats.getSelectedItem().toString().split(" ");		
 								
-								if (comboFormats.getSelectedItem().toString().contains("audio only"))
-								{
-									YOUTUBEDL.format = "-f " + f[0];
-								}
-								else
-								{
-									if (line.contains("twitter"))
-									{
-										YOUTUBEDL.format = "-f " + f[0];
-									}
-									else
-									{
-										YOUTUBEDL.format = "-f " + f[0]+"+bestaudio";
-									}
-								}
+								YOUTUBEDL.format = "-f " + f[0];								
 							}
 	
 							FFMPEG.disableAll();

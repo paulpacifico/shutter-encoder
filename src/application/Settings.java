@@ -150,6 +150,7 @@ public class Settings {
 	public static int videoPlayerVolume = 50;
 	public static boolean videoPlayerCasePlaySound = true;
 	public static boolean videoPlayerCaseVuMeter = true;
+	public static boolean videoPlayerCaseGPUDecoding = false;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
@@ -187,7 +188,7 @@ public class Settings {
 		comboLanguage.setName("comboLanguage");
 
 		frame.setSize(370, 642);
-		if (Shutter.getLanguage.equals(new Locale("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(new Locale("uk").getDisplayLanguage()))
+		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
 		}
@@ -768,15 +769,15 @@ public class Settings {
 			{
 				String l[] = f.getName().split("\\.");
 				
-				String language = new Locale(l[0]).getDisplayLanguage();
+				String language = Locale.of(l[0]).getDisplayLanguage();
 				String country = "";
 											
 				//Country
 				if (l[0].contains("_"))
 				{				
 					String c[] = l[0].split("_");
-					language = new Locale(c[0]).getDisplayLanguage();
-					country = " (" + new Locale(c[0], c[1]).getDisplayCountry() + ")";
+					language = Locale.of(c[0]).getDisplayLanguage();
+					country = " (" + Locale.of(c[0], c[1]).getDisplayCountry() + ")";
 				}
 				
 				data[d] = (language + country);	
@@ -1248,7 +1249,7 @@ public class Settings {
 		});
 		
 		JLabel donate;
-		if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage()))
+		if (Shutter.getLanguage.equals(Locale.of("fr").getDisplayLanguage()))
 			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
 		else
 			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_EN.png")));
@@ -1266,9 +1267,9 @@ public class Settings {
 				
 				try {
 					
-					if (Shutter.getLanguage.equals(new Locale("fr").getDisplayLanguage())
-					|| Shutter.getLanguage.equals(new Locale("it").getDisplayLanguage())
-					|| Shutter.getLanguage.equals(new Locale("es").getDisplayLanguage()))
+					if (Shutter.getLanguage.equals(Locale.of("fr").getDisplayLanguage())
+					|| Shutter.getLanguage.equals(Locale.of("it").getDisplayLanguage())
+					|| Shutter.getLanguage.equals(Locale.of("es").getDisplayLanguage()))
 					{
 						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=EUR"));
 					}
@@ -1689,7 +1690,13 @@ public class Settings {
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseVuMeter"))
 					{
 						videoPlayerCaseVuMeter = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-					}				
+					}		
+					
+					//caseGPU video player
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseGPU"))
+					{
+						videoPlayerCaseGPUDecoding = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}
 					
 					//FTP
 					if (eElement.getParentNode().getNodeName().equals("Ftp"))
@@ -2043,6 +2050,30 @@ public class Settings {
 				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseVuMeter.isSelected())));
 			else
 				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCaseVuMeter)));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//caseGPU video player
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("caseGPU"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			if (VideoPlayer.caseGPU != null)
+				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseGPU.isSelected())));
+			else
+				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCaseGPUDecoding)));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);

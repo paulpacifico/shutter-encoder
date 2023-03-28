@@ -180,7 +180,7 @@ public class Utils extends Shutter {
 					{						
 						for (String local : Locale.getISOLanguages())
 						{												
-							String language = new Locale(local).getDisplayLanguage();
+							String language = Locale.of(local).getDisplayLanguage();
 
 							//With Country
 							if (getLanguage.contains("("))
@@ -191,7 +191,7 @@ public class Utils extends Shutter {
 								{
 									for (String countries : Locale.getISOCountries())
 									{				
-										String country = new Locale(local, countries).getDisplayCountry();
+										String country = Locale.of(local, countries).getDisplayCountry();
 																				
 										if (country.equals(c[1]))
 										{															
@@ -241,27 +241,27 @@ public class Utils extends Shutter {
 				input = defaultLanguage(pathToLanguages);
 			}
 			
-			if (getLanguage.contains(new Locale("zh").getDisplayLanguage()))
+			if (getLanguage.contains(Locale.of("zh").getDisplayLanguage()))
 			{				
 				Shutter.magnetoFont = "Noto Sans SC Medium";
 				Shutter.montserratFont = "Noto Sans SC Medium";
 				Shutter.freeSansFont = "Noto Sans SC Medium";
 			}
-			else if (getLanguage.contains(new Locale("ja").getDisplayLanguage())
-			|| getLanguage.equals(new Locale("ru").getDisplayLanguage())
-			|| getLanguage.equals(new Locale("uk").getDisplayLanguage())) //use system default font
+			else if (getLanguage.contains(Locale.of("ja").getDisplayLanguage())
+			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
+			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "";
 				Shutter.freeSansFont = "";
 			}
-			else if (getLanguage.contains(new Locale("vi").getDisplayLanguage())
-			|| getLanguage.contains(new Locale("pl").getDisplayLanguage())) //use system default font
+			else if (getLanguage.contains(Locale.of("vi").getDisplayLanguage())
+			|| getLanguage.contains(Locale.of("pl").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "FreeSans";
 			}
-			else if (getLanguage.equals(new Locale("sl").getDisplayLanguage()))
+			else if (getLanguage.equals(Locale.of("sl").getDisplayLanguage()))
 			{
 				Shutter.montserratFont = "FreeSans";
 			}
@@ -284,11 +284,11 @@ public class Utils extends Shutter {
 
 		if (new File(loadLanguage).exists())
 		{
-			getLanguage = new Locale(System.getProperty("user.language")).getDisplayLanguage();
+			getLanguage = Locale.of(System.getProperty("user.language")).getDisplayLanguage();
 			
 			//Multiple countries
 			if (System.getProperty("user.language").equals("pt") || System.getProperty("user.language").equals("zh"))
-				getLanguage = new Locale(System.getProperty("user.language")).getDisplayLanguage() + " (" + new Locale(System.getProperty("user.language"), System.getProperty("user.country")).getDisplayCountry() + ")";
+				getLanguage = Locale.of(System.getProperty("user.language")).getDisplayLanguage() + " (" + Locale.of(System.getProperty("user.language"), System.getProperty("user.country")).getDisplayCountry() + ")";
 						
 			return new FileInputStream(loadLanguage);
 		}
@@ -379,6 +379,7 @@ public class Utils extends Shutter {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static File UNCPath(File file) {		
 		
 	frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

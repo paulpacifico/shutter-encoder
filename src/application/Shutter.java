@@ -1558,6 +1558,7 @@ public class Shutter {
 		});
 
 		menuOpenFolder.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (System.getProperty("os.name").contains("Mac")) 
@@ -1880,6 +1881,7 @@ public class Shutter {
 		});
 		
 		arborescence.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				File source = null;
@@ -3307,21 +3309,41 @@ public class Shutter {
 							caseFastStart.setEnabled(false);
 					}
 										
-					// Add quality selection for .webp .avif
+					// Add quality selection for .webp .avif .tif
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 					{
-						if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
+						if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif") || comboFilter.getSelectedItem().toString().equals(".tif"))
 						{
-							grpResolution.add(lblImageQuality);
+							if (comboFilter.getSelectedItem().toString().equals(".tif"))
+							{
+								if (comboImageQuality.getItemAt(0).equals("packbits") == false)
+								{
+									comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "packbits", "raw", "lzw", "deflate" }));
+								}
+								comboImageQuality.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
+								comboImageQuality.setSize(90, 16);
+								grpResolution.remove(lblImageQuality);
+							}
+							else
+							{
+								if (comboImageQuality.getItemAt(0).equals("100%") == false)
+								{
+									comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));	
+								}
+								comboImageQuality.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
+								comboImageQuality.setSize(50, 16);
+								grpResolution.add(lblImageQuality);
+							}				
 							grpResolution.add(comboImageQuality);
-							grpResolution.repaint();
+							comboImageQuality.repaint();
 						}
 						else
 						{
 							grpResolution.remove(lblImageQuality);
 							grpResolution.remove(comboImageQuality);
-							grpResolution.repaint();
 						}
+						
+						grpResolution.repaint();
 					}
 
 					if (comboFonctions.getSelectedItem().toString().equals("DNxHD") 
@@ -4692,7 +4714,7 @@ public class Shutter {
 		lblIsInterpret.setSize(20, 16);
 		lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
 		grpResolution.add(lblIsInterpret);		
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()) || getLanguage.equals(new Locale("vi").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || getLanguage.equals(Locale.of("uk").getDisplayLanguage()) || getLanguage.equals(Locale.of("vi").getDisplayLanguage()))
 		{
 			lblIsInterpret.setVisible(false);
 		}				
@@ -4813,13 +4835,12 @@ public class Shutter {
 		
 		comboImageQuality = new JComboBox<String>();
 		comboImageQuality.setName("comboImageQuality");
-		comboImageQuality.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));
+		comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));
 		comboImageQuality.setSelectedIndex(0);
 		comboImageQuality.setMaximumRowCount(20);
 		comboImageQuality.setFont(new Font(freeSansFont, Font.PLAIN, 11));
-		comboImageQuality.setEditable(true);
-		comboImageQuality.setSize(50, 16);
+		comboImageQuality.setEditable(false);
+		comboImageQuality.setSize(90, 16);
 		comboImageQuality.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
 		grpResolution.add(comboImageQuality);
 	}
@@ -8354,7 +8375,7 @@ public class Shutter {
 		lblAudioIs.setSize(lblAudioIs.getPreferredSize().width, 16);
 		lblAudioIs.setLocation(comboAudioOut.getLocation().x + comboAudioOut.getWidth() + 7, caseConvertAudioFramerate.getLocation().y + 3);
 		
-		if (getLanguage.equals(new Locale("nl").getDisplayLanguage()) == false && getLanguage.equals(new Locale("ru").getDisplayLanguage()) == false && getLanguage.equals(new Locale("uk").getDisplayLanguage()) == false)		
+		if (getLanguage.equals(Locale.of("nl").getDisplayLanguage()) == false && getLanguage.equals(Locale.of("ru").getDisplayLanguage()) == false && getLanguage.equals(Locale.of("uk").getDisplayLanguage()) == false)		
 			grpAudio.add(lblAudioIs);
 	}
 
@@ -8556,7 +8577,7 @@ public class Shutter {
 		spinnerVideoFadeIn.setName("spinnerVideoFadeIn");
 		spinnerVideoFadeIn.setEnabled(false);
 		spinnerVideoFadeIn.setFont(new Font(freeSansFont, Font.PLAIN, 11));
-		if (getLanguage.equals(new Locale("en").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("en").getDisplayLanguage()))
 			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 12, caseVideoFadeIn.getLocation().y + 3, 41, 16);
 		else
 			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 6, caseVideoFadeIn.getLocation().y + 3, 41, 16);
@@ -8686,7 +8707,7 @@ public class Shutter {
 		JLabel iconFadeIn = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeIn.setToolTipText(language.getProperty("preview"));
 		iconFadeIn.setHorizontalAlignment(SwingConstants.CENTER);		
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("pl").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || getLanguage.equals(Locale.of("pl").getDisplayLanguage()))
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 3, lblFadeInColor.getY(), 16, 16);
 		else
 			iconFadeIn.setBounds(lblFadeInColor.getX() + lblFadeInColor.getWidth() + 8, lblFadeInColor.getY(), 16, 16);
@@ -8890,7 +8911,7 @@ public class Shutter {
 		JLabel iconFadeOut = new JLabel(new FlatSVGIcon("contents/preview.svg", 16, 16));
 		iconFadeOut.setToolTipText(language.getProperty("preview"));
 		iconFadeOut.setHorizontalAlignment(SwingConstants.CENTER);
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("pl").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || getLanguage.equals(Locale.of("pl").getDisplayLanguage()))
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 3, lblFadeOutColor.getY(), 16, 16);
 		else
 			iconFadeOut.setBounds(lblFadeOutColor.getX() + lblFadeOutColor.getWidth() + 8, lblFadeOutColor.getY(), 16, 16);		
@@ -8940,7 +8961,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeIn.setLocation(lblFadeInColor.getX(), iconFadeIn.getY() + iconFadeIn.getHeight());
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("pl").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || getLanguage.equals(Locale.of("pl").getDisplayLanguage()))
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() - 3, 10);
 		else
 			linkFadeIn.setSize(lblFadeInColor.getWidth() + iconFadeIn.getWidth() + 1, 10);
@@ -8960,7 +8981,7 @@ public class Shutter {
 			}
 		};	
 		linkFadeOut.setLocation(lblFadeOutColor.getX(), iconFadeOut.getY() + iconFadeOut.getHeight());
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("pl").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || getLanguage.equals(Locale.of("pl").getDisplayLanguage()))
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() - 3, 10);
 		else
 			linkFadeOut.setSize(lblFadeOutColor.getWidth() + iconFadeOut.getWidth() + 1, 10);
@@ -9525,7 +9546,7 @@ public class Shutter {
 		lblIsConform = new JLabel(Shutter.language.getProperty("fps"));
 		lblIsConform.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblIsConform.setSize(20, 16);
-		if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()) || getLanguage.equals(new Locale("vi").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || getLanguage.equals(Locale.of("uk").getDisplayLanguage()) || getLanguage.equals(Locale.of("vi").getDisplayLanguage()))
 			lblIsConform.setVisible(false);
 		
 		caseForcerProgressif.addActionListener(new ActionListener() {
@@ -9669,6 +9690,14 @@ public class Shutter {
 		
 								if (FFMPEG.error == false)
 									graphicsAccel.add("Intel Quick Sync");
+
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_amf -s 640x360 -f null -" + '"');
+								do {
+									Thread.sleep(10);
+								} while (FFMPEG.runProcess.isAlive());
+		
+								if (FFMPEG.error == false)
+									graphicsAccel.add("AMD AMF Encoder");
 							}
 						}
 						else
@@ -10983,7 +11012,11 @@ public class Shutter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				if (lblVBR.getText().equals("VBR") && caseAccel.isSelected() == false && comboFonctions.getSelectedItem().toString().contains("H.26"))
+				if (lblVBR.getText().equals("VBR")
+				&& (caseAccel.isSelected() == false
+				|| caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC")
+				|| caseAccel.isSelected() && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+				&& comboFonctions.getSelectedItem().toString().contains("H.26"))
 				{
 					lblVBR.setText("CBR");
 				}
@@ -14840,16 +14873,37 @@ public class Shutter {
 							iconTVResolution.setBounds(comboResolution.getX() + comboResolution.getWidth() + 9, 21, 16, 16);	
 							
 							// Ajout de la quality pour l'extension .webp & .avif
-							if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
+							if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif") || comboFilter.getSelectedItem().toString().equals(".tif"))
 							{
-								grpResolution.add(lblImageQuality);
+								if (comboFilter.getSelectedItem().toString().equals(".tif"))
+								{
+									if (comboImageQuality.getItemAt(0).equals("packbits") == false)
+									{
+										comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "packbits", "raw", "lzw", "deflate" }));
+									}
+									comboImageQuality.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
+									comboImageQuality.setSize(90, 16);
+									grpResolution.remove(lblImageQuality);
+								}
+								else
+								{
+									if (comboImageQuality.getItemAt(0).equals("100%") == false)
+									{
+										comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));	
+									}
+									comboImageQuality.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
+									comboImageQuality.setSize(50, 16);
+									grpResolution.add(lblImageQuality);
+								}		
 								grpResolution.add(comboImageQuality);
+								comboImageQuality.repaint();
 							}
 							else
 							{
 								grpResolution.remove(lblImageQuality);
 								grpResolution.remove(comboImageQuality);
 							}
+							grpResolution.repaint();
 						
 							
 							// lblInterpretation location
@@ -14859,7 +14913,7 @@ public class Shutter {
 							grpResolution.add(comboInterpret);							
 							lblIsInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblInterpretation.getLocation().y - 1);
 							grpResolution.add(lblIsInterpret);	
-							if (getLanguage.equals(new Locale("ru").getDisplayLanguage()) || getLanguage.equals(new Locale("uk").getDisplayLanguage()) || getLanguage.equals(new Locale("vi").getDisplayLanguage()))
+							if (getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || getLanguage.equals(Locale.of("uk").getDisplayLanguage()) || getLanguage.equals(Locale.of("vi").getDisplayLanguage()))
 							{
 								iconTVInterpret.setLocation(comboInterpret.getX() + comboInterpret.getWidth() + 5, lblIsInterpret.getY() + 1);
 							}
@@ -15487,7 +15541,7 @@ public class Shutter {
 		try {
 			//Affichage des titres
 			Font tabFont = new Font(montserratFont, Font.PLAIN, 11);		
-			if (getLanguage.equals(new Locale("en").getDisplayLanguage()))
+			if (getLanguage.equals(Locale.of("en").getDisplayLanguage()))
 				tabFont = new Font(montserratFont, Font.PLAIN, 10);		
 			
 			JLabel output = new JLabel(language.getProperty("output"));
@@ -16158,6 +16212,7 @@ public class Shutter {
 			liste.clear();
 		
 		Thread thread = new Thread(new Runnable() {
+			@SuppressWarnings("deprecation")
 			public void run() {
 				
 				do

@@ -351,7 +351,7 @@ public class SubtitlesEmbed {
 		String[] allLanguages = new String[languages.length];		
 		for (int l = 0; l < languages.length; l++)
 		{
-		    Locale loc = new Locale(languages[l]);
+		    Locale loc = Locale.of(languages[l]);
 		    allLanguages[l] = loc.getDisplayLanguage();
 		}
 		

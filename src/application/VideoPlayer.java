@@ -197,6 +197,7 @@ public class VideoPlayer {
 	public static JButton btnNextFile;
 	public static JButton btnPreviousFile;
 	public static JSlider slider;
+	public static JCheckBox caseGPU;
 	public static JCheckBox caseVuMeter;
 	public static JCheckBox casePlaySound;
 	public static JCheckBox caseInternalTc;
@@ -982,9 +983,10 @@ public class VideoPlayer {
 				playerAudio = pba.start();
 			}			
 				
+			ImageIO.setUseCache(false); //IMPORTANT
 			InputStream video = playerVideo.getInputStream();				
 			BufferedInputStream videoInputStream = new BufferedInputStream(video);
-					
+
 			InputStream audio = playerAudio.getInputStream();							
 		    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audio);		    
 		    AudioFormat audioFormat = audioInputStream.getFormat();
@@ -1023,7 +1025,7 @@ public class VideoPlayer {
 								bytesRead = audioInputStream.read(bytes, 0, bytes.length);
 				        		line.write(bytes, 0, bytesRead);
 												 				        		
-				        		//Read 1 video frame
+				        		//Read 1 video frame				        		
 								frameVideo = ImageIO.read(videoInputStream);
 								playerRepaint();
 								fps ++;										
@@ -1344,7 +1346,7 @@ public class VideoPlayer {
 							} 
 							while (FFPROBE.isRunning);
 							
-							FFMPEG.checkGPUCapabilities(videoPath);
+							FFMPEG.checkGPUCapabilities(videoPath, true);
 							
 							if (FFPROBE.interlaced == null)
 							{
@@ -1452,6 +1454,7 @@ public class VideoPlayer {
 						btnMarkOut.setVisible(false);
 						btnGoToOut.setVisible(false);
 						caseInternalTc.setVisible(false);
+						caseGPU.setVisible(true);
 						caseVuMeter.setVisible(true);
 						casePlaySound.setVisible(true);
 						btnCapture.setEnabled(false);
@@ -1511,6 +1514,7 @@ public class VideoPlayer {
 						btnMarkOut.setVisible(false);
 						btnGoToOut.setVisible(false);
 						caseInternalTc.setVisible(false);
+						caseGPU.setVisible(false);
 						caseVuMeter.setVisible(false);
 						casePlaySound.setVisible(false);
 						btnCapture.setEnabled(true);
@@ -1590,6 +1594,7 @@ public class VideoPlayer {
 						btnStop.setVisible(true);
 						btnMarkOut.setVisible(true);
 						btnGoToOut.setVisible(true);
+						caseGPU.setVisible(true);
 						caseVuMeter.setVisible(true);												
 						casePlaySound.setVisible(true);
 						
@@ -1911,30 +1916,7 @@ public class VideoPlayer {
 				}
 			}
 			
-			String gpuDecoding = "";
-			/*
-			if (FFMPEG.isGPUCompatible)
-			{
-				if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
-				{
-					if (FFMPEG.cudaAvailable)
-					{
-						gpuDecoding = " -hwaccel cuda";
-					}
-					else if (FFMPEG.qsvAvailable)
-					{
-						gpuDecoding = " -hwaccel qsv";
-					}
-				}
-				else
-					gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
-			}
-			else if (System.getProperty("os.name").contains("Mac"))
-			{
-				gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
-			}*/
-			
-			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v bmp -an -f image2pipe pipe:-";
+			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v bmp -an -f image2pipe pipe:-";
 		}
 		else
 		{
@@ -1949,11 +1931,12 @@ public class VideoPlayer {
 			}	
 
 			String gpuDecoding = "";
-			/*
-			if (FFMPEG.isGPUCompatible)
+			
+			if (caseGPU.isSelected())
 			{
-				if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+				if (FFMPEG.isGPUCompatible)
 				{
+					//Auto GPU selection
 					if (FFMPEG.cudaAvailable)
 					{
 						gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
@@ -1961,19 +1944,19 @@ public class VideoPlayer {
 					else if (FFMPEG.qsvAvailable)
 					{
 						gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
-					}
+					}					
+					else
+						gpuDecoding = " -hwaccel auto";
 				}
-				else
-					gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+				else if (System.getProperty("os.name").contains("Mac"))
+				{
+					gpuDecoding = " -hwaccel auto";
+				}
 			}
-			else if (System.getProperty("os.name").contains("Mac"))
-			{
-				gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
-			}
-			 */
-			Console.consoleFFMPEG.append(System.lineSeparator() + gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed) + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
+			
+			Console.consoleFFMPEG.append(System.lineSeparator() + gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
 
-			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed) + " -c:v bmp -an -f image2pipe pipe:-";			
+			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";			
 		}
 	}
 	
@@ -2278,7 +2261,7 @@ public class VideoPlayer {
 					}							
 				}
 				else if (btnPlay.getText().equals(Shutter.language.getProperty("btnPlay")))
-				{					
+				{									
 					if (preview.exists() || caseAddSubtitles.isSelected())
 					{
 						preview.delete();												
@@ -3987,6 +3970,38 @@ public class VideoPlayer {
 				} while (frameIsComplete == false);		
 
 				Settings.videoPlayerCaseVuMeter = caseVuMeter.isSelected();
+			}
+
+		});
+		
+		caseGPU = new JCheckBox(Shutter.language.getProperty("caseGPU"));
+		caseGPU.setName("caseGPU");	
+		caseGPU.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseGPU.setSelected(Settings.videoPlayerCaseGPUDecoding);
+		frame.getContentPane().add(caseGPU);
+		
+		caseGPU.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				frameIsComplete = false;
+							
+				playerSetTime(slider.getValue());
+				
+				long time = System.currentTimeMillis();
+				
+				do {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException er) {}
+					
+					if (System.currentTimeMillis() - time > 1000)
+						frameIsComplete = true;
+												
+				} while (frameIsComplete == false);		
+
+				Settings.videoPlayerCaseGPUDecoding = caseGPU.isSelected();
 			}
 
 		});
@@ -6512,7 +6527,7 @@ public class VideoPlayer {
 								if (width > player.getWidth())
 									width = player.getWidth();
 								
-								if (height > player.getWidth())
+								if (height > player.getHeight())
 									height = player.getHeight();
 								
 								selection.setBounds(x, y, width, height);
@@ -6585,9 +6600,9 @@ public class VideoPlayer {
 						if (width > player.getWidth())
 							width = player.getWidth();
 						
-						if (height > player.getWidth())
+						if (height > player.getHeight())
 							height = player.getHeight();
-						
+
 						selection.setBounds(x, y, width, height);
 						
 			        } catch (Exception er) {			        	
@@ -7200,6 +7215,7 @@ public class VideoPlayer {
 				{
 					int value = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
 					selection.setSize(value, selection.getHeight());
+					checkSelection();
 				}
 			}
 
@@ -7252,6 +7268,7 @@ public class VideoPlayer {
 					textCropWidth.setText(String.valueOf(mouseCropOffsetX + (e.getX() - MousePositionX)));
 					int value = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
 					selection.setSize(value , selection.getHeight());
+					checkSelection();
 				}
 			}
 
@@ -7293,6 +7310,7 @@ public class VideoPlayer {
 				{
 					int value = (int) Math.round((float) (Integer.valueOf(textCropHeight.getText()) * player.getWidth()) / FFPROBE.imageWidth);
 					selection.setSize(selection.getWidth(), value);
+					checkSelection();
 				}
 			}
 
@@ -7345,6 +7363,7 @@ public class VideoPlayer {
 					textCropHeight.setText(String.valueOf(mouseCropOffsetY + (e.getY() - MousePositionY)));
 					int value = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * player.getHeight()) / FFPROBE.imageHeight);
 					selection.setSize(selection.getWidth(), value);
+					checkSelection();
 				}
 			}
 
@@ -9730,6 +9749,7 @@ public class VideoPlayer {
 							//On copy le .srt dans le fichier
 							Thread copySRT = new Thread(new Runnable()
 							{
+								@SuppressWarnings("deprecation")
 								@Override
 								public void run() {
 									
@@ -10533,7 +10553,7 @@ public class VideoPlayer {
 		percent1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		percent1.setForeground(Utils.themeColor);
 		percent1.setBounds(textSubsSize.getLocation().x + textSubsSize.getWidth() + 2, lblSize.getY(), px1.getPreferredSize().width, 16);		
-		if (Shutter.getLanguage.equals(new Locale("pl").getDisplayLanguage()) == false)
+		if (Shutter.getLanguage.equals(Locale.of("pl").getDisplayLanguage()) == false)
 			grpSubtitles.add(percent1);	
 		
 		lblSubsBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOff"));
@@ -10633,7 +10653,7 @@ public class VideoPlayer {
     		
     	});
 			
-		if (Shutter.getLanguage.equals(new Locale("pl").getDisplayLanguage()))
+		if (Shutter.getLanguage.equals(Locale.of("pl").getDisplayLanguage()))
 		{
 			lblSubsOutline = new JLabel(Shutter.language.getProperty("lblSize"));
 		}
@@ -11719,7 +11739,9 @@ public class VideoPlayer {
 			int newPosY = (int) Math.floor((logo.getHeight() - logoFinalSizeHeight) / 2);
 			
 			if (Shutter.overlayDeviceIsRunning)
+			{
 				FFMPEG.run(" -v quiet " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
+			}
 			else
 				FFMPEG.run(" -v quiet -i " + '"' + logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
 
@@ -11727,8 +11749,8 @@ public class VideoPlayer {
 				Thread.sleep(10);
 			} while (FFMPEG.process.isAlive() == false);
 		
-			InputStream videoInput = FFMPEG.process.getInputStream();
- 
+			ImageIO.setUseCache(false); //IMPORTANT
+			InputStream videoInput = FFMPEG.process.getInputStream(); 
 			InputStream is = new BufferedInputStream(videoInput);
 			logoPNG = ImageIO.read(is);
 	       	
@@ -11933,7 +11955,7 @@ public class VideoPlayer {
 						//Screen capture
 						if (Shutter.inputDeviceIsRunning && preview.exists() == false)
 						{
-							cmd = " -vframes 1 -an " + setFilter("", "") + " ";	
+							cmd = " -vframes 1 -an " + setFilter("", "", true) + " ";	
 														
 							frame.setVisible(false);
 							FFMPEG.run(" " +  RecordInputDevice.setInputDevices() + cmd + '"' + preview + '"');
@@ -11944,11 +11966,11 @@ public class VideoPlayer {
 							if (caseAddSubtitles.isSelected())
 							{
 								writeCurrentSubs(playerCurrentFrame);
-								FFMPEG.run(EXRGamma + " -v quiet" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","") + " -vframes 1 -c:v bmp -sws_flags neighbor -f image2pipe pipe:-"); 
+								FFMPEG.run(EXRGamma + " -v quiet" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -sws_flags bicubic -f image2pipe pipe:-"); 
 							}
 							else
 							{
-								FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"' + setFilter("","") + " -vframes 1 -c:v bmp -sws_flags neighbor -f image2pipe pipe:-"); 							    	
+								FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -sws_flags bicubic -f image2pipe pipe:-"); 							    	
 							}
 						}
 
@@ -11962,8 +11984,8 @@ public class VideoPlayer {
 							frame.setVisible(true);
 						}
 	
-						InputStream videoInput = FFMPEG.process.getInputStream();			
-						
+						ImageIO.setUseCache(false); //IMPORTANT
+						InputStream videoInput = FFMPEG.process.getInputStream();		
 						InputStream is = new BufferedInputStream(videoInput);
 						frameVideo = ImageIO.read(is);	
 				
@@ -11994,7 +12016,7 @@ public class VideoPlayer {
 		}
 	}
 	
-	private static String setFilter(String yadif, String speed) {
+	private static String setFilter(String yadif, String speed, boolean noGPU) {
 		
 		//Subtitles
 		String background = "" ;
@@ -12051,44 +12073,36 @@ public class VideoPlayer {
 		}	
 		
 		//Scaling
-		filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=neighbor";
+		//filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=bicubic";
 		
-		/*
-		String bitDepth = "nv12";
-		if (FFPROBE.imageDepth == 10)
+		if (FFMPEG.isGPUCompatible && caseGPU.isSelected() && noGPU == false)
 		{
-			bitDepth = "p010";
-		}			
-		
-		//Auto GPU selection
-		boolean autoQSV = false;
-		boolean autoCUDA = false;
-		if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
-		{
+			String bitDepth = "nv12";
+			if (FFPROBE.imageDepth == 10)
+			{
+				bitDepth = "p010";
+			}			
+			
+			//Auto GPU selection	
 			if (FFMPEG.cudaAvailable)
 			{
-				autoCUDA = true;
+				filter = filter.replace("yadif", "yadif_cuda");			
+				filter += "scale_cuda=" + player.getWidth() + ":" + player.getHeight() + ":interp_algo=bicubic,hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.qsvAvailable)
+			else if (FFMPEG.qsvAvailable && yadif == "")
 			{
-				autoQSV = true;
+				filter += "scale_qsv=" + player.getWidth() + ":" + player.getHeight() + ":mode=low_power,hwdownload,format=" + bitDepth;
+			}	
+			else
+			{
+				filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=bicubic";
 			}
-		}
-
-		if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && yadif == "")
-		{
-			filter += "scale_qsv=" + player.getWidth() + ":" + player.getHeight() + ":mode=low_power,hwdownload,format=" + bitDepth;
-		}
-		else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
-		{
-			filter = filter.replace("yadif", "yadif_cuda");			
-			filter += "scale_cuda=" + player.getWidth() + ":" + player.getHeight() + ":interp_algo=nearest,hwdownload,format=" + bitDepth;
 		}
 		else
 		{
-			filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=neighbor";
-		}*/
-
+			filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=bicubic";
+		}
+		
 		//Speed
 		if (speed != "")
 		{
@@ -12290,6 +12304,7 @@ public class VideoPlayer {
 		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, frame.getSize().height - 16 - 12 + 2, lblMode.getPreferredSize().width, 16);		
 
 		caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, comboMode.getY(), caseVuMeter.getPreferredSize().width, 23);
+		caseGPU.setBounds(caseVuMeter.getX() - caseGPU.getPreferredSize().width - 5, comboMode.getY(), caseGPU.getPreferredSize().width, 23);
 		
 		caseInternalTc.setBounds(grpIn.getX(), frame.getSize().height - 16 - 12, caseInternalTc.getPreferredSize().width, 23);	
 		casePlaySound.setBounds(caseInternalTc.getX() + caseInternalTc.getWidth() + 4, caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
@@ -12420,7 +12435,7 @@ public class VideoPlayer {
 			if (w > player.getWidth())
 				w = player.getWidth();
 			
-			if (h > player.getWidth())
+			if (h > player.getHeight())
 				h = player.getHeight();
 			
 			selection.setSize(w , h);	
@@ -13060,7 +13075,7 @@ public class VideoPlayer {
 					if (w > player.getWidth())
 						w = player.getWidth();
 					
-					if (h > player.getWidth())
+					if (h > player.getHeight())
 						h = player.getHeight();
 					
 					selection.setSize(w , h);	
