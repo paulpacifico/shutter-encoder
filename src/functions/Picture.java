@@ -161,7 +161,7 @@ public class Picture extends Shutter {
 						filterComplex = Overlay.setWatermark(filterComplex);
 						
 		            	//Timecode
-						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""));			         
+						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), videoPlayerCapture);			         
 	
 						//Crop
 				        filterComplex = Image.setCrop(filterComplex);
@@ -172,6 +172,14 @@ public class Picture extends Shutter {
 				        	filterComplex = Image.setScale(filterComplex, false);
 				        	filterComplex = Image.setPad(filterComplex, false);		
 			        	}
+				        
+				        //GIF Paletteuse²
+						if (comboFilter.getSelectedItem().toString().equals(".gif"))
+						{
+							if (filterComplex != "") filterComplex += ",";
+							
+							filterComplex += "split[a][b];[a]palettegen[p];[b][p]paletteuse,fps=" + comboImageOption.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "");
+						}
 						
 						//filterComplex
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, "");		
@@ -340,15 +348,15 @@ public class Picture extends Shutter {
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".webp"))
 		{
-			return " -quality " + comboImageQuality.getSelectedItem().toString().replace("%", "");
+			return " -quality " + comboImageOption.getSelectedItem().toString().replace("%", "");
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".avif"))
 		{
-			return " -crf " +  Math.round((float) 63 - (float) ((float) ((float) Integer.valueOf(comboImageQuality.getSelectedItem().toString().replace("%", "")) * 63) / 100));
+			return " -crf " +  Math.round((float) 63 - (float) ((float) ((float) Integer.valueOf(comboImageOption.getSelectedItem().toString().replace("%", "")) * 63) / 100));
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".tif"))
 		{
-			return " -compression_algo " + comboImageQuality.getSelectedItem().toString();
+			return " -compression_algo " + comboImageOption.getSelectedItem().toString();
 		}
 		else
 		{
@@ -378,6 +386,10 @@ public class Picture extends Shutter {
 		if (caseCreateSequence.isSelected())
 		{
 			return " -r 1";
+		}
+		else if (comboFilter.getSelectedItem().toString().equals(".gif"))
+		{
+			return "";
 		}
 		else
 			return " -vframes 1";

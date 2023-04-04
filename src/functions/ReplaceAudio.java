@@ -34,6 +34,8 @@ import settings.InputAndOutput;
 
 public class ReplaceAudio extends Shutter {
 	
+	private static int shortestLength = 0;
+	
 	private static void main(String audioFiles, String audioExt, File videoFile) throws InterruptedException {
 		
 		if (scanIsRunning == false)
@@ -71,7 +73,7 @@ public class ReplaceAudio extends Shutter {
 		if (fileOut != null)
 		{					
 			String audio = setAudio(extension, audioExt);
-			String shortest = " -shortest";
+			String shortest = " -t " + shortestLength + "ms";
 			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")))
 				shortest = "";
 								
@@ -97,6 +99,8 @@ public class ReplaceAudio extends Shutter {
 
 	public static void setStreams() {
 		
+		shortestLength = 0;
+		
 		Thread thread = new Thread(new Runnable() {	
 			
 			@Override
@@ -114,10 +118,20 @@ public class ReplaceAudio extends Shutter {
 					{								
 						for (int i = 0 ; i < liste.getSize() ; i++)
 						{
+							//Allows to get the shortest file duration
+							FFPROBE.Data(liste.getElementAt(i));
+							
+							do {
+								Thread.sleep(100);
+							} while (FFPROBE.isRunning);
+							
+							if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+								shortestLength = FFPROBE.totalLength;
+							
 							if (FFPROBE.FindStreams(liste.getElementAt(i)))
 							{
 								videoStream ++;
-							}
+							}							
 						}		
 						
 						//Start batch replace
@@ -169,7 +183,25 @@ public class ReplaceAudio extends Shutter {
 					if (liste.getSize() <= 2 || videoStream == 1) //Replace one video file
 					{
 						if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) == false || caseChangeAudioCodec.isSelected() == false)
-						{						
+						{		
+							//Allows to get the shortest file duration
+							FFPROBE.Data(liste.getElementAt(0));
+							
+							do {
+								Thread.sleep(100);
+							} while (FFPROBE.isRunning);
+							
+							shortestLength = FFPROBE.totalLength;
+							
+							FFPROBE.Data(liste.getElementAt(1));
+							
+							do {
+								Thread.sleep(100);
+							} while (FFPROBE.isRunning);
+							
+							if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+								shortestLength = FFPROBE.totalLength;
+							
 							//Stream analyze		
 							if (FFPROBE.FindStreams(liste.getElementAt(1)))
 							{
@@ -182,9 +214,9 @@ public class ReplaceAudio extends Shutter {
 							{
 								videoFile = new File(liste.getElementAt(0));		
 								audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
-								audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));
+								audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));								
 							}	
-						
+																					
 							float offset = 0;
 							
 							if (caseAudioOffset.isSelected() || caseInAndOut.isSelected())

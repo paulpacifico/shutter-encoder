@@ -191,7 +191,7 @@ public class Rewrap extends Shutter {
 								concat = " -noaccurate_seek";
 														
 							//Command
-							String cmd = " -avoid_negative_ts make_zero -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
+							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 							
 							do
@@ -202,7 +202,7 @@ public class Rewrap extends Shutter {
 							
 							if (FFMPEG.error)
 							{
-								cmd = " -avoid_negative_ts make_zero -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
+								cmd = " -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
 								FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 								
 								do

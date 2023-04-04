@@ -537,7 +537,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Overlay.setWatermark(filterComplex);
 						
 		            	//Timecode
-						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""));
+						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), false);
 				        
 				    	//Crop
 				        filterComplex = Image.setCrop(filterComplex);

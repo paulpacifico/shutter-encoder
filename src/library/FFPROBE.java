@@ -900,7 +900,7 @@ public static int gopSpace = 124;
 							
 			//Analyse
 	        while ((line = br.readLine()) != null) 
-			{
+			{	        	
 	        	if (line.contains("codec_type=video"))
 	        	{
 	        		return true;					        		 

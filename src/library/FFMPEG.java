@@ -1573,8 +1573,10 @@ public static StringBuilder errorLog = new StringBuilder();
 				dureeTotale = (int) (dureeTotale * (FFPROBE.currentFPS / newFPS));
 			}
 						
-			if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")))
+			if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) && comboFilter.getSelectedItem().toString().equals(".gif") == false && Shutter.caseCreateSequence.isSelected() == false)
+			{
 				dureeTotale = 1;
+			}
 			
 			if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 			|| comboFonctions.getSelectedItem().toString().equals("H.265")
@@ -1620,7 +1622,7 @@ public static StringBuilder errorLog = new StringBuilder();
     			progressBar1.setStringPainted(false);
     		else
     			progressBar1.setStringPainted(true);
-    		    		
+    		    		    		
 			if (pass2)
 			{
 				progressBar1.setValue((dureeTotale / 2) + getTimeToSeconds(ffmpegTime));
