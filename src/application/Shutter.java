@@ -84,6 +84,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -267,7 +268,7 @@ public class Shutter {
 	protected static JLabel iconPresets;
 	protected static JComboBox<String> comboResolution;
 	protected static JLabel lblImageQuality;
-	protected static JComboBox<String> comboImageQuality;
+	protected static JComboBox<String> comboImageOption;
 	protected static JCheckBox caseRotate;
 	protected static JComboBox<String> comboRotate;
 	protected static JCheckBox caseMiror;
@@ -551,6 +552,8 @@ public class Shutter {
 		new Shutter();
 		
 		Utils.textFieldBackground();
+		
+		ImageIO.setUseCache(false); //IMPORTANT use RAM instead of HDD cache
 	}
 
 	public Shutter() {
@@ -1308,7 +1311,7 @@ public class Shutter {
 		lblV.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblV.setText("v" + actualVersion);
 		lblV.setVisible(false);
-		lblV.setBounds(panelShutter.getX() + panelShutter.getWidth(), 6, lblV.getPreferredSize().width, 16);
+		lblV.setBounds(panelShutter.getX() + panelShutter.getWidth(), 6, lblV.getPreferredSize().width + 4, 16);
 		topPanel.add(lblV);
 
 		lblV.addMouseListener(new MouseListener() {
@@ -3309,38 +3312,57 @@ public class Shutter {
 							caseFastStart.setEnabled(false);
 					}
 										
-					// Add quality selection for .webp .avif .tif
+					// Add quality selection
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 					{
-						if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif") || comboFilter.getSelectedItem().toString().equals(".tif"))
-						{
-							if (comboFilter.getSelectedItem().toString().equals(".tif"))
+						if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
+						{							
+							if (comboImageOption.getItemAt(0).equals("100%") == false)
 							{
-								if (comboImageQuality.getItemAt(0).equals("packbits") == false)
-								{
-									comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "packbits", "raw", "lzw", "deflate" }));
-								}
-								comboImageQuality.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
-								comboImageQuality.setSize(90, 16);
-								grpResolution.remove(lblImageQuality);
+								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));	
 							}
-							else
+							comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
+							comboImageOption.setSize(50, 16);
+							grpResolution.add(lblImageQuality);											
+							grpResolution.add(comboImageOption);
+							comboImageOption.repaint();
+						}
+						else if (comboFilter.getSelectedItem().toString().equals(".tif"))
+						{
+							if (comboImageOption.getItemAt(0).equals("packbits") == false)
 							{
-								if (comboImageQuality.getItemAt(0).equals("100%") == false)
+								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "packbits", "raw", "lzw", "deflate" }));
+							}
+							comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
+							comboImageOption.setSize(90, 16);
+							grpResolution.remove(lblImageQuality);
+							grpResolution.add(comboImageOption);
+							comboImageOption.repaint();
+						}
+						else if (comboFilter.getSelectedItem().toString().equals(".gif"))
+						{
+							if (comboImageOption.getItemAt(0).equals("15 " + Shutter.language.getProperty("fps")) == false)
+							{
+								String fps[] = new String[10];
+								int a = 0;
+								for (int f = 15 ; f < 25 ; f++)
 								{
-									comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));	
+									fps[a] = f + " " + Shutter.language.getProperty("fps");
+									a++; 
 								}
-								comboImageQuality.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
-								comboImageQuality.setSize(50, 16);
-								grpResolution.add(lblImageQuality);
-							}				
-							grpResolution.add(comboImageQuality);
-							comboImageQuality.repaint();
+								
+								comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
+							}
+							comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
+							comboImageOption.setSize(90, 16);
+							grpResolution.remove(lblImageQuality);
+							grpResolution.add(comboImageOption);
+							comboImageOption.repaint();
 						}
 						else
 						{
 							grpResolution.remove(lblImageQuality);
-							grpResolution.remove(comboImageQuality);
+							grpResolution.remove(comboImageOption);
 						}
 						
 						grpResolution.repaint();
@@ -4833,16 +4855,16 @@ public class Shutter {
 		lblImageQuality.setBounds(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, comboResolution.getY() + 3, lblImageQuality.getPreferredSize().width + 4, 16);
 		grpResolution.add(lblImageQuality);
 		
-		comboImageQuality = new JComboBox<String>();
-		comboImageQuality.setName("comboImageQuality");
-		comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));
-		comboImageQuality.setSelectedIndex(0);
-		comboImageQuality.setMaximumRowCount(20);
-		comboImageQuality.setFont(new Font(freeSansFont, Font.PLAIN, 11));
-		comboImageQuality.setEditable(false);
-		comboImageQuality.setSize(90, 16);
-		comboImageQuality.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
-		grpResolution.add(comboImageQuality);
+		comboImageOption = new JComboBox<String>();
+		comboImageOption.setName("comboImageOption");
+		comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));
+		comboImageOption.setSelectedIndex(0);
+		comboImageOption.setMaximumRowCount(20);
+		comboImageOption.setFont(new Font(freeSansFont, Font.PLAIN, 11));
+		comboImageOption.setEditable(false);
+		comboImageOption.setSize(90, 16);
+		comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
+		grpResolution.add(comboImageOption);
 	}
 
 	private void grpImageSequence() {
@@ -9709,7 +9731,7 @@ public class Shutter {
 							//Accélération graphique Windows
 							if (System.getProperty("os.name").contains("Windows"))
 							{
-								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -s 640x360 -f null -" + '"');
+								FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -b_ref_mode 0 -s 640x360 -f null -" + '"');
 								do {
 									Thread.sleep(10);
 								} while (FFMPEG.runProcess.isAlive());
@@ -11092,7 +11114,7 @@ public class Shutter {
 				
 				// Resolution
 				comboResolution.setSelectedIndex(0);
-				comboImageQuality.setSelectedIndex(0);
+				comboImageOption.setSelectedIndex(0);
 				caseCreateSequence.setSelected(false);
 				comboInterpret.setEnabled(false);
 				comboInterpret.setSelectedIndex(7);
@@ -14872,37 +14894,57 @@ public class Shutter {
 							
 							iconTVResolution.setBounds(comboResolution.getX() + comboResolution.getWidth() + 9, 21, 16, 16);	
 							
-							// Ajout de la quality pour l'extension .webp & .avif
-							if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif") || comboFilter.getSelectedItem().toString().equals(".tif"))
-							{
-								if (comboFilter.getSelectedItem().toString().equals(".tif"))
+							// Ajout de la quality pour l'extension .webp & .avif & .tif
+							if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
+							{							
+								if (comboImageOption.getItemAt(0).equals("100%") == false)
 								{
-									if (comboImageQuality.getItemAt(0).equals("packbits") == false)
-									{
-										comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "packbits", "raw", "lzw", "deflate" }));
-									}
-									comboImageQuality.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
-									comboImageQuality.setSize(90, 16);
-									grpResolution.remove(lblImageQuality);
+									comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));	
 								}
-								else
+								comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
+								comboImageOption.setSize(50, 16);
+								grpResolution.add(lblImageQuality);											
+								grpResolution.add(comboImageOption);
+								comboImageOption.repaint();
+							}
+							else if (comboFilter.getSelectedItem().toString().equals(".tif"))
+							{
+								if (comboImageOption.getItemAt(0).equals("packbits") == false)
 								{
-									if (comboImageQuality.getItemAt(0).equals("100%") == false)
+									comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "packbits", "raw", "lzw", "deflate" }));
+								}
+								comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
+								comboImageOption.setSize(90, 16);
+								grpResolution.remove(lblImageQuality);
+								grpResolution.add(comboImageOption);
+								comboImageOption.repaint();
+							}
+							else if (comboFilter.getSelectedItem().toString().equals(".gif"))
+							{
+								if (comboImageOption.getItemAt(0).equals("15 " + Shutter.language.getProperty("fps")) == false)
+								{
+									String fps[] = new String[10];
+									int a = 0;
+									for (int f = 15 ; f < 25 ; f++)
 									{
-										comboImageQuality.setModel(new DefaultComboBoxModel<String>(new String[] { "100%","95%","90%","85%","80%","75%","70%","65%","60%","55%","50%","45%","40%","35%","30%","25%","20%","15%","10%","5%","0%" }));	
+										fps[a] = f + " " + Shutter.language.getProperty("fps");
+										a++; 
 									}
-									comboImageQuality.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
-									comboImageQuality.setSize(50, 16);
-									grpResolution.add(lblImageQuality);
-								}		
-								grpResolution.add(comboImageQuality);
-								comboImageQuality.repaint();
+									
+									comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
+								}
+								comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
+								comboImageOption.setSize(90, 16);
+								grpResolution.remove(lblImageQuality);
+								grpResolution.add(comboImageOption);
+								comboImageOption.repaint();
 							}
 							else
 							{
 								grpResolution.remove(lblImageQuality);
-								grpResolution.remove(comboImageQuality);
+								grpResolution.remove(comboImageOption);
 							}
+							
 							grpResolution.repaint();
 						
 							
@@ -15487,7 +15529,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".bmp", ".ico", ".webp", ".avif" };
+				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".webp", ".avif",".bmp", ".ico", ".gif" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -15841,7 +15883,7 @@ public class Shutter {
 		}		
 		
 		//.webp .avif
-		comboImageQuality.setEnabled(true);
+		comboImageOption.setEnabled(true);
 		
 		if (caseCreateSequence.isSelected())
 			comboInterpret.setEnabled(true);

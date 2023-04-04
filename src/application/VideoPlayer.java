@@ -457,9 +457,8 @@ public class VideoPlayer {
             shape1.add(shape2);
     		frame.setShape(shape1);
     		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
-        	
 		}
-				
+		
 		topPanel();
 		
 		//Ces deux boutons définissent la postion des autres objets par la suite ils doivent donc être appelés en amont
@@ -838,18 +837,6 @@ public class VideoPlayer {
 							frameIsComplete = false;
 										
 							playerSetTime(slider.getValue());
-							
-							long time = System.currentTimeMillis();
-							
-							do {
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException er) {}
-								
-								if (System.currentTimeMillis() - time > 1000)
-									frameIsComplete = true;
-															
-							} while (frameIsComplete == false);		
 						}	
 					}
 				}
@@ -863,12 +850,12 @@ public class VideoPlayer {
 				
 				if (e.getKeyCode() == KeyEvent.VK_J)
 				{
-					playerSetTime((float) (VideoPlayer.playerCurrentFrame - 11));
+					playerSetTime((float) (VideoPlayer.playerCurrentFrame - 10));
   				}
 					
 				if (e.getKeyCode() == KeyEvent.VK_L)
 				{
-					playerSetTime((float) (VideoPlayer.playerCurrentFrame + 9));
+					playerSetTime((float) (VideoPlayer.playerCurrentFrame + 10));
 				}
 				
 				if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
@@ -952,6 +939,8 @@ public class VideoPlayer {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		
+		resizeAll(); //IMPORTANT
 	}
 	
 	public static void playerProcess(float inputTime) {
@@ -983,7 +972,6 @@ public class VideoPlayer {
 				playerAudio = pba.start();
 			}			
 				
-			ImageIO.setUseCache(false); //IMPORTANT
 			InputStream video = playerVideo.getInputStream();				
 			BufferedInputStream videoInputStream = new BufferedInputStream(video);
 
@@ -1010,8 +998,7 @@ public class VideoPlayer {
 						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
 
 						if (playerLoop)
-						{		
-							
+						{							
 							try {	
 								
 								//Audio volume	
@@ -1043,14 +1030,15 @@ public class VideoPlayer {
 									playerCurrentFrame += 1;	
 								
 															
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+							} catch (Exception e) {}
 							finally {
 								
 								if (frameControl)
 								{
 									playerLoop = false;
+									
+									if (playerCurrentFrame > 1)
+										getTimePoint(playerCurrentFrame);
 								}
 								else if (playerPlayVideo)
 								{
@@ -1059,17 +1047,8 @@ public class VideoPlayer {
 					            	if (delay > 0)
 					            	{		            		
 						            	long time = System.nanoTime();
-						            	do {
-							            	try {
-												Thread.sleep(0);
-											} catch (InterruptedException e) {}
-						            	} while (System.nanoTime() - time < delay);			            	
+						            	while (System.nanoTime() - time < delay) {}			            	
 					                }
-					            	/*
-					            	if (playerCurrentFrame % 10 == 1)
-					            	{
-					            		System.out.println(Math.round((float) 1000 / ((float) (System.nanoTime() - (startTime - (int) ((float) inputFramerateMS * 1000000))) / 1000000)));
-					            	}*/
 								}								
 								
 								frameIsComplete = true;		
@@ -1123,10 +1102,10 @@ public class VideoPlayer {
 	public static void playerStop() {
 		
 		playerLoop = false;
-		
+		/*
 		try {
 			Thread.sleep((long) inputFramerateMS);
-		} catch (InterruptedException e1) {}
+		} catch (InterruptedException e1) {}*/
 		
 		if (playerVideo != null)
 		{
@@ -1144,7 +1123,7 @@ public class VideoPlayer {
 		{
 			player.repaint();
 		}
-		
+
 		getTimePoint(playerCurrentFrame); 		
 	}
 	
@@ -1188,8 +1167,8 @@ public class VideoPlayer {
 							} while (playerThread.isAlive());
 											
 							playerPlayVideo = true;
-							playerProcess(t);	
 							playerLoop = true;
+							playerProcess(t);								
 						}
 						else
 						{						
@@ -1200,26 +1179,27 @@ public class VideoPlayer {
 								} catch (InterruptedException e) {}
 							} while (playerThread.isAlive());				
 							
-							playerProcess(t);
-							
+							frameControl = true; //IMPORTANT to stop the player loop
+							frameIsComplete = false;		
 							playerLoop = true;
-							
+							playerProcess(t);							
+														
 							long time = System.currentTimeMillis();
 							
 							do {
+
 								try {
-									Thread.sleep(4);
+									Thread.sleep(1);
 								} catch (InterruptedException e) {}
 								
 								if (System.currentTimeMillis() - time > 1000)
-									break;
-								
-							} while (frameVideo == null);
-							
-							playerLoop = false;
+									frameIsComplete = true;
+															
+							} while (frameIsComplete == false);
 						}
-						
+												
 						playerCurrentFrame = t;
+						getTimePoint(playerCurrentFrame); 	
 					}
 					
 					frameControl = false;
@@ -1237,27 +1217,29 @@ public class VideoPlayer {
 		playerPlayVideo = false;
 
 		if (playerVideo == null || playerVideo.isAlive() == false)		
-		{
+		{				
+			frameControl = true; //IMPORTANT to stop the player loop
+			frameIsComplete = false;		
 			playerLoop = true;
-			
-			if (playerCurrentFrame > 0)
-				playerCurrentFrame -= 1;					
-			
-			playerProcess(playerCurrentFrame);	
+			playerProcess(playerCurrentFrame);
 			
 			long time = System.currentTimeMillis();
 			
 			do {
+				
 				try {
-					Thread.sleep(4);
+					Thread.sleep(1);
 				} catch (InterruptedException e) {}
-				
+
 				if (System.currentTimeMillis() - time > 1000)
-					break;
-				
-			} while (frameVideo == null);
+					frameIsComplete = true;
+											
+			} while (frameIsComplete == false);
 			
-			playerLoop = false;
+			if (playerCurrentFrame > 0)
+				playerCurrentFrame -= 1;
+			
+			getTimePoint(playerCurrentFrame);
 		}
 		
 		frameControl = false;	
@@ -1954,9 +1936,11 @@ public class VideoPlayer {
 				}
 			}
 			
-			Console.consoleFFMPEG.append(System.lineSeparator() + gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
+			String cmd = gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
+			
+			Console.consoleFFMPEG.append(System.lineSeparator() + cmd + System.lineSeparator());
 
-			return gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";			
+			return cmd;			
 		}
 	}
 	
@@ -2150,23 +2134,7 @@ public class VideoPlayer {
 									}
 								}
 								else
-									playerSetTime(playerCurrentFrame - 2);
-								
-								long time = System.currentTimeMillis();
-								
-								do {
-									
-									try {
-										Thread.sleep(1);
-									} catch (InterruptedException e) {}
-									
-									if (System.currentTimeMillis() - time > 1000)
-										frameIsComplete = true;
-																
-								} while (frameIsComplete == false);												
-								
-								if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
-									getTimePoint(playerCurrentFrame - 1);
+									playerSetTime(playerCurrentFrame - 1);									
 							}	
 							
 							i = 0;
@@ -2194,13 +2162,13 @@ public class VideoPlayer {
 					sliderSpeed.setValue(2);
 					lblSpeed.setText(Shutter.language.getProperty("conformBySpeed") + " x1");
 					lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);
-					playerSetTime(playerCurrentFrame);
+					playerSetTime(playerCurrentFrame + 1);
 				}
 				
 				if (preview.exists() || caseAddSubtitles.isSelected())
 				{
 					preview.delete();												
-					playerSetTime(playerCurrentFrame);
+					playerSetTime(playerCurrentFrame + 1);
 				}
 
 				frameControl = true;
@@ -2376,7 +2344,7 @@ public class VideoPlayer {
 						
 				playerInMark = cursorWaveform.getX();
 				waveformContainer.repaint();							
-				updateGrpIn(playerCurrentFrame - 1);
+				updateGrpIn(playerCurrentFrame);
 				timecode.repaint();
 			}
 			
@@ -2415,7 +2383,7 @@ public class VideoPlayer {
 
 				playerOutMark = cursorWaveform.getX();
 				waveformContainer.repaint();
-				updateGrpOut(playerCurrentFrame);
+				updateGrpOut(playerCurrentFrame + 1);
 			}
 			
 		});
@@ -2814,12 +2782,12 @@ public class VideoPlayer {
 					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerOutMark)
 					{							
 						cursorWaveform.setLocation(playerInMark, 0);
-						updateGrpIn(playerCurrentFrame - 1);
+						updateGrpIn(playerCurrentFrame);
 					}
 					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerInMark)
 					{			
 						cursorWaveform.setLocation(playerOutMark, 0);
-						updateGrpOut(playerCurrentFrame);
+						updateGrpOut(playerCurrentFrame + 1);
 					}		
 					
 					sliderChange = false;
@@ -2847,7 +2815,7 @@ public class VideoPlayer {
 						//NTSC framerate
 						playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
 						
-						playerSetTime(playerCurrentFrame - 1);
+						playerSetTime(playerCurrentFrame);
 					}					
 										
 					waveformContainer.repaint();
@@ -3096,7 +3064,7 @@ public class VideoPlayer {
 
 				int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 				int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
-				        		        		
+        		
 				if (accept && frame.getHeight() < screenHeight - taskBarHeight)
 				{					
 					if (player.getHeight() > player.getWidth())
@@ -3575,19 +3543,7 @@ public class VideoPlayer {
 					{
 						frameIsComplete = false;
 									
-						playerSetTime(slider.getValue());
-						
-						long time = System.currentTimeMillis();
-						
-						do {
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException er) {}
-							
-							if (System.currentTimeMillis() - time > 1000)
-								frameIsComplete = true;
-														
-						} while (frameIsComplete == false);		
+						playerSetTime(slider.getValue());	
 					}					
 				}
 			}	
@@ -3629,19 +3585,7 @@ public class VideoPlayer {
 					{
 						frameIsComplete = false;
 									
-						playerSetTime(slider.getValue());
-						
-						long time = System.currentTimeMillis();
-						
-						do {
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException er) {}
-							
-							if (System.currentTimeMillis() - time > 1000)
-								frameIsComplete = true;
-														
-						} while (frameIsComplete == false);		
+						playerSetTime(slider.getValue());	
 					}	
 				}
 			}
@@ -3956,18 +3900,6 @@ public class VideoPlayer {
 				frameIsComplete = false;
 							
 				playerSetTime(slider.getValue());
-				
-				long time = System.currentTimeMillis();
-				
-				do {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException er) {}
-					
-					if (System.currentTimeMillis() - time > 1000)
-						frameIsComplete = true;
-												
-				} while (frameIsComplete == false);		
 
 				Settings.videoPlayerCaseVuMeter = caseVuMeter.isSelected();
 			}
@@ -3988,18 +3920,6 @@ public class VideoPlayer {
 				frameIsComplete = false;
 							
 				playerSetTime(slider.getValue());
-				
-				long time = System.currentTimeMillis();
-				
-				do {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException er) {}
-					
-					if (System.currentTimeMillis() - time > 1000)
-						frameIsComplete = true;
-												
-				} while (frameIsComplete == false);		
 
 				Settings.videoPlayerCaseGPUDecoding = caseGPU.isSelected();
 			}
@@ -4073,7 +3993,7 @@ public class VideoPlayer {
 				
     			//Update lblTimecode
 				sliderChange = true;
-    			getTimePoint(playerCurrentFrame - 1);
+    			getTimePoint(playerCurrentFrame);
 				sliderChange = false;
 			}	
 		});
@@ -6355,20 +6275,7 @@ public class VideoPlayer {
 						
 						frameIsComplete = false;
 						
-						playerSetTime(playerCurrentFrame - 1);
-						
-						long time = System.currentTimeMillis();
-						
-						do {
-							
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException e) {}
-							
-							if (System.currentTimeMillis() - time > 1000)
-								frameIsComplete = true;
-														
-						} while (frameIsComplete == false);	
+						playerSetTime(playerCurrentFrame);
 					}
 					
 					//Important
@@ -6406,20 +6313,7 @@ public class VideoPlayer {
 						
 						frameIsComplete = false;
 						
-						playerSetTime(playerCurrentFrame - 1);
-						
-						long time = System.currentTimeMillis();
-						
-						do {
-							
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException e) {}
-							
-							if (System.currentTimeMillis() - time > 1000)
-								frameIsComplete = true;
-														
-						} while (frameIsComplete == false);	
+						playerSetTime(playerCurrentFrame);
 					}
 					ratioChanged = false;	
 					
@@ -6496,7 +6390,7 @@ public class VideoPlayer {
 							FFMPEG.cropdetect = "";
 							
 							//Input point
-							String inputPoint = " -ss " + (float) (playerCurrentFrame - 1) * inputFramerateMS + "ms";
+							String inputPoint = " -ss " + (float) (playerCurrentFrame) * inputFramerateMS + "ms";
 							if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 								inputPoint = "";
 							
@@ -7966,7 +7860,7 @@ public class VideoPlayer {
 					}
 					
 					float currentTime = Timecode.setNonDropFrameTC(playerCurrentFrame);
-					float offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF - 1;
+					float offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
 					
 					if (offset < 0)
 						offset = 0;
@@ -11748,8 +11642,7 @@ public class VideoPlayer {
 			do {
 				Thread.sleep(10);
 			} while (FFMPEG.process.isAlive() == false);
-		
-			ImageIO.setUseCache(false); //IMPORTANT
+
 			InputStream videoInput = FFMPEG.process.getInputStream(); 
 			InputStream is = new BufferedInputStream(videoInput);
 			logoPNG = ImageIO.read(is);
@@ -11903,7 +11796,7 @@ public class VideoPlayer {
 							deinterlace = " -vf yadif=0:" + FFPROBE.fieldOrder + ":0";		
 	
 						//Input point
-						String inputPoint = " -ss " + (float) (playerCurrentFrame - 1) * inputFramerateMS + "ms";
+						String inputPoint = " -ss " + (float) (playerCurrentFrame) * inputFramerateMS + "ms";
 						if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 							inputPoint = "";
 												
@@ -11984,7 +11877,6 @@ public class VideoPlayer {
 							frame.setVisible(true);
 						}
 	
-						ImageIO.setUseCache(false); //IMPORTANT
 						InputStream videoInput = FFMPEG.process.getInputStream();		
 						InputStream is = new BufferedInputStream(videoInput);
 						frameVideo = ImageIO.read(is);	
@@ -12071,7 +11963,7 @@ public class VideoPlayer {
 		{
 			filter += yadif + ",";
 		}	
-		
+
 		//Scaling
 		//filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=bicubic";
 		
