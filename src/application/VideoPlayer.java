@@ -12412,8 +12412,8 @@ public class VideoPlayer {
 			
 			float totalIn =  (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 			float totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
-
-			float total = Math.round(totalOut - totalIn);
+			
+			float total = (totalOut - totalIn);
 						
 			//NTSC timecode
 			total = Timecode.getNonDropFrameTC(total);
@@ -12421,10 +12421,10 @@ public class VideoPlayer {
 			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 				total = totalFrames - total;	
 
-			durationH = (int) (total / FFPROBE.currentFPS / 3600);
-			durationM = (int) ((total / FFPROBE.currentFPS / 60) % 60);
-			durationS = (int) ((total / FFPROBE.currentFPS) % 60);
-			durationF = (int) (total % FFPROBE.currentFPS);
+			durationH = (int) Math.floor(total / FFPROBE.currentFPS / 3600);
+			durationM = (int) Math.floor((total / FFPROBE.currentFPS / 60) % 60);
+			durationS = (int) Math.floor((total / FFPROBE.currentFPS) % 60);
+			durationF = (int) Math.round(total % FFPROBE.currentFPS);
 			
 			lblDuration.setText(Shutter.language.getProperty("lblDuree") + " " + durationH + "h " + durationM +"min " + durationS + "sec " + durationF + "i" + " | " + Shutter.language.getProperty("lblTotalFrames") + " " + (int) total);
 			
@@ -12455,7 +12455,7 @@ public class VideoPlayer {
 						Shutter.textH.setText(formatter.format(Math.floor(total / FFPROBE.currentFPS / 3600)));
 						Shutter.textM.setText(formatter.format(Math.floor(total / FFPROBE.currentFPS / 60) % 60));
 						Shutter.textS.setText(formatter.format(Math.floor(total / FFPROBE.currentFPS) % 60));    		
-						Shutter.textF.setText(formatter.format(Math.floor(total % FFPROBE.currentFPS)));
+						Shutter.textF.setText(formatter.format(Math.round(total % FFPROBE.currentFPS)));
 			    	     
 			    	    FFPROBE.setFilesize();
 			    	    
