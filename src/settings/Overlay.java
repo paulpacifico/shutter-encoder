@@ -91,11 +91,7 @@ public class Overlay extends Shutter {
 				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
 
 				//NTSC framerate
-				if (VideoPlayer.caseAddTimecode.isSelected())
-				{
-					timeIn = Timecode.getNonDropFrameTC(timeIn);
-				}
-				else if (VideoPlayer.caseShowTimecode.isSelected())
+				if (VideoPlayer.caseShowTimecode.isSelected())
 				{
 					timeIn = 0;
 				}
