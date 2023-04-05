@@ -69,7 +69,7 @@ public class Overlay extends Shutter {
 				tc1 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
 				tc2 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
 				tc3 = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
-				tc4 = formatter.format(Math.floor(offset % FFPROBE.currentFPS));
+				tc4 = formatter.format(Math.round(offset % FFPROBE.currentFPS));
 			}	
 			
 			if (videoPlayerCapture)
