@@ -7862,12 +7862,6 @@ public class VideoPlayer {
 					
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 
-					//NTSC framerate
-					if (VideoPlayer.caseAddTimecode.isSelected())
-					{
-						timeIn = Timecode.getNonDropFrameTC(timeIn);
-					}
-					
 					if (caseShowTimecode.isSelected())
 					{
 						timeIn = 0;
