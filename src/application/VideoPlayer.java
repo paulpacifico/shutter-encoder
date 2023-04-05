@@ -1036,9 +1036,7 @@ public class VideoPlayer {
 								if (frameControl)
 								{
 									playerLoop = false;
-									
-									if (playerCurrentFrame > 1)
-										getTimePoint(playerCurrentFrame);
+									getTimePoint(playerCurrentFrame);
 								}
 								else if (playerPlayVideo)
 								{
@@ -2092,7 +2090,7 @@ public class VideoPlayer {
 				i ++;
 				
 				if (frameVideo != null && i <= 1)
-				{										
+				{					
 					Thread t = new Thread(new Runnable() {
 
 						@Override
@@ -2134,7 +2132,20 @@ public class VideoPlayer {
 									}
 								}
 								else
-									playerSetTime(playerCurrentFrame - 1);									
+									playerSetTime(playerCurrentFrame - 1);					
+															
+								long time = System.currentTimeMillis();
+								
+								do {
+
+									try {
+										Thread.sleep(1);
+									} catch (InterruptedException e) {}
+									
+									if (System.currentTimeMillis() - time > 1000)
+										frameIsComplete = true;
+																
+								} while (frameIsComplete == false);
 							}	
 							
 							i = 0;
@@ -7852,7 +7863,10 @@ public class VideoPlayer {
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 
 					//NTSC framerate
-					timeIn = Timecode.getNonDropFrameTC(timeIn);
+					if (VideoPlayer.caseAddTimecode.isSelected())
+					{
+						timeIn = Timecode.getNonDropFrameTC(timeIn);
+					}
 					
 					if (caseShowTimecode.isSelected())
 					{
@@ -12406,7 +12420,7 @@ public class VideoPlayer {
 			float totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
 
 			float total = Math.round(totalOut - totalIn);
-
+						
 			//NTSC timecode
 			total = Timecode.getNonDropFrameTC(total);
 						

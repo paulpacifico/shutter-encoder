@@ -278,6 +278,7 @@ public class Settings {
 				if (btnLoadPreset.isSelected())
 				{
 					comboLoadPreset.setEnabled(true);
+					comboLoadPreset.removeAllItems();
 					
 					if (Functions.functionsFolder.exists())
 					{
