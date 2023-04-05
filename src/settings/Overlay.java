@@ -38,29 +38,50 @@ public class Overlay extends Shutter {
 	public static String showTimecode(String filterComplex, String file, boolean videoPlayerCapture) {
 		
 		if (caseInAndOut.isSelected() && (VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseAddText.isSelected() || VideoPlayer.caseShowFileName.isSelected()))
-		{
+		{			
 			String tc1 = FFPROBE.timecode1;
 			String tc2 = FFPROBE.timecode2;
 			String tc3 = FFPROBE.timecode3;
 			String tc4 = FFPROBE.timecode4;
-			 
-			if (VideoPlayer.caseAddTimecode.isSelected())
-			{				
+						 
+			if (VideoPlayer.caseAddTimecode.isSelected() && VideoPlayer.TC1.getText().isEmpty() == false && VideoPlayer.TC2.getText().isEmpty() == false && VideoPlayer.TC3.getText().isEmpty() == false && VideoPlayer.TC4.getText().isEmpty() == false)
+			{			
 				tc1 = VideoPlayer.TC1.getText();
 				tc2 = VideoPlayer.TC2.getText();			
 				tc3 = VideoPlayer.TC3.getText();		    
 				tc4 = VideoPlayer.TC4.getText();			
 			}
-			else if (VideoPlayer.caseShowTimecode.isSelected())
-			{			
-				tc1 = VideoPlayer.caseInH.getText();
-				tc2 = VideoPlayer.caseInM.getText();
-				tc3 = VideoPlayer.caseInS.getText();    		
-				tc4 = VideoPlayer.caseInF.getText();			
+			else if (VideoPlayer.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals("") == false)
+			{							
+				float tcH = Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS;
+				float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
+				float tcS = Integer.parseInt(tc3) * FFPROBE.currentFPS;
+				
+				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
+
+				float offset = timeIn + tcH + tcM + tcS + Integer.parseInt(tc4);
+
+				if (offset < 0)
+					offset = 0;
+				
+				DecimalFormat formatter = new DecimalFormat("00");	
+				
+				tc1 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
+				tc2 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
+				tc3 = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
+				tc4 = formatter.format(Math.floor(offset % FFPROBE.currentFPS));
 			}	
 			
 			if (videoPlayerCapture)
-			{				
+			{		
+				if (VideoPlayer.caseShowTimecode.isSelected())
+				{
+					tc1 = FFPROBE.timecode1;
+					tc2 = FFPROBE.timecode2;
+					tc3 = FFPROBE.timecode3;
+					tc4 = FFPROBE.timecode4;
+				}
+				
 				DecimalFormat formatter = new DecimalFormat("00");					
 												
 				float tcH = Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS;
@@ -74,10 +95,14 @@ public class Overlay extends Shutter {
 				{
 					timeIn = Timecode.getNonDropFrameTC(timeIn);
 				}
+				else if (VideoPlayer.caseShowTimecode.isSelected())
+				{
+					timeIn = 0;
+				}
 												
 				float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
 				float offset = (currentTime - timeIn) + tcH + tcM + tcS + Integer.parseInt(tc4);
-				
+
 				if (offset < 0)
 					offset = 0;
 				
