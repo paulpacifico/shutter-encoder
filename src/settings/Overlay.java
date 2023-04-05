@@ -23,7 +23,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import javax.swing.JTextField;
 
@@ -50,62 +49,37 @@ public class Overlay extends Shutter {
 				tc1 = VideoPlayer.TC1.getText();
 				tc2 = VideoPlayer.TC2.getText();			
 				tc3 = VideoPlayer.TC3.getText();		    
-				tc4 = VideoPlayer.TC4.getText();
-			
-				if (videoPlayerCapture)
-				{
-					DecimalFormat formatter = new DecimalFormat("00");					
-													
-					float tcH = Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS;
-					float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
-					float tcS = Integer.parseInt(tc3) * FFPROBE.currentFPS;
-					
-					float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
-	
-					//NTSC framerate
-					timeIn = Timecode.getNonDropFrameTC(timeIn);
-					
-					float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
-					float offset = (currentTime - timeIn) + tcH + tcM + tcS + Integer.parseInt(tc4);
-					
-					if (offset < 0)
-						offset = 0;
-					
-					tc1 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
-					tc2 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
-					tc3 = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
-					tc4 = formatter.format(Math.floor(offset % FFPROBE.currentFPS));
-				}
+				tc4 = VideoPlayer.TC4.getText();			
 			}
 			else if (VideoPlayer.caseShowTimecode.isSelected())
-			{
-				float tcH = Integer.valueOf(FFPROBE.timecode1);
-				float tcM = Integer.valueOf(FFPROBE.timecode2);
-				float tcS = Integer.valueOf(FFPROBE.timecode3);
-				float tcF = Integer.valueOf(FFPROBE.timecode4);
-				
-				tcH = tcH * 3600 * FFPROBE.currentFPS;
-				tcM = tcM * 60 * FFPROBE.currentFPS;
-				tcS = tcS * FFPROBE.currentFPS;
+			{			
+				tc1 = VideoPlayer.caseInH.getText();
+				tc2 = VideoPlayer.caseInM.getText();
+				tc3 = VideoPlayer.caseInS.getText();    		
+				tc4 = VideoPlayer.caseInF.getText();			
+			}	
+			
+			if (videoPlayerCapture)
+			{				
+				DecimalFormat formatter = new DecimalFormat("00");					
+												
+				float tcH = Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS;
+				float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
+				float tcS = Integer.parseInt(tc3) * FFPROBE.currentFPS;
 				
 				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
-											
+
 				//NTSC framerate
-				timeIn = Timecode.getNonDropFrameTC(timeIn);
-							
-				if (videoPlayerCapture)
+				if (VideoPlayer.caseAddTimecode.isSelected())
 				{
-					timeIn = 0;
+					timeIn = Timecode.getNonDropFrameTC(timeIn);
 				}
+												
+				float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
+				float offset = (currentTime - timeIn) + tcH + tcM + tcS + Integer.parseInt(tc4);
 				
-				float offset = timeIn + (tcH + tcM + tcS + tcF);
-				if (videoPlayerCapture)
-				{
-					float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
-					offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
-				}
-				
-				NumberFormat formatter = new DecimalFormat("00");
+				if (offset < 0)
+					offset = 0;
 				
 				tc1 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
 				tc2 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);

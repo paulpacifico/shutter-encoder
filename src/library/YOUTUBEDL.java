@@ -98,7 +98,7 @@ public static String format = "";
 							youtubedl = "yt-dlp_macos";
 							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
 							{
-								youtubedl = "youtube-dl";
+								youtubedl = "yt-dlp_macos_x86";
 							}
 						}
 
@@ -217,7 +217,7 @@ public static String format = "";
 							youtubedl = "yt-dlp_macos";
 							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
 							{
-								youtubedl = "youtube-dl";
+								youtubedl = "yt-dlp_macos_x86";
 							}
 						}
 
@@ -306,7 +306,7 @@ public static String format = "";
 							youtubedl = "yt-dlp_macos";
 							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
 							{
-								youtubedl = "youtube-dl";
+								youtubedl = "yt-dlp_macos_x86";
 							}
 						}
 
