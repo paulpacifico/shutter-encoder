@@ -1045,7 +1045,7 @@ public class VideoPlayer {
 					            	if (delay > 0)
 					            	{		            		
 						            	long time = System.nanoTime();
-						            	while (System.nanoTime() - time < delay) {}			            	
+						            	while (System.nanoTime() - time < delay) {}		
 					                }
 								}								
 								
@@ -1063,7 +1063,7 @@ public class VideoPlayer {
 						}							
 						
 					} while (playerVideo.isAlive());
-										
+													
 					try {
 						video.close();
 					} catch (IOException e) {}		
@@ -1139,6 +1139,7 @@ public class VideoPlayer {
 		
 		if (setTime == null || setTime.isAlive() == false && frameVideo != null)
 		{
+			
 			setTime = new Thread(new Runnable() {
 
 				@Override
@@ -1194,8 +1195,10 @@ public class VideoPlayer {
 									frameIsComplete = true;
 															
 							} while (frameIsComplete == false);
+							
+							playerLoop = false;
 						}
-												
+														
 						playerCurrentFrame = t;
 						getTimePoint(playerCurrentFrame); 	
 					}
@@ -1935,7 +1938,7 @@ public class VideoPlayer {
 			}
 			
 			String cmd = gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
-			
+						
 			Console.consoleFFMPEG.append(System.lineSeparator() + cmd + System.lineSeparator());
 
 			return cmd;			
@@ -2761,7 +2764,7 @@ public class VideoPlayer {
 			public void mouseReleased(MouseEvent e) {	
 
 				if (Shutter.liste.getSize() > 0)
-                {
+                {	/*
 					//Allows to wait for the last frame to load
 					if (playerLoop == false)
 					{
@@ -2778,6 +2781,7 @@ public class VideoPlayer {
 							} catch (InterruptedException e1) {}
 						} while (playerLoop);
 					}
+					*/
 					
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 					float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
