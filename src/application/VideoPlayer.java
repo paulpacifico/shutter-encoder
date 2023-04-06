@@ -12426,7 +12426,7 @@ public class VideoPlayer {
 			durationS = (int) Math.floor((total / FFPROBE.currentFPS) % 60);
 			durationF = (int) Math.round(total % FFPROBE.currentFPS);
 			
-			lblDuration.setText(Shutter.language.getProperty("lblDuree") + " " + durationH + "h " + durationM +"min " + durationS + "sec " + durationF + "i" + " | " + Shutter.language.getProperty("lblTotalFrames") + " " + (int) total);
+			lblDuration.setText(Shutter.language.getProperty("lblDuree") + " " + durationH + "h " + durationM +"min " + durationS + "sec " + durationF + "i" + " | " + Shutter.language.getProperty("lblTotalFrames") + " " + (int) Math.ceil(total));
 			
 			if (total <= 0)
 			{
