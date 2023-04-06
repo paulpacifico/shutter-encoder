@@ -1136,18 +1136,17 @@ public class VideoPlayer {
 	}
 	
 	public static void playerSetTime(float time) {
-		
-		if (setTime == null || setTime.isAlive() == false && frameVideo != null)
-		{
 			
+		if (setTime == null || setTime.isAlive() == false && frameVideo != null)
+		{			
 			setTime = new Thread(new Runnable() {
 
 				@Override
 				public void run() {					
 
-					float t = time;
+					int t = (int) Math.ceil(time);
 					
-					if (t < 0.0f)
+					if (t < 0)
 						t = 0;
 					
 					writeCurrentSubs(t);
@@ -1200,7 +1199,8 @@ public class VideoPlayer {
 						}
 														
 						playerCurrentFrame = t;
-						getTimePoint(playerCurrentFrame); 	
+						getTimePoint(playerCurrentFrame); 
+						timecode.repaint();
 					}
 					
 					frameControl = false;
@@ -2149,6 +2149,7 @@ public class VideoPlayer {
 										frameIsComplete = true;
 																
 								} while (frameIsComplete == false);
+								
 							}	
 							
 							i = 0;
