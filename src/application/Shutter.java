@@ -1556,6 +1556,15 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+				if (FFPROBE.isRunning)
+				{
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+				}
+				
 				FFMPEG.toSDL(false);
 			}
 		});
@@ -2132,9 +2141,11 @@ public class Shutter {
 			public void mouseClicked(MouseEvent e) {
 
 				if (FFMPEG.isRunning == false && BMXTRANSWRAP.isRunning == false && DVDAUTHOR.isRunning == false
-						&& TSMUXER.isRunning == false && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1
-						&& liste.getSize() > 0)
+				&& TSMUXER.isRunning == false && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1
+				&& liste.getSize() > 0)
+				{
 					menuDisplay.doClick();
+				}
 
 				if (e.getButton() == MouseEvent.BUTTON3 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1)
 				{
@@ -2319,13 +2330,11 @@ public class Shutter {
 								
 								FunctionUtils.allowsInvalidCharacters = true;
 							}
-						}
-						else
-						{
+							
 							liste.addElement(file.getAbsolutePath());
 							addToList.setVisible(false);
 							lblFiles.setText(Utils.filesNumber());
-						}
+						}							
 					}
 
 					changeFilters();
