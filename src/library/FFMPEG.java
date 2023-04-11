@@ -403,7 +403,7 @@ public static StringBuilder errorLog = new StringBuilder();
 	}
 	
 	public static void toSDL(boolean isVideoPlayer) {
-		
+				
 		if (fileList.getSelectedIndices().length > 1 && isVideoPlayer == false)
 		{
 			String input = "";
@@ -426,7 +426,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			FFMPEG.toFFPLAY(input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map "
 					+ '"' + "[out]" + '"' + " -map a? -f nut pipe:play |");
 		} else {
-			
+						
 			//File
 			File inputFile = null;
 			
@@ -559,7 +559,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			
 			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -map a? -f nut pipe:play |";
-
+			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			
 			if (isVideoPlayer)
