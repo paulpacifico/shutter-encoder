@@ -374,7 +374,8 @@ public static int gopSpace = 124;
 						                currentFPS = Float.parseFloat(str[1]);
 						                
 						                //Used for VFR						      
-						                str = str[1].split("\\.");						                
+						                str = String.valueOf(currentFPS).split("\\.");	
+
 						                if (str[1].length() == 2 && str[1].equals("00") == false)
 						                {
 						                	if (str[1].equals("88") == false //119.88
