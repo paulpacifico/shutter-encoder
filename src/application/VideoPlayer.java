@@ -11978,7 +11978,13 @@ public class VideoPlayer {
 		}	
 
 		//Scaling
-		//filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=bicubic";
+		int width = player.getWidth();
+		int height = player.getHeight();
+		if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
+		{
+			width = player.getHeight();
+			height = player.getWidth();
+		}
 		
 		if (FFMPEG.isGPUCompatible && caseGPU.isSelected() && noGPU == false)
 		{
@@ -11992,22 +11998,22 @@ public class VideoPlayer {
 			if (FFMPEG.cudaAvailable)
 			{
 				filter = filter.replace("yadif", "yadif_cuda");			
-				filter += "scale_cuda=" + player.getWidth() + ":" + player.getHeight() + ":interp_algo=bicubic,hwdownload,format=" + bitDepth;
+				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=bicubic,hwdownload,format=" + bitDepth;
 			}
 			else if (FFMPEG.qsvAvailable && yadif == "")
 			{
-				filter += "scale_qsv=" + player.getWidth() + ":" + player.getHeight() + ":mode=low_power,hwdownload,format=" + bitDepth;
+				filter += "scale_qsv=" + width + ":" + height + ":mode=low_power,hwdownload,format=" + bitDepth;
 			}	
 			else
 			{
-				filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=bicubic";
+				filter += "scale=" + width + ":" + height + ":flags=bicubic";
 			}
 		}
 		else
 		{
-			filter += "scale=" + player.getWidth() + ":" + player.getHeight() + ":flags=bicubic";
+			filter += "scale=" + width + ":" + height + ":flags=bicubic";
 		}
-		
+				
 		//Speed
 		if (speed != "")
 		{
@@ -12261,14 +12267,14 @@ public class VideoPlayer {
 		
 		if (ratio < 1.3f)
 		{
-			int maxHeigth = frame.getHeight() - (frame.getHeight() - lblPosition.getY()) - btnCapture.getY() - btnCapture.getHeight() - 64;
+			int maxHeight = frame.getHeight() - (frame.getHeight() - lblPosition.getY()) - btnCapture.getY() - btnCapture.getHeight() - 64;
 			
 			if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 			{
-				maxHeigth = frame.getHeight() - btnCapture.getY() - btnCapture.getHeight() - 24;
+				maxHeight = frame.getHeight() - btnCapture.getY() - btnCapture.getHeight() - 24;
 			}
 			
-			player.setSize((int) (maxHeigth * ratio), maxHeigth);
+			player.setSize((int) (maxHeight * ratio), maxHeight);
 		}
 		else
 		{

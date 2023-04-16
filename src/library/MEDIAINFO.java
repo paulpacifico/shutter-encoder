@@ -83,7 +83,24 @@ public static Thread runProcess;
 					while ((line = br.readLine()) != null)
 					{		
 					   infoData.append(line);
-					   					  
+					   /*	
+					   //Variable Frame Rate
+					   if (line.contains("Frame rate mode :"))
+					   {						   
+						   infoData.append(System.lineSeparator());
+						   
+						   line = br.readLine();
+						   infoData.append(line);
+						   
+						   String s[] = line.split(">");
+						   String s2[] = s[1].split("<");
+						   
+						   if (s2[0].equals("Variable"))
+						   {
+							   FFPROBE.currentFPS = FFPROBE.timebaseFPS;
+						   }
+					   }*/
+					   
 					   //Timecode
 					   if (line.contains("Time code of first frame") && FFPROBE.timecode1 == "")
 					   {

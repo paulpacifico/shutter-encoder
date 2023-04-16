@@ -1603,15 +1603,21 @@ public class VideoEncoders extends Shutter {
 		String line;
 		while ((line = oldXML.readLine()) != null)
 		{
-			if (line.contains("path"))
+			if (FFPROBE.currentFPS != 25.0f && line.contains("pal"))
+			{
+				writer.write(line.replace("pal", "ntsc").replace("720x576", "720x480") + System.lineSeparator());
+			}
+			else if (line.contains("path"))
+			{
 				writer.write(line.replace("path", MPEGFile) + System.lineSeparator());
+			}
 			else					
 				writer.write(line + System.lineSeparator());
 		}
 		
-			reader.close();
-			oldXML.close();
-			writer.close();		
+		reader.close();
+		oldXML.close();
+		writer.close();		
 			
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 				DVDAUTHOR.run("-o " + '"' + dvdFolder.toString() + "/" + '"' + " -x " + '"' + dvdFolder.toString() + "/dvd.xml" + '"');

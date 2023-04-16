@@ -169,7 +169,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "16.9";
+	public static String actualVersion = "17.0";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
@@ -2306,9 +2306,12 @@ public class Shutter {
 				dialog.setMultipleMode(true);
 				dialog.setVisible(true);
 
-				if (dialog.getFiles() != null) {
+				if (dialog.getFiles() != null)
+				{
 					File[] files = dialog.getFiles();
-					for (int i = 0; i < files.length; i++) {
+					
+					for (int i = 0; i < files.length; i++)
+					{						
 						int s = files[i].getAbsolutePath().toString().lastIndexOf('.');
 						String ext = files[i].getAbsolutePath().toString().substring(s);
 						if (ext.equals(".enc")) {
@@ -2329,12 +2332,12 @@ public class Shutter {
 								JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
 								
 								FunctionUtils.allowsInvalidCharacters = true;
-							}
-							
-							liste.addElement(file.getAbsolutePath());
-							addToList.setVisible(false);
-							lblFiles.setText(Utils.filesNumber());
-						}							
+							}														
+						}		
+						
+						liste.addElement(file.getAbsolutePath());
+						addToList.setVisible(false);
+						lblFiles.setText(Utils.filesNumber());
 					}
 
 					changeFilters();
