@@ -610,17 +610,24 @@ public class AdvancedFeatures extends Shutter {
 			return " -vsync vfr";
 		}
 		
-		if (FFPROBE.currentFPS == 59.94f)
+		if (caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
 		{
-			return " -r 60000/1001";
+			//Null	
 		}
-		else if (FFPROBE.currentFPS == 29.97f)
+		else
 		{
-			return " -r 30000/1001";
-		}
-		else if (FFPROBE.currentFPS == 23.98f)
-		{
-			return " -r 24000/1001";
+			if (FFPROBE.currentFPS == 59.94f)
+			{
+				return " -r 60000/1001";
+			}
+			else if (FFPROBE.currentFPS == 29.97f)
+			{
+				return " -r 30000/1001";
+			}
+			else if (FFPROBE.currentFPS == 23.98f)
+			{
+				return " -r 24000/1001";
+			}
 		}
 		
 		return "";
