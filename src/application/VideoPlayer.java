@@ -2341,6 +2341,11 @@ public class VideoPlayer {
 				if (Shutter.fileList.getSelectedIndex() < Shutter.liste.getSize())
 	      		{      			
 					Shutter.fileList.setSelectedIndex(Shutter.fileList.getSelectedIndex() + 1);
+					if (playerLoop)
+					{
+						btnPlay.setText(Shutter.language.getProperty("btnPlay"));
+						playerLoop = false;
+					}
 					setMedia();
 	      		}
 			}
