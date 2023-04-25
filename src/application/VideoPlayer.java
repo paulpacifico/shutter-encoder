@@ -60,6 +60,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.font.FontRenderContext;
@@ -549,6 +550,13 @@ public class VideoPlayer {
 		
 		totalDuration();
 				
+		frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+				Settings.saveSettings();
+            }
+        });
+		
 		frame.addMouseMotionListener(new MouseMotionListener(){
  			
 			@Override
@@ -2790,12 +2798,12 @@ public class VideoPlayer {
 					*/
 					
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
-					float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
+					float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
 
 					playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
-					if ((timeOut + 1) < totalFrames)
+					if ((int) Math.ceil(timeOut) < totalFrames)
 					{
-						playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut) / totalFrames);
+						playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
 					}
 					else
 						playerOutMark = waveformContainer.getWidth();
@@ -12226,7 +12234,7 @@ public class VideoPlayer {
 		casePlaySound.setBounds(caseInternalTc.getX() + caseInternalTc.getWidth() + 4, caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
 
 		float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
-		float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText()) - 1;
+		float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
 
 		//Sliders
 		if (waveformContainer.isVisible())
@@ -12250,11 +12258,11 @@ public class VideoPlayer {
 			}
 			
 			playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
-			
-			if ((timeOut + 1) < totalFrames)
-				playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut) / totalFrames);
+						
+			if ((int) Math.ceil(timeOut) < totalFrames)
+				playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
 			else
-				playerOutMark = waveformContainer.getWidth() - 2;
+				playerOutMark = waveformContainer.getWidth() - 2;	
 			
 			waveformContainer.repaint();
 		}
@@ -12425,7 +12433,7 @@ public class VideoPlayer {
 	public static void totalDuration() {	
 		
 		try {
-			
+						
 			float totalIn =  (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 			float totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
 			
@@ -12433,7 +12441,7 @@ public class VideoPlayer {
 						
 			//NTSC timecode
 			total = Timecode.getNonDropFrameTC(total);
-						
+
 			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 				total = totalFrames - total;	
 
@@ -12441,7 +12449,7 @@ public class VideoPlayer {
 			durationM = (int) Math.floor((total / FFPROBE.currentFPS / 60) % 60);
 			durationS = (int) Math.floor((total / FFPROBE.currentFPS) % 60);
 			durationF = (int) Math.round(total % FFPROBE.currentFPS);
-			
+						
 			lblDuration.setText(Shutter.language.getProperty("lblDuree") + " " + durationH + "h " + durationM +"min " + durationS + "sec " + durationF + "i" + " | " + Shutter.language.getProperty("lblTotalFrames") + " " + (int) Math.ceil(total));
 			
 			if (total <= 0)
@@ -12773,7 +12781,7 @@ public class VideoPlayer {
 										if (((JCheckBox) p).isSelected())
 											((JCheckBox) p).doClick();
 									}
-																		
+									
 									//State
 									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									

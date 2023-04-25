@@ -176,7 +176,7 @@ public class Shutter {
 	public static String magnetoFont = "Magneto";
 	public static String montserratFont = "Montserrat";
 	public static String freeSansFont = "FreeSans";
-	public static File documents = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
+	public static File documents = new File(System.getProperty("user.home") + "/Shutter Encoder");
 	public static File settingsXML = new File(Shutter.documents + "/settings.xml");
 	public static String dirTemp = System.getProperty("java.io.tmpdir");
 	public static File lutsFolder;
@@ -545,9 +545,11 @@ public class Shutter {
 		Utils.loadThemes();		
 		Splash.increment();
 				
-		// Documents Shutter Encoder
+		// Documents Shutter Encoder		
 		if (Shutter.documents.exists() == false)
+		{
 			Shutter.documents.mkdirs();
+		}
 
 		new Shutter();
 		
@@ -3335,6 +3337,7 @@ public class Shutter {
 							}
 							comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
 							comboImageOption.setSize(50, 16);
+							comboImageOption.setEditable(false);
 							grpResolution.add(lblImageQuality);											
 							grpResolution.add(comboImageOption);
 							comboImageOption.repaint();
@@ -3347,26 +3350,37 @@ public class Shutter {
 							}
 							comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
 							comboImageOption.setSize(90, 16);
+							comboImageOption.setEditable(false);
 							grpResolution.remove(lblImageQuality);
 							grpResolution.add(comboImageOption);
 							comboImageOption.repaint();
 						}
-						else if (comboFilter.getSelectedItem().toString().equals(".gif"))
+						else if (comboFilter.getSelectedItem().toString().equals(".gif") || comboFilter.getSelectedItem().toString().equals(".apng"))
 						{
 							if (comboImageOption.getItemAt(0).equals("15 " + Shutter.language.getProperty("fps")) == false)
 							{
-								String fps[] = new String[10];
+								String fps[] = new String[17];
 								int a = 0;
-								for (int f = 15 ; f < 25 ; f++)
+								for (int f = 15 ; f < 24 ; f++)
 								{
 									fps[a] = f + " " + Shutter.language.getProperty("fps");
 									a++; 
 								}
+
+								fps[a] = "23,98 " + Shutter.language.getProperty("fps");
+								fps[a+1] = "24 " + Shutter.language.getProperty("fps");
+								fps[a+2] = "25 " + Shutter.language.getProperty("fps");
+								fps[a+3] = "29,97 " + Shutter.language.getProperty("fps");
+								fps[a+4] = "30 " + Shutter.language.getProperty("fps");
+								fps[a+5] = "50 " + Shutter.language.getProperty("fps");
+								fps[a+6] = "59,94 " + Shutter.language.getProperty("fps");
+								fps[a+7] = "60 " + Shutter.language.getProperty("fps");
 								
 								comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
 							}
 							comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
 							comboImageOption.setSize(90, 16);
+							comboImageOption.setEditable(false);
 							grpResolution.remove(lblImageQuality);
 							grpResolution.add(comboImageOption);
 							comboImageOption.repaint();
@@ -4733,8 +4747,7 @@ public class Shutter {
 		comboInterpret = new JComboBox<String>();
 		comboInterpret.setName("comboInterpret");
 		comboInterpret.setEnabled(false);
-		comboInterpret.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "1", "5", "10", "15","20", "23,98", "24", "25", "29,97", "30", "48", "50", "59,94", "60" }));
+		comboInterpret.setModel(new DefaultComboBoxModel<String>(new String[] { "1", "5", "10", "15","20", "23,98", "24", "25", "29,97", "30", "48", "50", "59,94", "60" }));
 		comboInterpret.setSelectedIndex(7);
 		comboInterpret.setMaximumRowCount(20);
 		comboInterpret.setFont(new Font(freeSansFont, Font.PLAIN, 11));
@@ -14915,6 +14928,7 @@ public class Shutter {
 								}
 								comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
 								comboImageOption.setSize(50, 16);
+								comboImageOption.setEditable(false);
 								grpResolution.add(lblImageQuality);											
 								grpResolution.add(comboImageOption);
 								comboImageOption.repaint();
@@ -14927,26 +14941,37 @@ public class Shutter {
 								}
 								comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
 								comboImageOption.setSize(90, 16);
+								comboImageOption.setEditable(false);
 								grpResolution.remove(lblImageQuality);
 								grpResolution.add(comboImageOption);
 								comboImageOption.repaint();
 							}
-							else if (comboFilter.getSelectedItem().toString().equals(".gif"))
+							else if (comboFilter.getSelectedItem().toString().equals(".gif") || comboFilter.getSelectedItem().toString().equals(".apng"))
 							{
 								if (comboImageOption.getItemAt(0).equals("15 " + Shutter.language.getProperty("fps")) == false)
 								{
-									String fps[] = new String[10];
+									String fps[] = new String[17];
 									int a = 0;
-									for (int f = 15 ; f < 25 ; f++)
+									for (int f = 15 ; f < 24 ; f++)
 									{
 										fps[a] = f + " " + Shutter.language.getProperty("fps");
 										a++; 
 									}
+
+									fps[a] = "23,98 " + Shutter.language.getProperty("fps");
+									fps[a+1] = "24 " + Shutter.language.getProperty("fps");
+									fps[a+2] = "25 " + Shutter.language.getProperty("fps");
+									fps[a+3] = "29,97 " + Shutter.language.getProperty("fps");
+									fps[a+4] = "30 " + Shutter.language.getProperty("fps");
+									fps[a+5] = "50 " + Shutter.language.getProperty("fps");
+									fps[a+6] = "59,94 " + Shutter.language.getProperty("fps");
+									fps[a+7] = "60 " + Shutter.language.getProperty("fps");
 									
 									comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
-								}
+								}								
 								comboImageOption.setLocation(iconTVResolution.getWidth() + iconTVResolution.getLocation().x + 8, lblImageQuality.getLocation().y);
 								comboImageOption.setSize(90, 16);
+								comboImageOption.setEditable(false);
 								grpResolution.remove(lblImageQuality);
 								grpResolution.add(comboImageOption);
 								comboImageOption.repaint();
@@ -15541,7 +15566,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".webp", ".avif",".bmp", ".ico", ".gif" };
+				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".webp", ".avif",".bmp", ".ico", ".gif", ".apng" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);

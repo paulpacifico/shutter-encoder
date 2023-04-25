@@ -59,6 +59,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -132,8 +133,10 @@ public class Utils extends Shutter {
 			// Library/Preferences sur Mac
 			try {
 				
+				File oldDocumentsPath = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
+				
 				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				{
+				{					
 					if (new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder").exists())
 					{
 						Shutter.documents = new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder");
@@ -143,6 +146,31 @@ public class Utils extends Shutter {
 					{
 						Shutter.documents = new File("/Library/Preferences/Shutter Encoder");
 						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+					}	
+					else if (oldDocumentsPath.exists()) //old path
+					{
+						try {
+							FileUtils.moveDirectory(oldDocumentsPath, Shutter.documents);
+						} 
+						catch (IOException e)
+						{
+							Shutter.documents = oldDocumentsPath;
+							Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+						}
+					}
+				}
+				else 
+				{
+					if (oldDocumentsPath.exists()) //old path
+					{
+						try {
+							FileUtils.moveDirectory(oldDocumentsPath, Shutter.documents);
+						} 
+						catch (IOException e)
+						{
+							Shutter.documents = oldDocumentsPath;
+							Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+						}
 					}
 				}
 				
@@ -1345,6 +1373,38 @@ public class Utils extends Shutter {
 								
 								settings.appendChild(component);
 							}
+							else if (p instanceof JComboBox)
+							{
+								//Component
+								Element component = document.createElement("Component");
+								
+								//Type
+								Element cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JComboBox"));
+								component.appendChild(cType);
+																	
+								//Name
+								Element cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(p.getName()));
+								component.appendChild(cName);
+								
+								//Value
+								Element cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
+								component.appendChild(cValue);
+								
+								//State
+								Element cState = document.createElement("Enable");
+								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+								component.appendChild(cState);
+								
+								//Visible
+								Element cVisible = document.createElement("Visible");
+								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+								component.appendChild(cVisible);		
+								
+								settings.appendChild(component);
+							}
 							else if (p instanceof JTextField)
 							{
 								//Component
@@ -1385,7 +1445,7 @@ public class Utils extends Shutter {
 				
 				Element overlay = document.createElement("Overlay");
 				
-				if (VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseShowFileName.isSelected())
+				if (VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseAddText.isSelected() || VideoPlayer.caseShowFileName.isSelected())
 				{
 					for (Component p : VideoPlayer.grpOverlay.getComponents())
 					{

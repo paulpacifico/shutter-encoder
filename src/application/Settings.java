@@ -310,19 +310,22 @@ public class Settings {
 			
 		});
 			
-		if (Functions.functionsFolder.exists())
-		{
-			if (Functions.functionsFolder.listFiles().length != 0)
+		try {
+			if (Functions.functionsFolder.exists())
 			{
-				for (File f : Functions.functionsFolder.listFiles())
+				if (Functions.functionsFolder.listFiles().length != 0)
 				{
-					if (f.getName().toString().equals(".DS_Store") == false)
+					for (File f : Functions.functionsFolder.listFiles())
 					{
-						comboLoadPreset.addItem(f.getName());
+						if (f.getName().toString().equals(".DS_Store") == false)
+						{
+							comboLoadPreset.addItem(f.getName());
+						}
 					}
 				}
 			}
-		}
+		} catch (Exception e) {}
+		
 		comboLoadPreset.setEnabled(false);
 		comboLoadPreset.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboLoadPreset.setEditable(false);

@@ -109,7 +109,7 @@ public class Timecode extends Shutter {
 	}
 	
 	public static float getNonDropFrameTC(float currentFrame) {
-		
+				
 		//Allows to set the current seeking values
 		if (isNonDropFrame())
 		{				

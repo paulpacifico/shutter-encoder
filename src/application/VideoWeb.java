@@ -504,7 +504,7 @@ public class VideoWeb {
 					caseWAV.setSelected(false);
 					
 					if (caseAuto.isSelected())
-						comboFormats.setSelectedIndex(2);
+						comboFormats.setSelectedIndex(3);
 				}
 				else
 				{
@@ -529,7 +529,7 @@ public class VideoWeb {
 					caseMP3.setSelected(false);
 					
 					if (caseAuto.isSelected())
-						comboFormats.setSelectedIndex(2);
+						comboFormats.setSelectedIndex(3);
 				}
 				else
 				{

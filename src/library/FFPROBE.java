@@ -250,8 +250,8 @@ public static int gopSpace = 124;
 					             textS.setText(formatter.format(sec));
 					             textF.setText(formatter.format(frames));
 					             
-					      		if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
-					     			VideoPlayer.totalDuration();
+					      		/*if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
+					     			VideoPlayer.totalDuration();*/
 
 					            setFilesize();
 							}

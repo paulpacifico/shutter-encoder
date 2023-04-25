@@ -37,6 +37,7 @@ import settings.Transitions;
 
 /*
  * AAC
+ * ALAC
  * AC3
  * AIFF
  * FLAC

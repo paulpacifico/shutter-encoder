@@ -47,13 +47,16 @@ public class InputAndOutput extends Shutter {
 			if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 	        {
 				String frames[] = VideoPlayer.lblDuration.getText().split(" ");
-				
-	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG"))
-	        	&& caseCreateSequence.isSelected())
+							
+	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG")) && caseCreateSequence.isSelected())
 	        	{		        	
 		    		float outputFPS = FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 		    		
 		    		outPoint = " -vframes " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
+	        	}
+	        	else if (FFPROBE.audioOnly || comboFonctions.getSelectedItem().toString().equals("VP8") || comboFonctions.getSelectedItem().toString().equals("VP9")) //Issue for audio and libvpx encoding
+	        	{
+	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 1]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
 	        	}
 	        	else
 	        	{

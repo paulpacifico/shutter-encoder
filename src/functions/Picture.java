@@ -391,6 +391,10 @@ public class Picture extends Shutter {
 		{
 			return "";
 		}
+		else if (comboFilter.getSelectedItem().toString().equals(".apng"))
+		{
+			return " -r " + comboImageOption.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".");
+		}
 		else
 			return " -vframes 1";
 	}
