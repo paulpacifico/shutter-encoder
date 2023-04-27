@@ -73,12 +73,12 @@ public class AudioSettings extends Shutter {
 		else if (FFPROBE.qantization == 32)
 			audio = " -c:a pcm_s32le"; 
 		
-		if (Transitions.setAudioFadeIn() !=  "")
+		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
-			audio += " -filter:a " + Transitions.setAudioFadeIn();
+			audio += " -filter:a " + Transitions.setAudioFadeIn(false);
 		}
 		
-		if (Transitions.setAudioFadeOut() !=  "")
+		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
 			if (audio.contains("-filter:a"))
 			{
@@ -87,7 +87,7 @@ public class AudioSettings extends Shutter {
 			else
 				audio += " -filter:a ";
 			
-			audio += Transitions.setAudioFadeOut();
+			audio += Transitions.setAudioFadeOut(false);
 		}
 		
 		if (Transitions.setAudioSpeed() !=  "")
@@ -273,16 +273,16 @@ public class AudioSettings extends Shutter {
 			
 			String transitions = "";
 			
-			if (Transitions.setAudioFadeIn() !=  "")
+			if (Transitions.setAudioFadeIn(false) !=  "")
 			{
-				transitions += Transitions.setAudioFadeIn();
+				transitions += Transitions.setAudioFadeIn(false);
 			}
 			
-			if (Transitions.setAudioFadeOut() !=  "")
+			if (Transitions.setAudioFadeOut(false) !=  "")
 			{
 				if (transitions != "")	transitions += ",";
 				
-				transitions += Transitions.setAudioFadeOut();
+				transitions += Transitions.setAudioFadeOut(false);
 			}
 			
 			if (Transitions.setAudioSpeed() !=  "")

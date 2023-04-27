@@ -1001,16 +1001,16 @@ public class FunctionUtils extends Shutter {
 		String mapping = "";		
 		String transitions = "";	
 		
-		if (Transitions.setAudioFadeIn() !=  "")
+		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
-			transitions += Transitions.setAudioFadeIn();
+			transitions += Transitions.setAudioFadeIn(false);
 		}
 		
-		if (Transitions.setAudioFadeOut() !=  "")
+		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
 			if (transitions != "")	transitions += ",";
 			
-			transitions += Transitions.setAudioFadeOut();
+			transitions += Transitions.setAudioFadeOut(false);
 		}
 		
 		if (Transitions.setAudioSpeed() !=  "")

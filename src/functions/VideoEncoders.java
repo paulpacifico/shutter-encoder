@@ -615,7 +615,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Corrections.setLimiter(filterComplex);
 			            
 						//Fade-in Fade-out
-						filterComplex = Transitions.setVideoFade(filterComplex);
+						filterComplex = Transitions.setVideoFade(filterComplex, false);
 										
 		            	//Audio
 			            if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))

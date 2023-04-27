@@ -312,14 +312,14 @@ public class AudioEncoders extends Shutter {
 		String audio = "";	
 		String audioFilter = "";	
 		
-		if (Transitions.setAudioFadeIn() !=  "")
+		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeIn();
+			audioFilter += "," + Transitions.setAudioFadeIn(false);
 		}
 		
-		if (Transitions.setAudioFadeOut() !=  "")
+		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeOut();
+			audioFilter += "," + Transitions.setAudioFadeOut(false);
 		}
 		
 		if (Transitions.setAudioSpeed() !=  "")
@@ -420,14 +420,14 @@ public class AudioEncoders extends Shutter {
 		
 		String audioFilter = "";	
 		
-		if (Transitions.setAudioFadeIn() !=  "")
+		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeIn();
+			audioFilter += "," + Transitions.setAudioFadeIn(false);
 		}
 		
-		if (Transitions.setAudioFadeOut() !=  "")
+		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeOut();
+			audioFilter += "," + Transitions.setAudioFadeOut(false);
 		}
 		
 		if (Transitions.setAudioSpeed() !=  "")

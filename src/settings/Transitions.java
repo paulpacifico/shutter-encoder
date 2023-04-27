@@ -26,7 +26,7 @@ import library.FFPROBE;
 
 public class Transitions extends Shutter {
 
-	public static String setVideoFade(String filterComplex) {
+	public static String setVideoFade(String filterComplex, boolean isVideoPlayer) {
 		
 		if (grpTransitions.isVisible())
 		{
@@ -43,7 +43,17 @@ public class Transitions extends Shutter {
 	    		
 	    		String videoFade = "fade=in:st=0ms:d=" + videoInValue + "ms:color=" + color;
 	    		
-	        	filterComplex += videoFade;
+	    		if (isVideoPlayer)
+	    		{
+					if (VideoPlayer.cursorWaveform.getX() == VideoPlayer.playerInMark || VideoPlayer.playTransition)
+					{
+						filterComplex += videoFade;
+					}
+					else
+						filterComplex += "null";	
+				}
+	    		else
+	    			filterComplex += videoFade;
 	    	}
 	    	
 	    	//Fade-out
@@ -59,6 +69,11 @@ public class Transitions extends Shutter {
 	        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 	        		long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 	        		 
+	        		if (isVideoPlayer)
+	        		{
+	        			totalIn = (long) Math.floor(VideoPlayer.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
+	        		}
+	        		
 	        		if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
 	        		{
 		        		videoStart = (totalOut - totalIn) - videoOutValue;
@@ -83,14 +98,19 @@ public class Transitions extends Shutter {
 	    		
 	    		String videoFade = "fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color;
 	    		
-	    		filterComplex += videoFade;
+	    		if (videoStart > 0)
+	    		{	    		
+	    			filterComplex += videoFade;
+	    		}
+	    		else
+	    			filterComplex += "null";	
 	    	}
 		}
 		
 		return filterComplex;
 	}
 	
-	public static String setAudioFadeIn() {
+	public static String setAudioFadeIn(boolean isVideoPlayer) {
 		
 		String audioFilter = "";
 		
@@ -99,13 +119,23 @@ public class Transitions extends Shutter {
     	{ 
     		long audioInValue = (long) (Integer.parseInt(spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 			
-			audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
+    		if (isVideoPlayer)
+    		{
+				if (VideoPlayer.cursorWaveform.getX() == VideoPlayer.playerInMark || VideoPlayer.playTransition)
+				{
+					audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
+				}
+				else
+					audioFilter += "anull";	
+			}
+    		else
+    			audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
     	}    
         
 		return audioFilter;
 	}
 	
-	public static String setAudioFadeOut() {
+	public static String setAudioFadeOut(boolean isVideoPlayer) {
 		
 		String audioFilter = "";
 
@@ -120,6 +150,11 @@ public class Transitions extends Shutter {
 				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 				long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 				 
+				if (isVideoPlayer)
+        		{
+        			totalIn = (long) Math.floor(VideoPlayer.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
+        		}
+				
 				if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
 				{
 					audioStart = (totalOut - totalIn) - audioOutValue;
@@ -133,7 +168,12 @@ public class Transitions extends Shutter {
     			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
     		}
     		
-    		audioFilter += "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
+    		if (audioStart > 0)
+    		{	    		
+    			audioFilter += "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
+    		}
+    		else
+    			audioFilter += "anull";
     	}
         
 		return audioFilter;
