@@ -134,6 +134,7 @@ import library.XPDF;
 import settings.Colorimetry;
 import settings.Corrections;
 import settings.Timecode;
+import settings.Transitions;
 
 public class VideoPlayer {
 	
@@ -180,6 +181,7 @@ public class VideoPlayer {
 	private static JLabel lblSpeed;
 	private static JSlider sliderSpeed;
 	private static boolean showInfoMessage = true;
+	public static boolean playTransition = false;
 		
 	//Buttons & Checkboxes
 	private static JButton btnCapture;
@@ -1963,15 +1965,39 @@ public class VideoPlayer {
 			else
 				speed = " -af atempo=0.5,atempo=0.5";
 		}
-				
+		
+		String audioFade = "";
+		if (Shutter.caseAudioFadeIn.isSelected() || Shutter.caseAudioFadeOut.isSelected())
+		{
+			if (speed != "")
+			{
+				audioFade += ",";
+			}
+			else
+				audioFade += " -af ";
+			
+			audioFade += Transitions.setAudioFadeIn(true);
+			
+			if (Transitions.setAudioFadeIn(true) != "" && Transitions.setAudioFadeOut(true) != "") audioFade += ",";
+			
+			audioFade += Transitions.setAudioFadeOut(true);
+		
+		}
+		
+		if (playTransition)
+		{
+			playTransition = false;
+		}
+		
 		if (FFPROBE.hasAudio == false)
 		{
-			return " -v quiet -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
+			return " -v quiet -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
 		}
 		else
 		{
-			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + speed + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
-		}
+			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + speed + audioFade + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+		}		
+		
 	}
     
 	public static void addWaveform(boolean newWaveform) {
@@ -2389,6 +2415,8 @@ public class VideoPlayer {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {		
 
+				playTransition = true;
+				
 				playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 				
 				//NTSC framerate
@@ -12095,13 +12123,19 @@ public class VideoPlayer {
 											            	
 		//Denoise			
 		eq = Corrections.setDenoiser(eq);
-			
+		
 		//Exposure
 		if (preview.exists() == false) //Show only on playing
 			eq = Corrections.setSmoothExposure(eq);	
 		
 		//Limiter
 		eq = Corrections.setLimiter(eq);
+
+		//Fade-in Fade-out
+		if (Transitions.caseVideoFadeIn.isSelected() || Transitions.caseVideoFadeOut.isSelected())
+		{
+			eq = Transitions.setVideoFade(eq, true);
+		}
 				
 		if (eq.isEmpty() == false)
 		{
@@ -12278,6 +12312,18 @@ public class VideoPlayer {
 			ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
 		}
 		
+		if (Shutter.caseForcerDAR.isSelected())
+		{
+			if (Shutter.comboDAR.getSelectedItem().toString().contains(":"))
+			{
+				String s[] = Shutter.comboDAR.getSelectedItem().toString().split(":");
+				
+				ratio = (float) Integer.parseInt(s[0]) / Integer.parseInt(s[1]);
+			}
+			else
+				ratio = Float.parseFloat(Shutter.comboDAR.getSelectedItem().toString());
+		}
+		
 		if (ratio < 1.3f)
 		{
 			int maxHeight = frame.getHeight() - (frame.getHeight() - lblPosition.getY()) - btnCapture.getY() - btnCapture.getHeight() - 64;
@@ -12307,7 +12353,7 @@ public class VideoPlayer {
 		player.setSize(player.getWidth() - (player.getWidth() % 4), player.getHeight());	
 
 		imageRatio = (float) FFPROBE.imageWidth / player.getWidth();
-				
+						
 		//grpOverlay
 		grpOverlay.setLocation(frame.getWidth() - grpOverlay.getWidth() - 6, grpCrop.getY() + grpCrop.getHeight() + 6);
 		

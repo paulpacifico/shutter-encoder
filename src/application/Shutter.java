@@ -169,7 +169,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.0";
+	public static String actualVersion = "17.1";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
@@ -4693,7 +4693,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}			
 			}
 
@@ -5132,7 +5132,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}	
 			}
 
@@ -5223,7 +5223,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}	
 			}
 
@@ -5811,6 +5811,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseLevels.isSelected()) 
 				{
 					comboInLevels.setEnabled(true);
@@ -5824,7 +5825,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}
 			}
 			
@@ -5852,7 +5853,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}
 			}
 			
@@ -5886,7 +5887,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}
 			}
 			
@@ -5916,7 +5917,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}
 			}
 			
@@ -5959,7 +5960,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}
 			}
 			
@@ -5993,7 +5994,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}
 			}
 			
@@ -6298,7 +6299,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}	
 			}			
 			
@@ -6405,7 +6406,7 @@ public class Shutter {
 				
 				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
 				{
-					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
 				}	
 			}
 
@@ -8605,6 +8606,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseVideoFadeIn.isSelected())
 				{
 					spinnerVideoFadeIn.setEnabled(true);
@@ -8615,6 +8617,11 @@ public class Shutter {
 				}		
 				
 				Utils.textFieldBackground();
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
+				}
 			}
 			
 		});
@@ -8671,10 +8678,16 @@ public class Shutter {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
 				if (lblFadeInColor.getText().equals(language.getProperty("black")))
 					lblFadeInColor.setText(language.getProperty("white"));
 				else
 					lblFadeInColor.setText(language.getProperty("black"));
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
+				}
 			}
 
 			@Override
@@ -8707,6 +8720,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseAudioFadeIn.isSelected())
 				{
 					spinnerAudioFadeIn.setEnabled(true);
@@ -8717,6 +8731,11 @@ public class Shutter {
 				}	
 				
 				Utils.textFieldBackground();
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
+				}
 			}
 			
 		});
@@ -8820,6 +8839,11 @@ public class Shutter {
 				}
 				
 				Utils.textFieldBackground();
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
+				}
 			}
 			
 		});
@@ -8867,11 +8891,17 @@ public class Shutter {
 		lblFadeOutColor.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e)	{	
+				
 				if (lblFadeOutColor.getText().equals(language.getProperty("black")))
 					lblFadeOutColor.setText(language.getProperty("white"));
 				else
 					lblFadeOutColor.setText(language.getProperty("black"));
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
+				}
 			}
 
 			@Override
@@ -8921,6 +8951,11 @@ public class Shutter {
 				}	
 
 				Utils.textFieldBackground();
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use resizeAll and reload the frame
+				}
 			}
 			
 		});
@@ -9339,6 +9374,11 @@ public class Shutter {
 					comboDAR.setEnabled(true);
 				else
 					comboDAR.setEnabled(false);
+				
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+				}
 			}
 
 		});
@@ -9353,7 +9393,21 @@ public class Shutter {
 		comboDAR.setSize(54, 16);
 		comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 		grpResolution.add(comboDAR);
+			
+		comboDAR.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (VideoPlayer.frame != null && VideoPlayer.frame.isVisible())
+				{
+					VideoPlayer.btnStop.doClick(); //Use resizeAll and reload the frame
+				}
 				
+			}
+			
+		});
+		
 		caseCreateTree = new JCheckBox(language.getProperty("caseCreateTree"));
 		caseCreateTree.setName("caseCreateTree");
 		caseCreateTree.setFont(new Font(freeSansFont, Font.PLAIN, 12));
