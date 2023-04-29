@@ -1405,10 +1405,16 @@ public class VideoPlayer {
 
 							if (FFPROBE.imageRatio < 1.77f)
 							{
-								frame.setMinimumSize(new Dimension(1300, 724));
+								frame.setMinimumSize(new Dimension(1300, 724));								
 							}
 							else
 								frame.setMinimumSize(new Dimension(1300, 624));
+							
+				    		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+				            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+				            shape1.add(shape2);
+				    		frame.setShape(shape1);
+				    		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 						}
 						
 					} catch (InterruptedException e) {}

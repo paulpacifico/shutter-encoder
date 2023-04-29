@@ -12379,14 +12379,6 @@ public class Shutter {
 								+ "/JRE/bin/java.exe" + '"';
 						processGame = new ProcessBuilder(PathToJRE + " -jar " + '"' + PathToGame + '"');
 					} 
-					else if (System.getProperty("os.name").contains("Mac"))
-					{
-						PathToJRE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToJRE = PathToJRE.substring(0, PathToJRE.length() - 1);
-						PathToJRE = PathToJRE.substring(0, (int) (PathToJRE.lastIndexOf("/"))).replace("%20", " ")
-								+ "/JRE/Contents/Home/bin/java";
-						processGame = new ProcessBuilder("/bin/bash", "-c" , '"' + PathToJRE + '"' + " -jar " + '"' + PathToGame + '"');	
-					}
 					else
 					{
 						PathToJRE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();

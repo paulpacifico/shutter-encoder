@@ -91,7 +91,7 @@ public class Utils extends Shutter {
 	public static boolean yesToAll = false;
 	public static boolean noToAll = false;
 	public final static String username = "info@shutterencoder.com";
-	public final static String password = "";
+	public final static String password = "shutterencodermail";
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -130,11 +130,11 @@ public class Utils extends Shutter {
 			pathToLanguages = pathToLanguages.substring(0, (int) (pathToLanguages.lastIndexOf("/"))).replace("%20", " ")
 					+ "/Languages/";		
 			
-			// Library/Preferences sur Mac
 			try {
-				
+
 				File oldDocumentsPath = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
 				
+				// Library/Preferences sur Mac
 				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 				{					
 					if (new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder").exists())
@@ -154,8 +154,11 @@ public class Utils extends Shutter {
 						} 
 						catch (IOException e)
 						{
-							Shutter.documents = oldDocumentsPath;
-							Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+							if (Shutter.documents.exists() == false)
+							{
+								Shutter.documents = oldDocumentsPath;
+								Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+							}
 						}
 					}
 				}
@@ -168,8 +171,11 @@ public class Utils extends Shutter {
 						} 
 						catch (IOException e)
 						{
-							Shutter.documents = oldDocumentsPath;
-							Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+							if (Shutter.documents.exists() == false)
+							{
+								Shutter.documents = oldDocumentsPath;
+								Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+							}							
 						}
 					}
 				}
