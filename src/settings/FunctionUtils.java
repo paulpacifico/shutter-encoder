@@ -1099,7 +1099,7 @@ public class FunctionUtils extends Shutter {
 				}
 				else //On ajoute une piste silencieuse
 				{
-					silentTrack = " -f lavfi -i anullsrc=r=48000:cl=mono";
+					silentTrack = " -f lavfi -i anullsrc=r=" + lbl48k.getText() + ":cl=mono";
 					
 					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422"))
 						silentTrack += " -shortest -map_metadata -1";

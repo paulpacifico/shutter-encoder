@@ -265,7 +265,10 @@ public class AudioSettings extends Shutter {
     				&& comboAudio7.getSelectedIndex() == 6
     				&& comboAudio8.getSelectedIndex() == 7)
     				{
-		    			mapping = " -map a?";	
+				    	if (isBroadcastCodec == false)
+		    			{
+		    				mapping = " -map a?";	
+		    			}
 		    			
 		    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
 		    			{
@@ -403,7 +406,11 @@ public class AudioSettings extends Shutter {
     				&& comboAudio7.getSelectedIndex() == 6
     				&& comboAudio8.getSelectedIndex() == 7)
     				{
-		    			mapping = " -map a?";	
+		    			
+		    			if (isBroadcastCodec == false)
+		    			{
+		    				mapping = " -map a?";	
+		    			}
 		    			
 		    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
 		    			{
