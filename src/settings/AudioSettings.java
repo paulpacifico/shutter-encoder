@@ -52,90 +52,55 @@ public class AudioSettings extends Shutter {
 		return audioFiles;	
 	}
 
-	public static String setAudioEditingCodecs(String audioFiles) {
-
-		//No audio
-		if (comboAudio1.getSelectedIndex() == 16
-		&& comboAudio2.getSelectedIndex() == 16
-		&& comboAudio3.getSelectedIndex() == 16
-		&& comboAudio4.getSelectedIndex() == 16
-		&& comboAudio5.getSelectedIndex() == 16
-		&& comboAudio6.getSelectedIndex() == 16
-		&& comboAudio7.getSelectedIndex() == 16
-		&& comboAudio8.getSelectedIndex() == 16)
+	public static String setAudioMapping(String filterComplex, String audioCodec, String audioFiles) {
+			
+		String audioBitrate = "";
+		
+		boolean isEditingCodec = false;
+		boolean isBroadcastCodec = false;
+		
+		if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
 		{
-			return " -an";
+			audioBitrate = " -b:a " + debitAudio.getSelectedItem().toString() + "k";
+		}		
+		else if (comboFonctions.getSelectedItem().toString().equals("DVD"))
+		{
+			audioBitrate = " -b:a 320k";
+		}
+		else if (comboFonctions.getSelectedItem().equals("XDCAM HD422")
+		|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
+		|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Broadcast codecs
+		{
+			isBroadcastCodec = true;
+		}
+		else //Editing codecs
+		{
+			isEditingCodec = true;
 		}
 		
-		String audio = " -c:a pcm_s16le";
-		if (FFPROBE.qantization == 24)
-			audio = " -c:a pcm_s24le";
-		else if (FFPROBE.qantization == 32)
-			audio = " -c:a pcm_s32le"; 
-		
-		if (Transitions.setAudioFadeIn(false) !=  "")
-		{
-			audio += " -filter:a " + Transitions.setAudioFadeIn(false);
-		}
-		
-		if (Transitions.setAudioFadeOut(false) !=  "")
-		{
-			if (audio.contains("-filter:a"))
-			{
-				audio += ",";
-			}
-			else
-				audio += " -filter:a ";
-			
-			audio += Transitions.setAudioFadeOut(false);
-		}
-		
-		if (Transitions.setAudioSpeed() !=  "")
-		{
-			//No audio
-			if (Transitions.setAudioSpeed().equals(" -an"))
-			{
-				return " -an";
-			}
-			
-			if (audio.contains("-filter:a"))
-			{
-				audio += ",";
-			}
-			else
-				audio += " -filter:a ";
-			
-			audio += Transitions.setAudioSpeed();
-		}
-			
-        if (caseOPATOM.isSelected())
-        {
-        	return audioFiles + audio + " -ar 48000";
-        }
-		else
+		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
 		{
 			String mapping = "";
-			if (inputDeviceIsRunning)
+			
+			if (comboAudio1.getSelectedIndex() == 0
+			&& comboAudio2.getSelectedIndex() == 1
+			&& comboAudio3.getSelectedIndex() == 2
+			&& comboAudio4.getSelectedIndex() == 3
+			&& comboAudio5.getSelectedIndex() == 4
+			&& comboAudio6.getSelectedIndex() == 5
+			&& comboAudio7.getSelectedIndex() == 6
+			&& comboAudio8.getSelectedIndex() == 7)
 			{
-				if (liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
-					mapping = " -map a? -map 2?";
-				else
-					mapping = " -map a?";	
-			}
-			else if (comboAudio1.getSelectedIndex() == 0
-				&& comboAudio2.getSelectedIndex() == 1
-				&& comboAudio3.getSelectedIndex() == 2
-				&& comboAudio4.getSelectedIndex() == 3
-				&& comboAudio5.getSelectedIndex() == 4
-				&& comboAudio6.getSelectedIndex() == 5
-				&& comboAudio7.getSelectedIndex() == 6
-				&& comboAudio8.getSelectedIndex() == 7)
-			{
-				return audio + " -ar 48000 -map a?";	
+    			mapping = " -map a?";	
+    			
+    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+    			{
+    				mapping += " -map 2?";
+    			}
 			}
 			else
 			{
-				if (comboAudio1.getSelectedIndex() != 16)
+	    		if (comboAudio1.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
 				if (comboAudio2.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
@@ -153,40 +118,9 @@ public class AudioSettings extends Shutter {
 					mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			}
 			
-			return audio + " -ar 48000" + mapping;	
-		}
-	}
-	
-	public static String setAudioOutputCodecs(String filterComplex, String audioCodec) {
-			
-		String audioBitrate = " -b:a " + debitAudio.getSelectedItem().toString() + "k";
-		
-		if (comboFonctions.getSelectedItem().toString().equals("DVD"))
-			audioBitrate = " -b:a 320k";
-		
-		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
-		{
-    		String mapping = "";
-    		if (comboAudio1.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-			if (comboAudio2.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-			if (comboAudio3.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-			if (comboAudio4.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-			if (comboAudio5.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-			if (comboAudio6.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-			if (comboAudio7.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-			if (comboAudio8.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
-			
 			return " -c:a copy" + mapping;
 		}
-		else if ((debitAudio.getSelectedItem().toString().equals("0") && audioCodec != "FLAC") || comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
+		else if ((debitAudio.getSelectedItem().toString().equals("0") && audioCodec != "FLAC" && isEditingCodec == false && isBroadcastCodec == false) || comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
 		{
 			return " -an";
 		}
@@ -298,6 +232,11 @@ public class AudioSettings extends Shutter {
 				transitions += Transitions.setAudioSpeed();
 			}
 			
+			if (caseOPATOM.isSelected())
+	        {
+	        	return audioFiles + audio + " -ar " + lbl48k.getText();
+	        }
+			
 		    if (FFPROBE.stereo)
 		    {
 		    	if (FFPROBE.surround && lblAudioMapping.getText().equals("Multi") == false)
@@ -316,22 +255,42 @@ public class AudioSettings extends Shutter {
 		    	else if (lblAudioMapping.getText().equals("Multi"))
 		    	{				    
 				    String mapping = "";
-		    		if (comboAudio1.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-					if (comboAudio2.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-					if (comboAudio3.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-					if (comboAudio4.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-					if (comboAudio5.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-					if (comboAudio6.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-					if (comboAudio7.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-					if (comboAudio8.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+				    
+				    if (comboAudio1.getSelectedIndex() == 0
+    				&& comboAudio2.getSelectedIndex() == 1
+    				&& comboAudio3.getSelectedIndex() == 2
+    				&& comboAudio4.getSelectedIndex() == 3
+    				&& comboAudio5.getSelectedIndex() == 4
+    				&& comboAudio6.getSelectedIndex() == 5
+    				&& comboAudio7.getSelectedIndex() == 6
+    				&& comboAudio8.getSelectedIndex() == 7)
+    				{
+		    			mapping = " -map a?";	
+		    			
+		    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+		    			{
+		    				mapping += " -map 2?";
+		    			}
+    				}
+    				else if (isBroadcastCodec == false)
+    				{				    
+			    		if (comboAudio1.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
+						if (comboAudio2.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
+						if (comboAudio3.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
+						if (comboAudio4.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
+						if (comboAudio5.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
+						if (comboAudio6.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
+						if (comboAudio7.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
+						if (comboAudio8.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+    				}
 					
 		    		if (transitions != "")
 		    			transitions = " -filter:a " + '"' + transitions + '"';
@@ -349,8 +308,10 @@ public class AudioSettings extends Shutter {
 				    else
 				    	audio += " -filter_complex " + '"';	
 		    		
-					if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
+					if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown all tracks to mono
+					{
 						audio += "[0:a]anull" + transitions + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate;
+					}
 					else
 					{
 						if (comboAudio1.getSelectedIndex() == 0)
@@ -392,7 +353,7 @@ public class AudioSettings extends Shutter {
 			    	}
 				    else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
 				    {
-				    	if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
+				    	if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown all tracks to mono
 			    		{
 				    		audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a][" + String.valueOf(comboAudio2.getSelectedIndex()).replace("1","2") + ":a]amerge=inputs=2" + transitions + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate;
 			    		}
@@ -422,7 +383,7 @@ public class AudioSettings extends Shutter {
 		    		 else
 				    	audio += " -filter_complex " + '"';	
 				    
-		    		 if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown des pistes en mono
+		    		 if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown all tracks to mono
 		    		 {
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + transitions + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate;
 		    		 }
@@ -432,23 +393,43 @@ public class AudioSettings extends Shutter {
 		    	 else
 		    	 {
 		    		String mapping = "";
-		    		if (comboAudio1.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-					if (comboAudio2.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-					if (comboAudio3.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-					if (comboAudio4.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-					if (comboAudio5.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-					if (comboAudio6.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-					if (comboAudio7.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-					if (comboAudio8.getSelectedIndex() != 16)
-						mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
-					
+		    		
+		    		if (comboAudio1.getSelectedIndex() == 0
+    				&& comboAudio2.getSelectedIndex() == 1
+    				&& comboAudio3.getSelectedIndex() == 2
+    				&& comboAudio4.getSelectedIndex() == 3
+    				&& comboAudio5.getSelectedIndex() == 4
+    				&& comboAudio6.getSelectedIndex() == 5
+    				&& comboAudio7.getSelectedIndex() == 6
+    				&& comboAudio8.getSelectedIndex() == 7)
+    				{
+		    			mapping = " -map a?";	
+		    			
+		    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+		    			{
+		    				mapping += " -map 2?";
+		    			}
+    				}
+    				else if (isBroadcastCodec == false)
+    				{
+			    		if (comboAudio1.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
+						if (comboAudio2.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
+						if (comboAudio3.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
+						if (comboAudio4.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
+						if (comboAudio5.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
+						if (comboAudio6.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
+						if (comboAudio7.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
+						if (comboAudio8.getSelectedIndex() != 16)
+							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+    				}
+						
 		    		if (transitions != "")
 		    			transitions = " -filter:a " + '"' + transitions + '"';
 		    		
@@ -467,30 +448,4 @@ public class AudioSettings extends Shutter {
 		}
 	}
 
-	public static String setAudioBroadcastCodecs(String filterComplex) {
-		
-		//No audio
-		if (comboAudio1.getSelectedIndex() == 16
-			&& comboAudio2.getSelectedIndex() == 16
-			&& comboAudio3.getSelectedIndex() == 16
-			&& comboAudio4.getSelectedIndex() == 16
-			&& comboAudio5.getSelectedIndex() == 16
-			&& comboAudio6.getSelectedIndex() == 16
-			&& comboAudio7.getSelectedIndex() == 16
-			&& comboAudio8.getSelectedIndex() == 16)
-		{
-			return " -an";
-		}
-		else
-		{			
-			String audio = " -c:a pcm_s24le";
-			if (caseAS10.isSelected() && comboAS10.getSelectedItem().toString().equals("NRK_HD_2012"))
-				audio = " -c:a pcm_s16le";
-				
-	        if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
-	        	return " -an";
-	        
-			return audio + " -ar 48000";
-		}
-	}
 }

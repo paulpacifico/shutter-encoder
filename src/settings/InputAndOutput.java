@@ -54,7 +54,12 @@ public class InputAndOutput extends Shutter {
 		    		
 		    		outPoint = " -vframes " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
 	        	}
-	        	else if (FFPROBE.audioOnly || comboFonctions.getSelectedItem().toString().equals("VP8") || comboFonctions.getSelectedItem().toString().equals("VP9")) //Issue for audio and libvpx encoding
+	        	else if (FFPROBE.audioOnly
+	        	|| comboFonctions.getSelectedItem().toString().equals("VP8")
+	        	|| comboFonctions.getSelectedItem().toString().equals("VP9")
+	        	|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
+				|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
+				|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Issue for audio, libvpx & added mute track
 	        	{
 	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 1]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
 	        	}

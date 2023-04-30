@@ -618,38 +618,24 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Transitions.setVideoFade(filterComplex, false);
 										
 		            	//Audio
-			            if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
-						{
-			            	audio = AudioSettings.setAudioOutputCodecs(filterComplex, comboAudioCodec.getSelectedItem().toString());	
-						}
-			            else if (grpResolution.isVisible())
-						{
-			            	switch (comboFonctions.getSelectedItem().toString())
-							{
-								case "AVC-Intra 100":	
-								case "XAVC":
-								case "XDCAM HD422":
-									
-									audio = AudioSettings.setAudioBroadcastCodecs(audio);								
-									break;
-								
-								default:
-									
-									audio = AudioSettings.setAudioEditingCodecs(audio);									
-									break;
-							}
-						}
-			            else if (comboFonctions.getSelectedItem().toString().equals("DV PAL"))
+			            if (comboFonctions.getSelectedItem().toString().equals("DV PAL"))
 			            {
 			            	audio = " -c:a pcm_s16le -ar 48000 -map v:0 -map a?";
 			            }
+			            else
+			            	audio = AudioSettings.setAudioMapping(filterComplex, comboAudioCodec.getSelectedItem().toString(), audio);	
 			            
-		            	//filterComplex
-						if (grpBitrate.isVisible() || comboFonctions.getSelectedItem().toString().equals("DVD"))
+		            	//filterComplex					
+						if (comboFonctions.getSelectedItem().toString().equals("DV PAL"))
 						{
-							filterComplex = FunctionUtils.setFilterComplex(filterComplex, true, audio);		
+							if (filterComplex != "") 
+							{
+								filterComplex = " -filter_complex " + '"' + filterComplex + '"' + audio;
+							}
+							else
+								filterComplex = audio;
 						}
-						else if (grpResolution.isVisible())
+						else 
 						{
 							switch (comboFonctions.getSelectedItem().toString())
 							{
@@ -662,19 +648,10 @@ public class VideoEncoders extends Shutter {
 								
 								default:
 									
-									filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, audio);									
+									filterComplex = FunctionUtils.setFilterComplex(filterComplex, audio);									
 									break;
 							}
 						}	
-						else if (comboFonctions.getSelectedItem().toString().equals("DV PAL"))
-						{
-							if (filterComplex != "") 
-							{
-								filterComplex = " -filter_complex " + '"' + filterComplex + '"' + audio;
-							}
-							else
-								filterComplex = audio;
-						}
 												
 						//Timecode
 						String timecode = Timecode.setTimecode();

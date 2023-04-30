@@ -182,7 +182,7 @@ public class Picture extends Shutter {
 						}
 						
 						//filterComplex
-						filterComplex = FunctionUtils.setFilterComplex(filterComplex, false, "");		
+						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "");		
 						
 						//Hardware decoding
 						String hardwareDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");

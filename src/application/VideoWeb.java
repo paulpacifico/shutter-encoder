@@ -96,7 +96,7 @@ public class VideoWeb {
 	private JCheckBox caseMP3;
 	private JCheckBox caseWAV;
 	private JCheckBox caseAuto;
-	private JCheckBox caseMetadata;
+	public static JCheckBox caseMetadata;
 	private JCheckBox caseUser;
 	private JCheckBox casePass;
 	private JCheckBox caseVideoPass;
@@ -435,7 +435,15 @@ public class VideoWeb {
 		});
 			
 		caseMetadata  = new JCheckBox(Shutter.language.getProperty("casePreserveMetadata"));
-		caseMetadata.setSelected(false);
+		caseMetadata.setName("caseMetadata");
+		if (Settings.videoWebCaseMetadata)
+		{
+			caseMetadata.setSelected(true);
+		}
+		else
+		{
+			caseMetadata.setSelected(false);
+		}
 		caseMetadata.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseMetadata.setBounds(66, caseAuto.getY() + 22, caseMetadata.getPreferredSize().width, 16);	
 		grpURL.add(caseMetadata);

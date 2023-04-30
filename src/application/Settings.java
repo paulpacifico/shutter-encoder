@@ -151,6 +151,7 @@ public class Settings {
 	public static boolean videoPlayerCasePlaySound = true;
 	public static boolean videoPlayerCaseVuMeter = true;
 	public static boolean videoPlayerCaseGPUDecoding = false;
+	public static boolean videoWebCaseMetadata = false;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
@@ -1754,6 +1755,12 @@ public class Settings {
 						//Value
 						Shutter.textStream.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 					}
+					
+					//caseMetadata
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseMetadata"))
+					{
+						videoWebCaseMetadata = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}
 				}
 			}		
 		}							
@@ -2293,6 +2300,30 @@ public class Settings {
 				
 				root.appendChild(stream);
 			}
+			
+			//CaseMetadata
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("caseMetadata"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			if (VideoWeb.caseMetadata != null)
+				cValue.appendChild(document.createTextNode(String.valueOf(VideoWeb.caseMetadata.isSelected())));
+			else
+				cValue.appendChild(document.createTextNode(String.valueOf(videoWebCaseMetadata)));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);		
 						
 			// creation du fichier XML
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();

@@ -845,7 +845,7 @@ public class FunctionUtils extends Shutter {
 		return subsMapping;
 	}
 	
-	public static String setFilterComplex(String filterComplex, boolean isOutputCodec, String audio) {
+	public static String setFilterComplex(String filterComplex, String audio) {
 
 		//No audio
 		if (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
@@ -887,39 +887,34 @@ public class FunctionUtils extends Shutter {
         	else
         		filterComplex = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]";
         	
-        	if (isOutputCodec)
+			float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
+        	float value = (float) (newFPS/ FFPROBE.currentFPS);
+        	
+			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))) && (value < 0.5f || value > 2.0f))    
+			{
+				filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
+			}
+			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
+			{
+				filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
+			}
+        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.stereo == false)
         	{
-				float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
-	        	float value = (float) (newFPS/ FFPROBE.currentFPS);
-	        	
-				if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))) && (value < 0.5f || value > 2.0f))    
-				{
-					filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
-				}
-				else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
-				{
-					filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
-				}
-	        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.stereo == false)
-	        	{
-	        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
-	        	}
-	        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.surround == false)
-	        	{
-	        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
-	        	}
-	        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")))
-	        	{
-	        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' + "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
-	        	}
-	        	else
-	        		filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
+        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
+        	}
+        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.surround == false)
+        	{
+        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
+        	}
+        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")))
+        	{
+        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' + "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
         	}
         	else
         		filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
         
         }
-        else if (isOutputCodec)
+        else
         {        
 			float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
         	float value = (float) (newFPS/ FFPROBE.currentFPS);
@@ -946,10 +941,6 @@ public class FunctionUtils extends Shutter {
         	}
         	else
         		filterComplex = " -map v:0" + audio;
-        }
-        else
-        {
-        	filterComplex = " -map v:0" + audio;
         }
         
 		//On map les sous-titres que l'on intègre        
@@ -1020,15 +1011,9 @@ public class FunctionUtils extends Shutter {
 			transitions += Transitions.setAudioSpeed();
 		}
 		
+		
 		//No audio
-		if (comboAudio1.getSelectedIndex() == 16
-		&& comboAudio2.getSelectedIndex() == 16
-		&& comboAudio3.getSelectedIndex() == 16
-		&& comboAudio4.getSelectedIndex() == 16
-		&& comboAudio5.getSelectedIndex() == 16
-		&& comboAudio6.getSelectedIndex() == 16
-		&& comboAudio7.getSelectedIndex() == 16
-		&& comboAudio8.getSelectedIndex() == 16)
+		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
 		{
 			if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
 			{
@@ -1049,12 +1034,12 @@ public class FunctionUtils extends Shutter {
 			
 			return mapping;
 		}
-		else
-		{
+		else if (comboAudioCodec.getSelectedItem().equals(language.getProperty("codecCopy")) == false)
+		{ 
 			int channels = 0;
 			for (Component c : grpSetAudio.getComponents())
 			{
-				if (c instanceof JComboBox)
+				if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false)
 				{
 					if (((JComboBox) c).getSelectedIndex() != 16)
 						channels ++;
@@ -1079,11 +1064,16 @@ public class FunctionUtils extends Shutter {
 				    		transitions = transitions + ",";
 						
 						if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+						{
 							mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]" + transitions + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
+						}
 						else if (filterComplex != "")
+						{
 							mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out];[0:a]" + transitions + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
+						}
 						else
 							mapping += " -map v:0 -filter_complex [0:a]" + transitions + "channelsplit[a1][a2] -map [a1] -map [a2]" + audio;
+						
 						m ++;
 					}
 					else
@@ -1092,19 +1082,20 @@ public class FunctionUtils extends Shutter {
 						int map = m;
 						for (Component c : grpSetAudio.getComponents())
 						{
-							if (c instanceof JComboBox)
+							if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false)
 							{								
 								if (i == m)
 								{
 									map = (((JComboBox) c).getSelectedIndex() + 1);	
+									
 									break;
 								}
 								i++;
 							}						
 						}
 						
-						mapping += " -map 0:" + map;
-					}
+						mapping += " -map 0:" + map;						
+					}					
 				}
 				else //On ajoute une piste silencieuse
 				{
