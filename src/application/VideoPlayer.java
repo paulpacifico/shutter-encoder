@@ -1008,7 +1008,7 @@ public class VideoPlayer {
             line.open(audioFormat);
 	        FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
             line.start();	
-				        							
+				        					
 			playerThread = new Thread(new Runnable() {
 
 				@Override
@@ -1026,15 +1026,16 @@ public class VideoPlayer {
 							try {	
 								
 								//Audio volume	
-						        double gain = (double) sliderVolume.getValue() / 100;   
-						        if (casePlaySound.isSelected() == false && (sliderChange || frameControl || windowDrag))
-						        	gain = 0.0/100;
-						        float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
-						        gainControl.setValue(dB);
-
-								///Read 1 audio frame
-								bytesRead = audioInputStream.read(bytes, 0, bytes.length);
-				        		line.write(bytes, 0, bytesRead);
+								if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false && windowDrag == false))						       
+								{
+									double gain = (double) sliderVolume.getValue() / 100;   
+							        float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
+							        gainControl.setValue(dB);
+	
+									///Read 1 audio frame
+									bytesRead = audioInputStream.read(bytes, 0, bytes.length);
+					        		line.write(bytes, 0, bytesRead);
+								}
 												 				        		
 				        		//Read 1 video frame				        		
 								frameVideo = ImageIO.read(videoInputStream);
@@ -1078,7 +1079,10 @@ public class VideoPlayer {
 						}	 
 						else
 						{
-							line.flush();	
+							if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false && windowDrag == false))				       
+							{
+								line.flush();	
+							}
 														
 							//IMPORTANT reduce CPU usage
 							try {
@@ -1094,13 +1098,17 @@ public class VideoPlayer {
 					try {
 						videoInputStream.close();
 					} catch (IOException e) {}
-					try {
-						audio.close();
-					} catch (IOException e) {}
-					try {
-						audioInputStream.close();
-					} catch (IOException e) {}
-					line.close();	
+					
+					if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false && windowDrag == false))	       
+					{
+						try {
+							audio.close();
+						} catch (IOException e) {}
+						try {
+							audioInputStream.close();
+						} catch (IOException e) {}
+						line.close();	
+					}
 				}
 				
 			});
@@ -12675,7 +12683,7 @@ public class VideoPlayer {
 			if (FFMPEG.cudaAvailable)
 			{
 				filter = filter.replace("yadif", "yadif_cuda");			
-				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=bicubic,hwdownload,format=" + bitDepth;
+				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=nearest,hwdownload,format=" + bitDepth;
 			}
 			else if (FFMPEG.qsvAvailable && yadif == "")
 			{
@@ -12683,12 +12691,12 @@ public class VideoPlayer {
 			}	
 			else
 			{
-				filter += "scale=" + width + ":" + height + ":flags=bicubic";
+				filter += "scale=" + width + ":" + height + ":flags=neighbor";
 			}
 		}
 		else
 		{
-			filter += "scale=" + width + ":" + height + ":flags=bicubic";
+			filter += "scale=" + width + ":" + height + ":flags=neighbor";
 		}
 				
 		//Alpha channel
