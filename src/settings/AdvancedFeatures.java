@@ -610,7 +610,7 @@ public class AdvancedFeatures extends Shutter {
 			return " -vsync vfr";
 		}
 		
-		if (caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+		if (caseForcerDesentrelacement.isSelected() && (lblTFF.getText().equals("x2") || comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine")))
 		{
 			//Null	
 		}
@@ -804,6 +804,12 @@ public class AdvancedFeatures extends Shutter {
 		
 		String options = "";
 		
+		int maxrate = FunctionUtils.setVideoBitrate();		
+		if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+		{
+			maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
+		}
+		
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "H.264":
@@ -812,11 +818,11 @@ public class AdvancedFeatures extends Shutter {
 		        {
 		        	options = " -x264opts tff=1";
 		            if (lblVBR.getText().equals("CBR"))
-		            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
+		            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 		        }
 		        else if (lblVBR.getText().equals("CBR"))
 		        {
-		        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
+		        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 		        }
 		        
 	        	break;
@@ -831,18 +837,18 @@ public class AdvancedFeatures extends Shutter {
 		        		options += ":keyint=" + Shutter.gopSize.getText();
 		        	
 		            if (lblVBR.getText().equals("CBR"))
-		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
+		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 		        }
 		        else if (caseGOP.isSelected())
 		        {
 		    		options = " -x265-params keyint=" + Shutter.gopSize.getText();
 		    		
 		            if (lblVBR.getText().equals("CBR"))
-		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
+		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 		        }
 		        else if (lblVBR.getText().equals("CBR"))
 		        {
-		        	options = " -x265-params strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + FunctionUtils.setVideoBitrate() + "k -bufsize " + Integer.valueOf((int) (FunctionUtils.setVideoBitrate() * 2)) + "k";
+		        	options = " -x265-params strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 		        }
 
 				break;

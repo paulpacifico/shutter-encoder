@@ -2410,10 +2410,10 @@ public class Utils extends Shutter {
 		textF.setBackground(new Color(60,60,60));
 		bitrateSize.setBackground(new Color(60,60,60));
 		gopSize.setBackground(new Color(60,60,60));
-		spinnerVideoFadeIn.setBackground(new Color(60,60,60));
-		spinnerAudioFadeIn.setBackground(new Color(60,60,60));
-		spinnerVideoFadeOut.setBackground(new Color(60,60,60));
-		spinnerAudioFadeOut.setBackground(new Color(60,60,60));	
+		VideoPlayer.spinnerVideoFadeIn.setBackground(new Color(60,60,60));
+		VideoPlayer.spinnerAudioFadeIn.setBackground(new Color(60,60,60));
+		VideoPlayer.spinnerVideoFadeOut.setBackground(new Color(60,60,60));
+		VideoPlayer.spinnerAudioFadeOut.setBackground(new Color(60,60,60));	
 	}
 
 	@SuppressWarnings("unused")

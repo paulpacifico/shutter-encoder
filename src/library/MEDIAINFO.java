@@ -102,7 +102,7 @@ public static Thread runProcess;
 					   }*/
 					   
 					   //Timecode
-					   if (line.contains("Time code of first frame") && FFPROBE.timecode1 == "")
+					   if (line.contains("Time code of first frame"))
 					   {
 						   infoData.append(System.lineSeparator());
 						   

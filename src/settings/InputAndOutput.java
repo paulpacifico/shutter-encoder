@@ -54,7 +54,7 @@ public class InputAndOutput extends Shutter {
 		    		
 		    		outPoint = " -vframes " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
 	        	}
-	        	else if (FFPROBE.audioOnly
+	        	else if (FFPROBE.audioOnly || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false) 
 	        	|| comboFonctions.getSelectedItem().toString().equals("VP8")
 	        	|| comboFonctions.getSelectedItem().toString().equals("VP9")
 	        	|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")

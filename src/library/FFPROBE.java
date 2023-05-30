@@ -258,7 +258,7 @@ public static int gopSpace = 124;
 			            }
  			            
 			            // Détection YUVJ
-						if (line.contains("Video:"))
+						if (line.contains("Video:") && line.contains("attached pic") == false)
 						{						
 							//Codec vidéo
 							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
@@ -365,8 +365,8 @@ public static int gopSpace = 124;
 				            	}
 				                else
 				                {
-						            if (line.contains("fps") && line.contains("attached pic") == false) 
-						            {
+						            if (line.contains("fps")) 
+						            {						            	
 						                String str[] = line.split("fps");
 						                	
 						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
@@ -468,7 +468,7 @@ public static int gopSpace = 124;
 			        	}
 			        	 
 		        	 	//Timecode
-			            if (line.contains("timecode"))
+			            if (line.contains("timecode") && line.contains("timecode is invalid") == false)
 			            {		
 			            	//Drop frame / non drop frame
 			            	if (line.contains(";"))
@@ -692,7 +692,7 @@ public static int gopSpace = 124;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_frames -select_streams v:0 -i " + '"' + file + '"');
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -show_frames -select_streams v:0 -i " + '"' + file + '"');						
 					}
 					else
 					{
@@ -701,6 +701,7 @@ public static int gopSpace = 124;
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
 						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -i " + '"' + file + '"' + " -select_streams v:0 -show_frames");
 					}	
+					processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 					
 					isRunning = true;	
 					

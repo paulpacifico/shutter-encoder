@@ -1074,7 +1074,14 @@ public class VideoEncoders extends Shutter {
 				if (FFPROBE.currentFPS != 24.0 && FFPROBE.currentFPS != 23.98 && caseForcerProgressif.isSelected() == false)
 		        	interlace = ":tff=1";
 				
-				return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=40000:vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";
+				String maxrate = "40000";
+				
+				if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+				{
+					maxrate = maximumBitrate.getSelectedItem().toString();
+				}
+				
+				return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=" + maxrate + ":vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";
 				
 			case "DVD":
 				
@@ -1421,11 +1428,12 @@ public class VideoEncoders extends Shutter {
 	private static String setBitrate() {
 		
 		FunctionUtils.setVideoBitrate();
-		
+				
 		switch (comboFonctions.getSelectedItem().toString())
 		{
+		
 			case "AV1":
-			
+							
 				if (lblVBR.getText().equals("CQ"))
 		        {
 					String gpu = "";
@@ -1471,6 +1479,13 @@ public class VideoEncoders extends Shutter {
 				
 			case "H.264":
 			case "H.265":
+							
+				String maxrate = "";
+				
+				if (maximumBitrate.getSelectedItem().toString().equals("auto") == false && lblVBR.getText().equals("CBR") == false)
+				{
+					maxrate = " -maxrate " + maximumBitrate.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(maximumBitrate.getSelectedItem().toString()) * 2)) + "k";
+				}
 				
 				if (lblVBR.getText().equals("CQ"))
 		        {
@@ -1492,15 +1507,15 @@ public class VideoEncoders extends Shutter {
 						gpu = " -q:v " + (31 - (int) Math.ceil((FunctionUtils.setVideoBitrate() * 31) / 51));
 					}
 						
-		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu;          
+		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu + maxrate;          
 		        }
 				else if (lblVBR.getText().equals("CBR") && caseAccel.isSelected())
 		        {
 		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k -rc cbr";
 		        }
 		        else
-		        {
-		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k";
+		        {		        	
+		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k" + maxrate;
 		        }
 				
 			case "VP8":

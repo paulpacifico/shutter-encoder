@@ -1009,8 +1009,7 @@ public class FunctionUtils extends Shutter {
 			if (transitions != "")	transitions += ",";
 			
 			transitions += Transitions.setAudioSpeed();
-		}
-		
+		}		
 		
 		//No audio
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
