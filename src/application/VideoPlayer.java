@@ -603,8 +603,8 @@ public class VideoPlayer {
 			
 		});
 		
-		frame.addMouseListener(new MouseListener(){
-
+		frame.addMouseListener(new MouseListener() {
+			
 			@Override
 			public void mouseClicked(MouseEvent e) {
 			}
@@ -615,18 +615,12 @@ public class VideoPlayer {
 				if (frame.getCursor().getType() == Cursor.SE_RESIZE_CURSOR)
 				{
 					windowDrag = true;
-																				
-    				if (playerVideo != null)
-    				{
-    					btnPlay.setText(Shutter.language.getProperty("btnPlay"));
-    					playerStop();
-    				}
 				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
-
+				
 				if (Shutter.liste.getSize() > 0 && Shutter.fileList.getSelectedValue().equals(videoPath) == false)
 				{					
 					setMedia();
@@ -980,7 +974,7 @@ public class VideoPlayer {
 	
 				//AUDIO STREAM
 				playerAudio = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToFFMPEG + setAudioCommand(inputTime)});
-			}
+			}	
 			else
 			{
 				String PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -1000,13 +994,13 @@ public class VideoPlayer {
 			BufferedInputStream videoInputStream = new BufferedInputStream(video);
 
 			InputStream audio = playerAudio.getInputStream();							
-		    AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audio);		    
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audio);		    
 		    AudioFormat audioFormat = audioInputStream.getFormat();
 	        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
 	        SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
 	        
             line.open(audioFormat);
-	        FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+            FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
             line.start();	
 				        					
 			playerThread = new Thread(new Runnable() {
@@ -1014,7 +1008,7 @@ public class VideoPlayer {
 				@Override
 				public void run() {
 
-					byte bytes[] = new byte[(int) (FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
+					byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
 		            int bytesRead = 0;
 		            
 					do {	
@@ -1066,9 +1060,16 @@ public class VideoPlayer {
 								else if (playerPlayVideo)
 								{
 					            	long delay = startTime - System.nanoTime();
-					                					            	
+					                				
 					            	if (delay > 0)
-					            	{		            		
+					            	{		      
+					            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
+						            	try {
+											Thread.sleep((int) (delay / 1000000 / 1.5));
+										} catch (InterruptedException e) {}
+					            		
+						            	delay = startTime - System.nanoTime();
+						            	
 						            	long time = System.nanoTime();
 						            	while (System.nanoTime() - time < delay) {}		
 					                }
@@ -2536,15 +2537,17 @@ public class VideoPlayer {
                 
                 Graphics2D g2 = (Graphics2D)g;
                 
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                
                 g2.setColor(Color.BLACK);
                                 
-                if (windowDrag || Shutter.liste.getSize() == 0)
+                if (Shutter.liste.getSize() == 0)
                 {
                 	g2.fillRect(0, 0, player.getWidth(), player.getHeight()); 
                 }
                 else
                 {
-                	g2.drawImage(frameVideo, 0, 0, null); 
+                	g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
                 }
                 
                 //Get the current fps
@@ -3130,7 +3133,7 @@ public class VideoPlayer {
 		fullscreen.addMouseListener(new MouseListener(){
 			
 			private boolean accept = false;
-
+			
 			@Override
 			public void mouseClicked(MouseEvent e) {			
 			}
@@ -3139,12 +3142,6 @@ public class VideoPlayer {
 			public void mousePressed(MouseEvent e) {		
 				fullscreen.setIcon(new FlatSVGIcon("contents/max_pressed.svg", 15, 15));
 				accept = true;
-				
-				if (playerVideo != null)
-				{
-					btnPlay.setText(Shutter.language.getProperty("btnPlay"));
-					playerStop();
-				}
 			}
 
 			@Override
@@ -3270,25 +3267,12 @@ public class VideoPlayer {
 		bottomImage.setBounds(0 ,0, frame.getSize().width, 28);
 		
 		bottomImage.addMouseListener(new MouseListener() {
-
+			
 			@Override
 			public void mouseClicked(MouseEvent down) {
 				
 				if (down.getClickCount() == 2)
-				{
-					if (playerVideo != null)
-    				{
-						btnPlay.setText(Shutter.language.getProperty("btnPlay"));
-    					playerStop();
-    					
-    					//Bug workaround
-    					do {
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException e1) {};
-						} while (playerVideo.isAlive());
-    				}
-					
+				{					
     				GraphicsConfiguration config = frame.getGraphicsConfiguration();
     				GraphicsDevice myScreen = config.getDevice();
     				GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -12850,7 +12834,7 @@ public class VideoPlayer {
 	}
 	
 	private void resizeAll() {
-						
+			
 		if (preview.exists())
 			preview.delete();
 		
