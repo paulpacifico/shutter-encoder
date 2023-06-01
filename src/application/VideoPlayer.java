@@ -155,7 +155,7 @@ public class VideoPlayer {
 	public static JPanel player; 
     public static Process playerVideo;
     public static Process playerAudio;
-    public static Thread playerThread;
+    public static Thread playerThread;	
     public static Thread setTime;
 	public static float playerCurrentFrame = 0;
     private static long fpsTime = 0;
@@ -181,6 +181,7 @@ public class VideoPlayer {
 	private static JSlider sliderSpeed;
 	private static boolean showInfoMessage = true;
 	public static boolean playTransition = false;
+    private static boolean closeAudioStream = false;
 		
 	//Buttons & Checkboxes
 	private static JButton btnCapture;
@@ -1002,7 +1003,7 @@ public class VideoPlayer {
             line.open(audioFormat);
             FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
             line.start();	
-				        					
+            
 			playerThread = new Thread(new Runnable() {
 
 				@Override
@@ -1010,18 +1011,19 @@ public class VideoPlayer {
 
 					byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
 		            int bytesRead = 0;
-		            
+		            		            
 					do {	
 						
 						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
-
+						
 						if (playerLoop)
 						{							
 							try {	
 								
 								//Audio volume	
-								if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false && windowDrag == false))						       
+								if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false))						       
 								{
+									closeAudioStream = true;
 									double gain = (double) sliderVolume.getValue() / 100;   
 							        float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
 							        gainControl.setValue(dB);
@@ -1030,6 +1032,8 @@ public class VideoPlayer {
 									bytesRead = audioInputStream.read(bytes, 0, bytes.length);
 					        		line.write(bytes, 0, bytesRead);
 								}
+								else
+									closeAudioStream = false;
 												 				        		
 				        		//Read 1 video frame				        		
 								frameVideo = ImageIO.read(videoInputStream);
@@ -1065,7 +1069,7 @@ public class VideoPlayer {
 					            	{		      
 					            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
 						            	try {
-											Thread.sleep((int) (delay / 1000000 / 1.5));
+											Thread.sleep((int) (delay / 1000000 / 2));
 										} catch (InterruptedException e) {}
 					            		
 						            	delay = startTime - System.nanoTime();
@@ -1080,7 +1084,7 @@ public class VideoPlayer {
 						}	 
 						else
 						{
-							if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false && windowDrag == false))				       
+							if (closeAudioStream)				       
 							{
 								line.flush();	
 							}
@@ -1100,7 +1104,7 @@ public class VideoPlayer {
 						videoInputStream.close();
 					} catch (IOException e) {}
 					
-					if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false && windowDrag == false))	       
+					if (closeAudioStream)	       
 					{
 						try {
 							audio.close();
@@ -1186,51 +1190,48 @@ public class VideoPlayer {
 					
 					playerPlayVideo = false;
 					
+					boolean playback;
+					if (playerIsPlaying())
+					{
+						playback = true;
+					}
+					else
+						playback = false;					
+										
 					if (frameVideo != null)
 					{
-						if (playerIsPlaying())
-						{				
-							playerStop();
-							do {
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e) {}
-							} while (playerThread.isAlive());
-											
-							playerPlayVideo = true;
+						playerStop();
+						do {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {}
+						} while (playerThread.isAlive());				
+						
+						frameControl = true; //IMPORTANT to stop the player loop
+						frameIsComplete = false;		
+						playerLoop = true;
+						playerProcess(t);							
+													
+						long time = System.currentTimeMillis();
+						
+						do {
+
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {}
+							
+							if (System.currentTimeMillis() - time > 1000)
+								frameIsComplete = true;
+														
+						} while (frameIsComplete == false);
+						
+						if (playback && mouseIsPressed == false)
+						{						
 							playerLoop = true;
-							playerProcess(t);								
 						}
 						else
-						{						
-							playerStop();
-							do {
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e) {}
-							} while (playerThread.isAlive());				
-							
-							frameControl = true; //IMPORTANT to stop the player loop
-							frameIsComplete = false;		
-							playerLoop = true;
-							playerProcess(t);							
-														
-							long time = System.currentTimeMillis();
-							
-							do {
-
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e) {}
-								
-								if (System.currentTimeMillis() - time > 1000)
-									frameIsComplete = true;
-															
-							} while (frameIsComplete == false);
-							
 							playerLoop = false;
-						}
-														
+																				
 						playerCurrentFrame = t;
 						getTimePoint(playerCurrentFrame); 
 						timecode.repaint();
@@ -1523,6 +1524,8 @@ public class VideoPlayer {
 						else
 							showScale.setVisible(false);
 						
+						showFPS.setVisible(false);
+						
 						if (Shutter.caseEnableSequence.isSelected())
 							btnPlay.setVisible(true);
 						else
@@ -1569,6 +1572,7 @@ public class VideoPlayer {
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(true);
 							grpTransitions.setEnabled(true);
+							grpTransitions.setLocation(grpColorimetry.getLocation());
 							caseVideoFadeIn.setEnabled(false);
 							caseVideoFadeOut.setEnabled(false);
 							grpCrop.setVisible(false);
@@ -1582,6 +1586,7 @@ public class VideoPlayer {
 							grpCorrections.setVisible(true);
 							grpTransitions.setVisible(true);
 							grpTransitions.setEnabled(true);
+							grpTransitions.setLocation(grpColorimetry.getLocation().x, grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 							caseVideoFadeIn.setEnabled(true);
 							if (caseVideoFadeIn.isSelected())
 								spinnerVideoFadeIn.setEnabled(true);
@@ -1640,6 +1645,7 @@ public class VideoPlayer {
 							btnCapture.setEnabled(false);
 							caseInternalTc.setVisible(false);
 							showScale.setVisible(false);
+							showFPS.setVisible(false);
 						}
 						else
 						{
@@ -2047,7 +2053,15 @@ public class VideoPlayer {
 	public static void addWaveform(boolean newWaveform) {
 					
 		addWaveformIsRunning = true;
-		waveformIcon.setVisible(false);
+		if (newWaveform || waveform.exists() == false)
+		{
+			waveformIcon.setVisible(false);
+			
+			if (newWaveform)
+			{
+				waveform.delete();
+			}
+		}
 			
 		Thread addWaveform = new Thread(new Runnable()
 		{
@@ -2086,20 +2100,21 @@ public class VideoPlayer {
 									SubtitlesTimeline.waveform = new JLabel();	
 								
 								long time = (long) (SubtitlesTimeline.timelineScrollBar.getValue() / SubtitlesTimeline.zoom);
-								String h = formatter.format(time / 3600);
-								String m = formatter.format((time / 60) % 60);
-								String s = formatter.format(time % 60);    		
+	
+								String h = formatter.format(Math.floor(time / 1000) / 3600);
+								String m = formatter.format((Math.floor(time / 1000) / 60) % 60);
+								String s = formatter.format(Math.floor(time / 1000) % 60);    		
 								String f = formatterToMs.format(time % 1000);
 								
 								start = " -ss " + h + ":" + m + ":" + s + "." + f;
-								duration = "atrim=duration=" + (SubtitlesTimeline.frame.getWidth() * 2) / 100 + ",";								
-								size = (long) ((SubtitlesTimeline.frame.getWidth() * 2) * 10 * SubtitlesTimeline.zoom);
+								duration = "atrim=duration=" + (SubtitlesTimeline.frame.getWidth() / 100) + ",";								
+								size = (long) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom);
 							}
 						
 							//IMPORTANT
 							if (size > 549944)
 								size = 549944;
-								
+							
 							FFMPEG.run(start + " -i " + '"' + videoPath + '"'
 							+ " -filter:a aresample=8000 -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green" + '"' 
 							+ " -pix_fmt rgba -vn -frames:v 1 -y " + '"' + waveform + '"');  									
@@ -2115,7 +2130,7 @@ public class VideoPlayer {
 								try {
 									Thread.sleep(10);
 								} catch (InterruptedException e) {}										
-							} while (waveform.exists() == false && FFMPEG.isRunning);			
+							} while (waveform.exists() == false && FFMPEG.isRunning);								
 						}
 						
 						//add Waveform		
@@ -2124,10 +2139,10 @@ public class VideoPlayer {
 							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) && Shutter.caseInAndOut.isSelected()) //Ne charge plus l'image si la fenêtre est fermée entre temps
 							{
 								Image imageBMP = ImageIO.read(waveform);
-								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance((int) ((SubtitlesTimeline.frame.getWidth() * 2) * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
+								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
 								
 								SubtitlesTimeline.waveform.setIcon(resizedWaveform);							
-								SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) ((SubtitlesTimeline.frame.getWidth() * 2) * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
+								SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
 								SubtitlesTimeline.waveform.repaint();
 							}
 							else
@@ -2310,6 +2325,22 @@ public class VideoPlayer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				//Allows to wait for the last frame to load					
+				long time = System.currentTimeMillis();
+
+				if (playerIsPlaying() == false)
+				{
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {}
+						
+						if (System.currentTimeMillis() - time > 1000)
+							break;
+						
+					} while (playerLoop);
+				}
+				
 				if (btnPlay.getText().equals(Shutter.language.getProperty("btnPause")))
 				{
 					btnPlay.setText(Shutter.language.getProperty("btnPlay"));	
@@ -2356,12 +2387,13 @@ public class VideoPlayer {
 					playerCurrentFrame = 0;
 					if (playerVideo != null)
 					{
-						playerStop();
+						playerStop();						
 						do {
 							try {
-								Thread.sleep(1);
+								Thread.sleep(100);
 							} catch (InterruptedException e1) {};
 						} while (playerVideo.isAlive());
+												
 						slider.setValue(0);
 					}
 					
@@ -2379,7 +2411,6 @@ public class VideoPlayer {
 				{
 					resizeAll();
 				}
-								
 			}			
 			
 		});
@@ -2732,7 +2763,7 @@ public class VideoPlayer {
 		    protected void paintComponent(Graphics g)
 		    {		
 	        	Graphics2D g2 = (Graphics2D)g; 
-
+	        	
 	            //Borders
                 g2.setColor(new Color(65, 65, 65));
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 5, 5);	
@@ -2820,7 +2851,7 @@ public class VideoPlayer {
 			public void mousePressed(MouseEvent e) {
 				
 				mouseIsPressed = true;
-				
+								
 				if (Shutter.liste.getSize() > 0)
                 {
 					//IMPORTANT
@@ -12541,11 +12572,11 @@ public class VideoPlayer {
 							//Subtitles are visible only from a video file
 							if (caseAddSubtitles.isSelected())
 							{				
-								FFMPEG.run(EXRGamma + " -v quiet" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -sws_flags bicubic -f image2pipe pipe:-"); 
+								FFMPEG.run(EXRGamma + " -v quiet" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -f image2pipe pipe:-"); 
 							}
 							else
 							{
-								FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -sws_flags bicubic -f image2pipe pipe:-"); 							    	
+								FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -f image2pipe pipe:-"); 							    	
 							}
 						}
 
@@ -12649,10 +12680,28 @@ public class VideoPlayer {
 		//Scaling
 		int width = player.getWidth();
 		int height = player.getHeight();
+		
+		String algorithm = "bilinear";
+		if (mouseIsPressed)
+		{
+			//width = width / 4;
+			//height = height / 4;
+			algorithm = "neighbor";
+		}
+		
 		if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
 		{
-			width = player.getHeight();
-			height = player.getWidth();
+			if (mouseIsPressed)
+			{
+				//width = height / 4;
+				//height = width / 4;
+				algorithm = "neighbor";
+			}
+			else
+			{
+				width = player.getHeight();
+				height = player.getWidth();
+			}
 		}
 		
 		if (FFMPEG.isGPUCompatible && caseGPU.isSelected() && noGPU == false)
@@ -12667,7 +12716,7 @@ public class VideoPlayer {
 			if (FFMPEG.cudaAvailable)
 			{
 				filter = filter.replace("yadif", "yadif_cuda");			
-				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=nearest,hwdownload,format=" + bitDepth;
+				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=" + algorithm.replace("neighbor", "nearest").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
 			}
 			else if (FFMPEG.qsvAvailable && yadif == "")
 			{
@@ -12675,12 +12724,12 @@ public class VideoPlayer {
 			}	
 			else
 			{
-				filter += "scale=" + width + ":" + height + ":flags=neighbor";
+				filter += "scale=" + width + ":" + height + ":flags=" + algorithm;
 			}
 		}
 		else
 		{
-			filter += "scale=" + width + ":" + height + ":flags=neighbor";
+			filter += "scale=" + width + ":" + height + ":flags=" + algorithm;		
 		}
 				
 		//Alpha channel
@@ -12905,36 +12954,36 @@ public class VideoPlayer {
 		float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 		float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
 
+		//Waveforms
+		addWaveform(false);		
+		 			
 		//Sliders
-		if (waveformContainer.isVisible())
+		slider.setBounds(grpIn.getLocation().x + grpIn.getSize().width + 6, grpIn.getLocation().y, frame.getSize().width - (grpIn.getLocation().x + grpIn.getSize().width + 6) * 2 - 6, 60); 
+		waveformContainer.setBounds(slider.getX(), slider.getY() + 7, slider.getWidth(), grpIn.getHeight() - 9);
+		waveformIcon.setBounds(waveformContainer.getBounds());
+		
+		if (playerCurrentFrame <= 1)
 		{
-			slider.setBounds(grpIn.getLocation().x + grpIn.getSize().width + 6, grpIn.getLocation().y, frame.getSize().width - (grpIn.getLocation().x + grpIn.getSize().width + 6) * 2 - 6, 60); 
-			waveformContainer.setBounds(slider.getX(), slider.getY() + 7, slider.getWidth(), grpIn.getHeight() - 9);
-			waveformIcon.setBounds(waveformContainer.getBounds());
-			
-			if (playerCurrentFrame <= 1)
-			{
-				cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);
-			}
-			else
-			{
-				if (cursorWaveform.getX() > waveformContainer.getWidth() - 2)
-				{
-					cursorWaveform.setLocation(waveformContainer.getWidth() - 2, 0);
-				}
-				else
-					cursorWaveform.setBounds(Math.round((float) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 2, waveformContainer.getSize().height);
-			}
-			
-			playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
-						
-			if ((int) Math.ceil(timeOut) < totalFrames)
-				playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
-			else
-				playerOutMark = waveformContainer.getWidth() - 2;	
-			
-			waveformContainer.repaint();
+			cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);
 		}
+		else
+		{
+			if (cursorWaveform.getX() > waveformContainer.getWidth() - 2)
+			{
+				cursorWaveform.setLocation(waveformContainer.getWidth() - 2, 0);
+			}
+			else
+				cursorWaveform.setBounds(Math.round((float) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 2, waveformContainer.getSize().height);
+		}
+		
+		playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
+					
+		if ((int) Math.ceil(timeOut) < totalFrames)
+			playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
+		else
+			playerOutMark = waveformContainer.getWidth() - 2;	
+		
+		waveformContainer.repaint();		
 				
 		//lblTimecode & lblDuration
 		lblPosition.setBounds(slider.getX(), slider.getY() - 16, slider.getWidth(), 16);
@@ -13097,16 +13146,11 @@ public class VideoPlayer {
 				waveformIcon.setVisible(false);
 			}
 			else
-			{		
-				//Waveforms
-				addWaveform(false);	
-	
+			{			
 				if (btnPlay.isEnabled())
 					playerFreeze();	
 			}
 		}
-		else
-			waveformIcon.setVisible(false);
 		
 		refreshTimecodeAndText();
 	}
