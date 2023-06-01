@@ -12680,28 +12680,17 @@ public class VideoPlayer {
 		//Scaling
 		int width = player.getWidth();
 		int height = player.getHeight();
+				
+		if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
+		{
+			width = player.getHeight();
+			height = player.getWidth();		
+		}
 		
 		String algorithm = "bilinear";
 		if (mouseIsPressed)
 		{
-			//width = width / 4;
-			//height = height / 4;
 			algorithm = "neighbor";
-		}
-		
-		if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
-		{
-			if (mouseIsPressed)
-			{
-				//width = height / 4;
-				//height = width / 4;
-				algorithm = "neighbor";
-			}
-			else
-			{
-				width = player.getHeight();
-				height = player.getWidth();
-			}
 		}
 		
 		if (FFMPEG.isGPUCompatible && caseGPU.isSelected() && noGPU == false)
