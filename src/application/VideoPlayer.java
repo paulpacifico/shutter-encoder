@@ -1009,7 +1009,7 @@ public class VideoPlayer {
 				@Override
 				public void run() {
 
-					byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
+					byte bytes[] = new byte[(int) Math.ceil(48000*4/FFPROBE.currentFPS)];
 		            int bytesRead = 0;
 		            		            
 					do {	
@@ -2045,7 +2045,7 @@ public class VideoPlayer {
 		}
 		else
 		{
-			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + speed + audioFade + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + speed + audioFade + " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";
 		}		
 		
 	}

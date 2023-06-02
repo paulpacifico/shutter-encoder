@@ -11330,7 +11330,13 @@ public class Shutter {
 				}	
 				else if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					if (comboFonctions.getSelectedItem().toString().equals("DVD"))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					}
+					else
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					
 					comboAudioCodec.setSelectedIndex(0);						
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(5);
@@ -14311,15 +14317,30 @@ public class Shutter {
 							
 							caseChangeAudioCodec.setSelected(true);
 							comboAudioCodec.setEnabled(true);
-				
-							if (comboAudioCodec.getItemCount() != 3 || comboAudioCodec.getItemAt(0).equals("AC3") == false)
+											
+							if ("Blu-ray".equals(function))
 							{
-								lblAudioMapping.setText(language.getProperty("stereo"));
-								comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-								comboAudioCodec.setSelectedIndex(0);						
-								debitAudio.setModel(comboAudioBitrate.getModel());								
-								debitAudio.setSelectedIndex(5);
+								if (comboAudioCodec.getItemCount() != 4 || comboAudioCodec.getItemAt(0).equals("AC3") == false)
+								{
+									lblAudioMapping.setText(language.getProperty("stereo"));
+									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+									comboAudioCodec.setSelectedIndex(0);						
+									debitAudio.setModel(comboAudioBitrate.getModel());								
+									debitAudio.setSelectedIndex(5);
+								}								
 							}
+							else
+							{
+								if (comboAudioCodec.getItemCount() != 3 || comboAudioCodec.getItemAt(0).equals("AC3") == false)
+								{
+									lblAudioMapping.setText(language.getProperty("stereo"));
+									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+									comboAudioCodec.setSelectedIndex(0);						
+									debitAudio.setModel(comboAudioBitrate.getModel());								
+									debitAudio.setSelectedIndex(5);
+								}
+							}
+							
 							caseChangeAudioCodec.setEnabled(false);
 		
 							grpSetAudio.add(comboAudioCodec);
