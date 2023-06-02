@@ -837,18 +837,35 @@ public class AdvancedFeatures extends Shutter {
 		        		options += ":keyint=" + Shutter.gopSize.getText();
 		        	
 		            if (lblVBR.getText().equals("CBR"))
+		            {
 		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+		            }
+		            else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
+			        {
+			        	options += ":lossless=1";
+			        }
+		            
 		        }
 		        else if (caseGOP.isSelected())
 		        {
 		    		options = " -x265-params keyint=" + Shutter.gopSize.getText();
 		    		
 		            if (lblVBR.getText().equals("CBR"))
+		            {
 		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+		            }
+		            else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
+			        {
+			        	options += ":lossless=1";
+			        }
 		        }
 		        else if (lblVBR.getText().equals("CBR"))
 		        {
 		        	options = " -x265-params strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+		        }		        
+		        else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
+		        {
+		        	options = " -x265-params lossless=1";
 		        }
 
 				break;

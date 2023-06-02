@@ -370,7 +370,7 @@ public static int gopSpace = 124;
 						                String str[] = line.split("fps");
 						                	
 						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-
+						                
 						                currentFPS = Float.parseFloat(str[1]);
 						                
 						                //Used for VFR						      
@@ -389,6 +389,30 @@ public static int gopSpace = 124;
 						                	}
 						                }
 						            } 
+						            else if (line.contains("tbr"))
+						            {
+						            	String str[] = line.split("tbr");
+					                	
+						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+						                
+						                currentFPS = Float.parseFloat(str[1]);
+						                
+						                //Used for VFR						      
+						                str = String.valueOf(currentFPS).split("\\.");	
+
+						                if (str[1].length() == 2 && str[1].equals("00") == false)
+						                {
+						                	if (str[1].equals("88") == false //119.88
+						                	&& str[1].equals("94") == false //59.94
+						                	&& str[1].equals("97") == false //29.97
+						                	&& str[1].equals("98") == false) //23.98
+						                	{						                	
+							                	str = line.split("tbr");
+								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+								                currentFPS = Float.parseFloat(str[1]);
+						                	}
+						                }
+						            }
 				                }
 			                }
 						 }
