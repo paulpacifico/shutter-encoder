@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -170,6 +171,8 @@ public class VideoPlayer {
     public static int playerInMark = 0;
     public static int playerOutMark = 0;
     public static Image frameVideo;
+	private static double screenRefreshRate = 16.7; //Vsync in ms
+	private static long lastEvTime = 0;
     public static boolean playerLoop = false;
     public static boolean frameIsComplete = false;
     public static boolean playerPlayVideo = true;
@@ -480,6 +483,31 @@ public class VideoPlayer {
     		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		}
 		
+		GraphicsConfiguration config = frame.getGraphicsConfiguration();
+		GraphicsDevice myScreen = config.getDevice();
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] allScreens = env.getScreenDevices();
+		
+		int screenIndex = -1;
+		for (int i = 0; i < allScreens.length; i++) {
+		    if (allScreens[i].equals(myScreen))
+		    {
+		    	screenIndex = i;
+		        break;
+		    }	
+		}
+		
+		DisplayMode dm = allScreens[screenIndex].getDisplayMode();
+	    int refreshRate = dm.getRefreshRate();
+	    if (refreshRate == DisplayMode.REFRESH_RATE_UNKNOWN)
+	    {
+	    	screenRefreshRate = 16.666666;
+	    }
+	    else 
+	    {
+	    	screenRefreshRate = (double) 1000 / refreshRate;
+	    }
+
 		topPanel();
 		
 		//Ces deux boutons définissent la postion des autres objets par la suite ils doivent donc être appelés en amont
@@ -1055,8 +1083,8 @@ public class VideoPlayer {
 				        		//Read 1 video frame				        		
 								frameVideo = ImageIO.read(videoInputStream);
 								playerRepaint();
-								fps ++;										
-								
+						    	fps ++;	
+
 								if (sliderSpeed.getValue() != 2)
 								{													
 									if (sliderSpeed.getValue() != 0)
@@ -1171,11 +1199,18 @@ public class VideoPlayer {
 	public static void playerRepaint() {
 				
 		if (frameVideo != null)
-		{
-			player.repaint();
+		{			  
+		    long time = System.currentTimeMillis();
+		    
+		    if (time > (lastEvTime + screenRefreshRate)) //Vsync
+		    {			    	
+		    	lastEvTime = time;		      
+		    	player.repaint();
+		    	getTimePoint(playerCurrentFrame); 
+		    }
+			
 		}
-
-		getTimePoint(playerCurrentFrame); 		
+				
 	}
 	
 	public static boolean playerIsPlaying() {
@@ -3212,6 +3247,17 @@ public class VideoPlayer {
 				        break;
 				    }
 				}
+				
+				DisplayMode dm = allScreens[screenIndex].getDisplayMode();
+			    int refreshRate = dm.getRefreshRate();
+			    if (refreshRate == DisplayMode.REFRESH_RATE_UNKNOWN)
+			    {
+			    	screenRefreshRate = 16.666666;
+			    }
+			    else 
+			    {
+			    	screenRefreshRate = (double) 1000 / refreshRate;
+			    }
 
 				int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 				int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
@@ -3338,6 +3384,17 @@ public class VideoPlayer {
     				        break;
     				    }
     				}
+    				
+    				DisplayMode dm = allScreens[screenIndex].getDisplayMode();
+    			    int refreshRate = dm.getRefreshRate();
+    			    if (refreshRate == DisplayMode.REFRESH_RATE_UNKNOWN)
+    			    {
+    			    	screenRefreshRate = 16.666666;
+    			    }
+    			    else 
+    			    {
+    			    	screenRefreshRate = (double) 1000 / refreshRate;
+    			    }
 
     				int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
     				int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
@@ -12735,12 +12792,12 @@ public class VideoPlayer {
 			}	
 			else
 			{
-				filter += "scale=" + width + ":" + height + ":flags=" + algorithm;
+				filter += "scale=" + width + ":" + height + ":sws_flags=" + algorithm + ":sws_dither=none";
 			}
 		}
 		else
 		{
-			filter += "scale=" + width + ":" + height + ":flags=" + algorithm;		
+			filter += "scale=" + width + ":" + height + ":sws_flags=" + algorithm + ":sws_dither=none";		
 		}
 				
 		//Alpha channel
