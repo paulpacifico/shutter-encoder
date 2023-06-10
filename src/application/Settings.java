@@ -23,11 +23,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
-import java.awt.Image;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -59,6 +61,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -68,11 +71,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JCheckBox;
 import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
+import javax.swing.border.MatteBorder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -147,10 +150,6 @@ public class Settings {
 	public static JLabel lblDestination1 = new JLabel(); 
 	public static JLabel lblDestination2 = new JLabel(); 
 	public static JLabel lblDestination3 = new JLabel(); 
-	public static int videoPlayerVolume = 50;
-	public static boolean videoPlayerCasePlaySound = true;
-	public static boolean videoPlayerCaseVuMeter = true;
-	public static boolean videoPlayerCaseGPUDecoding = false;
 	public static boolean videoWebCaseMetadata = false;
 	
 	private static int MousePositionX;
@@ -188,7 +187,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 642);
+		frame.setSize(370, 662);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
@@ -208,12 +207,16 @@ public class Settings {
 		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
+
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 				
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(172);
+		scrollBar.setMaximum(152);
 		scrollBar.setBackground(new Color(45, 45, 45));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
@@ -1493,18 +1496,18 @@ public class Settings {
 		topPanel.add(quit);
 		topPanel.add(reduce);
 		topPanel.add(help);
-		topPanel.setBounds(0, 0, frame.getWidth(), 28);
+		topPanel.setBounds(0, 0, frame.getWidth(), 24);
 		
 		JLabel title = new JLabel(Shutter.language.getProperty("frameSettings"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setBounds(0, 1, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
-		topImage.setIcon(imageIcon);		
+		topImage.setBackground(new Color(40,40,40));
+		topImage.setOpaque(true);
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
 		topImage.setBounds(title.getBounds());
 		
 		topPanel.add(topImage);
@@ -1574,8 +1577,7 @@ public class Settings {
 					Element eElement = (Element) nNode;
 
 					for (Component p : frame.getContentPane().getComponents())
-					{			
-
+					{		
 						if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 						{								
 							if (p instanceof JPanel && p.getName().equals("backgroundPanel") == false)
@@ -1682,27 +1684,27 @@ public class Settings {
 					//Volume video player
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderVolume"))
 					{
-						videoPlayerVolume = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						VideoPlayer.sliderVolume.setValue(Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 					}
 					
 					//casePlaySound video player
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePlaySound"))
 					{
-						videoPlayerCasePlaySound = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						VideoPlayer.casePlaySound.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 					}
 					
 					//caseVuMeter video player
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseVuMeter"))
 					{
-						videoPlayerCaseVuMeter = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						VideoPlayer.caseVuMeter.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 					}		
 					
 					//caseGPU video player
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseGPU"))
 					{
-						videoPlayerCaseGPUDecoding = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						VideoPlayer.caseGPU.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 					}
-					
+										
 					//FTP
 					if (eElement.getParentNode().getNodeName().equals("Ftp"))
 					{		
@@ -2009,10 +2011,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			if (VideoPlayer.sliderVolume != null)
-				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.sliderVolume.getValue())));
-			else
-				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerVolume)));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.sliderVolume.getValue())));
 			component.appendChild(cValue);	
 			
 			root.appendChild(component);
@@ -2033,10 +2032,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			if (VideoPlayer.casePlaySound != null)
-				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.casePlaySound.isSelected())));
-			else
-				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCasePlaySound)));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.casePlaySound.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2057,10 +2053,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			if (VideoPlayer.caseVuMeter != null)
-				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseVuMeter.isSelected())));
-			else
-				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCaseVuMeter)));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseVuMeter.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2081,10 +2074,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			if (VideoPlayer.caseGPU != null)
-				cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseGPU.isSelected())));
-			else
-				cValue.appendChild(document.createTextNode(String.valueOf(videoPlayerCaseGPUDecoding)));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseGPU.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);

@@ -21,7 +21,6 @@ package settings;
 
 import application.Settings;
 import application.Shutter;
-import application.VideoPlayer;
 import functions.VideoEncoders;
 import library.FFPROBE;
 import library.FFMPEG;
@@ -32,7 +31,7 @@ public class Image extends Shutter {
 		
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 		{	    	
-	    	if (caseInAndOut.isSelected() && VideoPlayer.caseEnableCrop.isSelected())
+	    	if (Shutter.caseEnableCrop.isSelected())
 			{
 				if (filterComplex != "")
 					filterComplex += "[w];[w]";
@@ -78,10 +77,10 @@ public class Image extends Shutter {
 					}
 				}
 				
-				int cropWidth = Math.round((float) Integer.parseInt(VideoPlayer.textCropWidth.getText()) / imageRatio);
-				int cropHeight = Math.round((float) Integer.parseInt(VideoPlayer.textCropHeight.getText()) / imageRatio);
-				int cropX = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosX.getText()) / imageRatio);
-				int cropY = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosY.getText()) / imageRatio);
+				int cropWidth = Math.round((float) Integer.parseInt(Shutter.textCropWidth.getText()) / imageRatio);
+				int cropHeight = Math.round((float) Integer.parseInt(Shutter.textCropHeight.getText()) / imageRatio);
+				int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
+				int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
 
 	    		filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
 			}

@@ -219,7 +219,7 @@ public class AudioEncoders extends Shutter {
 						
 						//Concat mode
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
-						if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 																						
 						//Audio
@@ -287,7 +287,7 @@ public class AudioEncoders extends Shutter {
 							
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
-						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;

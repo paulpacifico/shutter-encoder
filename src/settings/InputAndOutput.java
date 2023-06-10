@@ -30,7 +30,7 @@ public class InputAndOutput extends Shutter {
 	
 	public static void getInputAndOutput() {
 
-		if (caseInAndOut.isSelected() && VideoPlayer.waveformContainer.isVisible())
+		if (VideoPlayer.waveformContainer.isVisible())
 		{						
 			float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
 			

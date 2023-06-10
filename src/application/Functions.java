@@ -21,6 +21,7 @@ package application;
 
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -52,6 +53,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.TransferHandler;
+import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
@@ -64,6 +66,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 
 import javax.swing.ListSelectionModel;
@@ -107,7 +110,11 @@ public class Functions {
 		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y + frame.getSize().height / 2);		
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);	
 		
 		frame.addMouseListener(new MouseListener(){
 
@@ -215,7 +222,7 @@ public class Functions {
 		scrollPane.getViewport().add(listeDeFonctions);
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
-		scrollPane.setBounds(0, 28, 333, 269);
+		scrollPane.setBounds(0, 26, 333, 269);
 		
 		frame.getContentPane().add(scrollPane);
 		
@@ -592,14 +599,14 @@ public class Functions {
 				
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFonctions"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setBounds(0, 1, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
-		topImage.setIcon(imageIcon);		
+		topImage.setBackground(new Color(40,40,40));
+		topImage.setOpaque(true);
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));	
 		topImage.setBounds(title.getBounds());
 		
 		topPanel.add(topImage);		

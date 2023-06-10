@@ -28,17 +28,17 @@ public class Transitions extends Shutter {
 
 	public static String setVideoFade(String filterComplex, boolean isVideoPlayer) {
 		
-		if (caseInAndOut.isSelected() && caseInAndOut.isSelected() && VideoPlayer.grpTransitions.isEnabled())
+		if (grpTransitions.isEnabled())
 		{
 			//Fade-in
-	    	if (VideoPlayer.caseVideoFadeIn.isSelected())
+	    	if (Shutter.caseVideoFadeIn.isSelected())
 	    	{ 
 	    		if (filterComplex != "") filterComplex += ",";	
 	    		
-	    		long videoInValue = (long) (Integer.parseInt(VideoPlayer.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long videoInValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 	    		
 	    		String color = "black";
-				if (VideoPlayer.lblFadeInColor.getText().equals(language.getProperty("white")))
+				if (Shutter.lblFadeInColor.getText().equals(language.getProperty("white")))
 					color = "white";
 	    		
 	    		String videoFade = "fade=in:st=0ms:d=" + videoInValue + "ms:color=" + color;
@@ -57,14 +57,14 @@ public class Transitions extends Shutter {
 	    	}
 	    	
 	    	//Fade-out
-	    	if (VideoPlayer.caseVideoFadeOut.isSelected())
+	    	if (Shutter.caseVideoFadeOut.isSelected())
 	    	{
 	    		if (filterComplex != "") filterComplex += ",";	
 	    		
-	    		long videoOutValue = (long) (Integer.parseInt(VideoPlayer.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 	    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
-	    		
-	    		if (caseInAndOut.isSelected())
+
+	    		if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth())
 	    		{
 	        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 	        		long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
@@ -73,7 +73,7 @@ public class Transitions extends Shutter {
 	        		{
 	        			totalIn = (long) Math.floor(VideoPlayer.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));	        			
 	        		}
-	        		
+	        			        		
 	        		if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
 	        		{
 		        		videoStart = (totalOut - totalIn) - videoOutValue;
@@ -83,17 +83,17 @@ public class Transitions extends Shutter {
 	    		}
 	    		else if (caseEnableSequence.isSelected())
 	    		{
-	    			videoOutValue = (long) (Integer.parseInt(VideoPlayer.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
+	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
 		    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * liste.getSize()) - videoOutValue;
 	    		}
 	    		else if (Settings.btnSetBab.isSelected())
 	    		{
-	    			videoOutValue = (long) (Integer.parseInt(VideoPlayer.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 		    		videoStart = (long) FunctionUtils.mergeDuration - videoOutValue;
 	    		}
 	    		
 	    		String color = "black";
-				if (VideoPlayer.lblFadeOutColor.getText().equals(language.getProperty("white")))
+				if (Shutter.lblFadeOutColor.getText().equals(language.getProperty("white")))
 					color = "white";
 	    		
 	    		String videoFade = "fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color;
@@ -115,9 +115,9 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 		
 		//Fade-in
-		if (caseInAndOut.isSelected() && VideoPlayer.grpTransitions.isEnabled() && VideoPlayer.caseAudioFadeIn.isSelected())
+		if (grpTransitions.isEnabled() && Shutter.caseAudioFadeIn.isSelected())
     	{ 
-    		long audioInValue = (long) (Integer.parseInt(VideoPlayer.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long audioInValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 			
     		if (isVideoPlayer)
     		{
@@ -140,12 +140,12 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 
     	//Fade-out
-		if (caseInAndOut.isSelected() && VideoPlayer.grpTransitions.isEnabled() && VideoPlayer.caseAudioFadeOut.isSelected())
+		if (grpTransitions.isEnabled() && Shutter.caseAudioFadeOut.isSelected())
     	{
-    		long audioOutValue = (long) (Integer.parseInt(VideoPlayer.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    		long audioOutValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
     		
-    		if (caseInAndOut.isSelected())
+    		if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth())
 			{
 				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 				long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
@@ -164,7 +164,7 @@ public class Transitions extends Shutter {
 			}
     		else if (Settings.btnSetBab.isSelected())
     		{
-    			audioOutValue = (long) (Integer.parseInt(VideoPlayer.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    			audioOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
     		}
     		
@@ -183,7 +183,7 @@ public class Transitions extends Shutter {
 		
 		String audioFilter = "";
 		
-		if ((caseInAndOut.isSelected() && VideoPlayer.grpTransitions.isEnabled()) || grpAudio.isVisible() || grpSetAudio.isVisible())
+		if (grpTransitions.isEnabled() || grpAudio.isVisible() || grpSetAudio.isVisible())
 		{
 	    	//Audio Speed				        
 			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed"))

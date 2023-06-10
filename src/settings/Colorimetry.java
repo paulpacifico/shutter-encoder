@@ -22,7 +22,6 @@ package settings;
 import java.io.File;
 
 import application.Shutter;
-import application.VideoPlayer;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MKVMERGE;
@@ -52,7 +51,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setColor(String filterComplex) {
 				
-		if (grpColorimetry.isVisible() && caseInAndOut.isSelected() && VideoPlayer.caseEnableColorimetry.isSelected() && setEQ(true).equals("") == false)
+		if (grpColorimetry.isVisible() && Shutter.caseEnableColorimetry.isSelected() && setEQ(true).equals("") == false)
 		{			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -100,7 +99,7 @@ public class Colorimetry extends Shutter {
 			else
 				filterComplex += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
 		}
-		
+
 		return filterComplex;
 	}
 		
@@ -207,15 +206,15 @@ public class Colorimetry extends Shutter {
 
 	public static String setGrain(String eq) {
 	
-		if (VideoPlayer.sliderGrain.getValue() != 0)
+		if (Shutter.sliderGrain.getValue() != 0)
 		{		
 			if (eq != "")
 				eq += ",";
 
-			if (VideoPlayer.sliderGrain.getValue() > 0)
-				eq += "unsharp=la=" + (float) VideoPlayer.sliderGrain.getValue() / 50;
+			if (Shutter.sliderGrain.getValue() > 0)
+				eq += "unsharp=la=" + (float) Shutter.sliderGrain.getValue() / 50;
 			else
-				eq += "bm3d=sigma=" + (float) (0 - VideoPlayer.sliderGrain.getValue()); 
+				eq += "bm3d=sigma=" + (float) (0 - Shutter.sliderGrain.getValue()); 
 		}
 		
 		return eq;
@@ -223,16 +222,16 @@ public class Colorimetry extends Shutter {
 		
 	public static String setAngle(String eq) {
 
-		if (VideoPlayer.sliderAngle.getValue() != 0)
+		if (Shutter.sliderAngle.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
 			float angle;
-			if (VideoPlayer.sliderAngle.getValue() > 0)
-				angle = (float) ((float) ((float) VideoPlayer.sliderAngle.getValue() / 10) * Math.PI) / 180;
+			if (Shutter.sliderAngle.getValue() > 0)
+				angle = (float) ((float) ((float) Shutter.sliderAngle.getValue() / 10) * Math.PI) / 180;
 			else
-				angle = (float) ((float) (0 - (float) VideoPlayer.sliderAngle.getValue() / 10) * Math.PI) / 180;
+				angle = (float) ((float) (0 - (float) Shutter.sliderAngle.getValue() / 10) * Math.PI) / 180;
 			
 			float ratio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
 			float h = (float) ( (float) FFPROBE.imageHeight / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
@@ -249,10 +248,10 @@ public class Colorimetry extends Shutter {
 						
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
 			{
-				eq += "rotate=" + ((float) VideoPlayer.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight; 
+				eq += "rotate=" + ((float) Shutter.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight; 
 			}
 			else
-				eq += "rotate=" + ((float) VideoPlayer.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
+				eq += "rotate=" + ((float) Shutter.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
 		}
 		
 		return eq;
@@ -260,15 +259,15 @@ public class Colorimetry extends Shutter {
 	
 	public static String setVignette(String eq) {
 		
-		if (VideoPlayer.sliderVignette.getValue() != 0)
+		if (Shutter.sliderVignette.getValue() != 0)
 		{		
 			if (eq != "")
 				eq += ",";
 
-			if (VideoPlayer.sliderVignette.getValue() > 0)
-				eq += "vignette=PI/" + (float) (100 - VideoPlayer.sliderVignette.getValue()) / 5 + ":mode=backward"; 
+			if (Shutter.sliderVignette.getValue() > 0)
+				eq += "vignette=PI/" + (float) (100 - Shutter.sliderVignette.getValue()) / 5 + ":mode=backward"; 
 			else
-				eq += "vignette=PI/" + (float) (100 + VideoPlayer.sliderVignette.getValue()) / 5;				
+				eq += "vignette=PI/" + (float) (100 + Shutter.sliderVignette.getValue()) / 5;				
 		}
 		
 		return eq;
@@ -289,12 +288,12 @@ public class Colorimetry extends Shutter {
 	
 	public static String setSaturation(String eq) {
 		
-		if (VideoPlayer.sliderSaturation.getValue() != 0)
+		if (Shutter.sliderSaturation.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";			
 			
-			eq += "eq=saturation=" + ((float) (VideoPlayer.sliderSaturation.getValue() + 100) / 100);
+			eq += "eq=saturation=" + ((float) (Shutter.sliderSaturation.getValue() + 100) / 100);
 		}
 		
 		return eq;
@@ -302,20 +301,20 @@ public class Colorimetry extends Shutter {
 
 	public static String setBalance(String eq) {		
 		
-		float r = (float) VideoPlayer.sliderRED.getValue() / 400;
-		float g = (float) VideoPlayer.sliderGREEN.getValue() / 400;
-		float b = (float) VideoPlayer.sliderBLUE.getValue() / 400;
+		float r = (float) Shutter.sliderRED.getValue() / 400;
+		float g = (float) Shutter.sliderGREEN.getValue() / 400;
+		float b = (float) Shutter.sliderBLUE.getValue() / 400;
 		
-		if (VideoPlayer.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
+		if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
 			balanceAll = "rs="+r+":gs="+g+":bs="+b+":rm="+r+":gm="+g+":bm="+b+":rh="+r+":gh="+g+":bh="+b;			
 			
-		if (VideoPlayer.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))	
+		if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))	
 			balanceLow = "rs="+r+":gs="+g+":bs="+b;	
 		
-		else if (VideoPlayer.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setMedium")))		
+		else if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setMedium")))		
 			balanceMedium = "rm="+r+":gm="+g+":bm="+b;	
 		
-		else if (VideoPlayer.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
+		else if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 			balanceHigh = "rh="+r+":gh="+g+":bh="+b;
 		
 		if (balanceAll != "" && balanceAll.equals("rs=0.0:gs=0.0:bs=0.0:rm=0.0:gm=0.0:bm=0.0:rh=0.0:gh=0.0:bh=0.0") == false)
@@ -354,12 +353,12 @@ public class Colorimetry extends Shutter {
 
 	public static String setContrast(String eq) {
 		
-		if (VideoPlayer.sliderContrast.getValue() != 0)
+		if (Shutter.sliderContrast.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 
-			eq += "eq=contrast=" + (1 + (float) VideoPlayer.sliderContrast.getValue() / 100); 
+			eq += "eq=contrast=" + (1 + (float) Shutter.sliderContrast.getValue() / 100); 
 		}
 		
 		return eq;
@@ -367,12 +366,12 @@ public class Colorimetry extends Shutter {
 	
 	public static String setWB(String eq) {
 
-		if (VideoPlayer.sliderBalance.getValue() != 6500)
+		if (Shutter.sliderBalance.getValue() != 6500)
 		{
 			if (eq != "")
 				eq += ",";
 
-			eq += "colortemperature=" + (int) (13000 - VideoPlayer.sliderBalance.getValue()); 
+			eq += "colortemperature=" + (int) (13000 - Shutter.sliderBalance.getValue()); 
 		}
 		
 		return eq;
@@ -380,12 +379,12 @@ public class Colorimetry extends Shutter {
 	
 	public static String setHUE(String eq) {
 
-		if (VideoPlayer.sliderHUE.getValue() != 0)
+		if (Shutter.sliderHUE.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 
-			eq += "hue=h=" + (0 - VideoPlayer.sliderHUE.getValue()); 
+			eq += "hue=h=" + (0 - Shutter.sliderHUE.getValue()); 
 		}
 		
 		return eq;
@@ -393,20 +392,20 @@ public class Colorimetry extends Shutter {
 	
 	public static String setWhite(String eq) {
 
-		if (VideoPlayer.sliderWhite.getValue() != 0)
+		if (Shutter.sliderWhite.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
 				
-			if (VideoPlayer.sliderWhite.getValue() > 0)
+			if (Shutter.sliderWhite.getValue() > 0)
 			{
-				float value = 1 - (float) VideoPlayer.sliderWhite.getValue() / 200;				
+				float value = 1 - (float) Shutter.sliderWhite.getValue() / 200;				
 				eq += "colorlevels=rimax=" + value + ":gimax=" + value + ":bimax=" + value; 
 			}
 			else
 			{
-				float value = 1 + (float) VideoPlayer.sliderWhite.getValue() / 200;
+				float value = 1 + (float) Shutter.sliderWhite.getValue() / 200;
 				eq += "colorlevels=romax=" + value + ":gomax=" + value + ":bomax=" + value; 
 			}
 		}
@@ -416,19 +415,19 @@ public class Colorimetry extends Shutter {
 	
 	public static String setBlack(String eq) {
 
-		if (VideoPlayer.sliderBlack.getValue() != 0)
+		if (Shutter.sliderBlack.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 				
-			if (VideoPlayer.sliderBlack.getValue() > 0)
+			if (Shutter.sliderBlack.getValue() > 0)
 			{
-				float value = (float) VideoPlayer.sliderBlack.getValue() / 200;				
+				float value = (float) Shutter.sliderBlack.getValue() / 200;				
 				eq += "colorlevels=romin=" + value + ":gomin=" + value + ":bomin=" + value; 				 
 			}
 			else
 			{
-				float value = 0 - (float) VideoPlayer.sliderBlack.getValue() / 200;
+				float value = 0 - (float) Shutter.sliderBlack.getValue() / 200;
 				eq += "colorlevels=rimin=" + value + ":gimin=" + value + ":bimin=" + value;
 			}
 				
@@ -439,15 +438,15 @@ public class Colorimetry extends Shutter {
 
 	public static String setShadows(String eq) {
 
-		if (VideoPlayer.sliderShadows.getValue() != 0)
+		if (Shutter.sliderShadows.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 										
-			if (VideoPlayer.sliderShadows.getValue() > 0)
-				eq += "curves=master=" + "'" + "0/0 0.25/" + (0.25f - (float) (0 - (float) VideoPlayer.sliderShadows.getValue() / 500)) + " 0.5/0.5 0.75/0.75 0.875/0.875 1/1'"; 
+			if (Shutter.sliderShadows.getValue() > 0)
+				eq += "curves=master=" + "'" + "0/0 0.25/" + (0.25f - (float) (0 - (float) Shutter.sliderShadows.getValue() / 500)) + " 0.5/0.5 0.75/0.75 0.875/0.875 1/1'"; 
 			else
-				eq += "curves=master=" + "'0/0 " + (0.25f - (float) VideoPlayer.sliderShadows.getValue() / 500) + "/0.25 0.5/0.5 0.625/0.625 0.75/0.75 0.875/0.875 1/1" + "'"; 
+				eq += "curves=master=" + "'0/0 " + (0.25f - (float) Shutter.sliderShadows.getValue() / 500) + "/0.25 0.5/0.5 0.625/0.625 0.75/0.75 0.875/0.875 1/1" + "'"; 
 		}
 		
 		return eq;
@@ -455,15 +454,15 @@ public class Colorimetry extends Shutter {
 	
 	public static String setMediums(String eq) {
 
-		if (VideoPlayer.sliderMediums.getValue() != 0)
+		if (Shutter.sliderMediums.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 					
-			if (VideoPlayer.sliderMediums.getValue() > 0)
-				eq += "curves=master=" + "'" + "0/0 " + (0.5 - (float) VideoPlayer.sliderMediums.getValue() / 400) + "/" + (0.5 + (float) VideoPlayer.sliderMediums.getValue() / 400) + " 1/1" + "'"; 										
+			if (Shutter.sliderMediums.getValue() > 0)
+				eq += "curves=master=" + "'" + "0/0 " + (0.5 - (float) Shutter.sliderMediums.getValue() / 400) + "/" + (0.5 + (float) Shutter.sliderMediums.getValue() / 400) + " 1/1" + "'"; 										
 			else
-				eq += "curves=master=" + "'" + "0/0 " + (0.5 + (float) (0 - (float) VideoPlayer.sliderMediums.getValue() / 400)) + "/" + (0.5 - (float) (0 - (float) VideoPlayer.sliderMediums.getValue() / 400)) + " 1/1" + "'"; 
+				eq += "curves=master=" + "'" + "0/0 " + (0.5 + (float) (0 - (float) Shutter.sliderMediums.getValue() / 400)) + "/" + (0.5 - (float) (0 - (float) Shutter.sliderMediums.getValue() / 400)) + " 1/1" + "'"; 
 		}
 		
 		return eq;
@@ -471,15 +470,15 @@ public class Colorimetry extends Shutter {
 
 	public static String setHighlights(String eq) {
 
-		if (VideoPlayer.sliderHighlights.getValue() != 0)
+		if (Shutter.sliderHighlights.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
-			if (VideoPlayer.sliderHighlights.getValue() > 0)
-				eq += "curves=master=" + "'" + "0/0 0.125/0.125 0.25/0.25 0.375/0.375 0.5/0.5 " + (0.75f - (float) VideoPlayer.sliderHighlights.getValue() / 500) + "/0.75 1/1" + "'"; 										
+			if (Shutter.sliderHighlights.getValue() > 0)
+				eq += "curves=master=" + "'" + "0/0 0.125/0.125 0.25/0.25 0.375/0.375 0.5/0.5 " + (0.75f - (float) Shutter.sliderHighlights.getValue() / 500) + "/0.75 1/1" + "'"; 										
 			else
-				eq += "curves=master=" + "'" + "0/0 0.125/0.125 0.25/0.25 0.375/0.375 0.5/0.5 0.75/" + (0.75f - (float) (0 - (float) VideoPlayer.sliderHighlights.getValue() / 500)) + " 1/1'"; 
+				eq += "curves=master=" + "'" + "0/0 0.125/0.125 0.25/0.25 0.375/0.375 0.5/0.5 0.75/" + (0.75f - (float) (0 - (float) Shutter.sliderHighlights.getValue() / 500)) + " 1/1'"; 
 		}
 		
 		return eq;
@@ -487,12 +486,12 @@ public class Colorimetry extends Shutter {
 
 	public static String setExposure(String eq) {
 
-		if (VideoPlayer.sliderExposure.getValue() != 0)
+		if (Shutter.sliderExposure.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
-			eq += "exposure=" + (float) ((float) VideoPlayer.sliderExposure.getValue() / 100) * 3; 
+			eq += "exposure=" + (float) ((float) Shutter.sliderExposure.getValue() / 100) * 3; 
 		}
 		
 		return eq;
@@ -500,12 +499,12 @@ public class Colorimetry extends Shutter {
 	
 	public static String setGamma(String eq) {		
 
-		if (VideoPlayer.sliderGamma.getValue() != 0)
+		if (Shutter.sliderGamma.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
-			eq += "eq=gamma=" + (1 + (float) VideoPlayer.sliderGamma.getValue() / 100); 
+			eq += "eq=gamma=" + (1 + (float) Shutter.sliderGamma.getValue() / 100); 
 		}
 		
 		return eq;

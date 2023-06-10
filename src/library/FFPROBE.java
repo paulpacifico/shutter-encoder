@@ -250,7 +250,7 @@ public static int gopSpace = 124;
 					             textS.setText(formatter.format(sec));
 					             textF.setText(formatter.format(frames));
 					             
-					      		/*if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
+					      		/*if (VideoPlayer.playerVideo != null)	
 					     			VideoPlayer.totalDuration();*/
 
 					            setFilesize();
@@ -502,7 +502,7 @@ public static int gopSpace = 124;
 			            	else
 			            		dropFrameTC = ":";
 			            	
-			            	if (VideoPlayer.caseShowTimecode.isSelected()
+			            	if (Shutter.caseShowTimecode.isSelected()
 		            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")
 		            		|| comboFonctions.getSelectedItem().equals("XAVC")
 		            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
@@ -514,7 +514,7 @@ public static int gopSpace = 124;
 		            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
 		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
 		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))			            			
-	            			|| (caseInAndOut.isSelected() && VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
+	            			|| (VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
 				            {
 			            		if (FFPROBE.timecode1 == "")
 				                {			            					            			
@@ -851,7 +851,7 @@ public static int gopSpace = 124;
 						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries packet=pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
 					}	
 				
-					VideoPlayer.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					isRunning = true;	
 					Process process = processFFPROBE.start();
 
@@ -904,7 +904,7 @@ public static int gopSpace = 124;
 				} catch (Exception e) {				
 					FFMPEG.error = true;					
 				} finally {
-					VideoPlayer.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					isRunning = false;
 				}						
 			}			
@@ -1053,7 +1053,7 @@ public static int gopSpace = 124;
 				            textS.setText(formatter.format((totalLength / 1000) % 60));				        
 				            textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
 				             			             
-				            if (caseInAndOut.isSelected() && VideoPlayer.playerVideo != null)	
+				            if (VideoPlayer.playerVideo != null)	
 					     		VideoPlayer.totalDuration();
 				             
 				            setFilesize();

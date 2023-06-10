@@ -22,7 +22,6 @@ package settings;
 import java.io.File;
 
 import application.Shutter;
-import application.VideoPlayer;
 import library.FFMPEG;
 import library.FFPROBE;
 
@@ -32,7 +31,7 @@ public class Corrections extends Shutter {
 	
 	public static String setStabilisation(String filterComplex, File file, String fichier, String concat) throws InterruptedException {
 				
-		if (caseInAndOut.isSelected() && VideoPlayer.caseStabilisation.isSelected())
+		if (Shutter.caseStabilisation.isSelected())
 		{
 			if (System.getProperty("os.name").contains("Windows"))
 				vidstab = new File("vidstab.trf");
@@ -70,7 +69,7 @@ public class Corrections extends Shutter {
 	
 	public static String setDeflicker(String filterComplex) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseDeflicker.isSelected())
+		if (Shutter.caseDeflicker.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -82,7 +81,7 @@ public class Corrections extends Shutter {
 		
 	public static String setDeband(String filterComplex) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseBanding.isSelected())
+		if (Shutter.caseBanding.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -94,7 +93,7 @@ public class Corrections extends Shutter {
 	
 	public static String setLimiter(String filterComplex) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseLimiter.isSelected())
+		if (Shutter.caseLimiter.isSelected())
 		{			
 			if (filterComplex != "") filterComplex += ",";
 
@@ -113,9 +112,9 @@ public class Corrections extends Shutter {
 	
 	public static String setDetails(String filterComplex) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseDetails.isSelected())
+		if (Shutter.caseDetails.isSelected())
 		{
-			float value = (0 - (float) VideoPlayer.sliderDetails.getValue() / 10);
+			float value = (0 - (float) Shutter.sliderDetails.getValue() / 10);
 			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -127,9 +126,9 @@ public class Corrections extends Shutter {
 	
 	public static String setDenoiser(String filterComplex) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseDenoise.isSelected())
+		if (Shutter.caseDenoise.isSelected())
 		{
-			int value = VideoPlayer.sliderDenoise.getValue();
+			int value = Shutter.sliderDenoise.getValue();
 			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -141,9 +140,9 @@ public class Corrections extends Shutter {
 	
 	public static String setSmoothExposure(String filterComplex) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseSmoothExposure.isSelected())
+		if (Shutter.caseSmoothExposure.isSelected())
 		{
-			int value = VideoPlayer.sliderSmoothExposure.getValue();
+			int value = Shutter.sliderSmoothExposure.getValue();
 			
 			if (filterComplex != "") filterComplex += ",";
 			

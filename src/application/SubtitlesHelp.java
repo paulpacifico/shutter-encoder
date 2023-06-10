@@ -39,7 +39,7 @@ public class SubtitlesHelp {
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
-		frame.setLocation(VideoPlayer.frame.getLocation().x + VideoPlayer.frame.getSize().width/2 - 200, VideoPlayer.frame.getLocation().y + VideoPlayer.frame.getHeight() /2 - 150);
+		frame.setLocation(Shutter.frame.getLocation().x + Shutter.frame.getSize().width/2 - 200, Shutter.frame.getLocation().y + Shutter.frame.getHeight() /2 - 150);
 				
 		JTextPane lblHelp = new JTextPane();
 		lblHelp.setBackground(new Color(45, 45, 45));

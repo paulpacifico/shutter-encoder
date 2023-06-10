@@ -37,21 +37,21 @@ public class Overlay extends Shutter {
 
 	public static String showTimecode(String filterComplex, String file, boolean videoPlayerCapture) {
 		
-		if (caseInAndOut.isSelected() && (VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseAddText.isSelected() || VideoPlayer.caseShowFileName.isSelected()))
+		if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected()))
 		{			
 			String tc1 = FFPROBE.timecode1;
 			String tc2 = FFPROBE.timecode2;
 			String tc3 = FFPROBE.timecode3;
 			String tc4 = FFPROBE.timecode4;
 						 
-			if (VideoPlayer.caseAddTimecode.isSelected() && VideoPlayer.TC1.getText().isEmpty() == false && VideoPlayer.TC2.getText().isEmpty() == false && VideoPlayer.TC3.getText().isEmpty() == false && VideoPlayer.TC4.getText().isEmpty() == false)
+			if (Shutter.caseAddTimecode.isSelected() && Shutter.TC1.getText().isEmpty() == false && Shutter.TC2.getText().isEmpty() == false && Shutter.TC3.getText().isEmpty() == false && Shutter.TC4.getText().isEmpty() == false)
 			{			
-				tc1 = VideoPlayer.TC1.getText();
-				tc2 = VideoPlayer.TC2.getText();			
-				tc3 = VideoPlayer.TC3.getText();		    
-				tc4 = VideoPlayer.TC4.getText();			
+				tc1 = Shutter.TC1.getText();
+				tc2 = Shutter.TC2.getText();			
+				tc3 = Shutter.TC3.getText();		    
+				tc4 = Shutter.TC4.getText();			
 			}
-			else if (VideoPlayer.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals("") == false)
+			else if (Shutter.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals("") == false)
 			{							
 				float tcH = Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS;
 				float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
@@ -74,7 +74,7 @@ public class Overlay extends Shutter {
 			
 			if (videoPlayerCapture)
 			{		
-				if (VideoPlayer.caseShowTimecode.isSelected())
+				if (Shutter.caseShowTimecode.isSelected())
 				{
 					tc1 = FFPROBE.timecode1;
 					tc2 = FFPROBE.timecode2;
@@ -91,7 +91,7 @@ public class Overlay extends Shutter {
 				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
 
 				//NTSC framerate
-				if (VideoPlayer.caseShowTimecode.isSelected())
+				if (Shutter.caseShowTimecode.isSelected())
 				{
 					timeIn = 0;
 				}
@@ -125,7 +125,7 @@ public class Overlay extends Shutter {
 						File fontPath = new File(fontFolder[i].toString());
 						String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
 						
-						if (fontName[0].equals(VideoPlayer.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+						if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
 						{
 							overlayFont = fontFolder[i].getAbsolutePath();	
 							break;
@@ -145,7 +145,7 @@ public class Overlay extends Shutter {
 							File fontPath = new File(fontFolder[i].toString());
 							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
 							
-							if (fontName[0].equals(VideoPlayer.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+							if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
 							{
 								overlayFont = fontFolder[i].getAbsolutePath();	
 								break;
@@ -166,7 +166,7 @@ public class Overlay extends Shutter {
 							File fontPath = new File(fontFolder[i].toString());
 							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
 							
-							if (fontName[0].equals(VideoPlayer.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+							if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
 							{
 								overlayFont = fontFolder[i].getAbsolutePath();	
 								break;
@@ -187,7 +187,7 @@ public class Overlay extends Shutter {
 					 		File fontPath = new File(fontFolder[i].toString());
 							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
 							
-							if (fontName[0].equals(VideoPlayer.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+							if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
 							{
 								overlayFont = fontFolder[i].getAbsolutePath();	
 								break;
@@ -209,7 +209,7 @@ public class Overlay extends Shutter {
 							File fontPath = new File(fontFolder[i].toString());
 							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
 							
-							if (fontName[0].contains(VideoPlayer.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+							if (fontName[0].contains(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
 							{
 								overlayFont = fontFolder[i].getAbsolutePath();	
 								break;
@@ -230,7 +230,7 @@ public class Overlay extends Shutter {
 							File fontPath = new File(fontFolder[i].toString());
 							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
 							
-							if (fontName[0].contains(VideoPlayer.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+							if (fontName[0].contains(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
 							{
 								overlayFont = fontFolder[i].getAbsolutePath();	
 								break;
@@ -251,7 +251,7 @@ public class Overlay extends Shutter {
 					 		File fontPath = new File(fontFolder[i].toString());
 							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
 							
-							if (fontName[0].contains(VideoPlayer.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
+							if (fontName[0].contains(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
 							{
 								overlayFont = fontFolder[i].getAbsolutePath();	
 								break;
@@ -264,7 +264,7 @@ public class Overlay extends Shutter {
 					 overlayFont = "/Library/Fonts/Arial";
 			}
 			else
-				overlayFont = "font=" + VideoPlayer.comboOverlayFont.getSelectedItem().toString();
+				overlayFont = "font=" + Shutter.comboOverlayFont.getSelectedItem().toString();
 	      
 			float imageRatio = 1.0f;
 			
@@ -307,19 +307,19 @@ public class Overlay extends Shutter {
 				}
 			}
 
-	      	if (VideoPlayer.caseShowFileName.isSelected())
+	      	if (Shutter.caseShowFileName.isSelected())
 	      	{
 	      		if (filterComplex != "") filterComplex += ",";
-	      			filterComplex += "drawtext=" + overlayFont + ":text='" + file + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundNameAlpha;
+	      			filterComplex += "drawtext=" + overlayFont + ":text='" + file + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(Shutter.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Shutter.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + Shutter.foregroundHex + Shutter.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(Shutter.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Shutter.backgroundHex + Shutter.backgroundNameAlpha;
 	      	}
 	      	
-	      	if (VideoPlayer.caseAddText.isSelected())
+	      	if (Shutter.caseAddText.isSelected())
 	      	{
 	      		if (filterComplex != "") filterComplex += ",";
-	      			filterComplex += "drawtext=" + overlayFont + ":text='" + VideoPlayer.text.getText() + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundNameAlpha;
+	      			filterComplex += "drawtext=" + overlayFont + ":text='" + Shutter.text.getText() + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(Shutter.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Shutter.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + Shutter.foregroundHex + Shutter.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(Shutter.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Shutter.backgroundHex + Shutter.backgroundNameAlpha;
 	      	}
 	      	
-		   	if ((VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected()))
+		   	if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected()))
 		   	{
 		   		String dropFrame = ":";
 		   		if (FFPROBE.dropFrameTC.equals(":") == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
@@ -339,13 +339,13 @@ public class Overlay extends Shutter {
 		   			
 		   		if (filterComplex != "") filterComplex += ",";
 		   		
-		   		if (VideoPlayer.caseAddTimecode.isSelected() && VideoPlayer.lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
+		   		if (Shutter.caseAddTimecode.isSelected() && Shutter.lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
 		   		{
 		   			String startNumber = String.format("%.0f", Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS + Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS + Integer.parseInt(tc3) * FFPROBE.currentFPS + Integer.parseInt(tc4));
-		   			filterComplex += "drawtext=" + overlayFont + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundTcAlpha;
+		   			filterComplex += "drawtext=" + overlayFont + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + Math.round(Integer.parseInt(Shutter.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Shutter.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + Shutter.foregroundHex + Shutter.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(Shutter.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Shutter.backgroundHex + Shutter.backgroundTcAlpha;
 		   		}
 		   		else
-		   			filterComplex += "drawtext=" + overlayFont + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(VideoPlayer.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + VideoPlayer.foregroundHex + VideoPlayer.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(VideoPlayer.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + VideoPlayer.backgroundHex + VideoPlayer.backgroundTcAlpha + ":tc24hmax=1";	      
+		   			filterComplex += "drawtext=" + overlayFont + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(Shutter.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Shutter.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + Shutter.foregroundHex + Shutter.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(Shutter.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Shutter.backgroundHex + Shutter.backgroundTcAlpha + ":tc24hmax=1";	      
 		   	}   
 		}
 		
@@ -354,22 +354,22 @@ public class Overlay extends Shutter {
 
 	public static String setSubtitles(boolean limitToFHD) {
 		
-    	if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
+    	if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    	
 			if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
     		{	
 				String background = "" ;
-				if (VideoPlayer.lblSubsBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-					background = ",BorderStyle=4,BackColour=&H" + VideoPlayer.subsAlpha + VideoPlayer.subsHex2 + "&,Outline=0";
+				if (Shutter.lblSubsBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+					background = ",BorderStyle=4,BackColour=&H" + Shutter.subsAlpha + Shutter.subsHex2 + "&,Outline=0";
 				else
-					background = ",Outline=" + VideoPlayer.outline + ",OutlineColour=&H" + VideoPlayer.subsAlpha + VideoPlayer.subsHex2 + "&";
+					background = ",Outline=" + Shutter.outline + ",OutlineColour=&H" + Shutter.subsAlpha + Shutter.subsHex2 + "&";
 				
 				//Bold
-				if (VideoPlayer.btnG.getForeground() != Color.BLACK)
+				if (Shutter.btnG.getForeground() != Color.BLACK)
 					background += ",Bold=1";
 				
 				//Italic
-				if (VideoPlayer.btnI.getForeground() != Color.BLACK)
+				if (Shutter.btnI.getForeground() != Color.BLACK)
 					background += ",Italic=1";
 				
 				String i[] = FFPROBE.imageResolution.split("x"); 
@@ -398,31 +398,31 @@ public class Overlay extends Shutter {
 					int ow = Integer.parseInt(s[0]);
 					int oh = Integer.parseInt(s[1]);  
 					
-					int width = Math.round((float) Integer.parseInt(VideoPlayer.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
-					int height = Math.round((float) (ih + Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText())) / ((float) ih/oh));
+					int width = Math.round((float) Integer.parseInt(Shutter.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
+					int height = Math.round((float) (ih + Integer.parseInt(Shutter.textSubtitlesPosition.getText())) / ((float) ih/oh));
 															
-					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + VideoPlayer.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + VideoPlayer.textSubsSize.getText() + ",PrimaryColour=&H" + VideoPlayer.subsHex + "&" + background + "'" + '"';
+					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + Shutter.textSubsSize.getText() + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"';
 				}		
 				else
 				{					
-					int fontSize = Integer.parseInt(VideoPlayer.textSubsSize.getText());
-					int height = Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText());
+					int fontSize = Integer.parseInt(Shutter.textSubsSize.getText());
+					int height = Integer.parseInt(Shutter.textSubtitlesPosition.getText());
 					
-					if (VideoPlayer.caseEnableCrop.isSelected())
+					if (Shutter.caseEnableCrop.isSelected())
 					{
 						int ih = Integer.parseInt(i[1]);
-						int oh = Integer.parseInt(VideoPlayer.textCropHeight.getText());
-						height -= Integer.parseInt(VideoPlayer.textCropPosY.getText());
+						int oh = Integer.parseInt(Shutter.textCropHeight.getText());
+						height -= Integer.parseInt(Shutter.textCropPosY.getText());
 						fontSize = (int) ((float) fontSize * ((float) ih/oh));
 					}
 										
-					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + VideoPlayer.textSubsWidth.getText() + ":" + i[1] + "+" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + VideoPlayer.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + fontSize + ",PrimaryColour=&H" + VideoPlayer.subsHex + "&" + background + "'" + '"';		
+					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + Shutter.textSubsWidth.getText() + ":" + i[1] + "+" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + fontSize + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"';		
 				}
 			}
 			else // ASS or SSA
 			{
 				String i[] = FFPROBE.imageResolution.split("x");
-				VideoPlayer.textSubsWidth.setText(i[0]); //IMPORTANT
+				Shutter.textSubsWidth.setText(i[0]); //IMPORTANT
 				
 				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
@@ -443,8 +443,8 @@ public class Overlay extends Shutter {
 		        	int ow = Integer.parseInt(s[0]);
 		        	int oh = Integer.parseInt(s[1]);        	
 		        	
-		        	int width = Math.round((float) Integer.parseInt(VideoPlayer.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
-		        	int height = Math.round((float) (ih + Integer.parseInt(VideoPlayer.textSubtitlesPosition.getText())) / ((float) ih/oh));
+		        	int width = Math.round((float) Integer.parseInt(Shutter.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
+		        	int height = Math.round((float) (ih + Integer.parseInt(Shutter.textSubtitlesPosition.getText())) / ((float) ih/oh));
 		        	
 		        	return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
 				}
@@ -452,7 +452,7 @@ public class Overlay extends Shutter {
 					return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
 			}
 		}
-		else if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+		else if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
     	{	
 			String subsFiles = "";
 			for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
@@ -474,13 +474,13 @@ public class Overlay extends Shutter {
 	
 	public static String setLogo() {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseAddWatermark.isSelected() && Shutter.overlayDeviceIsRunning)
+		if (Shutter.caseAddWatermark.isSelected() && Shutter.overlayDeviceIsRunning)
 		{
 			return " " + RecordInputDevice.setOverlayDevice(); 
 		}
-		else if (caseInAndOut.isSelected() && VideoPlayer.caseAddWatermark.isSelected())
+		else if (Shutter.caseAddWatermark.isSelected())
 		{
-			return " -i " + '"' + VideoPlayer.logoFile + '"'; 
+			return " -i " + '"' + Shutter.logoFile + '"'; 
 		}
 		
 		return "";
@@ -488,7 +488,7 @@ public class Overlay extends Shutter {
 	
 	public static String setWatermark(String filterComplex) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseAddWatermark.isSelected())
+		if (Shutter.caseAddWatermark.isSelected())
         {		     
 			float imageRatio = 1.0f;
 			
@@ -531,19 +531,19 @@ public class Overlay extends Shutter {
 				}
 			}
 
-			float size = (float) Integer.parseInt(VideoPlayer.textWatermarkSize.getText()) / 100;			
+			float size = (float) Integer.parseInt(Shutter.textWatermarkSize.getText()) / 100;			
 
         	if (filterComplex != "") 	
         	{
             	filterComplex = "[0:v]" + filterComplex + "[v];[1:v]scale=iw*" + ((double) 1 / imageRatio) * size + ":ih*" + ((double) 1 / imageRatio) * size +			
-        				",lut=a=val*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkOpacity.getText()) / 100) + 
-        				"[scaledwatermark];[v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosY.getText()) / imageRatio);
+        				",lut=a=val*" + ((float) Integer.parseInt(Shutter.textWatermarkOpacity.getText()) / 100) + 
+        				"[scaledwatermark];[v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(Shutter.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(Shutter.textWatermarkPosY.getText()) / imageRatio);
         	}
         	else
         	{	
             	filterComplex = "[1:v]scale=iw*" + ((double) 1 / imageRatio) * size + ":ih*" + ((double) 1 / imageRatio) * size +
-        				",lut=a=val*" + ((float) Integer.parseInt(VideoPlayer.textWatermarkOpacity.getText()) / 100) + 
-        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(VideoPlayer.textWatermarkPosY.getText()) / imageRatio);
+        				",lut=a=val*" + ((float) Integer.parseInt(Shutter.textWatermarkOpacity.getText()) / 100) + 
+        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(Shutter.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(Shutter.textWatermarkPosY.getText()) / imageRatio);
         	}
 
         }
@@ -553,17 +553,17 @@ public class Overlay extends Shutter {
 	
 	public static String setOverlay(String filterComplex, boolean limitToFHD) {
 		
-		if (caseInAndOut.isSelected() && VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn)
+		if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    		
         	String i[] = FFPROBE.imageResolution.split("x");
 
         	int ImageWidth = Integer.parseInt(i[0]);
         	
-        	int posX = (Math.round(ImageWidth - Integer.parseInt(VideoPlayer.textSubsWidth.getText())) / 2);
+        	int posX = (Math.round(ImageWidth - Integer.parseInt(Shutter.textSubsWidth.getText())) / 2);
 
-        	if (VideoPlayer.caseEnableCrop.isSelected())
+        	if (Shutter.caseEnableCrop.isSelected())
         	{
-        		posX -= Integer.parseInt(VideoPlayer.textCropPosX.getText());
+        		posX -= Integer.parseInt(Shutter.textCropPosX.getText());
         	}
         	
         	if (limitToFHD)
@@ -601,7 +601,7 @@ public class Overlay extends Shutter {
 	        	posX = Math.round(posX / imageRatio);
         	}
     		
-    		if (VideoPlayer.caseAddWatermark.isSelected())
+    		if (Shutter.caseAddWatermark.isSelected())
 			{
     			filterComplex += "[p];[p][2:v]overlay=shortest=1:x=" + posX;
 			}

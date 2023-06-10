@@ -400,7 +400,7 @@ public class FunctionUtils extends Shutter {
 		
 		File concatFile = new File(output.replace("\\", "/") + "/" + file.getName().replace(extension, ".txt")); 
 		
-		if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+		if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 		{									
 			try {								
 				PrintWriter writer = new PrintWriter(concatFile.toString(), "UTF-8");
@@ -808,7 +808,7 @@ public class FunctionUtils extends Shutter {
 	public static String setMapSubtitles() {
 		
 		int i = 0;
-		if (VideoPlayer.caseAddWatermark.isSelected())
+		if (Shutter.caseAddWatermark.isSelected())
 			i = 1;
 		
 		String subsMapping = "";
@@ -831,7 +831,7 @@ public class FunctionUtils extends Shutter {
 	        	String[] languages = Locale.getISOLanguages();			
 				Locale loc = Locale.of(languages[((JComboBox) c).getSelectedIndex()]);
 				
-				if (VideoPlayer.caseAddWatermark.isSelected())
+				if (Shutter.caseAddWatermark.isSelected())
 				{
 					subsMapping += " -map " + i + ":s -metadata:s:s:" + (i - 2) + " language=" + loc.getISO3Language().replace("zho", "chi"); //For chinese compatibility			
 				}
@@ -882,7 +882,7 @@ public class FunctionUtils extends Shutter {
         if (filterComplex != "")
         {	          	
         	//Si une des cases est sélectionnée alors il y a déjà [0:v]
-        	if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+        	if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
         		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
         	else
         		filterComplex = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]";
@@ -944,7 +944,7 @@ public class FunctionUtils extends Shutter {
         }
         
 		//On map les sous-titres que l'on intègre        
-        if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+        if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
         {			        	
         	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
         		filterComplex += " -c:s srt" + setMapSubtitles();
@@ -1014,7 +1014,7 @@ public class FunctionUtils extends Shutter {
 		//No audio
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
 		{
-			if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 			{
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
 			}
@@ -1026,7 +1026,7 @@ public class FunctionUtils extends Shutter {
 				mapping += " -map v:0" + audio;
 			
 			//On map les sous-titres que l'on intègre        
-			if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+			if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
 			{
 				mapping += " -c:s mov_text" + setMapSubtitles();
 			}
@@ -1062,7 +1062,7 @@ public class FunctionUtils extends Shutter {
 						if (transitions != "")
 				    		transitions = transitions + ",";
 						
-						if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+						if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 						{
 							mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]" + transitions + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
 						}
@@ -1103,9 +1103,9 @@ public class FunctionUtils extends Shutter {
 					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422"))
 						silentTrack += " -shortest -map_metadata -1";
 					
-					if (VideoPlayer.caseAddWatermark.isSelected() && (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+					if (Shutter.caseAddWatermark.isSelected() && (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 						mapping += " -map 3";	
-					else if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+					else if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 						mapping += " -map 2";
 					else
 						mapping += " -map 1";	
@@ -1118,7 +1118,7 @@ public class FunctionUtils extends Shutter {
 			if (transitions != "")
 	    		transitions = " -filter:a " + '"' + transitions + '"';
 			
-			if (VideoPlayer.caseAddWatermark.isSelected() || (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn))
+			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 				mapping = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + transitions + mapping + audio;
 			else if (filterComplex != "")
 				mapping = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + transitions + mapping + audio;
@@ -1127,7 +1127,7 @@ public class FunctionUtils extends Shutter {
 		}		
 		
 		//On map les sous-titres que l'on intègre        
-        if (VideoPlayer.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+        if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
         {        				
 			mapping += " -c:s mov_text" + setMapSubtitles();
         }
@@ -1377,7 +1377,7 @@ public class FunctionUtils extends Shutter {
 		}
 		
 		//Concat mode or Image sequence
-		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 		{
 			File concatList = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 			
 			
@@ -1409,7 +1409,7 @@ public class FunctionUtils extends Shutter {
 			int timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
 			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
-			if (caseInAndOut.isSelected())
+			if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 				millisecondsToTc = timecodeToMs + VideoPlayer.durationH * 3600000 + VideoPlayer.durationM * 60000 + VideoPlayer.durationS * 1000 + VideoPlayer.durationF * (int) (1000 / FFPROBE.currentFPS);
 			
 			if (caseEnableSequence.isSelected())

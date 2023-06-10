@@ -25,6 +25,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -51,6 +52,7 @@ import java.awt.Image;
 
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
 import javax.swing.JButton;
 import javax.swing.JSpinner;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -77,7 +79,6 @@ import javax.swing.JScrollPane;
 	private JLabel quit;
 	private JLabel reduce;
 	private JLabel topImage;
-	private JLabel bottomImage;
 	private static JLabel lblBottomArrow;
 	private static JButton btnEDL;
 	public static JLabel lblEdit;
@@ -119,8 +120,11 @@ import javax.swing.JScrollPane;
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
-	    	
+			
+			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+			Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+			Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 		}
 				
 		topPanel();
@@ -226,22 +230,17 @@ import javax.swing.JScrollPane;
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
-				
-		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_SMOOTH);
-		ImageIcon header = new ImageIcon(scaledImage);
-		bottomImage = new JLabel(header);
-		bottomImage.setBounds(0 ,0, frame.getSize().width, 28);
-			
+
 		JLabel title = new JLabel(Shutter.language.getProperty("frameDetectionCoupe"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setBounds(0, 1, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
-		topImage.setIcon(imageIcon);		
+		topImage.setBackground(new Color(40,40,40));
+		topImage.setOpaque(true);
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));	
 		topImage.setBounds(title.getBounds());
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
@@ -290,7 +289,6 @@ import javax.swing.JScrollPane;
 		topPanel.add(quit);	
 		topPanel.add(reduce);
 		topPanel.add(topImage);
-		topPanel.add(bottomImage);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -340,7 +338,7 @@ import javax.swing.JScrollPane;
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		frame.getContentPane().add(topPanel);						
 
-		bottomImage.addMouseListener(new MouseListener() {
+		topImage.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent down) {
@@ -367,7 +365,7 @@ import javax.swing.JScrollPane;
 
 		 });
 		 		
-		bottomImage.addMouseMotionListener(new MouseMotionListener() {
+		topImage.addMouseMotionListener(new MouseMotionListener() {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {

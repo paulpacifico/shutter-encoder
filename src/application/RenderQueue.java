@@ -27,7 +27,6 @@ import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -58,6 +57,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -76,19 +76,16 @@ import settings.FunctionUtils;
 
 	public class RenderQueue {
 	public static JFrame frame;
-	private static int taskBarHeight;
-	
+
 	/*
 	 * Composants
 	 */
 	private static JPanel topPanel;
 	private static JLabel title = new JLabel(Shutter.language.getProperty("frameFileDeRendus"));
-	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private JLabel quit;
 	private JLabel fullscreen;
 	private JLabel reduce;
 	private JLabel topImage;
-	private JLabel bottomImage;
 	public static JButton btnStartRender;
 	public static JTable table;
 	public static DefaultTableModel tableRow;
@@ -119,10 +116,11 @@ import settings.FunctionUtils;
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y + (int) (Shutter.frame.getSize().getHeight() / 4));
+			
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    		taskBarHeight = (int) (dim.getHeight() - winSize.height);
+			Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 		}
 				
 		topPanel();
@@ -316,9 +314,9 @@ import settings.FunctionUtils;
 					int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 					int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();						
 
-					if (accept && frame.getHeight() < screenHeight - taskBarHeight)
+					if (accept && frame.getHeight() < screenHeight - Shutter.taskBarHeight)
 					{		
-						frame.setSize(screenWidth, screenHeight - taskBarHeight);
+						frame.setSize(screenWidth, screenHeight - Shutter.taskBarHeight);
 						
 						if (System.getProperty("os.name").contains("Windows"))
 						{
@@ -356,21 +354,16 @@ import settings.FunctionUtils;
 			
 		});
 		
-		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width * 10, topPanel.getSize().height, Image.SCALE_SMOOTH);
-		ImageIcon header = new ImageIcon(scaledImage);
-		bottomImage = new JLabel(header);
-		bottomImage.setBounds(0 ,0, frame.getSize().width * 10, 28);
-			
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setBounds(0, 1, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
-		topImage.setIcon(imageIcon);		
-		topImage.setBounds(title.getBounds());
+		topImage.setBackground(new Color(40,40,40));
+		topImage.setOpaque(true);
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
+		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
@@ -419,7 +412,6 @@ import settings.FunctionUtils;
 		topPanel.add(fullscreen);
 		topPanel.add(reduce);
 		topPanel.add(topImage);
-		topPanel.add(bottomImage);
 		
 		quit.addMouseListener(new MouseListener(){
 
@@ -508,7 +500,7 @@ import settings.FunctionUtils;
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		frame.getContentPane().add(topPanel);						
 
-		bottomImage.addMouseListener(new MouseListener() {
+		topImage.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent down) {
@@ -531,9 +523,9 @@ import settings.FunctionUtils;
 					int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 					int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
 
-					if (frame.getHeight() < screenHeight - taskBarHeight)
+					if (frame.getHeight() < screenHeight - Shutter.taskBarHeight)
 					{
-						frame.setSize(screenWidth, screenHeight - taskBarHeight);
+						frame.setSize(screenWidth, screenHeight - Shutter.taskBarHeight);
 						
 						if (System.getProperty("os.name").contains("Windows"))
 						{
@@ -579,7 +571,7 @@ import settings.FunctionUtils;
 
 		 });
 		 		
-		bottomImage.addMouseMotionListener(new MouseMotionListener() {
+		topImage.addMouseMotionListener(new MouseMotionListener() {
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
@@ -787,7 +779,7 @@ import settings.FunctionUtils;
 
 	private void resizeAll() {
 		
-		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setBounds(0, 0, frame.getWidth(), 24);
 		
 		btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
 		
@@ -796,9 +788,8 @@ import settings.FunctionUtils;
 		quit.setBounds(frame.getSize().width - 20, 4, 15,15);	
 		fullscreen.setBounds(quit.getLocation().x - 20, 4, 15,15);
 		reduce.setBounds(fullscreen.getLocation().x - 20, 4, 15,15);
-		topPanel.setBounds(0, 0, frame.getSize().width, 28);	
-		
-		topImage.setLocation(frame.getSize().width / 2 - 200, 0);
+		topPanel.setBounds(0, 0, frame.getSize().width, 24);		
+		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 	}
 	
 	private static void lastActions(int item, String file, File fileOut) {
@@ -828,7 +819,7 @@ import settings.FunctionUtils;
 		}
 		
 		//Concat mode or Image sequence
-		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")) && Shutter.caseInAndOut.isSelected())
+		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
 		{
 			String extension = file.substring(file.lastIndexOf("."));
 			

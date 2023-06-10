@@ -219,7 +219,7 @@ public class ReplaceAudio extends Shutter {
 																					
 							float offset = 0;
 							
-							if (caseAudioOffset.isSelected() || caseInAndOut.isSelected())
+							if (caseAudioOffset.isSelected())
 							{
 								FFPROBE.Data(videoFile.toString());
 								
@@ -276,7 +276,7 @@ public class ReplaceAudio extends Shutter {
 				{
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(i)  + '"';
 				}
-				else if (caseInAndOut.isSelected())
+				else if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 				{
 					offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(i)  + '"';

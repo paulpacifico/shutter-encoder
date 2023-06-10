@@ -20,7 +20,6 @@
 package settings;
 
 import application.Shutter;
-import application.VideoPlayer;
 import library.FFPROBE;
 
 public class BitratesAdjustement extends Shutter {
@@ -43,7 +42,7 @@ public class BitratesAdjustement extends Shutter {
 	
 	public static String setCrop(String filterComplex) {		
 		    	
-    	if (VideoPlayer.caseEnableCrop.isSelected())
+    	if (Shutter.caseEnableCrop.isSelected())
 		{
 			if (filterComplex != "")
 				filterComplex += "[w];[w]";
@@ -62,10 +61,10 @@ public class BitratesAdjustement extends Shutter {
 				imageRatio = (float) FFPROBE.imageWidth / ow;
 			}
 			
-			int cropWidth = Math.round((float) Integer.parseInt(VideoPlayer.textCropWidth.getText()) / imageRatio);
-			int cropHeight = Math.round((float) Integer.parseInt(VideoPlayer.textCropHeight.getText()) / imageRatio);
-			int cropX = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosX.getText()) / imageRatio);
-			int cropY = Math.round((float)Integer.parseInt(VideoPlayer.textCropPosY.getText()) / imageRatio);
+			int cropWidth = Math.round((float) Integer.parseInt(Shutter.textCropWidth.getText()) / imageRatio);
+			int cropHeight = Math.round((float) Integer.parseInt(Shutter.textCropHeight.getText()) / imageRatio);
+			int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
+			int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
 
     		filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
 		}

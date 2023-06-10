@@ -184,12 +184,8 @@ public class SubtitlesTimeline {
 			@Override
 			public void windowClosed(WindowEvent arg0) {				
 
-			Utils.changeFrameVisibility(VideoPlayer.frame, true);
-			
 			if (VideoPlayer.playerVideo != null)
 				VideoPlayer.playerStop();
-			
-			Shutter.caseInAndOut.setSelected(false);
 			
 			Utils.changeFrameVisibility(Shutter.frame, false);						
 			Utils.changeFrameVisibility(frame, true);
@@ -199,7 +195,6 @@ public class SubtitlesTimeline {
     		
     		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
     		{
-				Shutter.caseInAndOut.setSelected(false);
     			SubtitlesTimeline.frame.dispose();
     			
     			if (SubtitlesHelp.frame != null)
@@ -215,10 +210,10 @@ public class SubtitlesTimeline {
 						 
 			 if (q == 0)
 			 {
-				 if (VideoPlayer.caseAddSubtitles.isSelected())
-					 VideoPlayer.caseAddSubtitles.doClick();
+				 if (Shutter.caseAddSubtitles.isSelected())
+					 Shutter.caseAddSubtitles.doClick();
 				 
-				 VideoPlayer.caseAddSubtitles.doClick();
+				 Shutter.caseAddSubtitles.doClick();
 			 }
 			 else
 			 {

@@ -159,7 +159,7 @@ public class VideoEncoders extends Shutter {
 						}
 						else
 						{
-							if ((VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected()))
+							if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected()))
 								extensionName += "_TC";
 						}
 						
@@ -229,7 +229,7 @@ public class VideoEncoders extends Shutter {
 						}			
 						
 						//Split video
-						if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 						{
 							container = "_%03d" + container;
 						}
@@ -263,7 +263,7 @@ public class VideoEncoders extends Shutter {
 												
 						//Concat mode or Image sequence
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
-						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 						}
@@ -961,7 +961,7 @@ public class VideoEncoders extends Shutter {
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
 						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
-						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -970,7 +970,7 @@ public class VideoEncoders extends Shutter {
 						FFMPEG.error  = true;
 					}			
 				}
-				
+								
 				FunctionUtils.OPAtomFolder = null;
 				FunctionUtils.silentTrack = "";
 
@@ -990,7 +990,7 @@ public class VideoEncoders extends Shutter {
 		try {
 			
 			//Crop need to be before scaling
-			if (Shutter.caseInAndOut.isSelected() && VideoPlayer.caseEnableCrop.isSelected())
+			if (Shutter.caseEnableCrop.isSelected())
 			{
 				FFMPEG.isGPUCompatible = false;
 				return false;
@@ -1022,12 +1022,12 @@ public class VideoEncoders extends Shutter {
 	    	float or = (float) ow / oh;
 	
 	    	//Ratio comparison
-	    	if (ir != or && caseInAndOut.isSelected() 
-	    	&& (VideoPlayer.caseAddTimecode.isSelected()
-	    	|| VideoPlayer.caseShowTimecode.isSelected()
-	    	|| VideoPlayer.caseAddText.isSelected()
-	    	|| VideoPlayer.caseShowFileName.isSelected()    	
-	    	|| VideoPlayer.caseAddWatermark.isSelected()))
+	    	if (ir != or 
+	    	&& (Shutter.caseAddTimecode.isSelected()
+	    	|| Shutter.caseShowTimecode.isSelected()
+	    	|| Shutter.caseAddText.isSelected()
+	    	|| Shutter.caseShowFileName.isSelected()    	
+	    	|| Shutter.caseAddWatermark.isSelected()))
 	    	{
 	    		FFMPEG.isGPUCompatible = false;
 	    		return false;
@@ -1454,7 +1454,7 @@ public class VideoEncoders extends Shutter {
 			case "DVD":
 				
 				float bitrate = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
-				if (caseInAndOut.isSelected())
+				if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 				{
 					float totalIn =  Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * VideoPlayer.inputFramerateMS;
 					float totalOut = Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * VideoPlayer.inputFramerateMS;

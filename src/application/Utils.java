@@ -817,55 +817,52 @@ public class Utils extends Shutter {
 				
 				Element player = document.createElement("Player");
 				
-				if (caseInAndOut.isSelected())
+				for (Component p : Shutter.frame.getContentPane().getComponents())
 				{
-					for (Component p : VideoPlayer.frame.getContentPane().getComponents())
+					if (p.getName() != "" && p.getName() != null)
 					{
-						if (p.getName() != "" && p.getName() != null)
+						if (p instanceof JCheckBox)
 						{
-							if (p instanceof JCheckBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JCheckBox"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								settings.appendChild(component);
-							}
-						}				
-					}
-					
+							//Component
+							Element component = document.createElement("Component");
+							
+							//Type
+							Element cType = document.createElement("Type");
+							cType.appendChild(document.createTextNode("JCheckBox"));
+							component.appendChild(cType);
+							
+							//Name
+							Element cName = document.createElement("Name");
+							cName.appendChild(document.createTextNode(p.getName()));
+							component.appendChild(cName);
+							
+							//Value
+							Element cValue = document.createElement("Value");
+							cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
+							component.appendChild(cValue);
+							
+							//State
+							Element cState = document.createElement("Enable");
+							cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+							component.appendChild(cState);
+							
+							//Visible
+							Element cVisible = document.createElement("Visible");
+							cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+							component.appendChild(cVisible);		
+							
+							settings.appendChild(component);
+						}
+					}				
+				}					
 				root.appendChild(player);
-				}
+				
 				
 				Element color = document.createElement("Color");
 				
-				if (VideoPlayer.caseEnableColorimetry.isSelected())
+				if (Shutter.caseEnableColorimetry.isSelected())
 				{
-					for (Component p : VideoPlayer.panelColorimetryComponents.getComponents())
+					for (Component p : grpImageAdjustement.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{	
@@ -1263,9 +1260,9 @@ public class Utils extends Shutter {
 				
 				Element corrections = document.createElement("Corrections");
 				
-				if (VideoPlayer.grpCorrections != null)
+				if (grpCorrections != null)
 				{
-					for (Component p : VideoPlayer.grpCorrections.getComponents())
+					for (Component p : grpCorrections.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{	
@@ -1341,9 +1338,9 @@ public class Utils extends Shutter {
 				
 				Element imageCropping = document.createElement("Crop");
 				
-				if (VideoPlayer.caseEnableCrop.isSelected())
+				if (Shutter.caseEnableCrop.isSelected())
 				{
-					for (Component p : VideoPlayer.grpCrop.getComponents())
+					for (Component p : grpCrop.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
@@ -1451,9 +1448,9 @@ public class Utils extends Shutter {
 				
 				Element overlay = document.createElement("Overlay");
 				
-				if (VideoPlayer.caseAddTimecode.isSelected() || VideoPlayer.caseShowTimecode.isSelected() || VideoPlayer.caseAddText.isSelected() || VideoPlayer.caseShowFileName.isSelected())
+				if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
 				{
-					for (Component p : VideoPlayer.grpOverlay.getComponents())
+					for (Component p : grpOverlay.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{									
@@ -1660,9 +1657,9 @@ public class Utils extends Shutter {
 							
 				Element subtitles = document.createElement("Subtitles");
 				
-				if (VideoPlayer.caseAddSubtitles.isSelected())
+				if (Shutter.caseAddSubtitles.isSelected())
 				{
-					for (Component p : VideoPlayer.grpSubtitles.getComponents())
+					for (Component p : grpSubtitles.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
@@ -1898,9 +1895,9 @@ public class Utils extends Shutter {
 								
 				Element watermark = document.createElement("Watermark");
 				
-				if (VideoPlayer.caseAddWatermark.isSelected())
+				if (Shutter.caseAddWatermark.isSelected())
 				{
-					for (Component p : VideoPlayer.grpWatermark.getComponents())
+					for (Component p : grpWatermark.getComponents())
 					{
 						if (p.getName() != "" && p.getName() != null)
 						{
@@ -2073,25 +2070,17 @@ public class Utils extends Shutter {
 									else if (p instanceof JCheckBox)
 									{
 										
-										if (p.getName().equals("caseInAndOut") && Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
+										//Value
+										if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 										{
-											caseInAndOut.doClick();											
-											VideoPlayer.loadSettings(encFile);
-										}										
+											if (((JCheckBox) p).isSelected() == false)
+												((JCheckBox) p).doClick();
+										}
 										else
 										{
-											//Value
-											if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-											{
-												if (((JCheckBox) p).isSelected() == false)
-													((JCheckBox) p).doClick();
-											}
-											else
-											{
-												if (((JCheckBox) p).isSelected())
-													((JCheckBox) p).doClick();
-											}
-										}
+											if (((JCheckBox) p).isSelected())
+												((JCheckBox) p).doClick();
+										}										
 																												
 										//State
 										((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
@@ -2124,13 +2113,6 @@ public class Utils extends Shutter {
 											
 											//Visible
 											((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-															
-											if (p.getName().equals("comboFonctions"))
-											{
-												do {
-													Thread.sleep(100);
-												} while (btnReset.getX() > 336);
-											}										
 										}
 									}
 									else if (p instanceof JTextField)
@@ -2410,10 +2392,10 @@ public class Utils extends Shutter {
 		textF.setBackground(new Color(60,60,60));
 		bitrateSize.setBackground(new Color(60,60,60));
 		gopSize.setBackground(new Color(60,60,60));
-		VideoPlayer.spinnerVideoFadeIn.setBackground(new Color(60,60,60));
-		VideoPlayer.spinnerAudioFadeIn.setBackground(new Color(60,60,60));
-		VideoPlayer.spinnerVideoFadeOut.setBackground(new Color(60,60,60));
-		VideoPlayer.spinnerAudioFadeOut.setBackground(new Color(60,60,60));	
+		Shutter.spinnerVideoFadeIn.setBackground(new Color(60,60,60));
+		Shutter.spinnerAudioFadeIn.setBackground(new Color(60,60,60));
+		Shutter.spinnerVideoFadeOut.setBackground(new Color(60,60,60));
+		Shutter.spinnerAudioFadeOut.setBackground(new Color(60,60,60));	
 	}
 
 	@SuppressWarnings("unused")

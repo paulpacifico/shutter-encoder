@@ -25,7 +25,6 @@ import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -57,6 +56,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
@@ -75,7 +75,6 @@ import javax.swing.JComboBox;
 
 public class VideoWeb {
 	public static JDialog frame;
-	ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
 	private static int complete;
 		
 	/*
@@ -234,14 +233,14 @@ public class VideoWeb {
 		
 		JLabel title = new JLabel(Shutter.language.getProperty("panelWebVideo"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setBounds(0, 1, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon header = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
-		topImage.setIcon(imageIcon);		
+		topImage.setBackground(new Color(40,40,40));
+		topImage.setOpaque(true);
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));	
 		topImage.setBounds(title.getBounds());
 		
 		topPanel.add(topImage);

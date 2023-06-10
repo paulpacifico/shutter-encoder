@@ -128,7 +128,7 @@ public class Rewrap extends Shutter {
 							extensionName = Settings.txtExtension.getText();
 						
 						//Split video
-						if (caseInAndOut.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 						{
 							extensionName = "_%03d" + extensionName;
 						}
@@ -185,7 +185,7 @@ public class Rewrap extends Shutter {
 						{
 							//Concat mode
 							String concat = FunctionUtils.setConcat(file, labelOutput);					
-							if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+							if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 								file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 							else
 								concat = " -noaccurate_seek";
@@ -214,7 +214,7 @@ public class Rewrap extends Shutter {
 						}
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
-						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -324,7 +324,7 @@ public class Rewrap extends Shutter {
 	
 	private static String setSubtitles() {
 				
-		if (VideoPlayer.caseAddSubtitles.isSelected())
+		if (Shutter.caseAddSubtitles.isSelected())
     	{		
 			String subsFiles = "";
 			for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
@@ -346,7 +346,7 @@ public class Rewrap extends Shutter {
 	
 	private static String setMapSubtitles() {
 
-		if (VideoPlayer.caseAddSubtitles.isSelected())
+		if (Shutter.caseAddSubtitles.isSelected())
 		{			
 			if (comboFilter.getSelectedItem().toString().equals(".mkv"))
 				return " -c:s srt" + FunctionUtils.setMapSubtitles();

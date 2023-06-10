@@ -23,8 +23,10 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -44,10 +46,9 @@ import javax.swing.JPanel;
 
 import javax.swing.JFrame;
 
-import java.awt.Image;
-
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
+import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
@@ -81,7 +82,7 @@ import library.MEDIAINFO;
 		frame.setTitle(Shutter.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(600, 642);
+		frame.setSize(600, 662);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
@@ -90,7 +91,11 @@ import library.MEDIAINFO;
 		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);		
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);		
 				
 		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
 		lblWait.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
@@ -294,21 +299,22 @@ import library.MEDIAINFO;
 			
 		});
 				
-		ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("contents/header.png"));
-		Image scaledImage = image.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_SMOOTH);
-		ImageIcon header = new ImageIcon(scaledImage);
-		bottomImage = new JLabel(header);
-		bottomImage.setBounds(0 ,0, frame.getSize().width, 28);
+		bottomImage = new JLabel();
+		bottomImage.setBackground(new Color(40,40,40));
+		bottomImage.setOpaque(true);
+		bottomImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
+		bottomImage.setBounds(0 , 1, frame.getSize().width, 24);
 			
 		JLabel title = new JLabel(Shutter.language.getProperty("frameInformations"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 0, frame.getWidth(), 28);
+		title.setBounds(0, 1, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		ImageIcon imageIcon = new ImageIcon(header.getImage().getScaledInstance(topPanel.getSize().width, topPanel.getSize().height, Image.SCALE_DEFAULT));
-		topImage.setIcon(imageIcon);		
+		topImage.setBackground(new Color(40,40,40));
+		topImage.setOpaque(true);
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));		
 		topImage.setBounds(title.getBounds());
 				
 		topPanel.add(quit);	

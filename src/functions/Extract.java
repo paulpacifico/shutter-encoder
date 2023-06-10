@@ -127,7 +127,7 @@ public class Extract extends Shutter {
 						while(FFMPEG.runProcess.isAlive());
 																		
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
-						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")) && caseInAndOut.isSelected())
+						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;

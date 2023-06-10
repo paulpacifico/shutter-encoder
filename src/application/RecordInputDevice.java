@@ -521,16 +521,7 @@ public class RecordInputDevice {
 				inputDeviceResolution = FFPROBE.imageResolution;	
 				if (FFPROBE.interlaced == null)
 				  	FFPROBE.interlaced = "0";
-				
-				//Watermark
-				if (comboInputVideo.getSelectedIndex() > 0)
-				{								
-					if (Shutter.caseInAndOut.isSelected() == false)
-					{
-						Shutter.caseInAndOut.doClick();					
-					}
-				}	
-								
+												
 				//Set options
 				Shutter.addToList.setVisible(false);
 				Shutter.case2pass.setSelected(false);
