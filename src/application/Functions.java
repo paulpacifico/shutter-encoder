@@ -208,8 +208,8 @@ public class Functions {
 		frame.getContentPane().add(lblDrop);
 		
 		listeDeFonctions = new JList<String>(liste);
-		listeDeFonctions.setBackground(new Color(185,185,185));
-		listeDeFonctions.setForeground(Color.BLACK);
+		listeDeFonctions.setBackground(new Color(60,60,60));
+		listeDeFonctions.setForeground(new Color(245, 245, 245));
 		listeDeFonctions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listeDeFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		listeDeFonctions.setCellRenderer(new FonctionsRenderer());
@@ -716,20 +716,21 @@ class FonctionsRenderer extends DefaultListCellRenderer {
 	    ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(15, 15 , Image.SCALE_SMOOTH));		
 	    setIcon(icon);
 	    setFont(new Font("SansSerif", Font.PLAIN, 12));
-	    setForeground(Color.BLACK);
+	    setForeground(new Color(245, 245, 245));
 		setOpaque(true);
 			
 		if (isSelected)
 		{
-			setBackground(new Color(215, 215, 215));
+			setBackground(new Color(90, 90, 90));
 		}
 		else
 		{			
 			if (index % 2 == 1)
-				setBackground(new Color(185, 185, 185));
+				setBackground(new Color(60, 60, 60));
 			else
-				setBackground(new Color(191, 191, 191));
+				setBackground(new Color(66, 66, 66));
 		}
+		
       return this;
   }
 }

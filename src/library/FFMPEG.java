@@ -175,7 +175,6 @@ public static StringBuilder errorLog = new StringBuilder();
 								if (cmd.contains("pipe:play"))
 								{
 									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -vf scale=" + VideoPlayer.player.getWidth() + ":" + VideoPlayer.player.getHeight() + " -c:v bmp -an -f image2pipe pipe:-";
-									VideoPlayer.resizeAll(true); //IMPORTANT
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -202,6 +201,13 @@ public static StringBuilder errorLog = new StringBuilder();
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
 							process = processFFMPEG.start();
 						}	
+						
+						//IMPORTANT
+						if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
+						|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
+						{
+							VideoPlayer.resizeAll();
+						}
 							
 						String line;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
@@ -216,21 +222,27 @@ public static StringBuilder errorLog = new StringBuilder();
 				        Console.consoleFFMPEG.append(System.lineSeparator());
 				        
 				        if (cmd.contains("pipe:play"))
-						{
-					        Thread playerThread = new Thread(new Runnable() {
+						{				        	
+				        	VideoPlayer.playerStop();
+					     
+				        	Thread playerThread = new Thread(new Runnable() {
 	
 								@Override
 								public void run() {
 									
 									do {
+										
 										try {
-											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")))
+											
+											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
 											{
 												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);
 												VideoPlayer.playerRepaint();
 											}
+											
 										} catch (Exception e) {}
-									} while (FFMPEG.isRunning);
+										
+									} while (VideoPlayer.frameVideo != null);
 								}
 					    		
 					    	});

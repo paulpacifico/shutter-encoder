@@ -607,12 +607,44 @@ public class Utils extends Shutter {
 				for (Component c : frame.getContentPane().getComponents())
 				{
 					if (c instanceof JPanel)
-					{
+					{						
 						for (Component p : ((JPanel) c).getComponents())
 						{
 							if (p.getName() != "" && p.getName() != null)
 							{
-								if (p instanceof JLabel)
+								if (p instanceof JButton)
+								{
+									//Component
+									Element component = document.createElement("Component");
+									
+									//Type
+									Element cType = document.createElement("Type");
+									cType.appendChild(document.createTextNode("JButton"));
+									component.appendChild(cType);
+									
+									//Name
+									Element cName = document.createElement("Name");
+									cName.appendChild(document.createTextNode(p.getName()));
+									component.appendChild(cName);
+									
+									//Value
+									Element cValue = document.createElement("Value");								
+									cValue.appendChild(document.createTextNode(((JButton) p).getForeground().toString()));
+									component.appendChild(cValue);
+									
+									//State
+									Element cState = document.createElement("Enable");
+									cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+									component.appendChild(cState);
+									
+									//Visible
+									Element cVisible = document.createElement("Visible");
+									cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+									component.appendChild(cVisible);		
+									
+									settings.appendChild(component);
+								}
+								else if (p instanceof JLabel)
 								{
 									//Component
 									Element component = document.createElement("Component");
@@ -807,133 +839,50 @@ public class Utils extends Shutter {
 									
 									settings.appendChild(component);
 								}
+								else if (p instanceof JPanel)
+								{
+									//Component
+									Element component = document.createElement("Component");
+									
+									//Type
+									Element cType = document.createElement("Type");
+									cType.appendChild(document.createTextNode("JPanel"));
+									component.appendChild(cType);
+
+									//Name
+									Element cName = document.createElement("Name");
+									cName.appendChild(document.createTextNode(p.getName()));
+									component.appendChild(cName);
+									
+									//Value
+									Element cValue = document.createElement("Value");
+									cValue.appendChild(document.createTextNode(String.valueOf(((JPanel) p).getBackground())));
+									component.appendChild(cValue);
+									
+									//State
+									Element cState = document.createElement("Enable");
+									cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+									component.appendChild(cState);
+									
+									//Visible
+									Element cVisible = document.createElement("Visible");
+									cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+									component.appendChild(cVisible);		
+									
+									root.appendChild(component);
+								}
 							}
 						}
 					}
 				}
 				
 				root.appendChild(settings);
-				
-				Element player = document.createElement("Player");
-				
-				for (Component p : Shutter.frame.getContentPane().getComponents())
-				{
-					if (p.getName() != "" && p.getName() != null)
-					{
-						if (p instanceof JCheckBox)
-						{
-							//Component
-							Element component = document.createElement("Component");
-							
-							//Type
-							Element cType = document.createElement("Type");
-							cType.appendChild(document.createTextNode("JCheckBox"));
-							component.appendChild(cType);
-							
-							//Name
-							Element cName = document.createElement("Name");
-							cName.appendChild(document.createTextNode(p.getName()));
-							component.appendChild(cName);
-							
-							//Value
-							Element cValue = document.createElement("Value");
-							cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
-							component.appendChild(cValue);
-							
-							//State
-							Element cState = document.createElement("Enable");
-							cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-							component.appendChild(cState);
-							
-							//Visible
-							Element cVisible = document.createElement("Visible");
-							cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-							component.appendChild(cVisible);		
-							
-							settings.appendChild(component);
-						}
-					}				
-				}					
-				root.appendChild(player);
-				
-				
+								
+				//Saving grpAdjustement values	
 				Element color = document.createElement("Color");
 				
 				if (Shutter.caseEnableColorimetry.isSelected())
-				{
-					for (Component p : grpImageAdjustement.getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null)
-						{	
-							if (p instanceof JSlider)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JSlider"));
-								component.appendChild(cType);
-	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JSlider) p).getValue())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								color.appendChild(component);
-							}
-							else if (p instanceof JComboBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JComboBox"));
-								component.appendChild(cType);
-																	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								color.appendChild(component);
-							}
-						}												
-					}
-					
-					//Saving values	
-						
+				{											
 					//allR
 					Element componentallR = document.createElement("Component");
 					
@@ -1256,720 +1205,7 @@ public class Utils extends Shutter {
 					
 				root.appendChild(color);
 				}				
-				
-				Element corrections = document.createElement("Corrections");
-				
-				if (grpCorrections != null)
-				{
-					for (Component p : grpCorrections.getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null)
-						{	
-							if (p instanceof JCheckBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JCheckBox"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								settings.appendChild(component);
-							}
-							else if (p instanceof JSlider)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JSlider"));
-								component.appendChild(cType);
-	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JSlider) p).getValue())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								color.appendChild(component);
-							}
-						}		
-						
-					root.appendChild(corrections);
-					}
-				}
-				
-				Element imageCropping = document.createElement("Crop");
-				
-				if (Shutter.caseEnableCrop.isSelected())
-				{
-					for (Component p : grpCrop.getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null)
-						{
-							if (p instanceof JCheckBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JCheckBox"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								settings.appendChild(component);
-							}
-							else if (p instanceof JComboBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JComboBox"));
-								component.appendChild(cType);
-																	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								settings.appendChild(component);
-							}
-							else if (p instanceof JTextField)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JTextField"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								imageCropping.appendChild(component);
-							}									
-						}
-					}
-					
-				root.appendChild(imageCropping);
-				}
-				
-				Element overlay = document.createElement("Overlay");
-				
-				if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
-				{
-					for (Component p : grpOverlay.getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null)
-						{									
-							if (p instanceof JCheckBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JCheckBox"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								overlay.appendChild(component);
-							}
-							else if (p instanceof JLabel)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JLabel"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								overlay.appendChild(component);
-							}
-							else if (p instanceof JComboBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JComboBox"));
-								component.appendChild(cType);
-																	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								overlay.appendChild(component);
-							}
-							else if (p instanceof JTextField)
-							{
-								if ((((JTextField) p).getText().toString()).isEmpty() == false && (((JTextField) p).getText().toString()) != "")
-								{
-									//Component
-									Element component = document.createElement("Component");
-									
-									//Type
-									Element cType = document.createElement("Type");
-									cType.appendChild(document.createTextNode("JTextField"));
-									component.appendChild(cType);
-									
-									//Name
-									Element cName = document.createElement("Name");
-									cName.appendChild(document.createTextNode(p.getName()));
-									component.appendChild(cName);
-									
-									//Value
-									Element cValue = document.createElement("Value");
-									cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
-									component.appendChild(cValue);
-									
-									//State
-									Element cState = document.createElement("Enable");
-									cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-									component.appendChild(cState);
-									
-									//Visible
-									Element cVisible = document.createElement("Visible");
-									cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-									component.appendChild(cVisible);		
-									
-									overlay.appendChild(component);
-								}
-							}
-							else if (p instanceof JSpinner)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JSpinner"));
-								component.appendChild(cType);
-	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JSpinner) p).getValue())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								overlay.appendChild(component);
-							}
-							else if (p instanceof JPanel)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JPanel"));
-								component.appendChild(cType);
-	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JPanel) p).getBackground())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								overlay.appendChild(component);
-							}
-						}				
-					}	
-					
-				root.appendChild(overlay);
-				}
-							
-				Element subtitles = document.createElement("Subtitles");
-				
-				if (Shutter.caseAddSubtitles.isSelected())
-				{
-					for (Component p : grpSubtitles.getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null)
-						{
-							if (p instanceof JCheckBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JCheckBox"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								settings.appendChild(component);
-							}
-							else if (p instanceof JButton)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JButton"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");								
-								cValue.appendChild(document.createTextNode(((JButton) p).getForeground().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								subtitles.appendChild(component);
-							}
-							else if (p instanceof JLabel)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JLabel"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								subtitles.appendChild(component);
-							}
-							else if (p instanceof JComboBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JComboBox"));
-								component.appendChild(cType);
-																	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								subtitles.appendChild(component);
-							}
-							else if (p instanceof JTextField)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JTextField"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								subtitles.appendChild(component);
-							}
-							else if (p instanceof JSpinner)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JSpinner"));
-								component.appendChild(cType);
-	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JSpinner) p).getValue())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								subtitles.appendChild(component);
-							}
-							else if (p instanceof JPanel)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JPanel"));
-								component.appendChild(cType);
-	
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JPanel) p).getBackground())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								subtitles.appendChild(component);
-							}
-						}
-					}
-					
-				root.appendChild(subtitles);
-				}
-								
-				Element watermark = document.createElement("Watermark");
-				
-				if (Shutter.caseAddWatermark.isSelected())
-				{
-					for (Component p : grpWatermark.getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null)
-						{
-							if (p instanceof JCheckBox)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JCheckBox"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								settings.appendChild(component);
-							}
-							else if (p instanceof JTextField)
-							{
-								//Component
-								Element component = document.createElement("Component");
-								
-								//Type
-								Element cType = document.createElement("Type");
-								cType.appendChild(document.createTextNode("JTextField"));
-								component.appendChild(cType);
-								
-								//Name
-								Element cName = document.createElement("Name");
-								cName.appendChild(document.createTextNode(p.getName()));
-								component.appendChild(cName);
-								
-								//Value
-								Element cValue = document.createElement("Value");
-								cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
-								component.appendChild(cValue);
-								
-								//State
-								Element cState = document.createElement("Enable");
-								cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
-								component.appendChild(cState);
-								
-								//Visible
-								Element cVisible = document.createElement("Visible");
-								cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
-								component.appendChild(cVisible);		
-								
-								watermark.appendChild(component);
-							}									
-						}
-					}
-					
-				root.appendChild(watermark);
-				}
-								
+																															
 				// creation du fichier XML
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
@@ -2016,8 +1252,11 @@ public class Utils extends Shutter {
 		Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 	else
-	{				
+	{			
 		try {
+			
+			doNotLoadImage = true;
+			
 			File fXmlFile = encFile;
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -2038,7 +1277,12 @@ public class Utils extends Shutter {
 						if (c instanceof JPanel)
 						{
 							for (Component p : ((JPanel) c).getComponents())
-							{								
+							{				
+								if (p.getName() != "" && p.getName() != null && p.getName().equals("text"))
+								{
+									continue;
+								}
+								
 								//For lock icon only
 								if (p.getName() != "" && p.getName() != null)
 								{
@@ -2049,9 +1293,9 @@ public class Utils extends Shutter {
 										lock.setName("lock");
 									}
 								}
-								
+																
 								if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-								{
+								{									
 									if (p instanceof JLabel)
 									{										
 										//Value
@@ -2067,8 +1311,7 @@ public class Utils extends Shutter {
 										((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
 									}
 									else if (p instanceof JCheckBox)
-									{
-										
+									{										
 										//Value
 										if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 										{
@@ -2089,6 +1332,21 @@ public class Utils extends Shutter {
 									}
 									else if (p instanceof JComboBox)
 									{		
+										if (p.getName().equals("comboFonctions"))
+										{
+											long time = System.currentTimeMillis();
+											
+											do {
+												try {
+													Thread.sleep(100);
+												} catch (InterruptedException er) {}
+												
+												if (System.currentTimeMillis() - time > 1000)
+													VideoPlayer.frameIsComplete = true;
+																			
+											} while (VideoPlayer.frameIsComplete == false);
+										}
+										
 										if (p.getName().equals("comboLUTs"))
 										{
 											comboLUTs.setSelectedIndex(10);
@@ -2124,6 +1382,19 @@ public class Utils extends Shutter {
 										
 										//Visible
 										((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									
+										//Elements position
+										if (p.getName().equals("textNamePosX"))
+											fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);	
+										
+										if (p.getName().equals("textNamePosY"))
+											fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+																			
+										if (p.getName().equals("textTcPosY"))
+											timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+										
+										if (p.getName().equals("textTcPosX"))
+											timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
 									}
 									else if (p instanceof JSlider)
 									{
@@ -2147,6 +1418,31 @@ public class Utils extends Shutter {
 										//Visible
 										((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 									}
+									else if (p instanceof JPanel)
+									{
+										//Value
+										String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
+										String s2[] = s[1].split(",");
+										((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
+										
+										if (p.getName().equals("panelTcColor"))
+										{
+											foregroundColor = panelTcColor.getBackground();
+										}
+										else if (p.getName().equals("panelTcColor2"))
+										{
+											backgroundColor = panelTcColor2.getBackground();
+										}
+										
+										if (p.getName().equals("panelSubsColor"))
+										{
+											fontSubsColor = panelSubsColor.getBackground();
+										}
+										else if (p.getName().equals("panelSubsColor2"))
+										{
+											backgroundSubsColor = panelSubsColor2.getBackground();
+										}
+									}
 								}
 							}
 						}
@@ -2154,16 +1450,90 @@ public class Utils extends Shutter {
 				}
 			}
 			
-			changeFunction(false);						
-				
+			changeFunction(false);	
+							
 		} catch (Exception e) {
 			
 			System.out.println(e);
 		}
 		finally {
 			
+			doNotLoadImage = false;
+						
+			//grpCrop
+			if (caseEnableCrop.isSelected())
+			{
+				selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / imageRatio));
+				int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+				int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+				
+				if (w > VideoPlayer.player.getWidth())
+					w = VideoPlayer.player.getWidth();
+				
+				if (h > VideoPlayer.player.getHeight())
+					h = VideoPlayer.player.getHeight();
+				
+				selection.setSize(w , h);	
+				
+				frameCropX = VideoPlayer.player.getLocation().x;
+				frameCropY = VideoPlayer.player.getLocation().y;
+				
+				anchorRight = selection.getLocation().x + selection.getWidth();
+				anchorBottom = selection.getLocation().y + selection.getHeight();					
+				VideoPlayer.checkSelection();
+			}
+			
+			//grpOverlay
+			if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
+			{
+				timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+				tcLocX = timecode.getLocation().x;
+				tcLocY = timecode.getLocation().y;	
+			}
+			if (caseAddText.isSelected() || caseShowFileName.isSelected())
+			{
+				fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+				fileLocX = fileName.getLocation().x;
+				fileLocY = fileName.getLocation().y;
+			}
+			
+			//grpSubtitles
+			if (caseAddSubtitles.isSelected())
+			{						    		
+				if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth)
+				{
+					subsCanvas.setBounds(0, 0, VideoPlayer.player.getWidth(), (int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));
+				}
+				else
+				{
+					subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
+				    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
+					
+					subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
+				}			
+			}
+			
+			//grpWatermark
+			if (caseAddWatermark.isSelected())
+			{
+				VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
+				logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / imageRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
+				//Saving location
+				logoLocX = logo.getLocation().x;
+				logoLocY = logo.getLocation().y;
+			}
+			
+			timecode.repaint();
+			fileName.repaint();
+			selection.repaint();
+			overImage.repaint();
+			
+			VideoPlayer.btnStop.doClick();
+			
 			if (Functions.frame != null)
+			{
 				Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}

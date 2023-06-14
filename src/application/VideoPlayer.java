@@ -110,6 +110,7 @@ public class VideoPlayer {
     private static FloatControl gainControl;
     public static Thread playerThread;	
     public static Thread setTime;
+    private static String setEQ = "";	
 	public static float playerCurrentFrame = 0;
     private static long fpsTime = 0;
     private static int fps = 0;
@@ -126,7 +127,7 @@ public class VideoPlayer {
     public static boolean playerPlayVideo = true;
 	public static boolean sliderChange = false;
 	private static JLabel lblVolume;
-	public static JSlider sliderVolume;
+	public static JSlider sliderVolume = new JSlider();;
 	public static JLabel lblPosition;
 	public static JLabel lblDuration;
 	private static JLabel lblMode;
@@ -150,8 +151,8 @@ public class VideoPlayer {
 	public static JButton btnGoToIn;
 	public static JButton btnGoToOut;
 	public static JSlider slider;
-	public static JCheckBox caseVuMeter;
-	public static JCheckBox casePlaySound;
+	public static JCheckBox caseVuMeter = new JCheckBox(Shutter.language.getProperty("caseVuMeter"));;
+	public static JCheckBox casePlaySound = new JCheckBox(Shutter.language.getProperty("casePlaySound"));;
 	public static JCheckBox caseInternalTc;
 	
 	public static String videoPath = null;
@@ -542,7 +543,7 @@ public class VideoPlayer {
 				//VIDEO STREAM
 				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo));
 				playerVideo = pbv.start();	
-				
+								
 				//AUDIO STREAM
 				if (casePlaySound.isSelected() || mouseIsPressed == false || (sliderChange == false && frameControl == false))						       
 				{
@@ -743,8 +744,8 @@ public class VideoPlayer {
 	
 	public static void playerSetTime(float time) {
 			
-		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null)
-		{			
+		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null && Shutter.doNotLoadImage == false)
+		{				
 			setTime = new Thread(new Runnable() {
 
 				@Override
@@ -816,7 +817,7 @@ public class VideoPlayer {
 	}
 		
 	public static void playerFreeze() {
-				
+						
 		frameControl = true;
 		playerPlayVideo = false;
 
@@ -849,7 +850,7 @@ public class VideoPlayer {
 		frameControl = false;	
 		playerPlayVideo = true;
 	}
-	
+		
     public static void setMedia() {
     		    	
     	//Updating video file
@@ -1186,7 +1187,7 @@ public class VideoPlayer {
 			Shutter.btnStart.setEnabled(false);
 		}
 		
-		resizeAll(false);
+		resizeAll();
 		
 		if (Shutter.fileList.hasFocus() == false)
 		{
@@ -1520,8 +1521,14 @@ public class VideoPlayer {
 				}
 			}
 			
+			
 			String cmd = gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
-						
+			
+			if (Shutter.inputDeviceIsRunning)
+			{
+				cmd = " " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
+			}
+
 			Console.consoleFFMPEG.append(System.lineSeparator() + cmd + System.lineSeparator());
 
 			return cmd;			
@@ -1938,7 +1945,7 @@ public class VideoPlayer {
 						slider.setValue(0);
 					}
 					
-					resizeAll(false);
+					resizeAll();
 
 					btnPlay.setText("▶");
 					playerLoop = false;
@@ -1950,7 +1957,7 @@ public class VideoPlayer {
 				}
 				else if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 				{
-					resizeAll(false);
+					resizeAll();
 				}
 			}			
 			
@@ -2525,8 +2532,7 @@ public class VideoPlayer {
 		cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);
 		waveformContainer.add(cursorWaveform);		
 				
-		sliderVolume = new JSlider();
-		sliderVolume.setName("sliderVolume");
+		sliderVolume.setName("sliderVolume");		
 		sliderVolume.setValue(50);			
 		Shutter.frame.getContentPane().add(sliderVolume);
 				
@@ -3314,10 +3320,9 @@ public class VideoPlayer {
 	
 	private void playerOptions() {
 		
-		caseVuMeter = new JCheckBox(Shutter.language.getProperty("caseVuMeter"));
 		caseVuMeter.setName("caseVuMeter");	
-		caseVuMeter.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseVuMeter.setSelected(true);		
+		caseVuMeter.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
+		caseVuMeter.setSelected(true);
 		Shutter.frame.getContentPane().add(caseVuMeter);
 		
 		caseVuMeter.addActionListener(new ActionListener() {
@@ -3331,8 +3336,7 @@ public class VideoPlayer {
 			}
 
 		});
-				
-		casePlaySound = new JCheckBox(Shutter.language.getProperty("casePlaySound"));
+					
 		casePlaySound.setName("casePlaySound");	
 		casePlaySound.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		casePlaySound.setSelected(true);
@@ -3863,7 +3867,7 @@ public class VideoPlayer {
 	}
 	
 	public static void loadImage(boolean forceRefresh) {
-			
+					
 		if (forceRefresh && videoPath != null)
 		{
 			Thread waitProcess = new Thread (new Runnable() {
@@ -3880,7 +3884,7 @@ public class VideoPlayer {
 			waitProcess.start();
 		}
 		
-		if ((forceRefresh || runProcess.isAlive() == false) && videoPath != null)
+		if ((forceRefresh || runProcess.isAlive() == false) && videoPath != null && Shutter.doNotLoadImage == false)
 		{			
 			
 			runProcess = new Thread (new Runnable() {
@@ -4223,87 +4227,87 @@ public class VideoPlayer {
 		}			
 		
 		//EQ
-		String eq = "";	
+		setEQ = "";	
 		
 		//Stabilisation
 		if (Shutter.stabilisation != "")
-			eq = Shutter.stabilisation;
+			setEQ = Shutter.stabilisation;
 		
 		//Blend
 		if (preview.exists() == false) //Show only on playing
 		{
-			eq = ImageSequence.setBlend(eq);
-			eq = ImageSequence.setMotionBlur(eq);
+			setEQ = ImageSequence.setBlend(setEQ);
+			setEQ = ImageSequence.setMotionBlur(setEQ);
 		}
 		
 		//LUTs
-		eq = Colorimetry.setLUT(eq);	
+		setEQ = Colorimetry.setLUT(setEQ);	
 		
 		//Levels
-		eq = Colorimetry.setLevels(eq);
+		setEQ = Colorimetry.setLevels(setEQ);
 		
 		//Colormatrix
-		eq = Colorimetry.setColormatrix(eq);
+		setEQ = Colorimetry.setColormatrix(setEQ);
 		
 		//Rotate
 		if (Shutter.caseRotate.isSelected() || Shutter.caseMiror.isSelected())
-			eq = settings.Image.setRotate(eq);
+			setEQ = settings.Image.setRotate(setEQ);
 		
 		//Colorimetry
 		if (Shutter.caseEnableColorimetry.isSelected())
 		{			
 			String color = Colorimetry.setEQ(false);
 						
-			if (eq != "" && color != "")
+			if (setEQ != "" && color != "")
 			{
-				eq += "," + color;
+				setEQ += "," + color;
 			}
 			else if (color != "")
 			{
-				eq += color;
+				setEQ += color;
 			}
 			
 			if (Shutter.sliderAngle.getValue() != 0)
 			{
-				if (eq.contains("scale"))
+				if (setEQ.contains("scale"))
 				{
-					eq = eq.replace("scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight,  "scale=" + player.getWidth() + ":" + player.getHeight());
+					setEQ = setEQ.replace("scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight,  "scale=" + player.getWidth() + ":" + player.getHeight());
 				}
 				else
 				{
-					eq += ",scale=" + player.getWidth() + ":" + player.getHeight();
+					setEQ += ",scale=" + player.getWidth() + ":" + player.getHeight();
 				}
 			}
 		}
 				
 		//Deflicker			
-		eq = Corrections.setDeflicker(eq);
+		setEQ = Corrections.setDeflicker(setEQ);
 			
 		//Deband			
-		eq = Corrections.setDeband(eq);
+		setEQ = Corrections.setDeband(setEQ);
 				 
 		//Details			
-		eq = Corrections.setDetails(eq);				
+		setEQ = Corrections.setDetails(setEQ);				
 											            	
 		//Denoise			
-		eq = Corrections.setDenoiser(eq);
+		setEQ = Corrections.setDenoiser(setEQ);
 		
 		//Exposure
 		if (preview.exists() == false) //Show only on playing
-			eq = Corrections.setSmoothExposure(eq);	
+			setEQ = Corrections.setSmoothExposure(setEQ);	
 		
 		//Limiter
-		eq = Corrections.setLimiter(eq);
+		setEQ = Corrections.setLimiter(setEQ);
 
 		//Fade-in Fade-out
 		if (Shutter.caseVideoFadeIn.isSelected() || Shutter.caseVideoFadeOut.isSelected())
 		{
-			eq = Transitions.setVideoFade(eq, true);
+			setEQ = Transitions.setVideoFade(setEQ, true);
 		}
 								
-		if (eq.isEmpty() == false)
+		if (setEQ.isEmpty() == false)
 		{
-			filter += "," + eq;
+			filter += "," + setEQ;
 		}
 		
 		if (caseVuMeter.isSelected() && FFPROBE.hasAudio && Shutter.caseAddSubtitles.isSelected() == false && preview.exists() == false)
@@ -4363,10 +4367,18 @@ public class VideoPlayer {
 
 	}
 
-	public static void resizeAll(boolean isPiping) {
+	public static void resizeAll() {
 		
-		if (Shutter.frame.getWidth() > 332)	
-		{		
+		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
+		{			
+			boolean isPiping = false;
+			if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
+			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume"))
+			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
+			{
+				isPiping = true;
+			}
+			
 			if (preview.exists())
 				preview.delete();
 					
@@ -4404,12 +4416,16 @@ public class VideoPlayer {
 				String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");		
 				ratio = (float) Integer.parseInt(s[0]) / Integer.parseInt(s[1]);
 			}
-
+			else if (Shutter.caseEnableCrop.isSelected() && isPiping)
+			{			
+				ratio = (float) Integer.parseInt(Shutter.textCropWidth.getText()) / Integer.parseInt(Shutter.textCropHeight.getText());
+			}
+			
 			if (ratio < 1.3f)
 			{
 				int maxHeight = (int) (Shutter.frame.getHeight() / 1.6f);
 				
-				if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || isPiping) //Image
+				if (FFPROBE.totalLength <= 40 && Shutter.caseEnableSequence.isSelected() == false || isPiping) //Image
 				{
 					maxHeight = Shutter.frame.getHeight() - (Shutter.grpChooseFiles.getY() + 8) - (Shutter.frame.getHeight() - (Shutter.grpProgression.getY() + Shutter.grpProgression.getHeight()));
 				}
@@ -4434,7 +4450,7 @@ public class VideoPlayer {
 				y = Shutter.grpChooseFiles.getY() + 50;
 			}	
 			
-			if ((FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || isPiping) && videoPath != null) //Image
+			if ((FFPROBE.totalLength <= 40 && Shutter.caseEnableSequence.isSelected() == false || isPiping) && videoPath != null) //Image
 			{
 				y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2;
 			}
@@ -4600,7 +4616,17 @@ public class VideoPlayer {
 			
 			if (Shutter.windowDrag == false && videoPath != null)
 			{	
-				if (FFPROBE.totalLength <= 40)
+				if (Shutter.inputDeviceIsRunning)
+				{
+					if (setEQ.isEmpty() == false)
+					{
+						loadImage(false);
+						waveformIcon.setVisible(false);
+					}
+					else
+						playerFreeze();
+				}
+				else if (FFPROBE.totalLength <= 40)
 				{
 					loadImage(false);
 					waveformIcon.setVisible(false);
@@ -4767,507 +4793,5 @@ public class VideoPlayer {
     	}
     		
     }
-
-	public static void loadSettings(File encFile) {
-		/*
-		Thread t = new Thread (new Runnable() 
-		{
-			@Override
-			public void run() {
-				
-			try {
-			
-				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				
-				do {
-					Thread.sleep(10);					
-				} while (btnPlay == null);
-
-				File fXmlFile = encFile;
-				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-				Document doc = dBuilder.parse(fXmlFile);
-				doc.getDocumentElement().normalize();
-			
-				NodeList nList = doc.getElementsByTagName("Component");
-								
-				for (int temp = 0; temp < nList.getLength(); temp++) 
-				{
-					Node nNode = nList.item(temp);
-					
-					if (nNode.getNodeType() == Node.ELEMENT_NODE)
-					{
-						Element eElement = (Element) nNode;
-						
-						//Player						
-						for (Component p : Shutter.frame.getContentPane().getComponents())
-						{
-							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{
-								if (p instanceof JCheckBox)
-								{									
-									//Value
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-									{
-										if (((JCheckBox) p).isSelected() == false)
-											((JCheckBox) p).doClick();
-									}
-									else
-									{
-										if (((JCheckBox) p).isSelected())
-											((JCheckBox) p).doClick();
-									}
-																		
-									//State
-									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}										
-							}							
-						}	
-						
-						//grpImageAdjustement
-						for (Component p : grpImageAdjustement.getComponents())
-						{				
-							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{								
-								if (p instanceof JSlider)
-								{
-									//Value
-									((JSlider) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-																		
-									//State
-									((JSlider) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}
-							}							
-						}	
-						
-						//grpCorrections
-						for (Component p : grpCorrections.getComponents())
-						{				
-							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{	
-								if (p instanceof JCheckBox)
-								{									
-									//Value
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-									{
-										if (((JCheckBox) p).isSelected() == false)
-											((JCheckBox) p).doClick();
-									}
-									else
-									{
-										if (((JCheckBox) p).isSelected())
-											((JCheckBox) p).doClick();
-									}
-																		
-									//State
-									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}		
-								else if (p instanceof JSlider)
-								{
-									//Value
-									((JSlider) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-																		
-									//State
-									((JSlider) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}
-							}							
-						}
-						
-						//grpCrop
-						for (Component p : grpCrop.getComponents())
-						{				
-							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{			
-								if (p instanceof JCheckBox)
-								{									
-									//Value
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-									{
-										if (((JCheckBox) p).isSelected() == false)
-											((JCheckBox) p).doClick();
-									}
-									else
-									{
-										if (((JCheckBox) p).isSelected())
-											((JCheckBox) p).doClick();
-									}
-																		
-									//State
-									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}		
-								else if (p instanceof JTextField)
-								{										
-									//Value
-									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								
-									//Position des éléments
-									if (p.getName().equals("textPosX") && textCropPosX.getText().length() > 0)
-									{
-										int value = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * player.getHeight()) / FFPROBE.imageHeight);	
-										selection.setLocation(value, selection.getLocation().y);	
-									}
-									
-									if (p.getName().equals("textPosY") && textCropPosY.getText().length() > 0)
-									{
-										int value = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * player.getWidth()) / FFPROBE.imageWidth);	
-										selection.setLocation(selection.getLocation().x, value);
-									}
-									
-									if (p.getName().equals("textWidth") && textCropWidth.getText().length() > 0)
-									{
-										int value = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
-										selection.setSize(value, selection.getHeight());
-									}
-									
-									if (p.getName().equals("textHeight") && textCropHeight.getText().length() > 0)
-									{
-										int value = (int) Math.round((float) (Integer.valueOf(textCropHeight.getText()) * player.getWidth()) / FFPROBE.imageWidth);
-										selection.setSize(selection.getWidth(), value);
-									}
-								}
-							}
-						}
-						
-						//grpOverlay
-						for (Component p : grpOverlay.getComponents())
-						{
-							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{
-								if (p instanceof JPanel)
-								{									
-									//Value
-									String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
-									String s2[] = s[1].split(",");
-									((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
-									
-									if (p.getName().equals("panelTcColor"))
-									{
-										foregroundColor = panelTcColor.getBackground();
-									}
-									else if (p.getName().equals("panelTcColor2"))
-									{
-										backgroundColor = panelTcColor2.getBackground();
-									}
-								}
-								
-								if (p instanceof JCheckBox)
-								{									
-									//Value
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-									{
-										if (((JCheckBox) p).isSelected() == false)
-											((JCheckBox) p).doClick();
-									}
-									else
-									{
-										if (((JCheckBox) p).isSelected())
-											((JCheckBox) p).doClick();
-									}
-									
-									//State
-									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}
-								else if (p instanceof JLabel)
-								{									
-									//Value
-									((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));																			
-								}
-								else if (p instanceof JComboBox)
-								{									
-									//Value
-									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									
-								}
-								else if (p instanceof JTextField)
-								{			
-									long time = System.currentTimeMillis();
-									
-									do {
-										try {
-											Thread.sleep(100);
-										} catch (InterruptedException er) {}
-										
-										if (System.currentTimeMillis() - time > 1000)
-											frameIsComplete = true;
-																	
-									} while (frameIsComplete == false);
-									
-									//Value
-									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									
-									//Elements position
-									if (p.getName().equals("textNamePosX"))
-										fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);	
-									
-									if (p.getName().equals("textNamePosY"))
-										fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
-																		
-									if (p.getName().equals("textTcPosY"))
-										timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
-									
-									if (p.getName().equals("textTcPosX"))
-										timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
-								}
-							}
-						}
-						
-						//grpSubtitles
-						for (Component p : grpSubtitles.getComponents())
-						{
-							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{
-								if (p instanceof JCheckBox)
-								{									
-									//Value
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-									{
-										if (((JCheckBox) p).isSelected() == false)
-											((JCheckBox) p).doClick();
-									}
-									else
-									{
-										if (((JCheckBox) p).isSelected())
-											((JCheckBox) p).doClick();
-									}
-																		
-									//State
-									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}		
-								else if (p instanceof JPanel)
-								{
-									//Value
-									String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
-									String s2[] = s[1].split(",");
-									((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
-									
-									if (p.getName().equals("panelSubsColor"))
-									{
-										fontSubsColor = panelSubsColor.getBackground();
-									}
-									else if (p.getName().equals("panelSubsColor2"))
-									{
-										backgroundSubsColor = panelSubsColor2.getBackground();
-									}
-
-								}
-								else if (p instanceof JButton)
-								{									
-									//Value
-									String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
-									String s2[] = s[1].split(",");
-									
-									if (Integer.valueOf(s2[0]) == 0 && Integer.valueOf(s2[1]) == 0 && Integer.valueOf(s2[2]) == 0)								
-										((JButton) p).setForeground(Color.BLACK);	
-									else
-										((JButton) p).setForeground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));	
-								}
-								else if (p instanceof JLabel)
-								{									
-									//Value
-									((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-
-								}
-								else if (p instanceof JComboBox)
-								{
-									//Value
-									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									
-								}
-								else if (p instanceof JTextField)
-								{									
-									//Value
-									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}
-							}
-						}					
-						
-						//grpWatermark
-						for (Component p : grpWatermark.getComponents())
-						{			
-							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{								
-								if (p instanceof JCheckBox)
-								{									
-									//Value
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-									{
-										if (((JCheckBox) p).isSelected() == false)
-											((JCheckBox) p).doClick();
-									}
-									else
-									{
-										if (((JCheckBox) p).isSelected())
-											((JCheckBox) p).doClick();
-									}
-																		
-									//State
-									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}		
-								else if (p instanceof JTextField)
-								{											
-									//Value
-									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																		
-									//State
-									((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-									
-									//Visible
-									((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								}
-							}
-						}						
-					}
-				}			
-						
-				loadImage(false);
-				
-				if (frameVideo != null)
-				{
-					player.repaint();	
-				}
-				
-				//grpCrop
-				if (Shutter.caseEnableCrop.isSelected())
-				{
-					Shutter.selection.setLocation((int) Math.round(Integer.valueOf(Shutter.textCropPosX.getText()) / Shutter.imageRatio), (int) Math.round(Integer.valueOf(Shutter.textCropPosY.getText()) / Shutter.imageRatio));
-					int w = (int) Math.round((float)  (Integer.valueOf(Shutter.textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
-					int h = (int) Math.round((float)  (Integer.valueOf(Shutter.textCropHeight.getText()) * player.getHeight()) / FFPROBE.imageHeight);
-					
-					if (w > player.getWidth())
-						w = player.getWidth();
-					
-					if (h > player.getHeight())
-						h = player.getHeight();
-					
-					Shutter.selection.setSize(w , h);	
-					
-					Shutter.frameCropX = player.getLocation().x;
-					Shutter.frameCropY = player.getLocation().y;
-					
-					Shutter.anchorRight = Shutter.selection.getLocation().x + Shutter.selection.getWidth();
-					Shutter.anchorBottom = Shutter.selection.getLocation().y + Shutter.selection.getHeight();					
-					checkSelection();
-				}
-				
-				//grpOverlay
-				if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected())
-				{
-					Shutter.timecode.setLocation((int) Math.round(Integer.valueOf(Shutter.textTcPosX.getText()) / Shutter.imageRatio), (int) Math.round(Integer.valueOf(Shutter.textTcPosY.getText()) / Shutter.imageRatio));
-					Shutter.tcLocX = Shutter.timecode.getLocation().x;
-					Shutter.tcLocY = Shutter.timecode.getLocation().y;			
-				}
-				if (Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
-				{
-					Shutter.fileName.setLocation((int) Math.round(Integer.valueOf(Shutter.textNamePosX.getText()) / Shutter.imageRatio), (int) Math.round(Integer.valueOf(Shutter.textNamePosY.getText()) / Shutter.imageRatio));
-					Shutter.fileLocX = Shutter.fileName.getLocation().x;
-					Shutter.fileLocY = Shutter.fileName.getLocation().y;
-				}
-				
-				//grpSubtitles
-				if (Shutter.caseAddSubtitles.isSelected())
-				{						    		
-					if (Integer.parseInt(Shutter.textSubsWidth.getText()) >= FFPROBE.imageWidth)
-					{
-						Shutter.subsCanvas.setBounds(0, 0, player.getWidth(), (int) (player.getHeight() + (float) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / player.getHeight())));
-					}
-					else
-					{
-						Shutter.subsCanvas.setSize((int) ((float) Integer.parseInt(Shutter.textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / player.getHeight())),
-					    		(int) (player.getHeight() + (float) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / player.getHeight())));	
-						
-						Shutter.subsCanvas.setLocation((player.getWidth() - Shutter.subsCanvas.getWidth()) / 2, 0);
-					}			
-				}
-				
-				//grpWatermark
-				if (Shutter.caseAddWatermark.isSelected())
-				{
-					loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-					Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.imageRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.imageRatio));
-					//Saving location
-					Shutter.logoLocX = Shutter.logo.getLocation().x;
-					Shutter.logoLocY = Shutter.logo.getLocation().y;
-				}
-				
-				Shutter.timecode.repaint();
-				Shutter.fileName.repaint();
-				Shutter.selection.repaint();
-				Shutter.overImage.repaint();
-				
-				} catch (Exception e) {
-				} finally {
-					
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
-			}
-		});
-		t.start();	*/
-	}
 
 }

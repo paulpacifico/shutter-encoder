@@ -1544,6 +1544,25 @@ public class Settings {
 						}
 					}
 					
+					for (Component p : Shutter.statusBar.getComponents())
+					{
+						if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
+						{
+							if (p instanceof JComboBox)
+							{															
+								//Value
+								((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+								
+								//State
+								((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+								
+								//Visible
+								((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+								
+							}
+						}
+					}
+					
 					//Open folder at end
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseOpenFolderAtEnd1"))
 					{
@@ -1837,6 +1856,45 @@ public class Settings {
 				}
 			}
 			
+			for (Component p : Shutter.statusBar.getComponents())
+			{
+				if (p.getName() != "" && p.getName() != null)
+				{
+					if (p instanceof JComboBox)
+					{						
+						//Component
+						Element component = document.createElement("Component");
+						
+						//Type
+						Element cType = document.createElement("Type");
+						cType.appendChild(document.createTextNode("JComboBox"));
+						component.appendChild(cType);
+															
+						//Name
+						Element cName = document.createElement("Name");
+						cName.appendChild(document.createTextNode(p.getName()));
+						component.appendChild(cName);
+						
+						//Value
+						Element cValue = document.createElement("Value");						
+						cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));						
+						component.appendChild(cValue);
+						
+						//State
+						Element cState = document.createElement("Enable");
+						cState.appendChild(document.createTextNode(String.valueOf(p.isEnabled())));
+						component.appendChild(cState);
+						
+						//Visible
+						Element cVisible = document.createElement("Visible");
+						cVisible.appendChild(document.createTextNode(String.valueOf(p.isVisible())));
+						component.appendChild(cVisible);		
+						
+						root.appendChild(component);
+					}
+				}
+			}
+						
 			//Open folder at end
 			//Component
 			Element component = document.createElement("Component");

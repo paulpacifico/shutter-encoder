@@ -608,7 +608,7 @@ import settings.FunctionUtils;
                return true;
             }                   
         };
-        table.setForeground(Color.BLACK);
+        table.setForeground(new Color(245, 245, 245));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -654,7 +654,7 @@ import settings.FunctionUtils;
 		
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(table);
-		scrollPane.setBackground(new Color(185,185,185));
+		scrollPane.setBackground(new Color(60,60,60));
 		scrollPane.setOpaque(true);
 		scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
@@ -989,21 +989,21 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 
 	    setHorizontalAlignment(JLabel.CENTER);
 	    setFont(new Font("SansSerif", Font.PLAIN, 12));
-	    setForeground(Color.BLACK);
+	    setForeground(new Color(245, 245, 245));
 		setOpaque(true);
 		
-	    if (isSelected)
-	    {
-			setBackground(new Color(215, 215, 215));
-		} 
-	    else
+		if (isSelected)
+		{
+			setBackground(new Color(90, 90, 90));
+		}
+		else
 		{			
 			if (row % 2 == 1)
-				setBackground(new Color(185, 185, 185));
+				setBackground(new Color(60, 60, 60));
 			else
-				setBackground(new Color(191, 191, 191));
+				setBackground(new Color(66, 66, 66));
 		}
-
+		
 	    setBorder(new LineBorder(new Color(0,0,0,0)));	    
 	    return c;
 	}
