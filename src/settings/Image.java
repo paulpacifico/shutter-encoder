@@ -19,7 +19,6 @@
 
 package settings;
 
-import application.Settings;
 import application.Shutter;
 import functions.VideoEncoders;
 import library.FFPROBE;
@@ -287,7 +286,7 @@ public class Image extends Shutter {
 			//Auto GPU selection
 			boolean autoQSV = false;
 			boolean autoCUDA = false;
-			if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 			{
 				if (FFMPEG.cudaAvailable)
 				{
@@ -299,12 +298,12 @@ public class Image extends Shutter {
 				}
 			}
 			
-			if ((autoQSV || Settings.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
+			if ((autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
-			else if (autoCUDA || Settings.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
+			else if (autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
 			{
 				if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && filterComplex.contains("yadif"))
 				{

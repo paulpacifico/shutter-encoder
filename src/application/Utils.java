@@ -74,7 +74,6 @@ import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
-import library.FFPLAY;
 import library.FFPROBE;
 import library.MKVMERGE;
 import library.TSMUXER;
@@ -2441,9 +2440,6 @@ public class Utils extends Shutter {
 			if (FFPROBE.isRunning)
 				FFPROBE.process.destroy();
 			
-			if (FFPLAY.isRunning)
-				FFPLAY.process.destroy();
-
 			if (BMXTRANSWRAP.isRunning)
 				BMXTRANSWRAP.process.destroy();
 

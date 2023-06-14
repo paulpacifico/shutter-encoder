@@ -540,7 +540,9 @@ public class RecordInputDevice {
 				
 				Shutter.changeFilters();
 				
-				frame.dispose();				
+				frame.dispose();
+				
+				VideoPlayer.setMedia();
 			}
 			
 		});

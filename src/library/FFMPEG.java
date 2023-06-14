@@ -19,7 +19,6 @@
 
 package library;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FileDialog;
 import java.awt.Image;
@@ -40,7 +39,6 @@ import java.text.NumberFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -62,11 +60,8 @@ import application.RenderQueue;
 import application.SceneDetection;
 import application.Settings;
 import application.Shutter;
-import application.Utils;
 import application.VideoPlayer;
-import functions.VideoEncoders;
 import settings.BitratesAdjustement;
-import settings.Colorimetry;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 
@@ -90,6 +85,7 @@ private static boolean firstInput = true;
 public static int firstScreenIndex = -1;
 public static StringBuilder videoDevices;
 public static StringBuilder audioDevices;
+public static StringBuilder hwaccels = new StringBuilder();
 public static boolean isGPUCompatible = false;
 public static boolean cudaAvailable = false;
 public static boolean qsvAvailable = false;
@@ -169,15 +165,27 @@ public static StringBuilder errorLog = new StringBuilder();
 							PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-							
-							String pipe = "";								
-							if (cmd.contains("pipe:play"))
+																														
+							if (cmd.contains("image2pipe") || cmd.contains("pipe:play") || cmd.contains("pipe:stab") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
+							|| Shutter.caseEnableColorimetry.isSelected()
+							|| caseLUTs.isSelected() && grpColorimetry.isVisible()
+							|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpColorimetry.isVisible())
 							{
-								pipe =  " | " + '"' + PathToFFMPEG + '"' + " -i pipe:play -vf scale=" + VideoPlayer.player.getWidth() + ":" + VideoPlayer.player.getHeight() + " -c:v bmp -an -f image2pipe pipe:-";
+								String pipe = "";								
+								if (cmd.contains("pipe:play"))
+								{
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -vf scale=" + VideoPlayer.player.getWidth() + ":" + VideoPlayer.player.getHeight() + " -c:v bmp -an -f image2pipe pipe:-";
+									VideoPlayer.resizeAll(true); //IMPORTANT
+								}
+								
+								PathToFFMPEG = "Library\\ffmpeg.exe";
+								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 							}
-							
-							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);
-							process = processFFMPEG.start();						
+							else
+							{
+								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG.toString() + '"' + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));
+								process = processFFMPEG.start();	
+							}					
 						}
 						else
 						{
@@ -216,8 +224,11 @@ public static StringBuilder errorLog = new StringBuilder();
 									
 									do {
 										try {
-											VideoPlayer.frameVideo = ImageIO.read(videoInputStream);
-											VideoPlayer.playerRepaint();
+											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")))
+											{
+												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);
+												VideoPlayer.playerRepaint();
+											}
 										} catch (Exception e) {}
 									} while (FFMPEG.isRunning);
 								}
@@ -613,343 +624,10 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 
-	public static void previewEncoding() {
-		
-		switch (comboFonctions.getSelectedItem().toString()) 
-		{
-		case "DNxHD":
-		case "DNxHR":
-		case "Apple ProRes":
-		case "GoPro CineForm":
-		case "Uncompressed":
-		case "XDCAM HD422":				
-		case "AVC-Intra 100":
-		case "XAVC":
-		case "HAP":
-		case "FFV1":
-		case "H.264":
-		case "H.265":
-		case "VP8":
-		case "VP9":
-		case "AV1":
-		case "WMV":
-		case "MPEG-1":
-		case "MPEG-2":
-		case "OGV":
-		case "MJPEG":
-		case "Xvid":
-			VideoEncoders.main(false);
-			break;
-			
-		default:
-			
-			// Définition de la taille
-			if (liste.getSize() > 0) {
-				
-				String file = ""; 
-				// Fichiers sélectionnés ?
-				if (fileList.getSelectedIndices().length > 0) {
-					if (scanIsRunning) {
-						File dir = new File(Shutter.liste.firstElement());
-						for (File f : dir.listFiles()) {
-							if (f.isHidden() == false && f.isFile()) {
-								file = f.toString();
-								break;
-							}
-						}
-					} else
-						file = fileList.getSelectedValue().toString();
-
-				} else
-					file = liste.firstElement();
-				
-				String extension = file.substring(file.lastIndexOf("."));
-				
-				boolean isRaw = false;
-				switch (extension.toLowerCase()) { 
-					case ".3fr":
-					case ".arw":
-					case ".crw":
-					case ".cr2":
-					case ".cr3":
-					case ".dng":
-					case ".kdc":
-					case ".mrw":
-					case ".nef":
-					case ".nrw":
-					case ".orf":
-					case ".ptx":
-					case ".pef":
-					case ".raf":
-					case ".r3d":
-					case ".rw2":
-					case ".srw":
-					case ".x3f":
-						isRaw = true;
-				}
-				
-				 //Analyse
-				if  (extension.toLowerCase().equals(".pdf"))
-				{
-					 XPDF.toFFPROBE(file.toString());	
-					 do
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-					 while (XPDF.isRunning);
-				}
-				else if (isRaw)
-				{
-					 EXIFTOOL.run(file);	
-					 do
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-					 while (EXIFTOOL.isRunning);
-				}
-				else
-				{
-					if (Utils.inputDeviceIsRunning == false)
-						FFPROBE.Data(file.toString());	
-					
-					do
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-					while (FFPROBE.isRunning);
-				}
-
-				String rotate = "";
-				if (caseRotate.isSelected()) {
-					String transpose = "";
-					switch (comboRotate.getSelectedItem().toString()) {
-					case "90":
-						if (caseMiror.isSelected())
-							transpose = "transpose=3";
-						else
-							transpose = "transpose=1";
-						break;
-					case "-90":
-						if (caseMiror.isSelected())
-							transpose = "transpose=0";
-						else
-							transpose = "transpose=2";
-						break;
-					case "180":
-						if (caseMiror.isSelected())
-							transpose = "transpose=1,transpose=1,hflip";
-						else
-							transpose = "transpose=1,transpose=1";
-						break;
-					}
-
-					rotate = transpose;
-				}
-
-				String miror = "";
-				if (caseMiror.isSelected() && caseRotate.isSelected() == false)
-					miror = "hflip";
-
-				String filter = "";
-				String frameSize = "";
-				if (Shutter.caseEnableCrop.isSelected())
-				{			
-					//IMPORTANT
-					float imageRatio = 1.0f;
-					
-					int ow = FFPROBE.imageWidth;  
-					
-					if (Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
-					{
-						String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");
-						
-			        	ow = Integer.parseInt(s[0]);   
-			        	
-						imageRatio = (float) FFPROBE.imageWidth / ow;
-					}
-					
-					int cropWidth = Math.round((float) Integer.parseInt(Shutter.textCropWidth.getText()) / imageRatio);
-					int cropHeight = Math.round((float) Integer.parseInt(Shutter.textCropHeight.getText()) / imageRatio);
-					int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
-					int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
-
-					filter = " -vf crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;;
-				}
-				
-				if (comboResolution.getSelectedItem().toString().contains(":"))
-				{					
-		        	if (comboResolution.getSelectedItem().toString().contains("auto"))
-		        	{
-		        		String s[] = comboResolution.getSelectedItem().toString().split(":");
-		        		if (s[0].toString().equals("auto"))
-		        			frameSize = "scale=-1:" + s[1];
-		        		else
-		        			frameSize = "scale="+s[0]+":-1";
-		        	}
-		        	else
-		        	{
-			            String s[] = comboResolution.getSelectedItem().toString().split(":");
-			    		float number =  (float) 1 / Integer.parseInt(s[0]);
-			    		frameSize = "scale=iw*" + number + ":ih*" + number;
-		        	}
-					
-				}
-				else
-				{
-					String i[] = FFPROBE.imageResolution.split("x");
-		        	String o[] = FFPROBE.imageResolution.split("x");
-					
-					if (comboResolution.getSelectedItem().toString().contains("%"))
-					{
-						double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
-												
-						o[0] = String.valueOf((int) (Integer.parseInt(i[0]) * value));
-						o[1] = String.valueOf((int) (Integer.parseInt(i[1]) * value));
-					}
-					else					
-						o = comboResolution.getSelectedItem().toString().split("x");	
-		
-		        	int iw = Integer.parseInt(i[0]);
-		        	int ih = Integer.parseInt(i[1]);		        	
-		        	
-		        	int ow = Integer.parseInt(o[0]);
-		        	int oh = Integer.parseInt(o[1]);        	
-		        	float ir = (float) iw / ih;
-		        	
-		        	//Original sup. à la sortie
-		        	if (iw > ow && ih > oh)
-		        	{
-		        		//Si la hauteur calculée est > à la hauteur de sortie
-		        		if ( (float) ow / ir >= oh)
-		        			frameSize = "scale=" + ow + ":-1,crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
-		        		else
-		        			frameSize = "scale=-1:" + oh + ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
-		        	}
-		        	else
-		        		frameSize = "scale=" + ow + ":" + oh;
-				}
-									
-				if (frameSize != "")
-				{
-					if (filter != "")
-						filter += "," + frameSize;
-					else	
-						filter = " -vf " + frameSize;
-				}
-				
-				if (filter != "")
-				{
-					if (rotate != "")
-						filter += "," + rotate;
-					if (miror != "")
-						filter += "," + miror;
-				}
-				else
-				{
-					if (rotate != "" && miror != "")
-						filter += " -vf " + rotate + "," + miror;
-					else if (rotate != "")
-						filter += " -vf " + rotate;
-					else if (miror != "")
-						filter += " -vf " + miror;
-				}
-
-				//EXR gamma
-				String EXRGamma = Colorimetry.setInputCodec(extension);
-				
-				String compression = "";
-				int fileSize = 0;
-				if (comboFonctions.getSelectedItem().toString().equals("JPEG") && extension.toLowerCase().equals(".pdf") == false && isRaw == false)
-				{
-					int q = Math.round((float) 31 - (float) ((float) ((float) Integer.valueOf(comboFilter.getSelectedItem().toString().replace("%", "")) * 31) / 100));						
-					compression = " -q:v " + q;
-													    		
-					File fileOut = new File(dirTemp + "fileSize.jpg");
-					if (fileOut.exists()) fileOut.delete();
-					
-					//InOut
-					InputAndOutput.getInputAndOutput();	
-					
-					FFMPEG.run(InputAndOutput.inPoint + EXRGamma + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + filter + compression + " -vframes 1 " + '"' + fileOut + '"');							
-					
-					do
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-					while(FFMPEG.runProcess.isAlive());
-					
-					enableAll();
-					
-					if (fileOut.exists())
-					{
-						fileSize = (int) (float) fileOut.length() / 1024;						
-						fileOut.delete();
-					}					
-							
-					if (filter != "")
-						filter += ",drawtext=fontfile=" + pathToFont + ":text='" + fileSize + "Ko" + "':" + '"' + "x=(w-tw)*0.95:y=h-(2*lh)" + '"' + ":fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
-					else
-						filter = " -vf drawtext=fontfile=" + pathToFont + ":text='" + fileSize + "Ko" + "':" + '"' + "x=(w-tw)*0.95:y=h-(2*lh)" + '"' + ":fontcolor=white:fontsize=w*0.0422:box=1:boxcolor=0x00000099";
-				}							
-								
-				//FFPLAY
-				if (extension.toLowerCase().equals(".pdf"))
-				{
-					XPDF.toFFPLAY(filter);
-				}
-				else if (isRaw)
-				{
-					DCRAW.toFFPLAY(filter);
-				}
-				else if (comboFonctions.getSelectedItem().toString().equals("JPEG"))
-				{
-					String cmd = filter + " -an -c:v mjpeg" + compression + " -vframes 1 -f nut pipe:play |";
-					FFMPEG.toFFPLAY(InputAndOutput.inPoint + EXRGamma + " -i " + '"' + file + '"' + InputAndOutput.outPoint + cmd);
-				}
-				else
-					FFPLAY.run(EXRGamma + " -i " + '"' + file + '"' + filter);
-			}
-			
-			break;
-		}			
-							
-		Thread thread = new Thread(new Runnable(){			
-			@Override
-			public void run() {	
-				try {
-					do {								
-						Thread.sleep(10);								
-					} while (FFMPEG.isRunning == false);	
-					
-					enableAll();
-					lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-					lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
-					
-					do {								
-						Thread.sleep(10);								
-					} while (FFMPEG.isRunning);	
-				} catch (InterruptedException e1) {}	
-				
-				if (case2pass.isSelected())
-				{						
-					File fichier = new File(liste.getElementAt(0));
-					File folder = new File(fichier.getParent());
-					String ext = fichier.toString().substring(fichier.toString().lastIndexOf("."));
-					
-					if (caseChangeFolder1.isSelected())
-						folder = new File(lblDestination1.getText());					
-
-					FunctionUtils.listFilesForFolder(fichier.getName().replace(ext, ""), folder);
-				}
-			}
-		});
-		thread.start();	
-		
-	}
-	
 	public static void hwaccel(final String cmd) {
 		
-		error = false;		
+		error = false;	
+		isRunning = true;
 	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator());
 			
 		runProcess = new Thread(new Runnable()  {
@@ -984,7 +662,6 @@ public static StringBuilder errorLog = new StringBuilder();
 						
 					if (cmd.contains("-hwaccels"))
 					{
-						StringBuilder hwaccels = new StringBuilder();
 						InputStreamReader isr = new InputStreamReader(process.getInputStream());
 				        BufferedReader br = new BufferedReader(isr);
 				        
@@ -1003,9 +680,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				        }
 				        
 				        hwaccels.append(language.getProperty("aucun"));
-				        				        				        
-				        Settings.comboGPU = new JComboBox<String>( hwaccels.toString().split(System.lineSeparator()) );
-					}
+				    }
 					else
 					{
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
@@ -1023,10 +698,13 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					process.waitFor();					
 				   					     																		
-					} catch (IOException io) {//Bug Linux							
-					} catch (InterruptedException e) {
-						error = true;
-					}
+				} catch (IOException io) {//Bug Linux							
+				} catch (InterruptedException e) {
+					error = true;
+				}
+				finally {
+					isRunning = false;
+				}
 				
 			}				
 		});		
@@ -1043,8 +721,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		//Check is GPU can decode				
 		if (System.getProperty("os.name").contains("Windows")
-		&& Settings.comboGPU.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-		&& Settings.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
+		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
+		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
 		|| System.getProperty("os.name").contains("Windows") && force)
 		{
 			String vcodec = "";
@@ -1088,7 +766,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false || force)
 					{						
 						//Check for Nvidia or Intel GPU
-						if (Settings.comboGPU.getSelectedItem().toString().equals("auto") || force)
+						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") || force)
 						{
 							//Cuda
 							FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
@@ -1128,7 +806,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						}
 						else //Check the current selection
 						{
-							FFMPEG.gpuFilter(" -hwaccel " + Settings.comboGPU.getSelectedItem().toString() + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Settings.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+							FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
 							
 							do {
 								Thread.sleep(100);
@@ -1492,7 +1170,9 @@ public static StringBuilder errorLog = new StringBuilder();
 		try {
 		        				
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+			{
 				Runtime.getRuntime().exec("kill -SIGSTOP " + process.pid());
+			}
 			else
 			{					           	            
 				String pausep = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -1511,10 +1191,13 @@ public static StringBuilder errorLog = new StringBuilder();
 	public static void resumeProcess()
 	{
 		try {	
+			
 			elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 			
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))        
-		        Runtime.getRuntime().exec("kill -SIGCONT " + process.pid());
+			{
+				Runtime.getRuntime().exec("kill -SIGCONT " + process.pid());
+			}
 			else
 			{				
 				String pausep = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -1522,6 +1205,8 @@ public static StringBuilder errorLog = new StringBuilder();
 				pausep = '"' + pausep.substring(0,(int) (pausep.lastIndexOf("/"))).replace("%20", " ")  + "/Library/pausep.exe" + '"';
 				Runtime.getRuntime().exec(pausep + " " + process.pid() + " /r");
 			}
+			
+			btnStart.setText(language.getProperty("btnPauseFunction"));
 			
 			if (System.getProperty("os.name").contains("Windows") && Taskbar.isTaskbarSupported())
 				Taskbar.getTaskbar().setWindowProgressState(frame, Taskbar.State.NORMAL);
@@ -1772,16 +1457,10 @@ public static StringBuilder errorLog = new StringBuilder();
 				 tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass);
 				 tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
 				 
-				 if (tempsRestant.getX() + tempsRestant.getSize().width > lblArrows.getX())
-				 {
-					 lblArrows.setVisible(false);
-				 }
-				 else
-					 lblArrows.setVisible(true);
-				 
 				 if (heures != "" || minutes != "" || secondes != "")
 				 {
-					 tempsRestant.setVisible(true);					 
+					 tempsRestant.setVisible(true);	
+					 lblArrows.setVisible(false);
 				 }
 				 else
 				 {

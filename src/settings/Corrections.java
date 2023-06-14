@@ -52,9 +52,10 @@ public class Corrections extends Shutter {
 			
 			FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
 			
-			//Attente de la fin de FFMPEG
 			do
+			{
 				Thread.sleep(100);
+			}
 			while(FFMPEG.runProcess.isAlive());						
 			
 			if (filterComplex != "") filterComplex += ",";

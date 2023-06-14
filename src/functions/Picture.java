@@ -185,7 +185,7 @@ public class Picture extends Shutter {
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "");		
 						
 						//Hardware decoding
-						String hardwareDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
+						String hardwareDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
 						
 						//InOut		
 						InputAndOutput.getInputAndOutput();

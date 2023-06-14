@@ -113,10 +113,6 @@ public class Settings {
 	public static JTextField txtInputDevice = new JTextField();
 	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
-	private JLabel lblGpuDecoding = new JLabel(Shutter.language.getProperty("lblGpuDecoding"));
-	public static JComboBox<String> comboGPU = new JComboBox<String>(new String[] {"auto", Shutter.language.getProperty("aucun")} );
-	private JLabel lblGpuFiltering = new JLabel(Shutter.language.getProperty("lblGpuFiltering"));
-	public static JComboBox<String> comboGPUFilter = new JComboBox<String>(new String[] {"auto", Shutter.language.getProperty("aucun")} );
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});	
 	private JLabel lblSyncMode = new JLabel(Shutter.language.getProperty("lblSyncMode"));
@@ -177,8 +173,6 @@ public class Settings {
 		lastUsedOutput1.setName("lastUsedOutput1");
 		lastUsedOutput2.setName("lastUsedOutput2");
 		lastUsedOutput3.setName("lastUsedOutput3");
-		comboGPU.setName("comboGPU");
-		comboGPUFilter.setName("comboGPUFilter");
 		comboScale.setName("comboScale");
 		comboSync.setName("comboSync");
 		txtThreads.setName("txtThreads");
@@ -216,7 +210,7 @@ public class Settings {
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(152);
+		scrollBar.setMaximum(92);
 		scrollBar.setBackground(new Color(45, 45, 45));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
@@ -461,120 +455,9 @@ public class Settings {
 		}
 		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
-		
-		lblGpuDecoding.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblGpuDecoding.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, lblGpuDecoding.getPreferredSize().width, 16);
-		frame.getContentPane().add(lblGpuDecoding);
-		
-		comboGPU.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
-		comboGPU.setEditable(false);
-		comboGPU.setSelectedItem(Shutter.language.getProperty("aucun"));
-		comboGPU.setBounds(lblGpuDecoding.getX() + lblGpuDecoding.getWidth() + 6, lblGpuDecoding.getLocation().y - 4, comboGPU.getPreferredSize().width, 22);
-		comboGPU.setMaximumRowCount(10);
-		frame.getContentPane().add(comboGPU);
-		
-		comboGPU.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				if (System.getProperty("os.name").contains("Windows"))
-				{
-					if (comboGPU.getSelectedItem().equals("auto"))
-					{
-						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", Shutter.language.getProperty("aucun") }));
-						comboGPUFilter.setSelectedIndex(0);
-						comboGPUFilter.setEnabled(true);
-					}
-					else if (comboGPU.getSelectedItem().equals("qsv"))
-					{
-						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { "qsv", Shutter.language.getProperty("aucun") }));
-						comboGPUFilter.setSelectedIndex(0);
-						comboGPUFilter.setEnabled(true);
-					}
-					else if (comboGPU.getSelectedItem().equals("cuda"))
-					{
-						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { "cuda", Shutter.language.getProperty("aucun") }));
-						comboGPUFilter.setSelectedIndex(0);
-						comboGPUFilter.setEnabled(true);
-					}
-					else
-					{
-						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { Shutter.language.getProperty("aucun") }));
-						comboGPUFilter.setSelectedIndex(0);
-						comboGPUFilter.setEnabled(false);
-					}
-				}
-				
-			}
 			
-		});
-		
-		JLabel btnHelpGPU = new JLabel(new FlatSVGIcon("contents/help.svg", 15, 15));
-		btnHelpGPU.setHorizontalAlignment(SwingConstants.CENTER);
-		btnHelpGPU.setBounds(comboGPU.getLocation().x + comboGPU.getWidth() + 7, lblGpuDecoding.getY() - 1, 15, 15);
-		frame.getContentPane().add(btnHelpGPU);
-
-		btnHelpGPU.addMouseListener(new MouseListener() {
-
-			private boolean accept = false;
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				btnHelpGPU.setIcon(new FlatSVGIcon("contents/help_pressed.svg", 15, 15));
-				accept = true;
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (accept)
-				{
-					try {
-						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation.html#Set-GPU-decoding"));
-					}catch(Exception er){}
-				}
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnHelpGPU.setIcon(new FlatSVGIcon("contents/help_hover.svg", 15, 15));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				btnHelpGPU.setIcon(new FlatSVGIcon("contents/help.svg", 15, 15));
-				accept = false;
-			}
-
-		});
-	
-		lblGpuFiltering.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblGpuFiltering.setBounds(12, lblGpuDecoding.getLocation().y + lblGpuDecoding.getHeight() + 10, lblGpuFiltering.getPreferredSize().width, 16);
-		frame.getContentPane().add(lblGpuFiltering);
-		
-		comboGPUFilter.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
-		comboGPUFilter.setEditable(false);
-		if (System.getProperty("os.name").contains("Windows") && (comboGPU.getSelectedItem().equals("auto") || comboGPU.getSelectedItem().equals("qsv") || comboGPU.getSelectedItem().equals("cuda")))
-		{
-			comboGPUFilter.setSelectedItem("auto");
-			comboGPUFilter.setEnabled(true);
-		}
-		else
-		{
-			comboGPUFilter.setSelectedItem(Shutter.language.getProperty("aucun"));
-			comboGPUFilter.setEnabled(false);
-		}
-		
-		comboGPUFilter.setBounds(lblGpuFiltering.getX() + lblGpuFiltering.getWidth() + 6, lblGpuFiltering.getLocation().y - 4, comboGPUFilter.getPreferredSize().width, 22);
-		comboGPUFilter.setMaximumRowCount(10);
-		frame.getContentPane().add(comboGPUFilter);
-		
 		lblScaleMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblScaleMode.setBounds(12, lblGpuFiltering.getLocation().y + lblGpuFiltering.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
+		lblScaleMode.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblScaleMode);
 				
 		comboScale.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
@@ -1700,10 +1583,11 @@ public class Settings {
 					}		
 					
 					//caseGPU video player
+					/*
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseGPU"))
 					{
 						VideoPlayer.caseGPU.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-					}
+					}*/
 										
 					//FTP
 					if (eElement.getParentNode().getNodeName().equals("Ftp"))
@@ -2057,7 +1941,7 @@ public class Settings {
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
-			
+			/*
 			//caseGPU video player
 			//Component
 			component = document.createElement("Component");
@@ -2077,7 +1961,7 @@ public class Settings {
 			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseGPU.isSelected())));
 			component.appendChild(cValue);
 			
-			root.appendChild(component);
+			root.appendChild(component);*/
 			
 			//FTP
 			Element ftp = document.createElement("Ftp");

@@ -86,7 +86,7 @@ import settings.Transitions;
 
 public class VideoEncoders extends Shutter {
 	
-	public static void main(boolean encode) {
+	public static void main() {
 		
 		Thread thread = new Thread(new Runnable() {	
 			
@@ -696,7 +696,6 @@ public class VideoEncoders extends Shutter {
 				        String pass = BitratesAdjustement.setPass(fileOutputName);
 				
 						String output = '"' + fileOut.toString() + '"';
-						String previewContainer = "matroska";
 						
 						if (caseStream.isSelected())
 						{
@@ -732,7 +731,6 @@ public class VideoEncoders extends Shutter {
 								case "XAVC":
 																	
 									output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:play" + '"';
-									previewContainer = "mxf";
 									break;
 									
 								case "DNxHD":
@@ -753,7 +751,7 @@ public class VideoEncoders extends Shutter {
 						String gpuDecoding = "";						
 						if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
 						{
-							if (Settings.comboGPU.getSelectedItem().toString().equals("auto") && Settings.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+							if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 							{
 								if (FFMPEG.cudaAvailable)
 								{
@@ -765,11 +763,11 @@ public class VideoEncoders extends Shutter {
 								}
 							}
 							else
-								gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Settings.comboGPUFilter.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+								gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
 						}
 						else
 						{
-							gpuDecoding = " -hwaccel " + Settings.comboGPU.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+							gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
 						}							
 
 						if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
@@ -805,23 +803,13 @@ public class VideoEncoders extends Shutter {
 							if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
 								cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");	
 							
-							if (encode)
-								FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));	
-							else
-							{
-								FFMPEG.toFFPLAY(" " + RecordInputDevice.setInputDevices() + logo + cmd + " -f " + previewContainer + " pipe:play |");							
-								break;
-							}						
+							FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));						
 							
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
-						else if (encode) //Encoding
+						else
 						{
 							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
-						}
-						else //Preview
-						{						
-							FFMPEG.toFFPLAY(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + " -f " + previewContainer + " pipe:play |");
 						}
 
 						do
@@ -974,7 +962,7 @@ public class VideoEncoders extends Shutter {
 				FunctionUtils.OPAtomFolder = null;
 				FunctionUtils.silentTrack = "";
 
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && encode)
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 				{
 					enfOfFunction();
 				}
@@ -1680,7 +1668,7 @@ public class VideoEncoders extends Shutter {
 		if (Shutter.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
-			VideoEncoders.main(true);			
+			VideoEncoders.main();			
 			return true;
 		}
 		

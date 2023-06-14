@@ -91,7 +91,7 @@ import library.FFPROBE;
 public class SubtitlesTimeline {
 
 	public static JFrame frame;
-	public static JTextPane txtSubtitles;
+	public static JTextPane txtSubtitles = new JTextPane();
 	private static JButton lblHelp;
 	public static File srt;
 	public static int number = 0;
@@ -184,75 +184,86 @@ public class SubtitlesTimeline {
 			@Override
 			public void windowClosed(WindowEvent arg0) {				
 
-			if (VideoPlayer.playerVideo != null)
-				VideoPlayer.playerStop();
-			
-			Utils.changeFrameVisibility(Shutter.frame, false);						
-			Utils.changeFrameVisibility(frame, true);
-			
-    		if (Shutter.comboFonctions.getSelectedItem().equals("H.264") || Shutter.comboFonctions.getSelectedItem().equals("H.264"))
-    			FFPROBE.setLength();
-    		
-    		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-    		{
-    			SubtitlesTimeline.frame.dispose();
-    			
-    			if (SubtitlesHelp.frame != null)
-    				SubtitlesHelp.frame.dispose();
-    			
-    			if (SubtitlesEdit.frame != null)
-    				SubtitlesEdit.frame.dispose();
-    		}
-    		
-    		if (srt.exists())
-			{
-			 int q = JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("integrateSRT"), Shutter.language.getProperty("subtitles"), JOptionPane.YES_NO_OPTION);
+				if (VideoPlayer.playerVideo != null)
+					VideoPlayer.playerStop();
+				
+				Utils.changeFrameVisibility(Shutter.frame, false);						
+				Utils.changeFrameVisibility(frame, true);
+				
+	    		if (Shutter.comboFonctions.getSelectedItem().equals("H.264") || Shutter.comboFonctions.getSelectedItem().equals("H.264"))
+	    			FFPROBE.setLength();
+	    		
+	    		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+	    		{
+	    			SubtitlesTimeline.frame.dispose();
+	    			
+	    			if (SubtitlesHelp.frame != null)
+	    				SubtitlesHelp.frame.dispose();
+	    			
+	    			if (SubtitlesEdit.frame != null)
+	    				SubtitlesEdit.frame.dispose();
+	    		}
+	    		
+	    		if (srt.exists())
+				{
+					 int q = JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("integrateSRT"), Shutter.language.getProperty("subtitles"), JOptionPane.YES_NO_OPTION);
+								 
+					 if (q == 0)
+					 {
+						 if (Shutter.caseAddSubtitles.isSelected())
+							 Shutter.caseAddSubtitles.doClick();
 						 
-			 if (q == 0)
-			 {
-				 if (Shutter.caseAddSubtitles.isSelected())
-					 Shutter.caseAddSubtitles.doClick();
-				 
-				 Shutter.caseAddSubtitles.doClick();
-			 }
-			 else
-			 {
-					if (Shutter.caseOpenFolderAtEnd1.isSelected())
-					{						
-						if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux")) 
-						{
-							try {
-								Runtime.getRuntime().exec(new String[]{"/usr/bin/open", "-R", srt.toString()});
-							} catch (Exception e2){}
-						}
-						else if (System.getProperty("os.name").contains("Linux"))
-						{
-							try {
-								Desktop.getDesktop().open(srt.getParentFile());
-							} catch (Exception e2){}
-						}
-						else //Windows
-						{
-							try {
-								Runtime.getRuntime().exec("explorer.exe /select," + srt.toString());
-							} catch (IOException e1) {}
-						}
-					}
-			 }
+						 Shutter.caseAddSubtitles.doClick();
+					 }
+					 else
+					 {
+							if (Shutter.caseOpenFolderAtEnd1.isSelected())
+							{						
+								if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux")) 
+								{
+									try {
+										Runtime.getRuntime().exec(new String[]{"/usr/bin/open", "-R", srt.toString()});
+									} catch (Exception e2){}
+								}
+								else if (System.getProperty("os.name").contains("Linux"))
+								{
+									try {
+										Desktop.getDesktop().open(srt.getParentFile());
+									} catch (Exception e2){}
+								}
+								else //Windows
+								{
+									try {
+										Runtime.getRuntime().exec("explorer.exe /select," + srt.toString());
+									} catch (IOException e1) {}
+								}
+							}
+					 }
+				}
+				
+    			Shutter.comboFonctions.setEnabled(true);
+    			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+    			{
+    				Shutter.comboFonctions.setSelectedItem("");
+        			Shutter.changeFrameSize(false);
+    			}
+    			Shutter.btnStart.setEnabled(true);
+    			
+    			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    			Shutter.frame.setLocation(dim.width / 2 - Shutter.frame.getSize().width / 2, dim.height / 2 - Shutter.frame.getSize().height / 2);
+	    		
+				if (dirTemp.exists())
+				{
+					try {
+						FileUtils.deleteDirectory(dirTemp);
+					} catch (IOException e) {}
+				}
+				
+				if (VideoPlayer.waveform.exists())
+					VideoPlayer.waveform.delete();
+				
+				timeline.removeAll();
 			}
-			
-			if (dirTemp.exists())
-			{
-				try {
-					FileUtils.deleteDirectory(dirTemp);
-				} catch (IOException e) {}
-			}
-			
-			if (VideoPlayer.waveform.exists())
-				VideoPlayer.waveform.delete();
-			
-			timeline.removeAll();
-		}
 
 			@Override
 			public void windowClosing(WindowEvent arg0) {	
@@ -313,7 +324,6 @@ public class SubtitlesTimeline {
             }
         });
     	
-    	txtSubtitles = new JTextPane();
     	SimpleAttributeSet attribs = new SimpleAttributeSet();  
     	StyleConstants.setAlignment(attribs , StyleConstants.ALIGN_CENTER);  
     	txtSubtitles.setCaretColor(Color.BLACK);

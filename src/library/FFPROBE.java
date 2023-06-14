@@ -233,10 +233,10 @@ public static int gopSpace = 124;
 				    		String s[] = str.split(",");	 
 				    		
 				    		String ffmpegTime = s[0].replace(".", ":");	  
-				    					    					    		
+				    					    							    		
 				    		getVideoLengthTC = ffmpegTime;
 				    		totalLength = (getTimeToMS(ffmpegTime));
-				    		
+				    		    		
 				         	if (grpBitrate.isVisible() && totalLength != 0)
 							{     						         		
 					        	 NumberFormat formatter = new DecimalFormat("00");
@@ -1062,7 +1062,8 @@ public static int gopSpace = 124;
 					}
 					
 				} catch (Exception e) {
-					System.out.println(e);				}
+					System.out.println(e);		
+				}
 				finally {
 					calcul = false;
 					frame.setCursor(Cursor.getDefaultCursor());
@@ -1142,7 +1143,7 @@ public static int gopSpace = 124;
 	}
 	
 	private static int getTimeToMS(String time) {
-		
+				
 		String[] t = time.split(":");
 		
 		int heures = Integer.parseInt(t[0]);
