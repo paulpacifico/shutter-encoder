@@ -234,7 +234,7 @@ public class RecordInputDevice {
 					}
 										
 					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
-							+ " -c:v rawvideo -map a? -f nut pipe:play |";
+							+ " -c:v rawvideo -map a? -f nut pipe:play";
 
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
@@ -242,17 +242,8 @@ public class RecordInputDevice {
 						cmd = cmd.replace("0:v", "1:v");					
 														
 					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
-					
-					if (FFMPEG.isRunning) {
-						do {
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e1) {}
-						} while (FFMPEG.isRunning && FFMPEG.error == false);
-					}
-					
-					Shutter.liste.removeAllElements();
-					
+														
+					Shutter.liste.removeAllElements();					
 					Shutter.enableAll();
 					Shutter.progressBar1.setValue(0);
 			}
@@ -379,7 +370,7 @@ public class RecordInputDevice {
 					} 	
 										
 					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
-							+ " -c:v rawvideo -map a? -f nut pipe:play |";
+							+ " -c:v rawvideo -map a? -f nut pipe:play";
 
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));				
 										
@@ -387,17 +378,9 @@ public class RecordInputDevice {
 						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice().replace("video=" + '"' + "No video" + '"' + ":", "") + cmd);
 					else
 						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
+
 					
-					if (FFMPEG.isRunning) {
-						do {
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e1) {}
-						} while (FFMPEG.isRunning && FFMPEG.error == false);
-					}
-					
-					Shutter.liste.removeAllElements();
-					
+					Shutter.liste.removeAllElements();					
 					Shutter.enableAll();
 					Shutter.progressBar1.setValue(0);
 				}

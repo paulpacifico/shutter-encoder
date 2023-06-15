@@ -91,6 +91,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioInputStream;
@@ -285,13 +286,13 @@ public class Shutter {
 	protected static JCheckBox caseRotate;
 	protected static JComboBox<String> comboRotate;
 	protected static JCheckBox caseMiror;
-	protected static JCheckBox caseCreateSequence;
+	public static JCheckBox caseCreateSequence;
 	protected static JLabel lblInterpretation;
 	protected static JLabel lblIsInterpret;
-	protected static JComboBox<String> comboInterpret;
+	public static JComboBox<String> comboInterpret;
 	protected static JCheckBox case2pass;
 	protected static JCheckBox caseQMax;
-	protected static JCheckBox caseEnableSequence;
+	public static JCheckBox caseEnableSequence;
 	protected static JCheckBox caseYear;
 	protected static JCheckBox caseMonth;
 	protected static JCheckBox caseDay;
@@ -305,7 +306,7 @@ public class Shutter {
 	protected static JCheckBox caseLevels;
 	protected static JCheckBox caseColormatrix;
 	protected static JCheckBox caseColorspace;
-	protected static JComboBox<String> caseSequenceFPS;
+	public static JComboBox<String> caseSequenceFPS;
 	protected static JCheckBox caseSetTimecode;
 	protected static JCheckBox caseIncrementTimecode;
 	protected static JCheckBox caseGenerateFromDate;
@@ -1499,11 +1500,17 @@ public class Shutter {
 			@Override
 			@SuppressWarnings("unused")
 			public void mouseReleased(MouseEvent e) {
-				if (accept) {
+				
+				if (accept)
+				{
 					Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+					
 					if (frame.getLocation().x == dim.width / 2 - frame.getSize().width / 2
-							&& frame.getLocation().y == dim.height / 2 - frame.getSize().height / 2)
-						frame.setLocation(frame.getLocation().x - frame.getSize().width - 20, frame.getLocation().y);
+					&& frame.getLocation().y == dim.height / 2 - frame.getSize().height / 2)
+					{
+						frame.setLocation(frame.getLocation().x + new Random().nextInt(50), frame.getLocation().y + new Random().nextInt(50));
+					}
+					
 					try {
 						String newShutter;
 						if (System.getProperty("os.name").contains("Windows")) {
@@ -2532,6 +2539,7 @@ public class Shutter {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				FileDialog dialog = new FileDialog(frame, language.getProperty("import"), FileDialog.LOAD);
 				if (defaultFolder == "")
 				{
@@ -2923,13 +2931,11 @@ public class Shutter {
 							if (language.getProperty("functionCut").equals(function)) 
 							{
 								if (inputDeviceIsRunning)
+								{
 									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
-								else if (caseSetTimecode.isSelected())
+								}
+								else
 									Rewrap.main();
-								else {
-									JOptionPane.showMessageDialog(frame, language.getProperty("chooseInOutPoint"),
-											language.getProperty("noInOuPoint"), JOptionPane.INFORMATION_MESSAGE);						
-								}	
 							}
 							else if ("WAV".equals(function)
 									|| "MP3".equals(function)
@@ -5001,7 +5007,7 @@ public class Shutter {
 					while (FFPROBE.isRunning);
 				
 					//FFMPEGTOFFPLAY
-					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -i " + '"' + file + '"' + " -vf scale=1080:-1 -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:play |");
+					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale=1080:-1 -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:play");
 				}
 
 			}
@@ -5791,11 +5797,11 @@ public class Shutter {
 					videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
 	
 					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
-							+ " -c:v rawvideo -map 1:a -f nut pipe:play |";
+							+ " -c:v rawvideo -map 1:a -f nut pipe:play";
 	
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 										
-					FFMPEG.toFFPLAY(" -i " + '"' + videoFile + '"' + " -itsoffset " + offset + " -i " + '"' + audioFile + '"' + cmd);
+					FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -i " + '"' + videoFile + '"' + " -itsoffset " + offset + " -i " + '"' + audioFile + '"' + cmd);
 	
 					if (FFMPEG.isRunning) {
 						do {
@@ -8160,7 +8166,7 @@ public class Shutter {
 				}
 				
 				setSize(bounds.width, bounds.height);
-									
+
 				//Define center position after the size is correct
 				if (resetLocation)
 				{
@@ -13346,7 +13352,7 @@ public class Shutter {
 								}
 								else
 								{				
-									VideoPlayer.btnPlay.setText("⏸");
+									VideoPlayer.resizeAll();
 									
 									float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
 									
@@ -13354,6 +13360,8 @@ public class Shutter {
 									timeIn = Timecode.getNonDropFrameTC(timeIn);
 									
 									VideoPlayer.playerSetTime(timeIn);															
+									
+									VideoPlayer.btnPlay.doClick();
 									
 									do {
 										Thread.sleep(100);
@@ -16835,7 +16843,7 @@ public class Shutter {
 		lblGpuDecoding = new JLabel(Shutter.language.getProperty("lblGpuDecoding"));
 		lblGpuDecoding.setVisible(false);
 		lblGpuDecoding.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblGpuDecoding.setBounds(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY(), lblGpuDecoding.getPreferredSize().width, 15);
+		lblGpuDecoding.setBounds(750, lblBy.getY(), lblGpuDecoding.getPreferredSize().width, 15);
 		statusBar.add(lblGpuDecoding);
 								
 		//GPU decoding
@@ -16854,10 +16862,10 @@ public class Shutter {
 		comboGPUDecoding.setName("comboGPUDecoding");
 		comboGPUDecoding.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboGPUDecoding.setEditable(false);
-		comboGPUDecoding.setVisible(false);
 		comboGPUDecoding.setSelectedItem(Shutter.language.getProperty("aucun"));
 		comboGPUDecoding.setBounds(lblGpuDecoding.getX() + lblGpuDecoding.getWidth() + 6, lblGpuDecoding.getLocation().y - 1, comboGPUDecoding.getPreferredSize().width, 16);
 		comboGPUDecoding.setMaximumRowCount(10);
+		comboGPUDecoding.setVisible(false);
 		statusBar.add(comboGPUDecoding);
 		
 		comboGPUDecoding.addActionListener(new ActionListener() {
@@ -17854,10 +17862,17 @@ public class Shutter {
 			{
 				frame.setBounds(frame.getX() - (1350 - 312 - 332) / 2, frame.getY(), 1350 - 312, frame.getHeight());
 			}
-			else if (frame.getSize().width == 1350)
+			else if (frame.getSize().width == 654)
+			{
+				frame.setBounds(frame.getX() - (1350 - 312 - 654) / 2, frame.getY(), 1350 - 312, frame.getHeight());
+			}
+			else if (frame.getSize().width >= 1350)
 			{
 				frame.setBounds(frame.getX() + 312 / 2, frame.getY(), 1350 - 312, frame.getHeight());
 			}
+			
+			VideoPlayer.setPlayerButtons(true);
+			VideoPlayer.player.setVisible(true);
 
 			lblArrows.setVisible(false);
 			lblGpuDecoding.setVisible(true);
@@ -17869,14 +17884,47 @@ public class Shutter {
 			}			
 			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);				
 		}
+		else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionNormalization").equals(function))
+		{
+			if (frame.getSize().width == 332)
+			{
+				frame.setBounds(frame.getX() - (654 - 332) / 2, frame.getY(), 654, frame.getHeight());
+			}
+			else if (frame.getSize().width == 1350 - 312)
+			{
+				frame.setBounds(frame.getX() - (654 - (1350 - 312)) / 2, frame.getY(), 654, frame.getHeight());
+			}
+			else if (frame.getSize().width == 1350)
+			{
+				frame.setBounds(frame.getX() + (1350 - 654) / 2, frame.getY(), 654, frame.getHeight());
+			}
+
+			VideoPlayer.setPlayerButtons(false);
+			VideoPlayer.player.setVisible(false);
+			
+			lblArrows.setVisible(true);
+			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
+			lblGpuDecoding.setVisible(false);
+			comboGPUDecoding.setVisible(false);			
+			lblGpuFiltering.setVisible(false);
+			comboGPUFilter.setVisible(false);		
+			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);			
+		}
 		else if (bigger && frame.getSize().width < 1350)
 		{
 			if (frame.getSize().width == (1350 - 312))
 			{
 				frame.setBounds(frame.getX() - 312 / 2, frame.getY(), 1350, frame.getHeight());
 			}
+			else if (frame.getSize().width == 654)
+			{
+				frame.setBounds(frame.getX() - (1350 - 654) / 2, frame.getY(), 1350, frame.getHeight());
+			}
 			else
 				frame.setBounds(frame.getX() - (1350 - 332) / 2, frame.getY(), 1350, frame.getHeight());
+			
+			VideoPlayer.setPlayerButtons(true);
+			VideoPlayer.player.setVisible(true);
 			
 			lblArrows.setVisible(false);
 			lblGpuDecoding.setVisible(true);
@@ -17941,7 +17989,7 @@ public class Shutter {
 		    
 		int i = 0;
 						
-		if ((frame.getHeight() < screenHeight - taskBarHeight || frame.getWidth() < screenWidth) && frame.getWidth() > 332 && frame.getWidth() != (1350 - 312))
+		if ((frame.getHeight() < screenHeight - taskBarHeight || frame.getWidth() < screenWidth) && frame.getWidth() > 332 && frame.getWidth() != 654 && frame.getWidth() != (1350 - 312))
 		{		
 			i = screenHeight - taskBarHeight - frame.getHeight();
 			frame.setSize(screenWidth, screenHeight - taskBarHeight);
@@ -18254,7 +18302,7 @@ public class Shutter {
 							}
 							else
 								addToList.setText(language.getProperty("filesVideoOrAudioOrPicture"));
-							
+														
 							caseDisplay.setEnabled(false);
 							grpResolution.setVisible(false);
 							grpBitrate.setVisible(false);							
@@ -18856,7 +18904,7 @@ public class Shutter {
 						} else if ("DNxHD".equals(function) || "DNxHR".equals(function) || "Apple ProRes".equals(function) || "QT Animation".equals(function) || ("GoPro CineForm").equals(function) || "Uncompressed".equals(function) ) {
 							
 							addToList.setText(language.getProperty("filesVideoOrPicture"));			
-														
+
 							if (comboFonctions.getSelectedItem().equals("QT Animation") || subtitlesBurn == false)
 								caseDisplay.setEnabled(false);
 							else
@@ -20387,6 +20435,14 @@ public class Shutter {
 						grpResolution.repaint();
 						topPanel.repaint();
 						statusBar.repaint();
+						
+						/*
+						if (language.getProperty("functionMerge").equals(function))
+						{
+							VideoPlayer.setPlayerButtons(false);
+						}
+						else
+							VideoPlayer.setPlayerButtons(true);*/
 						
 					} catch (Exception e1) {
 					}

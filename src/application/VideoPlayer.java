@@ -120,7 +120,7 @@ public class VideoPlayer {
     public static int playerInMark = 0;
     public static int playerOutMark = 0;
     public static Image frameVideo;
-	private static double screenRefreshRate = 16.7; //Vsync in ms
+	public static double screenRefreshRate = 16.7; //Vsync in ms
 	private static long lastEvTime = 0;
     public static boolean playerLoop = false;
     public static boolean frameIsComplete = false;
@@ -726,10 +726,8 @@ public class VideoPlayer {
 		    	lastEvTime = time;		      
 		    	player.repaint();
 		    	getTimePoint(playerCurrentFrame); 
-		    }
-			
-		}
-				
+		    }			
+		}				
 	}
 	
 	public static boolean playerIsPlaying() {
@@ -852,7 +850,7 @@ public class VideoPlayer {
 	}
 		
     public static void setMedia() {
-    		    	
+
     	//Updating video file
 		if (Shutter.liste.getSize() != 0)
 		{
@@ -1137,7 +1135,14 @@ public class VideoPlayer {
 			caseInternalTc.setSelected(false);		
 			
 			lblPosition.setVisible(false);
-			lblDuration.setVisible(false);			
+			lblDuration.setVisible(false);	
+			
+			if (waveform.exists())
+			{
+				waveform.delete();
+				waveformIcon.setIcon(null);
+				waveformIcon.repaint();
+			}
 		}
 		
 		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("processEnded")))
@@ -1145,12 +1150,23 @@ public class VideoPlayer {
 			Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
 		}
 		
-		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 		{
 			caseInH.setVisible(false);
 			caseInM.setVisible(false);
 			caseInS.setVisible(false);
 			caseInF.setVisible(false);
+			caseOutH.setVisible(false);
+			caseOutM.setVisible(false);
+			caseOutS.setVisible(false);
+			caseOutF.setVisible(false);
+		}
+		else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
+		{
+			caseInH.setVisible(true);
+			caseInM.setVisible(true);
+			caseInS.setVisible(true);
+			caseInF.setVisible(true);
 			caseOutH.setVisible(false);
 			caseOutM.setVisible(false);
 			caseOutS.setVisible(false);
@@ -1186,9 +1202,9 @@ public class VideoPlayer {
 			
 			Shutter.btnStart.setEnabled(false);
 		}
-		
+				
 		resizeAll();
-		
+				
 		if (Shutter.fileList.hasFocus() == false)
 		{
 			waveformContainer.requestFocus();
@@ -1210,7 +1226,14 @@ public class VideoPlayer {
 			caseOutS.setVisible(false);
 			caseOutF.setVisible(false);
 			lblDuration.setVisible(false);
-			lblPosition.setVisible(true);
+			
+			if (Shutter.liste.getSize() > 0)
+			{
+				lblPosition.setVisible(true);
+			}
+			else
+				lblPosition.setVisible(false);
+			
 			lblVolume.setVisible(true);
 			sliderVolume.setVisible(true);
 			lblSpeed.setVisible(false);
@@ -1233,7 +1256,7 @@ public class VideoPlayer {
 			casePlaySound.setVisible(true);
 			showScale.setVisible(false);
 		}
-		else if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || enable == false) //Image or disableAll()
+		else if (Shutter.frame.getSize().width == 654 || FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || enable == false) //Image or disableAll()
 		{
 			waveformContainer.setVisible(false);
 			waveformIcon.setVisible(false);
@@ -1265,7 +1288,7 @@ public class VideoPlayer {
 				ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
 			}
 
-			if (ratio > 0.8f)
+			if (ratio > 0.8f && Shutter.liste.getSize() > 0)
 				showScale.setVisible(true);
 			else
 				showScale.setVisible(false);
@@ -1297,7 +1320,7 @@ public class VideoPlayer {
 			}
 		}
 		else
-		{						
+		{				
 			if (FFPROBE.audioOnly)
 			{
 				Shutter.caseVideoFadeIn.setEnabled(false);
@@ -1312,7 +1335,7 @@ public class VideoPlayer {
 				if (Shutter.caseVideoFadeOut.isSelected())
 					Shutter.spinnerVideoFadeOut.setEnabled(true);
 			}
-										
+													
 			waveformContainer.setVisible(true);
 			waveformIcon.setVisible(true);
 			caseInH.setVisible(true);
@@ -1323,8 +1346,16 @@ public class VideoPlayer {
 			caseOutM.setVisible(true);
 			caseOutS.setVisible(true);
 			caseOutF.setVisible(true);
-			lblDuration.setVisible(true);
-			lblPosition.setVisible(true);
+			if (Shutter.liste.getSize() > 0)
+			{
+				lblDuration.setVisible(true);
+				lblPosition.setVisible(true);
+			}
+			else
+			{
+				lblDuration.setVisible(false);
+				lblPosition.setVisible(false);
+			}
 			lblVolume.setVisible(true);
 			sliderVolume.setVisible(true);
 			lblSpeed.setVisible(true);
@@ -1369,7 +1400,11 @@ public class VideoPlayer {
 			else
 			{
 				caseInternalTc.setVisible(true);
-				showScale.setVisible(true);
+				
+				if (Shutter.liste.getSize() > 0)
+				{
+					showScale.setVisible(true);
+				}
 			}
 			
 			Shutter.caseAddSubtitles.setEnabled(true);
@@ -2991,6 +3026,23 @@ public class VideoPlayer {
 		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.currentFPS) % 60));    		
 		caseInF.setText(Shutter.formatter.format(Math.floor(timeIn % FFPROBE.currentFPS)));
 		
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
+		{
+			if (timeIn > 0)
+			{
+				Shutter.caseAudioOffset.setEnabled(true);
+				Shutter.caseAudioOffset.setSelected(true);
+				Shutter.txtAudioOffset.setEnabled(true);				
+				Shutter.txtAudioOffset.setText(String.valueOf((int) timeIn));
+			}
+			else
+			{
+				Shutter.caseAudioOffset.setEnabled(false);
+				Shutter.caseAudioOffset.setSelected(false);
+				Shutter.txtAudioOffset.setEnabled(false);
+				Shutter.txtAudioOffset.setText("0");
+			}					
+		}
 	}
 	
 	private void grpOut(){
@@ -3884,9 +3936,8 @@ public class VideoPlayer {
 			waitProcess.start();
 		}
 		
-		if ((forceRefresh || runProcess.isAlive() == false) && videoPath != null && Shutter.doNotLoadImage == false)
-		{			
-			
+		if ((forceRefresh || runProcess.isAlive() == false) && videoPath != null && Shutter.liste.getSize() >  0 && Shutter.doNotLoadImage == false)
+		{	
 			runProcess = new Thread (new Runnable() {
 			
 			@Override
@@ -4387,7 +4438,7 @@ public class VideoPlayer {
 				
 			//Waveforms
 			if (isPiping == false && Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false)
-			{
+			{	
 				addWaveform(false);				 					
 			}
 			
@@ -4568,7 +4619,7 @@ public class VideoPlayer {
 				Shutter.fileLocX = Shutter.fileName.getLocation().x;
 				Shutter.fileLocY = Shutter.fileName.getLocation().y;
 			}
-			
+						
 			btnPrevious.setBounds(player.getLocation().x + player.getSize().width / 2 - 21 - 4, slider.getY() + slider.getHeight() + 6, 22, 21);		
 			btnNext.setBounds(player.getLocation().x + player.getSize().width / 2 + 4, btnPrevious.getLocation().y, 22, 21);		
 			btnPlay.setBounds(btnPrevious.getLocation().x - 40 - 4, btnPrevious.getLocation().y, 40, 21);				
@@ -4613,8 +4664,8 @@ public class VideoPlayer {
 						
 			lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, lblSpeed.getY());	
 			sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() + 1, sliderSpeed.getY(), sliderSpeed.getWidth(), 22);	
-			
-			if (Shutter.windowDrag == false && videoPath != null)
+
+			if (Shutter.windowDrag == false && videoPath != null && FFMPEG.isRunning == false)
 			{	
 				if (Shutter.inputDeviceIsRunning)
 				{
