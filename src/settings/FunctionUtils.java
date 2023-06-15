@@ -1422,7 +1422,7 @@ public class FunctionUtils extends Shutter {
 		}
 		
 		//Open the folder
-		if (caseOpenFolderAtEnd1.isSelected() && cancelled == false && FFMPEG.error == false)
+		if (caseOpenFolderAtEnd1.isSelected() && comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false && cancelled == false && FFMPEG.error == false)
 		{
 			try {
 				Desktop.getDesktop().open(new File(output));

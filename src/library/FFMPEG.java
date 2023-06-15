@@ -19,9 +19,16 @@
 
 package library;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FileDialog;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Taskbar;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -39,7 +46,8 @@ import java.text.NumberFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -73,6 +81,7 @@ public static boolean isRunning = false;
 public static BufferedWriter writer;
 public static Thread runProcess = new Thread();
 public static Process process;
+private static Image frameVideo;
 public static String analyseLufs;
 public static Float mseSensibility = 800f;
 public static float newVolume;
@@ -249,8 +258,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					        playerThread.start();
 						}
 				        
-						while ((line = input.readLine()) != null) {
-														
+						while ((line = input.readLine()) != null)
+						{			
 							getAll.append(line);
 							getAll.append(System.lineSeparator());							
 							
@@ -267,22 +276,20 @@ public static StringBuilder errorLog = new StringBuilder();
 									setProgress(line, false, cmd);	
 							}
 							else
-								break;
-																			
-						}//While							
+								break;																			
+						}						
 						process.waitFor();	
 												
 						if (cancelled == false)
 							postAnalyse();						
 					   					     																		
-						} catch (IOException io) {//Bug Linux							
-						} catch (InterruptedException e) {
-							error = true;			
-						} finally {
-							isRunning = false;
-							caseRunInBackground.setEnabled(false);	
-							caseDisplay.setEnabled(true);
-						}
+					} catch (IOException io) {//Bug Linux							
+					} catch (InterruptedException e) {
+						error = true;			
+					} finally {
+						isRunning = false;
+						caseRunInBackground.setEnabled(false);	
+					}
 					
 				}				
 			});		
@@ -355,77 +362,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 
-	public static void toFFPLAY(final String cmd) {
-		
-			error = false;		
-			
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			
-			isRunning = true;
-			
-			runProcess = new Thread(new Runnable()  {
-				
-				@Override
-				public void run() {
-					
-					try {
-						String PathToFFMPEG;
-						ProcessBuilder processFFMPEG;
-						File file;
-						if (fileList.getSelectedIndices().length == 0)
-							file = new File(liste.firstElement());
-						else							
-							file = new File(fileList.getSelectedValue());							
-						
-						if (System.getProperty("os.name").contains("Windows"))
-						{
-							PathToFFMPEG = "Library\\ffmpeg.exe";
-							processFFMPEG = new ProcessBuilder("cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');
-						}
-						else
-						{
-							PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
-							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -i " + '"' + "pipe:play" + '"' + " -window_title " + '"' + file.getName() + '"');	
-						}		
-										
-						Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " " + PathToFFMPEG.replace("ffmpeg", "ffplay") + " -i " + '"' + "pipe:play" +  '"' + " -window_title " + '"' + file.getName() + '"'
-						+  System.lineSeparator() + System.lineSeparator());
-						
-						process = processFFMPEG.start();
-												
-						String line;
-						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-						
-						while ((line = input.readLine()) != null) {
-							
-							Console.consoleFFPLAY.append(line + System.lineSeparator() );		
-						
-							//Errors
-							checkForErrors(line);
-
-							 if (line.contains("frame"))
-								frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));		
-							
-																			
-						}//While					
-						process.waitFor();															
-					   					     																		
-						} catch (IOException io) {//Bug Linux							
-						} catch (InterruptedException e) {
-							error = true;
-						} finally {
-							isRunning = false;
-						}
-					
-				}				
-			});		
-			runProcess.start();	
-	}
-	
 	public static void toSDL(boolean isVideoPlayer) {
-				
+		
 		if (fileList.getSelectedIndices().length > 1 && isVideoPlayer == false)
 		{
 			String input = "";
@@ -445,8 +383,8 @@ public static StringBuilder errorLog = new StringBuilder();
 
 			hstack += "hstack=" + n + "[out]";
 
-			FFMPEG.toFFPLAY(input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map "
-					+ '"' + "[out]" + '"' + " -map a? -f nut pipe:play |");
+			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map "
+					+ '"' + "[out]" + '"' + " -map a? -f nut pipe:play");
 		} else {
 						
 			//File
@@ -513,7 +451,8 @@ public static StringBuilder errorLog = new StringBuilder();
 						
 						audioOutput += "vstack=" + (i + 1) + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
 					}
-				} else if (FFPROBE.channels == 1) 
+				} 
+				else if (FFPROBE.channels == 1) 
 				{
 					if (inputDeviceIsRunning && RecordInputDevice.audioDeviceIndex > 0 && overlayDeviceIsRunning && RecordInputDevice.overlayAudioDeviceIndex > 0)
 					{
@@ -580,7 +519,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				inputFile = new File(output.replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
 			}
 			
-			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -map a? -f nut pipe:play |";
+			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -map a? -f nut pipe:play";
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			
@@ -603,39 +542,232 @@ public static StringBuilder errorLog = new StringBuilder();
 			} 
 			else
 				FFMPEG.toFFPLAY(" -i " + '"' + inputFile + '"' + cmd);					
-			
-			if (FFMPEG.isRunning)
-			{
-				do {
-					if (FFMPEG.error)
-					{
-						JOptionPane.showConfirmDialog(frame, language.getProperty("cantReadFile"),
-								language.getProperty("menuItemVisualiser"), JOptionPane.PLAIN_MESSAGE,
-								JOptionPane.ERROR_MESSAGE);
-						break;
-					}
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e1) {
-					}
-				} while (FFMPEG.isRunning && FFMPEG.error == false);
-			}
-			
-			//Mode concat
-			if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
-			{		
-				File listeBAB = new File(output.replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));			
-				listeBAB.delete();
-			}
-
-			if (FFMPEG.isRunning)
-				FFMPEG.process.destroy();
-
-			enableAll();
+						
 			progressBar1.setValue(0);
 		}
 	}
+ 	
+	public static void toFFPLAY(final String cmd) {
+		
+		error = false;		
+		
+		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
+		isRunning = true;
+		
+		runProcess = new Thread(new Runnable()  {
+			
+			@Override
+			public void run() {
+				
+				try {
+					
+					String PathToFFMPEG;
+					ProcessBuilder processFFMPEG;
+					
+					//Image sequence
+					String fps = " -r " + FFPROBE.currentFPS;
+					if (Shutter.caseCreateSequence.isSelected())
+					{
+						fps = " -r " +  Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."));
+					}
+					else if (inputDeviceIsRunning || RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
+					{
+						fps = "";
+					}
 
+					if (System.getProperty("os.name").contains("Windows"))
+					{
+						PathToFFMPEG = "Library\\ffmpeg.exe";
+						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play " + fps + " -c:v bmp -an -f image2pipe pipe:-"});
+					}
+					else
+					{
+						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
+						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
+						
+						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play " + fps + " -c:v bmp -an -f image2pipe pipe:-");	
+						process = processFFMPEG.start();
+					}		
+				
+					directDisplay();
+									
+					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play " + fps + " -c:v bmp -an -f image2pipe pipe:-"
+					+  System.lineSeparator() + System.lineSeparator());
+
+					String line;
+					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
+					
+					while ((line = input.readLine()) != null)
+					{												
+						Console.consoleFFPLAY.append(line + System.lineSeparator() );		
+					
+						//Errors
+						checkForErrors(line);
+
+						 if (line.contains("frame"))
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
+					}					
+					process.waitFor();															
+				   					     																		
+				} catch (IOException io) {//Bug Linux							
+				} catch (InterruptedException e) {
+					error = true;
+				} finally {
+					
+					//Mode concat
+					if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+					{		
+						File inputFile = new File(VideoPlayer.videoPath);
+						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
+						File listeBAB = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));			
+						listeBAB.delete();
+					}
+					
+					isRunning = false;
+				}
+				
+			}				
+		});		
+		runProcess.start();	
+	}
+
+	@SuppressWarnings("serial")
+	public static void directDisplay() {
+		
+		String s[] = FFPROBE.imageResolution.split("x"); 
+		int iw = Integer.parseInt(s[0]);
+    	int ih = Integer.parseInt(s[1]);          	       	
+    	float ir = (float) iw / ih;
+    	
+    	int width = 1080;
+    	int height = (int) ((float) width / ir);
+    	
+		JFrame frame = new JFrame();
+		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		if (RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
+		{
+			frame.setTitle(language.getProperty("preview"));			
+		}
+		else
+			frame.setTitle(new File(Shutter.fileList.getSelectedValue()).getName());
+		
+		frame.setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setLayout(null);
+
+		GraphicsConfiguration config = frame.getGraphicsConfiguration();
+		GraphicsDevice myScreen = config.getDevice();
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] allScreens = env.getScreenDevices();
+		int screenIndex = -1;
+		for (int i = 0; i < allScreens.length; i++) {
+		    if (allScreens[i].equals(myScreen))
+		    {
+		    	screenIndex = i;
+		        break;
+		    }
+		}
+
+		int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();	
+		int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
+					
+    	int audioHeight = FFPROBE.channels * 12;
+    	
+    	/*if (FFPROBE.stereo)
+    		audioHeight = audioHeight * 2;*/
+		
+		frame.setSize(width, height + audioHeight);				
+		frame.setLocation(screenWidth / 2 - frame.getSize().width / 2, screenHeight / 2 - frame.getSize().height / 2);
+				
+		JPanel display = new JPanel() {
+			
+            @Override
+            protected void paintComponent(Graphics g) {
+            	
+                super.paintComponent(g);
+                
+                Graphics2D g2 = (Graphics2D)g;
+                
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                
+                g2.setColor(Color.BLACK);
+
+                setSize(frame.getWidth(), frame.getHeight());
+                
+                if (frameVideo != null)
+                {
+                	int audioHeight = FFPROBE.channels * 12;
+                	
+                	/*if (FFPROBE.stereo)
+                		audioHeight = audioHeight * 2;*/
+                	
+                	if (height > screenHeight)
+	                {
+                		int newWidth = (int) ((float) screenHeight * ir);
+	                	g2.drawImage(frameVideo, frame.getWidth() / 2 - newWidth / 2, 0, newWidth, this.getHeight() + audioHeight, this); 
+	                }
+	                else
+	                	g2.drawImage(frameVideo, frame.getWidth() / 2 - this.getWidth() / 2, frame.getHeight() / 2 - (int) (frame.getWidth() / ir) / 2 - audioHeight, this.getWidth(), (int) (frame.getWidth() / ir) + audioHeight, this); 
+                }
+                else
+                	g2.fillRect(0, 0, this.getWidth(), this.getHeight()); 
+            }
+        };
+        
+        display.setSize(frame.getWidth(), frame.getHeight());
+		display.setLayout(null);
+		display.setBackground(Color.BLACK);
+		
+		frame.add(display);
+		frame.setVisible(true);
+		
+		//Image sequence
+		float inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);;
+		if (Shutter.caseCreateSequence.isSelected())
+		{
+			inputFramerateMS = (float) (1000 / (Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."))));
+		}
+						
+		InputStream video = FFMPEG.process.getInputStream();				
+		BufferedInputStream videoInputStream = new BufferedInputStream(video);
+		
+		do {
+			
+			try {
+				
+				long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
+				
+				frameVideo = ImageIO.read(videoInputStream);
+
+				long delay = startTime - System.nanoTime();
+				
+            	if (delay > 0)
+            	{		      
+            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
+	            	try {
+						Thread.sleep((int) (delay / 1000000 / 2));
+					} catch (InterruptedException e) {}
+            		
+	            	delay = startTime - System.nanoTime();
+	            	
+	            	long time = System.nanoTime();
+	            	while (System.nanoTime() - time < delay) {}		
+                }
+            	
+            	display.repaint();
+				
+			} catch (Exception e) {}
+			
+		} while (frameVideo != null && frame.isVisible());
+		
+		process.destroy();
+		frameVideo = null;
+		FFMPEG.isRunning = false;
+		frame.dispose();		
+	}
+	
 	public static void hwaccel(final String cmd) {
 		
 		error = false;	
@@ -1242,6 +1374,10 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (caseEnableSequence.isSelected())
 			{
 				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
+			}
+			else if (FFPROBE.totalLength <= 40) //Image
+			{
+				dureeTotale = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
 			}
 			else if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 			{

@@ -134,7 +134,7 @@ public class Merge extends Shutter {
 						while(FFMPEG.runProcess.isAlive());
 													
 						listeBAB.delete();							
-				
+
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
 							lastActions(fileOut);

@@ -250,8 +250,8 @@ public static int gopSpace = 124;
 					             textS.setText(formatter.format(sec));
 					             textF.setText(formatter.format(frames));
 					             
-					      		/*if (VideoPlayer.playerVideo != null)	
-					     			VideoPlayer.totalDuration();*/
+					      		if (VideoPlayer.playerVideo != null)	
+					     			VideoPlayer.totalDuration();
 
 					            setFilesize();
 							}
@@ -574,8 +574,10 @@ public static int gopSpace = 124;
 		btnStart.setEnabled(false);
 		
 		processFrameData = new Thread(new Runnable()  {
+			
 			@Override
 			public void run() {
+				
 				try {		
 					
 					String PathToFFPROBE;
@@ -1015,24 +1017,6 @@ public static int gopSpace = 124;
 								Thread.sleep(100);
 							} while (processData.isAlive()); 
 						}
-												
-						if (caseEnableSequence.isSelected() == false)
-						{
-							String extension =  lblH264.getText().substring(lblH264.getText().lastIndexOf("."));
-							switch (extension)
-							{
-								case ".jpg":
-								case ".jpeg":
-								case ".png":
-								case ".tif":
-								case ".tiff":
-								case ".tga":
-								case ".bmp":
-								case ".psd":
-									
-									totalLength = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
-							}
-						}
 						
 						if (totalLength != 0 && inputDeviceIsRunning == false)
 						{           		
@@ -1068,7 +1052,7 @@ public static int gopSpace = 124;
 					calcul = false;
 					frame.setCursor(Cursor.getDefaultCursor());
 				}
-			}//Run
+			}
 		});
 		processSetLength.start();
 	
@@ -1143,7 +1127,7 @@ public static int gopSpace = 124;
 	}
 	
 	private static int getTimeToMS(String time) {
-				
+						
 		String[] t = time.split(":");
 		
 		int heures = Integer.parseInt(t[0]);

@@ -812,22 +812,18 @@ public class VideoEncoders extends Shutter {
 							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
 						}
 
-						do
-						{
+						do {
 							Thread.sleep(100);
-						}
-						while(FFMPEG.runProcess.isAlive());
+						} while (FFMPEG.runProcess.isAlive());
 						
 						if (grpBitrate.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
 							if (FFMPEG.cancelled == false)
 								FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 							
-							do
-							{
+							do {
 								Thread.sleep(100);
-							}
-							while(FFMPEG.runProcess.isAlive());							
+							} while (FFMPEG.runProcess.isAlive());			
 						}
 																			
 						if (FFMPEG.saveCode == false && cancelled == false && FFMPEG.error == false)
