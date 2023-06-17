@@ -287,8 +287,8 @@ public class VideoPlayer {
 
 						if (update)
 						{
-							Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.imageRatio) ) ) );
-							Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.imageRatio) ) ) );  
+							Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
+							Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
 							Shutter.logoLocX = Shutter.logo.getLocation().x;
 							Shutter.logoLocY = Shutter.logo.getLocation().y;
 						}
@@ -1552,7 +1552,7 @@ public class VideoPlayer {
 				}
 			}
 			
-			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v bmp -an -f image2pipe pipe:-";
+			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v bmp -an -f image2pipe pipe:-";
 		}
 		else
 		{
@@ -1591,7 +1591,7 @@ public class VideoPlayer {
 			}
 			
 			
-			String cmd = gpuDecoding + " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
+			String cmd = gpuDecoding + " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
 			
 			if (Shutter.inputDeviceIsRunning)
 			{
@@ -1640,7 +1640,7 @@ public class VideoPlayer {
 		
 		if (FFPROBE.hasAudio == false && (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false || Shutter.liste.getSize() == 1))
 		{
-			return " -v quiet -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
+			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
 		}
 		else
 		{
@@ -1651,7 +1651,7 @@ public class VideoPlayer {
 				input = Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1);
 			}
 			
-			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + input + '"' + speed + audioFade + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + input + '"' + speed + audioFade + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
 		}		
 		
 	}
@@ -3717,8 +3717,8 @@ public class VideoPlayer {
 
 		if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected())
 		{	
-			Shutter.textTcPosX.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().x * Shutter.imageRatio)));
-			Shutter.textTcPosY.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().y * Shutter.imageRatio)));  
+			Shutter.textTcPosX.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().x * Shutter.playerRatio)));
+			Shutter.textTcPosY.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().y * Shutter.playerRatio)));  
 		}
 		else
 		{
@@ -3728,8 +3728,8 @@ public class VideoPlayer {
 		
 		if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected())
 		{						
-			Shutter.textNamePosX.setText(String.valueOf((int) Math.round(Shutter.fileName.getLocation().x * Shutter.imageRatio)));
-			Shutter.textNamePosY.setText(String.valueOf((int) Math.round(Shutter.fileName.getLocation().y * Shutter.imageRatio)));  
+			Shutter.textNamePosX.setText(String.valueOf((int) Math.round(Shutter.fileName.getLocation().x * Shutter.playerRatio)));
+			Shutter.textNamePosY.setText(String.valueOf((int) Math.round(Shutter.fileName.getLocation().y * Shutter.playerRatio)));  
 		}
 		else
 		{	Shutter.textNamePosX.setText("0");
@@ -3877,8 +3877,8 @@ public class VideoPlayer {
 				} while (FFPROBE.isRunning);
 			}
 									
-			int logoFinalSizeWidth = (int) Math.floor((float) FFPROBE.imageWidth / Shutter.imageRatio);		
-			int logoFinalSizeHeight = (int) Math.floor((float) FFPROBE.imageHeight / Shutter.imageRatio);
+			int logoFinalSizeWidth = (int) Math.floor((float) FFPROBE.imageWidth / Shutter.playerRatio);		
+			int logoFinalSizeHeight = (int) Math.floor((float) FFPROBE.imageHeight / Shutter.playerRatio);
 	
 			//Adapt to size
 			logoFinalSizeWidth = (int) Math.floor((float) logoFinalSizeWidth * ((double) size / 100));
@@ -3890,10 +3890,10 @@ public class VideoPlayer {
 			
 			if (Shutter.overlayDeviceIsRunning)
 			{
-				FFMPEG.run(" -v quiet " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
+				FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
 			}
 			else
-				FFMPEG.run(" -v quiet -i " + '"' + Shutter.logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
+				FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags bicubic -f image2pipe pipe:-");
 
 			do {
 				Thread.sleep(10);
@@ -4130,11 +4130,11 @@ public class VideoPlayer {
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
 							{				
-								FFMPEG.run(EXRGamma + " -v quiet" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -f image2pipe pipe:-"); 
+								FFMPEG.run(EXRGamma + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -f image2pipe pipe:-"); 
 							}
 							else
 							{
-								FFMPEG.run(EXRGamma + " -v quiet -i " + '"' + preview + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -f image2pipe pipe:-"); 							    	
+								FFMPEG.run(EXRGamma + " -v quiet -hide_banner -i " + '"' + preview + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -f image2pipe pipe:-"); 							    	
 							}
 						}
 
@@ -4437,8 +4437,8 @@ public class VideoPlayer {
 		{						
 			caseVuMeter.setEnabled(false);
 			
-			int subsWidth = (int) ((float) (Integer.parseInt(Shutter.textSubsWidth.getText()) / Shutter.imageRatio));
-			int subsPosY = (int) ((float) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / Shutter.imageRatio);
+			int subsWidth = (int) ((float) (Integer.parseInt(Shutter.textSubsWidth.getText()) / Shutter.playerRatio));
+			int subsPosY = (int) ((float) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / Shutter.playerRatio);
 			
 			return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + subsWidth + ":" + player.getHeight() + "+" + subsPosY
           			+ ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + Shutter.textSubsSize.getText() + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"'
@@ -4482,7 +4482,7 @@ public class VideoPlayer {
 			{
 				ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
 			}
-			
+						
 			//CaseForceDAR
 			if (Shutter.caseForcerDAR.isSelected())
 			{
@@ -4552,7 +4552,7 @@ public class VideoPlayer {
 			//IMPORTANT video canvas must be a multiple of 4!
 			player.setSize(player.getWidth() - (player.getWidth() % 4), player.getHeight());
 			
-			Shutter.imageRatio = (float) FFPROBE.imageWidth / player.getWidth();
+			Shutter.playerRatio = (float) FFPROBE.imageWidth / player.getWidth();
 			
 			//Sliders
 			if (Shutter.frame.getWidth() == (1350 - 312))
@@ -4619,7 +4619,7 @@ public class VideoPlayer {
 			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
 			{
 				loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.imageRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.imageRatio));
+				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
 			}
 			
 			//grpCrop
@@ -4627,7 +4627,7 @@ public class VideoPlayer {
 			Shutter.frameCropY = player.getLocation().y;
 			if (Shutter.caseEnableCrop.isSelected())
 			{
-				Shutter.selection.setLocation((int) Math.round(Integer.valueOf(Shutter.textCropPosX.getText()) / Shutter.imageRatio), (int) Math.round(Integer.valueOf(Shutter.textCropPosY.getText()) / Shutter.imageRatio));
+				Shutter.selection.setLocation((int) Math.round(Integer.valueOf(Shutter.textCropPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textCropPosY.getText()) / Shutter.playerRatio));
 				int w = (int) Math.round((float)  (Integer.valueOf(Shutter.textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
 				int h = (int) Math.round((float)  (Integer.valueOf(Shutter.textCropHeight.getText()) * player.getHeight()) / FFPROBE.imageHeight);
 				
@@ -4650,13 +4650,13 @@ public class VideoPlayer {
 			//grpOverlay
 			if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected())
 			{
-				Shutter.timecode.setLocation((int) Math.round(Integer.valueOf(Shutter.textTcPosX.getText()) / Shutter.imageRatio), (int) Math.round(Integer.valueOf(Shutter.textTcPosY.getText()) / Shutter.imageRatio));
+				Shutter.timecode.setLocation((int) Math.round(Integer.valueOf(Shutter.textTcPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textTcPosY.getText()) / Shutter.playerRatio));
 				Shutter.tcLocX = Shutter.timecode.getLocation().x;
 				Shutter.tcLocY = Shutter.timecode.getLocation().y;			
 			}
 			if (Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
 			{
-				Shutter.fileName.setLocation((int) Math.round(Integer.valueOf(Shutter.textNamePosX.getText()) / Shutter.imageRatio), (int) Math.round(Integer.valueOf(Shutter.textNamePosY.getText()) / Shutter.imageRatio));
+				Shutter.fileName.setLocation((int) Math.round(Integer.valueOf(Shutter.textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textNamePosY.getText()) / Shutter.playerRatio));
 				Shutter.fileLocX = Shutter.fileName.getLocation().x;
 				Shutter.fileLocY = Shutter.fileName.getLocation().y;
 			}

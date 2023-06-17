@@ -566,7 +566,7 @@ public class Shutter {
 		
     //grpOverlay
     public static JPanel grpOverlay;
-	public static float imageRatio = 3;
+	public static float playerRatio = 3;
 	public static boolean ratioChanged = false;
     public static int tcPosX = 0;
     public static int tcPosY = 0;
@@ -7313,7 +7313,7 @@ public class Shutter {
 				if (textCropPosX.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textCropPosX.setText(String.valueOf(mouseCropOffsetX + (e.getX() - MousePositionX)));
-					selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / imageRatio), selection.getLocation().y);
+					selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / playerRatio), selection.getLocation().y);
 				}
 			}
 
@@ -7399,7 +7399,7 @@ public class Shutter {
 				if (textCropPosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textCropPosY.setText(String.valueOf(mouseCropOffsetY + (e.getY() - MousePositionY)));
-					selection.setLocation(selection.getLocation().x, (int) Math.round(Integer.valueOf(textCropPosY.getText()) / imageRatio));
+					selection.setLocation(selection.getLocation().x, (int) Math.round(Integer.valueOf(textCropPosY.getText()) / playerRatio));
 				}
 			}
 
@@ -7966,8 +7966,8 @@ public class Shutter {
 		        
 		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		        
-				Font font = new Font(comboOverlayFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(textTcSize.getText()) / imageRatio));
-		        font.deriveFont((float) Integer.parseInt(textTcSize.getText()) / imageRatio);
+				Font font = new Font(comboOverlayFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(textTcSize.getText()) / playerRatio));
+		        font.deriveFont((float) Integer.parseInt(textTcSize.getText()) / playerRatio);
 		        g2.setFont(font);
 		        		        
 		        String dropFrame = ":";
@@ -8141,8 +8141,8 @@ public class Shutter {
 			public void mouseDragged(MouseEvent e) {		
 				
 				timecode.setLocation(MouseInfo.getPointerInfo().getLocation().x - tcPosX + tcLocX, MouseInfo.getPointerInfo().getLocation().y - tcPosY + tcLocY);	
-				textTcPosX.setText(String.valueOf((int) Math.round(timecode.getLocation().x * imageRatio)));
-				textTcPosY.setText(String.valueOf((int) Math.round(timecode.getLocation().y * imageRatio)));  
+				textTcPosX.setText(String.valueOf((int) Math.round(timecode.getLocation().x * playerRatio)));
+				textTcPosY.setText(String.valueOf((int) Math.round(timecode.getLocation().y * playerRatio)));  
 			}
 	
 			@Override
@@ -8397,7 +8397,7 @@ public class Shutter {
 		posX.setBounds(24,  caseShowTimecode.getY() + caseShowTimecode.getHeight() + 6, posX.getPreferredSize().width, 16);
 		grpOverlay.add(posX);
 		
-		textTcPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(timecode.getLocation().x * imageRatio) ) ) );
+		textTcPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(timecode.getLocation().x * playerRatio) ) ) );
 		textTcPosX.setName("textTcPosX");
 		textTcPosX.setBounds(posX.getLocation().x + posX.getWidth() + 2, posX.getLocation().y, 34, 16);
 		textTcPosX.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -8414,7 +8414,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 				
 				if (textTcPosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
-					timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
+					timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / playerRatio), timecode.getLocation().y);
 				
 				tcLocX = timecode.getLocation().x;
 			}
@@ -8468,7 +8468,7 @@ public class Shutter {
 				if (textTcPosX.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textTcPosX.setText(String.valueOf(MouseTcPosition.offsetX + (e.getX() - MouseTcPosition.mouseX)));
-					timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
+					timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / playerRatio), timecode.getLocation().y);
 				}
 			}
 	
@@ -8491,7 +8491,7 @@ public class Shutter {
 		posY.setBounds(px1.getX() + px1.getWidth() + 30, posX.getLocation().y, posY.getPreferredSize().width, 16);
 		grpOverlay.add(posY);
 	
-		textTcPosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(timecode.getLocation().y * imageRatio) ) ) );
+		textTcPosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(timecode.getLocation().y * playerRatio) ) ) );
 		textTcPosY.setName("textTcPosY");
 		textTcPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posY.getLocation().y, 34, 16);
 		textTcPosY.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -8508,7 +8508,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 				
 				if (textTcPosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
-					timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+					timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / playerRatio));
 				
 				tcLocY = timecode.getLocation().y;
 			}
@@ -8562,7 +8562,7 @@ public class Shutter {
 				if (textTcPosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textTcPosY.setText(String.valueOf(MouseTcPosition.offsetY + (e.getY() - MouseTcPosition.mouseY)));
-					timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+					timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / playerRatio));
 				}
 			}
 	
@@ -8585,7 +8585,7 @@ public class Shutter {
 		lblSizeTC.setBounds(textTcPosX.getX() - lblSizeTC.getPreferredSize().width - 2, posX.getY() + posX.getHeight() + 6, lblSizeTC.getPreferredSize().width + 2, 16);				
 		grpOverlay.add(lblSizeTC);
 		
-		textTcSize = new JTextField(String.valueOf(Math.round((float) 27 * imageRatio)));
+		textTcSize = new JTextField(String.valueOf(Math.round((float) 27 * playerRatio)));
 		textTcSize.setName("textTcSize");
 		textTcSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		textTcSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
@@ -8978,8 +8978,8 @@ public class Shutter {
 			        
 			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			        
-			        Font font = new Font(comboOverlayFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(textNameSize.getText()) / imageRatio));
-			        font.deriveFont((float) Integer.parseInt(textNameSize.getText()) / imageRatio);
+			        Font font = new Font(comboOverlayFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(textNameSize.getText()) / playerRatio));
+			        font.deriveFont((float) Integer.parseInt(textNameSize.getText()) / playerRatio);
 			        g2.setFont(font);
 	
 			        String file = VideoPlayer.videoPath;
@@ -9103,8 +9103,8 @@ public class Shutter {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				fileName.setLocation(MouseInfo.getPointerInfo().getLocation().x - filePosX + fileLocX, MouseInfo.getPointerInfo().getLocation().y - filePosY + fileLocY);		
-				textNamePosX.setText(String.valueOf((int) Math.round(fileName.getLocation().x * imageRatio)));
-				textNamePosY.setText(String.valueOf((int) Math.round(fileName.getLocation().y * imageRatio)));  
+				textNamePosX.setText(String.valueOf((int) Math.round(fileName.getLocation().x * playerRatio)));
+				textNamePosY.setText(String.valueOf((int) Math.round(fileName.getLocation().y * playerRatio)));  
 			}
 	
 			@Override
@@ -9121,7 +9121,7 @@ public class Shutter {
 		posX2.setBounds(posX.getX(), caseShowFileName.getY() + caseShowFileName.getHeight() + 6, posX.getWidth(), 16);
 		grpOverlay.add(posX2);
 		
-		textNamePosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().x * imageRatio) ) ) );
+		textNamePosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().x * playerRatio) ) ) );
 		textNamePosX.setName("textNamePosX");
 		textNamePosX.setBounds(posX2.getLocation().x + posX2.getWidth() + 2, posX2.getLocation().y, 34, 16);
 		textNamePosX.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -9138,7 +9138,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 	
 				if (textNamePosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
-					fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);
+					fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / playerRatio), fileName.getLocation().y);
 				
 				fileLocX = fileName.getLocation().x;
 			}
@@ -9194,7 +9194,7 @@ public class Shutter {
 				if (textNamePosX.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textNamePosX.setText(String.valueOf(MouseNamePosition.offsetX + (e.getX() - MouseNamePosition.mouseX)));
-					fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);
+					fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / playerRatio), fileName.getLocation().y);
 				}
 			}
 	
@@ -9217,7 +9217,7 @@ public class Shutter {
 		posY2.setBounds(px3.getX() + px3.getWidth() + 30, posX2.getLocation().y, posX.getWidth(), 16);
 		grpOverlay.add(posY2);
 		
-		textNamePosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().y * imageRatio) ) ) );
+		textNamePosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().y * playerRatio) ) ) );
 		textNamePosY.setName("textNamePosY");
 		textNamePosY.setBounds(posY2.getLocation().x + posY2.getWidth() + 2, posY2.getLocation().y, 34, 16);
 		textNamePosY.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -9234,7 +9234,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 	
 				if (textNamePosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
-					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / playerRatio));
 				
 				fileLocY = fileName.getLocation().y;
 			}
@@ -9290,7 +9290,7 @@ public class Shutter {
 				if (textNamePosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textNamePosY.setText(String.valueOf(MouseNamePosition.offsetY + (e.getY() - MouseNamePosition.mouseY)));
-					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+					fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / playerRatio));
 				}
 			}
 	
@@ -9313,7 +9313,7 @@ public class Shutter {
 		lblSizeName.setBounds(lblSizeTC.getX(), posX2.getY() + posX2.getHeight() + 6, lblSizeTC.getWidth(), 16);		
 		grpOverlay.add(lblSizeName);
 		
-		textNameSize = new JTextField(String.valueOf(Math.round((float) 27 * imageRatio )));
+		textNameSize = new JTextField(String.valueOf(Math.round((float) 27 * playerRatio )));
 		textNameSize.setName("textNameSize");
 		textNameSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		textNameSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
@@ -10754,8 +10754,8 @@ public class Shutter {
 				if (e.getClickCount() == 2 && !e.isConsumed())
 				{
 					logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - logo.getWidth() / 2), (int) Math.floor(VideoPlayer.player.getHeight() / 2 - logo.getHeight() / 2));	
-					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 				}
 				else
 		     	{
@@ -10781,8 +10781,8 @@ public class Shutter {
 			public void mouseDragged(MouseEvent e) {
 				
 				logo.setLocation(MouseInfo.getPointerInfo().getLocation().x - logoPosX + logoLocX, MouseInfo.getPointerInfo().getLocation().y - logoPosY + logoLocY);		
-				textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-				textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+				textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+				textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 			}
 	
 			@Override
@@ -10849,8 +10849,8 @@ public class Shutter {
 						VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
 			    		VideoPlayer.player.add(logo);
 			    		
-			    		textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-						textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+			    		textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+						textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 			    		
 			    		//Overimage need to be the last component added
 						if (caseEnableCrop.isSelected())
@@ -10884,8 +10884,8 @@ public class Shutter {
 							VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
 				    		VideoPlayer.player.add(logo);
 				    		
-				    		textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-							textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+				    		textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+							textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 				    		
 				    		//Overimage need to be the last component added
 							if (caseEnableCrop.isSelected())
@@ -10980,7 +10980,7 @@ public class Shutter {
 		watermarkPosX.setForeground(Utils.themeColor);
 		watermarkPosX.setBounds(24, caseAddWatermark.getY() + caseAddWatermark.getHeight() + 4, watermarkPosX.getPreferredSize().width, 16);
 	
-		textWatermarkPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
+		textWatermarkPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
 		textWatermarkPosX.setName("textWatermarkPosX");
 		textWatermarkPosX.setEnabled(false);
 		textWatermarkPosX.setBounds(watermarkPosX.getLocation().x + watermarkPosX.getWidth() + 2, watermarkPosX.getLocation().y, 34, 16);
@@ -11004,7 +11004,7 @@ public class Shutter {
 				
 				if (textWatermarkPosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / imageRatio), logo.getLocation().y);
+					logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / playerRatio), logo.getLocation().y);
 					logoLocX = logo.getLocation().x;
 					logoLocY = logo.getLocation().y;
 				}
@@ -11059,7 +11059,7 @@ public class Shutter {
 				if (textWatermarkPosX.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textWatermarkPosX.setText(String.valueOf(MouseLogoPosition.offsetX + (e.getX() - MouseLogoPosition.mouseX)));
-					logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / imageRatio), logo.getLocation().y);
+					logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / playerRatio), logo.getLocation().y);
 				}
 			}
 	
@@ -11075,7 +11075,7 @@ public class Shutter {
 		watermarkPosY.setForeground(Utils.themeColor);
 		watermarkPosY.setBounds(px1.getX() + px1.getWidth() + 30, watermarkPosX.getLocation().y, watermarkPosX.getWidth(), 16);
 	
-		textWatermarkPosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );
+		textWatermarkPosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );
 		textWatermarkPosY.setName("textWatermarkPosY");
 		textWatermarkPosY.setEnabled(false);
 		textWatermarkPosY.setBounds(watermarkPosY.getLocation().x + watermarkPosY.getWidth() + 2, watermarkPosX.getY(), 34, 16);
@@ -11093,7 +11093,7 @@ public class Shutter {
 				
 				if (textWatermarkPosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
+					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / playerRatio));
 					logoLocX = logo.getLocation().x;
 					logoLocY = logo.getLocation().y;
 				}
@@ -11149,7 +11149,7 @@ public class Shutter {
 				if (textWatermarkPosY.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
 					textWatermarkPosY.setText(String.valueOf(MouseLogoPosition.offsetY + (e.getY() - MouseLogoPosition.mouseY)));
-					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
+					logo.setLocation(logo.getLocation().x, (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / playerRatio));
 				}
 			}
 	
@@ -11204,8 +11204,8 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				
-				textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-				textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+				textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+				textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 				logoLocX = logo.getLocation().x;
 				logoLocY = logo.getLocation().y;
 			}
@@ -11225,8 +11225,8 @@ public class Shutter {
 				{	
 					VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));	
 					
-					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 					logoLocX = logo.getLocation().x;
 					logoLocY = logo.getLocation().y;
 				}
@@ -11260,8 +11260,8 @@ public class Shutter {
 						textWatermarkSize.setText(String.valueOf(value));
 					
 					VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
-					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * imageRatio) ) ) );
-					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * imageRatio) ) ) );  
+					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 					logoLocX = logo.getLocation().x;
 					logoLocY = logo.getLocation().y;				
 				}

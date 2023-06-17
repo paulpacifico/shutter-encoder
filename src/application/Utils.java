@@ -1391,16 +1391,16 @@ public class Utils extends Shutter {
 												
 													//Elements position
 													if (p.getName().equals("textNamePosX"))
-														fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);	
+														fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), fileName.getLocation().y);	
 													
 													if (p.getName().equals("textNamePosY"))
-														fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+														fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
 																						
 													if (p.getName().equals("textTcPosY"))
-														timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+														timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
 													
 													if (p.getName().equals("textTcPosX"))
-														timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
+														timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);
 												}
 												else if (p instanceof JSlider)
 												{
@@ -1469,7 +1469,7 @@ public class Utils extends Shutter {
 						//grpCrop
 						if (caseEnableCrop.isSelected())
 						{
-							selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / imageRatio));
+							selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / Shutter.playerRatio));
 							int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
 							int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
 							
@@ -1492,14 +1492,14 @@ public class Utils extends Shutter {
 						//grpOverlay
 						if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
 						{
-							timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+							timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
 							tcLocX = timecode.getLocation().x;
 							tcLocY = timecode.getLocation().y;	
 							timecode.setSize(10,10); //Workaround to not reset the location
 						}
 						if (caseAddText.isSelected() || caseShowFileName.isSelected())
 						{
-							fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+							fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
 							fileLocX = fileName.getLocation().x;
 							fileLocY = fileName.getLocation().y;
 							fileName.setSize(10,10); //Workaround to not reset the location
@@ -1525,7 +1525,7 @@ public class Utils extends Shutter {
 						if (caseAddWatermark.isSelected())
 						{
 							VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
-							logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / imageRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
+							logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / Shutter.playerRatio));
 							//Saving location
 							logoLocX = logo.getLocation().x;
 							logoLocY = logo.getLocation().y;
