@@ -567,7 +567,7 @@ public class VideoPlayer {
 	            gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
 	            line.start();	
 			}
-			
+						
 			playerThread = new Thread(new Runnable() {
 
 				@Override
@@ -575,7 +575,17 @@ public class VideoPlayer {
 
 					byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
 		            int bytesRead = 0;
-		            		            
+		            boolean inputAudioStreamIsDone = false;
+		            		         
+		            //Replace audio offset
+		    		float offsetVideo = 0f;
+		    		float offsetAudio = 0f;
+					if (Shutter.caseAudioOffset.isSelected())
+					{
+						offsetVideo = (long) inputTime - Integer.parseInt(Shutter.txtAudioOffset.getText());
+						offsetAudio = (long) inputTime + Integer.parseInt(Shutter.txtAudioOffset.getText());
+					}
+
 					do {	
 						
 						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
@@ -593,16 +603,38 @@ public class VideoPlayer {
 							        gainControl.setValue(dB);
 	
 									///Read 1 audio frame
-									bytesRead = audioInputStream.read(bytes, 0, bytes.length);
-					        		line.write(bytes, 0, bytesRead);
+									if (playerCurrentFrame >= offsetAudio)
+									{
+										if (inputAudioStreamIsDone == false)
+										{
+											try {
+												
+												bytesRead = audioInputStream.read(bytes, 0, bytes.length);
+												line.write(bytes, 0, bytesRead);
+												
+											} catch (Exception e) {
+												
+												if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio"))
+												&& Shutter.comboFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("longest"))) //When the audio is empty
+												{	
+													inputAudioStreamIsDone = true;
+												}		
+												else
+													playerLoop = false;
+											}
+										}
+									}
 								}
 								else
 									closeAudioStream = false;
 												 				        		
-				        		//Read 1 video frame				        		
-								frameVideo = ImageIO.read(videoInputStream);
-								playerRepaint();
-						    	fps ++;	
+				        		//Read 1 video frame	
+								if (playerCurrentFrame >= offsetVideo)
+								{
+									frameVideo = ImageIO.read(videoInputStream);
+									playerRepaint();
+							    	fps ++;	
+								}
 
 								if (sliderSpeed.getValue() != 2)
 								{													
@@ -620,7 +652,7 @@ public class VideoPlayer {
 							} catch (Exception e) {}
 							finally {
 								
-								if (frameControl)
+								if (frameControl && Shutter.inputDeviceIsRunning == false)
 								{
 									playerLoop = false;
 									getTimePoint(playerCurrentFrame);
@@ -1100,7 +1132,9 @@ public class VideoPlayer {
 				
 				if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 					SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
-			}		
+			}	
+			
+			Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 		else
 		{				
@@ -1604,13 +1638,20 @@ public class VideoPlayer {
 			playTransition = false;
 		}
 		
-		if (FFPROBE.hasAudio == false)
+		if (FFPROBE.hasAudio == false && (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false || Shutter.liste.getSize() == 1))
 		{
 			return " -v quiet -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
 		}
 		else
 		{
-			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + speed + audioFade + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+			String input = videoPath;
+						
+			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) && Shutter.fileList.getSelectedIndex() + 1 < Shutter.liste.getSize())
+			{
+				input = Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1);
+			}
+			
+			return " -v quiet -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + input + '"' + speed + audioFade + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
 		}		
 		
 	}
@@ -3025,24 +3066,6 @@ public class VideoPlayer {
 		caseInM.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.currentFPS / 60) % 60));
 		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.currentFPS) % 60));    		
 		caseInF.setText(Shutter.formatter.format(Math.floor(timeIn % FFPROBE.currentFPS)));
-		
-		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
-		{
-			if (timeIn > 0)
-			{
-				Shutter.caseAudioOffset.setEnabled(true);
-				Shutter.caseAudioOffset.setSelected(true);
-				Shutter.txtAudioOffset.setEnabled(true);				
-				Shutter.txtAudioOffset.setText(String.valueOf((int) timeIn));
-			}
-			else
-			{
-				Shutter.caseAudioOffset.setEnabled(false);
-				Shutter.caseAudioOffset.setSelected(false);
-				Shutter.txtAudioOffset.setEnabled(false);
-				Shutter.txtAudioOffset.setText("0");
-			}					
-		}
 	}
 	
 	private void grpOut(){
@@ -4355,6 +4378,17 @@ public class VideoPlayer {
 		{
 			setEQ = Transitions.setVideoFade(setEQ, true);
 		}
+				//Interpolation
+		setEQ = AdvancedFeatures.setInterpolation(setEQ);
+		
+		//Slow motion
+		setEQ = AdvancedFeatures.setSlowMotion(setEQ);
+							
+        //PTS
+		setEQ = AdvancedFeatures.setPTS(setEQ);		      		                     	
+
+		//Conform
+		setEQ = AdvancedFeatures.setConform(setEQ);
 								
 		if (setEQ.isEmpty() == false)
 		{
@@ -4397,7 +4431,7 @@ public class VideoPlayer {
 		}
 		
 		//Close filter
-		filter += '"';						
+		filter += '"';		
 		
 		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{						
@@ -4437,7 +4471,7 @@ public class VideoPlayer {
 			float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
 				
 			//Waveforms
-			if (isPiping == false && Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false)
+			if (isPiping == false && Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false && Shutter.liste.getSize() > 0)
 			{	
 				addWaveform(false);				 					
 			}
@@ -4574,8 +4608,15 @@ public class VideoPlayer {
 				}			
 			}
 			
+			if (RecordInputDevice.comboInputVideo != null && RecordInputDevice.comboInputVideo.getSelectedIndex() > 0)
+			{
+				Shutter.caseAddWatermark.setSelected(true);
+			}
+			
 			//grpWatermark
-			if (Shutter.caseAddWatermark.isSelected())
+			if (Shutter.caseAddWatermark.isSelected()
+			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
+			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
 			{
 				loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
 				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.imageRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.imageRatio));
@@ -4665,7 +4706,9 @@ public class VideoPlayer {
 			lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, lblSpeed.getY());	
 			sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() + 1, sliderSpeed.getY(), sliderSpeed.getWidth(), 22);	
 
-			if (Shutter.windowDrag == false && videoPath != null && FFMPEG.isRunning == false)
+			if (Shutter.windowDrag == false && videoPath != null
+			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
+			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
 			{	
 				if (Shutter.inputDeviceIsRunning)
 				{
@@ -4687,7 +4730,12 @@ public class VideoPlayer {
 					if (btnPlay.isEnabled())
 						playerFreeze();	
 				}
-			}			
+			}	
+			
+			if (Shutter.liste.getSize() == 0)
+			{
+				VideoPlayer.setPlayerButtons(false);
+			}
 		}
 		
 		if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())

@@ -107,10 +107,6 @@ public class Settings {
 	private JLabel topImage;
 	private JLabel lblThreads = new JLabel(Shutter.language.getProperty("lblThreads"));
 	public static JTextField txtThreads = new JTextField();
-	private JLabel lblScreenRecord = new JLabel(Shutter.language.getProperty("lblScreenRecord"));
-	public static JTextField txtScreenRecord = new JTextField();
-	private JLabel lblInputDevice = new JLabel(Shutter.language.getProperty("lblInputDevice"));
-	public static JTextField txtInputDevice = new JTextField();
 	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
@@ -176,8 +172,6 @@ public class Settings {
 		comboScale.setName("comboScale");
 		comboSync.setName("comboSync");
 		txtThreads.setName("txtThreads");
-		txtScreenRecord.setName("txtScreenRecord");
-		txtInputDevice.setName("txtInputDevice");
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
@@ -210,7 +204,7 @@ public class Settings {
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(92);
+		scrollBar.setMaximum(40);
 		scrollBar.setBackground(new Color(45, 45, 45));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
@@ -478,56 +472,8 @@ public class Settings {
 		comboSync.setMaximumRowCount(10);
 		frame.getContentPane().add(comboSync);
 		
-		lblScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblScreenRecord.setBounds(12, lblSyncMode.getLocation().y + lblSyncMode.getHeight() + 10, lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
-		frame.getContentPane().add(lblScreenRecord);
-		
-		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
-		txtScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		txtScreenRecord.setText("25");
-		txtScreenRecord.setColumns(10);
-		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
-		frame.getContentPane().add(txtScreenRecord);
-		
-		txtScreenRecord.addKeyListener(new KeyAdapter(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (txtScreenRecord.getText().length() >= 3)
-					txtScreenRecord.setText("");				
-			}			
-			
-		});
-		
-		lblInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
-		frame.getContentPane().add(lblInputDevice);
-		
-		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
-		txtInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		txtInputDevice.setText("25");
-		txtInputDevice.setColumns(10);
-		txtInputDevice.setBounds(lblInputDevice.getLocation().x + lblInputDevice.getWidth() + 6, lblInputDevice.getLocation().y - 4, 40, 21);
-		frame.getContentPane().add(txtInputDevice);
-		
-		txtInputDevice.addKeyListener(new KeyAdapter(){
-
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				char caracter = e.getKeyChar();											
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != '.'|| String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume(); 
-				else if (txtInputDevice.getText().length() >= 5)
-					txtInputDevice.setText("");				
-			}			
-			
-		});
-		
 		lblThreads.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblThreads.setBounds(12, lblInputDevice.getLocation().y + lblInputDevice.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
+		lblThreads.setBounds(12, lblSyncMode.getLocation().y + lblSyncMode.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
 		frame.getContentPane().add(lblThreads);
 		
 		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);

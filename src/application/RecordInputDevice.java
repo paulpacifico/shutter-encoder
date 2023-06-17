@@ -19,21 +19,19 @@
 
 package application;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
@@ -42,7 +40,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -64,6 +62,11 @@ public class RecordInputDevice {
 	public static Integer screenWidth = 0;
 	public static Integer screenHeigth = 0;
 	public static String inputDeviceResolution = "";
+	
+	private static JLabel lblScreenRecord = new JLabel(Shutter.language.getProperty("lblScreenRecord"));
+	public static JTextField txtScreenRecord = new JTextField();
+	private static JLabel lblInputDevice = new JLabel(Shutter.language.getProperty("lblInputDevice"));
+	public static JTextField txtInputDevice = new JTextField();
 
 	public RecordInputDevice() {
 		
@@ -72,9 +75,9 @@ public class RecordInputDevice {
 		frame.setResizable(false);
 		frame.setModal(true);
 		if (System.getProperty("os.name").contains("Windows"))
-			frame.setSize(350, 210);
+			frame.setSize(350, 254);
 		else
-			frame.setSize(330, 130);
+			frame.setSize(330, 150);
 		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
 		
 		frame.setForeground(Color.WHITE);
@@ -188,10 +191,6 @@ public class RecordInputDevice {
 		iconScreenPreview.addMouseListener(new MouseListener() {
 
 			public void mouseClicked(MouseEvent e) {
-
-					String channels = "";
-					String videoOutput = "";
-					String audioOutput = "";
 					
 					Shutter.liste.removeAllElements();
 					
@@ -215,32 +214,14 @@ public class RecordInputDevice {
 						audioDeviceIndex = comboScreenAudio.getSelectedIndex();
 					else
 						audioDeviceIndex = -1;
-					
+										
 					//Permet d'injecter la resolution à FFPROBE
 					setInputDevices();
-					
-					if (comboScreenAudio.getSelectedIndex() > 0) 
-					{
-						channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
-						audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
-					}
 	
-					// On ajoute la vidéo
-					videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
+					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:play";	
 					
-					if (FFPROBE.channels == 0 || Shutter.liste.getElementAt(0).equals("Capture.input.device") && System.getProperty("os.name").contains("Windows")) {
-						videoOutput = "scale=1080:-1" + '"';
-						audioOutput = "";
-					}
-										
-					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
-							+ " -c:v rawvideo -map a? -f nut pipe:play";
-
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
-					if (Shutter.liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && Shutter.liste.getElementAt(0).equals("Capture.input.device") && RecordInputDevice.audioDeviceIndex > 0)
-						cmd = cmd.replace("0:v", "1:v");					
-														
 					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
 														
 					Shutter.liste.removeAllElements();					
@@ -270,23 +251,6 @@ public class RecordInputDevice {
 			}
 			
 		});
-		
-		@SuppressWarnings("serial")
-		JPanel screenLines = new JPanel() {
-			@Override
-			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				g.setColor(Color.LIGHT_GRAY);
-				float dash[] = { 5.0f };
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f));
-				g2.draw(new Line2D.Float(14, 0, 14, 20));
-				g2.draw(new Line2D.Float(1, 18, 14, 18));
-			}
-		};
-		screenLines.setBackground(new Color(45, 45, 45));
-		screenLines.setBounds(comboScreenVideo.getX() + comboScreenVideo.getWidth() + 2, iconScreenPreview.getY() + iconScreenPreview.getHeight() + 2, 30, 30);
-		frame.getContentPane().add(screenLines);
 		
 		JLabel inputVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
 		inputVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -331,11 +295,7 @@ public class RecordInputDevice {
 			public void mouseClicked(MouseEvent e) {
 
 				if (comboInputVideo.getSelectedIndex() > 0 || comboInputAudio.getSelectedIndex() > 0)
-				{
-					String channels = "";
-					String videoOutput = "";
-					String audioOutput = "";
-					
+				{					
 					Shutter.liste.removeAllElements();
 					
 					Shutter.liste.addElement("Capture.input.device");
@@ -349,36 +309,15 @@ public class RecordInputDevice {
 					
 					//Permet d'injecter la resolution à FFPROBE
 					setOverlayDevice();
-							
-					//Audio only
-					if (comboInputVideo.getSelectedIndex() == 0 && comboInputAudio.getSelectedIndex() > 0) 
-					{
-						audioOutput = "[0:a:0]showvolume=f=0.001:b=4:w=720:h=12[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
-					}
-					else
-					{
-						channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
-						audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
-
-						// On ajoute la vidéo
-						videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
-						
-						if (FFPROBE.channels == 0 || Shutter.liste.getElementAt(0).equals("Capture.input.device")) {
-							videoOutput = "scale=1080:-1" + '"';
-							audioOutput = "";
-						}
-					} 	
-										
-					String cmd = " -filter_complex " + '"' + videoOutput + audioOutput
-							+ " -c:v rawvideo -map a? -f nut pipe:play";
-
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));				
-										
+																	
+					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:play";		
+								
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
 					if (comboInputVideo.getSelectedIndex() == 0 && comboInputAudio.getSelectedIndex() > 0) 
 						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice().replace("video=" + '"' + "No video" + '"' + ":", "") + cmd);
 					else
 						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
-
 					
 					Shutter.liste.removeAllElements();					
 					Shutter.enableAll();
@@ -409,31 +348,71 @@ public class RecordInputDevice {
 			
 		});
 		
-		@SuppressWarnings("serial")
-		JPanel devicesLines = new JPanel() {
-			@Override
-			public void paintComponent(Graphics g) {
-				super.paintComponent(g);
-				g.setColor(Color.LIGHT_GRAY);
-				float dash[] = { 5.0f };
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setStroke(new BasicStroke(3.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 3.0f, dash, 0.0f));
-				g2.draw(new Line2D.Float(14, 0, 14, 20));
-				g2.draw(new Line2D.Float(1, 18, 14, 18));
-			}
-		};
-		devicesLines.setBackground(new Color(45, 45, 45));
-		devicesLines.setBounds(comboInputVideo.getX() + comboInputVideo.getWidth() + 2, iconDevicePreview.getY() + iconDevicePreview.getHeight() + 2, 30, 30);
+		lblScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblScreenRecord.setSize(lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
 		if (System.getProperty("os.name").contains("Windows"))
-			frame.getContentPane().add(devicesLines);
+		{
+			lblScreenRecord.setLocation(12, comboInputAudio.getLocation().y + comboInputAudio.getHeight() + 10);
+		}
+		else
+			lblScreenRecord.setLocation(12, comboScreenAudio.getLocation().y + comboScreenAudio.getHeight() + 10);
+		frame.getContentPane().add(lblScreenRecord);
+		
+		txtScreenRecord.setName("txtScreenRecord");
+		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
+		txtScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		txtScreenRecord.setText("25");
+		txtScreenRecord.setColumns(10);
+		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
+		frame.getContentPane().add(txtScreenRecord);
+		
+		txtScreenRecord.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtScreenRecord.getText().length() >= 3)
+					txtScreenRecord.setText("");				
+			}			
+			
+		});
+		
+		lblInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
+		if (System.getProperty("os.name").contains("Windows"))
+			frame.getContentPane().add(lblInputDevice);
+		
+		txtInputDevice.setName("txtInputDevice");
+		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
+		txtInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		txtInputDevice.setText("25");
+		txtInputDevice.setColumns(10);
+		txtInputDevice.setBounds(lblInputDevice.getLocation().x + lblInputDevice.getWidth() + 6, lblInputDevice.getLocation().y - 4, 40, 21);
+		if (System.getProperty("os.name").contains("Windows"))
+			frame.getContentPane().add(txtInputDevice);
+		
+		txtInputDevice.addKeyListener(new KeyAdapter(){
+
+			@Override
+			public void keyTyped(KeyEvent e) {	
+				char caracter = e.getKeyChar();											
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' && caracter != '.'|| String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume(); 
+				else if (txtInputDevice.getText().length() >= 5)
+					txtInputDevice.setText("");				
+			}			
+			
+		});				
 		
 		JButton btnOK = new JButton("OK");
 		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 24, 21);	
 		if (System.getProperty("os.name").contains("Windows"))
-			btnOK.setLocation(12, comboInputAudio.getY() + comboInputAudio.getHeight() + 14);	
+			btnOK.setLocation(12, lblInputDevice.getY() + lblInputDevice.getHeight() + 6);	
 		else
-			btnOK.setLocation(12, comboScreenAudio.getY() + comboScreenAudio.getHeight() + 14);	
+			btnOK.setLocation(12, lblScreenRecord.getY() + lblScreenRecord.getHeight() + 6);	
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener() {
@@ -593,13 +572,13 @@ public class RecordInputDevice {
 			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
 			{
 				if (setAudio != "") //Audio needs to be first for sync
-					return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
+					return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
 				else
-					return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + Settings.txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
+					return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
 			}
 			else
 			{				
-				return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
+				return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -framerate " + txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
 			}
 		}
 		else if (System.getProperty("os.name").contains("Windows"))
@@ -607,9 +586,9 @@ public class RecordInputDevice {
 			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
 			{				
 				if (setAudio != "") //Audio needs to be first for sync
-					return "-thread_queue_size 4096 -f dshow -i " + setAudio + " -thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + Settings.txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"' + setSecondAudio;
+					return "-thread_queue_size 4096 -f dshow -i " + setAudio + " -thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"' + setSecondAudio;
 				else
-					return "-thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + Settings.txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"';
+					return "-thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"';
 			}
 			else
 			{
@@ -617,13 +596,13 @@ public class RecordInputDevice {
 					setAudio = ":" + setAudio;	
 				
 				if (videoDeviceIndex > 0)
-					return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i video=" + '"' + videoDevice + '"' + setAudio;
+					return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + txtInputDevice.getText() + " -i video=" + '"' + videoDevice + '"' + setAudio;
 				else
-					return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + setAudio;					
+					return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + txtInputDevice.getText() + " -i " + setAudio;					
 			}
 		}
 		else
-			return "-thread_queue_size 4096 -f x11grab -framerate " + Settings.txtScreenRecord.getText() + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i :0.0+" + screenPositionX + "," + screenPositionY + setAudio;
+			return "-thread_queue_size 4096 -f x11grab -framerate " + txtScreenRecord.getText() + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i :0.0+" + screenPositionX + "," + screenPositionY + setAudio;
 	}
 	
 	public static String setOverlayDevice() {
@@ -648,7 +627,7 @@ public class RecordInputDevice {
 		    	
 		if (System.getProperty("os.name").contains("Mac"))
 		{
-			return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
+			return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -framerate " + txtInputDevice.getText() + " -i " + '"' + videoDeviceIndex + '"';
 		}
 		else if (System.getProperty("os.name").contains("Windows"))
 		{
@@ -657,7 +636,7 @@ public class RecordInputDevice {
 			if (setAudio != "")
 				setAudio = ":" + setAudio;
 			
-			return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + Settings.txtInputDevice.getText() + " -i video=" + '"' + videoDevice + '"' + setAudio;
+			return "-thread_queue_size 4096 -f dshow -probesize 100M -rtbufsize 100M -framerate " + txtInputDevice.getText() + " -i video=" + '"' + videoDevice + '"' + setAudio;
 		}
 		else
 			return "";

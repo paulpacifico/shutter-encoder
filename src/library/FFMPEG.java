@@ -30,6 +30,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Taskbar;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -45,6 +47,11 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.SourceDataLine;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -80,7 +87,14 @@ public static boolean error = false;
 public static boolean isRunning = false;
 public static BufferedWriter writer;
 public static Thread runProcess = new Thread();
+private static Thread displayThread;
 public static Process process;
+private static Process processAudio;
+private static InputStream audio = null;	
+private static AudioInputStream audioInputStream = null;
+private static SourceDataLine line = null;
+private static boolean showInputDeviceFrame = false;
+private static float directDisplayInputRatio = 1.777777f;
 private static Image frameVideo;
 public static String analyseLufs;
 public static Float mseSensibility = 800f;
@@ -212,8 +226,8 @@ public static StringBuilder errorLog = new StringBuilder();
 						}	
 						
 						//IMPORTANT
-						if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
-						|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
+						if (cmd.contains("cropdetect") == false
+						&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
 						{
 							VideoPlayer.resizeAll();
 						}
@@ -372,7 +386,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			int n = fileList.getSelectedIndices().length;
 			int i = 0;
 			for (String video : fileList.getSelectedValuesList()) {
-				input += " -i " + '"' + video + '"';
+				input += " -v quiet -i " + '"' + video + '"';
 				filter += "[" + i + ":v]scale=iw/" + n + ":ih/2[v" + i + "];";
 				i++;
 			}
@@ -384,7 +398,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			hstack += "hstack=" + n + "[out]";
 
 			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map "
-					+ '"' + "[out]" + '"' + " -map a? -f nut pipe:play");
+					+ '"' + "[out]" + '"' + " -an -f nut pipe:play");
 		} else {
 						
 			//File
@@ -433,8 +447,8 @@ public static StringBuilder errorLog = new StringBuilder();
 				{					
 					if (inputDeviceIsRunning)
 					{
-						channels += "[0:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
-						channels += "[2:a]showvolume=f=0.001:b=4:w=1080:h=12[a2];";
+						channels += "[0:a]showvolume=f=0.001:b=4:w=1000:h=12[a0];";
+						channels += "[2:a]showvolume=f=0.001:b=4:w=1000:h=12[a2];";
 						audioOutput += "[a0]";
 						audioOutput += "[a2]";
 						
@@ -445,7 +459,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						int i = 0;
 						for (i = 0; i < FFPROBE.channels; i++)
 						{
-							channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=1080:h=12[a" + i + "];";
+							channels += "[0:a:" + i + "]showvolume=f=0.001:b=4:w=1000:h=12[a" + i + "];";
 							audioOutput += "[a" + i + "]";
 						}
 						
@@ -456,26 +470,26 @@ public static StringBuilder errorLog = new StringBuilder();
 				{
 					if (inputDeviceIsRunning && RecordInputDevice.audioDeviceIndex > 0 && overlayDeviceIsRunning && RecordInputDevice.overlayAudioDeviceIndex > 0)
 					{
-						channels = "[2:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+						channels = "[2:a]showvolume=f=0.001:b=4:w=1000:h=12[a0];";
 						audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
 					}
 					else if (inputDeviceIsRunning && overlayDeviceIsRunning && RecordInputDevice.overlayAudioDeviceIndex > 0)
 					{
-						channels = "[1:a]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+						channels = "[1:a]showvolume=f=0.001:b=4:w=1000:h=12[a0];";
 						audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
 					}
 					else
 					{
-						channels = "[0:a:0]showvolume=f=0.001:b=4:w=1080:h=12[a0];";
+						channels = "[0:a:0]showvolume=f=0.001:b=4:w=1000:h=12[a0];";
 						audioOutput = "[a0]vstack" + "[volume]" + '"' + " -map " + '"' + "[volume]" + '"';
 					}
 				}
 
 				// On ajoute la vidéo
-				videoOutput = "[0:v]scale=1080:-1[v]" + ";" + channels + "[v]";
+				videoOutput = "[0:v]scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none[v]" + ";" + channels + "[v]";
 				
 				if (FFPROBE.channels == 0 || liste.getElementAt(0).equals("Capture.input.device")) {
-					videoOutput = "scale=1080:-1" + '"';
+					videoOutput = "scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none" + '"';
 					audioOutput = "";
 				}
 
@@ -487,13 +501,13 @@ public static StringBuilder errorLog = new StringBuilder();
 				{
 					videoOutput = "[2:v]scale=iw*" + ((float)  Integer.parseInt(Shutter.textWatermarkSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(Shutter.textWatermarkSize.getText()) / 100) +			
 	        				",lut=a=val*" + ((float) Integer.parseInt(Shutter.textWatermarkOpacity.getText()) / 100) + 
-	        				"[scaledwatermark];[1:v][scaledwatermark]overlay=" + Shutter.textWatermarkPosX.getText() + ":" + Shutter.textWatermarkPosY.getText() + ",scale=1080:-1[v]";			
+	        				"[scaledwatermark];[1:v][scaledwatermark]overlay=" + Shutter.textWatermarkPosX.getText() + ":" + Shutter.textWatermarkPosY.getText() + "[v]";			
 				}
 				else
 				{
 					videoOutput = "[1:v]scale=iw*" + ((float)  Integer.parseInt(Shutter.textWatermarkSize.getText()) / 100) + ":ih*" + ((float) Integer.parseInt(Shutter.textWatermarkSize.getText()) / 100) +			
 	        				",lut=a=val*" + ((float) Integer.parseInt(Shutter.textWatermarkOpacity.getText()) / 100) + 
-	        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + Shutter.textWatermarkPosX.getText() + ":" + Shutter.textWatermarkPosY.getText() + ",scale=1080:-1[v]";	
+	        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + Shutter.textWatermarkPosX.getText() + ":" + Shutter.textWatermarkPosY.getText() + "[v]";	
 				}
 					
 				if (audioOutput != "")
@@ -519,13 +533,16 @@ public static StringBuilder errorLog = new StringBuilder();
 				inputFile = new File(output.replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
 			}
 			
-			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -map a? -f nut pipe:play";
+			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -an -f nut pipe:play";
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			
+			//Loop image					
+			String loop = FunctionUtils.setLoop(extension);
+			
 			if (isVideoPlayer)
 			{
-				FFMPEG.toFFPLAY(InputAndOutput.inPoint + concat + " -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
+				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + concat + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
 			}
 			else if (inputDeviceIsRunning)
 			{
@@ -533,15 +550,15 @@ public static StringBuilder errorLog = new StringBuilder();
 					cmd = cmd.replace("0:v", "1:v");	
 				
 				if (overlayDeviceIsRunning && audioOutput == "")
-					cmd = cmd.replace("-map a?", "-map " + '"' + "[v]" + '"');
+					cmd = cmd.replace("-an", "-map " + '"' + "[v]" + '"');
 					
 				if (overlayDeviceIsRunning)
-					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + " " + RecordInputDevice.setOverlayDevice() + cmd);
+					FFMPEG.toFFPLAY(" -v quiet " + RecordInputDevice.setInputDevices() + " " + RecordInputDevice.setOverlayDevice() + cmd);
 				else
-					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
+					FFMPEG.toFFPLAY(" -v quiet " + RecordInputDevice.setInputDevices() + cmd);
 			} 
 			else
-				FFMPEG.toFFPLAY(" -i " + '"' + inputFile + '"' + cmd);					
+				FFMPEG.toFFPLAY(loop + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -v quiet -i " + '"' + inputFile + '"' + cmd);					
 						
 			progressBar1.setValue(0);
 		}
@@ -554,218 +571,292 @@ public static StringBuilder errorLog = new StringBuilder();
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		isRunning = true;
-		
-		runProcess = new Thread(new Runnable()  {
-			
-			@Override
-			public void run() {
-				
-				try {
-					
-					String PathToFFMPEG;
-					ProcessBuilder processFFMPEG;
-					
-					//Image sequence
-					String fps = " -r " + FFPROBE.currentFPS;
-					if (Shutter.caseCreateSequence.isSelected())
-					{
-						fps = " -r " +  Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."));
-					}
-					else if (inputDeviceIsRunning || RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
-					{
-						fps = "";
-					}
-
-					if (System.getProperty("os.name").contains("Windows"))
-					{
-						PathToFFMPEG = "Library\\ffmpeg.exe";
-						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play " + fps + " -c:v bmp -an -f image2pipe pipe:-"});
-					}
-					else
-					{
-						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
-						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
 						
-						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play " + fps + " -c:v bmp -an -f image2pipe pipe:-");	
-						process = processFFMPEG.start();
-					}		
+		try {
+			
+			String PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();;
+			ProcessBuilder processFFMPEG;
+			
+			//Image sequence
+			String fps = " -r " + FFPROBE.currentFPS;
+			if (Shutter.caseCreateSequence.isSelected())
+			{
+				fps = " -r " +  Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."));
+			}
+			else if (inputDeviceIsRunning || RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
+			{
+				fps = "";
+			}
+
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				//VIDEO STREAM
+				PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
+				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 				
-					directDisplay();
-									
-					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play " + fps + " -c:v bmp -an -f image2pipe pipe:-"
+				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");
+				process = pbv.start();
+								
+				//AUDIO STREAM
+				if (FFPROBE.hasAudio)						       
+				{							
+					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + " -v quiet -i " + '"' + fileList.getSelectedValue() + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
+					processAudio = pba.start();
+				}
+			}
+			else
+			{
+				//VIDEO STREAM					
+				PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
+				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
+				
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");	
+				process = processFFMPEG.start();
+			
+				//AUDIO STREAM
+				if (FFPROBE.hasAudio)				       
+				{
+					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + " -v quiet -i " + '"' + fileList.getSelectedValue() + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
+					processAudio = pba.start();
+				}
+			}	
+			
+			Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-"
 					+  System.lineSeparator() + System.lineSeparator());
+		
+			JFrame player = new JFrame();
+			player.getContentPane().setBackground(new Color(45, 45, 45));
+			player.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	
+			player.setBackground(new Color(45, 45, 45));
+			player.getContentPane().setLayout(null);
+			player.setIconImage(frame.getIconImage());
+			
+			if (RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
+			{
+				RecordInputDevice.frame.setVisible(false);	
+				showInputDeviceFrame = true;
+				player.setTitle(language.getProperty("preview"));			
+			}
+			else
+			{
+				showInputDeviceFrame = false;
+				player.setTitle(new File(Shutter.fileList.getSelectedValue()).getName());
+			}	
+			
+			player.addWindowListener(new WindowAdapter() {
+	
+				@Override
+				public void windowClosing(WindowEvent arg0) {
+	
+					isRunning = false;
+					
+					process.destroy();
+					displayThread.interrupt();
 
-					String line;
-					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-					
-					while ((line = input.readLine()) != null)
-					{												
-						Console.consoleFFPLAY.append(line + System.lineSeparator() );		
-					
-						//Errors
-						checkForErrors(line);
-
-						 if (line.contains("frame"))
-							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
-					}					
-					process.waitFor();															
-				   					     																		
-				} catch (IOException io) {//Bug Linux							
-				} catch (InterruptedException e) {
-					error = true;
-				} finally {
-					
-					//Mode concat
-					if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
-					{		
-						File inputFile = new File(VideoPlayer.videoPath);
-						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
-						File listeBAB = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));			
-						listeBAB.delete();
+					if (FFPROBE.hasAudio)
+					{
+						processAudio.destroy();	
 					}
 					
-					isRunning = false;
+					if (showInputDeviceFrame)
+					{
+						RecordInputDevice.frame.setVisible(true);	
+					}
 				}
 				
-			}				
-		});		
-		runProcess.start();	
-	}
+			});
+	
+			GraphicsConfiguration config = player.getGraphicsConfiguration();
+			GraphicsDevice myScreen = config.getDevice();
+			GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsDevice[] allScreens = env.getScreenDevices();
+			int screenIndex = -1;
+			for (int i = 0; i < allScreens.length; i++) {
+			    if (allScreens[i].equals(myScreen))
+			    {
+			    	screenIndex = i;
+			        break;
+			    }
+			}
+	
+			int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();	
+			int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 
-	@SuppressWarnings("serial")
-	public static void directDisplay() {
-		
-		String s[] = FFPROBE.imageResolution.split("x"); 
-		int iw = Integer.parseInt(s[0]);
-    	int ih = Integer.parseInt(s[1]);          	       	
-    	float ir = (float) iw / ih;
-    	
-    	int width = 1080;
-    	int height = (int) ((float) width / ir);
-    	
-		JFrame frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		if (RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
-		{
-			frame.setTitle(language.getProperty("preview"));			
-		}
-		else
-			frame.setTitle(new File(Shutter.fileList.getSelectedValue()).getName());
-		
-		frame.setBackground(new Color(45, 45, 45));
-		frame.getContentPane().setLayout(null);
-
-		GraphicsConfiguration config = frame.getGraphicsConfiguration();
-		GraphicsDevice myScreen = config.getDevice();
-		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] allScreens = env.getScreenDevices();
-		int screenIndex = -1;
-		for (int i = 0; i < allScreens.length; i++) {
-		    if (allScreens[i].equals(myScreen))
-		    {
-		    	screenIndex = i;
-		        break;
-		    }
-		}
-
-		int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();	
-		int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
-					
-    	int audioHeight = FFPROBE.channels * 12;
-    	
-    	/*if (FFPROBE.stereo)
-    		audioHeight = audioHeight * 2;*/
-		
-		frame.setSize(width, height + audioHeight);				
-		frame.setLocation(screenWidth / 2 - frame.getSize().width / 2, screenHeight / 2 - frame.getSize().height / 2);
+			@SuppressWarnings("serial")
+			JPanel display = new JPanel() {
 				
-		JPanel display = new JPanel() {
-			
-            @Override
-            protected void paintComponent(Graphics g) {
-            	
-                super.paintComponent(g);
-                
-                Graphics2D g2 = (Graphics2D)g;
-                
-                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                
-                g2.setColor(Color.BLACK);
-
-                setSize(frame.getWidth(), frame.getHeight());
-                
-                if (frameVideo != null)
-                {
-                	int audioHeight = FFPROBE.channels * 12;
-                	
-                	/*if (FFPROBE.stereo)
-                		audioHeight = audioHeight * 2;*/
-                	
-                	if (height > screenHeight)
+	            @Override
+	            protected void paintComponent(Graphics g) {
+	            	
+	                super.paintComponent(g);
+	                
+	                Graphics2D g2 = (Graphics2D)g;
+	                
+	                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	                
+	                g2.setColor(Color.BLACK);
+	
+	                setSize(player.getContentPane().getWidth(), player.getContentPane().getHeight());
+	                	                
+	                if (frameVideo != null)
 	                {
-                		int newWidth = (int) ((float) screenHeight * ir);
-	                	g2.drawImage(frameVideo, frame.getWidth() / 2 - newWidth / 2, 0, newWidth, this.getHeight() + audioHeight, this); 
+	                	if (player.getHeight() > screenHeight)
+		                {
+	                		int newWidth = (int) ((float) screenHeight * directDisplayInputRatio);
+		                	g2.drawImage(frameVideo, player.getContentPane().getWidth() / 2 - newWidth / 2, 0, newWidth, this.getHeight(), this); 
+		                }
+		                else
+		                	g2.drawImage(frameVideo, player.getContentPane().getWidth() / 2 - this.getWidth() / 2, player.getContentPane().getHeight() / 2 - (int) (this.getWidth() / directDisplayInputRatio) / 2, this.getWidth(), (int) (this.getWidth() / directDisplayInputRatio), this); 
 	                }
 	                else
-	                	g2.drawImage(frameVideo, frame.getWidth() / 2 - this.getWidth() / 2, frame.getHeight() / 2 - (int) (frame.getWidth() / ir) / 2 - audioHeight, this.getWidth(), (int) (frame.getWidth() / ir) + audioHeight, this); 
-                }
-                else
-                	g2.fillRect(0, 0, this.getWidth(), this.getHeight()); 
-            }
-        };
-        
-        display.setSize(frame.getWidth(), frame.getHeight());
-		display.setLayout(null);
-		display.setBackground(Color.BLACK);
-		
-		frame.add(display);
-		frame.setVisible(true);
-		
-		//Image sequence
-		float inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);;
-		if (Shutter.caseCreateSequence.isSelected())
-		{
-			inputFramerateMS = (float) (1000 / (Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."))));
-		}
-						
-		InputStream video = FFMPEG.process.getInputStream();				
-		BufferedInputStream videoInputStream = new BufferedInputStream(video);
-		
-		do {
+	                	g2.fillRect(0, 0, this.getWidth(), this.getHeight()); 
+	            }
+	        };
+	        
+			display.setLayout(null);
+			display.setBackground(Color.BLACK);
 			
-			try {
-				
-				long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
-				
-				frameVideo = ImageIO.read(videoInputStream);
+			player.add(display);
+			player.setVisible(true);
+			
+			InputStream video = process.getInputStream();				
+			BufferedInputStream videoInputStream = new BufferedInputStream(video);
+											
+			if (FFPROBE.hasAudio)						       
+			{
+				audio = processAudio.getInputStream();							
+				audioInputStream = AudioSystem.getAudioInputStream(audio);	
+			    AudioFormat audioFormat = audioInputStream.getFormat();					    
+		        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
+		        line = (SourceDataLine) AudioSystem.getLine(info);			        
+	            line.open(audioFormat);
+	            line.start();	
+			}
+			
+			displayThread = new Thread(new Runnable() {
 
-				long delay = startTime - System.nanoTime();
-				
-            	if (delay > 0)
-            	{		      
-            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
-	            	try {
-						Thread.sleep((int) (delay / 1000000 / 2));
-					} catch (InterruptedException e) {}
-            		
-	            	delay = startTime - System.nanoTime();
-	            	
-	            	long time = System.nanoTime();
-	            	while (System.nanoTime() - time < delay) {}		
-                }
-            	
-            	display.repaint();
-				
-			} catch (Exception e) {}
-			
-		} while (frameVideo != null && frame.isVisible());
+				@Override
+				public void run() {
+					        	       										
+					try {
+						
+				        boolean getRatio = true;
+				        			        
+				        byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
+			            int bytesRead = 0;
+			            
+						do {
+
+							//Image sequence
+							float inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);;
+							if (Shutter.caseCreateSequence.isSelected())
+							{
+								inputFramerateMS = (float) (1000 / (Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."))));
+							}	
+							
+							long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
+							
+							//Audio volume	
+							if (FFPROBE.hasAudio)						       
+							{
+								///Read 1 audio frame
+								try {
+									bytesRead = audioInputStream.read(bytes, 0, bytes.length);
+									line.write(bytes, 0, bytesRead);
+								} catch (Exception e) {}
+							}
 		
-		process.destroy();
-		frameVideo = null;
-		FFMPEG.isRunning = false;
-		frame.dispose();		
+							frameVideo = ImageIO.read(videoInputStream);
+			            	display.repaint();
+							
+							//Getting frame data info once
+							if (frameVideo != null && frameVideo.toString().contains("width") && getRatio)
+							{
+								String info = frameVideo.toString();
+															
+								String w[] = info.substring(info.indexOf("width")).replace("width ", "").split(" ");
+								String h[] = info.substring(info.indexOf("height")).replace("height ", "").split(" ");
+															
+								directDisplayInputRatio = (float) Integer.parseInt(w[1]) / Integer.parseInt(h[1]);
+								
+								int borderWidth = player.getWidth() - player.getContentPane().getWidth();
+	    						int borderHeight = player.getHeight() - player.getContentPane().getHeight();
+								
+								player.setSize(1000 + borderWidth, (int) (1000 / directDisplayInputRatio) + borderHeight);					
+								player.setLocation(screenWidth / 2 - player.getSize().width / 2, screenHeight / 2 - player.getSize().height / 2);															
+								display.setSize(player.getSize());
+															
+								frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+								
+								getRatio = false;
+							}						
+							
+							long delay = startTime - System.nanoTime();
+													
+			            	if (delay > 0)
+			            	{		      
+			            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
+				            	try {
+									Thread.sleep((int) (delay / 1000000 / 2));
+								} catch (InterruptedException e) {}
+			            		
+				            	delay = startTime - System.nanoTime();
+				            	
+				            	long time = System.nanoTime();
+				            	while (System.nanoTime() - time < delay) {}		
+			                }
+			            					            	
+						} while (process.isAlive());
+											
+						try {
+							video.close();
+						} catch (IOException e) {}		
+						try {
+							videoInputStream.close();
+						} catch (IOException e) {}
+						
+						if (audio != null)	       
+						{
+							try {
+								audio.close();
+							} catch (IOException e) {}
+							try {
+								audioInputStream.close();
+							} catch (IOException e) {}
+							
+							line.close();	
+						}
+						
+						if (player.isVisible())
+						{
+							player.dispose();	
+						}
+						
+					} catch (Exception e) {
+						error = true;
+					} finally {
+						
+						//Mode concat
+						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+						{		
+							File inputFile = new File(VideoPlayer.videoPath);
+							String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
+							File listeBAB = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));			
+							listeBAB.delete();
+						}
+						
+						isRunning = false;
+					}
+				}
+			
+	    	});
+			displayThread.setPriority(Thread.MAX_PRIORITY);
+			displayThread.start();
+		   					     																		
+		} catch (Exception e) {
+			error = true;
+		}
+								
 	}
 	
 	public static void hwaccel(final String cmd) {

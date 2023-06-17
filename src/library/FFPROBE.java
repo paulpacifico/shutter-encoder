@@ -22,6 +22,7 @@ package library;
 import java.awt.Cursor;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -31,7 +32,6 @@ import javax.swing.JOptionPane;
 import application.Console;
 import application.GOP;
 import application.RecordInputDevice;
-import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
 import settings.FunctionUtils;
@@ -128,6 +128,7 @@ public static int gopSpace = 124;
 
 			@Override
 			public void run() {
+				
 				try {	
 							
 					String PathToFFPROBE;
@@ -206,7 +207,7 @@ public static int gopSpace = 124;
 					Console.consoleFFPROBE.append(System.lineSeparator());
 					
 					while ((line = input.readLine()) != null)
-					{
+					{						
 						Console.consoleFFPROBE.append(line + System.lineSeparator());		
 									
 						//Errors
@@ -359,9 +360,9 @@ public static int gopSpace = 124;
 				                if (inputDeviceIsRunning)
 				            	{
 				            		if (file.equals("Capture.current.screen"))
-				            			currentFPS = Float.parseFloat(Settings.txtScreenRecord.getText());
+				            			currentFPS = Float.parseFloat(RecordInputDevice.txtScreenRecord.getText());
 				            		else
-				            			currentFPS = Float.parseFloat(Settings.txtInputDevice.getText());
+				            			currentFPS = Float.parseFloat(RecordInputDevice.txtInputDevice.getText());
 				            	}
 				                else
 				                {
@@ -543,6 +544,7 @@ public static int gopSpace = 124;
 				} finally {
 					isRunning = false;
 					btnStart.setEnabled(true);
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 						
 			}			
@@ -598,15 +600,38 @@ public static int gopSpace = 124;
 					}	
 					
 					isRunning = true;	
-					Process process = processFFPROBE.start();
-			         
+					Process process = processFFPROBE.start();			         			       
+			        
+			        Console.consoleFFPROBE.append(System.lineSeparator());	
+					
+			        //IMPORTANT avoid process hanging
+			        Thread stream = new Thread(new Runnable() {
+				      		        	
+						@Override
+						public void run() {
+							
+					        InputStreamReader esr = new InputStreamReader(process.getErrorStream());
+					        BufferedReader bre = new BufferedReader(esr);
+							
+							String line;
+							try {
+								
+								while ((line = bre.readLine()) != null)
+								{
+									Console.consoleFFPROBE.append(line + System.lineSeparator());
+								}
+								
+							} catch (IOException e) {}
+						}
+			        	
+			        });
+			        stream.start();
+			        
 			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
 			        BufferedReader br = new BufferedReader(isr);
+
+			        String line;			        		      		      
 			        			        
-			        String line;
-			        			        
-			        Console.consoleFFPROBE.append(System.lineSeparator());
-			        
 					//Analyse des données	
 			        while ((line = br.readLine()) != null)
 			        {		
@@ -615,94 +640,95 @@ public static int gopSpace = 124;
 						//Errors
 						FFMPEG.checkForErrors(line);
 																		
-					  if (line.contains("interlaced_frame"))
-					  {
-						  String interlace = line.substring(line.indexOf("interlaced_frame") + 17);
-						  interlaced = interlace;
-					  }
-					  if (line.contains("top_field_first")) 
-					  {
-						  String field = line.substring(line.indexOf("top_field_first") + 16);
-						  
-						  if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+						  if (line.contains("interlaced_frame"))
 						  {
-							  if (field.equals("1"))
-								  fieldOrder = "0";
-							  else
-								  fieldOrder = "1";
+							  String interlace = line.substring(line.indexOf("interlaced_frame") + 17);
+							  interlaced = interlace;
 						  }
-					  }
-					  
-					  if (line.contains("codec_type=video"))
-						  videoStream = true;
-
-					  if (line.contains("bits_per_raw_sample") && videoStream)
-					  {
-						  String depth = line.substring(line.indexOf("bits_per_raw_sample") + 20);
-						  
-						  if (depth.equals("N/A") == false)
+						  if (line.contains("top_field_first")) 
 						  {
-							  imageDepth = Integer.parseInt(depth);						  
-							  videoStream = false;
-						  }
-					  }
-					  
-					  if (line.contains("pix_fmt") && videoStream)
-					  {
-						  String depth = line.substring(line.indexOf("pix_fmt") + 8);
-						  
-						  pixelformat = depth;
-								  
-						  if (depth.equals("N/A") == false)
-						  {
-							  if (depth.contains("p10"))
-								  imageDepth = 10;	
-							  else if (depth.contains("p16"))
-								 imageDepth = 16;
+							  String field = line.substring(line.indexOf("top_field_first") + 16);
 							  
-							  videoStream = false;
-						  }						  
-					  }	
-
-					  if (line.contains("time_base"))
-					  {
-						  String s[] = line.split("=");
-						  timeBase = s[1];
-						  if (timeBase.contains("1/"))
-							  timeBase = s[1].replace("1/", ""); 
-					  }
-					  
-					  if (line.contains("min_luminance"))
-					  {
-						  String s[] = line.split("=");
-						  String s2[] = s[1].split("/");								  
-						  HDRmin = (float) Integer.parseInt(s2[0]) / Integer.parseInt(s2[1]);						  
-					  }
-					  
-					  if (line.contains("max_luminance"))
-					  {
-						  String s[] = line.split("=");
-						  String s2[] = s[1].split("/");								  
-						  HDRmax = (float) Integer.parseInt(s2[0]) / Integer.parseInt(s2[1]);	
-					  }
-						          						        		
-					}
-					
-					process.waitFor();					
+							  if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+							  {
+								  if (field.equals("1"))
+									  fieldOrder = "0";
+								  else
+									  fieldOrder = "1";
+							  }
+						  }
+						  
+						  if (line.contains("codec_type=video"))
+							  videoStream = true;
+	
+						  if (line.contains("bits_per_raw_sample") && videoStream)
+						  {
+							  String depth = line.substring(line.indexOf("bits_per_raw_sample") + 20);
+							  
+							  if (depth.equals("N/A") == false)
+							  {
+								  imageDepth = Integer.parseInt(depth);						  
+								  videoStream = false;
+							  }
+						  }
+						  
+						  if (line.contains("pix_fmt") && videoStream)
+						  {
+							  String depth = line.substring(line.indexOf("pix_fmt") + 8);
+							  
+							  pixelformat = depth;
+									  
+							  if (depth.equals("N/A") == false)
+							  {
+								  if (depth.contains("p10"))
+									  imageDepth = 10;	
+								  else if (depth.contains("p16"))
+									 imageDepth = 16;
+								  
+								  videoStream = false;
+							  }						  
+						  }	
+	
+						  if (line.contains("time_base"))
+						  {
+							  String s[] = line.split("=");
+							  timeBase = s[1];
+							  if (timeBase.contains("1/"))
+								  timeBase = s[1].replace("1/", ""); 
+						  }
+						  
+						  if (line.contains("min_luminance"))
+						  {
+							  String s[] = line.split("=");
+							  String s2[] = s[1].split("/");								  
+							  HDRmin = (float) Integer.parseInt(s2[0]) / Integer.parseInt(s2[1]);						  
+						  }
+						  
+						  if (line.contains("max_luminance"))
+						  {
+							  String s[] = line.split("=");
+							  String s2[] = s[1].split("/");								  
+							  HDRmax = (float) Integer.parseInt(s2[0]) / Integer.parseInt(s2[1]);	
+						  }
+							          						        		
+						}						
+						//process.waitFor();					
 													
 					} catch (Exception e) {	
 						FFMPEG.error = true;
 					} finally {
 						isRunning = false;
 						btnStart.setEnabled(true);
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
-						
-			}			
-		});
-		processFrameData.start();
+					
+				}			
+			});
+			processFrameData.start();
 	}
 	
 	public static void AnalyzeGOP(final String file, boolean isGOPWindow) {
+		
 		gopCount = 0;
 		gopSpace = 124;
 				
@@ -806,6 +832,7 @@ public static int gopSpace = 124;
 					} catch (Exception e) {						
 					} finally {
 						isRunning = false;
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}		
 						
 			}			
@@ -959,6 +986,7 @@ public static int gopSpace = 124;
 			} catch (Exception e) {}
 			finally {
 				isRunning = false;
+				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 		
 		return false;			
@@ -1050,7 +1078,7 @@ public static int gopSpace = 124;
 				}
 				finally {
 					calcul = false;
-					frame.setCursor(Cursor.getDefaultCursor());
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 			}
 		});

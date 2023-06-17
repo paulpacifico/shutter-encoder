@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.util.Locale;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -1246,299 +1247,324 @@ public class Utils extends Shutter {
 	@SuppressWarnings("rawtypes")
 	public static void loadSettings(File encFile) {
 	
-	if (liste.getSize() == 0)
-	{
-		JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),	language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
-		Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	}
-	else
-	{			
-		try {
-			
-			doNotLoadImage = true;
-			
-			File fXmlFile = encFile;
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-			doc.getDocumentElement().normalize();
-
-			NodeList nList = doc.getElementsByTagName("Component");
-			
-			for (int temp = 0; temp < nList.getLength(); temp++)
-			{
-				Node nNode = nList.item(temp);
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element eElement = (Element) nNode;
-					
-					//Type						
-					for (Component c : frame.getContentPane().getComponents())
-					{
-						if (c instanceof JPanel)
+		if (liste.getSize() == 0)
+		{
+			JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),	language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
+			Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+		else
+		{		
+			Thread load = new Thread(new Runnable() {
+	
+				@Override
+				public void run() {
+	
+					try {
+						
+						doNotLoadImage = true;
+						
+						File fXmlFile = encFile;
+						DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+						DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+						Document doc = dBuilder.parse(fXmlFile);
+						doc.getDocumentElement().normalize();
+	
+						NodeList nList = doc.getElementsByTagName("Component");
+						
+						for (int temp = 0; temp < nList.getLength(); temp++)
 						{
-							for (Component p : ((JPanel) c).getComponents())
-							{				
-								if (p.getName() != "" && p.getName() != null && p.getName().equals("text"))
-								{
-									continue;
-								}
+							Node nNode = nList.item(temp);
+							if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+								Element eElement = (Element) nNode;
 								
-								//For lock icon only
-								if (p.getName() != "" && p.getName() != null)
+								//Type						
+								for (Component c : frame.getContentPane().getComponents())
 								{
-									if ((p.getName().equals("lock") || p.getName().equals("unlock")) && eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lock"))
+									if (c instanceof JPanel)
 									{
-										lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
-										isLocked = true;
-										lock.setName("lock");
-									}
-								}
-																
-								if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-								{									
-									if (p instanceof JLabel)
-									{										
-										//Value
-										if (p.getName().equals("lock") == false && p.getName().equals("unlock") == false)
-										{
-											((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-										}
-																			
-										//State
-										((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-										
-										//Visible
-										((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
-									}
-									else if (p instanceof JCheckBox)
-									{										
-										//Value
-										if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-										{
-											if (((JCheckBox) p).isSelected() == false)
-												((JCheckBox) p).doClick();
-										}
-										else
-										{
-											if (((JCheckBox) p).isSelected())
-												((JCheckBox) p).doClick();
-										}										
-																												
-										//State
-										((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-										
-										//Visible
-										((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									}
-									else if (p instanceof JComboBox)
-									{		
-										if (p.getName().equals("comboFonctions"))
-										{
-											long time = System.currentTimeMillis();
+										for (Component p : ((JPanel) c).getComponents())
+										{				
+											if (p.getName() != "" && p.getName() != null && p.getName().equals("text"))
+											{
+												continue;
+											}
 											
-											do {
-												try {
-													Thread.sleep(100);
-												} catch (InterruptedException er) {}
+											//For lock icon only
+											if (p.getName() != "" && p.getName() != null)
+											{
+												if ((p.getName().equals("lock") || p.getName().equals("unlock")) && eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lock"))
+												{
+													lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+													isLocked = true;
+													lock.setName("lock");
+												}
+											}
+																			
+											if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
+											{									
+												if (p instanceof JLabel)
+												{										
+													//Value
+													if (p.getName().equals("lock") == false && p.getName().equals("unlock") == false)
+													{
+														((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+													}
+																						
+													//State
+													((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+													
+													//Visible
+													((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
+												}
+												else if (p instanceof JCheckBox)
+												{										
+													//Value
+													if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
+													{
+														if (((JCheckBox) p).isSelected() == false)
+															((JCheckBox) p).doClick();
+													}
+													else
+													{
+														if (((JCheckBox) p).isSelected())
+															((JCheckBox) p).doClick();
+													}										
+																															
+													//State
+													((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+													
+													//Visible
+													((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+												}
+												else if (p instanceof JComboBox)
+												{			
+													if (p.getName().equals("comboFonctions"))
+													{
+														long time = System.currentTimeMillis();
+														
+														do {
+															try {
+																Thread.sleep(100);
+															} catch (InterruptedException er) {}
+															
+															if (System.currentTimeMillis() - time > 1000)
+																VideoPlayer.frameIsComplete = true;
+																						
+														} while (VideoPlayer.frameIsComplete == false);
+													}
+													
+													if (p.getName().equals("comboLUTs"))
+													{
+														comboLUTs.setSelectedIndex(10);
+	
+												        for (int i = 0 ; i < comboLUTs.getModel().getSize() ; i++) 
+												        { 
+												        	if (comboLUTs.getModel().getElementAt(i).toString().equals(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
+												        	{
+												        		comboLUTs.setSelectedIndex(i);
+												        		break;
+												        	}
+												        }
+													}
+													else
+													{
+														//Value
+														((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+																							
+														//State
+														((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+														
+														//Visible
+														((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+													}
+												}
+												else if (p instanceof JTextField)
+												{
+													//Value
+													((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+																						
+													//State
+													((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+													
+													//Visible
+													((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 												
-												if (System.currentTimeMillis() - time > 1000)
-													VideoPlayer.frameIsComplete = true;
-																			
-											} while (VideoPlayer.frameIsComplete == false);
-										}
-										
-										if (p.getName().equals("comboLUTs"))
-										{
-											comboLUTs.setSelectedIndex(10);
-
-									        for (int i = 0 ; i < comboLUTs.getModel().getSize() ; i++) 
-									        { 
-									        	if (comboLUTs.getModel().getElementAt(i).toString().equals(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-									        	{
-									        		comboLUTs.setSelectedIndex(i);
-									        		break;
-									        	}
-									        }
-										}
-										else
-										{
-											//Value
-											((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																				
-											//State
-											((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-											
-											//Visible
-											((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-										}
-									}
-									else if (p instanceof JTextField)
-									{
-										//Value
-										((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																			
-										//State
-										((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-										
-										//Visible
-										((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									
-										//Elements position
-										if (p.getName().equals("textNamePosX"))
-											fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);	
-										
-										if (p.getName().equals("textNamePosY"))
-											fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
-																			
-										if (p.getName().equals("textTcPosY"))
-											timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
-										
-										if (p.getName().equals("textTcPosX"))
-											timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
-									}
-									else if (p instanceof JSlider)
-									{
-										//Value
-										((JSlider) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-																			
-										//State
-										((JSlider) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-										
-										//Visible
-										((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									}
-									else if (p instanceof JSpinner)
-									{							
-										//Value
-										((JSpinner) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-																			
-										//State
-										((JSpinner) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-										
-										//Visible
-										((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									}
-									else if (p instanceof JPanel)
-									{
-										//Value
-										String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
-										String s2[] = s[1].split(",");
-										((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
-										
-										if (p.getName().equals("panelTcColor"))
-										{
-											foregroundColor = panelTcColor.getBackground();
-										}
-										else if (p.getName().equals("panelTcColor2"))
-										{
-											backgroundColor = panelTcColor2.getBackground();
-										}
-										
-										if (p.getName().equals("panelSubsColor"))
-										{
-											fontSubsColor = panelSubsColor.getBackground();
-										}
-										else if (p.getName().equals("panelSubsColor2"))
-										{
-											backgroundSubsColor = panelSubsColor2.getBackground();
+													//Elements position
+													if (p.getName().equals("textNamePosX"))
+														fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), fileName.getLocation().y);	
+													
+													if (p.getName().equals("textNamePosY"))
+														fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+																						
+													if (p.getName().equals("textTcPosY"))
+														timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+													
+													if (p.getName().equals("textTcPosX"))
+														timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), timecode.getLocation().y);
+												}
+												else if (p instanceof JSlider)
+												{
+													//Value
+													((JSlider) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+																						
+													//State
+													((JSlider) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+													
+													//Visible
+													((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+												}
+												else if (p instanceof JSpinner)
+												{							
+													//Value
+													((JSpinner) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+																						
+													//State
+													((JSpinner) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+													
+													//Visible
+													((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+												}
+												else if (p instanceof JPanel)
+												{
+													//Value
+													String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
+													String s2[] = s[1].split(",");
+													((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
+													
+													if (p.getName().equals("panelTcColor"))
+													{
+														foregroundColor = panelTcColor.getBackground();
+													}
+													else if (p.getName().equals("panelTcColor2"))
+													{
+														backgroundColor = panelTcColor2.getBackground();
+													}
+													
+													if (p.getName().equals("panelSubsColor"))
+													{
+														fontSubsColor = panelSubsColor.getBackground();
+													}
+													else if (p.getName().equals("panelSubsColor2"))
+													{
+														backgroundSubsColor = panelSubsColor2.getBackground();
+													}
+												}
+											}
 										}
 									}
-								}
+								}					
 							}
 						}
-					}					
-				}
-			}
-			
-			changeFunction(false);	
-							
-		} catch (Exception e) {
-			
-			System.out.println(e);
-		}
-		finally {
-			
-			doNotLoadImage = false;
 						
-			//grpCrop
-			if (caseEnableCrop.isSelected())
-			{
-				selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / imageRatio));
-				int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
-				int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
-				
-				if (w > VideoPlayer.player.getWidth())
-					w = VideoPlayer.player.getWidth();
-				
-				if (h > VideoPlayer.player.getHeight())
-					h = VideoPlayer.player.getHeight();
-				
-				selection.setSize(w , h);	
-				
-				frameCropX = VideoPlayer.player.getLocation().x;
-				frameCropY = VideoPlayer.player.getLocation().y;
-				
-				anchorRight = selection.getLocation().x + selection.getWidth();
-				anchorBottom = selection.getLocation().y + selection.getHeight();					
-				VideoPlayer.checkSelection();
-			}
-			
-			//grpOverlay
-			if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
-			{
-				timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
-				tcLocX = timecode.getLocation().x;
-				tcLocY = timecode.getLocation().y;	
-			}
-			if (caseAddText.isSelected() || caseShowFileName.isSelected())
-			{
-				fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
-				fileLocX = fileName.getLocation().x;
-				fileLocY = fileName.getLocation().y;
-			}
-			
-			//grpSubtitles
-			if (caseAddSubtitles.isSelected())
-			{						    		
-				if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth)
-				{
-					subsCanvas.setBounds(0, 0, VideoPlayer.player.getWidth(), (int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));
+						changeFunction(false);	
+										
+					} catch (Exception e) {
+						
+						System.out.println(e);
+					}
+					finally {
+						
+						doNotLoadImage = false;
+									
+						//grpCrop
+						if (caseEnableCrop.isSelected())
+						{
+							selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / imageRatio));
+							int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+							int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+							
+							if (w > VideoPlayer.player.getWidth())
+								w = VideoPlayer.player.getWidth();
+							
+							if (h > VideoPlayer.player.getHeight())
+								h = VideoPlayer.player.getHeight();
+							
+							selection.setSize(w , h);	
+							
+							frameCropX = VideoPlayer.player.getLocation().x;
+							frameCropY = VideoPlayer.player.getLocation().y;
+							
+							anchorRight = selection.getLocation().x + selection.getWidth();
+							anchorBottom = selection.getLocation().y + selection.getHeight();					
+							VideoPlayer.checkSelection();
+						}
+						
+						//grpOverlay
+						if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
+						{
+							timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / imageRatio));
+							tcLocX = timecode.getLocation().x;
+							tcLocY = timecode.getLocation().y;	
+							timecode.setSize(10,10); //Workaround to not reset the location
+						}
+						if (caseAddText.isSelected() || caseShowFileName.isSelected())
+						{
+							fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / imageRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / imageRatio));
+							fileLocX = fileName.getLocation().x;
+							fileLocY = fileName.getLocation().y;
+							fileName.setSize(10,10); //Workaround to not reset the location
+						}
+						
+						//grpSubtitles
+						if (caseAddSubtitles.isSelected())
+						{						    		
+							if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth)
+							{
+								subsCanvas.setBounds(0, 0, VideoPlayer.player.getWidth(), (int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));
+							}
+							else
+							{
+								subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
+							    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
+								
+								subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
+							}			
+						}
+						
+						//grpWatermark
+						if (caseAddWatermark.isSelected())
+						{
+							VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
+							logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / imageRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
+							//Saving location
+							logoLocX = logo.getLocation().x;
+							logoLocY = logo.getLocation().y;
+						}
+						
+						VideoPlayer.btnStop.doClick();
+						VideoPlayer.resizeAll();
+						
+						if (lblVBR.getText().equals("CQ"))
+						{
+							String index = debitVideo.getSelectedItem().toString();
+							
+							String[] values = new String[53];
+							values[0] = language.getProperty("lblBest");
+							for (int i = 1 ; i < 52 ; i++)
+							{
+								values[i] = String.valueOf(i);
+							}			
+							values[52] = language.getProperty("lblWorst");
+							debitVideo.setModel(new DefaultComboBoxModel<String>(values));
+							debitVideo.setSelectedItem(index);
+						}
+						
+						if (Functions.frame != null)
+						{
+							Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						}
+						
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					}
+									
 				}
-				else
-				{
-					subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
-				    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
-					
-					subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
-				}			
-			}
+				
+			});
+			load.start();
 			
-			//grpWatermark
-			if (caseAddWatermark.isSelected())
-			{
-				VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
-				logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / imageRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / imageRatio));
-				//Saving location
-				logoLocX = logo.getLocation().x;
-				logoLocY = logo.getLocation().y;
-			}
 			
-			timecode.repaint();
-			fileName.repaint();
-			selection.repaint();
-			overImage.repaint();
-			
-			VideoPlayer.btnStop.doClick();
-			
-			if (Functions.frame != null)
-			{
-				Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-			
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
-}
 
 	public static void loadThemes() {
 								
