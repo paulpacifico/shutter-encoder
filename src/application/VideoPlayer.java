@@ -1568,7 +1568,7 @@ public class VideoPlayer {
 
 			String gpuDecoding = "";
 			
-			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
+			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && mouseIsPressed == false)
 			{
 				if (FFMPEG.isGPUCompatible)
 				{
@@ -4260,7 +4260,7 @@ public class VideoPlayer {
 			algorithm = "neighbor";
 		}
 		
-		if (FFMPEG.isGPUCompatible && Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto") && noGPU == false)
+		if (FFMPEG.isGPUCompatible && Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto") && noGPU == false && mouseIsPressed == false)
 		{
 			String bitDepth = "nv12";
 			if (FFPROBE.imageDepth == 10)
