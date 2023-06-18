@@ -891,7 +891,9 @@ public class Shutter {
 					changeFunction(true);
 					changeFilters();
 					
-					if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString()) || language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString()))
+					if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut"))
+					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))
+					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionConform")))
 					{
 						JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
 					}
@@ -18133,6 +18135,8 @@ public class Shutter {
 								
 							} while (i < frame.getWidth());
 						}
+						
+						VideoPlayer.seekOnKeyFrames = false;
 
 						String function = comboFonctions.getSelectedItem().toString();
 							
@@ -18217,9 +18221,14 @@ public class Shutter {
 						    		comboFonctions.setEnabled(false);	
 								}
 							}
+							else
+								VideoPlayer.seekOnKeyFrames = true;
+							
 						}
 						else if (language.getProperty("functionRewrap").equals(function) || language.getProperty("functionCut").equals(function) || language.getProperty("functionMerge").equals(function))
-						{							
+						{				
+							VideoPlayer.seekOnKeyFrames = true;
+							
 							if (language.getProperty("functionCut").equals(function) || language.getProperty("functionMerge").equals(function))
 							{
 								addToList.setText(language.getProperty("filesVideoOrAudio"));
@@ -18377,7 +18386,7 @@ public class Shutter {
 							}							
 
 						} else if (language.getProperty("functionReplaceAudio").equals(function) || language.getProperty("functionNormalization").equals(function)) {
-							
+														
 							if (language.getProperty("functionReplaceAudio").equals(function))
 								addToList.setText(language.getProperty("fileVideoAndAudio"));
 							else
@@ -20553,10 +20562,10 @@ public class Shutter {
 	
 	public static void animateSections(long startTime, boolean horizontal) {
 
-		int time = 300000;
+		int time = 200000;
 		if (horizontal)
 		{
-			time = 2000000;
+			time = 1000000;
 		}
 
 		do {
@@ -21840,13 +21849,8 @@ public class Shutter {
 		
 		if (grpDestination.isEnabled())
 			grpDestination.setSelectedIndex(0);
-		
-		if (caseDisplay.isEnabled() && caseDisplay.isSelected())
-		{
-			VideoPlayer.btnStop.doClick(); //Refresh the display
-		}
-		else
-			VideoPlayer.resizeAll();
+				
+		VideoPlayer.resizeAll();
 		
 		FunctionUtils.sendMail();
 		Wetransfer.sendToWeTransfer();
