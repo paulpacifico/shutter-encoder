@@ -831,17 +831,6 @@ public class VideoEncoders extends Shutter {
 							//HDR
 							switch (comboFonctions.getSelectedItem().toString())
 							{
-								case "AV1":
-								case "H.265":
-								case "VP8":
-								case "VP9":
-									
-									//HDR
-									Colorimetry.setHDR(fileName, fileOut);
-									
-									break;
-									
-								//Creating VOB files
 								case "DVD":
 									
 									lblCurrentEncoding.setText(Shutter.language.getProperty("createBurnFiles"));
@@ -1464,11 +1453,21 @@ public class VideoEncoders extends Shutter {
 			case "H.264":
 			case "H.265":
 							
-				String maxrate = "";
+				String limitedBitrate = "";
 				
-				if (maximumBitrate.getSelectedItem().toString().equals("auto") == false && lblVBR.getText().equals("CBR") == false)
+				int maxrate = FunctionUtils.setVideoBitrate();		
+				if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
 				{
-					maxrate = " -maxrate " + maximumBitrate.getSelectedItem().toString() + "k -bufsize " + Integer.valueOf((int) (Integer.parseInt(maximumBitrate.getSelectedItem().toString()) * 2)) + "k";
+					maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
+				}
+				
+				if (lblVBR.getText().equals("CBR"))
+		        {					
+					limitedBitrate = " -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+		        }	
+				else if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+				{
+					limitedBitrate = " -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 				}
 				
 				if (lblVBR.getText().equals("CQ"))
@@ -1491,7 +1490,7 @@ public class VideoEncoders extends Shutter {
 						gpu = " -q:v " + (31 - (int) Math.ceil((FunctionUtils.setVideoBitrate() * 31) / 51));
 					}
 						
-		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu + maxrate;          
+		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu + limitedBitrate;          
 		        }
 				else if (lblVBR.getText().equals("CBR") && caseAccel.isSelected())
 		        {
@@ -1499,7 +1498,7 @@ public class VideoEncoders extends Shutter {
 		        }
 		        else
 		        {		        	
-		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k" + maxrate;
+		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k" + limitedBitrate;
 		        }
 				
 			case "VP8":

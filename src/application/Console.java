@@ -62,7 +62,6 @@ public class Console extends JFrame {
 	public static JTextArea consoleMEDIAINFO =  new JTextArea();
 	public static JTextArea consoleYOUTUBEDL =  new JTextArea();
 	public static JTextArea consoleEXIFTOOL =  new JTextArea();
-	public static JTextArea consoleMKVMERGE =  new JTextArea();
 	public static JTabbedPane tabbedPane;
 	private JScrollPane scrollFFMPEG;
 	private JScrollPane scrollFFPLAY;
@@ -73,7 +72,6 @@ public class Console extends JFrame {
 	private JScrollPane scrollMEDIAINFO;
 	private JScrollPane scrollYOUTUBEDL;
 	private JScrollPane scrollEXIFTOOL;
-	private JScrollPane scrollMKVMERGE;
 	private JMenuBar menuBar;
 	private final JSpinner spinner;
 	private JCheckBoxMenuItem followLine;
@@ -134,9 +132,6 @@ public class Console extends JFrame {
 					case 8:
 						consoleEXIFTOOL.setText("");
 						break;
-					case 9:
-						consoleMKVMERGE.setText("");
-						break;
 				}
 			}
 			
@@ -188,9 +183,6 @@ public class Console extends JFrame {
 									break;
 								case 8:
 									writer.write(consoleEXIFTOOL.getText());
-									break;
-								case 9:
-									writer.write(consoleMKVMERGE.getText());
 									break;
 							}
 						writer.close();
@@ -263,7 +255,6 @@ public class Console extends JFrame {
 				consoleMEDIAINFO.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleYOUTUBEDL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleEXIFTOOL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleMKVMERGE.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));
 			}
 			
 		});
@@ -313,12 +304,7 @@ public class Console extends JFrame {
 		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleEXIFTOOL.setWrapStyleWord(true);
 		consoleEXIFTOOL.addKeyListener(kl);
-		consoleMKVMERGE.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleMKVMERGE.setBackground(new Color(45, 45, 45));
-		consoleMKVMERGE.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
-		consoleMKVMERGE.setWrapStyleWord(true);
-		consoleMKVMERGE.addKeyListener(kl);
-		
+
 		scrollFFMPEG = new JScrollPane();	
 		scrollFFMPEG.getViewport().add(consoleFFMPEG);
 		
@@ -346,9 +332,6 @@ public class Console extends JFrame {
 		scrollEXIFTOOL = new JScrollPane();	
 		scrollEXIFTOOL.getViewport().add(consoleEXIFTOOL); 
 		
-		scrollMKVMERGE = new JScrollPane();	
-		scrollMKVMERGE.getViewport().add(consoleMKVMERGE); 
-				
 		scrollFFMPEG.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
@@ -411,14 +394,7 @@ public class Console extends JFrame {
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
-		
-		scrollMKVMERGE.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-				
+	
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, frmConsole.getWidth(), frmConsole.getHeight());
 		tabbedPane.add("FFMPEG", scrollFFMPEG);
@@ -430,7 +406,6 @@ public class Console extends JFrame {
 		tabbedPane.add("MEDIAINFO", scrollMEDIAINFO);
 		tabbedPane.add("YOUTUBEDL", scrollYOUTUBEDL);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
-		tabbedPane.add("MKVMERGE", scrollMKVMERGE);
 		frmConsole.getContentPane().add(tabbedPane);		
 	}
 }

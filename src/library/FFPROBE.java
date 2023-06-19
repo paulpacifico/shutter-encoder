@@ -97,7 +97,7 @@ public static int gopSpace = 124;
 			channels = 0;
 			stereo = false;	
 		}
-		
+				
 		dropFrameTC = "";
 		surround = false;
 		totalLength = 0;

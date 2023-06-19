@@ -165,7 +165,6 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
-import library.MKVMERGE;
 import library.SEVENZIP;
 import library.TSMUXER;
 import library.XPDF;
@@ -266,6 +265,8 @@ public class Shutter {
 	protected static JComboBox<Object> comboColorspace;
 	protected static JLabel lblHDR;
 	protected static JComboBox<String> comboHDRvalue;
+	protected static JComboBox<String> comboCLLvalue;
+	protected static JComboBox<String> comboFALLvalue;
 	protected static JButton btnLUTs;
 	protected static JButton btnStart;
 	protected static JButton btnCancel;
@@ -988,11 +989,7 @@ public class Shutter {
 									if (XPDF.runProcess != null && XPDF.runProcess.isAlive())
 									{
 										XPDF.process.destroy();
-									}									
-									if (MKVMERGE.runProcess != null && MKVMERGE.runProcess.isAlive())
-									{
-										MKVMERGE.process.destroy();
-									}									
+									}																	
 									if (YOUTUBEDL.runProcess != null && YOUTUBEDL.runProcess.isAlive())
 									{
 										YOUTUBEDL.process.destroy();
@@ -1373,7 +1370,7 @@ public class Shutter {
 				
 				if (accept)
 				{
-					changeSize();
+					toogleFullscreen();
 				}
 			}
 
@@ -1614,7 +1611,7 @@ public class Shutter {
 				
 				if (down.getClickCount() == 2)
 				{
-					changeSize();
+					toogleFullscreen();
 				}
 			}
 			
@@ -2712,17 +2709,6 @@ public class Shutter {
 						}
 					} // End if
 				}
-				if (MKVMERGE.runProcess != null) {
-					if (MKVMERGE.runProcess.isAlive()) {
-						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
-								language.getProperty("stopProcess"), JOptionPane.YES_NO_OPTION,
-								JOptionPane.PLAIN_MESSAGE);
-						if (reply == JOptionPane.YES_OPTION) {
-							cancelled = true;
-							MKVMERGE.process.destroyForcibly();
-						}
-					} // End if
-				}
 				if (YOUTUBEDL.runProcess != null) {
 					if (YOUTUBEDL.runProcess.isAlive()) {
 						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
@@ -2929,7 +2915,8 @@ public class Shutter {
 						RenderQueue.btnStartRender.setEnabled(true);					
 					
 					// Command directe FFMPEG
-					if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")) {
+					if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg"))
+					{
 						if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
 								|| comboFilter.getEditor().getItem().toString().equals("")
 								|| comboFilter.getEditor().getItem().toString().equals(" ")
@@ -2938,8 +2925,10 @@ public class Shutter {
 									language.getProperty("extensionError"), JOptionPane.INFORMATION_MESSAGE);
 						else
 							Command.main();
-					} else {
-
+						
+					}
+					else
+					{
 						//Scan dossier
 						if (scan.getText().equals(language.getProperty("menuItemStopScan")) && scanIsRunning == false)
 								JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("dragFolderToDestination"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.INFORMATION_MESSAGE);
@@ -3465,7 +3454,7 @@ public class Shutter {
 				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")) 
 				{
 					changeFilters();
-					changeFrameSize(false);
+					resizeFrame(false);
 
 					topPanel.setBounds(0, 0, frame.getWidth(), 28);
 					topImage.setBounds(0, 0, topPanel.getWidth(), 24);
@@ -3517,7 +3506,7 @@ public class Shutter {
 						comboFonctions.hidePopup();
 						changeFilters();
 						changeSections(true);
-						changeFrameSize(false);
+						resizeFrame(false);
 						text = "";
 					} else if (e.getKeyCode() == KeyEvent.VK_DOWN)
 						e.consume();// Contournement pour éviter le listeDrop
@@ -4659,8 +4648,11 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				if (caseRunInBackground.isSelected()) {
-					Thread thread = new Thread(new Runnable() {
+					
+					Thread thread = new Thread(new Runnable()
+					{
 						boolean running = true;
 
 						@Override
@@ -4702,9 +4694,9 @@ public class Shutter {
 							} while (caseRunInBackground.isSelected()
 									&& btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")));
 
-						}// End Run
+						}
 
-					});// End Thread
+					});
 					thread.start();
 				}
 			}
@@ -9736,7 +9728,7 @@ public class Shutter {
 					else
 					{
 					
-						File video = new File(Shutter.liste.elementAt(0).toString());
+						File video = new File(fileList.getSelectedValue().toString());
 						String ext = video.toString().substring(video.toString().lastIndexOf("."));
 						
 						FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseSubtitles"),	FileDialog.LOAD);
@@ -9950,8 +9942,8 @@ public class Shutter {
 				else 
 				{
 					VideoPlayer.player.remove(subsCanvas);
-					caseAddSubtitles.setSelected(false);					
-					VideoPlayer.loadImage(true);					
+					caseAddSubtitles.setSelected(false);				
+
 	
 					for (Component c : grpSubtitles.getComponents())
 					{
@@ -11657,28 +11649,14 @@ public class Shutter {
 						caseAlpha.setSelected(false);
 						caseAlpha.setEnabled(false);			
 					}
-					
-					if (comboFonctions.getSelectedItem().toString().equals("VP9") || comboFonctions.getSelectedItem().toString().equals("AV1") || comboFonctions.getSelectedItem().toString().equals("H.265") )
-					{
-						if (comboColorspace.getSelectedItem().toString().contains("HDR"))
-						{
-							if (comboFilter.getModel().getSize() != 1)
-							{
-								final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(new String[] {".mkv"});						
-								comboFilter.setModel(model);
-							}
-						}
-					}
-					
+										
 					if (comboColorspace.getSelectedItem().toString().contains("HDR"))
 					{
-						btnLUTs.setVisible(false);
 						comboHDRvalue.setVisible(true);
 						lblHDR.setVisible(true);
 					}
 					else
 					{
-						btnLUTs.setVisible(true);
 						comboHDRvalue.setVisible(false);
 						lblHDR.setVisible(false);
 					}
@@ -11736,7 +11714,6 @@ public class Shutter {
 						}
 					}
 					
-					btnLUTs.setVisible(true);
 					comboHDRvalue.setVisible(false);
 					lblHDR.setVisible(false);
 				}
@@ -11764,12 +11741,69 @@ public class Shutter {
 		comboHDRvalue.setBounds(comboColorspace.getX() + comboColorspace.getWidth() - 80, comboColorspace.getLocation().y + comboColorspace.getHeight() + 2, 80, 16);
 		comboHDRvalue.setMaximumRowCount(10);
 		grpColorimetry.add(comboHDRvalue);
+				
+		comboCLLvalue = new JComboBox<String>(new String[] {"400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
+		comboCLLvalue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboCLLvalue.setEditable(true);
+		comboCLLvalue.setVisible(false);
+		comboCLLvalue.setSelectedIndex(3);
+		comboCLLvalue.setBounds(comboHDRvalue.getX(), comboHDRvalue.getLocation().y + comboHDRvalue.getHeight() + 2, 80, 16);
+		comboCLLvalue.setMaximumRowCount(10);
+		grpColorimetry.add(comboCLLvalue);
 		
-		lblHDR = new JLabel("HDR" + language.getProperty("colon"));
+		JLabel lblMaxCLL = new JLabel("MaxCLL" + language.getProperty("colon"));
+		lblMaxCLL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblMaxCLL.setBounds(comboCLLvalue.getX() - lblMaxCLL.getPreferredSize().width - 4, comboCLLvalue.getY(), lblMaxCLL.getPreferredSize().width, lblMaxCLL.getPreferredSize().height);
+		lblMaxCLL.setVisible(false);
+		grpColorimetry.add(lblMaxCLL);
+				
+		comboFALLvalue = new JComboBox<String>(new String[] {"400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
+		comboFALLvalue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboFALLvalue.setEditable(true);
+		comboFALLvalue.setVisible(false);
+		comboFALLvalue.setSelectedIndex(0);
+		comboFALLvalue.setBounds(comboHDRvalue.getX(), comboCLLvalue.getLocation().y + comboCLLvalue.getHeight() + 2, 80, 16);
+		comboFALLvalue.setMaximumRowCount(10);
+		grpColorimetry.add(comboFALLvalue);
+				
+		JLabel lblMaxFALL = new JLabel("MaxFALL" + language.getProperty("colon"));
+		lblMaxFALL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblMaxFALL.setBounds(comboFALLvalue.getX() - lblMaxFALL.getPreferredSize().width - 4, comboFALLvalue.getY(), lblMaxFALL.getPreferredSize().width, lblMaxFALL.getPreferredSize().height);
+		lblMaxFALL.setVisible(false);
+		grpColorimetry.add(lblMaxFALL);
+		
+		lblHDR = new JLabel("luminance" + language.getProperty("colon"));
 		lblHDR.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblHDR.setBounds(comboHDRvalue.getX() - lblHDR.getPreferredSize().width - 4, comboHDRvalue.getY(), lblHDR.getPreferredSize().width, lblHDR.getPreferredSize().height);
 		lblHDR.setVisible(false);
 		grpColorimetry.add(lblHDR);
+		
+		lblHDR.addComponentListener(new ComponentAdapter ()
+	    {
+	        public void componentShown(ComponentEvent e)
+	        {
+	        	lblMaxCLL.setVisible(true);
+				comboCLLvalue.setVisible(true);
+				lblMaxFALL.setVisible(true);
+				comboFALLvalue.setVisible(true);
+				
+				btnLUTs.setVisible(false);
+				caseLUTs.setVisible(false);
+				comboLUTs.setVisible(false);
+	        }
+
+	        public void componentHidden(ComponentEvent e)
+	        {
+	        	lblMaxCLL.setVisible(false);
+				comboCLLvalue.setVisible(false);
+				lblMaxFALL.setVisible(false);
+				comboFALLvalue.setVisible(false);
+				
+				btnLUTs.setVisible(true);
+				caseLUTs.setVisible(true);
+				comboLUTs.setVisible(true);
+	        }
+	    });
 		
 		comboColorspace.addActionListener(new ActionListener() {
 	
@@ -11787,73 +11821,13 @@ public class Shutter {
 					caseAlpha.setEnabled(true);					
 				}
 				
-				if ((comboFonctions.getSelectedItem().toString().equals("VP9") || comboFonctions.getSelectedItem().toString().equals("AV1") || comboFonctions.getSelectedItem().toString().equals("H.265")) && caseColorspace.isSelected())
-				{
-					if (comboColorspace.getSelectedItem().toString().contains("HDR"))
-					{
-						if (comboFilter.getModel().getSize() != 1)
-						{
-							final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(new String[] {".mkv"});						
-							comboFilter.setModel(model);
-						}
-					}
-					else
-					{
-						if (comboFonctions.getSelectedItem().toString().equals("VP8"))
-						{
-							if (comboFilter.getModel().getSize() != 2)
-							{
-								String filtres[] = {".webm", ".mkv" };
-								final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-								comboFilter.setModel(model);
-								comboFilter.setSelectedIndex(0);
-							}
-						}
-						else if (comboFonctions.getSelectedItem().toString().equals("VP9"))
-						{
-							if (comboFilter.getModel().getSize() != 3)
-							{
-								String filtres[] = {".webm", ".mkv", ".mp4" };
-								final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-								comboFilter.setModel(model);
-								comboFilter.setSelectedIndex(0);
-							}
-						}
-						else if (comboFonctions.getSelectedItem().toString().equals("AV1"))
-						{
-							if (comboFilter.getModel().getSize() != 3)
-							{
-								String filtres[] = {".mkv", ".mp4", ".webm"};	
-								final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-								comboFilter.setModel(model);
-								comboFilter.setSelectedIndex(0);
-							}
-						}
-						else if (comboFonctions.getSelectedItem().toString().equals("H.265"))
-						{
-							if (comboFilter.getModel().getSize() != 9)
-							{
-								String filtres[] = { ".mp4", ".mov", ".mkv", ".avi", ".flv", ".f4v", ".mpg", ".ts", ".m2ts" };
-								DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
-								if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
-									comboFilter.setModel(model);
-									comboFilter.setSelectedIndex(0);
-								}
-							}
-						}
-					}					
-					
-				}
-				
 				if (comboColorspace.getSelectedItem().toString().contains("HDR"))
 				{
-					btnLUTs.setVisible(false);
 					comboHDRvalue.setVisible(true);
 					lblHDR.setVisible(true);
 				}
 				else
 				{
-					btnLUTs.setVisible(true);
 					comboHDRvalue.setVisible(false);
 					lblHDR.setVisible(false);
 				}
@@ -16493,6 +16467,8 @@ public class Shutter {
 				topImage.repaint();
 				
 				doNotLoadImage = false;
+				
+				VideoPlayer.resizeAll();
 			}
 			
 		});
@@ -17475,7 +17451,7 @@ public class Shutter {
 				|| "JPEG".equals(function)
 				|| language.getProperty("functionNormalization").equals(function))
 		{
-			changeFrameSize(true);
+			resizeFrame(true);
 			changeSections(anim);
 			
 		} else if (language.getProperty("functionExtract").equals(function)				
@@ -17485,13 +17461,13 @@ public class Shutter {
 				|| language.getProperty("functionSceneDetection").equals(function)
 				|| language.getProperty("functionWeb").equals(function))
 		{
-			changeFrameSize(false);
+			resizeFrame(false);
 			changeSections(anim);
 			
 		} 
 		else if (language.getProperty("itemMyFunctions").equals(function))
 		{
-			changeFrameSize(false);
+			resizeFrame(false);
 			changeSections(anim);
 		
 			if (Functions.frame == null)
@@ -17772,7 +17748,7 @@ public class Shutter {
 			comboForceSpeed.setEnabled(false);
 	}
 
-	public static void changeFrameSize(final boolean bigger) {
+	public static void resizeFrame(final boolean bigger) {
 						
 		String function = comboFonctions.getSelectedItem().toString();
 		
@@ -17800,7 +17776,8 @@ public class Shutter {
 			VideoPlayer.setPlayerButtons(true);
 			VideoPlayer.player.setVisible(true);
 
-			lblArrows.setVisible(false);
+			lblArrows.setVisible(true);
+			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(true);
 			comboGPUDecoding.setVisible(true);			
 			if (System.getProperty("os.name").contains("Windows"))
@@ -17808,7 +17785,10 @@ public class Shutter {
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
 			}			
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);				
+			
+			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
+			lblYears.setLocation(frame.getWidth()  - lblYears.getPreferredSize().width - 6, lblBy.getY());
+		    lblYears.setVisible(true);
 		}
 		else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionNormalization").equals(function))
 		{
@@ -17820,7 +17800,7 @@ public class Shutter {
 			{
 				frame.setBounds(frame.getX() - (654 - (1350 - 312)) / 2, frame.getY(), 654, frame.getHeight());
 			}
-			else if (frame.getSize().width == 1350)
+			else if (frame.getSize().width >= 1350)
 			{
 				frame.setBounds(frame.getX() + (1350 - 654) / 2, frame.getY(), 654, frame.getHeight());
 			}
@@ -17833,8 +17813,11 @@ public class Shutter {
 			lblGpuDecoding.setVisible(false);
 			comboGPUDecoding.setVisible(false);			
 			lblGpuFiltering.setVisible(false);
-			comboGPUFilter.setVisible(false);		
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);			
+			comboGPUFilter.setVisible(false);			
+			
+			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
+			lblYears.setLocation(frame.getWidth()  - lblYears.getPreferredSize().width - 6, lblBy.getY());
+		    lblYears.setVisible(true);
 		}
 		else if (bigger && frame.getSize().width < 1350)
 		{
@@ -17859,8 +17842,11 @@ public class Shutter {
 			{
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
-			}
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);			
+			}		
+			
+			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
+			lblYears.setLocation(frame.getWidth()  - lblYears.getPreferredSize().width - 6, lblBy.getY());
+		    lblYears.setVisible(true);
 		}
 		else if (bigger == false && frame.getSize().width > 332)
 		{
@@ -17871,7 +17857,9 @@ public class Shutter {
 			comboGPUDecoding.setVisible(false);
 			lblGpuFiltering.setVisible(false);
 			comboGPUFilter.setVisible(false);
-			lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
+			
+		    lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
+		    lblYears.setVisible(false);
 		}
 		
 		setGPUOptions();
@@ -17893,7 +17881,7 @@ public class Shutter {
 		newInstance.setLocation(help.getLocation().x - 20, 4);		 
 	}
 
-	private static void changeSize() {
+	private static void toogleFullscreen() {
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		
@@ -17940,15 +17928,18 @@ public class Shutter {
 			frame.setLocation(frame.getX(), 0);	
 		}		
 		
-		if (frame.getWidth() >= 1350 || frame.getWidth() == (1350 - 312))
+		if (frame.getWidth() > 654)
 		{
 			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);		
 			lblV.setVisible(true);
+		    lblYears.setLocation(frame.getWidth()  - lblYears.getPreferredSize().width - 6, lblBy.getY());
+		    lblYears.setVisible(true);
 		}
 		else
 		{
 		    lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);	
 		    lblV.setVisible(false);
+		    lblYears.setVisible(false);
 		}	
 		
 		setGPUOptions();	
@@ -18150,7 +18141,7 @@ public class Shutter {
 							grpSetTimecode.setSize(grpSetTimecode.getSize().width, 17);
 							
 							//Reset GPU
-							if (caseAccel.isSelected())
+							if (caseAccel.isSelected() && Utils.loadEncFile.isAlive() == false)
 							{
 								caseAccel.doClick();
 							}
@@ -18747,7 +18738,6 @@ public class Shutter {
 							{
 								comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
 								
-								btnLUTs.setVisible(true);
 								comboHDRvalue.setVisible(false);
 								lblHDR.setVisible(false);
 							}
@@ -18949,7 +18939,6 @@ public class Shutter {
 								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits"}));
 
-									btnLUTs.setVisible(true);
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
 								}
@@ -18960,7 +18949,6 @@ public class Shutter {
 								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
 
-									btnLUTs.setVisible(true);
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
 								}
@@ -19366,7 +19354,6 @@ public class Shutter {
 								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits"}));
 
-									btnLUTs.setVisible(true);
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
 								}
@@ -19376,8 +19363,7 @@ public class Shutter {
 								if (comboColorspace.getItemCount() != 8)
 								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));
-
-									btnLUTs.setVisible(true);
+									
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
 								}
@@ -19720,13 +19706,22 @@ public class Shutter {
 							grpImageSequence.setLocation(grpImageSequence.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 							grpImageFilter.setVisible(false);
 							
-							if ("VP9".equals(function) || "AV1".equals(function))
+							if ("H.264".equals(function))
+							{
+								if (comboColorspace.getItemCount() != 6)
+								{
+									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits"}));
+
+									comboHDRvalue.setVisible(false);
+									lblHDR.setVisible(false);
+								}
+							}
+							else if ("AV1".equals(function))
 							{
 								if (comboColorspace.getItemCount() != 8)
 								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 PQ 10bits HDR", "Rec. 2020 HLG 10bits", "Rec. 2020 HLG 10bits HDR", "Rec. 2020 PQ 12bits", "Rec. 2020 HLG 12bits" }));							
 
-									btnLUTs.setVisible(true);
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
 								}
@@ -19737,7 +19732,6 @@ public class Shutter {
 								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 709 4:2:2", "Rec. 2020 PQ", "Rec. 2020 PQ 4:2:2", "Rec. 2020 HLG", "Rec. 2020 HLG 4:2:2"}));	
 
-									btnLUTs.setVisible(true);
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
 								}
@@ -19748,7 +19742,6 @@ public class Shutter {
 								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
 
-									btnLUTs.setVisible(true);
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
 								}
@@ -20259,7 +20252,6 @@ public class Shutter {
 							{
 								comboColorspace.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG"}));	
 
-								btnLUTs.setVisible(true);
 								comboHDRvalue.setVisible(false);
 								lblHDR.setVisible(false);
 							}
@@ -20601,10 +20593,7 @@ public class Shutter {
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
 				String[] extensions = new String[] { ".mp4", ".mov", ".mkv", ".avi", ".flv", ".f4v", ".mpg", ".ts", ".m2ts" };
-				
-				if (comboFonctions.getSelectedItem().toString().equals("H.265") && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
-					extensions = new String[] {".mkv"};	
-				
+
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(extensions);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
@@ -20709,9 +20698,7 @@ public class Shutter {
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
 				String[] extensions = new String[] {".mkv", ".mp4", ".webm" };
-				if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
-					extensions = new String[] {".mkv"};				
-				
+								
 				String types[] = extensions;
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
@@ -20743,11 +20730,8 @@ public class Shutter {
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 							
 				String[] extensions = new String[] { ".webm", ".mkv", ".mp4" };
-				if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
-					extensions = new String[] {".mkv"};				
-				
-				String types[] = extensions;
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(extensions);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);

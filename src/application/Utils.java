@@ -76,7 +76,6 @@ import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.FFPROBE;
-import library.MKVMERGE;
 import library.TSMUXER;
 import library.XPDF;
 import library.YOUTUBEDL;
@@ -92,6 +91,8 @@ public class Utils extends Shutter {
 	public static boolean noToAll = false;
 	public final static String username = "info@shutterencoder.com";
 	public final static String password = "";
+	
+	public static Thread loadEncFile;
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -1254,7 +1255,7 @@ public class Utils extends Shutter {
 		}
 		else
 		{		
-			Thread load = new Thread(new Runnable() {
+			loadEncFile = new Thread(new Runnable() {
 	
 				@Override
 				public void run() {
@@ -1317,7 +1318,13 @@ public class Utils extends Shutter {
 													((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
 												}
 												else if (p instanceof JCheckBox)
-												{										
+												{			
+													//State
+													((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+													
+													//Visible
+													((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+													
 													//Value
 													if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
 													{
@@ -1328,18 +1335,15 @@ public class Utils extends Shutter {
 													{
 														if (((JCheckBox) p).isSelected())
 															((JCheckBox) p).doClick();
-													}										
-																															
-													//State
-													((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+													}								
 													
-													//Visible
-													((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 												}
 												else if (p instanceof JComboBox)
 												{			
 													if (p.getName().equals("comboFonctions"))
-													{
+													{														
+														VideoPlayer.frameIsComplete = false;
+														
 														long time = System.currentTimeMillis();
 														
 														do {
@@ -1560,8 +1564,7 @@ public class Utils extends Shutter {
 				}
 				
 			});
-			load.start();
-			
+			loadEncFile.start();			
 			
 		}
 	}
@@ -1844,9 +1847,6 @@ public class Utils extends Shutter {
 
 			if (XPDF.isRunning)
 				XPDF.process.destroy();
-			
-			if (MKVMERGE.isRunning)
-				MKVMERGE.process.destroy();
 			
 			if (DVDAUTHOR.isRunning)
 				DVDAUTHOR.process.destroy();

@@ -729,7 +729,7 @@ public class AdvancedFeatures extends Shutter {
 				if (caseForceTune.isSelected())
 				{
 					if (av1Flags != "")
-						av1Flags += ",";
+						av1Flags += ":";
 						
 					av1Flags += "tune=" + comboForceTune.getSelectedIndex();
 				}
@@ -737,14 +737,31 @@ public class AdvancedFeatures extends Shutter {
 				if (caseFilmGrain.isSelected())
 				{
 					if (av1Flags != "")
-						av1Flags += ",";
+						av1Flags += ":";
 					
 					av1Flags += "film-grain=" + comboFilmGrain.getSelectedIndex();
 				}
 				
+				//HDR
+				if (grpColorimetry.isVisible() && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
+				{
+					if (av1Flags != "") av1Flags += ":";
+					
+					String PQorHLG = "16";
+					if (comboColorspace.getSelectedItem().toString().contains("HLG"))
+						PQorHLG = "18";
+					
+					if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
+					{
+						FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+					}
+					
+					av1Flags += "input-depth=10:color-primaries=9:transfer-characteristics=" + PQorHLG + ":matrix-coefficients=9:mastering-display=G(0.265,0.69)B(0.15,0.06)R(0.68,0.32)WP(0.3127,0.329)L(" + (int) FFPROBE.HDRmax + "," + FFPROBE.HDRmin + "):content-light=" + comboCLLvalue.getSelectedItem().toString().replace(" nits", "") + "," + comboFALLvalue.getSelectedItem().toString().replace(" nits", "") + ":enable-hdr=1";
+				}
+				
 				if (av1Flags != "")
 				{
-					flags += " -svtav1-params " + av1Flags;
+					flags += " -svtav1-params " + '"' + av1Flags + '"';
 				}
 				
 			case "H.264":
@@ -828,46 +845,59 @@ public class AdvancedFeatures extends Shutter {
 	        	break;
 	        
 			case "H.265":
-			
+						
+				//Interlacing
 				if (caseForcerEntrelacement.isSelected())
 		        {
-		        	options = " -x265-params interlace=1";
-		        	
-		        	if (caseGOP.isSelected())
-		        		options += ":keyint=" + Shutter.gopSize.getText();
-		        	
-		            if (lblVBR.getText().equals("CBR"))
-		            {
-		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
-		            }
-		            else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
-			        {
-			        	options += ":lossless=1";
-			        }
+		        	options += "interlace=1";
 		            
 		        }
-		        else if (caseGOP.isSelected())
+		        
+				//GOP
+				if (caseGOP.isSelected())
 		        {
-		    		options = " -x265-params keyint=" + Shutter.gopSize.getText();
+		        	if (options != "") options += ":";
+		        	
+		    		options += "keyint=" + Shutter.gopSize.getText();
 		    		
-		            if (lblVBR.getText().equals("CBR"))
-		            {
-		            	options += ":strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
-		            }
-		            else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
-			        {
-			        	options += ":lossless=1";
-			        }
 		        }
-		        else if (lblVBR.getText().equals("CBR"))
+		        
+				//Bitrate mode
+				if (lblVBR.getText().equals("CBR"))
 		        {
-		        	options = " -x265-params strict-cbr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+					if (options != "") options += ":";
+					
+		        	options += "strict-cbr=1";
 		        }		        
 		        else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
 		        {
-		        	options = " -x265-params lossless=1";
+		        	if (options != "") options += ":";
+		        	
+		        	options += "lossless=1";
 		        }
-
+				
+				//HDR
+				if (grpColorimetry.isVisible() && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
+				{
+					if (options != "") options += ":";
+					
+					String PQorHLG = "smpte2084";
+					if (comboColorspace.getSelectedItem().toString().contains("HLG"))
+						PQorHLG = "arib-std-b67";
+					
+					if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
+					{
+						FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+					}
+					
+					options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFPROBE.HDRmax * 10000 + "," + FFPROBE.HDRmin * 10000 + "):max-cll=" + comboCLLvalue.getSelectedItem().toString().replace(" nits", "") + "," + comboFALLvalue.getSelectedItem().toString().replace(" nits", "");
+				}
+				
+				if (options != "")
+				{
+					options = " -x265-params " + '"' + options + '"';
+				}
+								
 				break;
 		}
 		

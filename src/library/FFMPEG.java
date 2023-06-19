@@ -166,6 +166,8 @@ public static StringBuilder errorLog = new StringBuilder();
 			else
 				RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "ffmpeg" + checkList(cmd), lblDestination1.getText()});
 	        
+			RenderQueue.frame.toFront();
+			
 			lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
 		}
 		else
@@ -218,7 +220,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:play"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -i pipe:play -vf scale=" + VideoPlayer.player.getWidth() + ":" + VideoPlayer.player.getHeight() + " -c:v bmp -an -f image2pipe pipe:-";
+								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -vf scale=" + VideoPlayer.player.getWidth() + ":" + VideoPlayer.player.getHeight() + " -c:v bmp -an -f image2pipe pipe:-";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							

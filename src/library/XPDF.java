@@ -22,7 +22,6 @@ package library;
 import java.awt.Cursor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -138,8 +137,10 @@ public static int pagesCount = 1;
 		progressBar1.setValue(0);	
 			
 			runProcess = new Thread(new Runnable()  {
+				
 				@Override
 				public void run() {
+					
 					try {
 						String PathToXPDF;
 						ProcessBuilder processToXPDF;
@@ -160,6 +161,7 @@ public static int pagesCount = 1;
 						Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToXPDF + " " + '"' + file + '"' + System.lineSeparator() + System.lineSeparator());
 						
 						isRunning = true;
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						
 						String line;
 				        InputStreamReader isr = new InputStreamReader(process.getInputStream());
@@ -192,98 +194,22 @@ public static int pagesCount = 1;
 							error = true;
 						} finally {
 							isRunning = false;	
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						}						
 				}				
 			});		
 			runProcess.start();
 	}
 	
-	public static void toFFPLAY(final String filter) {
-		error = false;		
-		
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
-		runProcess = new Thread(new Runnable()  {
-			@Override
-			public void run() {
-				try {
-					
-					String PathToXPDF;
-					ProcessBuilder processToXPDF;
-					File file;
-					if (fileList.getSelectedIndices().length == 0)
-						file = new File(liste.firstElement());
-					else							
-						file = new File(fileList.getSelectedValue());
-					
-					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						PathToXPDF = "Library\\pdftoppm.exe";						
-						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'});
-					}
-					else
-					{
-						PathToXPDF = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToXPDF = PathToXPDF.substring(0,PathToXPDF.length()-1);
-						PathToXPDF = PathToXPDF.substring(0,(int) (PathToXPDF.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/pdftoppm";
-						processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"');	
-						process = processToXPDF.start();
-					}
-									
-					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'
-					+  System.lineSeparator() + System.lineSeparator());
-										
-					isRunning = true;
-					
-					String line;
-					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-					
-					while ((line = input.readLine()) != null) {
-						
-						Console.consoleFFPLAY.append(line + System.lineSeparator() );		
-					
-						//Erreurs
-						if (line.contains("Invalid data found when processing input") 
-								|| line.contains("No such file or directory")
-								|| line.contains("Invalid data found")
-								|| line.contains("No space left")
-								|| line.contains("does not contain any stream")
-								|| line.contains("Invalid argument")
-								|| line.contains("Error opening filters!")
-								|| line.contains("matches no streams")
-								|| line.contains("Error while opening encoder"))
-						{
-							error = true;
-							break;
-						} 								
-							 
-						 if (line.contains("frame"))
-							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));		
-						
-																		
-					}//While					
-					process.waitFor();															
-				   					     																		
-					} catch (IOException | InterruptedException e) {
-						error = true;
-					} finally {
-						isRunning = false;
-					}
-				
-			}				
-		});		
-		runProcess.start();	
-	}
-
 	public static void toFFPROBE(String file) {
 		
 		error = false;		
 		
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
 		runProcess = new Thread(new Runnable()  {
+			
 			@Override
 			public void run() {
+				
 				try {
 					
 					String PathToXPDF;
@@ -307,6 +233,7 @@ public static int pagesCount = 1;
 					+  System.lineSeparator() + System.lineSeparator());
 						
 					isRunning = true;
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
@@ -363,6 +290,7 @@ public static int pagesCount = 1;
 						error = true;
 					} finally {
 						isRunning = false;
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
 				
 			}				

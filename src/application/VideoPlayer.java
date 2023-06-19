@@ -4088,9 +4088,9 @@ public class VideoPlayer {
 						{
 							EXRGamma = Colorimetry.setInputCodec(extension);
 						}
-						
-						if (new File(Shutter.dirTemp + "preview.bmp").exists() == false && Shutter.caseAddSubtitles.isSelected() == false)
-						{											   		
+
+						if (preview.exists() == false && Shutter.caseAddSubtitles.isSelected() == false)
+						{
 							if (extension.toLowerCase().equals(".pdf"))
 							{
 								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -4099,7 +4099,7 @@ public class VideoPlayer {
 					            do {
 					            	Thread.sleep(10);  
 					            } while (XPDF.isRunning && XPDF.error == false);
-					            
+						            
 					            Shutter.enableAll();
 							}
 							else if (isRaw)
@@ -4226,9 +4226,9 @@ public class VideoPlayer {
 			
 			//Fond sous-titres							
 			if (Shutter.lblSubsBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-				background = ",BorderStyle=4,BackColour=&H" + Shutter.subsAlpha + Shutter.subsHex2 + "&,Shutter.outline=0";
+				background = ",BorderStyle=4,BackColour=&H" + Shutter.subsAlpha + Shutter.subsHex2 + "&,outline=0";
 			else
-				background = ",Shutter.outline=" + Shutter.outline + ",Shutter.outlineColour=&H" + Shutter.subsAlpha + Shutter.subsHex2 + "&";
+				background = ",outline=" + Shutter.outline + ",outlineColour=&H" + Shutter.subsAlpha + Shutter.subsHex2 + "&";
 				
 			//Bold
 			if (Shutter.btnG.getForeground() != Color.BLACK)
@@ -4473,6 +4473,16 @@ public class VideoPlayer {
 	}
 
 	public static void resizeAll() {
+				
+		if (FFPROBE.isRunning)
+		{
+			do {								
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {}								
+			} 
+			while (FFPROBE.isRunning);
+		}
 		
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
 		{			
@@ -4483,7 +4493,7 @@ public class VideoPlayer {
 			{
 				isPiping = true;
 			}
-			
+						
 			if (preview.exists())
 				preview.delete();
 					
@@ -4556,7 +4566,7 @@ public class VideoPlayer {
 			}	
 			
 			if ((FFPROBE.totalLength <= 40 && Shutter.caseEnableSequence.isSelected() == false || isPiping) && videoPath != null) //Image
-			{
+			{				
 				y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2;
 			}
 			

@@ -69,7 +69,6 @@ import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
-import library.MKVMERGE;
 import library.TSMUXER;
 import library.XPDF;
 import settings.FunctionUtils;
@@ -134,7 +133,7 @@ import settings.FunctionUtils;
 		    }
 			
 			public void windowClosed(WindowEvent arg0) {
-				if (FFMPEG.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+				if (FFMPEG.isRunning || DCRAW.isRunning || XPDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
 					Shutter.btnCancel.doClick();
 				
 				if (Shutter.btnCancel.isEnabled() == false)		
@@ -431,7 +430,7 @@ import settings.FunctionUtils;
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{		  
-					if (FFMPEG.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+					if (FFMPEG.isRunning || DCRAW.isRunning || XPDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
 						Shutter.btnCancel.doClick();
 					
 					if (Shutter.btnCancel.isEnabled() == false)		
@@ -719,18 +718,7 @@ import settings.FunctionUtils;
 									DCRAW.run(cmd.toString().replace("dcraw",""));
 									break;
 								case "pdftoppm" :
-									XPDF.run(cmd.toString().replace("pdftoppm",""));
-									break;
-								case "mkvmerge" :
-									if (cmd.contains("--chromaticity-coordinates")) //HDR
-									{
-										File HDRmkv = fileOut;
-										File tempHDR = new File(fileOut.toString().replace(fileOut.toString().substring(fileOut.toString().lastIndexOf(".")), "_HDR" + fileOut.toString().substring(fileOut.toString().lastIndexOf("."))));
-										fileOut.renameTo(tempHDR);	
-										fileOut = HDRmkv;
-									}
-
-									MKVMERGE.run(cmd.toString().replace("mkvmerge",""));
+									XPDF.run(cmd.toString().replace("pdfimages",""));
 									break;
 							}				
 							
@@ -742,7 +730,7 @@ import settings.FunctionUtils;
 							try {
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 								
 								
 								//Permet d'attendre si un autre processus se lance
@@ -750,7 +738,7 @@ import settings.FunctionUtils;
 								
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || MKVMERGE.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 							} catch (InterruptedException e) {}
 
 							lastActions(i, fichier, fileOut);
@@ -795,19 +783,7 @@ import settings.FunctionUtils;
 	private static void lastActions(int item, String file, File fileOut) {
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
-		
-		//Suppression fichiers résiduels HDR
-		if (cli[0].toString().equals("mkvmerge"))
-		{
-			if (MKVMERGE.error == false)
-			{
-				File tempHDR = new File(fileOut.toString().replace(fileOut.toString().substring(fileOut.toString().lastIndexOf(".")), "_HDR" + fileOut.toString().substring(fileOut.toString().lastIndexOf("."))));
-				tempHDR.delete();
-			}
-			else
-				FFMPEG.error = true;
-		}
-		
+				
 		//Erreurs
 		if (FFMPEG.error || fileOut.length() == 0 && Shutter.caseCreateSequence.isSelected() == false)
 		{

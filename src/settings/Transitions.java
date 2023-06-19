@@ -64,11 +64,26 @@ public class Transitions extends Shutter {
 	    		long videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 	    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
 
-	    		if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth())
+	    		if (caseEnableSequence.isSelected())
+	    		{
+	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
+		    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * liste.getSize()) - videoOutValue;
+	    		}
+	    		else if (Settings.btnSetBab.isSelected())
+	    		{
+	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    		videoStart = (long) FunctionUtils.mergeDuration - videoOutValue;
+	    		}
+	    		else
 	    		{
 	        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-	        		long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
-	        		 
+	        		long totalOut = FFPROBE.totalLength;
+					 
+					if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+			        {
+						totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+			        }
+					
 	        		if (isVideoPlayer)
 	        		{
 	        			totalIn = (long) Math.floor(VideoPlayer.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));	        			
@@ -80,16 +95,6 @@ public class Transitions extends Shutter {
 	        		}
 	        		else //Remove mode
 	        			videoStart = FFPROBE.totalLength - (totalOut - totalIn) - videoOutValue;
-	    		}
-	    		else if (caseEnableSequence.isSelected())
-	    		{
-	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
-		    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * liste.getSize()) - videoOutValue;
-	    		}
-	    		else if (Settings.btnSetBab.isSelected())
-	    		{
-	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-		    		videoStart = (long) FunctionUtils.mergeDuration - videoOutValue;
 	    		}
 	    		
 	    		String color = "black";
@@ -145,11 +150,21 @@ public class Transitions extends Shutter {
     		long audioOutValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
     		
-    		if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth())
+    		if (Settings.btnSetBab.isSelected())
+    		{
+    			audioOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
+    		}
+    		else
 			{
 				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-				long totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+				long totalOut = FFPROBE.totalLength;
 				 
+				if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+		        {
+					totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+		        }
+				
 				if (isVideoPlayer)
         		{
         			totalIn = (long) Math.floor(VideoPlayer.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
@@ -162,11 +177,6 @@ public class Transitions extends Shutter {
 				else //Remove mode
 					audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
 			}
-    		else if (Settings.btnSetBab.isSelected())
-    		{
-    			audioOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
-    		}
     		
     		if (audioStart > 0)
     		{	    		
