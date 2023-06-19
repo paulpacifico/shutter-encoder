@@ -764,7 +764,7 @@ public class VideoPlayer {
 	
 	public static boolean playerIsPlaying() {
 		
-		if (playerVideo != null && playerVideo.isAlive() && btnPlay.getText().equals("⏸"))
+		if (playerVideo != null && playerVideo.isAlive() && btnPlay.getName().equals("pause"))
 		{
 			return true;
 		}
@@ -899,7 +899,10 @@ public class VideoPlayer {
 		
     public static void setMedia() {
 
-    	if (FFMPEG.isRunning == false)
+      	if (FFMPEG.isRunning == false
+    	|| (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
+    	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume")) == false
+    	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false))
     	{
    	    	//Updating video file
 			if (Shutter.liste.getSize() != 0)
@@ -1164,7 +1167,8 @@ public class VideoPlayer {
 				playerStop();
 				slider.setValue(0);
 	
-				btnPlay.setText("▶");		
+				btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));	
+				btnPlay.setName("play");
 				
 				btnPlay.setEnabled(false);
 				btnPrevious.setEnabled(false);
@@ -1831,7 +1835,8 @@ public class VideoPlayer {
 							{										
 								if (playerLoop)
 								{
-									btnPlay.setText("▶");
+									btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));
+									btnPlay.setName("play");
 									playerLoop = false;
 								}
 
@@ -1909,7 +1914,8 @@ public class VideoPlayer {
 				{
 					if (playerLoop)
 					{
-						btnPlay.setText("▶");
+						btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));
+						btnPlay.setName("play");
 						playerLoop = false;
 					}
 
@@ -1938,26 +1944,11 @@ public class VideoPlayer {
 			
 		});
 		
-		btnPlay = new JButton("▶");		
+		btnPlay = new JButton(new FlatSVGIcon("contents/play.svg", 15, 15));		
 		btnPlay.setFont(new Font("", Font.PLAIN, 12));
 		btnPlay.setMargin(new Insets(0,0,0,0));			
 		Shutter.frame.getContentPane().add(btnPlay);
-		
-		btnPlay.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-
-				if (btnPlay.getText().equals("⏸") && System.getProperty("os.name").contains("Windows") == false)
-				{
-					btnPlay.setFont(new Font("", Font.PLAIN, 16));					
-				}
-				else
-					btnPlay.setFont(new Font("", Font.PLAIN, 12));				
-			}
 			
-		});
-		
 		btnPlay.addActionListener(new ActionListener() {
 
 			@Override
@@ -1979,10 +1970,11 @@ public class VideoPlayer {
 					} while (playerLoop);
 				}
 				
-				if (btnPlay.getText().equals("⏸"))
+				if (btnPlay.getName().equals("pause"))
 				{
 					btnPlay.setFont(new Font("Arial", Font.PLAIN, 12));
-					btnPlay.setText("▶");	
+					btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));	
+					btnPlay.setName("play");
 					playerLoop = false;
 					showFPS.setVisible(false);
 					
@@ -1991,7 +1983,7 @@ public class VideoPlayer {
 						playerSetTime(slider.getValue());	
 					}							
 				}
-				else if (btnPlay.getText().equals("▶"))
+				else if (btnPlay.getName().equals("play"))
 				{									
 					if (preview.exists() || Shutter.caseAddSubtitles.isSelected())
 					{
@@ -2000,7 +1992,8 @@ public class VideoPlayer {
 					}
 					
 					frameControl = false;
-					btnPlay.setText("⏸");
+					btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));
+					btnPlay.setName("pause");
 					playerLoop = true;
 		            fpsTime = System.nanoTime();
 		            displayCurrentFPS = 0;
@@ -2010,7 +2003,7 @@ public class VideoPlayer {
 			
 		});
 		
-		btnStop = new JButton("⏹");
+		btnStop = new JButton(new FlatSVGIcon("contents/stop.svg", 15, 15));
 		if (System.getProperty("os.name").contains("Windows"))
 		{
 			btnStop.setFont(new Font("", Font.PLAIN, 12));
@@ -2043,7 +2036,8 @@ public class VideoPlayer {
 					
 					resizeAll();
 
-					btnPlay.setText("▶");
+					btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));
+					btnPlay.setName("play");
 					playerLoop = false;
 										
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -2453,7 +2447,10 @@ public class VideoPlayer {
 					sliderChange = true;
 					
 					if (playerIsPlaying())
-						btnPlay.setText("⏸");		
+					{
+						btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));	
+						btnPlay.setName("pause");
+					}
 					
 					if (e.getX() >= 0 && e.getX() <= waveformContainer.getWidth() - 2)
 					{				
@@ -4916,7 +4913,8 @@ public class VideoPlayer {
     	
     	if (time - offset >= totalFrames - 2)
     	{
-    		btnPlay.setText("▶");
+    		btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));
+    		btnPlay.setName("play");
     	}
     		
     }

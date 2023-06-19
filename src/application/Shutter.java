@@ -13571,7 +13571,8 @@ public class Shutter {
 					VideoPlayer.playTransition = true;
 					VideoPlayer.playerSetTime(timeIn);
 					
-					VideoPlayer.btnPlay.setText("⏸");
+					VideoPlayer.btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));
+					VideoPlayer.btnPlay.setName("pause");
 					VideoPlayer.playerLoop = true;
 				}
 				else
@@ -13644,7 +13645,8 @@ public class Shutter {
 					VideoPlayer.playTransition = true;
 					VideoPlayer.playerSetTime(timeIn);
 					
-					VideoPlayer.btnPlay.setText("⏸");
+					VideoPlayer.btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));
+					VideoPlayer.btnPlay.setName("pause");
 					VideoPlayer.playerLoop = true;
 				}
 			}
@@ -13689,7 +13691,8 @@ public class Shutter {
 					VideoPlayer.playTransition = true;
 					VideoPlayer.playerSetTime(timeIn);
 					
-					VideoPlayer.btnPlay.setText("⏸");
+					VideoPlayer.btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));
+					VideoPlayer.btnPlay.setName("pause");
 					VideoPlayer.playerLoop = true;	
 				}
 				else
@@ -13781,7 +13784,8 @@ public class Shutter {
 						} while (VideoPlayer.setTime.isAlive());
 					}	
 
-					VideoPlayer.btnPlay.setText("⏸");
+					VideoPlayer.btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));
+					VideoPlayer.btnPlay.setName("pause");
 					VideoPlayer.playerLoop = true;
 				}
 				else
@@ -13873,7 +13877,8 @@ public class Shutter {
 						} while (VideoPlayer.setTime.isAlive());
 					}	
 					
-					VideoPlayer.btnPlay.setText("⏸");
+					VideoPlayer.btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));
+					VideoPlayer.btnPlay.setName("pause");
 					VideoPlayer.playerLoop = true;
 				}
 			}
@@ -13946,7 +13951,8 @@ public class Shutter {
 						} while (VideoPlayer.setTime.isAlive());
 					}	
 					
-					VideoPlayer.btnPlay.setText("⏸");
+					VideoPlayer.btnPlay.setIcon(new FlatSVGIcon("contents/pause.svg", 15, 15));
+					VideoPlayer.btnPlay.setName("pause");
 					VideoPlayer.playerLoop = true;
 				}
 				else
