@@ -89,7 +89,7 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
-import library.XPDF;
+import library.PDF;
 import settings.AdvancedFeatures;
 import settings.Colorimetry;
 import settings.Corrections;
@@ -951,19 +951,12 @@ public class VideoPlayer {
 						
 						if (extension.toLowerCase().equals(".pdf"))
 						{
-							 XPDF.info(videoPath);	
+							 PDF.info(videoPath);	
 							 do
 							 {
 								 Thread.sleep(100);						 
 							 }
-							 while (XPDF.isRunning);
-	
-							 XPDF.toFFPROBE(videoPath);	
-							 do
-							 {
-								 Thread.sleep(100);						 
-							 }
-							 while (XPDF.isRunning);								 
+							 while (PDF.isRunning);								 
 						}				
 						else
 						{						
@@ -1027,12 +1020,12 @@ public class VideoPlayer {
 							
 							if (extension.toLowerCase().equals(".pdf"))
 							{
-								 XPDF.toFFPROBE(videoPath);	
+								 PDF.info(videoPath);	
 								 do
 								 {
 									 Thread.sleep(100);
 								 }
-								 while (XPDF.isRunning);								 
+								 while (PDF.isRunning);								 
 							}				
 							else if (isRaw || Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG")
 										   || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionPicture")))
@@ -4031,12 +4024,12 @@ public class VideoPlayer {
 							
 							if (extension.toLowerCase().equals(".pdf"))
 							{
-								 XPDF.toFFPROBE(file.toString());	
+								 PDF.info(file.toString());	
 								 do
 								 {
 									 Thread.sleep(100);
 								 }
-								 while (XPDF.isRunning);								 
+								 while (PDF.isRunning);								 
 							}				
 							else if (isRaw)
 							{
@@ -4091,11 +4084,11 @@ public class VideoPlayer {
 							if (extension.toLowerCase().equals(".pdf"))
 							{
 								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								XPDF.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + '"' + preview + '"');
+								PDF.run(file, 0);
 								
 					            do {
 					            	Thread.sleep(10);  
-					            } while (XPDF.isRunning && XPDF.error == false);
+					            } while (PDF.isRunning && PDF.error == false);
 						            
 					            Shutter.enableAll();
 							}

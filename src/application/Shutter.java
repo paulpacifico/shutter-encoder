@@ -167,7 +167,7 @@ import library.FFPROBE;
 import library.MEDIAINFO;
 import library.SEVENZIP;
 import library.TSMUXER;
-import library.XPDF;
+import library.PDF;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
 import settings.Corrections;
@@ -985,11 +985,7 @@ public class Shutter {
 									if (DCRAW.runProcess != null && DCRAW.runProcess.isAlive())
 									{
 										DCRAW.process.destroy();
-									}									
-									if (XPDF.runProcess != null && XPDF.runProcess.isAlive())
-									{
-										XPDF.process.destroy();
-									}																	
+									}																								
 									if (YOUTUBEDL.runProcess != null && YOUTUBEDL.runProcess.isAlive())
 									{
 										YOUTUBEDL.process.destroy();
@@ -2698,14 +2694,13 @@ public class Shutter {
 						}
 					} // End if
 				}
-				if (XPDF.runProcess != null) {
-					if (XPDF.runProcess.isAlive()) {
+				if (PDF.runProcess != null) {
+					if (PDF.runProcess.isAlive()) {
 						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
 								language.getProperty("stopProcess"), JOptionPane.YES_NO_OPTION,
 								JOptionPane.PLAIN_MESSAGE);
 						if (reply == JOptionPane.YES_OPTION) {
 							cancelled = true;
-							XPDF.process.destroyForcibly();
 						}
 					} // End if
 				}

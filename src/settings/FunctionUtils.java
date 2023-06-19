@@ -59,7 +59,7 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
-import library.XPDF;
+import library.PDF;
 
 public class FunctionUtils extends Shutter {
 
@@ -115,22 +115,12 @@ public class FunctionUtils extends Shutter {
 		}	 
 		else if (extension.toLowerCase().equals(".pdf"))
 		{
-			 XPDF.info(file.toString());	
+			 PDF.info(file.toString());	
 			 do
 			 {
 				 Thread.sleep(100);						 
 			 }
-			 while (XPDF.isRunning);
-			 
-			 if (analyzeError(file.toString()))
-				 return false;
-			 
-			 XPDF.toFFPROBE(file.toString());	
-			 do
-			 {
-				 Thread.sleep(100);						 
-			 }
-			 while (XPDF.isRunning);
+			 while (PDF.isRunning);
 			 
 			 if (analyzeError(file.toString()))
 				 return false;

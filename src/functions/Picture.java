@@ -33,7 +33,7 @@ import application.Wetransfer;
 import library.DCRAW;
 import library.FFMPEG;
 import library.FFPROBE;
-import library.XPDF;
+import library.PDF;
 import settings.Colorimetry;
 import settings.Corrections;
 import settings.Filter;
@@ -230,26 +230,33 @@ public class Picture extends Shutter {
 						
 						//Command
 						String cmd = filterComplex + singleFrame + colorspace + compression + flags + " -an -y ";
+						
 						if (extension.toLowerCase().equals(".pdf"))
 						{
-							for (int p = 1 ; p < XPDF.pagesCount + 1 ; p++)
-							{
+							for (int page = 0; page < PDF.pagesCount ; ++page)
+							{ 	
+								if (cancelled)
+									break;
+								
+								PDF.run(file, page);
+								
+								do {
+									Thread.sleep(10);
+								} while(PDF.isRunning);
+								
 								int n = 1;
 								do {
 									fileOut = new File(labelOutput + "/" + fileName.replace(extension, "_" + n + container));
 									n++;
 								} while (fileOut.exists());
 								
-								if (cancelled == false)
-									XPDF.run(" -r 300 -f " + p + " -l " + p + " " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
+								FFMPEG.run(" -i " + '"' + VideoPlayer.preview + '"' + logo + cmd + '"' + fileOut + '"');
 								
-								do
-								{
-									Thread.sleep(100);
+								do {
+									Thread.sleep(10);
 								}
-								while(XPDF.runProcess.isAlive());
-							}						
-							btnStart.setEnabled(true);	
+								while(FFMPEG.isRunning);
+							}							
 						}
 						else if (isRaw)
 						{
@@ -268,7 +275,9 @@ public class Picture extends Shutter {
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
 						else
+						{
 							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
+						}
 	
 						if (isRaw)
 						{

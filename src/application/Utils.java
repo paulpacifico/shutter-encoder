@@ -77,7 +77,6 @@ import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.TSMUXER;
-import library.XPDF;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
 import settings.FunctionUtils;
@@ -1845,17 +1844,11 @@ public class Utils extends Shutter {
 			if (DCRAW.isRunning)
 				DCRAW.process.destroy();
 
-			if (XPDF.isRunning)
-				XPDF.process.destroy();
-			
 			if (DVDAUTHOR.isRunning)
 				DVDAUTHOR.process.destroy();
 			
 			if (TSMUXER.isRunning)
 				TSMUXER.process.destroy();
-			
-			if (XPDF.isRunning)
-				XPDF.process.destroy();
 			
 			if (YOUTUBEDL.isRunning)
 				YOUTUBEDL.process.destroy();
