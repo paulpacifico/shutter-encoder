@@ -809,6 +809,7 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseShowWaveform.isSelected())
 				{
 					timeline.removeAll();
@@ -1272,17 +1273,17 @@ public class SubtitlesTimeline {
 		
 		Toolkit.getDefaultToolkit().addAWTEventListener(
 				
-			    new AWTEventListener()
-			    {
-			        public void eventDispatched(AWTEvent event)
-			        {
-			              KeyEvent ke = (KeyEvent) event;
-			              if (ke.getID() == KeyEvent.KEY_PRESSED && txtSubtitles.hasFocus() == false && SubtitlesEdit.isWriting == false)
-			              {
-			            	 frame.requestFocus();
-			              }
-			        }
-			     }, AWTEvent.KEY_EVENT_MASK);	
+	    new AWTEventListener()
+	    {
+	        public void eventDispatched(AWTEvent event)
+	        {
+	              KeyEvent ke = (KeyEvent) event;
+	              if (ke.getID() == KeyEvent.KEY_PRESSED && txtSubtitles.hasFocus() == false && SubtitlesEdit.isWriting == false)
+	              {
+	            	 frame.requestFocus();
+	              }
+	        }
+	    }, AWTEvent.KEY_EVENT_MASK);	
 		
 		Utils.changeFrameVisibility(frame, false);
 		
@@ -1492,6 +1493,23 @@ public class SubtitlesTimeline {
 		txtSubtitles.setFocusable(true);
 		
     	frame.requestFocus();
+    	
+    	//Buttons
+    	if (System.getProperty("os.name").contains("Windows"))    		
+    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 24, 8);
+    	else
+    		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 12, 8);
+    	
+    	btnAdd.setBounds(btnEditAll.getLocation().x - btnAdd.getWidth() - 2, 8, btnAdd.getPreferredSize().width, 21);
+    	btnDelete.setBounds(btnAdd.getLocation().x - btnDelete.getWidth() - 2, 8, 80, 21);
+    	btnCut.setBounds(btnDelete.getLocation().x - btnCut.getWidth() - 2, 8, btnCut.getPreferredSize().width, 21);
+    	btnEnd.setBounds(btnCut.getLocation().x - btnEnd.getWidth() - 2, 8, btnEnd.getPreferredSize().width, 21);
+    	btnStart.setBounds(btnEnd.getLocation().x - btnStart.getWidth() - 2, 8, btnStart.getPreferredSize().width, 21);  
+       	caseShowWaveform.setBounds(btnStart.getX() - caseShowWaveform.getWidth() - 20, 6, caseShowWaveform.getPreferredSize().width, 23);
+       	images.setBounds(caseShowWaveform.getX() - images.getWidth() - 7, 9, 10, 16);
+       	textOffset.setBounds(images.getX() - images.getWidth() - 27, lblOffset.getLocation().y, 34, 16);
+       	lblOffset.setBounds(textOffset.getX() - lblOffset.getWidth() - 7, 9, lblOffset.getPreferredSize().width, 16); 
+       	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 4, 8, lblHelp.getPreferredSize().width, 22);
 	}
 	
 	public static void refreshData() {
@@ -2480,7 +2498,7 @@ public class SubtitlesTimeline {
 	public static void subtitlesNumber() {
 		
 		BufferedReader reader = null;
-		
+
 		try {
 				if (srt.exists() == false)
 				{
@@ -2519,7 +2537,7 @@ public class SubtitlesTimeline {
 		}
 	}
 		
-	private static void repaintTimeline() {
+	public static void repaintTimeline() {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {

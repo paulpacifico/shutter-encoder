@@ -951,13 +951,19 @@ public class Shutter {
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
 			
 			public void eventDispatched(AWTEvent event) {
-				
+								
 				if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false) 
 				{					
 					KeyEvent ke = (KeyEvent) event;
 										
 					if (ke.getID() == KeyEvent.KEY_PRESSED) 
 					{					
+						//Use ESCAPE only for FFPLAY
+						if (ke.getKeyCode() == KeyEvent.VK_ESCAPE)
+						{
+							frame.requestFocus();
+						}
+						
 						//CMD + Q
 						if (System.getProperty("os.name").contains("Mac") && (ke.getKeyCode() == KeyEvent.VK_Q) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0))
 						{							
@@ -1674,7 +1680,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (liste.getSize() > 0)
+				if (liste.getSize() > 0 && comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 				{
 					// Screen record
 					if (inputDeviceIsRunning)
@@ -9635,7 +9641,6 @@ public class Shutter {
 						{
 							Shutter.subtitlesBurn = false;
 							subtitlesFilePath = new File(SubtitlesTimeline.srt.toString());
-							Shutter.changeSections(false);
 							Shutter.caseDisplay.setSelected(false);
 	
 							//On copy le .srt dans le fichier
@@ -9659,7 +9664,7 @@ public class Shutter {
 										if (extension.equals(".mkv"))
 											cmd = " -c copy -c:s srt -map v:0? -map a? -map 1:s -y ";							
 										
-										FFMPEG.run(" -i " + '"' + fileIn + '"' + " -i " + '"' + subtitlesFile + '"' + cmd + '"'  + fileOut + '"');	
+										FFMPEG.run(" -i " + '"' + fileIn + '"' + " -i " + '"' + subtitlesFilePath + '"' + cmd + '"'  + fileOut + '"');	
 										
 										Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 										Shutter.lblCurrentEncoding.setText(fileIn.getName());
@@ -11737,11 +11742,11 @@ public class Shutter {
 		comboHDRvalue.setMaximumRowCount(10);
 		grpColorimetry.add(comboHDRvalue);
 				
-		comboCLLvalue = new JComboBox<String>(new String[] {"400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
+		comboCLLvalue = new JComboBox<String>(new String[] {"auto", "400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
 		comboCLLvalue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboCLLvalue.setEditable(true);
 		comboCLLvalue.setVisible(false);
-		comboCLLvalue.setSelectedIndex(3);
+		comboCLLvalue.setSelectedIndex(0);
 		comboCLLvalue.setBounds(comboHDRvalue.getX(), comboHDRvalue.getLocation().y + comboHDRvalue.getHeight() + 2, 80, 16);
 		comboCLLvalue.setMaximumRowCount(10);
 		grpColorimetry.add(comboCLLvalue);
@@ -11752,7 +11757,7 @@ public class Shutter {
 		lblMaxCLL.setVisible(false);
 		grpColorimetry.add(lblMaxCLL);
 				
-		comboFALLvalue = new JComboBox<String>(new String[] {"400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
+		comboFALLvalue = new JComboBox<String>(new String[] {"auto", "400 nits", "500 nits", "600 nits", "1000 nits", "1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits"} );
 		comboFALLvalue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
 		comboFALLvalue.setEditable(true);
 		comboFALLvalue.setVisible(false);
@@ -17789,7 +17794,7 @@ public class Shutter {
 			
 			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
 			lblYears.setLocation(frame.getWidth()  - lblYears.getPreferredSize().width - 6, lblBy.getY());
-		    lblYears.setVisible(true);
+		    lblYears.setVisible(false);
 		}
 		else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionNormalization").equals(function))
 		{
@@ -17818,7 +17823,7 @@ public class Shutter {
 			
 			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
 			lblYears.setLocation(frame.getWidth()  - lblYears.getPreferredSize().width - 6, lblBy.getY());
-		    lblYears.setVisible(true);
+		    lblYears.setVisible(false);
 		}
 		else if (bigger && frame.getSize().width < 1350)
 		{
@@ -18091,11 +18096,12 @@ public class Shutter {
 				{
 					try {
 						
-						if (frame.getSize().width == 1350 && action)
+						if (frame.getSize().width >= 1350 && action)
 						{							
 							int i = frame.getWidth() - 312 - 10;
 							
 							do {
+								
 								long startTime = System.nanoTime();
 								
 								changeGroupes = true;
@@ -18172,7 +18178,7 @@ public class Shutter {
 							grpImageFilter.setVisible(false);
 							grpAdvanced.setVisible(false);
 							btnReset.setVisible(false);
-							
+														
 							if (language.getProperty("functionSubtitles").equals(function))
 							{				
 								btnStart.setEnabled(false);
@@ -18182,35 +18188,15 @@ public class Shutter {
 									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
 								}
 								else if (scanIsRunning)
-									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
-											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
+								{	
+									JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"), language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
+								}
 								else
 								{
-									File video = new File(VideoPlayer.videoPath);
-									String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
-									
-									SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
-									
-						    		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-						    		frame.setLocation(frame.getLocation().x , dim.height/3 - frame.getHeight()/2);
-						    		
-						    		if (Shutter.caseAddSubtitles.isSelected())
+						    		if (action)
 						    		{
-						    			VideoPlayer.player.remove(Shutter.subsCanvas);
-										Shutter.caseAddSubtitles.setSelected(false);	    	
+							    		VideoPlayer.setMedia();
 						    		}
-						    		
-						    		if (SubtitlesTimeline.frame == null)    		
-						    		{
-						    			new SubtitlesTimeline(dim.width/2-500,Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);
-						    		}
-						    		else
-						    		{        		
-						    			SubtitlesTimeline.frame.setVisible(true);
-						    			SubtitlesTimeline.subtitlesNumber();
-						    		} 
-						    		
-						    		comboFonctions.setEnabled(false);	
 								}
 							}
 							else

@@ -23,6 +23,7 @@ import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -932,9 +933,7 @@ public class VideoPlayer {
 				} 
 				
 				//On Reset si on change de fichier
-				if (Shutter.fileList.getSelectedValue().equals(new File(videoPath).getName()) == false
-				&& cursorWaveform.isVisible()
-				&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+				if (Shutter.fileList.getSelectedValue().equals(new File(videoPath).getName()) == false && cursorWaveform.isVisible())
 				{
 					if (waveform.exists())
 						waveform.delete();
@@ -944,7 +943,7 @@ public class VideoPlayer {
 				}
 												
 				if (videoPath != null || Shutter.fileList.getSelectedValue().equals(new File(videoPath).getName()) == false)
-				{
+				{					
 					String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 					
 					try {
@@ -1144,9 +1143,6 @@ public class VideoPlayer {
 					updateGrpIn(0);
 					updateGrpOut(FFPROBE.totalLength);
 					slider.setMaximum((int) (totalFrames));
-					
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-						SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
 				}	
 				
 				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1235,25 +1231,43 @@ public class VideoPlayer {
 			}				
 					
 			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-			{
-				File video = new File(videoPath);
+			{				
+				File video = new File(VideoPlayer.videoPath);
 				String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 				
 				SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
-				
-	    		if (SubtitlesTimeline.frame != null) 
+				SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
+							
+				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	    		Shutter.frame.setLocation(Shutter.frame.getLocation().x , dim.height/3 - Shutter.frame.getHeight()/2);
+	
+	    		if (Shutter.caseAddSubtitles.isSelected())
 	    		{
-	    			SubtitlesTimeline.timeline.removeAll();
-	    			SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);	
+	    			VideoPlayer.player.remove(Shutter.subsCanvas);
+					Shutter.caseAddSubtitles.setSelected(false);	    	
+	    		}
+				
+	    		if (SubtitlesTimeline.frame == null) 
+	    		{	    	
+	    			new SubtitlesTimeline(dim.width/2-500,Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);
+	    		}
+	    		else
+	    		{
+	    			SubtitlesTimeline.frame.setVisible(true);
+					SubtitlesTimeline.subtitlesNumber();					
+					SubtitlesTimeline.timeline.remove(SubtitlesTimeline.waveform);
+					SubtitlesTimeline.repaintTimeline();
+					SubtitlesTimeline.timeline.removeAll();
+					SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);	
 	    		}
 	    		
-	    		SubtitlesTimeline.frame.setVisible(true);
-				SubtitlesTimeline.subtitlesNumber();
-				
-				Shutter.btnStart.setEnabled(false);
-			}
-					
-			resizeAll();
+	    		playerFreeze();	
+	    		
+				Shutter.btnStart.setEnabled(false);						    		
+				Shutter.comboFonctions.setEnabled(false);	
+	    	}
+			else		
+				resizeAll();
 					
 			if (Shutter.fileList.hasFocus() == false)
 			{
@@ -1748,7 +1762,7 @@ public class VideoPlayer {
 								Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 							else
 								Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
-							
+														
 							do {
 								try {
 									Thread.sleep(10);
@@ -1764,6 +1778,9 @@ public class VideoPlayer {
 								Image imageBMP = ImageIO.read(waveform);
 								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
 								
+								waveformIcon.setIcon(null);
+								waveformIcon.repaint();
+								
 								SubtitlesTimeline.waveform.setIcon(resizedWaveform);							
 								SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
 								SubtitlesTimeline.waveform.repaint();
@@ -1778,8 +1795,7 @@ public class VideoPlayer {
 								waveformIcon.setVisible(true);
 							} 						
 						}
-						catch (Exception e) {						
-						}
+						catch (Exception e) {}
 						finally
 						{
 							addWaveformIsRunning = false;
@@ -2622,13 +2638,8 @@ public class VideoPlayer {
 		sliderVolume.setValue(50);			
 		Shutter.frame.getContentPane().add(sliderVolume);
 				
-		lblVolume = new JLabel("🔊");
-		if (System.getProperty("os.name").contains("Windows"))
-		{
-			lblVolume.setFont(new Font("", Font.PLAIN, 16));
-		}
-		else
-			lblVolume.setFont(new Font("", Font.PLAIN, 12));
+		lblVolume = new JLabel(new FlatSVGIcon("contents/volume.svg", 15, 15));
+		lblVolume.setFont(new Font("", Font.PLAIN, 12));
 		lblVolume.setSize(lblVolume.getPreferredSize().width + 3, 16);			
 		lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, sliderVolume.getY() + 2);	
 		
@@ -3076,6 +3087,27 @@ public class VideoPlayer {
 		caseInM.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.currentFPS / 60) % 60));
 		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.currentFPS) % 60));    		
 		caseInF.setText(Shutter.formatter.format(Math.floor(timeIn % FFPROBE.currentFPS)));
+		
+		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
+		{
+			Shutter.txtAudioOffset.setText(String.valueOf((int) timeIn));
+			
+			if (timeIn > 0)
+			{
+				if (Shutter.caseAudioOffset.isSelected() == false)
+				{
+					Shutter.caseAudioOffset.doClick();
+				}
+				
+			}
+			else
+			{
+				if (Shutter.caseAudioOffset.isSelected())
+				{
+					Shutter.caseAudioOffset.doClick();
+				}
+			}
+		}
 	}
 	
 	private void grpOut(){
@@ -4745,8 +4777,10 @@ public class VideoPlayer {
 				}
 				else
 				{			
-					if (btnPlay.isEnabled())
+					if (btnPlay.isEnabled() && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+					{
 						playerFreeze();	
+					}
 				}
 			}	
 			

@@ -716,6 +716,8 @@ public class AdvancedFeatures extends Shutter {
 			case "H.265":	
 				
 				flags += " -tag:v hvc1";
+				
+				break;
 						
 			case "AV1":
 				
@@ -756,13 +758,25 @@ public class AdvancedFeatures extends Shutter {
 						FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
 					}
 					
-					av1Flags += "input-depth=10:color-primaries=9:transfer-characteristics=" + PQorHLG + ":matrix-coefficients=9:mastering-display=G(0.265,0.69)B(0.15,0.06)R(0.68,0.32)WP(0.3127,0.329)L(" + (int) FFPROBE.HDRmax + "," + FFPROBE.HDRmin + "):content-light=" + comboCLLvalue.getSelectedItem().toString().replace(" nits", "") + "," + comboFALLvalue.getSelectedItem().toString().replace(" nits", "") + ":enable-hdr=1";
+					if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
+					{
+						FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
+					}
+					
+					if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
+					{
+						FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
+					}
+					
+					av1Flags += "input-depth=10:color-primaries=9:transfer-characteristics=" + PQorHLG + ":matrix-coefficients=9:mastering-display=G(0.265,0.69)B(0.15,0.06)R(0.68,0.32)WP(0.3127,0.329)L(" + (int) FFPROBE.HDRmax + "," + FFPROBE.HDRmin + "):content-light=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL + ":enable-hdr=1";
 				}
 				
 				if (av1Flags != "")
 				{
 					flags += " -svtav1-params " + '"' + av1Flags + '"';
 				}
+				
+				break;
 				
 			case "H.264":
 			case "VP8":
@@ -890,7 +904,17 @@ public class AdvancedFeatures extends Shutter {
 						FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
 					}
 					
-					options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFPROBE.HDRmax * 10000 + "," + FFPROBE.HDRmin * 10000 + "):max-cll=" + comboCLLvalue.getSelectedItem().toString().replace(" nits", "") + "," + comboFALLvalue.getSelectedItem().toString().replace(" nits", "");
+					if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
+					{
+						FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
+					}
+					
+					if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
+					{
+						FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
+					}
+					
+					options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFPROBE.HDRmax * 10000 + "," + FFPROBE.HDRmin * 10000 + "):max-cll=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL;
 				}
 				
 				if (options != "")

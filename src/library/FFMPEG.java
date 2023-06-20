@@ -19,6 +19,7 @@
 
 package library;
 
+import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FileDialog;
@@ -30,6 +31,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Taskbar;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedInputStream;
@@ -601,8 +605,19 @@ public static StringBuilder errorLog = new StringBuilder();
 								
 				//AUDIO STREAM
 				if (FFPROBE.hasAudio)						       
-				{							
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + " -v quiet -i " + '"' + fileList.getSelectedValue() + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
+				{						
+					File inputFile = new File(fileList.getSelectedValue());
+					
+					//Concat mode
+					String concat = "";
+					if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+					{					
+						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
+						concat = FunctionUtils.setConcat(inputFile, inputFile.getParent());			
+						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
+					}
+					
+					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + concat + " -v quiet "  + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
 					processAudio = pba.start();
 				}
 			}
@@ -618,7 +633,18 @@ public static StringBuilder errorLog = new StringBuilder();
 				//AUDIO STREAM
 				if (FFPROBE.hasAudio)				       
 				{
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + " -v quiet -i " + '"' + fileList.getSelectedValue() + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
+					File inputFile = new File(fileList.getSelectedValue());
+					
+					//Concat mode
+					String concat = "";
+					if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+					{					
+						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
+						concat = FunctionUtils.setConcat(inputFile, inputFile.getParent());			
+						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
+					}
+					
+					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + concat + " -v quiet " + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
 					processAudio = pba.start();
 				}
 			}	
@@ -632,7 +658,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			player.setBackground(new Color(45, 45, 45));
 			player.getContentPane().setLayout(null);
 			player.setIconImage(frame.getIconImage());
-			
+						
 			if (RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
 			{
 				RecordInputDevice.frame.setVisible(false);	
@@ -714,12 +740,42 @@ public static StringBuilder errorLog = new StringBuilder();
 	                	g2.fillRect(0, 0, this.getWidth(), this.getHeight()); 
 	            }
 	        };
-	        
+	        	        
 			display.setLayout(null);
 			display.setBackground(Color.BLACK);
 			
 			player.add(display);
 			player.setVisible(true);
+			
+			// Keyboard shortcuts
+			Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
+				
+				public void eventDispatched(AWTEvent event) {
+					
+					KeyEvent ke = (KeyEvent) event;
+										
+					if (ke.getID() == KeyEvent.KEY_PRESSED && ke.getKeyCode() == KeyEvent.VK_ESCAPE) 
+					{	
+						isRunning = false;
+						
+						process.destroy();
+						displayThread.interrupt();
+
+						if (FFPROBE.hasAudio)
+						{
+							processAudio.destroy();	
+						}
+						
+						if (showInputDeviceFrame)
+						{
+							RecordInputDevice.frame.setVisible(true);	
+						}
+						
+						player.dispose();
+					}
+					
+				}
+			}, AWTEvent.KEY_EVENT_MASK);
 			
 			InputStream video = process.getInputStream();				
 			BufferedInputStream videoInputStream = new BufferedInputStream(video);

@@ -84,6 +84,8 @@ public static String timeBase = "";
 public static String creationTime = "";
 public static float HDRmin = 0;
 public static float HDRmax = 0;
+public static int maxCLL = 0;
+public static int maxFALL = 0;
 public static float keyFrame = 0;
 public static int gopCount = 0;
 public static int gopSpace = 124;
@@ -418,7 +420,7 @@ public static int gopSpace = 124;
 			                }
 						 }
 						 
-			        	 if (line.contains("Audio:"))
+			        	 if (line.contains("Audio:") && (line.contains("0 channels")) == false)
 			        	 {
 			        		 hasAudio = true;
 			        		 
@@ -570,7 +572,9 @@ public static int gopSpace = 124;
 		imageDepth = 8;		
 		timeBase = "";
 		HDRmin = (float) 0.01;
-		HDRmax = 1000;
+		HDRmax = 1000;		
+		maxCLL = 1000;
+		maxFALL = 400;
 
 		FFMPEG.error = false;
 		btnStart.setEnabled(false);
@@ -710,9 +714,21 @@ public static int gopSpace = 124;
 							  String s2[] = s[1].split("/");								  
 							  HDRmax = (float) Integer.parseInt(s2[0]) / Integer.parseInt(s2[1]);	
 						  }
-							          						        		
-						}						
-						//process.waitFor();					
+							       
+						  if (line.contains("max_content"))
+						  {
+							  String s[] = line.split("=");
+							  maxCLL = Integer.parseInt(s[1]);
+						  }
+						  
+						  if (line.contains("max_average"))
+						  {
+							  String s[] = line.split("=");
+							  maxFALL = Integer.parseInt(s[1]);
+						  }
+						  
+					}						
+					//process.waitFor();					
 													
 					} catch (Exception e) {	
 						FFMPEG.error = true;

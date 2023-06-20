@@ -84,17 +84,7 @@ public class SubtitlesEdit {
 		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		/*if (VideoPlayer.frame.getX() == dim.width/2-VideoPlayer.frame.getSize().width/2)
-		{
-			VideoPlayer.frame.setLocation(VideoPlayer.frame.getX() - frame.getWidth() / 2, VideoPlayer.frame.getY());
-		}
-		
-		if (VideoPlayer.frame.getX() + VideoPlayer.frame.getWidth() + 20 + frame.getWidth() < dim.width)
-		{
-			frame.setLocation(VideoPlayer.frame.getX() + VideoPlayer.frame.getWidth() + 20, VideoPlayer.frame.getY());
-		}
-		else*/
-			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);	
+		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);	
 		
 		scrollBar = new JScrollBar();
 		scrollBar.setBackground(new Color(45, 45, 45));
