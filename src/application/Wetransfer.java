@@ -103,7 +103,7 @@ public class Wetransfer {
 	public Wetransfer() {
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameWetransfer"));
 		frame.setForeground(Color.WHITE);

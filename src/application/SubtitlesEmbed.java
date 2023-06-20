@@ -116,7 +116,7 @@ public class SubtitlesEmbed {
 	public SubtitlesEmbed() {	
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameAddSubtitles"));
 		frame.setForeground(Color.WHITE);
@@ -381,7 +381,7 @@ public class SubtitlesEmbed {
 				c.setForeground(Utils.themeColor);
 				((JTextField) c).setBorder(BorderFactory.createLineBorder(new Color(75,75,75)));
 				c.setFont(new Font("SansSerif", Font.BOLD, 13));
-				c.setBackground(new Color(45, 45, 45));
+				c.setBackground(new Color(35,35,35));
 				if (((JTextField) c).getText() == null || ((JTextField) c).getText() == "" || ((JTextField) c).getText().isEmpty())
 				{
 					((JTextField) c).setText(Shutter.language.getProperty("aucun"));

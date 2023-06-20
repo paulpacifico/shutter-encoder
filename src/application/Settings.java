@@ -181,7 +181,7 @@ public class Settings {
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
 		}
 		
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
@@ -205,7 +205,7 @@ public class Settings {
 		
 		JScrollBar scrollBar = new JScrollBar();
 		scrollBar.setMaximum(40);
-		scrollBar.setBackground(new Color(45, 45, 45));
+		scrollBar.setBackground(new Color(35,35,35));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
 		scrollBar.setLocation(frame.getWidth() - scrollBar.getWidth() - 2, topPanel.getHeight());
@@ -238,7 +238,7 @@ public class Settings {
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setName("backgroundPanel");
 		backgroundPanel.setLayout(null);
-		backgroundPanel.setBackground(new Color(45, 45, 45));
+		backgroundPanel.setBackground(new Color(35,35,35));
 		backgroundPanel.setOpaque(true);
 		backgroundPanel.setSize(frame.getWidth(), 50);
 		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
@@ -672,7 +672,7 @@ public class Settings {
 			lblDestination1.setForeground(Utils.themeColor);
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination1.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination1.setBackground(new Color(45, 45, 45));
+		lblDestination1.setBackground(new Color(35,35,35));
 		if (lblDestination1.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -799,7 +799,7 @@ public class Settings {
 			lblDestination2.setForeground(Utils.themeColor);
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination2.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination2.setBackground(new Color(45, 45, 45));
+		lblDestination2.setBackground(new Color(35,35,35));
 		if (lblDestination2.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -918,7 +918,7 @@ public class Settings {
 			lblDestination3.setForeground(Utils.themeColor);
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination3.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination3.setBackground(new Color(45, 45, 45));
+		lblDestination3.setBackground(new Color(35,35,35));
 		if (lblDestination3.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))

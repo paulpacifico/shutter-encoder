@@ -107,7 +107,7 @@ public class VideoWeb {
 	public VideoWeb() {	
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
@@ -294,8 +294,8 @@ public class VideoWeb {
 		grpURL.setLayout(null);
 		grpURL.setLocation(6, 28);
 		grpURL.setSize(408, frame.getHeight() - 34);
-		grpURL.setBackground(new Color(45, 45, 45));
-		grpURL.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpURL.setBackground(new Color(35,35,35));
+		grpURL.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		
 		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);

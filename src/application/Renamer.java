@@ -82,7 +82,7 @@ public class Renamer {
 			frame.setSize(551, 163);
 		frame.setTitle(Shutter.language.getProperty("frameRenommage"));
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(new Color(45, 45, 45));				
+		frame.getContentPane().setBackground(new Color(35,35,35));				
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		

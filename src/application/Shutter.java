@@ -764,10 +764,10 @@ public class Shutter {
 
 	public Shutter() {
 					
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
-		frame.setBackground(new Color(45, 45, 45));
+		frame.setBackground(new Color(35,35,35));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(332, 662);
@@ -1252,6 +1252,7 @@ public class Shutter {
 
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
+		topPanel.setBackground(new Color(40,40,40));
 		topPanel.setBounds(0, 0, 1350, 28);
 
 		settings = new JLabel(new FlatSVGIcon("contents/settings.svg", 13, 13));
@@ -1649,13 +1650,13 @@ public class Shutter {
 		grpChooseFiles = new JPanel();
 		grpChooseFiles.setLayout(null);
 		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 327);
-		grpChooseFiles.setBackground(new Color(45, 45, 45));
-		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpChooseFiles.setBackground(new Color(35,35,35));
+		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		frame.getContentPane().add(grpChooseFiles);
 
 		fileList = new JList<String>(liste);
-		fileList.setBackground(new Color(60,60,60));
+		fileList.setBackground(new Color(50,50,50));
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
 		fileList.setBounds(10, 50, 292, frame.getHeight() - 387);
@@ -2640,9 +2641,9 @@ public class Shutter {
 		grpChooseFunction = new JPanel();
 		grpChooseFunction.setLayout(null);
 		grpChooseFunction.setBounds(10, grpChooseFiles.getY() + grpChooseFiles.getHeight() + 6, 312, 76);
-		grpChooseFunction.setBackground(new Color(45, 45, 45));
-		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpChooseFunction.setBackground(new Color(35,35,35));
+		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		frame.getContentPane().add(grpChooseFunction);
 
 		btnCancel = new JButton(language.getProperty("btnCancel"));
@@ -3287,7 +3288,7 @@ public class Shutter {
 
 		comboFonctions = new JComboBox<String[]>();
 		comboFonctions.setName("comboFonctions");
-		comboFonctions.setModel(new DefaultComboBoxModel(functionsList));				
+		comboFonctions.setModel(new DefaultComboBoxModel(functionsList));	
 		comboFonctions.setSelectedItem(null);		
 		comboFonctions.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		comboFonctions.setEditable(true);
@@ -3663,7 +3664,7 @@ public class Shutter {
 		
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);	
 		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 6, 308, 76);
-		grpDestination.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true)));		
+		grpDestination.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true)));		
 		grpDestination.setFont(new Font(montserratFont, Font.PLAIN, 11));	
 		frame.getContentPane().add(grpDestination);		
 
@@ -3862,12 +3863,12 @@ public class Shutter {
 			    		c = new Color(150,75,75);			    		
 			    		
 			    	// Fill
-					GradientPaint gp = new GradientPaint(0, 0, new Color(45, 45, 45), fill, lblDestination1.getHeight(),  c);
+					GradientPaint gp = new GradientPaint(0, 0, new Color(35,35,35), fill, lblDestination1.getHeight(),  c);
 				    g2d.setPaint(gp);
 				    g2d.fill(new Rectangle2D.Double(0, 0, fill, lblDestination1.getHeight()));	
 				    
 				    // Borders
-				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(45, 45, 45), lblDestination1.getWidth(), lblDestination1.getHeight(),  new Color(75,75,75));
+				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(35,35,35), lblDestination1.getWidth(), lblDestination1.getHeight(),  new Color(75,75,75));
 				    g2d.setPaint(gp2);
 				    g2d.drawRect(0, 0, lblDestination1.getWidth() - 1, lblDestination1.getHeight() - 1);
 			    }
@@ -3885,7 +3886,7 @@ public class Shutter {
 		lblDestination1.setForeground(Utils.themeColor);
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination1.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblDestination1.setBackground(new Color(45, 45, 45));
+		lblDestination1.setBackground(new Color(35,35,35));
 		lblDestination1.setText(language.getProperty("sameAsSource"));
 		lblDestination1.setBounds(6, 0, 290, 22);
 		destination1.add(lblDestination1);
@@ -4075,12 +4076,12 @@ public class Shutter {
 			    		c = new Color(150,75,75);			    		
 			    		
 			    	// Fill
-					GradientPaint gp = new GradientPaint(0, 0, new Color(45, 45, 45), fill, lblDestination2.getHeight(),  c);
+					GradientPaint gp = new GradientPaint(0, 0, new Color(35,35,35), fill, lblDestination2.getHeight(),  c);
 				    g2d.setPaint(gp);
 				    g2d.fill(new Rectangle2D.Double(0, 0, fill, lblDestination2.getHeight()));	
 				    
 				    // Borders
-				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(45, 45, 45), lblDestination2.getWidth(), lblDestination2.getHeight(),  new Color(75,75,75));
+				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(35,35,35), lblDestination2.getWidth(), lblDestination2.getHeight(),  new Color(75,75,75));
 				    g2d.setPaint(gp2);
 				    g2d.drawRect(0, 0, lblDestination2.getWidth() - 1, lblDestination2.getHeight() - 1);
 			    }
@@ -4098,7 +4099,7 @@ public class Shutter {
 		lblDestination2.setForeground(Utils.themeColor);
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination2.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblDestination2.setBackground(new Color(45, 45, 45));
+		lblDestination2.setBackground(new Color(35,35,35));
 		lblDestination2.setText(language.getProperty("aucune"));
 		lblDestination2.setBounds(6, 0, 290, 22);
 		destination2.add(lblDestination2);
@@ -4275,12 +4276,12 @@ public class Shutter {
 			    		c = new Color(150,75,75);			    		
 			    		
 			    	// Fill
-					GradientPaint gp = new GradientPaint(0, 0, new Color(45, 45, 45), fill, lblDestination3.getHeight(),  c);
+					GradientPaint gp = new GradientPaint(0, 0, new Color(35,35,35), fill, lblDestination3.getHeight(),  c);
 				    g2d.setPaint(gp);
 				    g2d.fill(new Rectangle2D.Double(0, 0, fill, lblDestination3.getHeight()));	
 				    
 				    // Borders
-				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(45, 45, 45), lblDestination3.getWidth(), lblDestination3.getHeight(),  new Color(75,75,75));
+				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(35,35,35), lblDestination3.getWidth(), lblDestination3.getHeight(),  new Color(75,75,75));
 				    g2d.setPaint(gp2);
 				    g2d.drawRect(0, 0, lblDestination3.getWidth() - 1, lblDestination3.getHeight() - 1);
 			    }
@@ -4298,7 +4299,7 @@ public class Shutter {
 		lblDestination3.setForeground(Utils.themeColor);
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination3.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblDestination3.setBackground(new Color(45, 45, 45));
+		lblDestination3.setBackground(new Color(35,35,35));
 		lblDestination3.setText(language.getProperty("aucune"));
 		lblDestination3.setBounds(6, 0, 290, 22);
 		destination3.add(lblDestination3);
@@ -4631,10 +4632,10 @@ public class Shutter {
 		grpProgression = new JPanel();
 		grpProgression.setLayout(null);
 		grpProgression.setBounds(10, grpDestination.getY() + grpDestination.getHeight() + 6, 312, 94);
-		grpProgression.setBackground(new Color(45, 45, 45));
+		grpProgression.setBackground(new Color(35,35,35));
 		grpProgression.setToolTipText(language.getProperty("rightClick"));
-		grpProgression.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpProgression") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
+		grpProgression.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpProgression") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		frame.getContentPane().add(grpProgression);
 
 		caseRunInBackground = new JCheckBox(language.getProperty("caseRunInBackground"));
@@ -4778,9 +4779,9 @@ public class Shutter {
 		grpResolution = new JPanel();
 		grpResolution.setLayout(null);
 		grpResolution.setVisible(false);
-		grpResolution.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpResolution") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpResolution.setBackground(new Color(45, 45, 45));
+		grpResolution.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpResolution") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpResolution.setBackground(new Color(35,35,35));
 		grpResolution.setBounds(frame.getWidth() - 312 - 10, 30, 312, 102);
 		frame.getContentPane().add(grpResolution);
 
@@ -5073,9 +5074,9 @@ public class Shutter {
 		grpImageFilter = new JPanel();
 		grpImageFilter.setLayout(null);
 		grpImageFilter.setVisible(false);
-		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpImageFilter.setBackground(new Color(45, 45, 45));
+		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpImageFilter.setBackground(new Color(35,35,35));
 		grpImageFilter.setBounds(frame.getWidth() - 312 - 10, 199, 312, 17);
 		frame.getContentPane().add(grpImageFilter);
 
@@ -5323,9 +5324,9 @@ public class Shutter {
 		grpSetTimecode = new JPanel();
 		grpSetTimecode.setLayout(null);
 		grpSetTimecode.setVisible(false);
-		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), language.getProperty("grpTimecode") + " ",
-				0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpSetTimecode.setBackground(new Color(45, 45, 45));
+		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), language.getProperty("grpTimecode") + " ",
+				0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpSetTimecode.setBackground(new Color(35,35,35));
 		grpSetTimecode.setBounds(frame.getWidth() - 312 - 10, 258, 312, 17);
 		frame.getContentPane().add(grpSetTimecode);
 
@@ -5556,9 +5557,9 @@ public class Shutter {
 		grpSetAudio = new JPanel();
 		grpSetAudio.setLayout(null);
 		grpSetAudio.setVisible(false);
-		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpSetAudio.setBackground(new Color(45, 45, 45));
+		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpSetAudio.setBackground(new Color(35,35,35));
 		grpSetAudio.setBounds(frame.getWidth() - 312 - 10, 343, 312, 47);
 		frame.getContentPane().add(grpSetAudio);
 		
@@ -5752,7 +5753,7 @@ public class Shutter {
 						
 		lblAudioMapping = new JLabel(language.getProperty("stereo"));
 		lblAudioMapping.setName("lblAudioMapping");
-		lblAudioMapping.setBackground(new Color(60, 60, 60));
+		lblAudioMapping.setBackground(new Color(50,50,50));
 		lblAudioMapping.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAudioMapping.setOpaque(true);
 		lblAudioMapping.setFont(new Font(montserratFont, Font.PLAIN, 11));
@@ -5840,7 +5841,7 @@ public class Shutter {
 				
 		lbl48k = new JLabel("48k");
 		lbl48k.setName("lbl48k");
-		lbl48k.setBackground(new Color(60, 60, 60));
+		lbl48k.setBackground(new Color(50,50,50));
 		lbl48k.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl48k.setOpaque(true);
 		lbl48k.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -6279,9 +6280,9 @@ public class Shutter {
 		grpAudio = new JPanel();
 		grpAudio.setLayout(null);
 		grpAudio.setVisible(false);
-		grpAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpAudio.setBackground(new Color(45, 45, 45));
+		grpAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpAudio.setBackground(new Color(35,35,35));
 		grpAudio.setBounds(frame.getWidth() - 312 - 10, 343, 312, 116);
 		frame.getContentPane().add(grpAudio);
 		
@@ -6319,7 +6320,7 @@ public class Shutter {
 		
 		lblMix = new JLabel(language.getProperty("stereo"));
 		lblMix.setName("lblMix");
-		lblMix.setBackground(new Color(60, 60, 60));
+		lblMix.setBackground(new Color(50,50,50));
 		lblMix.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMix.setOpaque(true);
 		lblMix.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -6398,7 +6399,7 @@ public class Shutter {
 
 		lblSplit = new JLabel(language.getProperty("mono"));
 		lblSplit.setName("lblSplit");
-		lblSplit.setBackground(new Color(60, 60, 60));
+		lblSplit.setBackground(new Color(50,50,50));
 		lblSplit.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSplit.setOpaque(true);
 		lblSplit.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -6540,8 +6541,8 @@ public class Shutter {
 		
 		grpCrop = new JPanel();
 		grpCrop.setLayout(null);
-		grpCrop.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("frameCropImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpCrop.setBackground(new Color(45, 45, 45));
+		grpCrop.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameCropImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpCrop.setBackground(new Color(35,35,35));
 		grpCrop.setSize(312, 17);
 		grpCrop.setLocation(frame.getWidth() - 312 - 10, grpImageAdjustement.getY());
 		frame.getContentPane().add(grpCrop);		
@@ -7625,8 +7626,8 @@ public class Shutter {
 	
 		grpOverlay = new JPanel();
 		grpOverlay.setLayout(null);
-		grpOverlay.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpOverlay.setBackground(new Color(45, 45, 45));
+		grpOverlay.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpOverlay.setBackground(new Color(35,35,35));
 		grpOverlay.setSize(312, 17);
 		grpOverlay.setLocation(frame.getWidth() - 312 - 10, grpCrop.getY() + grpCrop.getHeight() + 6);
 		frame.getContentPane().add(grpOverlay);		
@@ -7786,7 +7787,7 @@ public class Shutter {
 		
 		lblTcBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOn"));
 		lblTcBackground.setName("lblTcBackground");
-		lblTcBackground.setBackground(new Color(60, 60, 60));
+		lblTcBackground.setBackground(new Color(50,50,50));
 		lblTcBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTcBackground.setOpaque(true);
 		lblTcBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -8148,7 +8149,7 @@ public class Shutter {
 				
 		lblTimecode = new JLabel(Shutter.language.getProperty("lblTimecode"));
 		lblTimecode.setName("lblTimecode");
-		lblTimecode.setBackground(new Color(60, 60, 60));
+		lblTimecode.setBackground(new Color(50,50,50));
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimecode.setOpaque(true);
 		lblTimecode.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -9535,8 +9536,8 @@ public class Shutter {
 	
 		grpSubtitles = new JPanel();
 		grpSubtitles.setLayout(null);
-		grpSubtitles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("caseSubtitles") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpSubtitles.setBackground(new Color(45, 45, 45));
+		grpSubtitles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseSubtitles") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpSubtitles.setBackground(new Color(35,35,35));
 		grpSubtitles.setSize(312, 17);
 		grpSubtitles.setLocation(frame.getWidth() - 312 - 10, grpOverlay.getY() + grpOverlay.getHeight() + 6);
 		frame.getContentPane().add(grpSubtitles);		
@@ -10457,7 +10458,7 @@ public class Shutter {
 		
 		lblSubsBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOff"));
 		lblSubsBackground.setName("lblSubsBackground");
-		lblSubsBackground.setBackground(new Color(60, 60, 60));
+		lblSubsBackground.setBackground(new Color(50,50,50));
 		lblSubsBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubsBackground.setOpaque(true);
 		lblSubsBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -10686,8 +10687,8 @@ public class Shutter {
 			
 		grpWatermark = new JPanel();
 		grpWatermark.setLayout(null);
-		grpWatermark.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpWatermark.setBackground(new Color(45, 45, 45));
+		grpWatermark.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpWatermark.setBackground(new Color(35,35,35));
 		grpWatermark.setSize(312, 17);
 		grpWatermark.setLocation(frame.getWidth() - 312 - 10, grpSubtitles.getY() + grpSubtitles.getHeight() + 6);
 		frame.getContentPane().add(grpWatermark);
@@ -11413,9 +11414,9 @@ public class Shutter {
 		grpColorimetry = new JPanel();
 		grpColorimetry.setLayout(null);
 		grpColorimetry.setVisible(false);
-		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpColorimetry.setBackground(new Color(45, 45, 45));
+		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpColorimetry.setBackground(new Color(35,35,35));
 		grpColorimetry.setBounds(frame.getWidth() - 312 - 10, 199, 312, 17);
 		frame.getContentPane().add(grpColorimetry);
 		
@@ -11970,8 +11971,8 @@ public class Shutter {
 		grpImageAdjustement = new JPanel();
 		grpImageAdjustement.setName("grpImageAdjustement");
 		grpImageAdjustement.setLayout(null);
-		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("frameColorImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpImageAdjustement.setBackground(new Color(45, 45, 45));
+		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameColorImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpImageAdjustement.setBackground(new Color(35,35,35));
 		grpImageAdjustement.setBounds(frame.getWidth() - 312 - 10, 258, 312, 17);
 		
 		frame.getContentPane().add(grpImageAdjustement);		
@@ -13149,8 +13150,8 @@ public class Shutter {
 		
 		grpCorrections = new JPanel();
 		grpCorrections.setLayout(null);
-		grpCorrections.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("grpCorrections") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpCorrections.setBackground(new Color(45, 45, 45));
+		grpCorrections.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("grpCorrections") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpCorrections.setBackground(new Color(35,35,35));
 		grpCorrections.setBounds(frame.getWidth() - 312 - 10, grpImageAdjustement.getY() + grpImageAdjustement.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpCorrections);
 
@@ -13515,9 +13516,9 @@ public class Shutter {
 		grpTransitions = new JPanel();
 		grpTransitions.setLayout(null);
 		grpTransitions.setVisible(true);
-		grpTransitions.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), Shutter.language.getProperty("grpTransitions") + " ", 0,
-				0, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpTransitions.setBackground(new Color(45, 45, 45));
+		grpTransitions.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("grpTransitions") + " ", 0,
+				0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpTransitions.setBackground(new Color(35,35,35));
 		grpTransitions.setBounds(frame.getWidth() - 312 - 10, grpCorrections.getY() + grpCorrections.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpTransitions);
 		
@@ -13620,7 +13621,7 @@ public class Shutter {
 				
 		lblFadeInColor = new JLabel(Shutter.language.getProperty("black"));
 		lblFadeInColor.setName("lblFadeInColor");
-		lblFadeInColor.setBackground(new Color(60, 60, 60));
+		lblFadeInColor.setBackground(new Color(50,50,50));
 		lblFadeInColor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFadeInColor.setOpaque(true);
 		lblFadeInColor.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -13830,7 +13831,7 @@ public class Shutter {
 		
 		lblFadeOutColor = new JLabel(Shutter.language.getProperty("black"));
 		lblFadeOutColor.setName("lblFadeOutColor");
-		lblFadeOutColor.setBackground(new Color(60, 60, 60));
+		lblFadeOutColor.setBackground(new Color(50,50,50));
 		lblFadeOutColor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFadeOutColor.setOpaque(true);
 		lblFadeOutColor.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -14002,9 +14003,9 @@ public class Shutter {
 		grpImageSequence = new JPanel();
 		grpImageSequence.setLayout(null);
 		grpImageSequence.setVisible(false);
-		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpImageSequence.setBackground(new Color(45, 45, 45));
+		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpImageSequence.setBackground(new Color(35,35,35));
 		grpImageSequence.setBounds(frame.getWidth() - 312 - 10, 199, 312, 17);
 		frame.getContentPane().add(grpImageSequence);
 		
@@ -14174,8 +14175,8 @@ public class Shutter {
 		grpAdvanced = new JPanel();
 		grpAdvanced.setLayout(null);
 		grpAdvanced.setVisible(false);
-		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpAdvanced.setBackground(new Color(45, 45, 45));
+		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpAdvanced.setBackground(new Color(35,35,35));
 		grpAdvanced.setBounds(frame.getWidth() - 312 - 10, 396, 312, 17);
 		frame.getContentPane().add(grpAdvanced);
 
@@ -14292,7 +14293,7 @@ public class Shutter {
 		
 		lblTFF = new JLabel("TFF");
 		lblTFF.setName("lblTFF");
-		lblTFF.setBackground(new Color(60, 60, 60));
+		lblTFF.setBackground(new Color(50,50,50));
 		lblTFF.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTFF.setOpaque(true);
 		lblTFF.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -14478,12 +14479,12 @@ public class Shutter {
 		
 		lblCreateOPATOM = new JLabel(language.getProperty("lblCreateOPATOM"));
 		lblCreateOPATOM.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblCreateOPATOM.setBackground(new Color(45, 45, 45));
+		lblCreateOPATOM.setBackground(new Color(35,35,35));
 		lblCreateOPATOM.setSize((int) lblCreateOPATOM.getPreferredSize().getWidth(), 23);
 		
 		lblOPATOM = new JLabel("OP-Atom");
 		lblOPATOM.setName("lblOPATOM");
-		lblOPATOM.setBackground(new Color(60, 60, 60));
+		lblOPATOM.setBackground(new Color(50,50,50));
 		lblOPATOM.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOPATOM.setOpaque(true);
 		lblOPATOM.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -14704,7 +14705,7 @@ public class Shutter {
 
 		lblNiveaux = new JLabel("0-255");
 		lblNiveaux.setName("lblNiveaux");
-		lblNiveaux.setBackground(new Color(60, 60, 60));
+		lblNiveaux.setBackground(new Color(50,50,50));
 		lblNiveaux.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNiveaux.setOpaque(true);
 		lblNiveaux.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -15212,9 +15213,9 @@ public class Shutter {
 		grpBitrate = new JPanel();
 		grpBitrate.setLayout(null);
 		grpBitrate.setVisible(false);
-		grpBitrate.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true),
-				language.getProperty("grpBitrate") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), Color.WHITE));
-		grpBitrate.setBackground(new Color(45, 45, 45));
+		grpBitrate.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
+				language.getProperty("grpBitrate") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpBitrate.setBackground(new Color(35,35,35));
 		grpBitrate.setBounds(658, 30, 312, 208);
 		frame.getContentPane().add(grpBitrate);	
 		
@@ -15385,7 +15386,7 @@ public class Shutter {
 					if (lblPad.getText().equals(Shutter.language.getProperty("lblPad")))
 						g.setColor(Color.BLACK);
 					else
-						g.setColor(new Color(45, 45, 45));
+						g.setColor(new Color(35,35,35));
 					
 					g.fillRect(0, 0, 8, 16);
 					g.fillRect((70 - 8), 0, (70 - 8), 16);
@@ -15394,7 +15395,7 @@ public class Shutter {
 		};
 		lblPad.setText(language.getProperty("lblPad"));
 		lblPad.setName("lblPad");
-		lblPad.setBackground(new Color(60, 60, 60));
+		lblPad.setBackground(new Color(50,50,50));
 		lblPad.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPad.setOpaque(true);
 		lblPad.setVisible(false);
@@ -15765,7 +15766,7 @@ public class Shutter {
 				}
 			}
 		};
-		h264lines.setBackground(new Color(45, 45, 45));
+		h264lines.setBackground(new Color(35,35,35));
 		h264lines.setBounds(212, lblKbsH264.getY() - 7, 53, 105);
 		grpBitrate.add(h264lines);
 		grpBitrate.validate();
@@ -15787,7 +15788,7 @@ public class Shutter {
 				
 		lblVBR = new JLabel("VBR");
 		lblVBR.setName("lblVBR");
-		lblVBR.setBackground(new Color(60, 60, 60));
+		lblVBR.setBackground(new Color(50,50,50));
 		lblVBR.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVBR.setOpaque(true);
 		lblVBR.setFont(new Font(montserratFont, Font.PLAIN, 11));
@@ -17321,7 +17322,7 @@ public class Shutter {
 			public void mouseClicked(MouseEvent arg0) {
 				final JFrame oldVersions = new JFrame();
 				oldVersions.setUndecorated(true);
-				oldVersions.getContentPane().setBackground(new Color(45, 45, 45));
+				oldVersions.getContentPane().setBackground(new Color(35,35,35));
 				oldVersions.setBackground(new Color(1.0f, 1.0f, 1.0f, 1.0f));
 				oldVersions.setSize(1600, 423);
 				oldVersions.setShape(new RoundRectangle2D.Double(0, 0, oldVersions.getWidth() + 18,
@@ -21927,19 +21928,19 @@ class FilesCellRenderer extends JLabel implements ListCellRenderer {
 		setToolTipText(value.toString());
 		
 		setFont(new Font("SansSerif", Font.PLAIN, 12));
-		setForeground(new Color(245, 245, 245));
+		setForeground(Color.LIGHT_GRAY);
 		setOpaque(true);
 		
 		if (isSelected)
 		{
-			setBackground(new Color(90, 90, 90));
+			setBackground(new Color(80, 80, 80));
 		}
 		else
 		{			
 			if (index % 2 == 1)
-				setBackground(new Color(60, 60, 60));
+				setBackground(new Color(50,50,50));
 			else
-				setBackground(new Color(66, 66, 66));
+				setBackground(new Color(56,56,56));
 		}
 		return this;
 	}
@@ -21952,6 +21953,15 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 	public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) 
 	{
 		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+		
+		if (isSelected)
+		{
+			setBackground(Utils.themeColor);
+		}
+		else
+		{	
+			setBackground(new Color(50,50,50));
+		}
 		
 		if (value.toString().contains(":") || value.toString().equals(Shutter.language.getProperty("itemMyFunctions")))
 		{			

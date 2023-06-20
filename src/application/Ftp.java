@@ -93,7 +93,7 @@ public class Ftp {
 	public Ftp() {
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFtp"));
 		frame.setForeground(Color.WHITE);

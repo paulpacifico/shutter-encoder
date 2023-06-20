@@ -98,7 +98,7 @@ import settings.FunctionUtils;
 	public RenderQueue() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFileDeRendus"));
 		frame.setForeground(Color.WHITE);
@@ -607,7 +607,7 @@ import settings.FunctionUtils;
                return true;
             }                   
         };
-        table.setForeground(new Color(245, 245, 245));
+        table.setForeground(new Color(240,240,240));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -653,7 +653,7 @@ import settings.FunctionUtils;
 		
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(table);
-		scrollPane.setBackground(new Color(60,60,60));
+		scrollPane.setBackground(new Color(50,50,50));
 		scrollPane.setOpaque(true);
 		scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
@@ -956,25 +956,25 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 
 	private static final long serialVersionUID = 1L;
 
-	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int index, int col) {
 
-	    Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+	    Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, index, col);
 
 	    setHorizontalAlignment(JLabel.CENTER);
 	    setFont(new Font("SansSerif", Font.PLAIN, 12));
-	    setForeground(new Color(245, 245, 245));
+	    setForeground(Color.LIGHT_GRAY);
 		setOpaque(true);
 		
 		if (isSelected)
 		{
-			setBackground(new Color(90, 90, 90));
+			setBackground(new Color(80, 80, 80));
 		}
 		else
 		{			
-			if (row % 2 == 1)
-				setBackground(new Color(60, 60, 60));
+			if (index % 2 == 1)
+				setBackground(new Color(50,50,50));
 			else
-				setBackground(new Color(66, 66, 66));
+				setBackground(new Color(56,56,56));
 		}
 		
 	    setBorder(new LineBorder(new Color(0,0,0,0)));	    

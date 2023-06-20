@@ -77,7 +77,7 @@ import library.MEDIAINFO;
 	public Informations() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
@@ -237,7 +237,7 @@ import library.MEDIAINFO;
 	public static void addTabControl() {	
 		
 		tabPanel = new JPanel();			
-		tabPanel.setBackground(new Color(45, 45, 45));
+		tabPanel.setBackground(new Color(35,255,35));
 		tabPanel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		tabPanel.setLayout(null);
 		tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);				
@@ -251,7 +251,7 @@ import library.MEDIAINFO;
 		
 	private void topPanel() {	
 		
-		topPanel	= new JPanel();
+		topPanel = new JPanel();
 		topPanel.setLayout(null);
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		

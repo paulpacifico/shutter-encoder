@@ -35,14 +35,14 @@ public class SubtitlesHelp {
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitles"));
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
 		frame.setLocation(Shutter.frame.getLocation().x + Shutter.frame.getSize().width/2 - 200, Shutter.frame.getLocation().y + Shutter.frame.getHeight() /2 - 150);
 				
 		JTextPane lblHelp = new JTextPane();
-		lblHelp.setBackground(new Color(45, 45, 45));
+		lblHelp.setBackground(new Color(35,35,35));
 		lblHelp.setText(Shutter.language.getProperty("txtShortcuts"));
 		lblHelp.setForeground(Color.WHITE);
 		lblHelp.setHighlighter(null);

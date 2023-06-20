@@ -101,7 +101,7 @@ import javax.swing.JScrollPane;
 	public SceneDetection(boolean runAnalyse) {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameDetectionCoupe"));
 		frame.setForeground(Color.WHITE);
@@ -383,6 +383,7 @@ import javax.swing.JScrollPane;
 	private void content() {
 		
 		scrollPane = new JScrollPane();
+		scrollPane.setBackground(new Color(35,35,35));
 		scrollPane.setBounds(9, 65, 380, frame.getSize().height - 136);
 		frame.getContentPane().add(scrollPane);
 			
@@ -621,6 +622,7 @@ import javax.swing.JScrollPane;
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setRowHeight(80);
+		table.setBackground(new Color(50,50,50));
 		table.getColumnModel().getColumn(0).setPreferredWidth(18);
 		table.getColumnModel().getColumn(1).setPreferredWidth(table.getColumnModel().getColumn(1).getPreferredWidth());
 		table.setBounds(9, 65, 380, frame.getHeight() - 134);

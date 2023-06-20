@@ -2400,7 +2400,7 @@ public class VideoPlayer {
 	                }
 	                	                
 	                //Masks
-	                g2.setColor(new Color(45,45,45, 120)); 
+	                g2.setColor(new Color(50,50,50, 120)); 
 	                if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 	                {
 	                	g2.fillRoundRect(playerInMark + 2, 1, playerOutMark - playerInMark - 1, getHeight() - 2, 5, 5);

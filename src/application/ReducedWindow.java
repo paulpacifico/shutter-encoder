@@ -107,7 +107,7 @@ public class ReducedWindow extends JDialog {
 		panel = new JPanel();	
 		panel.setLayout(null);
 		panel.setBounds(6, 3, 88, 88);
-		panel.setBackground(new Color(45, 45, 45));
+		panel.setBackground(new Color(35,35,35));
 		frame.getContentPane().add(panel);
 		
 		pourcentage = new JLabel("0%");
@@ -348,7 +348,7 @@ class MiniWindowBackground extends JPanel {
   	  
  		  Graphics2D g2 = (Graphics2D)g.create();
  		  g2.setRenderingHints(qualityHints);
- 		  g2.setColor(new Color(45, 45, 45));
+ 		  g2.setColor(new Color(35,35,35));
  		  g2.fillRoundRect(0, 0,320, 94,30,30);
      }
 }

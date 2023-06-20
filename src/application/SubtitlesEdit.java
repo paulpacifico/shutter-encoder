@@ -79,7 +79,7 @@ public class SubtitlesEdit {
 		frame.setSize(620, 640);
 		frame.setAlwaysOnTop(true);
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		frame.getContentPane().setBackground(new Color(45, 45, 45));
+		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));
 
@@ -87,7 +87,7 @@ public class SubtitlesEdit {
 		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);	
 		
 		scrollBar = new JScrollBar();
-		scrollBar.setBackground(new Color(45, 45, 45));
+		scrollBar.setBackground(new Color(35,35,35));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 						
 		frame.addMouseWheelListener(new MouseWheelListener(){
@@ -409,11 +409,11 @@ public class SubtitlesEdit {
 		
 		JTextField in = new JTextField();
 		in.setText(subIn);
-		in.setBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true));
+		in.setBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true));
 		in.setForeground(Utils.themeColor);
 		in.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		in.setBounds(77, textPosition - 2, 94, 25);	
-		in.setBackground(new Color(45, 45, 45));
+		in.setBackground(new Color(35,35,35));
 		in.setHorizontalAlignment(SwingConstants.CENTER);
 			   	
 		in.addKeyListener(new KeyAdapter()
@@ -475,11 +475,11 @@ public class SubtitlesEdit {
 		
 		JTextField out = new JTextField();
 		out.setText(subOut);
-		out.setBorder(new RoundedLineBorder(new Color(65, 65, 65), 1, 5, true));
+		out.setBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true));
 		out.setForeground(Utils.themeColor);
 		out.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		out.setBounds(77, textPosition + 24, 94, 25);	
-		out.setBackground(new Color(45, 45, 45));
+		out.setBackground(new Color(35,35,35));
 		out.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		out.addKeyListener(new KeyAdapter()

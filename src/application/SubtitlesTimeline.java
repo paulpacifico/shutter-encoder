@@ -147,7 +147,7 @@ public class SubtitlesTimeline {
     	frame.setResizable(true);
     	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     	frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
-    	frame.getContentPane().setBackground(new Color(45, 45, 45));
+    	frame.getContentPane().setBackground(new Color(35,35,35));
     	frame.getContentPane().setLayout(null);
     	frame.setAlwaysOnTop(true);
     	frame.setSize(1000, 270);
@@ -1288,13 +1288,13 @@ public class SubtitlesTimeline {
 		Utils.changeFrameVisibility(frame, false);
 		
 		JPanel timelineBackround = new JPanel();
-		timelineBackround.setBackground(new Color(45, 45, 45));
+		timelineBackround.setBackground(new Color(35,35,35));
 		timelineBackround.setLayout(null);
-		timelineBackround.setBorder(BorderFactory.createTitledBorder(new MatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY), Shutter.language.getProperty("lblTimeline") + " ", TitledBorder.CENTER, TitledBorder.TOP, new Font(Shutter.montserratFont, Font.PLAIN, 12), Color.WHITE));
+		timelineBackround.setBorder(BorderFactory.createTitledBorder(new MatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY), Shutter.language.getProperty("lblTimeline") + " ", TitledBorder.CENTER, TitledBorder.TOP, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		timelineBackround.setBounds(0, 80, frame.getWidth(), frame.getContentPane().getHeight() - 97);
 		frame.getContentPane().add(timelineBackround);
 		
-		timeline.setBackground(new Color(45, 45, 45));
+		timeline.setBackground(new Color(35,35,35));
 		timeline.setLayout(null);
 		timeline.setBounds(0, 15, (int) (((VideoPlayer.slider.getMaximum() - 2) * VideoPlayer.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
 		timelineBackround.add(timeline);
@@ -1383,12 +1383,12 @@ public class SubtitlesTimeline {
 		
 		timelineScrollBar.setVisible(true);
 		timelineScrollBar.setValue(0);
-		timelineScrollBar.setBackground(new Color(45, 45, 45));
+		timelineScrollBar.setBackground(new Color(35,35,35));
 		timelineScrollBar.setOrientation(JScrollBar.HORIZONTAL);	
 		timelineScrollBar.setBounds(0, 0, frame.getContentPane().getWidth(), 17);
 		
 		JPanel scrollBarPanel = new JPanel();
-		scrollBarPanel.setBackground(new Color(45, 45, 45));
+		scrollBarPanel.setBackground(new Color(35,35,35));
 		scrollBarPanel.setLayout(null);
 		scrollBarPanel.setBounds(0, frame.getContentPane().getHeight() - 17, frame.getContentPane().getWidth(), 17);
 		frame.getContentPane().add(scrollBarPanel);	
@@ -1632,7 +1632,7 @@ public class SubtitlesTimeline {
 	private static JTextPane addText(String subContent, int x, int size) {
 		
 		JTextPane text = new JTextPane();
-		text.setBackground(new Color(45, 45, 45, 120));
+		text.setBackground(new Color(35,35,35, 120));
 		text.setForeground(Color.WHITE);
 		text.setText(subContent);	
 		text.setBorder(new RoundedBorder(5, Utils.themeColor));		

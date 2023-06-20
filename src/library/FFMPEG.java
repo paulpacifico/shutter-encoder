@@ -653,9 +653,9 @@ public static StringBuilder errorLog = new StringBuilder();
 					+  System.lineSeparator() + System.lineSeparator());
 		
 			JFrame player = new JFrame();
-			player.getContentPane().setBackground(new Color(45, 45, 45));
+			player.getContentPane().setBackground(new Color(50,50,50));
 			player.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	
-			player.setBackground(new Color(45, 45, 45));
+			player.setBackground(new Color(50,50,50));
 			player.getContentPane().setLayout(null);
 			player.setIconImage(frame.getIconImage());
 						
