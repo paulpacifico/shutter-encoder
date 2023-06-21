@@ -748,11 +748,14 @@ import settings.FunctionUtils;
 							}
 							
 						}
-						
+												
 						btnStartRender.setEnabled(true);
 						Shutter.enableAll();
 						Shutter.enfOfFunction();
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+						
+						//Enable buttons
+						VideoPlayer.setPlayerButtons(true);	
 						
 					}//End Run
 				});
