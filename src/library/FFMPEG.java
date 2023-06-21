@@ -147,7 +147,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					saveToXML(cmd);
 		}
 		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false)
-		{
+		{			
 			//On récupère le nom précédent
 			if (lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")))
 			{

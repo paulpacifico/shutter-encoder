@@ -453,6 +453,7 @@ public class Functions {
 				
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
+		topPanel.setBackground(new Color(35,35,35));
 		topPanel.setBounds(0, 0, 333, 28);
 	
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));

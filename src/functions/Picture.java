@@ -57,6 +57,25 @@ public class Picture extends Shutter {
 
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
+					//Render queue only accept selected files
+					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					{
+						boolean isSelected = false;
+						
+						for (String input : Shutter.fileList.getSelectedValuesList())
+						{
+							if (liste.getElementAt(i).equals(input))
+							{
+								isSelected = true;
+							}
+						}	
+						
+						if (isSelected == false)
+						{
+							continue;
+						}							
+					}
+					
 					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
 									
 					if (file == null)

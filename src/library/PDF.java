@@ -81,7 +81,10 @@ public static int pagesCount = 1;
 	
 	public static void info(String file) {
 		
-		error = false;		
+		error = false;	
+		
+		FFPROBE.hasAudio = false;
+		FFPROBE.totalLength = 0;
 		
 		runProcess = new Thread(new Runnable()  {
 			

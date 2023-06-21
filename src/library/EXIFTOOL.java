@@ -46,15 +46,18 @@ private static Boolean horizontal = true;
 
 	public static void run(final String file) {
 				
-	 error = false;
-	 scanOrientation = true;
-	 horizontal = true;
-	 exifDate = "0000:00:00";
-	 exifHours = "00:00:00";
-	 creationDate = "0000:00:00";
-	 creationHours = "00:00:00";
-	 exifWidth = "";
-	 exifHeight = "";
+		error = false;
+		scanOrientation = true;
+		horizontal = true;
+		exifDate = "0000:00:00";
+		exifHours = "00:00:00";
+		creationDate = "0000:00:00";
+		creationHours = "00:00:00";
+		exifWidth = "";
+		exifHeight = "";
+		 
+		FFPROBE.hasAudio = false;
+		FFPROBE.totalLength = 0;
 		 
 		runProcess = new Thread(new Runnable()  {
 			@Override

@@ -25,7 +25,6 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -120,11 +119,7 @@ import javax.swing.JScrollPane;
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-			Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
-			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
 		}
 				
 		topPanel();
@@ -226,6 +221,7 @@ import javax.swing.JScrollPane;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
+		topPanel.setBackground(new Color(35,35,35));
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));

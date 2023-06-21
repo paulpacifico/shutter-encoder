@@ -757,8 +757,6 @@ public class Shutter {
 
 		new Shutter();
 		
-		Utils.textFieldBackground();
-		
 		ImageIO.setUseCache(false); //IMPORTANT use RAM instead of HDD cache
 	}
 
@@ -1252,7 +1250,7 @@ public class Shutter {
 
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(40,40,40));
+		topPanel.setBackground(new Color(35,35,35));
 		topPanel.setBounds(0, 0, 1350, 28);
 
 		settings = new JLabel(new FlatSVGIcon("contents/settings.svg", 13, 13));
@@ -5706,8 +5704,6 @@ public class Shutter {
 				}
 				
 				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
-				
-				Utils.textFieldBackground();
 			}
 
 		});
@@ -13580,8 +13576,6 @@ public class Shutter {
 				{
 					spinnerVideoFadeIn.setEnabled(false);		
 				}		
-				
-				Utils.textFieldBackground();
 			}
 			
 		});
@@ -13700,8 +13694,7 @@ public class Shutter {
 				{
 					spinnerAudioFadeIn.setEnabled(false);		
 				}	
-				
-				Utils.textFieldBackground();
+
 			}
 			
 		});
@@ -13754,7 +13747,7 @@ public class Shutter {
 					caseVideoFadeOut.setSelected(false);
 				}
 				
-				if (caseVideoFadeOut.isSelected())
+				if (caseVideoFadeOut.isSelected() && liste.getSize() > 0)
 				{
 					spinnerVideoFadeOut.setEnabled(true);
 					
@@ -13793,8 +13786,6 @@ public class Shutter {
 				{
 					spinnerVideoFadeOut.setEnabled(false);		
 				}
-				
-				Utils.textFieldBackground();
 			}
 			
 		});
@@ -13921,7 +13912,7 @@ public class Shutter {
 					caseAudioFadeOut.setSelected(false);
 				}
 				
-				if (caseAudioFadeOut.isSelected())
+				if (caseAudioFadeOut.isSelected() && liste.getSize() > 0)
 				{
 					spinnerAudioFadeOut.setEnabled(true);
 					
@@ -13960,8 +13951,7 @@ public class Shutter {
 				{
 					spinnerAudioFadeOut.setEnabled(false);		
 				}	
-
-				Utils.textFieldBackground();				
+				
 			}
 			
 		});
@@ -14766,6 +14756,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseGOP.isSelected())
 				{
 					gopSize.setEnabled(true);
@@ -14774,8 +14765,6 @@ public class Shutter {
 				{
 					gopSize.setEnabled(false);		
 				}	
-				
-				Utils.textFieldBackground();
 			}
 			
 		});
@@ -15095,6 +15084,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseChunks.isSelected())
 				{
 					chunksSize.setEnabled(true);
@@ -15103,8 +15093,6 @@ public class Shutter {
 				{
 					chunksSize.setEnabled(false);		
 				}	
-				
-				Utils.textFieldBackground();
 			}
 			
 		});
@@ -16428,8 +16416,6 @@ public class Shutter {
 				comboInColormatrix.setSelectedIndex(0);
 				comboOutColormatrix.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 601", "Rec. 709", "Rec. 2020", "SDR"}));
 				comboOutColormatrix.setSelectedIndex(1);
-				
-				Utils.textFieldBackground();		
 				
 				// Important				
 				//Used to force refreshing panels
@@ -21268,8 +21254,6 @@ public class Shutter {
 		VideoPlayer.player.remove(logo);
 		VideoPlayer.showScale.setVisible(false);		
 		VideoPlayer.playerStop();
-		
-		Utils.textFieldBackground();
 
 		lblFiles.setEnabled(true);
 		lblFilesEnded.setEnabled(true);
@@ -21603,8 +21587,6 @@ public class Shutter {
 		
 		if (caseAudioFadeOut.isSelected() == false)
 			spinnerAudioFadeOut.setEnabled(false);
-		
-		Utils.textFieldBackground();
 
 		if (caseAS10.isSelected() == false)
 			comboAS10.setEnabled(false);

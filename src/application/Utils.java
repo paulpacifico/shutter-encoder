@@ -1737,7 +1737,7 @@ public class Utils extends Shutter {
 		UIManager.put("Slider.thumbColor", themeColor);		
 		UIManager.put("Slider.hoverColor", highlightColor);
 		UIManager.put("Slider.trackValueColor", themeColor);
-		UIManager.put("Slider.trackColor", new Color(40,40,40));
+		UIManager.put("Slider.trackColor", new Color(25,25,25));
 		UIManager.put("Slider.thumbSize", new Dimension(10,10));
 		UIManager.put("Slider.trackWidth", 4);
 		UIManager.put("Slider.focusWidth", 0);	
@@ -1778,23 +1778,6 @@ public class Utils extends Shutter {
 		FlatInspector.install("ctrl shift alt X");		
 	}
 	
-	public static void textFieldBackground() {
-		
-		Settings.txtExtension.setBackground(new Color(50,50,50));
-		Settings.txtExclude.setBackground(new Color(50,50,50));
-		txtAudioOffset.setBackground(new Color(50,50,50));
-		textH.setBackground(new Color(50,50,50));
-		textM.setBackground(new Color(50,50,50));
-		textS.setBackground(new Color(50,50,50));
-		textF.setBackground(new Color(50,50,50));
-		bitrateSize.setBackground(new Color(50,50,50));
-		gopSize.setBackground(new Color(50,50,50));
-		Shutter.spinnerVideoFadeIn.setBackground(new Color(50,50,50));
-		Shutter.spinnerAudioFadeIn.setBackground(new Color(50,50,50));
-		Shutter.spinnerVideoFadeOut.setBackground(new Color(50,50,50));
-		Shutter.spinnerAudioFadeOut.setBackground(new Color(50,50,50));	
-	}
-
 	@SuppressWarnings("unused")
 	public static void restartApp() {
 		

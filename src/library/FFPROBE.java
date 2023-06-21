@@ -89,6 +89,7 @@ public static int maxFALL = 0;
 public static float keyFrame = 0;
 public static int gopCount = 0;
 public static int gopSpace = 124;
+public static boolean hasAlpha = false;
 
 	public static void Data(final String file) {	
 				
@@ -575,6 +576,7 @@ public static int gopSpace = 124;
 		HDRmax = 1000;		
 		maxCLL = 1000;
 		maxFALL = 400;
+		hasAlpha = false;
 
 		FFMPEG.error = false;
 		btnStart.setEnabled(false);
@@ -727,20 +729,24 @@ public static int gopSpace = 124;
 							  maxFALL = Integer.parseInt(s[1]);
 						  }
 						  
-					}						
-					//process.waitFor();					
+						  if (line.contains("alpha_mode=1") || FFPROBE.pixelformat.contains("a"))
+						  {
+							  hasAlpha = true;
+						  }
+						  
+					}										
 													
-					} catch (Exception e) {	
-						FFMPEG.error = true;
-					} finally {
-						isRunning = false;
-						btnStart.setEnabled(true);
-						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					}
-					
-				}			
-			});
-			processFrameData.start();
+				} catch (Exception e) {	
+					FFMPEG.error = true;
+				} finally {
+					isRunning = false;
+					btnStart.setEnabled(true);
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				}
+				
+			}			
+		});
+		processFrameData.start();
 	}
 	
 	public static void AnalyzeGOP(final String file, boolean isGOPWindow) {

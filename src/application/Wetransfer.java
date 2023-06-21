@@ -137,7 +137,8 @@ public class Wetransfer {
 			
 	private void topPanel() {
 		
-		topPanel = new JPanel();		
+		topPanel = new JPanel();
+		topPanel.setBackground(new Color(35,35,35));
 		topPanel.setLayout(null);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));

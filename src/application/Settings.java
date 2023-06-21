@@ -345,8 +345,6 @@ public class Settings {
 				{
 					txtExtension.setEnabled(false);
 				}
-				
-				Utils.textFieldBackground();
 			}
 			
 		});
@@ -377,8 +375,6 @@ public class Settings {
 				{
 					txtExclude.setEnabled(false);
 				}
-				
-				Utils.textFieldBackground();
 			}
 			
 		});
@@ -1191,6 +1187,7 @@ public class Settings {
 		
 		topPanel = new JPanel();	
 		topPanel.setName("topPanel");
+		topPanel.setBackground(new Color(35,35,35));
 		topPanel.setLayout(null);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
