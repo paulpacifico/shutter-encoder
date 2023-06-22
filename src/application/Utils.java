@@ -1335,25 +1335,14 @@ public class Utils extends Shutter {
 														if (((JCheckBox) p).isSelected())
 															((JCheckBox) p).doClick();
 													}								
-													
+																										
 												}
 												else if (p instanceof JComboBox)
 												{			
 													if (p.getName().equals("comboFonctions"))
 													{														
-														VideoPlayer.frameIsComplete = false;
-														
-														long time = System.currentTimeMillis();
-														
-														do {
-															try {
-																Thread.sleep(100);
-															} catch (InterruptedException er) {}
-															
-															if (System.currentTimeMillis() - time > 1000)
-																VideoPlayer.frameIsComplete = true;
-																						
-														} while (VideoPlayer.frameIsComplete == false);
+														VideoPlayer.frameIsComplete = false;														
+														doNotLoadImage = false;
 													}
 													
 													if (p.getName().equals("comboLUTs"))
@@ -1379,6 +1368,23 @@ public class Utils extends Shutter {
 														
 														//Visible
 														((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+													}
+													
+													long time = System.currentTimeMillis();
+													
+													if (p.getName().equals("comboFonctions"))
+													{																												
+														do {
+															try {
+																Thread.sleep(100);
+															} catch (InterruptedException er) {}
+															
+															if (System.currentTimeMillis() - time > 1000)
+																VideoPlayer.frameIsComplete = true;
+																						
+														} while (VideoPlayer.frameIsComplete == false);
+														
+														doNotLoadImage = true;
 													}
 												}
 												else if (p instanceof JTextField)

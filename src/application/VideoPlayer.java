@@ -4534,7 +4534,7 @@ public class VideoPlayer {
 			{			
 				ratio = (float) Integer.parseInt(Shutter.textCropWidth.getText()) / Integer.parseInt(Shutter.textCropHeight.getText());
 			}
-			
+						
 			if (ratio < 1.3f)
 			{
 				int maxHeight = (int) (Shutter.frame.getHeight() / 1.6f);
@@ -4557,13 +4557,15 @@ public class VideoPlayer {
 				
 				player.setSize(maxWidth, (int) (maxWidth / ratio));		
 			}	
-							
-			int y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2 - 58;
-			if (ratio < 1.3f)
+
+			if (Shutter.frame.getHeight() - player.getHeight() < 220 && (FFPROBE.totalLength > 40 || Shutter.caseEnableSequence.isSelected()))
 			{
-				y = Shutter.grpChooseFiles.getY() + 50;
-			}	
-			
+				int p = 220 - (Shutter.frame.getHeight() - player.getHeight());				
+				player.setSize(player.getWidth() - p, player.getHeight() - p);
+			}
+						
+			int y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2 - 58;
+
 			if ((FFPROBE.totalLength <= 40 && Shutter.caseEnableSequence.isSelected() == false || isPiping) && videoPath != null) //Image
 			{				
 				y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2;
@@ -4765,6 +4767,7 @@ public class VideoPlayer {
 			{
 				VideoPlayer.setPlayerButtons(false);
 			}
+			
 		}
 		
 		if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
@@ -4786,6 +4789,7 @@ public class VideoPlayer {
 		}
 		
 		Shutter.lblYears.setLocation(Shutter.frame.getWidth() - Shutter.lblYears.getPreferredSize().width - 6, Shutter.lblBy.getY());
+		
 	}
 	
 	public static void totalDuration() {	

@@ -245,7 +245,7 @@ public class SubtitlesTimeline {
     			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
     			{
     				Shutter.comboFonctions.setSelectedItem("");
-        			Shutter.resizeFrame(false);
+        			Shutter.changeWidth(false);
     			}
     			Shutter.btnStart.setEnabled(true);
     			

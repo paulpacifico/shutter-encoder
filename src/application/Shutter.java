@@ -3451,7 +3451,7 @@ public class Shutter {
 				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")) 
 				{
 					changeFilters();
-					resizeFrame(false);
+					changeWidth(false);
 
 					topPanel.setBounds(0, 0, frame.getWidth(), 28);
 					topImage.setBounds(0, 0, topPanel.getWidth(), 24);
@@ -3503,7 +3503,7 @@ public class Shutter {
 						comboFonctions.hidePopup();
 						changeFilters();
 						changeSections(true);
-						resizeFrame(false);
+						changeWidth(false);
 						text = "";
 					} else if (e.getKeyCode() == KeyEvent.VK_DOWN)
 						e.consume();// Contournement pour éviter le listeDrop
@@ -16519,123 +16519,7 @@ public class Shutter {
 				
 				if (windowDrag)
 		       	{	
-					if (frame.getWidth() >= 1350 && width >= 1350)
-					{
-						frame.setSize(width, frame.getHeight() + i);					
-					}
-					else
-					    frame.setSize(frame.getSize().width, frame.getHeight() + i);
-									
-					if (frame.getWidth() > 332)
-					{
-						lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
-						lblV.setVisible(true);
-					}
-					else
-					{
-						lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);		
-						lblV.setVisible(false);
-					}
-					
-					setGPUOptions();
-					
-					lblV.setLocation(lblShutterEncoder.getX() + lblShutterEncoder.getWidth(), 5);
-					
-					if (frame.getWidth() > 332)
-					{
-						int grpX = frame.getWidth() - 312 - 10;
-						grpResolution.setLocation(grpX, grpResolution.getLocation().y);
-						grpBitrate.setLocation(grpX, grpBitrate.getLocation().y);								
-						grpSetAudio.setLocation(grpX, grpSetAudio.getLocation().y);
-						grpAudio.setLocation(grpX, grpAudio.getLocation().y);								
-						grpCrop.setLocation(grpX, grpCrop.getLocation().y);								
-						grpOverlay.setLocation(grpX, grpOverlay.getLocation().y);
-						grpSubtitles.setLocation(grpX, grpSubtitles.getLocation().y);
-						grpWatermark.setLocation(grpX, grpWatermark.getLocation().y);
-						grpColorimetry.setLocation(grpX, grpColorimetry.getLocation().y);								
-						grpImageAdjustement.setLocation(grpX, grpImageAdjustement.getLocation().y);								
-						grpCorrections.setLocation(grpX, grpCorrections.getLocation().y);	
-						grpTransitions.setLocation(grpX, grpTransitions.getLocation().y);	
-						grpImageSequence.setLocation(grpX, grpImageSequence.getLocation().y);
-						grpImageFilter.setLocation(grpX, grpImageFilter.getLocation().y);
-						grpSetTimecode.setLocation(grpX, grpSetTimecode.getLocation().y);
-						grpAdvanced.setLocation(grpX, grpAdvanced.getLocation().y);
-						btnReset.setLocation((grpX + 2), btnReset.getLocation().y);
-					}
-					
-					topPanel.setBounds(0, 0, frame.getWidth(), 28);
-					topImage.setBounds(0, 0, topPanel.getWidth(), 24);
-					quit.setLocation(frame.getSize().width - 20, 4);
-					fullscreen.setLocation(quit.getLocation().x - 20, 4);
-					reduce.setLocation(fullscreen.getLocation().x - 20, 4);
-					help.setLocation(reduce.getLocation().x - 20, 4);
-					newInstance.setLocation(help.getLocation().x - 20, 4);
-			        
-					Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-			        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
-			        shape1.add(shape2);
-					frame.setShape(shape1);
-					
-					grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 327);
-					fileList.setSize(fileList.getWidth(), frame.getHeight() - 387);
-					addToList.setSize(fileList.getSize());					
-					scrollBar.setSize(scrollBar.getWidth(), fileList.getHeight());
-					grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFunction.getY() + i);
-					grpDestination.setLocation(grpDestination.getX(), grpDestination.getY() + i);
-					grpProgression.setLocation(grpProgression.getX(), grpProgression.getY() + i);
-			        
-			        //On récupère le groupe qui est le plus haut
-					JPanel top;
-					
-					if (grpResolution.isVisible())
-					{
-						top = grpResolution;
-					}
-					else if (grpSetTimecode.isVisible())
-					{
-						top = grpSetTimecode;
-					}
-					else if (grpSetAudio.isVisible())
-					{
-						top = grpSetAudio;
-					}
-					else
-					{
-						top = grpAudio;
-					}
-										
-					//Empêche de faire dépasser la position minimale de top
-					if (i < 0 && frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31)
-						i = 0;
-					
-					//Pré calcul
-					if (top.getY() + i >= grpChooseFiles.getY() && i > 0)
-					{
-						i = grpChooseFiles.getY() - top.getY();	
-					}
-					
-					if (frame.getWidth() > 332 && top.getY() < 30) 
-					{		
-						grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + i);
-						grpBitrate.setLocation(grpBitrate.getLocation().x, grpBitrate.getLocation().y + i);								
-						grpSetAudio.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getLocation().y + i);
-						grpAudio.setLocation(grpAudio.getLocation().x, grpAudio.getLocation().y + i);								
-						grpCrop.setLocation(grpCrop.getLocation().x, grpCrop.getLocation().y + i);								
-						grpOverlay.setLocation(grpOverlay.getLocation().x, grpOverlay.getLocation().y + i);
-						grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y + i);
-						grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y + i);
-						grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y + i);								
-						grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x, grpImageAdjustement.getLocation().y + i);								
-						grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + i);	
-						grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + i);	
-						grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + i);
-						grpImageFilter.setLocation(grpImageFilter.getLocation().x, grpImageFilter.getLocation().y + i);
-						grpSetTimecode.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getLocation().y + i);
-						grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + i);
-						btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + i);		
-					}
-															
-					VideoPlayer.resizeAll();        			
+					resizeAll(width, i);     			
 		       	}	
 				
 			}
@@ -17446,7 +17330,7 @@ public class Shutter {
 				|| "JPEG".equals(function)
 				|| language.getProperty("functionNormalization").equals(function))
 		{
-			resizeFrame(true);
+			changeWidth(true);
 			changeSections(anim);
 			
 		} else if (language.getProperty("functionExtract").equals(function)				
@@ -17456,13 +17340,13 @@ public class Shutter {
 				|| language.getProperty("functionSceneDetection").equals(function)
 				|| language.getProperty("functionWeb").equals(function))
 		{
-			resizeFrame(false);
+			changeWidth(false);
 			changeSections(anim);
 			
 		} 
 		else if (language.getProperty("itemMyFunctions").equals(function))
 		{
-			resizeFrame(false);
+			changeWidth(false);
 			changeSections(anim);
 		
 			if (Functions.frame == null)
@@ -17743,7 +17627,7 @@ public class Shutter {
 			comboForceSpeed.setEnabled(false);
 	}
 
-	public static void resizeFrame(final boolean bigger) {
+	public static void changeWidth(final boolean bigger) {
 						
 		String function = comboFonctions.getSelectedItem().toString();
 		
@@ -17889,7 +17773,8 @@ public class Shutter {
 		fullscreen.setLocation(quit.getLocation().x - 20, 4);
 		reduce.setLocation(fullscreen.getLocation().x - 20, 4);
 		help.setLocation(reduce.getLocation().x - 20, 4);
-		newInstance.setLocation(help.getLocation().x - 20, 4);		 
+		newInstance.setLocation(help.getLocation().x - 20, 4);		
+		
 	}
 
 	private static void toogleFullscreen() {
@@ -17912,48 +17797,55 @@ public class Shutter {
 		int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 		int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();	
 		    
-		int i = 0;
+		int height = 0;
 						
 		if ((frame.getHeight() < screenHeight - taskBarHeight || frame.getWidth() < screenWidth) && frame.getWidth() > 332 && frame.getWidth() != 654 && frame.getWidth() != (1350 - 312))
 		{		
-			i = screenHeight - taskBarHeight - frame.getHeight();
-			frame.setSize(screenWidth, screenHeight - taskBarHeight);
+			height = screenHeight - taskBarHeight - frame.getHeight();
+			resizeAll(screenWidth, height);
 			frame.setLocation(0, 0);	        		
 		}
 		else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth))
 		{		
-			i = 662 - frame.getHeight();
-			frame.setSize(1350, 662);
+			height = 662 - frame.getHeight();
+			resizeAll(1350, height);
 			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 		}
 		else if (frame.getHeight() >= screenHeight - taskBarHeight)
 		{
-			i = 662 - frame.getHeight();
-    		frame.setSize(frame.getWidth(), 662);
+			height = 662 - frame.getHeight();
+			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), dim.height/2-frame.getSize().height/2);	
 		}
 		else
 		{
-			i = screenHeight - taskBarHeight - frame.getHeight();
-    		frame.setSize(frame.getWidth(), screenHeight - taskBarHeight);
+			height = screenHeight - taskBarHeight - frame.getHeight();
+			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), 0);	
-		}		
+		}			
+	}
+	
+	public static void resizeAll(int width, int height) {
 		
-		if (frame.getWidth() > 654)
+		if (frame.getWidth() >= 1350 && width >= 1350)
 		{
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);		
+			frame.setSize(width, frame.getHeight() + height);					
+		}
+		else
+		    frame.setSize(frame.getSize().width, frame.getHeight() + height);
+								
+		if (frame.getWidth() > 332)
+		{
+			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
 			lblV.setVisible(true);
-		    lblYears.setLocation(frame.getWidth()  - lblYears.getPreferredSize().width - 6, lblBy.getY());
-		    lblYears.setVisible(true);
 		}
 		else
 		{
-		    lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);	
-		    lblV.setVisible(false);
-		    lblYears.setVisible(false);
-		}	
+			lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);		
+			lblV.setVisible(false);
+		}
 		
-		setGPUOptions();	
+		setGPUOptions();
 		
 		lblV.setLocation(lblShutterEncoder.getX() + lblShutterEncoder.getWidth(), 5);
 		
@@ -17986,22 +17878,21 @@ public class Shutter {
 		reduce.setLocation(fullscreen.getLocation().x - 20, 4);
 		help.setLocation(reduce.getLocation().x - 20, 4);
 		newInstance.setLocation(help.getLocation().x - 20, 4);
-
+        
 		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
 		frame.setShape(shape1);
-		statusBar.setLocation(0, frame.getHeight() - 23);
 		
 		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 327);
 		fileList.setSize(fileList.getWidth(), frame.getHeight() - 387);
 		addToList.setSize(fileList.getSize());					
 		scrollBar.setSize(scrollBar.getWidth(), fileList.getHeight());
-		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFunction.getY() + i);
-		grpDestination.setLocation(grpDestination.getX(), grpDestination.getY() + i);
-		grpProgression.setLocation(grpProgression.getX(), grpProgression.getY() + i);	
-		
-		//On récupère le groupe qui est le plus haut
+		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFunction.getY() + height);
+		grpDestination.setLocation(grpDestination.getX(), grpDestination.getY() + height);
+		grpProgression.setLocation(grpProgression.getX(), grpProgression.getY() + height);
+        
+        //On récupère le groupe qui est le plus haut
 		JPanel top;
 		
 		if (grpResolution.isVisible())
@@ -18020,33 +17911,41 @@ public class Shutter {
 		{
 			top = grpAudio;
 		}
-						
-		i = (grpChooseFiles.getY() - top.getY());
-				
-		if (frame.getWidth() > 332) 
-		{														
-			grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + i);
-			grpBitrate.setLocation(grpBitrate.getLocation().x, grpBitrate.getLocation().y + i);								
-			grpSetAudio.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getLocation().y + i);
-			grpAudio.setLocation(grpAudio.getLocation().x, grpAudio.getLocation().y + i);								
-			grpCrop.setLocation(grpCrop.getLocation().x, grpCrop.getLocation().y + i);								
-			grpOverlay.setLocation(grpOverlay.getLocation().x, grpOverlay.getLocation().y + i);
-			grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y + i);
-			grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y + i);
-			grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y + i);								
-			grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x, grpImageAdjustement.getLocation().y + i);								
-			grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + i);	
-			grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + i);	
-			grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + i);
-			grpImageFilter.setLocation(grpImageFilter.getLocation().x, grpImageFilter.getLocation().y + i);
-			grpSetTimecode.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getLocation().y + i);
-			grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + i);
-			btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + i);		
+							
+		//Empêche de faire dépasser la position minimale de top
+		if (height < 0 && frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31)
+			height = 0;
+		
+		//Pré calcul
+		if (top.getY() + height >= grpChooseFiles.getY() && height > 0)
+		{
+			height = grpChooseFiles.getY() - top.getY();	
 		}
 		
-		VideoPlayer.resizeAll();				
+		if (frame.getWidth() > 332 && top.getY() < 30) 
+		{		
+			grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + height);
+			grpBitrate.setLocation(grpBitrate.getLocation().x, grpBitrate.getLocation().y + height);								
+			grpSetAudio.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getLocation().y + height);
+			grpAudio.setLocation(grpAudio.getLocation().x, grpAudio.getLocation().y + height);								
+			grpCrop.setLocation(grpCrop.getLocation().x, grpCrop.getLocation().y + height);								
+			grpOverlay.setLocation(grpOverlay.getLocation().x, grpOverlay.getLocation().y + height);
+			grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y + height);
+			grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y + height);
+			grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y + height);								
+			grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x, grpImageAdjustement.getLocation().y + height);								
+			grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + height);	
+			grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + height);	
+			grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + height);
+			grpImageFilter.setLocation(grpImageFilter.getLocation().x, grpImageFilter.getLocation().y + height);
+			grpSetTimecode.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getLocation().y + height);
+			grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + height);
+			btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + height);		
+		}
+												
+		VideoPlayer.resizeAll();   		
 	}
-	
+		
 	private static void setGPUOptions() {
 		
 		String function = comboFonctions.getSelectedItem().toString();
@@ -20548,6 +20447,7 @@ public class Shutter {
 				}
 			});
 			extend.start();
+			extend.setPriority(Thread.MAX_PRIORITY);
 		}
 		
 	}
@@ -21308,7 +21208,7 @@ public class Shutter {
 			
 			if (caseDisplay.isSelected() == false || caseDisplay.isEnabled() == false)
 			{
-				resizeFrame(false);
+				changeWidth(false);
 				caseRunInBackground.setEnabled(true);
 			}
 
