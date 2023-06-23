@@ -161,6 +161,11 @@ import library.MEDIAINFO;
 				drag = false;
 				if (MEDIAINFO.isRunning == false)
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
+				
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	            shape1.add(shape2);
+	    		frame.setShape(shape1);				
 			}
 
 			@Override
@@ -218,10 +223,17 @@ import library.MEDIAINFO;
     	frame.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent e2)
 		    {
-				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
-		        shape1.add(shape2);
-		    	frame.setShape(shape1);
+		    	if (System.getProperty("os.name").contains("Mac") && drag)
+				{
+					frame.setShape(null);
+				}
+				else
+				{
+					Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		            shape1.add(shape2);
+		    		frame.setShape(shape1);
+				}
 		    }
  		});
 		

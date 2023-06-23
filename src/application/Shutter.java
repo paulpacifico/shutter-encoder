@@ -772,11 +772,11 @@ public class Shutter {
 		frame.setMinimumSize(new Dimension(332, 662));
 		frame.setResizable(false);
 		frame.setUndecorated(true);
+		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100, 100, 100)));
 		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
-        frame.setShape(shape1);
-		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100, 100, 100)));
+		frame.setShape(shape1);
 		
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 
@@ -799,8 +799,12 @@ public class Shutter {
             public void componentResized(ComponentEvent e) {
             	
             	if (windowDrag == false)
-            	{					
+            	{					            		
 					VideoPlayer.resizeAll();					
+            	}
+            	else
+            	{
+            		resizeAll(frame.getWidth(), 0);
             	}
             }
         });
@@ -16414,44 +16418,6 @@ public class Shutter {
 				comboOutColormatrix.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 601", "Rec. 709", "Rec. 2020", "SDR"}));
 				comboOutColormatrix.setSelectedIndex(1);
 				
-				// Important				
-				//Used to force refreshing panels
-				grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + 1);
-				grpBitrate.setLocation(grpBitrate.getLocation().x, grpBitrate.getLocation().y + 1);								
-				grpSetAudio.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getLocation().y + 1);
-				grpAudio.setLocation(grpAudio.getLocation().x, grpAudio.getLocation().y + 1);								
-				grpCrop.setLocation(grpCrop.getLocation().x, grpCrop.getLocation().y + 1);								
-				grpOverlay.setLocation(grpOverlay.getLocation().x, grpOverlay.getLocation().y + 1);
-				grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y + 1);
-				grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y + 1);
-				grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y + 1);								
-				grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x, grpImageAdjustement.getLocation().y + 1);								
-				grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + 1);	
-				grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + 1);	
-				grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + 1);
-				grpImageFilter.setLocation(grpImageFilter.getLocation().x, grpImageFilter.getLocation().y + 1);
-				grpSetTimecode.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getLocation().y + 1);
-				grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + 1);
-				btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + 1);		
-				
-				grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y - 1);
-				grpBitrate.setLocation(grpBitrate.getLocation().x, grpBitrate.getLocation().y - 1);								
-				grpSetAudio.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getLocation().y - 1);
-				grpAudio.setLocation(grpAudio.getLocation().x, grpAudio.getLocation().y - 1);								
-				grpCrop.setLocation(grpCrop.getLocation().x, grpCrop.getLocation().y - 1);								
-				grpOverlay.setLocation(grpOverlay.getLocation().x, grpOverlay.getLocation().y - 1);
-				grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y - 1);
-				grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y - 1);
-				grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y - 1);								
-				grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x, grpImageAdjustement.getLocation().y - 1);								
-				grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y - 1);	
-				grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y - 1);	
-				grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y - 1);
-				grpImageFilter.setLocation(grpImageFilter.getLocation().x, grpImageFilter.getLocation().y - 1);
-				grpSetTimecode.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getLocation().y - 1);
-				grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y - 1);
-				btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y - 1);		
-				
 				topPanel.repaint();
 				statusBar.repaint();
 				topImage.repaint();
@@ -16501,6 +16467,7 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent e) {		
 				windowDrag = false;
+				resizeAll(frame.getWidth(), 0);
 			}
 			
 		});
@@ -17757,24 +17724,7 @@ public class Shutter {
 		    lblYears.setVisible(false);
 		}
 		
-		setGPUOptions();
-		
-		lblV.setLocation(lblShutterEncoder.getX() + lblShutterEncoder.getWidth(), 5);
-		lblV.setVisible(bigger);
-		 
-		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-        Area shape2 = new Area(new Rectangle(0, frame.getHeight() - 15, frame.getWidth(), 15));
-        shape1.add(shape2);
-		frame.setShape(shape1);
-
-		topPanel.setBounds(0, 0, frame.getWidth(), 28);
-		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
-		quit.setLocation(frame.getSize().width - 20, 4);
-		fullscreen.setLocation(quit.getLocation().x - 20, 4);
-		reduce.setLocation(fullscreen.getLocation().x - 20, 4);
-		help.setLocation(reduce.getLocation().x - 20, 4);
-		newInstance.setLocation(help.getLocation().x - 20, 4);		
-		
+		resizeAll(frame.getWidth(), 0);		
 	}
 
 	private static void toogleFullscreen() {
@@ -17822,7 +17772,8 @@ public class Shutter {
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), 0);	
-		}			
+		}	
+		
 	}
 	
 	public static void resizeAll(int width, int height) {
@@ -17878,12 +17829,7 @@ public class Shutter {
 		reduce.setLocation(fullscreen.getLocation().x - 20, 4);
 		help.setLocation(reduce.getLocation().x - 20, 4);
 		newInstance.setLocation(help.getLocation().x - 20, 4);
-        
-		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
-        shape1.add(shape2);
-		frame.setShape(shape1);
-		
+  		
 		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 327);
 		fileList.setSize(fileList.getWidth(), frame.getHeight() - 387);
 		addToList.setSize(fileList.getSize());					
@@ -17942,7 +17888,19 @@ public class Shutter {
 			grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + height);
 			btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + height);		
 		}
-												
+							
+		if (System.getProperty("os.name").contains("Mac") && windowDrag)
+		{
+			frame.setShape(null);
+		}
+		else
+		{
+			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+            shape1.add(shape2);
+    		frame.setShape(shape1);
+		}
+		
 		VideoPlayer.resizeAll();   		
 	}
 		
@@ -20459,12 +20417,13 @@ public class Shutter {
 		{
 			time = 1000000;
 		}
-
-		do {
+		
+		while (System.nanoTime() - startTime < time)
+		{
 			try {
 				Thread.sleep(0);
 			} catch (InterruptedException e) {}
-		} while (System.nanoTime() - startTime < time);
+		} 
 	}
 	
 	public static void changeFilters() {

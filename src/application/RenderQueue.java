@@ -187,10 +187,17 @@ import settings.FunctionUtils;
     	frame.addComponentListener(new ComponentAdapter() {
 		    public void componentResized(ComponentEvent e2)
 		    {
-				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-		        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
-		        shape1.add(shape2);
-		    	frame.setShape(shape1);
+		    	if (System.getProperty("os.name").contains("Mac") && drag)
+				{
+					frame.setShape(null);
+				}
+				else
+				{
+					Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		            shape1.add(shape2);
+		    		frame.setShape(shape1);
+				}
 		    }
  		});
     	
@@ -216,6 +223,11 @@ import settings.FunctionUtils;
     		@Override
 			public void mouseReleased(MouseEvent e) {
 				drag = false;
+				
+				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+	            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	            shape1.add(shape2);
+	    		frame.setShape(shape1);
 			}
     		
     		

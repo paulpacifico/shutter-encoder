@@ -35,14 +35,11 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
@@ -51,8 +48,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Area;
-import java.awt.geom.RoundRectangle2D;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -501,16 +496,6 @@ public class VideoPlayer {
 			component.addKeyListener(keyListener);
 		}
 						
-    	Shutter.frame.addComponentListener(new ComponentAdapter() {
-		    public void componentResized(ComponentEvent e2)
-		    {
-				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
-		        Area shape2 = new Area(new Rectangle(0, Shutter.frame.getHeight()-15, Shutter.frame.getWidth(), 15));
-		        shape1.add(shape2);
-		    	Shutter.frame.setShape(shape1);
-		    }
- 		});
-
     	Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 	
@@ -848,7 +833,7 @@ public class VideoPlayer {
 	}
 		
 	public static void playerFreeze() {
-		
+				
 		if ((setTime == null || setTime.isAlive() == false) && (playerVideo == null || playerVideo.isAlive() == false))
 		{				
 			setTime = new Thread(new Runnable() {
@@ -860,7 +845,7 @@ public class VideoPlayer {
 					
 					playerPlayVideo = false;
 					
-					if (frameVideo != null && playerThread != null)
+					if (playerThread != null)
 					{
 						playerStop();
 						do {
@@ -869,9 +854,9 @@ public class VideoPlayer {
 							} catch (InterruptedException e) {}
 						} while (playerThread.isAlive());	
 					}
-					
+										
 					frameControl = true; //IMPORTANT to stop the player loop
-					frameIsComplete = false;		
+					frameIsComplete = false;						
 					playerLoop = true;
 					playerProcess(playerCurrentFrame);							
 												
@@ -887,7 +872,7 @@ public class VideoPlayer {
 							frameIsComplete = true;
 													
 					} while (frameIsComplete == false);
-						
+											
 					if (playerCurrentFrame > 0)
 						playerCurrentFrame -= 1;
 
@@ -4484,7 +4469,7 @@ public class VideoPlayer {
 		}
 		
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
-		{			
+		{						
 			boolean isPiping = false;
 			if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume"))

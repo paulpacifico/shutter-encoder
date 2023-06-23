@@ -1564,6 +1564,12 @@ public class Utils extends Shutter {
 						}
 						
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						
+						//IMPORTANT
+						Shutter.resizeAll(Shutter.frame.getWidth(), 0); 
+						Shutter.frame.repaint();
+						
+						Functions.frame.toFront();
 					}
 									
 				}
