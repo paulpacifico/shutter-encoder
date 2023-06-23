@@ -41,9 +41,7 @@ public static int pagesCount = 1;
 	public static void run(File file, int pageNumber) {
 					
 		error = false;
-		progressBar1.setValue(0);	
-		
-		disableAll();
+		progressBar1.setValue(0);		
 		btnStart.setEnabled(false);
 		
 		runProcess = new Thread(new Runnable()  {
@@ -62,12 +60,13 @@ public static int pagesCount = 1;
 					pagesCount = document.getNumberOfPages();	
 					
 					BufferedImage image = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.RGB);
+										
 					ImageIOUtil.writeImage(image, VideoPlayer.preview.toString(), 300);					
 															
 					document.close();
 				
 				} catch (Exception e) {
-					error = true;
+					error = true;					
 				} finally {
 					isRunning = false;
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

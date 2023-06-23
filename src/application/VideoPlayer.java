@@ -133,6 +133,7 @@ public class VideoPlayer {
 	private static boolean showInfoMessage = true;
 	public static boolean playTransition = false;
     private static boolean closeAudioStream = false;
+    public static boolean isPiping = false;
 		
 	//Buttons & Checkboxes
 	public static JLabel btnPreview;
@@ -767,6 +768,8 @@ public class VideoPlayer {
 				@Override
 				public void run() {					
 
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					
 					int t = (int) Math.ceil(time);
 					
 					if (t < 0)
@@ -810,7 +813,7 @@ public class VideoPlayer {
 								frameIsComplete = true;
 														
 						} while (frameIsComplete == false);
-						
+
 						if (playback && mouseIsPressed == false)
 						{						
 							playerLoop = true;
@@ -825,6 +828,8 @@ public class VideoPlayer {
 					
 					frameControl = false;
 					playerPlayVideo = true;		
+					
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 				
 			});
@@ -1734,9 +1739,7 @@ public class VideoPlayer {
 							
 							FFMPEG.run(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"'
 							+ " -filter:a aresample=8000 -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green" + '"' 
-							+ " -pix_fmt rgba -vn -vframes 1 -y " + '"' + waveform + '"');  									
-		
-							Shutter.enableAll();							
+							+ " -pix_fmt rgba -vn -vframes 1 -y " + '"' + waveform + '"');  																
 							
 							if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 								Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
@@ -2146,9 +2149,7 @@ public class VideoPlayer {
                 super.paintComponent(g);
                 
                 Graphics2D g2 = (Graphics2D)g;
-                
-                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                
+                               
                 g2.setColor(Color.BLACK);
 
                 if (frameVideo == null || Shutter.liste.getSize() == 0 || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) && Shutter.caseDisplay.isSelected() == false)
@@ -2157,7 +2158,15 @@ public class VideoPlayer {
                 }
                 else
                 {
-                	g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
+                	if (Shutter.windowDrag || isPiping)
+                	{
+                		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
+                	}
+                	else
+                	{
+                		g2.drawImage(frameVideo, 0, 0, this); 
+                	}
                 }
                 
                 //Get the current fps
@@ -3956,8 +3965,7 @@ public class VideoPlayer {
 				} while (FFPROBE.isRunning);
 				
 			} catch (InterruptedException e) {}
-			
-        	Shutter.enableAll();  
+
         	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 			else
@@ -4007,9 +4015,7 @@ public class VideoPlayer {
 					}
 				
 			        try
-			        {	 	
-			        	frameVideo = null;
-			        	
+			        {	
 			        	File file = new File(videoPath);
 			        			        						
 						String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
@@ -4076,8 +4082,6 @@ public class VideoPlayer {
 					            do {
 					            	Thread.sleep(10);  
 					            } while (PDF.isRunning && PDF.error == false);
-						            
-					            Shutter.enableAll();
 							}
 							else if (isRaw)
 							{	
@@ -4087,8 +4091,6 @@ public class VideoPlayer {
 					            do {
 					            	Thread.sleep(10);  
 					            } while (DCRAW.isRunning && DCRAW.error == false);
-					            
-					            Shutter.enableAll();
 							}
 							else if (Shutter.inputDeviceIsRunning) //Screen capture		
 							{					
@@ -4099,8 +4101,6 @@ public class VideoPlayer {
 					            do {
 					            	Thread.sleep(10);  
 					            } while (FFMPEG.isRunning && FFMPEG.error == false);
-					            
-					            Shutter.enableAll();
 							}
 							else									
 							{
@@ -4462,7 +4462,7 @@ public class VideoPlayer {
 		{
 			do {								
 				try {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {}								
 			} 
 			while (FFPROBE.isRunning);
@@ -4470,20 +4470,14 @@ public class VideoPlayer {
 		
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
 		{						
-			boolean isPiping = false;
+			isPiping = false;
 			if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
 			{
 				isPiping = true;
 			}
-						
-			if (preview.exists())
-				preview.delete();
 					
-			float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
-			float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
-				
 			//Waveforms
 			if (isPiping == false && Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false && Shutter.liste.getSize() > 0)
 			{	
@@ -4594,15 +4588,23 @@ public class VideoPlayer {
 				else
 					cursorWaveform.setBounds(Math.round((float) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 2, waveformContainer.getSize().height);
 			}
-			
-			playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
-						
-			if ((int) Math.ceil(timeOut) < totalFrames)
-				playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
-			else
-				playerOutMark = waveformContainer.getWidth() - 2;	
-			
-			waveformContainer.repaint();
+
+			if (isPiping == false)
+			{
+				try { //Might fail loading
+					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+					float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
+									
+					playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
+								
+					if ((int) Math.ceil(timeOut) < totalFrames)
+						playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
+					else
+						playerOutMark = waveformContainer.getWidth() - 2;	
+				} catch (Exception e) {}
+				
+				waveformContainer.repaint();
+			}
 			
 			//lblTimecode & lblDuration
 			lblPosition.setBounds(slider.getX(), slider.getY() - 22, slider.getWidth(), 16);

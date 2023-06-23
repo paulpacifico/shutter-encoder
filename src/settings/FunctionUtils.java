@@ -499,7 +499,7 @@ public class FunctionUtils extends Shutter {
 			progressBar1.setMaximum((int) (mergeDuration / 1000));
 			
 			FFPROBE.totalLength = mergeDuration;
-			FFMPEG.dureeTotale = progressBar1.getMaximum();
+			FFMPEG.fileLength = progressBar1.getMaximum();
 						
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			

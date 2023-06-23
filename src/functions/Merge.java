@@ -105,7 +105,7 @@ public class Merge extends Shutter {
 																			
 						progressBar1.setMaximum((int) (totalLength / 1000));
 						FFPROBE.totalLength = progressBar1.getMaximum();	
-						FFMPEG.dureeTotale = progressBar1.getMaximum();
+						FFMPEG.fileLength = progressBar1.getMaximum();
 											
 						lblCurrentEncoding.setText(Shutter.language.getProperty("babEncoding"));
 				

@@ -1254,7 +1254,7 @@ public class Shutter {
 
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(35,35,35));
+		topPanel.setBackground(new Color(40,40,40));
 		topPanel.setBounds(0, 0, 1350, 28);
 
 		settings = new JLabel(new FlatSVGIcon("contents/settings.svg", 13, 13));
@@ -11693,7 +11693,7 @@ public class Shutter {
 					{
 						if (comboFilter.getModel().getSize() != 3)
 						{
-							String filtres[] = {".mkv", ".mp4", ".webm"};	
+							String filtres[] = {".mp4", ".mkv", ".webm"};	
 							final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(filtres);
 							comboFilter.setModel(model);
 							comboFilter.setSelectedIndex(0);
@@ -16465,7 +16465,19 @@ public class Shutter {
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {		
+			public void mouseReleased(MouseEvent e) {	
+				
+				if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+					
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {}
+					} while (VideoPlayer.setTime.isAlive());
+				}
+				
 				windowDrag = false;
 				resizeAll(frame.getWidth(), 0);
 			}
@@ -17598,7 +17610,7 @@ public class Shutter {
 						
 		String function = comboFonctions.getSelectedItem().toString();
 		
-		if (bigger == false && FFMPEG.isRunning && (caseDisplay.isSelected() == false || caseDisplay.isEnabled() == false))
+		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false)
 		{		
 			if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 			{
@@ -17772,8 +17784,18 @@ public class Shutter {
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), 0);	
-		}	
+		}		
 		
+		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
+		{
+			VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+			
+			do {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {}
+			} while (VideoPlayer.setTime.isAlive());
+		}
 	}
 	
 	public static void resizeAll(int width, int height) {
@@ -17901,7 +17923,7 @@ public class Shutter {
     		frame.setShape(shape1);
 		}
 		
-		VideoPlayer.resizeAll();   		
+		VideoPlayer.resizeAll();
 	}
 		
 	private static void setGPUOptions() {
@@ -20229,7 +20251,7 @@ public class Shutter {
 	public static void extendSections(Component grpPanel, int maxSize) {
 						
 		if (extendSectionsIsRunning == false) //Avoid double-click bug
-		{
+		{	
 			Thread extend = new Thread(new Runnable() {
 				
 				@Override
@@ -20417,13 +20439,13 @@ public class Shutter {
 		{
 			time = 1000000;
 		}
-		
+						
 		while (System.nanoTime() - startTime < time)
 		{
 			try {
 				Thread.sleep(0);
 			} catch (InterruptedException e) {}
-		} 
+		}  
 	}
 	
 	public static void changeFilters() {
@@ -20556,7 +20578,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String[] extensions = new String[] {".mkv", ".mp4", ".webm" };
+				String[] extensions = new String[] {".mp4", ".mkv", ".webm" };
 								
 				String types[] = extensions;
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
@@ -21165,7 +21187,7 @@ public class Shutter {
 			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) == false && comboFonctions.getSelectedItem().toString().equals("JPEG") == false)
 				progressBar1.setValue(0);
 			
-			if (caseDisplay.isSelected() == false || caseDisplay.isEnabled() == false)
+			if (caseDisplay.isSelected() == false)
 			{
 				changeWidth(false);
 				caseRunInBackground.setEnabled(true);
@@ -21190,7 +21212,7 @@ public class Shutter {
 	}
 
 	public static void enableAll() {
-
+		
 		Component[] components = frame.getContentPane().getComponents();
 
 		if (scanIsRunning) {
@@ -21558,6 +21580,8 @@ public class Shutter {
 		statusBar.repaint();
 		topImage.repaint();
 		frame.repaint();
+		
+		VideoPlayer.setMedia();
 		
 		if (inputDeviceIsRunning)
 			progressBar1.setIndeterminate(false);

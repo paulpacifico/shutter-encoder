@@ -86,7 +86,7 @@ import settings.InputAndOutput;
 
 public class FFMPEG extends Shutter {
 	
-public static int dureeTotale = 0; 
+public static int fileLength = 0; 
 public static boolean error = false;
 public static boolean isRunning = false;
 public static BufferedWriter writer;
@@ -203,7 +203,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								String pipe = "";								
 								if (cmd.contains("pipe:play"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -vf scale=" + VideoPlayer.player.getWidth() + ":" + VideoPlayer.player.getHeight() + " -c:v bmp -an -f image2pipe pipe:-";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -c:v bmp -an -f image2pipe pipe:-";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -224,7 +224,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:play"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -vf scale=" + VideoPlayer.player.getWidth() + ":" + VideoPlayer.player.getHeight() + " -c:v bmp -an -f image2pipe pipe:-";
+								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -c:v bmp -an -f image2pipe pipe:-";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
@@ -1514,49 +1514,49 @@ public static StringBuilder errorLog = new StringBuilder();
 				
 		//Get the duration
 	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && line.contains("Segment-Durations-Ms") == false && firstInput)
-		{	    	
+		{	    	    	
 			String str = line.substring(line.indexOf(":") + 2);
 			String[] split = str.split(",");	 
 	
 			String ffmpegTime = split[0].replace(".", ":");	  
-			
+							
 			if (caseEnableSequence.isSelected())
 			{
-				dureeTotale = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
+				fileLength = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
 			}
 			else if (FFPROBE.totalLength <= 40) //Image
 			{
-				dureeTotale = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
+				fileLength = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
 			}
 			else if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 			{
-				dureeTotale = VideoPlayer.durationH * 3600 + VideoPlayer.durationM * 60 + VideoPlayer.durationS;
+				fileLength = VideoPlayer.durationH * 3600 + VideoPlayer.durationM * 60 + VideoPlayer.durationS;
 			}
 			else
-				dureeTotale = (getTimeToSeconds(ffmpegTime));
-			
+				fileLength = (getTimeToSeconds(ffmpegTime));
+						
 			if (caseConform.isSelected())
 			{
 				float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));	
 				if (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))
 				{
-					dureeTotale = (int) (dureeTotale * (FFPROBE.currentFPS / newFPS ));	
+					fileLength = (int) (fileLength * (FFPROBE.currentFPS / newFPS ));	
 				}
 				else if (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
 				{
-					dureeTotale = (int) (dureeTotale * (newFPS / FFPROBE.currentFPS));	
+					fileLength = (int) (fileLength * (newFPS / FFPROBE.currentFPS));	
 				}
 			}
 			
 			if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionConform")))
 			{
 				float newFPS = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".")));		
-				dureeTotale = (int) (dureeTotale * (FFPROBE.currentFPS / newFPS));
+				fileLength = (int) (fileLength * (FFPROBE.currentFPS / newFPS));
 			}
 						
 			if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) && comboFilter.getSelectedItem().toString().equals(".gif") == false && Shutter.caseCreateSequence.isSelected() == false)
 			{
-				dureeTotale = 1;
+				fileLength = 1;
 			}
 			
 			if ((comboFonctions.getSelectedItem().toString().equals("H.264")
@@ -1572,7 +1572,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 			&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
 			{
-				dureeTotale = (dureeTotale * 2);
+				fileLength = (fileLength * 2);
 			}	
 
 			if (cmd.contains("-loop"))
@@ -1580,141 +1580,113 @@ public static StringBuilder errorLog = new StringBuilder();
 				progressBar1.setMaximum(Integer.parseInt(Settings.txtImageDuration.getText()));
 			}
 			else if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) ==  false)			
-			{
-				progressBar1.setMaximum(dureeTotale);	
-			}
-			
-		}	    	    
-	    
-	  //Progression
-	  if (line.contains("time=") && lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
-								 && lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
-								 && lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
-	  {		  
-		  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
-		  	error = false;
-		  	
-	  		String str = line.substring(line.indexOf(":") - 2);
-    		String[] split = str.split("b");	 
-    	    
-    		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	    	
-
-    		if (progressBar1.getString().equals("NaN") || inputDeviceIsRunning)
-    			progressBar1.setStringPainted(false);
-    		else
-    			progressBar1.setStringPainted(true);
-    		    		    		
-			if (pass2)
-			{
-				progressBar1.setValue((dureeTotale / 2) + getTimeToSeconds(ffmpegTime));
-			}
-			else
-			{
-				progressBar1.setValue(getTimeToSeconds(ffmpegTime));
-			}
-			
-	  }
-	  
-		//Elapsed time
-		previousElapsedTime = (int) (System.currentTimeMillis() - elapsedTime);
-
-		int timeH = (previousElapsedTime / 3600000) % 60;
-		int timeMin =  (previousElapsedTime / 60000) % 60;
-		int timeSec = (previousElapsedTime / 1000) % 60;
-		
-		String heures = "";
-		String minutes= "";
-		String secondes = "";
-		
-		if (timeH >= 1)
-			heures = timeH + "h ";
-		else
-			heures = "";
-		if (timeMin >= 1)
-			minutes = timeMin + "min ";
-		else
-			minutes = "";
-		if (timeSec > 0)
-			secondes = timeSec +"sec";
-		else
-			secondes = "0sec";
-		
-		tempsEcoule.setText(Shutter.language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
-		tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
-	         
-	  //Remaining time
-	  if ((line.contains("frame=") || line.contains("time=")) && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
-	  {
-		 String[] split = line.split("=");	
-		 int frames = 0;
-		 
-		 if (line.contains("frame="))
-		 {
-			 frames = Integer.parseInt(split[1].replace("fps", "").replace(" ", ""));			 
-		 }
-		 else if (line.contains("time="))
-		 {
-				String[] rawTime = split[2].split(" ");
-				String timecode = rawTime[0].replace(".", ":");	  
-				String [] time = timecode.split(":");
-								
-				int h = Integer.parseInt(time[0]);
-				int m = Integer.parseInt(time[1]);
-				int s = Integer.parseInt(time[2]);
-				int fps = Integer.parseInt(time[3]);
+			{ 
+				progressBar1.setMaximum(fileLength);	
+			}	
+		}  	    
+	    	    
+		  //Progression
+		  if (line.contains("time=") && lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
+									 && lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
+									 && lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
+		  {		  
+			  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
+			  	error = false;
+			  	
+		  		String str = line.substring(line.indexOf(":") - 2);
+	    		String[] split = str.split("b");	 
+	    	    
+	    		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	    	
+	
+	    		if (progressBar1.getString().equals("NaN") || inputDeviceIsRunning)
+	    			progressBar1.setStringPainted(false);
+	    		else
+	    			progressBar1.setStringPainted(true);
+	    		    		    		
+				if (pass2)
+				{
+					progressBar1.setValue((fileLength / 2) + getTimeToSeconds(ffmpegTime));
+				}
+				else
+				{
+					progressBar1.setValue(getTimeToSeconds(ffmpegTime));
+				}
 				
-				frames = (int) ((h * 3600 * FFPROBE.currentFPS) + (m * 60 * FFPROBE.currentFPS) +  (s * FFPROBE.currentFPS) + fps);  			
-		 }
-				 
-		 if (time == 0)
-		 {
-			frame0 = frames;
-			time = System.currentTimeMillis();
-		 }
-		 
-		 if (System.currentTimeMillis() - time >= 1000 && (frames - frame0) > 0)
-		 {		
-			 if (fps == 0)
-				 fps = (frames - frame0);
-			 else
+		  }
+		  
+			//Elapsed time
+			previousElapsedTime = (int) (System.currentTimeMillis() - elapsedTime);
+	
+			int timeH = (previousElapsedTime / 3600000) % 60;
+			int timeMin =  (previousElapsedTime / 60000) % 60;
+			int timeSec = (previousElapsedTime / 1000) % 60;
+			
+			String heures = "";
+			String minutes= "";
+			String secondes = "";
+			
+			if (timeH >= 1)
+				heures = timeH + "h ";
+			else
+				heures = "";
+			if (timeMin >= 1)
+				minutes = timeMin + "min ";
+			else
+				minutes = "";
+			if (timeSec > 0)
+				secondes = timeSec +"sec";
+			else
+				secondes = "0sec";
+			
+			tempsEcoule.setText(Shutter.language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
+			tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
+		         
+		  //Remaining time
+		  if ((line.contains("frame=") || line.contains("time=")) && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
+		  {
+			 String[] split = line.split("=");	
+			 int frames = 0;
+			 
+			 if (line.contains("frame="))
 			 {
-				 if (frames - frame0 < fps - 100 || frames - frame0 > fps + 100)
+				 frames = Integer.parseInt(split[1].replace("fps", "").replace(" ", ""));			 
+			 }
+			 else if (line.contains("time="))
+			 {
+					String[] rawTime = split[2].split(" ");
+					String timecode = rawTime[0].replace(".", ":");	  
+					String [] time = timecode.split(":");
+									
+					int h = Integer.parseInt(time[0]);
+					int m = Integer.parseInt(time[1]);
+					int s = Integer.parseInt(time[2]);
+					int fps = Integer.parseInt(time[3]);
+					
+					frames = (int) ((h * 3600 * FFPROBE.currentFPS) + (m * 60 * FFPROBE.currentFPS) +  (s * FFPROBE.currentFPS) + fps);  			
+			 }
+					 
+			 if (time == 0)
+			 {
+				frame0 = frames;
+				time = System.currentTimeMillis();
+			 }
+			 
+			 if (System.currentTimeMillis() - time >= 1000 && (frames - frame0) > 0)
+			 {		
+				 if (fps == 0)
 					 fps = (frames - frame0);
-				 else if (frames - frame0 > fps + 1)
-					 fps ++;
-				 else if (frames - frame0 < fps - 1 && fps > 1)
-					 fps --;				 
-			 }
-			 					 
-			 time = 0;
-			 int total;
-			 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
-						|| comboFonctions.getSelectedItem().toString().equals("H.265")
-						|| comboFonctions.getSelectedItem().toString().equals("WMV")
-						|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
-						|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
-						|| comboFonctions.getSelectedItem().toString().equals("WebM")
-						|| comboFonctions.getSelectedItem().toString().equals("AV1")
-						|| comboFonctions.getSelectedItem().toString().equals("OGV")
-						|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
-						|| comboFonctions.getSelectedItem().toString().equals("Xvid")
-					 	|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
-					 	&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
-				 total = (int) ((dureeTotale / 2) * FFPROBE.currentFPS);
-			 
-			 else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) == false && caseForcerEntrelacement.isSelected() == false)
-			 {
-				 float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));	
-				 total = (int) ((float) (dureeTotale * FFPROBE.currentFPS) * (newFPS / FFPROBE.currentFPS));
-			 }
-			 else
-				 total = (int) (dureeTotale * FFPROBE.currentFPS);
-			 
-			 int restant = ((total - frames) / fps);
-	 	 
-			 if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false && comboFonctions.getSelectedItem().equals("Synchronisation automatique") == false)
-			 {
-				 String pass = "";
+				 else
+				 {
+					 if (frames - frame0 < fps - 100 || frames - frame0 > fps + 100)
+						 fps = (frames - frame0);
+					 else if (frames - frame0 > fps + 1)
+						 fps ++;
+					 else if (frames - frame0 < fps - 1 && fps > 1)
+						 fps --;				 
+				 }
+				 					 
+				 time = 0;
+				 int total;
 				 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 							|| comboFonctions.getSelectedItem().toString().equals("H.265")
 							|| comboFonctions.getSelectedItem().toString().equals("WMV")
@@ -1722,93 +1694,119 @@ public static StringBuilder errorLog = new StringBuilder();
 							|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
 							|| comboFonctions.getSelectedItem().toString().equals("WebM")
 							|| comboFonctions.getSelectedItem().toString().equals("AV1")
-						 	|| comboFonctions.getSelectedItem().toString().equals("OGV")
+							|| comboFonctions.getSelectedItem().toString().equals("OGV")
 							|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
 							|| comboFonctions.getSelectedItem().toString().equals("Xvid")
 						 	|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 						 	&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
+					 total = (int) ((fileLength / 2) * FFPROBE.currentFPS);
+				 
+				 else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) == false && caseForcerEntrelacement.isSelected() == false)
 				 {
-					 if (pass2 == false)
-						 pass = " - " + Shutter.language.getProperty("firstPass");
-					 else
-						 pass = " - " + Shutter.language.getProperty("secondPass");
-				 }
-				 		
-				timeH = (restant / 3600) % 60;
-				timeMin =  (restant / 60) % 60;
-				timeSec = (restant) % 60;
-				 
-				if (timeH >= 1)
-					heures = timeH + "h ";
-				else
-					heures = "";
-				if (timeMin >= 1)
-					minutes = timeMin + "min ";
-				else
-					minutes = "";
-				if (timeSec > 0)
-					secondes = timeSec +"sec";
-				else
-					secondes = "";
-				 
-				 tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass);
-				 tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
-				 
-				 if (heures != "" || minutes != "" || secondes != "")
-				 {
-					 tempsRestant.setVisible(true);	
-					 lblArrows.setVisible(false);
+					 float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));	
+					 total = (int) ((float) (fileLength * FFPROBE.currentFPS) * (newFPS / FFPROBE.currentFPS));
 				 }
 				 else
+					 total = (int) (fileLength * FFPROBE.currentFPS);
+				 
+				 int restant = ((total - frames) / fps);
+		 	 
+				 if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false && comboFonctions.getSelectedItem().equals("Synchronisation automatique") == false)
 				 {
-					 tempsRestant.setVisible(false);	
+					 String pass = "";
+					 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
+								|| comboFonctions.getSelectedItem().toString().equals("H.265")
+								|| comboFonctions.getSelectedItem().toString().equals("WMV")
+								|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
+								|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
+								|| comboFonctions.getSelectedItem().toString().equals("WebM")
+								|| comboFonctions.getSelectedItem().toString().equals("AV1")
+							 	|| comboFonctions.getSelectedItem().toString().equals("OGV")
+								|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
+								|| comboFonctions.getSelectedItem().toString().equals("Xvid")
+							 	|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+							 	&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
+					 {
+						 if (pass2 == false)
+							 pass = " - " + Shutter.language.getProperty("firstPass");
+						 else
+							 pass = " - " + Shutter.language.getProperty("secondPass");
+					 }
+					 		
+					timeH = (restant / 3600) % 60;
+					timeMin =  (restant / 60) % 60;
+					timeSec = (restant) % 60;
+					 
+					if (timeH >= 1)
+						heures = timeH + "h ";
+					else
+						heures = "";
+					if (timeMin >= 1)
+						minutes = timeMin + "min ";
+					else
+						minutes = "";
+					if (timeSec > 0)
+						secondes = timeSec +"sec";
+					else
+						secondes = "";
+					 
+					 tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass);
+					 tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
+					 
+					 if (heures != "" || minutes != "" || secondes != "")
+					 {
+						 tempsRestant.setVisible(true);	
+						 lblArrows.setVisible(false);
+					 }
+					 else
+					 {
+						 tempsRestant.setVisible(false);	
+					 }
 				 }
-			 }
-		 }	
-		 		 
-	  }		
-	  else if (line.contains("frame=") && caseDisplay.isSelected() == false) //Pour afficher le temps écoulé
-	  {
-		  tempsEcoule.setVisible(true);
-	  }
-	  
-	  //Cut detection
-	  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) && line.contains("pts"))
-	  {
-		  NumberFormat formatter = new DecimalFormat("00");
-		  String rawline[] = line.split(":");
-		  String fullTime[] = rawline[3].split(" ");
-		  int rawTime = (int) (Float.valueOf(fullTime[0]) * 1000);	 
-		  long rawFrames = (long) Math.round(rawTime / (1000 / FFPROBE.currentFPS));		  
+			 }	
+			 		 
+		  }		
+		  else if (line.contains("frame=")) //Pour afficher le temps écoulé
+		  {
+			  tempsEcoule.setVisible(true);
+		  }
 		  
-          String h = formatter.format(Math.round(rawFrames / Math.round(FFPROBE.currentFPS)) / 3600);
-          String m = formatter.format(Math.round((rawFrames / Math.round(FFPROBE.currentFPS)) / 60) % 60);
-          String s = formatter.format(Math.round((rawFrames / Math.round(FFPROBE.currentFPS)) % 60));          
-          String f = formatter.format(rawFrames % Math.round(FFPROBE.currentFPS));
-          
-          File imageName = new File(SceneDetection.outputFolder + "/" + SceneDetection.tableRow.getRowCount() + ".png");
-                    
-          //Permet d'attendre la création de l'image
-          do {
-	          try {
-				Thread.sleep(100);
-	          } catch (InterruptedException e) {}
-          } while (imageName.exists() == false);
-          
-          ImageIcon imageIcon = new ImageIcon(imageName.toString());
-          ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(142, 80, Image.SCALE_DEFAULT));	         
-          SceneDetection.tableRow.addRow(new Object[] {(SceneDetection.tableRow.getRowCount() + 1), icon, h + ":" + m +  ":" + s + ":" + f});
-
-          SceneDetection.scrollPane.getVerticalScrollBar().setValue(SceneDetection.scrollPane.getVerticalScrollBar().getMaximum());
-          SceneDetection.table.repaint();
-	  }
-	  
-	  //autocrop detection
-	  if (line.contains("Parsed_cropdetect"))
-	  {
-		  cropdetect = line.substring(line.indexOf("crop=") + 5);
-	  }
-	  
+		  //Cut detection
+		  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) && line.contains("pts"))
+		  {
+			  NumberFormat formatter = new DecimalFormat("00");
+			  String rawline[] = line.split(":");
+			  String fullTime[] = rawline[3].split(" ");
+			  int rawTime = (int) (Float.valueOf(fullTime[0]) * 1000);	 
+			  long rawFrames = (long) Math.round(rawTime / (1000 / FFPROBE.currentFPS));		  
+			  
+	          String h = formatter.format(Math.round(rawFrames / Math.round(FFPROBE.currentFPS)) / 3600);
+	          String m = formatter.format(Math.round((rawFrames / Math.round(FFPROBE.currentFPS)) / 60) % 60);
+	          String s = formatter.format(Math.round((rawFrames / Math.round(FFPROBE.currentFPS)) % 60));          
+	          String f = formatter.format(rawFrames % Math.round(FFPROBE.currentFPS));
+	          
+	          File imageName = new File(SceneDetection.outputFolder + "/" + SceneDetection.tableRow.getRowCount() + ".png");
+	                    
+	          //Permet d'attendre la création de l'image
+	          do {
+		          try {
+					Thread.sleep(100);
+		          } catch (InterruptedException e) {}
+	          } while (imageName.exists() == false);
+	          
+	          ImageIcon imageIcon = new ImageIcon(imageName.toString());
+	          ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(142, 80, Image.SCALE_DEFAULT));	         
+	          SceneDetection.tableRow.addRow(new Object[] {(SceneDetection.tableRow.getRowCount() + 1), icon, h + ":" + m +  ":" + s + ":" + f});
+	
+	          SceneDetection.scrollPane.getVerticalScrollBar().setValue(SceneDetection.scrollPane.getVerticalScrollBar().getMaximum());
+	          SceneDetection.table.repaint();
+		  }
+		  
+		  //autocrop detection
+		  if (line.contains("Parsed_cropdetect"))
+		  {
+			  cropdetect = line.substring(line.indexOf("crop=") + 5);
+		  }	  
 	}
 
 	private static void postAnalyse() {

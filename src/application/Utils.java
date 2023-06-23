@@ -1569,7 +1569,8 @@ public class Utils extends Shutter {
 						Shutter.resizeAll(Shutter.frame.getWidth(), 0); 
 						Shutter.frame.repaint();
 						
-						Functions.frame.toFront();
+						if (Functions.frame != null)
+							Functions.frame.toFront();
 					}
 									
 				}

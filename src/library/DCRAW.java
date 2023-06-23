@@ -91,8 +91,6 @@ public static Process process;
 		}
 		else
 		{
-			disableAll();
-			
 			runProcess = new Thread(new Runnable()  {
 				@Override
 				public void run() {
