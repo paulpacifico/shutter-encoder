@@ -905,8 +905,8 @@ public class VideoPlayer {
     	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false))
     	{
    	    	//Updating video file
-			if (Shutter.liste.getSize() != 0)
-			{
+			if (Shutter.liste.getSize() > 0)
+			{				
 				if (Shutter.fileList.getSelectedIndices().length == 0)
 	      		{
 					Shutter.fileList.setSelectedIndex(0);
@@ -1219,8 +1219,8 @@ public class VideoPlayer {
 				caseOutM.setVisible(true);
 				caseOutS.setVisible(true);
 				caseOutF.setVisible(true);
-			}				
-					
+			}		
+				
 			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 			{				
 				File video = new File(VideoPlayer.videoPath);
@@ -1237,7 +1237,7 @@ public class VideoPlayer {
 	    			VideoPlayer.player.remove(Shutter.subsCanvas);
 					Shutter.caseAddSubtitles.setSelected(false);	    	
 	    		}
-				
+					    		    	
 	    		if (SubtitlesTimeline.frame == null) 
 	    		{	    	
 	    			new SubtitlesTimeline(dim.width/2-500,Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);		
@@ -1808,7 +1808,7 @@ public class VideoPlayer {
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
-		btnPrevious.setFont(new Font("", Font.PLAIN, 12));
+		btnPrevious.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));
 		Shutter.frame.getContentPane().add(btnPrevious);
 				
 		btnPrevious.addActionListener(new ActionListener(){
@@ -1892,7 +1892,7 @@ public class VideoPlayer {
 		});
 		
 		btnNext = new JButton(">");
-		btnNext.setFont(new Font("", Font.PLAIN, 12));		
+		btnNext.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));		
 		Shutter.frame.getContentPane().add(btnNext);
 		
 		btnNext.addActionListener(new ActionListener(){
@@ -1951,7 +1951,6 @@ public class VideoPlayer {
 		});
 		
 		btnPlay = new JButton(new FlatSVGIcon("contents/play.svg", 15, 15));		
-		btnPlay.setFont(new Font("", Font.PLAIN, 12));
 		btnPlay.setMargin(new Insets(0,0,0,0));			
 		Shutter.frame.getContentPane().add(btnPlay);
 			
@@ -1978,7 +1977,6 @@ public class VideoPlayer {
 				
 				if (btnPlay.getName().equals("pause"))
 				{
-					btnPlay.setFont(new Font("Arial", Font.PLAIN, 12));
 					btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));	
 					btnPlay.setName("play");
 					playerLoop = false;
@@ -2009,14 +2007,7 @@ public class VideoPlayer {
 			
 		});
 		
-		btnStop = new JButton(new FlatSVGIcon("contents/stop.svg", 15, 15));
-		if (System.getProperty("os.name").contains("Windows"))
-		{
-			btnStop.setFont(new Font("", Font.PLAIN, 12));
-		}
-		else
-			btnStop.setFont(new Font("", Font.PLAIN, 16));
-		
+		btnStop = new JButton(new FlatSVGIcon("contents/stop.svg", 15, 15));		
 		btnStop.setMargin(new Insets(0,0,0,0));	
 		Shutter.frame.getContentPane().add(btnStop);		
 		
@@ -2059,8 +2050,8 @@ public class VideoPlayer {
 			
 		});
 
-		btnMarkIn = new JButton("⬥");
-		btnMarkIn.setFont(new Font("", Font.PLAIN, 12));			
+		btnMarkIn = new JButton("[");
+		btnMarkIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));			
 		Shutter.frame.getContentPane().add(btnMarkIn);
 		
 		btnMarkIn.addActionListener(new ActionListener() {
@@ -2079,9 +2070,9 @@ public class VideoPlayer {
 			
 		});
 		
-		btnGoToIn = new JButton("⬥<");
+		btnGoToIn = new JButton("[<");
 		btnGoToIn.setMargin(new Insets(0,0,0,0));
-		btnGoToIn.setFont(new Font("", Font.PLAIN, 12));			
+		btnGoToIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));			
 		Shutter.frame.getContentPane().add(btnGoToIn);
 		
 		btnGoToIn.addActionListener(new ActionListener() {
@@ -2101,8 +2092,8 @@ public class VideoPlayer {
 			
 		});
 		
-		btnMarkOut = new JButton("⬥");
-		btnMarkOut.setFont(new Font("", Font.PLAIN, 12));		
+		btnMarkOut = new JButton("]");
+		btnMarkOut.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));		
 		Shutter.frame.getContentPane().add(btnMarkOut);
 		
 		btnMarkOut.addActionListener(new ActionListener() {
@@ -2120,9 +2111,9 @@ public class VideoPlayer {
 			
 		});
 				
-		btnGoToOut = new JButton(">⬥");
+		btnGoToOut = new JButton(">]");
 		btnGoToOut.setMargin(new Insets(0,0,0,0));
-		btnGoToOut.setFont(new Font("", Font.PLAIN, 12));				
+		btnGoToOut.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));				
 		Shutter.frame.getContentPane().add(btnGoToOut);
 		
 		btnGoToOut.addActionListener(new ActionListener() {

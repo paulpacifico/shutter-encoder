@@ -2220,11 +2220,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					frame.setOpacity(0.5f);
-				} catch (Exception er) {}
 				new GOP();
-				frame.setOpacity(1.0f);
 			}
 
 		});
@@ -7815,50 +7811,6 @@ public class Shutter {
 		caseAddTimecode.setLocation(8, lblColor.getY() + lblColor.getHeight() + 9);
 		grpOverlay.add(caseAddTimecode);
 		
-		caseAddTimecode.addActionListener(new ActionListener() {
-	
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				if (caseAddTimecode.isSelected())
-				{
-					timecode.repaint();
-					TC1.setEnabled(true);
-					TC2.setEnabled(true);
-					TC3.setEnabled(true);
-					TC4.setEnabled(true);	
-					caseShowTimecode.setSelected(false);					
-					VideoPlayer.player.add(timecode);
-					
-					//Overimage need to be the last component added
-					if (caseEnableCrop.isSelected())
-					{
-						VideoPlayer.player.remove(selection);
-						VideoPlayer.player.remove(overImage);
-						VideoPlayer.player.add(selection);
-						VideoPlayer.player.add(overImage);
-					}					
-				} 
-				else
-				{
-					FFPROBE.timecode1 = "";
-					FFPROBE.timecode2 = "";
-					FFPROBE.timecode3 = "";
-					FFPROBE.timecode4 = "";
-					TC1.setEnabled(false);
-					TC2.setEnabled(false);
-					TC3.setEnabled(false);
-					TC4.setEnabled(false);					
-					VideoPlayer.player.remove(timecode);
-				}
-				
-				VideoPlayer.refreshTimecodeAndText();
-				
-				VideoPlayer.player.repaint();
-			}
-	
-		});
-		
 		timecode = new JPanel() {
 			
 			@Override
@@ -8244,77 +8196,19 @@ public class Shutter {
 		caseShowTimecode.setLocation(caseAddTimecode.getX(), caseAddTimecode.getY() + caseAddTimecode.getHeight());
 		grpOverlay.add(caseShowTimecode);
 				
-		caseShowTimecode.addActionListener(new ActionListener() {
-	
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				if (caseShowTimecode.isSelected())
-				{
-					//Timecode info
-					if (Utils.inputDeviceIsRunning == false)
-					{						
-						if (FFPROBE.timecode1.equals(""))
-		    			{
-		    				MEDIAINFO.run(VideoPlayer.videoPath, false);
-		    				
-		    				do
-		    				{
-		    					try {
-			        				Thread.sleep(100);
-			        			} catch (InterruptedException e1) {}
-		    				}
-		    				while (MEDIAINFO.isRunning);		    				
-		    			}
-						
-						if (FFPROBE.timecode1.equals(""))
-						{
-							caseShowTimecode.setSelected(false);
-							caseAddTimecode.doClick();
-						}
-						else
-						{
-							TC1.setEnabled(false);
-							TC2.setEnabled(false);
-							TC3.setEnabled(false);
-							TC4.setEnabled(false);
-							caseAddTimecode.setSelected(false);					
-							VideoPlayer.player.add(timecode);
-							
-							//Overimage need to be the last component added
-							if (caseEnableCrop.isSelected())
-							{
-								VideoPlayer.player.remove(selection);
-								VideoPlayer.player.remove(overImage);
-								VideoPlayer.player.add(selection);
-								VideoPlayer.player.add(overImage);
-							}
-						}						
-					}					
-				}				
-				else
-				{
-					VideoPlayer.player.remove(timecode);
-				}
-				
-				VideoPlayer.refreshTimecodeAndText();
-				
-				VideoPlayer.player.repaint();
-			}
-	
-		});
-	
 		JLabel posX = new JLabel(Shutter.language.getProperty("posX"));
 		posX.setHorizontalAlignment(SwingConstants.LEFT);
 		posX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posX.setForeground(Utils.themeColor);
 		posX.setAlignmentX(SwingConstants.RIGHT);
+		posX.setEnabled(false);
 		posX.setBounds(24,  caseShowTimecode.getY() + caseShowTimecode.getHeight() + 6, posX.getPreferredSize().width, 16);
 		grpOverlay.add(posX);
 		
 		textTcPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(timecode.getLocation().x * playerRatio) ) ) );
 		textTcPosX.setName("textTcPosX");
 		textTcPosX.setBounds(posX.getLocation().x + posX.getWidth() + 2, posX.getLocation().y, 34, 16);
+		textTcPosX.setEnabled(false);
 		textTcPosX.setHorizontalAlignment(SwingConstants.RIGHT);
 		textTcPosX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		grpOverlay.add(textTcPosX);
@@ -8400,6 +8294,7 @@ public class Shutter {
 		grpOverlay.add(px1);		
 		
 		JLabel posY = new JLabel(Shutter.language.getProperty("posY"));
+		posY.setEnabled(false);
 		posY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posY.setForeground(Utils.themeColor);
 		posY.setAlignmentX(SwingConstants.RIGHT);
@@ -8408,6 +8303,7 @@ public class Shutter {
 	
 		textTcPosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(timecode.getLocation().y * playerRatio) ) ) );
 		textTcPosY.setName("textTcPosY");
+		textTcPosY.setEnabled(false);
 		textTcPosY.setBounds(posY.getLocation().x + posY.getWidth() + 2, posY.getLocation().y, 34, 16);
 		textTcPosY.setHorizontalAlignment(SwingConstants.RIGHT);
 		textTcPosY.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -8494,6 +8390,7 @@ public class Shutter {
 		grpOverlay.add(px2);	
 					
 		JLabel lblSizeTC = new JLabel(Shutter.language.getProperty("lblSize"));
+		lblSizeTC.setEnabled(false);
 		lblSizeTC.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblSizeTC.setAlignmentX(SwingConstants.RIGHT);
 		lblSizeTC.setForeground(Utils.themeColor);
@@ -8501,6 +8398,7 @@ public class Shutter {
 		grpOverlay.add(lblSizeTC);
 		
 		textTcSize = new JTextField(String.valueOf(Math.round((float) 27 * playerRatio)));
+		textTcSize.setEnabled(false);
 		textTcSize.setName("textTcSize");
 		textTcSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		textTcSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
@@ -8606,6 +8504,7 @@ public class Shutter {
 		grpOverlay.add(percent1);
 		
 		JLabel lblOpacityTC = new JLabel(Shutter.language.getProperty("lblOpacity"));
+		lblOpacityTC.setEnabled(false);
 		lblOpacityTC.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblOpacityTC.setAlignmentX(SwingConstants.RIGHT);
 		lblOpacityTC.setForeground(Utils.themeColor);
@@ -8614,6 +8513,7 @@ public class Shutter {
 		
 		textTcOpacity = new JTextField("50");
 		textTcOpacity.setName("textTcOpacity");
+		textTcOpacity.setEnabled(false);
 		textTcOpacity.setHorizontalAlignment(SwingConstants.RIGHT);
 		textTcOpacity.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
 		textTcOpacity.setBounds(textTcPosY.getLocation().x, lblSizeTC.getLocation().y, textTcSize.getWidth(), 16);
@@ -8728,43 +8628,6 @@ public class Shutter {
 		caseAddText.setLocation(caseAddTimecode.getX(), lblSizeTC.getY() + lblSizeTC.getHeight() + 8);
 		grpOverlay.add(caseAddText);
 		
-		caseAddText.addActionListener(new ActionListener()	{
-	
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if (caseAddText.isSelected())
-				{
-					caseShowFileName.setSelected(false);
-					text.setEnabled(true);
-					
-					if (text.getText().length() > 0)
-					{
-						VideoPlayer.player.add(fileName);
-						
-						//Overimage need to be the last component added
-						if (caseEnableCrop.isSelected())
-						{
-							VideoPlayer.player.remove(selection);
-							VideoPlayer.player.remove(overImage);
-							VideoPlayer.player.add(selection);
-							VideoPlayer.player.add(overImage);
-						}
-					}	
-				}
-				else
-				{
-					text.setEnabled(false);
-					VideoPlayer.player.remove(fileName);
-				}
-				
-				VideoPlayer.refreshTimecodeAndText();
-				
-				VideoPlayer.player.repaint();	
-		
-			}
-		});
-		
 		text = new JTextField("");
 		text.setName("text");
 		text.setEnabled(false);
@@ -8837,44 +8700,12 @@ public class Shutter {
 		caseShowFileName.setLocation(caseAddText.getX(), caseAddText.getY() + caseAddText.getHeight());
 		grpOverlay.add(caseShowFileName);
 		
-		caseShowFileName.addActionListener(new ActionListener() {
-	
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if (caseShowFileName.isSelected())
-				{
-					caseAddText.setSelected(false);
-					text.setEnabled(false);
-					VideoPlayer.player.add(fileName);
-										 
-					//Overimage need to be the last component added
-					if (caseEnableCrop.isSelected())
-					{
-						VideoPlayer.player.remove(selection);
-						VideoPlayer.player.remove(overImage);
-						VideoPlayer.player.add(selection);
-						VideoPlayer.player.add(overImage);
-					}
-				}
-				else
-				{
-					VideoPlayer.player.remove(fileName);
-				}
-				
-				VideoPlayer.refreshTimecodeAndText();
-	
-				VideoPlayer.player.repaint();
-			}
-			
-		});
-			
 		fileName = new JPanel() {
 			
 			@Override
 		    protected void paintComponent(Graphics g)
 		    {			
-				if (caseShowFileName.isSelected() || caseAddText.isSelected() && text.getText().length() > 0)
+				if ((caseShowFileName.isSelected() || caseAddText.isSelected() && text.getText().length() > 0) && liste.getSize() > 0)
 				{
 			        super.paintComponent(g);		
 					
@@ -9029,6 +8860,7 @@ public class Shutter {
 		});
 		
 		JLabel posX2 = new JLabel(Shutter.language.getProperty("posX"));
+		posX2.setEnabled(false);
 		posX2.setHorizontalAlignment(SwingConstants.LEFT);
 		posX2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posX2.setForeground(Utils.themeColor);
@@ -9038,6 +8870,7 @@ public class Shutter {
 		
 		textNamePosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().x * playerRatio) ) ) );
 		textNamePosX.setName("textNamePosX");
+		textNamePosX.setEnabled(false);
 		textNamePosX.setBounds(posX2.getLocation().x + posX2.getWidth() + 2, posX2.getLocation().y, 34, 16);
 		textNamePosX.setHorizontalAlignment(SwingConstants.RIGHT);
 		textNamePosX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -9126,6 +8959,7 @@ public class Shutter {
 		grpOverlay.add(px3);				
 		
 		JLabel posY2 = new JLabel(Shutter.language.getProperty("posY"));
+		posY2.setEnabled(false);
 		posY2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		posY2.setForeground(Utils.themeColor);
 		posY2.setAlignmentX(SwingConstants.RIGHT);
@@ -9133,6 +8967,7 @@ public class Shutter {
 		grpOverlay.add(posY2);
 		
 		textNamePosY = new JTextField(String.valueOf(Integer.valueOf((int) Math.round(fileName.getLocation().y * playerRatio) ) ) );
+		textNamePosY.setEnabled(false);
 		textNamePosY.setName("textNamePosY");
 		textNamePosY.setBounds(posY2.getLocation().x + posY2.getWidth() + 2, posY2.getLocation().y, 34, 16);
 		textNamePosY.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -9222,6 +9057,7 @@ public class Shutter {
 		grpOverlay.add(px4);
 		
 		JLabel lblSizeName = new JLabel(Shutter.language.getProperty("lblSize"));
+		lblSizeName.setEnabled(false);
 		lblSizeName.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblSizeName.setAlignmentX(SwingConstants.RIGHT);
 		lblSizeName.setForeground(Utils.themeColor);
@@ -9229,6 +9065,7 @@ public class Shutter {
 		grpOverlay.add(lblSizeName);
 		
 		textNameSize = new JTextField(String.valueOf(Math.round((float) 27 * playerRatio )));
+		textNameSize.setEnabled(false);
 		textNameSize.setName("textNameSize");
 		textNameSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		textNameSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
@@ -9335,6 +9172,7 @@ public class Shutter {
 		grpOverlay.add(percent3);
 		
 		JLabel lblOpacityName = new JLabel(Shutter.language.getProperty("lblOpacity"));
+		lblOpacityName.setEnabled(false);
 		lblOpacityName.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		lblOpacityName.setAlignmentX(SwingConstants.RIGHT);
 		lblOpacityName.setForeground(Utils.themeColor);
@@ -9342,6 +9180,7 @@ public class Shutter {
 		grpOverlay.add(lblOpacityName);
 		
 		textNameOpacity = new JTextField("50");
+		textNameOpacity.setEnabled(false);
 		textNameOpacity.setName("spinnerNameOpacity");
 		textNameOpacity.setHorizontalAlignment(SwingConstants.RIGHT);
 		textNameOpacity.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
@@ -9448,7 +9287,284 @@ public class Shutter {
 		percent4.setForeground(Utils.themeColor);
 		percent4.setBounds(textNameOpacity.getLocation().x + textNameOpacity.getWidth() + 2, lblOpacityName.getY(), percent1.getPreferredSize().width, 16);
 		grpOverlay.add(percent4);
+
+		caseAddTimecode.addActionListener(new ActionListener() {
+	
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				
+				if (caseAddTimecode.isSelected())
+				{
+					posX.setEnabled(true);
+					textTcPosX.setEnabled(true);
+					px1.setEnabled(true);
+					posY.setEnabled(true);
+					textTcPosY.setEnabled(true);
+					px2.setEnabled(true);
+					lblSizeTC.setEnabled(true);
+					textTcSize.setEnabled(true);
+					percent1.setEnabled(true);
+					lblOpacityTC.setEnabled(true);
+					textTcOpacity.setEnabled(true);
+					percent2.setEnabled(true);
+					
+					timecode.repaint();
+					TC1.setEnabled(true);
+					TC2.setEnabled(true);
+					TC3.setEnabled(true);
+					TC4.setEnabled(true);	
+					caseShowTimecode.setSelected(false);					
+					VideoPlayer.player.add(timecode);
+					
+					//Overimage need to be the last component added
+					if (caseEnableCrop.isSelected())
+					{
+						VideoPlayer.player.remove(selection);
+						VideoPlayer.player.remove(overImage);
+						VideoPlayer.player.add(selection);
+						VideoPlayer.player.add(overImage);
+					}					
+				} 
+				else
+				{
+					posX.setEnabled(false);
+					textTcPosX.setEnabled(false);
+					px1.setEnabled(false);
+					posY.setEnabled(false);
+					textTcPosY.setEnabled(false);
+					px2.setEnabled(false);
+					lblSizeTC.setEnabled(false);
+					textTcSize.setEnabled(false);
+					percent1.setEnabled(false);
+					lblOpacityTC.setEnabled(false);
+					textTcOpacity.setEnabled(false);
+					percent2.setEnabled(false);
+					
+					FFPROBE.timecode1 = "";
+					FFPROBE.timecode2 = "";
+					FFPROBE.timecode3 = "";
+					FFPROBE.timecode4 = "";
+					TC1.setEnabled(false);
+					TC2.setEnabled(false);
+					TC3.setEnabled(false);
+					TC4.setEnabled(false);					
+					VideoPlayer.player.remove(timecode);
+				}
+				
+				VideoPlayer.refreshTimecodeAndText();
+				
+				VideoPlayer.player.repaint();
+			}
+	
+		});
+		
+		caseShowTimecode.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (caseShowTimecode.isSelected() && liste.getSize() > 0)
+				{
+					posX.setEnabled(true);
+					textTcPosX.setEnabled(true);
+					px1.setEnabled(true);
+					posY.setEnabled(true);
+					textTcPosY.setEnabled(true);
+					px2.setEnabled(true);
+					lblSizeTC.setEnabled(true);
+					textTcSize.setEnabled(true);
+					percent1.setEnabled(true);
+					lblOpacityTC.setEnabled(true);
+					textTcOpacity.setEnabled(true);
+					percent2.setEnabled(true);
+					
+					//Timecode info
+					if (Utils.inputDeviceIsRunning == false)
+					{						
+						if (FFPROBE.timecode1.equals(""))
+		    			{
+		    				MEDIAINFO.run(VideoPlayer.videoPath, false);
+		    				
+		    				do
+		    				{
+		    					try {
+			        				Thread.sleep(100);
+			        			} catch (InterruptedException e1) {}
+		    				}
+		    				while (MEDIAINFO.isRunning);		    				
+		    			}
+						
+						if (FFPROBE.timecode1.equals(""))
+						{
+							caseShowTimecode.setSelected(false);
+							caseAddTimecode.doClick();
+						}
+						else
+						{
+							TC1.setEnabled(false);
+							TC2.setEnabled(false);
+							TC3.setEnabled(false);
+							TC4.setEnabled(false);
+							caseAddTimecode.setSelected(false);					
+							VideoPlayer.player.add(timecode);
+							
+							//Overimage need to be the last component added
+							if (caseEnableCrop.isSelected())
+							{
+								VideoPlayer.player.remove(selection);
+								VideoPlayer.player.remove(overImage);
+								VideoPlayer.player.add(selection);
+								VideoPlayer.player.add(overImage);
+							}
+						}						
+					}					
+				}				
+				else
+				{
+					posX.setEnabled(false);
+					textTcPosX.setEnabled(false);
+					px1.setEnabled(false);
+					posY.setEnabled(false);
+					textTcPosY.setEnabled(false);
+					px2.setEnabled(false);
+					lblSizeTC.setEnabled(false);
+					textTcSize.setEnabled(false);
+					percent1.setEnabled(false);
+					lblOpacityTC.setEnabled(false);
+					textTcOpacity.setEnabled(false);
+					percent2.setEnabled(false);
+					
+					VideoPlayer.player.remove(timecode);
+				}
+				
+				VideoPlayer.refreshTimecodeAndText();
+				
+				VideoPlayer.player.repaint();
+			}
+	
+		});
+			
+		caseAddText.addActionListener(new ActionListener()	{
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseAddText.isSelected())
+				{
+					posX2.setEnabled(true);
+					textNamePosX.setEnabled(true);
+					px3.setEnabled(true);
+					posY2.setEnabled(true);
+					textNamePosY.setEnabled(true);
+					px4.setEnabled(true);
+					lblSizeName.setEnabled(true);
+					textNameSize.setEnabled(true);
+					percent3.setEnabled(true);
+					lblOpacityName.setEnabled(true);
+					textNameOpacity.setEnabled(true);
+					percent4.setEnabled(true);
+					
+					caseShowFileName.setSelected(false);
+					text.setEnabled(true);
+					
+					if (text.getText().length() > 0)
+					{
+						VideoPlayer.player.add(fileName);
+						
+						//Overimage need to be the last component added
+						if (caseEnableCrop.isSelected())
+						{
+							VideoPlayer.player.remove(selection);
+							VideoPlayer.player.remove(overImage);
+							VideoPlayer.player.add(selection);
+							VideoPlayer.player.add(overImage);
+						}
+					}	
+				}
+				else
+				{
+					posX2.setEnabled(false);
+					textNamePosX.setEnabled(false);
+					px3.setEnabled(false);
+					posY2.setEnabled(false);
+					textNamePosY.setEnabled(false);
+					px4.setEnabled(false);
+					lblSizeName.setEnabled(false);
+					textNameSize.setEnabled(false);
+					percent3.setEnabled(false);
+					lblOpacityName.setEnabled(false);
+					textNameOpacity.setEnabled(false);
+					percent4.setEnabled(false);
+					
+					text.setEnabled(false);
+					VideoPlayer.player.remove(fileName);
+				}
+				
+				VideoPlayer.refreshTimecodeAndText();
+				
+				VideoPlayer.player.repaint();	
+		
+			}
+		});
+		
+		caseShowFileName.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseShowFileName.isSelected())
+				{
+					posX2.setEnabled(true);
+					textNamePosX.setEnabled(true);
+					px3.setEnabled(true);
+					posY2.setEnabled(true);
+					textNamePosY.setEnabled(true);
+					px4.setEnabled(true);
+					lblSizeName.setEnabled(true);
+					textNameSize.setEnabled(true);
+					percent3.setEnabled(true);
+					lblOpacityName.setEnabled(true);
+					textNameOpacity.setEnabled(true);
+					percent4.setEnabled(true);
+					
+					caseAddText.setSelected(false);
+					text.setEnabled(false);
+					VideoPlayer.player.add(fileName);
+										 
+					//Overimage need to be the last component added
+					if (caseEnableCrop.isSelected())
+					{
+						VideoPlayer.player.remove(selection);
+						VideoPlayer.player.remove(overImage);
+						VideoPlayer.player.add(selection);
+						VideoPlayer.player.add(overImage);
+					}
+				}
+				else
+				{
+					posX2.setEnabled(false);
+					textNamePosX.setEnabled(false);
+					px3.setEnabled(false);
+					posY2.setEnabled(false);
+					textNamePosY.setEnabled(false);
+					px4.setEnabled(false);
+					lblSizeName.setEnabled(false);
+					textNameSize.setEnabled(false);
+					percent3.setEnabled(false);
+					lblOpacityName.setEnabled(false);
+					textNameOpacity.setEnabled(false);
+					percent4.setEnabled(false);
+					
+					VideoPlayer.player.remove(fileName);
+				}
+				
+				VideoPlayer.refreshTimecodeAndText();
+	
+				VideoPlayer.player.repaint();
+			}
+			
+		});
+			
 	}
 
 	private void grpSubtitles() {
@@ -18000,13 +18116,6 @@ public class Shutter {
 									{	
 										JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"), language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 									}
-									else
-									{
-							    		if (action)
-							    		{
-								    		VideoPlayer.setMedia();
-							    		}
-									}
 								}
 								else
 									VideoPlayer.seekOnKeyFrames = true;
@@ -20180,6 +20289,12 @@ public class Shutter {
 							grpResolution.repaint();
 							topPanel.repaint();
 							statusBar.repaint();
+							
+							if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) && action) 
+							{
+								VideoPlayer.videoPath = null;
+					    		VideoPlayer.setMedia();
+							}
 																			
 						} catch (Exception e1) {
 						}
@@ -21345,9 +21460,44 @@ public class Shutter {
 		}
 		
 		components = grpOverlay.getComponents();
-		for (int i = 0; i < components.length; i++) {
+		for (int i = 0; i < components.length; i++)
+		{
 			components[i].setEnabled(true);
 		}
+		
+		if (caseAddTimecode.isSelected() == false && caseShowTimecode.isSelected() == false)
+		{
+			components = grpOverlay.getComponents();
+			for (int i = 0; i < components.length; i++)
+			{
+				if (components[i].getY() > caseShowTimecode.getY() && components[i].getY() < caseAddText.getY())
+					components[i].setEnabled(false);
+			}
+		}
+		
+		if (caseAddTimecode.isSelected() == false)
+		{
+			TC1.setEnabled(false);
+			TC2.setEnabled(false);
+			TC3.setEnabled(false);
+			TC4.setEnabled(false);		
+		}
+		
+		if (caseAddText.isSelected() == false && caseShowFileName.isSelected() == false)
+		{
+			components = grpOverlay.getComponents();
+			for (int i = 0; i < components.length; i++)
+			{
+				if (components[i].getY() > caseShowFileName.getY())
+					components[i].setEnabled(false);
+			}			
+		}
+		
+		if (caseAddText.isSelected() == false)
+		{
+			text.setEnabled(false);
+		}
+		
 		
 		components = grpSubtitles.getComponents();
 		for (int i = 0; i < components.length; i++)

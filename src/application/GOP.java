@@ -43,9 +43,10 @@ public class GOP {
 	private JScrollBar scrollBar;
 
 	public GOP() {
+		
 		frame = new JDialog();
 		frame.setResizable(false);		
-		frame.setModal(true);
+		frame.setModal(false);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().setBackground(new Color(35,35,35));
