@@ -154,10 +154,9 @@ import functions.OfflineDetection;
 import functions.Picture;
 import functions.ReplaceAudio;
 import functions.Rewrap;
+import functions.VMAF;
 import functions.VideoEncoders;
 import functions.VideoInserts;
-import functions.VMAF;
-
 import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DVDAUTHOR;
@@ -165,9 +164,9 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
+import library.PDF;
 import library.SEVENZIP;
 import library.TSMUXER;
-import library.PDF;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
 import settings.Corrections;
@@ -686,7 +685,7 @@ public class Shutter {
 	}
   	  
 	public static void main(String[] args) {
-		
+				
 		//Splashscreen
 		new Splash();
 				
@@ -1166,7 +1165,7 @@ public class Shutter {
 		}
 			
 		if (Settings.btnDisableUpdate.isSelected() == false)
-			Update.newVersion();					
+			Update.newVersion();		
 	}
 	
 	private void topPanel() {
@@ -2618,56 +2617,45 @@ public class Shutter {
 						} catch (InterruptedException e1) {}
 					} while (FFMPEG.runProcess.isAlive());
 				}
-				if (DCRAW.runProcess != null) {
-					if (DCRAW.runProcess.isAlive()) {
-						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
-								language.getProperty("stopProcess"), JOptionPane.YES_NO_OPTION,
-								JOptionPane.PLAIN_MESSAGE);
-						if (reply == JOptionPane.YES_OPTION) {
-							cancelled = true;
-							DCRAW.process.destroy();
-						}
-					} // End if
-				}
-				if (PDF.runProcess != null) {
-					if (PDF.runProcess.isAlive()) {
-						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
-								language.getProperty("stopProcess"), JOptionPane.YES_NO_OPTION,
-								JOptionPane.PLAIN_MESSAGE);
-						if (reply == JOptionPane.YES_OPTION) {
-							cancelled = true;
-						}
-					} // End if
-				}
-				if (YOUTUBEDL.runProcess != null) {
-					if (YOUTUBEDL.runProcess.isAlive()) {
-						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
-								language.getProperty("stopProcess"), JOptionPane.YES_NO_OPTION,
-								JOptionPane.PLAIN_MESSAGE);
-						if (reply == JOptionPane.YES_OPTION) {
-							cancelled = true;
-							YOUTUBEDL.process.destroy();
-						}
+				
+				if (DCRAW.runProcess != null)
+				{
+					if (DCRAW.runProcess.isAlive())
+					{
+						cancelled = true;
+						DCRAW.process.destroy();
 					}
 				}
-				if (BMXTRANSWRAP.runProcess != null) {
-					if (BMXTRANSWRAP.runProcess.isAlive()) {
-						int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
-								language.getProperty("stopProcess"), JOptionPane.YES_NO_OPTION,
-								JOptionPane.PLAIN_MESSAGE);
-						if (reply == JOptionPane.YES_OPTION) {
-							cancelled = true;
-							BMXTRANSWRAP.process.destroy();
-						}
+				
+				if (PDF.runProcess != null)
+				{
+					if (PDF.runProcess.isAlive())
+					{
+						cancelled = true;
 					}
 				}
+				
+				if (YOUTUBEDL.runProcess != null)
+				{
+					if (YOUTUBEDL.runProcess.isAlive())
+					{
+						cancelled = true;
+						YOUTUBEDL.process.destroy();
+					}
+				}
+				
+				if (BMXTRANSWRAP.runProcess != null)
+				{
+					if (BMXTRANSWRAP.runProcess.isAlive())
+					{
+						cancelled = true;
+						BMXTRANSWRAP.process.destroy();
+					}
+				}
+
 				if (copyFileIsRunning)
 				{
-					int reply = JOptionPane.showConfirmDialog(frame, language.getProperty("areYouSure"),
-							language.getProperty("stopProcess"), JOptionPane.YES_NO_OPTION,
-							JOptionPane.PLAIN_MESSAGE);
-					if (reply == JOptionPane.YES_OPTION)
-						cancelled = true;
+					cancelled = true;
 				}
 				if (scanIsRunning) {
 					cancelled = true;

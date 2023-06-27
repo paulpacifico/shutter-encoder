@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import javax.swing.JOptionPane;
 
 import application.Shutter;
+import application.VideoPlayer;
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
@@ -63,6 +64,7 @@ public class LoudnessTruePeak extends Shutter {
 							continue;
 						
 						//InOut		
+						VideoPlayer.getFileList(file.toString());
 						InputAndOutput.getInputAndOutput();	
 						
 		            	//Audio

@@ -25,6 +25,7 @@ import application.Ftp;
 import application.Settings;
 import application.Shutter;
 import application.Utils;
+import application.VideoPlayer;
 import application.Wetransfer;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -97,6 +98,7 @@ public class Conform extends Shutter {
 						String audio = setAudio();						
 			           	
 						//InOut		
+						VideoPlayer.getFileList(file.toString());
 						InputAndOutput.getInputAndOutput();
 						
 						//File output

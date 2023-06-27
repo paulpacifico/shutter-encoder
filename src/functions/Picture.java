@@ -207,6 +207,7 @@ public class Picture extends Shutter {
 						String hardwareDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
 						
 						//InOut		
+						VideoPlayer.getFileList(file.toString());
 						InputAndOutput.getInputAndOutput();
 						
 						if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())

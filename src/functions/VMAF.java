@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import javax.swing.JOptionPane;
 
 import application.Shutter;
+import application.VideoPlayer;
 import library.FFMPEG;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
@@ -77,6 +78,7 @@ public class VMAF extends Shutter {
 							continue;
 						
 						//InOut		
+						VideoPlayer.getFileList(file.toString());
 						InputAndOutput.getInputAndOutput();	
 						
 						//Sending command
