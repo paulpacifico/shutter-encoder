@@ -56,9 +56,6 @@ private static Boolean horizontal = true;
 		exifWidth = "";
 		exifHeight = "";
 		 
-		FFPROBE.hasAudio = false;
-		FFPROBE.totalLength = 0;
-		 
 		runProcess = new Thread(new Runnable()  {
 			@Override
 			public void run() {

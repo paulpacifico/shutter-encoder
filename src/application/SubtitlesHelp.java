@@ -46,6 +46,7 @@ public class SubtitlesHelp {
 		lblHelp.setText(Shutter.language.getProperty("txtShortcuts"));
 		lblHelp.setForeground(Color.WHITE);
 		lblHelp.setHighlighter(null);
+		lblHelp.setFocusable(false);
 		lblHelp.setEditable(false);
 		lblHelp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		lblHelp.setBounds(10, 12, 420, 320);

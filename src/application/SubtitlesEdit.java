@@ -64,7 +64,7 @@ public class SubtitlesEdit {
 	private static int scrollValue = 0;
 	private static long keyboardTime;
 	private static boolean keyboardLoop = false;
-	public static boolean isWriting = true;
+	public static boolean isWriting = false;
 	private boolean drag = false;
 	private static boolean refreshSubs = false;
 	

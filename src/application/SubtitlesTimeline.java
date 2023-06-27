@@ -439,7 +439,7 @@ public class SubtitlesTimeline {
 			}
     		
     	});
-    	
+
     	frame.getContentPane().add(txtSubtitles);
     	    	    	    	
     	JLabel lblTexte = new JLabel(Shutter.language.getProperty("lblTexte"));
@@ -1271,17 +1271,15 @@ public class SubtitlesTimeline {
 		frame.addMouseWheelListener(mouseWheelListener);
 		txtSubtitles.addKeyListener(keyListener);	
 		
-		Toolkit.getDefaultToolkit().addAWTEventListener(
-				
-	    new AWTEventListener()
+		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener()
 	    {
 	        public void eventDispatched(AWTEvent event)
 	        {
-	              KeyEvent ke = (KeyEvent) event;
-	              if (ke.getID() == KeyEvent.KEY_PRESSED && txtSubtitles.hasFocus() == false && SubtitlesEdit.isWriting == false)
-	              {
+	             KeyEvent ke = (KeyEvent) event;
+	             if (ke.getID() == KeyEvent.KEY_PRESSED && txtSubtitles.hasFocus() == false && SubtitlesEdit.isWriting == false)
+	             {
 	            	 frame.requestFocus();
-	              }
+	             }
 	        }
 	    }, AWTEvent.KEY_EVENT_MASK);	
 		
@@ -1509,7 +1507,7 @@ public class SubtitlesTimeline {
        	images.setBounds(caseShowWaveform.getX() - images.getWidth() - 7, 9, 10, 16);
        	textOffset.setBounds(images.getX() - images.getWidth() - 27, lblOffset.getLocation().y, 34, 16);
        	lblOffset.setBounds(textOffset.getX() - lblOffset.getWidth() - 7, 9, lblOffset.getPreferredSize().width, 16); 
-       	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 4, 8, lblHelp.getPreferredSize().width, 22);
+       	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 4, 8, lblHelp.getPreferredSize().width, 22);       	
 	}
 	
 	public static void refreshData() {

@@ -157,6 +157,7 @@ public class VideoEncoders extends Shutter {
 							continue;	
 												
 						//InOut	
+						VideoPlayer.getFileList(file.toString());
 						InputAndOutput.getInputAndOutput();	
 						
 						//Output folder
