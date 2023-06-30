@@ -36,6 +36,7 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -203,7 +204,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								String pipe = "";								
 								if (cmd.contains("pipe:play"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -c:v bmp -an -f image2pipe pipe:-";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -an -c:v rawvideo -pix_fmt rgb24 -f image2pipe pipe:-";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -224,7 +225,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:play"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -c:v bmp -an -f image2pipe pipe:-";
+								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -an -c:v rawvideo -pix_fmt rgb24 -f image2pipe pipe:-";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
@@ -259,19 +260,25 @@ public static StringBuilder errorLog = new StringBuilder();
 								@Override
 								public void run() {
 									
-									do {
-										
-										try {
-											
+									byte[] frameData = new byte[FFPROBE.imageWidth * FFPROBE.imageHeight * 3]; // RGB24 format: 3 bytes per pixel
+									
+						            BufferedImage frameImage = new BufferedImage(FFPROBE.imageWidth, FFPROBE.imageHeight, BufferedImage.TYPE_INT_RGB);
+						            Graphics2D graphics = frameImage.createGraphics();
+						            
+						            try {
+						            	
+										do
+										{
 											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
 											{
-												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);
+												VideoPlayer.readFrameData(videoInputStream, frameData);											
+												VideoPlayer.frameVideo = VideoPlayer.convertToImage(frameData, frameImage, graphics);
 												VideoPlayer.playerRepaint();
-											}
+											}	
 											
-										} catch (Exception e) {}
+										} while (VideoPlayer.frameVideo != null);
 										
-									} while (VideoPlayer.frameVideo != null);
+									} catch (Exception e) {}
 								}
 					    		
 					    	});
@@ -799,28 +806,27 @@ public static StringBuilder errorLog = new StringBuilder();
 					try {
 						
 				        boolean getRatio = true;
-				        			        
-				        byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
-			            int bytesRead = 0;
+				        
+						//Image sequence
+						float inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);;
+						if (Shutter.caseCreateSequence.isSelected())
+						{
+							inputFramerateMS = (float) (1000 / (Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."))));
+						}	
 			            
 						do {
-
-							//Image sequence
-							float inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);;
-							if (Shutter.caseCreateSequence.isSelected())
-							{
-								inputFramerateMS = (float) (1000 / (Float.valueOf(Shutter.comboInterpret.getSelectedItem().toString().replace(",", "."))));
-							}	
 							
 							long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
 							
 							//Audio volume	
 							if (FFPROBE.hasAudio)						       
 							{
+								byte bytes[] = new byte[line.available()];
+								
 								///Read 1 audio frame
 								try {
-									bytesRead = audioInputStream.read(bytes, 0, bytes.length);
-									line.write(bytes, 0, bytesRead);
+									audioInputStream.read(bytes, 0, bytes.length);
+									line.write(bytes, 0, bytes.length);
 								} catch (Exception e) {}
 							}
 		
@@ -855,7 +861,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			            	{		      
 			            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
 				            	try {
-									Thread.sleep((int) (delay / 1000000 / 2));
+				            		Thread.sleep((int) (delay / 1500000));
 								} catch (InterruptedException e) {}
 			            		
 				            	delay = startTime - System.nanoTime();

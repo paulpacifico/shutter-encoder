@@ -64,6 +64,7 @@ import library.PDF;
 public class FunctionUtils extends Shutter {
 
 	public static int completed;
+	public static StringBuilder watchFolder = new StringBuilder();
 	public static boolean allowsInvalidCharacters = false;
 	public static boolean yesToAll = false;
 	public static boolean noToAll = false;
@@ -80,7 +81,7 @@ public class FunctionUtils extends Shutter {
 		btnStart.setEnabled(false);	
 		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
-				
+						
 		if (caseGenerateFromDate.isSelected()
 		|| comboFonctions.getSelectedItem().toString().equals("JPEG")
 		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
@@ -91,9 +92,6 @@ public class FunctionUtils extends Shutter {
 				Thread.sleep(100);
 			}						 
 			while (EXIFTOOL.isRunning);
-			/*
-			if (analyzeError(file.toString()))
-				return false;*/
 		}
 				
 		//inputDeviceIsRunning is already analyzed
@@ -276,6 +274,11 @@ public class FunctionUtils extends Shutter {
 										continue;//Next
 									}
 								}
+								
+								if (getWatchFolderList(file) == false)
+								{
+									continue;
+								}
 							}
 						}
 						else
@@ -307,33 +310,99 @@ public class FunctionUtils extends Shutter {
 		return null;
 	}
 
+	private static void setWatchFolderList(File input) {
+		
+		try {
+			
+			StringBuilder stb = new StringBuilder();
+
+			if (watchFolder.length() > 0)
+			{			
+				for (String file : watchFolder.toString().split(System.lineSeparator()))
+				{	
+					stb.append(file + System.lineSeparator());
+				}
+
+				watchFolder.setLength(0);
+
+				boolean fileExists = false;							
+				for (String file : stb.toString().split(System.lineSeparator()))
+				{
+					if (file.equals(input.toString())) //Replace at the same line
+					{						
+						watchFolder.append(input.toString() + System.lineSeparator());
+						fileExists = true;
+					}
+					else if (file.equals("null") == false)
+					{
+						watchFolder.append(file + System.lineSeparator());
+					}
+				}
+				
+				if (fileExists == false)
+				{
+					watchFolder.append(input.toString() + System.lineSeparator());
+				}
+			}		
+			else
+			{
+				watchFolder.append(input.toString() + System.lineSeparator());
+			}
+								
+		} catch (Exception e) {}		
+	}
+	
+	public static boolean getWatchFolderList(File input) {
+		
+		try {
+				
+			if (watchFolder.length() > 0)
+			{		
+				for (String line : watchFolder.toString().split(System.lineSeparator()))
+				{	
+					if (line.equals(input.toString()))
+					{			
+						return false;
+					}
+				}
+			}		
+			
+		} catch (Exception e) {}		
+		
+		return true;		
+	}
+	
 	public static void moveScannedFiles(File file)
 	{
-		File folder = new File(file.getParent() + "/completed");
-		
-		//Si erreur
-		if (FFMPEG.error || cancelled)
-			folder = new File(file.getParent() + "/error");
-		
-		if (folder.exists() == false)
-			folder.mkdir();
-		
-		File fileToMove = new File(folder + "/" + file.getName());
-				
-		if (fileToMove.exists())
+		//Error
+		if (FFMPEG.error)
 		{
-			int n = 1;
+			File folder = new File(file.getParent() + "/error");
+
+			if (folder.exists() == false)
+				folder.mkdir();
 			
-			String ext =  file.getName().substring(file.getName().lastIndexOf("."));
+			File fileToMove = new File(folder + "/" + file.getName());
+					
+			if (fileToMove.exists())
+			{
+				int n = 1;
+				
+				String ext =  file.getName().substring(file.getName().lastIndexOf("."));
+				
+				do {
+					fileToMove = new File(folder + "/" + file.getName().replace(ext, "") + "_" + n + ext);
+					n++;
+				} while (fileToMove.exists());
+			}
 			
-			do {
-				fileToMove = new File(folder + "/" + file.getName().replace(ext, "") + "_" + n + ext);
-				n++;
-			} while (fileToMove.exists());
+			//Moving the file to error folder
+			file.renameTo(fileToMove);	
 		}
-		
-		//Moving the file to completed folder
-		file.renameTo(fileToMove);	
+		else
+		{
+			setWatchFolderList(file);
+		}
 	}
 	
 	public static String completedFiles(int number) {

@@ -760,7 +760,7 @@ public class Shutter {
 	}
 
 	public Shutter() {
-					
+			
 		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
@@ -985,11 +985,6 @@ public class Shutter {
 									if (VideoPlayer.waveform.exists())
 									{
 										VideoPlayer.waveform.delete();
-									}
-									
-									if (VideoPlayer.fileList.exists())
-									{
-										VideoPlayer.fileList.delete();
 									}
 					            }
 					        });
@@ -1260,12 +1255,7 @@ public class Shutter {
 					if (VideoPlayer.waveform.exists())
 					{
 						VideoPlayer.waveform.delete();
-					}
-					
-					if (VideoPlayer.fileList.exists())
-					{
-						VideoPlayer.fileList.delete();
-					}
+					}				
 					
 					System.exit(0);
 				}
@@ -1631,7 +1621,9 @@ public class Shutter {
 					
 					// Scan
 					scan.setText(language.getProperty("menuItemStartScan"));
-					scanIsRunning = false;				
+					scanIsRunning = false;		
+					
+					FunctionUtils.watchFolder.setLength(0);	
 	
 					liste.clear();
 					addToList.setVisible(true);
@@ -2290,8 +2282,9 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (scan.getText().equals(language.getProperty("menuItemStartScan"))) {
-					
+				
+				if (scan.getText().equals(language.getProperty("menuItemStartScan")))
+				{					
 					File destination = null;
 					if (liste.getSize() > 0)
 					{
@@ -2319,10 +2312,14 @@ public class Shutter {
 						JOptionPane.showMessageDialog(frame, language.getProperty("dragFolderToList"), language.getProperty("chooseScanFolder"), JOptionPane.INFORMATION_MESSAGE);						
 					}
 					
-				} else {
+				}
+				else
+				{
 					scan.setText(language.getProperty("menuItemStartScan"));
 					btnEmptyList.doClick();
 					scanIsRunning = false;
+					
+					FunctionUtils.watchFolder.setLength(0);	
 				}
 				lblFiles.setText(Utils.filesNumber());
 			}
@@ -2659,6 +2656,8 @@ public class Shutter {
 					scan.setText(language.getProperty("menuItemStartScan"));
 					btnEmptyList.doClick();
 					scanIsRunning = false;
+					
+					FunctionUtils.watchFolder.setLength(0);			
 				}
 				if (Ftp.isRunning) {
 					cancelled = true;
@@ -21809,8 +21808,11 @@ public class Shutter {
 		if (grpDestination.isEnabled())
 			grpDestination.setSelectedIndex(0);
 				
-		VideoPlayer.videoPath = null;
-		VideoPlayer.setMedia();	
+		if (scanIsRunning == false)
+		{
+			VideoPlayer.videoPath = null;
+			VideoPlayer.setMedia();	
+		}
 		
 		FunctionUtils.sendMail();
 		Wetransfer.sendToWeTransfer();
