@@ -4705,7 +4705,7 @@ public class Shutter {
 		comboResolution.setName("comboResolution");
 		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "2:1", "4:1", "8:1", "16:1",
 				"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
-				"4096x2160", "3840x2160", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
+				"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 				"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
 		comboResolution.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		comboResolution.setEditable(true);
@@ -4824,7 +4824,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame		
+				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
 			}
 
 		});
@@ -13281,7 +13281,7 @@ public class Shutter {
 									//NTSC framerate
 									timeIn = Timecode.getNonDropFrameTC(timeIn);
 									
-									VideoPlayer.playerSetTime(timeIn);															
+									VideoPlayer.playerSetTime(timeIn);	
 									
 									VideoPlayer.btnPlay.doClick();
 									
@@ -13894,7 +13894,7 @@ public class Shutter {
 					}
 							
 					VideoPlayer.playerCurrentFrame = timeOut - spinnerValue * 2;
-					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);	
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);
 					
 					//Allows to wait for the last frame to load					
 					long time = System.currentTimeMillis();
@@ -13968,7 +13968,7 @@ public class Shutter {
 					}
 							
 					VideoPlayer.playerCurrentFrame = timeOut - spinnerValue * 2;
-					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);	
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);
 					
 					//Allows to wait for the last frame to load					
 					long time = System.currentTimeMillis();
@@ -14295,7 +14295,7 @@ public class Shutter {
 					comboForcerDesentrelacement.setEnabled(false);
 				}
 				
-				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame				
+				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
 			}
 		});
 
@@ -16703,7 +16703,7 @@ public class Shutter {
 				
 				VideoPlayer.frameIsComplete = false;
 				
-				VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());				
+				VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());	
 			}
 			
 		});
@@ -16741,7 +16741,7 @@ public class Shutter {
 								
 				VideoPlayer.frameIsComplete = false;
 				
-				VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());				
+				VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());
 			}
 			
 		});
@@ -18591,9 +18591,9 @@ public class Shutter {
 								}
 								else
 								{
-									if (comboResolution.getItemCount() != 19)
+									if (comboResolution.getItemCount() != 20)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}							
@@ -18809,9 +18809,9 @@ public class Shutter {
 								}
 								else
 								{
-									if (comboResolution.getItemCount() != 19)
+									if (comboResolution.getItemCount() != 20)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}
@@ -19136,9 +19136,9 @@ public class Shutter {
 								grpResolution.add(comboDAR);							
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 								
-								if (comboResolution.getItemCount() != 19)
+								if (comboResolution.getItemCount() != 20)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 								}
 								
@@ -19427,9 +19427,9 @@ public class Shutter {
 								grpResolution.add(comboDAR);							
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 								
-								if (comboResolution.getItemCount() != 19)
+								if (comboResolution.getItemCount() != 20)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 								}
 								
@@ -19888,9 +19888,9 @@ public class Shutter {
 									grpResolution.add(comboDAR);							
 									comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 									
-									if (comboResolution.getItemCount() != 19)
+									if (comboResolution.getItemCount() != 20)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 									
@@ -20081,11 +20081,11 @@ public class Shutter {
 								
 								grpResolution.add(comboResolution);
 								
-								if (comboResolution.getItemCount() != 26)
+								if (comboResolution.getItemCount() != 27)
 								{
 									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "2:1", "4:1", "8:1", "16:1",
 											"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
-											"4096x2160", "3840x2160", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
+											"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 											"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
 								}
 								

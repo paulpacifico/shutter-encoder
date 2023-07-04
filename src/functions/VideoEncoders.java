@@ -477,12 +477,12 @@ public class VideoEncoders extends Shutter {
 									
 									if (FFPROBE.imageResolution.equals("1440x1080"))
 									{
-										filterComplex = Image.setScale(filterComplex, false);	
+										filterComplex = Image.setScale(filterComplex, false, false);	
 										filterComplex = Image.setPad(filterComplex, false);			
 									}
 									else
 									{
-										filterComplex = Image.setScale(filterComplex, true);	
+										filterComplex = Image.setScale(filterComplex, true, false);	
 										filterComplex = Image.setPad(filterComplex, true);		
 									}
 									
@@ -490,7 +490,7 @@ public class VideoEncoders extends Shutter {
 									
 								default:
 									
-									filterComplex = Image.setScale(filterComplex, false);	
+									filterComplex = Image.setScale(filterComplex, false, false);	
 									filterComplex = Image.setPad(filterComplex, false);			
 									break;
 							}	
@@ -575,12 +575,12 @@ public class VideoEncoders extends Shutter {
 									
 									if (FFPROBE.imageResolution.equals("1440x1080"))
 									{
-										filterComplex = Image.setScale(filterComplex, false);	
+										filterComplex = Image.setScale(filterComplex, false, false);	
 										filterComplex = Image.setPad(filterComplex, false);			
 									}
 									else
 									{
-										filterComplex = Image.setScale(filterComplex, true);	
+										filterComplex = Image.setScale(filterComplex, true, false);	
 										filterComplex = Image.setPad(filterComplex, true);		
 									}
 									
@@ -588,7 +588,7 @@ public class VideoEncoders extends Shutter {
 									
 								default:
 									
-									filterComplex = Image.setScale(filterComplex, false);	
+									filterComplex = Image.setScale(filterComplex, false, false);	
 									filterComplex = Image.setPad(filterComplex, false);			
 									break;
 							}	

@@ -36,7 +36,6 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -117,7 +116,6 @@ public static StringBuilder hwaccels = new StringBuilder();
 public static boolean isGPUCompatible = false;
 public static boolean cudaAvailable = false;
 public static boolean qsvAvailable = false;
-
 public static int differenceMax;
 
 //Moyenne de fps		
@@ -204,7 +202,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								String pipe = "";								
 								if (cmd.contains("pipe:play"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -an -c:v rawvideo -pix_fmt rgb24 -f image2pipe pipe:-";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -an -c:v bmp -f image2pipe pipe:-";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -225,7 +223,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:play"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -an -c:v rawvideo -pix_fmt rgb24 -f image2pipe pipe:-";
+								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -an -c:v bmp -f image2pipe pipe:-";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
@@ -250,7 +248,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				        writer = new BufferedWriter(new OutputStreamWriter(stdin));				        
 				        
 				        Console.consoleFFMPEG.append(System.lineSeparator());
-				        
+				        				        
 				        if (cmd.contains("pipe:play"))
 						{				        	
 				        	VideoPlayer.playerStop();
@@ -259,21 +257,15 @@ public static StringBuilder errorLog = new StringBuilder();
 	
 								@Override
 								public void run() {
-									
-									byte[] frameData = new byte[FFPROBE.imageWidth * FFPROBE.imageHeight * 3]; // RGB24 format: 3 bytes per pixel
-									
-						            BufferedImage frameImage = new BufferedImage(FFPROBE.imageWidth, FFPROBE.imageHeight, BufferedImage.TYPE_INT_RGB);
-						            Graphics2D graphics = frameImage.createGraphics();
-						            
+
 						            try {
 						            	
-										do
-										{
+										do {
+											
 											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
-											{
-												VideoPlayer.readFrameData(videoInputStream, frameData);											
-												VideoPlayer.frameVideo = VideoPlayer.convertToImage(frameData, frameImage, graphics);
-												VideoPlayer.playerRepaint();
+											{												
+												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);
+												VideoPlayer.player.repaint();
 											}	
 											
 										} while (VideoPlayer.frameVideo != null);
@@ -284,7 +276,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					    	});
 					        playerThread.start();
 						}
-				        
+
 						while ((line = input.readLine()) != null)
 						{			
 							getAll.append(line);
@@ -304,7 +296,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							}
 							else
 								break;																			
-						}						
+						}					
 						process.waitFor();	
 												
 						if (cancelled == false)
@@ -410,9 +402,10 @@ public static StringBuilder errorLog = new StringBuilder();
 
 			hstack += "hstack=" + n + "[out]";
 
-			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map "
-					+ '"' + "[out]" + '"' + " -an -f nut pipe:play");
-		} else {
+			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map " + '"' + "[out]" + '"' + " -an -f nut pipe:play");
+		}
+		else
+		{
 						
 			//File
 			File inputFile = null;

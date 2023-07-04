@@ -48,8 +48,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -102,6 +100,7 @@ public class VideoPlayer {
     //Player
 	public static JPanel player; 
     public static Process playerVideo;
+    public static Process bufferVideo;
     public static Process playerAudio;
     private static InputStream audio;		
     private static BufferedInputStream videoInputStream;
@@ -109,6 +108,7 @@ public class VideoPlayer {
     private static SourceDataLine line;
     private static FloatControl gainControl;
     public static Thread playerThread;	
+    public static Thread bufferThread;
     public static Thread setTime;
     private static String setEQ = "";	
 	public static float playerCurrentFrame = 0;
@@ -191,7 +191,7 @@ public class VideoPlayer {
 	public static JLabel waveformIcon;
 	public static JLabel waveformContainer;
 	public static JPanel cursorWaveform;
-	private static boolean mouseIsPressed = false;
+	public static boolean mouseIsPressed = false;
 	
 	//Preview
 	public static File preview = new File(Shutter.dirTemp + "preview.bmp");
@@ -760,8 +760,8 @@ public class VideoPlayer {
 	}
 	
 	public static void playerSetTime(float time) {
-			
-		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null && Shutter.doNotLoadImage == false)
+					
+		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2)
 		{				
 			setTime = new Thread(new Runnable() {
 
@@ -774,17 +774,28 @@ public class VideoPlayer {
 					
 					if (t < 0)
 						t = 0;
-					
+									
+					boolean useBuffer = false;
+					if (preview.exists() || Shutter.caseAddSubtitles.isSelected())
+					{
+						preview.delete();							
+						useBuffer = false;
+					}
+					else if (FFPROBE.audioOnly == false && mouseIsPressed && playerIsPlaying() == false)
+					{
+						useBuffer = true;
+					}
+						
 					int framesToSkip = (int) ((float) time - playerCurrentFrame);
 					int framesToSkipBackward = (int) ((float) time - bufferCurrentFrame);
-						
-					if (framesToSkip < 60 && framesToSkip >= 0 && FFPROBE.audioOnly == false && (frameControl || mouseIsPressed)) //Read forward is faster until 60 frames then recreating the process
-					{	
-						if (bufferedFrames.size() > 1 && (bufferCurrentFrame - playerCurrentFrame) > 0) //Read buffered frames if they exists
-						{			
-							int framesToRead = (int) ((float) bufferCurrentFrame - playerCurrentFrame - framesToSkip + 1);
-														
-							frameVideo = bufferedFrames.get((int) (bufferedFrames.size() - framesToRead));	
+															
+					if (framesToSkip < 60 && framesToSkip >= 0 && useBuffer) //Read forward is faster until 60 frames then recreating the process
+					{						
+						int framesToRead = (int) ((float) bufferCurrentFrame - playerCurrentFrame - framesToSkip + 1);
+															
+						if (bufferedFrames.size() > 1 && (bufferCurrentFrame - playerCurrentFrame) > 0 && bufferedFrames.size() - framesToRead < bufferedFrames.size()) //Read buffered frames if they exists
+						{		
+							frameVideo = bufferedFrames.get(bufferedFrames.size() - framesToRead);	
 							playerCurrentFrame += framesToSkip;
 							
 							getTimePoint(playerCurrentFrame); 						
@@ -795,18 +806,20 @@ public class VideoPlayer {
 							try {
 	
 								int i = 0;
+								
 								do {
 									
 									i++;
 									
 									frameVideo = ImageIO.read(videoInputStream);
 									updateCurrentFrame();																		
-									bufferedFrames.add(frameVideo);
 									
 									if (bufferedFrames.size() > 500) //Limit the buffer size into memory
 									{
 										bufferedFrames.remove(0);
 									}
+									
+									bufferedFrames.add(frameVideo);
 									
 									if (i == framesToSkip)
 									{
@@ -815,12 +828,12 @@ public class VideoPlayer {
 									}
 									
 								} while (i < framesToSkip);
-								
+
 							} catch (Exception er) {}
 						}
 					}
-					else if (0 - framesToSkipBackward < bufferedFrames.size() && framesToSkip < 0 && bufferedFrames.size() > 1 && FFPROBE.audioOnly == false && (frameControl || mouseIsPressed)) //Read available buffered frames backward
-					{																		
+					else if (0 - framesToSkipBackward < bufferedFrames.size() && bufferedFrames.size() + framesToSkipBackward < bufferedFrames.size() && framesToSkip < 0 && bufferedFrames.size() > 1 && useBuffer) //Read available buffered frames backward
+					{								
 						frameVideo = bufferedFrames.get(bufferedFrames.size() + framesToSkipBackward);							
 						playerCurrentFrame += framesToSkip + 1;
 						
@@ -828,8 +841,12 @@ public class VideoPlayer {
 						player.repaint();
 					}
 					else
-					{						
-						bufferedFrames.clear();
+					{			
+						//Clear the buffer
+						if (bufferedFrames.size() > 0 && (framesToSkip >= 60 || 0 - framesToSkipBackward >= bufferedFrames.size() || useBuffer == false))
+						{				
+							bufferedFrames.clear();
+						}
 						
 						writeCurrentSubs(t);
 						
@@ -883,7 +900,8 @@ public class VideoPlayer {
 						}
 						
 						frameControl = false;
-						playerPlayVideo = true;		
+						playerPlayVideo = true;	
+												
 					}
 					
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1165,7 +1183,7 @@ public class VideoPlayer {
 					caseOutS.setEnabled(true);
 					caseOutF.setEnabled(true);
 					
-					if (FFPROBE.totalLength > 40)
+					if (FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
 					{
 						lblPosition.setVisible(true);
 						lblDuration.setVisible(true);
@@ -1407,7 +1425,7 @@ public class VideoPlayer {
 			
 			showFPS.setVisible(false);
 			
-			if (Shutter.caseEnableSequence.isSelected())
+			if (Shutter.caseEnableSequence.isSelected() && enable)
 				btnPlay.setVisible(true);
 			else
 				btnPlay.setVisible(false);
@@ -1415,7 +1433,7 @@ public class VideoPlayer {
 			btnPrevious.setVisible(false);
 			btnNext.setVisible(false);
 			
-			if (Shutter.caseEnableSequence.isSelected())
+			if (Shutter.caseEnableSequence.isSelected() && enable)
 				btnStop.setVisible(true);
 			else
 				btnStop.setVisible(false);
@@ -1426,7 +1444,7 @@ public class VideoPlayer {
 			caseVuMeter.setVisible(false);
 			casePlaySound.setVisible(false);
 			
-			if (Shutter.caseEnableSequence.isSelected())
+			if (Shutter.caseEnableSequence.isSelected() && enable)
 			{	
 				Shutter.caseAddSubtitles.setEnabled(true);
 			}
@@ -1736,7 +1754,7 @@ public class VideoPlayer {
 	}
     
 	private static void updateCurrentFrame() {
-		
+				
 		if (sliderSpeed.getValue() != 2)
 		{													
 			if (sliderSpeed.getValue() != 0)
@@ -1749,42 +1767,7 @@ public class VideoPlayer {
 		else
 			playerCurrentFrame += 1;	
 	}
-	    
-    public static int readFrameData(InputStream inputStream, byte[] frameData) throws IOException {
-    	
-        int bytesRead = 0;
-        int bytesToRead = frameData.length;
-
-        while (bytesToRead > 0) {
-        	
-            int read = inputStream.read(frameData, bytesRead, bytesToRead);
-            if (read == -1) {
-                break; // End of stream
-            }
-            bytesRead += read;
-            bytesToRead -= read;
-            
-        }
-
-        return bytesRead;
-    }
-
-    public static BufferedImage convertToImage(byte[] frameData, BufferedImage image, Graphics2D graphics) {
-    	
-        // Convert the frame data to a BufferedImage
-        int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        int pixelIndex = 0;
-        for (int i = 0; i < frameData.length; i += 3) {
-            int r = frameData[i] & 0xFF;
-            int g = frameData[i + 1] & 0xFF;
-            int b = frameData[i + 2] & 0xFF;
-            int pixelValue = (r << 16) | (g << 8) | b;
-            pixels[pixelIndex++] = pixelValue;
-        }
-
-        return image;
-    }
-	    
+	        
 	public static void addWaveform(boolean newWaveform) {
 					
 		addWaveformIsRunning = true;
@@ -1921,7 +1904,7 @@ public class VideoPlayer {
 			public void actionPerformed(ActionEvent e) {
 
 				i ++;
-				
+
 				if (frameVideo != null && i <= 1)
 				{					
 					Thread t = new Thread(new Runnable() {
@@ -1938,7 +1921,7 @@ public class VideoPlayer {
 							}
 			
 							frameControl = true;
-							
+														
 							if (playerVideo != null && frameVideo != null)
 							{										
 								if (playerLoop)
@@ -2011,8 +1994,7 @@ public class VideoPlayer {
 				}
 				
 				if (preview.exists() || Shutter.caseAddSubtitles.isSelected())
-				{
-					preview.delete();												
+				{												
 					playerSetTime(playerCurrentFrame + 1);
 				}
 
@@ -2087,13 +2069,18 @@ public class VideoPlayer {
 					if (sliderSpeed.getValue() != 2)
 					{						
 						playerSetTime(slider.getValue());	
-					}							
+					}		
+					else
+					{
+						//IMPORTANT
+						getTimePoint(playerCurrentFrame); 
+					}
+					
 				}
 				else if (btnPlay.getName().equals("play"))
 				{									
 					if (preview.exists() || Shutter.caseAddSubtitles.isSelected())
-					{
-						preview.delete();												
+					{											
 						playerSetTime(playerCurrentFrame);
 					}
 					
@@ -2438,10 +2425,7 @@ public class VideoPlayer {
 			public void stateChanged(ChangeEvent e) {
 
 				if (playerVideo != null && sliderChange)
-				{		
-					if (preview.exists())
-						preview.delete();
-					
+				{							
 					if (slider.getValue() > 0)
 					{								
 						playerSetTime(slider.getValue());						
@@ -4135,7 +4119,13 @@ public class VideoPlayer {
 			
 			@Override
 			public void run() {
-
+								
+					//Clear the buffer
+					if (bufferedFrames.size() > 0)
+					{				
+						bufferedFrames.clear();
+					}
+				
 					//Important permet de lancer le runtime process dans FFMPEG
 					boolean display = false;
 					if (Shutter.caseDisplay.isSelected())
@@ -4367,7 +4357,7 @@ public class VideoPlayer {
 		//Crop & Pad
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
 		{			
-			filter += settings.Image.setScale("", false);
+			filter += settings.Image.setScale("", false, true);
 			filter += settings.Image.setPad("", false) + ",";
 		}
 		else			
@@ -4517,7 +4507,9 @@ public class VideoPlayer {
 		{
 			setEQ = Transitions.setVideoFade(setEQ, true);
 		}
-				//Interpolation
+		
+		/*
+		//Interpolation
 		setEQ = AdvancedFeatures.setInterpolation(setEQ);
 		
 		//Slow motion
@@ -4528,6 +4520,7 @@ public class VideoPlayer {
 
 		//Conform
 		setEQ = AdvancedFeatures.setConform(setEQ);
+		*/
 								
 		if (setEQ.isEmpty() == false)
 		{
@@ -4705,10 +4698,7 @@ public class VideoPlayer {
 		}
 		
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
-		{				
-			//All bufferedFrames need to be removed
-			bufferedFrames.clear();
-			
+		{							
 			isPiping = false;
 			if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume"))
@@ -5047,7 +5037,7 @@ public class VideoPlayer {
 			{
 				lblDuration.setVisible(false);  
 			}
-			else if (waveformContainer.isVisible() && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
+			else if (waveformContainer.isVisible() && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.caseEnableSequence.isSelected() == false)
 			{
 	    		lblDuration.setVisible(true);   
 	    		

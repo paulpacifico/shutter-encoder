@@ -20,6 +20,7 @@
 package settings;
 
 import application.Shutter;
+import application.VideoPlayer;
 import functions.VideoEncoders;
 import library.FFPROBE;
 import library.FFMPEG;
@@ -145,7 +146,7 @@ public class Image extends Shutter {
 			return " -s 1920x1080";
 	}
 	
-	public static String setScale(String filterComplex, boolean limitToFHD) {	
+	public static String setScale(String filterComplex, boolean limitToFHD, boolean isVideoPlayer) {	
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
@@ -274,7 +275,8 @@ public class Image extends Shutter {
 		//GPU Scaling
 		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=")
 		&& comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false
-		&& FFPROBE.videoCodec.contains("vp9") == false && FFPROBE.videoCodec.contains("vp8") == false)
+		&& FFPROBE.videoCodec.contains("vp9") == false && FFPROBE.videoCodec.contains("vp8") == false
+		&& VideoPlayer.mouseIsPressed == false)
 		{
 			//Scaling
 			String bitDepth = "nv12";
@@ -301,7 +303,9 @@ public class Image extends Shutter {
 			if ((autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
-				filterComplex += ",hwdownload,format=" + bitDepth;
+				
+				if (isVideoPlayer == false)
+					filterComplex += ",hwdownload,format=" + bitDepth;
 			}
 			else if (autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
 			{
@@ -309,7 +313,9 @@ public class Image extends Shutter {
 				{
 					filterComplex = filterComplex.replace("yadif=", "yadif_cuda=");			
 					filterComplex = filterComplex.replace("scale=", "scale_cuda=");
-					filterComplex += ",hwdownload,format=" + bitDepth;
+					
+					if (isVideoPlayer == false)
+						filterComplex += ",hwdownload,format=" + bitDepth;
 				}
 			}
 		}

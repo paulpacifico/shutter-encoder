@@ -288,11 +288,11 @@ public static boolean hasAlpha = false;
 			                   lumaLevel = "0-255";
 			                			                
 			                // Lecture
-						 	String ligne = line;
-			                ligne = line.substring(ligne.indexOf("Video:"));
+						 	String data = line;
+			                data = line.substring(data.indexOf("Video:"));
 
 			                // Timecode Size
-			                String split[] = ligne.split(",");
+			                String split[] = data.split(",");
 			                int i = 0;
 			                do {
 			                    i ++;
@@ -315,7 +315,7 @@ public static boolean hasAlpha = false;
 				                
 				                String splitx[]= height.split("x");
 				                
-				                String getHeight[] =  splitx[1].split(" ");
+				                String getHeight[] = splitx[1].split(" ");
 	
 					            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
 					            imageHeight = Integer.parseInt(splitr[0]);
