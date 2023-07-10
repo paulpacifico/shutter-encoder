@@ -900,6 +900,15 @@ public class Shutter {
 					{
 						JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
 					}
+					
+					if (VideoPlayer.btnPlay.isVisible() && liste.getSize() > 0)
+					{
+						VideoPlayer.btnPlay.requestFocus();
+					}
+					else
+					{
+						frame.requestFocus();
+					}
 				}
 			}
 		});
@@ -3223,7 +3232,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				if (comboFonctions.getSelectedItem().equals(language.getProperty("itemNoConversion")))
 				{
 					newList.clear();
@@ -3368,7 +3377,7 @@ public class Shutter {
 		comboFonctions.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
 			
 			String text = "";
-
+			
 			@Override
 			public void keyReleased(KeyEvent e) {
 
@@ -3397,7 +3406,8 @@ public class Shutter {
 					if (comboFonctions.getEditor().toString().length() <= 1)
 						text = String.valueOf(e.getKeyChar()).toLowerCase();
 
-					if (Character.isLetterOrDigit(e.getKeyChar())) {
+					if (Character.isLetterOrDigit(e.getKeyChar()))
+					{						
 						comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
 						text += String.valueOf(e.getKeyChar()).toLowerCase();
 
@@ -3421,7 +3431,9 @@ public class Shutter {
 							changeFunction(true);
 						}
 
-					} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE)
+					{
 						comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
 						comboFonctions.getEditor().setItem("");
 						comboFonctions.hidePopup();
@@ -3429,10 +3441,25 @@ public class Shutter {
 						changeSections(true);
 						changeWidth(false);
 						text = "";
-					} else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+					{
 						e.consume();// Contournement pour éviter le listeDrop
+					}
 					else
-						comboFonctions.hidePopup();
+						comboFonctions.hidePopup();					
+				}
+				
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					if (VideoPlayer.btnPlay.isVisible() && liste.getSize() > 0)
+					{
+						VideoPlayer.btnPlay.requestFocus();
+					}
+					else
+					{
+						frame.requestFocus();
+					}
 				}
 			}
 		});

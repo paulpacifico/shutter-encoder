@@ -837,12 +837,13 @@ public class VideoPlayer {
 					if (t < 0)
 						t = 0;
 
+					//Buffer is not used on NDF timecode, too many issues
 					boolean useBuffer = false;
 					if (preview.exists() || Shutter.caseAddSubtitles.isSelected())
 					{
 						preview.delete();
 					}					
-					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != time)
+					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != time && (Timecode.isNonDropFrame() == false || mouseIsPressed))
 					{
 						useBuffer = true;
 					}
@@ -942,7 +943,7 @@ public class VideoPlayer {
 								}
 							}
 						}
-						
+												
 						writeCurrentSubs(t);
 						
 						playerPlayVideo = false;
@@ -2189,7 +2190,7 @@ public class VideoPlayer {
 				}
 				else if (btnPlay.getName().equals("play"))
 				{									
-					if (bufferedFrames.size() > 0)
+					if (bufferedFrames.size() > 0 || preview.exists())
 					{				
 						//Clear the buffer
 						bufferedFrames.clear();						
@@ -2714,12 +2715,12 @@ public class VideoPlayer {
 					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerOutMark && mouseIsPressed)
 					{							
 						cursorWaveform.setLocation(playerInMark, 0);
-						updateGrpIn(slider.getValue());
+						updateGrpIn(playerCurrentFrame);
 					}
 					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerInMark && mouseIsPressed)
 					{			
 						cursorWaveform.setLocation(playerOutMark, 0);
-						updateGrpOut(slider.getValue() + 1);
+						updateGrpOut(playerCurrentFrame);
 					}		
 					
 					sliderChange = false;								
@@ -2731,8 +2732,13 @@ public class VideoPlayer {
 						} catch (InterruptedException e1) {}
 					} while (setTime.isAlive());
 
-					playerSetTime(slider.getValue());				
-										
+					if (Timecode.isNonDropFrame())
+					{
+						playerSetTime(playerCurrentFrame - 1);		
+					}
+					else
+						playerSetTime(playerCurrentFrame);		
+					
 					waveformContainer.repaint();
 					
 					waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -2785,8 +2791,7 @@ public class VideoPlayer {
 					{
 						playerOutMark = cursorWaveform.getX();
 						waveformContainer.repaint();
-					}
-					
+					}					
                 }
 			}
 
@@ -4442,11 +4447,11 @@ public class VideoPlayer {
 		//Scaling
 		int width = player.getWidth();
 		int height = player.getHeight();
-				
+						
 		//Crop & Pad
-		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
+		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && noGPU == false)
 		{			
-			filter += settings.Image.setScale("", false, true);
+			filter += settings.Image.setScale("", false);
 			filter += settings.Image.setPad("", false) + ",";
 		}
 		else			
@@ -4478,7 +4483,8 @@ public class VideoPlayer {
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto")
 		&& noGPU == false
 		&& mouseIsPressed == false
-		&& Colorimetry.setInputCodec(extension) == "")
+		&& Colorimetry.setInputCodec(extension) == ""
+		&& Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")))
 		{
 			String bitDepth = "nv12";
 			if (FFPROBE.imageDepth == 10)
