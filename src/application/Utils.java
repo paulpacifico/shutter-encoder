@@ -295,7 +295,7 @@ public class Utils extends Shutter {
 				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "FreeSans";
 			}
-			else if (getLanguage.equals(Locale.of("sl").getDisplayLanguage()))
+			else if (getLanguage.equals(Locale.of("sl").getDisplayLanguage()) || getLanguage.equals(Locale.of("cs").getDisplayLanguage()))
 			{
 				Shutter.montserratFont = "FreeSans";
 			}

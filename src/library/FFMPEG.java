@@ -798,6 +798,9 @@ public static StringBuilder errorLog = new StringBuilder();
 					        	       										
 					try {
 						
+						byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
+			            int bytesRead = 0;
+						
 				        boolean getRatio = true;
 				        
 						//Image sequence
@@ -813,13 +816,11 @@ public static StringBuilder errorLog = new StringBuilder();
 							
 							//Audio volume	
 							if (FFPROBE.hasAudio)						       
-							{
-								byte bytes[] = new byte[line.available()];
-								
+							{								
 								///Read 1 audio frame
 								try {
-									audioInputStream.read(bytes, 0, bytes.length);
-									line.write(bytes, 0, bytes.length);
+									bytesRead = audioInputStream.read(bytes, 0, bytes.length);
+					        		line.write(bytes, 0, bytesRead);
 								} catch (Exception e) {}
 							}
 		

@@ -183,6 +183,7 @@ public class Shutter {
 	public static String actualVersion = "17.2";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
+	public static long availableMemory;
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String magnetoFont = "Magneto";
 	public static String montserratFont = "Montserrat";
@@ -760,7 +761,7 @@ public class Shutter {
 	}
 
 	public Shutter() {
-			
+		
 		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
@@ -1160,7 +1161,9 @@ public class Shutter {
 		}
 			
 		if (Settings.btnDisableUpdate.isSelected() == false)
-			Update.newVersion();		
+			Update.newVersion();	
+		
+		availableMemory = Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
 	}
 	
 	private void topPanel() {
@@ -17809,13 +17812,13 @@ public class Shutter {
 		{
 			height = 662 - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
-			frame.setLocation(screenX, dim.height/2-frame.getSize().height/2);	
+			frame.setLocation(frame.getX(), dim.height/2-frame.getSize().height/2);	
 		}
 		else
 		{
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
-			frame.setLocation(screenX, 0);	
+			frame.setLocation(frame.getX(), 0);	
 		}		
 		
 		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
