@@ -136,7 +136,7 @@ public class Picture extends Shutter {
 						//Scaling									
 			        	if (VideoEncoders.setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
-			        		filterComplex = Image.setScale(filterComplex, false, false);	
+			        		filterComplex = Image.setScale(filterComplex, false);	
 			        		filterComplex = Image.setPad(filterComplex, false);		
 			        	}
 						
@@ -188,7 +188,7 @@ public class Picture extends Shutter {
 				        //Scaling
 				        if (VideoEncoders.setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode		
 			        	{
-				        	filterComplex = Image.setScale(filterComplex, false, false);
+				        	filterComplex = Image.setScale(filterComplex, false);
 				        	filterComplex = Image.setPad(filterComplex, false);		
 			        	}
 				        

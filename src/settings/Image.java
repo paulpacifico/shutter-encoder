@@ -146,7 +146,7 @@ public class Image extends Shutter {
 			return " -s 1920x1080";
 	}
 	
-	public static String setScale(String filterComplex, boolean limitToFHD, boolean isVideoPlayer) {	
+	public static String setScale(String filterComplex, boolean limitToFHD) {	
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
@@ -304,8 +304,7 @@ public class Image extends Shutter {
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
 				
-				if (isVideoPlayer == false)
-					filterComplex += ",hwdownload,format=" + bitDepth;
+				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
 			else if (autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
 			{
@@ -314,8 +313,7 @@ public class Image extends Shutter {
 					filterComplex = filterComplex.replace("yadif=", "yadif_cuda=");			
 					filterComplex = filterComplex.replace("scale=", "scale_cuda=");
 					
-					if (isVideoPlayer == false)
-						filterComplex += ",hwdownload,format=" + bitDepth;
+					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
 			}
 		}
