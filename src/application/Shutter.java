@@ -5798,8 +5798,12 @@ public class Shutter {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
 				switch (lbl48k.getText())
 				{
+					case "16k" :
+						lbl48k.setText("44.1k");
+						break;
 					case "44.1k" :
 						lbl48k.setText("48k");
 						break;
@@ -5810,7 +5814,7 @@ public class Shutter {
 						lbl48k.setText("192k");
 						break;
 					case "192k" :
-						lbl48k.setText("44.1k");
+						lbl48k.setText("16k");
 						break;
 				}
 			}
@@ -16252,6 +16256,20 @@ public class Shutter {
 					if (grpSetAudio.getHeight() > 74)
 						extendSections(grpSetAudio, 74);
 				}
+				else if (comboFonctions.getSelectedItem().toString().equals("WAV")
+				|| comboFonctions.getSelectedItem().toString().equals("AIFF")
+				|| comboFonctions.getSelectedItem().toString().equals("FLAC")
+				|| comboFonctions.getSelectedItem().toString().equals("ALAC")
+				|| comboFonctions.getSelectedItem().toString().equals("MP3")
+				|| comboFonctions.getSelectedItem().toString().equals("AAC")
+				|| comboFonctions.getSelectedItem().toString().equals("AC3")
+				|| comboFonctions.getSelectedItem().toString().equals("OPUS")
+				|| comboFonctions.getSelectedItem().toString().equals("OGG")
+				|| comboFonctions.getSelectedItem().toString().equals("Dolby Digital Plus")
+				|| comboFonctions.getSelectedItem().toString().equals("Dolby TrueHD"))
+				{
+					//Don't change anything
+				}
 				else //Editing codecs
 				{
 					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
@@ -20242,8 +20260,14 @@ public class Shutter {
 								grpImageFilter.setVisible(true);
 								grpImageFilter.setLocation(grpImageFilter.getX(),grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
 								grpSetTimecode.setVisible(false);
-								grpAdvanced.setVisible(false);
-								btnReset.setLocation(btnReset.getX(), grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
+
+								grpAdvanced.removeAll();
+								grpAdvanced.setVisible(true);
+								caseCreateTree.setLocation(7, 14);
+								grpAdvanced.add(caseCreateTree);					
+								grpAdvanced.setLocation(grpAdvanced.getX(), grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
+								
+								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 								
 							} else {
 								
