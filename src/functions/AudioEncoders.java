@@ -405,9 +405,8 @@ public class AudioEncoders extends Shutter {
 		}
 		else if (FFPROBE.stereo)
 		{
-			audio = "-map a:0 ";
 			if (audioFilter != "")     
-				audio += audioFilter.replaceFirst(",", " -filter_complex ") + " ";
+				audio = audioFilter.replaceFirst(",", " -filter_complex ") + " ";
 		}
 		else if (FFPROBE.channels > 1)
 		{

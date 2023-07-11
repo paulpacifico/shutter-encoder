@@ -69,9 +69,9 @@ public class ReplaceAudio extends Shutter {
 		{
 			fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", extension);
 		}
-		
+				
 		if (fileOut != null)
-		{					
+		{							
 			String audio = setAudio(extension, audioExt);
 			String shortest = " -t " + shortestLength + "ms";
 			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")))
@@ -117,23 +117,33 @@ public class ReplaceAudio extends Shutter {
 					if (liste.getSize() > 2)
 					{								
 						for (int i = 0 ; i < liste.getSize() ; i++)
-						{
-							//Allows to get the shortest file duration
-							FFPROBE.Data(liste.getElementAt(i));
-							
-							do {
-								Thread.sleep(100);
-							} while (FFPROBE.isRunning);
-							
-							if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
-								shortestLength = FFPROBE.totalLength;
-							
-							if (FFPROBE.FindStreams(liste.getElementAt(i)))
+						{			
+							//Ignore mute tracks
+							if (liste.getElementAt(i).contains("lavfi") == false)
 							{
-								videoStream ++;
-							}							
-						}		
-						
+								//Allows to get the shortest file duration
+								FFPROBE.Data(liste.getElementAt(i));
+								
+								do {
+									Thread.sleep(100);
+								} while (FFPROBE.isRunning);
+								
+								if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+								{
+									shortestLength = FFPROBE.totalLength;
+								}
+								
+								if (FFPROBE.FindStreams(liste.getElementAt(i)))
+								{
+									videoStream ++;
+								}
+							}
+							else
+							{
+								shortestLength = FFPROBE.totalLength;
+							}
+						}	
+												
 						//Start batch replace
 						if (videoStream > 1)
 						{
@@ -168,7 +178,7 @@ public class ReplaceAudio extends Shutter {
 										continue;
 									}
 								}
-
+								
 								//Start replacement
 								main(audioFiles, audioExt, videoFile);
 								
@@ -193,11 +203,15 @@ public class ReplaceAudio extends Shutter {
 							
 							shortestLength = FFPROBE.totalLength;
 							
-							FFPROBE.Data(liste.getElementAt(1));
-							
-							do {
-								Thread.sleep(100);
-							} while (FFPROBE.isRunning);
+							//Ignore mute tracks
+							if (liste.getElementAt(1).contains("lavfi") == false)
+							{
+								FFPROBE.Data(liste.getElementAt(1));
+								
+								do {
+									Thread.sleep(100);
+								} while (FFPROBE.isRunning);
+							}
 							
 							if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
 								shortestLength = FFPROBE.totalLength;
@@ -214,7 +228,12 @@ public class ReplaceAudio extends Shutter {
 							{
 								videoFile = new File(liste.getElementAt(0));		
 								audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
-								audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));								
+								
+								//Ignore mute tracks
+								if (liste.getElementAt(1).contains("lavfi") == false)
+								{
+									audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));								
+								}
 							}	
 																					
 							float offset = 0;
