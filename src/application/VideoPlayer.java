@@ -1842,14 +1842,23 @@ public class VideoPlayer {
 		}
 		else
 		{
-			String input = videoPath;
+			String input = " -i " + '"' + videoPath + '"';
 						
 			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) && Shutter.fileList.getSelectedIndex() + 1 < Shutter.liste.getSize())
 			{
-				input = Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1);
+				if (Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1).contains("lavfi"))
+				{
+					input =  " -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"';
+				}
+				else
+				{
+					input = " -i " + '"' + Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1) + '"';
+				}
+				
+				System.out.println();
 			}
 
-			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + input + '"' + speed + audioFade + duration + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
 		}		
 		
 	}

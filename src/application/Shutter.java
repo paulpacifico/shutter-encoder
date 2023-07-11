@@ -1748,6 +1748,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				liste.addElement(" -f lavfi -i anullsrc=r=" + lbl48k.getText() + ":cl=mono");
 			}
 		});
@@ -18429,18 +18430,19 @@ public class Shutter {
 								grpWatermark.setVisible(false);					
 								grpColorimetry.setVisible(false);						
 								grpImageAdjustement.setVisible(false);
-								grpCorrections.setVisible(false);
-								grpTransitions.setVisible(false);						
+								grpCorrections.setVisible(false);	
+								grpTransitions.setVisible(true);
 								grpImageSequence.setVisible(false);
 								grpImageFilter.setVisible(false);	
-								grpSetTimecode.setVisible(false);							
+								grpSetTimecode.setVisible(false);									
+								grpTransitions.setLocation(grpTransitions.getX(), grpAudio.getSize().height + grpAudio.getLocation().y + 6);
 								grpAdvanced.removeAll();
 								grpAdvanced.setVisible(true);
 								caseCreateTree.setLocation(7, 14);
 								grpAdvanced.add(caseCreateTree);
-								caseDRC.setLocation(7, caseCreateTree.getLocation().y + 17);
+								caseDRC.setLocation(7, caseCreateTree.getLocation().y + 17);								
 								grpAdvanced.add(caseDRC);						
-								grpAdvanced.setLocation(grpAdvanced.getX(), grpAudio.getSize().height + grpAudio.getLocation().y + 6);
+								grpAdvanced.setLocation(grpAdvanced.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 								
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 															
