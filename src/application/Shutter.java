@@ -6769,13 +6769,7 @@ public class Shutter {
 
 						selection.setBounds(x, y, width, height);
 						
-			        } catch (Exception er) {			        	
-	
-			        	if (comboPreset.getSelectedItem().toString() != "")
-			        	{
-			        		JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("wrongValue"), Shutter.language.getProperty("wrongFormat"), JOptionPane.ERROR_MESSAGE);
-			        	}
-			        }	
+			        } catch (Exception er) {}	
 				}
 			}
 			
@@ -17670,7 +17664,7 @@ public class Shutter {
 	public static void changeWidth(final boolean bigger) {
 						
 		String function = comboFonctions.getSelectedItem().toString();
-		
+				
 		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false)
 		{		
 			if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
@@ -17795,6 +17789,16 @@ public class Shutter {
 			
 		    lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
 		    lblYears.setVisible(false);
+		}
+		else if (bigger && frame.getSize().width > 332)
+		{
+			lblGpuDecoding.setVisible(true);
+			comboGPUDecoding.setVisible(true);
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				lblGpuFiltering.setVisible(true);
+				comboGPUFilter.setVisible(true);
+			}
 		}
 		
 		resizeAll(frame.getWidth(), 0);		
@@ -21281,6 +21285,11 @@ public class Shutter {
 
 			caseDisplay.setEnabled(false);
 			btnStart.setEnabled(true);
+			
+			lblGpuDecoding.setVisible(false);
+			comboGPUDecoding.setVisible(false);			
+			lblGpuFiltering.setVisible(false);
+			comboGPUFilter.setVisible(false);	
 			
 			if (inputDeviceIsRunning || caseStream.isSelected())
 			{

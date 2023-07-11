@@ -431,7 +431,7 @@ public class VideoPlayer {
 						{
 							frameIsComplete = false;
 										
-							playerSetTime(slider.getValue());
+							playerSetTime(playerCurrentFrame);
 						}	
 					}
 				}
@@ -672,10 +672,11 @@ public class VideoPlayer {
 						}   
 						else
 						{
+							/*
 							if (line!= null && closeAudioStream)				       
 							{
 								line.flush();	
-							}
+							}*/
 														
 							//IMPORTANT reduce CPU usage
 							do {
@@ -755,8 +756,6 @@ public class VideoPlayer {
 		        gainControl.setValue(dB);		        
 		        bytesRead = audioInputStream.read(bytes, 0, bytes.length);
         		line.write(bytes, 0, bytesRead);
-
-				playerAudio.waitFor();
 
 				try {
 					audio.close();
@@ -1849,7 +1848,7 @@ public class VideoPlayer {
 			{
 				input = Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1);
 			}
-			
+
 			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + input + '"' + speed + audioFade + duration + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
 		}		
 		
@@ -2176,7 +2175,7 @@ public class VideoPlayer {
 					
 					if (sliderSpeed.getValue() != 2)
 					{						
-						playerSetTime(slider.getValue());	
+						playerSetTime(playerCurrentFrame);	
 					}		
 					else
 					{
@@ -2939,7 +2938,7 @@ public class VideoPlayer {
 					{
 						frameIsComplete = false;
 									
-						playerSetTime(slider.getValue());	
+						playerSetTime(playerCurrentFrame);	
 					}					
 				}
 			}	
@@ -2981,7 +2980,7 @@ public class VideoPlayer {
 					{
 						frameIsComplete = false;
 									
-						playerSetTime(slider.getValue());	
+						playerSetTime(playerCurrentFrame);	
 					}	
 				}
 			}
@@ -3656,7 +3655,7 @@ public class VideoPlayer {
 				
 				frameIsComplete = false;
 							
-				playerSetTime(slider.getValue());
+				playerSetTime(playerCurrentFrame);
 			}
 
 		});
