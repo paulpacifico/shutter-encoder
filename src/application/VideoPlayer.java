@@ -672,11 +672,11 @@ public class VideoPlayer {
 						}   
 						else
 						{
-							/*
-							if (line!= null && closeAudioStream)				       
+							
+							if (line!= null && closeAudioStream && sliderChange == false && frameControl == false)		       
 							{
 								line.flush();	
-							}*/
+							}
 														
 							//IMPORTANT reduce CPU usage
 							do {
@@ -3661,6 +3661,12 @@ public class VideoPlayer {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				if (bufferedFrames.size() > 0)
+				{				
+					//Clear the buffer
+					bufferedFrames.clear();						
+				}
 				
 				frameIsComplete = false;
 							

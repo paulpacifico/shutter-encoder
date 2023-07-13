@@ -87,6 +87,7 @@ import javax.swing.text.StyleConstants;
 import org.apache.commons.io.FileUtils;
 
 import library.FFPROBE;
+import settings.Timecode;
 
 public class SubtitlesTimeline {
 
@@ -1314,6 +1315,8 @@ public class SubtitlesTimeline {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
+				VideoPlayer.mouseIsPressed = true;
+				
 				frame.requestFocus();
 				
 				VideoPlayer.sliderChange = true;
@@ -1338,7 +1341,25 @@ public class SubtitlesTimeline {
 			@Override
 			public void mouseReleased(MouseEvent e) {	
 				
-				VideoPlayer.sliderChange = false;						
+				VideoPlayer.mouseIsPressed = false;
+				
+				VideoPlayer.sliderChange = false;	
+				
+				//Reload the frame to apply bicubic filter					
+				do {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e1) {}
+				} while (VideoPlayer.setTime.isAlive());
+
+				if (Timecode.isNonDropFrame())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame - 1);		
+				}
+				else
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);		
+				
+				timeline.repaint();
 
 				//Then refresh the slider position
 				VideoPlayer.getTimePoint(VideoPlayer.playerCurrentFrame - 1);

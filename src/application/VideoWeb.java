@@ -717,7 +717,7 @@ public class VideoWeb {
 							Shutter.btnStart.setEnabled(false);
 						
 						    //Download	    
-							YOUTUBEDL.run(line, options());
+							YOUTUBEDL.run('"' + line + '"', options());
 							
 						       do { 
 						    	   Thread.sleep(100);		
