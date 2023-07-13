@@ -35,6 +35,7 @@ import settings.InputAndOutput;
 public class ReplaceAudio extends Shutter {
 	
 	private static int shortestLength = 0;
+	private static int videoStream = 0;
 	
 	private static void main(String audioFiles, String audioExt, File videoFile) throws InterruptedException {
 		
@@ -74,7 +75,7 @@ public class ReplaceAudio extends Shutter {
 		{							
 			String audio = setAudio(extension, audioExt);
 			String shortest = " -t " + shortestLength + "ms";
-			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")))
+			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
 				shortest = "";
 								
 			//Command				
@@ -113,37 +114,44 @@ public class ReplaceAudio extends Shutter {
 					File videoFile = null;
 					
 					//Batch replace video analyze
-					int videoStream = 0;							
-					if (liste.getSize() > 2)
+					videoStream = 0;							
+					if (liste.getSize() >= 2)
 					{								
 						for (int i = 0 ; i < liste.getSize() ; i++)
 						{			
 							//Ignore mute tracks
 							if (liste.getElementAt(i).contains("lavfi") == false)
 							{
-								//Allows to get the shortest file duration
-								FFPROBE.Data(liste.getElementAt(i));
-								
-								do {
-									Thread.sleep(100);
-								} while (FFPROBE.isRunning);
-								
-								if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+								if (videoStream <= 1)
 								{
-									shortestLength = FFPROBE.totalLength;
+									//Allows to get the shortest file duration
+									FFPROBE.Data(liste.getElementAt(i));
+									
+									do {
+										Thread.sleep(100);
+									} while (FFPROBE.isRunning);
+									
+									if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+									{
+										shortestLength = FFPROBE.totalLength;
+									}
 								}
 								
 								if (FFPROBE.FindStreams(liste.getElementAt(i)))
 								{
-									videoStream ++;
+									videoStream ++;									
+									if (videoStream > 1)
+									{
+										break;
+									}
 								}
 							}
 							else
 							{
 								shortestLength = FFPROBE.totalLength;
 							}
-						}	
-												
+						}
+						
 						//Start batch replace
 						if (videoStream > 1)
 						{
@@ -152,6 +160,18 @@ public class ReplaceAudio extends Shutter {
 								if (i % 2 == 0)
 								{
 									videoFile = new File(liste.getElementAt(i));
+								
+									//Allows to get the shortest file duration
+									FFPROBE.Data(liste.getElementAt(i+1));
+									
+									do {
+										Thread.sleep(100);
+									} while (FFPROBE.isRunning);
+									
+									if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+									{
+										shortestLength = FFPROBE.totalLength;
+									}
 									
 									if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) && caseChangeAudioCodec.isSelected())
 									{
@@ -193,29 +213,7 @@ public class ReplaceAudio extends Shutter {
 					if (liste.getSize() <= 2 || videoStream == 1) //Replace one video file
 					{
 						if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) == false || caseChangeAudioCodec.isSelected() == false)
-						{		
-							//Allows to get the shortest file duration
-							FFPROBE.Data(liste.getElementAt(0));
-							
-							do {
-								Thread.sleep(100);
-							} while (FFPROBE.isRunning);
-							
-							shortestLength = FFPROBE.totalLength;
-							
-							//Ignore mute tracks
-							if (liste.getElementAt(1).contains("lavfi") == false)
-							{
-								FFPROBE.Data(liste.getElementAt(1));
-								
-								do {
-									Thread.sleep(100);
-								} while (FFPROBE.isRunning);
-							}
-							
-							if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
-								shortestLength = FFPROBE.totalLength;
-							
+						{									
 							//Stream analyze		
 							if (FFPROBE.FindStreams(liste.getElementAt(1)))
 							{

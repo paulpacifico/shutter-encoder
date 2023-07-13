@@ -121,7 +121,7 @@ public static String format = "";
 					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());
 		                
 					    if (lineOutput != null)
-						{			    	
+					    {
 					    	if (lineOutput.contains("Destination"))
 					    	{
 					    		 lblCurrentEncoding.setText(lineOutput.substring(24).replace(lblDestination1.getText(), "").substring(1));
@@ -153,8 +153,8 @@ public static String format = "";
 			       				else
 			       					lblArrows.setVisible(true);
 						    }
-						}
-						          						        		
+					    }
+					    						          						        		
 					} while(lineOutput != null && Shutter.cancelled == false);	
 					
 					process.waitFor();
