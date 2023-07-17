@@ -180,7 +180,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.2";
+	public static String actualVersion = "17.3";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -2860,11 +2860,18 @@ public class Shutter {
 					}
 					else
 					{
-						//Scan dossier
+						//Scan Folder
 						if (scan.getText().equals(language.getProperty("menuItemStopScan")) && scanIsRunning == false)
-								JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("dragFolderToDestination"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.INFORMATION_MESSAGE);
+						{
+							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("dragFolderToDestination"), Shutter.language.getProperty("chooseDestinationFolder"), JOptionPane.INFORMATION_MESSAGE);
+						}
 						else
 						{
+							if (inputDeviceIsRunning)
+							{
+								VideoPlayer.playerStop();
+							}
+							
 							String function = comboFonctions.getSelectedItem().toString();
 							if (language.getProperty("functionCut").equals(function)) 
 							{

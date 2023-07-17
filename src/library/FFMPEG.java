@@ -1238,10 +1238,10 @@ public static StringBuilder errorLog = new StringBuilder();
 						//Get devices Mac
 						if (cmd.contains("avfoundation") && line.contains("]")) 
 						{	
-							if (isAudioDevices)
+							if (isAudioDevices && line.contains("Error") == false)
 							{								
 								String s[] = line.split("\\]");
-								
+									
 								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.ISO_8859_1);
 								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
 								

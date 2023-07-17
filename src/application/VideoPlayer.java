@@ -1787,7 +1787,7 @@ public class VideoPlayer {
 			
 			if (Shutter.inputDeviceIsRunning)
 			{
-				cmd = " " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
+				cmd = " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
 			}
 
 			Console.consoleFFMPEG.append(System.lineSeparator() + cmd + System.lineSeparator());
@@ -2376,7 +2376,7 @@ public class VideoPlayer {
                 }
                 else
                 {               	
-                	if (Shutter.windowDrag || isPiping)
+                	if (Shutter.windowDrag || isPiping || Shutter.inputDeviceIsRunning)
                 	{                	
                 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                 		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
@@ -4463,7 +4463,7 @@ public class VideoPlayer {
 		int height = player.getHeight();
 						
 		//Crop & Pad
-		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && noGPU == false)
+		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
 		{			
 			filter += settings.Image.setScale("", false);
 			filter += settings.Image.setPad("", false) + ",";
@@ -4492,7 +4492,11 @@ public class VideoPlayer {
 
 		String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 		
-		if (FFMPEG.isGPUCompatible
+		if (Shutter.inputDeviceIsRunning)
+		{
+			filter += "null";
+		}
+		else if (FFMPEG.isGPUCompatible
 		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto")
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto")
 		&& noGPU == false
