@@ -1,5 +1,5 @@
 <img align=left src="https://www.shutterencoder.com/images/icon.png" width="64">
-<h1>Shutter Encoder v17.2</h1>
+<h1>Shutter Encoder v17.3</h1>
 
 ![logo](/SocialBanner.png)
 
