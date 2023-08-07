@@ -92,6 +92,7 @@ public class Utils extends Shutter {
 	public final static String password = "";
 	
 	public static Thread loadEncFile;
+	public static String hwaccel = "";
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -1261,7 +1262,7 @@ public class Utils extends Shutter {
 	
 					try {
 						
-						doNotLoadImage = true;
+						doNotLoadImage = true;					
 						
 						File fXmlFile = encFile;
 						DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -1345,6 +1346,11 @@ public class Utils extends Shutter {
 														doNotLoadImage = false;
 													}
 													
+													if (p.getName().equals("comboAccel"))
+													{																											
+														hwaccel = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
+													}
+													
 													if (p.getName().equals("comboLUTs"))
 													{
 														comboLUTs.setSelectedIndex(10);
@@ -1383,7 +1389,7 @@ public class Utils extends Shutter {
 																VideoPlayer.frameIsComplete = true;
 																						
 														} while (VideoPlayer.frameIsComplete == false);
-														
+																	
 														doNotLoadImage = true;
 													}
 												}
@@ -1474,7 +1480,7 @@ public class Utils extends Shutter {
 					finally {
 						
 						doNotLoadImage = false;
-									
+						
 						//grpCrop
 						if (caseEnableCrop.isSelected())
 						{
@@ -1561,16 +1567,27 @@ public class Utils extends Shutter {
 						if (Functions.frame != null)
 						{
 							Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+							iconPresets.setVisible(true);
+							if (iconList.isVisible())
+							{
+								iconPresets.setLocation(iconList.getX() + iconList.getWidth() + 2, 45);
+								btnCancel.setBounds(207 + iconList.getWidth(), 46, 101 - iconList.getWidth() -  4, 21);
+							}
+							else
+							{
+								iconPresets.setBounds(180, 45, 21, 21);
+								btnCancel.setBounds(207, 46, 97, 21);
+							}
+							
+							Utils.changeFrameVisibility(Functions.frame, true);
 						}
 						
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						
 						//IMPORTANT
 						Shutter.resizeAll(Shutter.frame.getWidth(), 0); 
-						Shutter.frame.repaint();
-						
-						if (Functions.frame != null)
-							Functions.frame.toFront();
+						Shutter.frame.repaint();						
 					}
 									
 				}

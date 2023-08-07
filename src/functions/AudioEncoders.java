@@ -130,7 +130,13 @@ public class AudioEncoders extends Shutter {
 						{	
 							case "AAC":
 								
-								audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k";		
+								if (System.getProperty("os.name").contains("Mac"))
+								{
+									audioCodec = "aac_at -b:a " + comboFilter.getSelectedItem().toString() + "k";	
+								}
+								else
+									audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k";	
+								
 								container = ".m4a";	
 								stereoOutput = false;
 								break;

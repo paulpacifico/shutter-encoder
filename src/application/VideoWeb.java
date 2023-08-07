@@ -39,7 +39,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
-import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -120,7 +119,7 @@ public class VideoWeb {
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	        shape1.add(shape2);
 			frame.setShape(shape1);

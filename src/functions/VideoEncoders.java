@@ -790,7 +790,7 @@ public class VideoEncoders extends Shutter {
 							gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
 						}							
 
-						if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
+						if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("VAAPI"))			
 						{
 							gpuDecoding += " -vaapi_device /dev/dri/renderD128";
 						}
@@ -806,7 +806,7 @@ public class VideoEncoders extends Shutter {
 			    			}	
 			    			
 			    			//When there is no filter AND it's 8bit only
-			    			if (filterComplex.contains("format=" + bitDepth + "[out]") && caseAccel.isSelected() && caseColorspace.isSelected() == false)
+			    			if (filterComplex.contains("format=" + bitDepth + "[out]") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && caseColorspace.isSelected() == false)
 			    			{
 			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, "");
 			    			}
@@ -1043,7 +1043,7 @@ public class VideoEncoders extends Shutter {
 		{
 			case "AV1":
 		
-				if (caseAccel.isSelected())
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
@@ -1091,7 +1091,7 @@ public class VideoEncoders extends Shutter {
 				
 			case "H.264":
 				
-				if (caseAccel.isSelected())
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 						return " -c:v h264_nvenc -b_ref_mode 0";	
@@ -1115,7 +1115,7 @@ public class VideoEncoders extends Shutter {
 			
 			case "H.265":
 				
-				if (caseAccel.isSelected())
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 						return " -c:v hevc_nvenc -b_ref_mode 0";	
@@ -1162,11 +1162,11 @@ public class VideoEncoders extends Shutter {
 			
 			case "VP9":
 				
-				if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 				{
 					return " -c:v vp9_qsv -row-mt 1";
 				}
-		    	else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))
+		    	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("VAAPI"))
 		    	{
 		    		return " -c:v vp9_vaapi -row-mt 1";
 		    	}
@@ -1183,7 +1183,7 @@ public class VideoEncoders extends Shutter {
 				
 			case "Apple ProRes":
 				
-				if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.name").contains("Mac"))
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.name").contains("Mac"))
 				{
 					switch (comboFilter.getSelectedItem().toString())
 					{					
@@ -1430,11 +1430,11 @@ public class VideoEncoders extends Shutter {
 				if (lblVBR.getText().equals("CQ"))
 		        {
 					String gpu = "";
-					if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
 						gpu = " -qp " + FunctionUtils.setVideoBitrate();
 					}
-					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+					else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{
 						gpu = " -global_quality " + FunctionUtils.setVideoBitrate();
 					}
@@ -1493,26 +1493,26 @@ public class VideoEncoders extends Shutter {
 				if (lblVBR.getText().equals("CQ"))
 		        {
 		    		String gpu = "";
-					if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
 						gpu = " -qp " + FunctionUtils.setVideoBitrate();
 					}
-					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+					else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{
 						gpu = " -global_quality " + FunctionUtils.setVideoBitrate();
 					}
-					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+					else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 					{
 						gpu = " -qp_i " + FunctionUtils.setVideoBitrate() + " -qp_p " + FunctionUtils.setVideoBitrate() + " -qp_b " + FunctionUtils.setVideoBitrate();        			
 					}
-					else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 					{
 						gpu = " -q:v " + (31 - (int) Math.ceil((FunctionUtils.setVideoBitrate() * 31) / 51));
 					}
 						
 		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu + limitedBitrate;          
 		        }
-				else if (lblVBR.getText().equals("CBR") && caseAccel.isSelected())
+				else if (lblVBR.getText().equals("CBR") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 		        {
 		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k -rc cbr";
 		        }

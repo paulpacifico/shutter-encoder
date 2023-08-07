@@ -372,10 +372,10 @@ public static boolean hasAlpha = false;
 						            if (line.contains("fps")) 
 						            {						            	
 						                String str[] = line.split("fps");
-						                	
+						                							                
 						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
 						                
-						                currentFPS = Float.parseFloat(str[1]);
+						                currentFPS = Float.parseFloat(str[1].replace("k", "")); //I don't know why there is a 'k' character with dv files...
 						                
 						                //Used for VFR						      
 						                str = String.valueOf(currentFPS).split("\\.");	

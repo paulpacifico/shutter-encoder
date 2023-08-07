@@ -125,7 +125,7 @@ public static Process process;
 						
 						while ((line = input.readLine()) != null) {							
 						    Console.consoleFFMPEG.append(line + System.lineSeparator());																		
-						}//While														
+						}													
 						process.waitFor();
 										
 						} catch (IOException | InterruptedException e) {

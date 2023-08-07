@@ -176,7 +176,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		else
 		{
 			isRunning = true;
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false)
+			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && screenshotIsRunning == false)
 				disableAll();
 			
 			runProcess = new Thread(new Runnable()  {
@@ -617,7 +617,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
 					}
 					
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + concat + " -v quiet "  + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
+					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + concat + " -v quiet "  + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav pipe:-");	
 					processAudio = pba.start();
 				}
 			}
@@ -644,7 +644,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
 					}
 					
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + concat + " -v quiet " + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-");	
+					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + concat + " -v quiet " + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav pipe:-");	
 					processAudio = pba.start();
 				}
 			}	
@@ -798,7 +798,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					        	       										
 					try {
 						
-						byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
+						byte bytes[] = new byte[(int) Math.ceil(48000*2/FFPROBE.currentFPS)];
 			            int bytesRead = 0;
 						
 				        boolean getRatio = true;
@@ -983,7 +983,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						while ((line = input.readLine()) != null) {						
 							
 							Console.consoleFFMPEG.append(line + System.lineSeparator() );		
-							
+														
 							//Errors
 							checkForErrors(line);																										
 						}			
@@ -1081,7 +1081,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							if (FFMPEG.error == false)
 								qsvAvailable = true;
 							
-							if (caseAccel.isSelected())
+							if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 							{								
 								if (comboAccel.getSelectedItem().equals("Intel Quick Sync")) //Cannot use CUDA decoding with QSV encoding
 								{
@@ -1586,12 +1586,15 @@ public static StringBuilder errorLog = new StringBuilder();
 		}  	    
 	    	    
 		  //Progression
-		  if (line.contains("time=") && lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
-									 && lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
-									 && lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
+		  if (line.contains("time=") && line.contains("N/A") == false
+		  && lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
+		  && lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
+		  && lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
 		  {		  
 			  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
 			  	error = false;
+			  	
+			  	System.out.println(line);
 			  	
 		  		String str = line.substring(line.indexOf(":") - 2);
 	    		String[] split = str.split("b");	 

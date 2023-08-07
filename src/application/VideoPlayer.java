@@ -87,6 +87,7 @@ import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
 import library.PDF;
+import library.WAIFU2X;
 import settings.AdvancedFeatures;
 import settings.Colorimetry;
 import settings.Corrections;
@@ -575,7 +576,7 @@ public class VideoPlayer {
 				@Override
 				public void run() {
 					
-					byte bytes[] = new byte[(int) Math.ceil(FFPROBE.audioSampleRate*4/FFPROBE.currentFPS)];
+					byte bytes[] = new byte[(int) Math.ceil(48000*2/FFPROBE.currentFPS)];
 		            int bytesRead = 0;
 
 		            boolean inputAudioStreamIsDone = false;
@@ -652,9 +653,9 @@ public class VideoPlayer {
 								else if (playerPlayVideo)
 								{										
 					            	long delay = startTime - System.nanoTime();
-					                				
+					                			
 					            	if (delay > 0)
-					            	{		      
+					            	{						            		
 					            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
 						            	try {
 						            		Thread.sleep((int) (delay / 1500000));
@@ -822,7 +823,7 @@ public class VideoPlayer {
 	
 	public static void playerSetTime(float time) {
 							
-		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2)
+		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
 		{				
 			setTime = new Thread(new Runnable() {
 
@@ -977,7 +978,7 @@ public class VideoPlayer {
 									Thread.sleep(1);
 								} catch (InterruptedException e) {}
 								
-								if (System.currentTimeMillis() - time > 1000)
+								if (System.currentTimeMillis() - time > 5000)
 									frameIsComplete = true;
 															
 							} while (frameIsComplete == false);
@@ -1021,11 +1022,11 @@ public class VideoPlayer {
 					playerPlayVideo = false;
 					
 					if (playerThread != null)
-					{
+					{						
 						playerStop();
 						do {
 							try {
-								Thread.sleep(1);
+								Thread.sleep(10);
 							} catch (InterruptedException e) {}
 						} while (playerThread.isAlive());	
 					}
@@ -1043,7 +1044,7 @@ public class VideoPlayer {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {}
 						
-						if (System.currentTimeMillis() - time > 1000)
+						if (System.currentTimeMillis() - time > 5000)
 							frameIsComplete = true;
 													
 					} while (frameIsComplete == false);
@@ -1063,379 +1064,404 @@ public class VideoPlayer {
 		
     public static void setMedia() {
 
-      	if (FFMPEG.isRunning == false
-    	|| (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
-    	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume")) == false
-    	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false))
-    	{
-   	    	//Updating video file
-			if (Shutter.liste.getSize() > 0)
-			{				
-				if (Shutter.fileList.getSelectedIndices().length == 0)
-	      		{
-					Shutter.fileList.setSelectedIndex(0);
-	      		}
-												
-				//set timecode & Shutter.fileName locations
-				refreshTimecodeAndText();				
-				
-				if (Shutter.scanIsRunning)
-				{
-					File dir = new File(Shutter.liste.firstElement());
-					for (File f : dir.listFiles()) {
-						if (f.isHidden() == false && f.isFile()) {
-							videoPath = f.toString();
-							break;
-						}
-					}
-				} 
-				
-				//Reset when changing file													
-				if (Shutter.fileList.getSelectedValue().equals(videoPath) == false)
-				{		
-					if (Shutter.scanIsRunning == false)
-						videoPath = Shutter.fileList.getSelectedValue();
-										
-					if (preview.exists())
-						preview.delete();
-					
-					if (waveform.exists())
-						waveform.delete();
-										
-					if (FFMPEG.isRunning)
-						FFMPEG.process.destroy();
-											
-					String extension = videoPath.substring(videoPath.lastIndexOf("."));	
-					
-					try {
-						
-						if (extension.toLowerCase().equals(".pdf"))
-						{	
-							PDF.info(videoPath);	
-							do
-							{
-								Thread.sleep(100);						 
-							}
-							while (PDF.isRunning);								 
-						}				
-						else
-						{						
-							FFPROBE.Data(videoPath);
-							do 
-							{								
-								Thread.sleep(100);								
-							} 
-							while (FFPROBE.isRunning);	
-							
-							FFPROBE.FrameData(videoPath);	
-							do 
-							{								
-								Thread.sleep(100);								
-							} 
-							while (FFPROBE.isRunning);
-							
-							FFMPEG.checkGPUCapabilities(videoPath, true);
-							
-							if (FFPROBE.interlaced == null)
-							{
-								MEDIAINFO.run(videoPath, false);
-								
-								do
-								{
-									Thread.sleep(100);
-								}
-								while (MEDIAINFO.isRunning);
-								
-								if (FFPROBE.interlaced == null)
-								{
-									FFPROBE.interlaced = "0";
-									FFPROBE.fieldOrder = "0";
-								}
-							}
-	
-							boolean isRaw = false;
-				    		
-							//FFprobe with RAW files
-							switch (extension.toLowerCase()) { 
-								case ".3fr":
-								case ".arw":
-								case ".crw":
-								case ".cr2":
-								case ".cr3":
-								case ".dng":
-								case ".kdc":
-								case ".mrw":
-								case ".nef":
-								case ".nrw":
-								case ".orf":
-								case ".ptx":
-								case ".pef":
-								case ".raf":
-								case ".r3d":
-								case ".rw2":
-								case ".srw":
-								case ".x3f":
-									isRaw = true;
-							}
-											
-							if (isRaw || Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG")
-							|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionPicture")))
-							{
-								EXIFTOOL.run(videoPath);	
-								do
-								{
-									Thread.sleep(100);						 
-								}
-								while (EXIFTOOL.isRunning);
-							}
-						}
-												
-					} catch (InterruptedException e) {}
-						
-					setPlayerButtons(true);	
-					
-					seekOnKeyFrames = false;
-					
-					if (FFPROBE.audioOnly == false
-					&& (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut"))
-					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))
-					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionConform"))))
-					{
-						FFPROBE.AnalyzeGOP(videoPath, false);
-						do {
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e) {}
-							
-							if (FFPROBE.gopCount > 2)
-							{
-								seekOnKeyFrames = true;
-								FFPROBE.process.destroy();
-								break;
-							}
-						} while (FFPROBE.isRunning);	
-					}
-					else
-					{
-						Shutter.caseEnableCrop.setEnabled(true);
-						Shutter.caseAddWatermark.setEnabled(true);
-						Shutter.caseSafeArea.setEnabled(true);
-					}
-					
-					//Image sequence
-					if (Shutter.caseEnableSequence.isSelected())
-					{	
-						//Create the concat text file
-						FunctionUtils.setConcat(new File("concat.txt"), Shutter.dirTemp);						
-						inputFramerateMS = Float.parseFloat(Shutter.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
-					}
-					else					
-						inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);		
-					
-					totalFrames = (float) Math.round(FFPROBE.totalLength / inputFramerateMS);
-					playerCurrentFrame = 0;
-	
-					caseInternalTc.setEnabled(true);	
-					Shutter.caseShowTimecode.setEnabled(true);
-					
-					Shutter.textSubsWidth.setText(String.valueOf(FFPROBE.imageWidth));
-					
-					if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
-					{
-						String vcodec = FFPROBE.videoCodec.replace("video", "");
-						for (String s : Shutter.functionsList)
-						{
-							if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
-							|| s.toLowerCase().contains(vcodec.toLowerCase()))
-							{
-								vcodec = s;
-								break;
-							}
-							else
-								vcodec = vcodec.toUpperCase();
-						}
-						
-						showScale.setText(FFPROBE.imageResolution + " " + vcodec);
-					}
-					else
-						showScale.setText(FFPROBE.imageResolution);
-					
-					btnPlay.setEnabled(true);
-					btnPrevious.setEnabled(true);
-					btnNext.setEnabled(true);
-					btnStop.setEnabled(true);
-					btnMarkIn.setEnabled(true);
-					btnMarkOut.setEnabled(true);
-					btnGoToIn.setEnabled(true);
-					btnGoToOut.setEnabled(true);	
-					
-					caseInH.setEnabled(true);
-					caseInM.setEnabled(true);
-					caseInS.setEnabled(true);
-					caseInF.setEnabled(true);
-					caseOutH.setEnabled(true);
-					caseOutM.setEnabled(true);
-					caseOutS.setEnabled(true);
-					caseOutF.setEnabled(true);
-					
-					if (FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
-					{
-						lblPosition.setVisible(true);
-						lblDuration.setVisible(true);
-					}
-					
-					btnStop.doClick();
-					
-					playerInMark = 0;
-					playerOutMark = waveformContainer.getWidth() - 2;
-					
-					waveformContainer.repaint();
-					
-					//Reset boxes
-					updateGrpIn(0);
-					updateGrpOut(FFPROBE.totalLength);
-					slider.setMaximum((int) (totalFrames));
-									
-					//Setup fileList
-					getFileList(videoPath);
-					setFileList();				
-				}	
-				
-				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-			else
-			{				
-				btnStop.doClick();
-				
-				videoPath = null;
-				showScale.setVisible(false);
-				playerStop();
-				slider.setValue(0);
-	
-				btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));	
-				btnPlay.setName("play");
-				
-				btnPlay.setEnabled(false);
-				btnPrevious.setEnabled(false);
-				btnNext.setEnabled(false);
-				btnStop.setEnabled(false);
-				btnMarkIn.setEnabled(false);
-				btnMarkOut.setEnabled(false);
-				btnGoToIn.setEnabled(false);
-				btnGoToOut.setEnabled(false);
-				
-				caseInH.setEnabled(false);
-				caseInM.setEnabled(false);
-				caseInS.setEnabled(false);
-				caseInF.setEnabled(false);
-				caseOutH.setEnabled(false);
-				caseOutM.setEnabled(false);
-				caseOutS.setEnabled(false);
-				caseOutF.setEnabled(false);
-				
-				caseInternalTc.setEnabled(false);	
-				caseInternalTc.setSelected(false);		
-				
-				lblPosition.setVisible(false);
-				lblDuration.setVisible(false);	
-				
-				if (waveform.exists())
-				{
-					waveform.delete();
-					waveformIcon.setIcon(null);
-					waveformIcon.repaint();
-				}
-			}
-			
-			if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("processEnded")))
-			{
-				Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
-			}
-			
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-			{
-				caseInH.setVisible(false);
-				caseInM.setVisible(false);
-				caseInS.setVisible(false);
-				caseInF.setVisible(false);
-				caseOutH.setVisible(false);
-				caseOutM.setVisible(false);
-				caseOutS.setVisible(false);
-				caseOutF.setVisible(false);
-			}
-			else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
-			{
-				caseInH.setVisible(true);
-				caseInM.setVisible(true);
-				caseInS.setVisible(true);
-				caseInF.setVisible(true);
-				caseOutH.setVisible(false);
-				caseOutM.setVisible(false);
-				caseOutS.setVisible(false);
-				caseOutF.setVisible(false);
-			}
-			else if (waveformContainer.isVisible())
-			{
-				caseInH.setVisible(true);
-				caseInM.setVisible(true);
-				caseInS.setVisible(true);
-				caseInF.setVisible(true);
-				caseOutH.setVisible(true);
-				caseOutM.setVisible(true);
-				caseOutS.setVisible(true);
-				caseOutF.setVisible(true);
-			}		
-				
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-			{				
-				File video = new File(VideoPlayer.videoPath);
-				String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
-				
-				SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
-				SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
-							
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-	    		Shutter.frame.setLocation(Shutter.frame.getLocation().x , dim.height/3 - Shutter.frame.getHeight()/2);
-	
-	    		if (Shutter.caseAddSubtitles.isSelected())
-	    		{
-	    			VideoPlayer.player.remove(Shutter.subsCanvas);
-					Shutter.caseAddSubtitles.setSelected(false);	    	
-	    		}
-					    		    	
-	    		if (SubtitlesTimeline.frame == null) 
-	    		{	    	
-	    			new SubtitlesTimeline(dim.width/2-500,Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);		
-	    		}
-	    		else
-	    		{
-	    			SubtitlesTimeline.frame.setVisible(true);
-					SubtitlesTimeline.subtitlesNumber();					
-					SubtitlesTimeline.timeline.remove(SubtitlesTimeline.waveform);
-					SubtitlesTimeline.repaintTimeline();
-					SubtitlesTimeline.timeline.removeAll();
-					SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);	
-	    		}
-	    		
-	    		playerFreeze();	
-	    		
-				Shutter.btnStart.setEnabled(false);						    		
-				Shutter.comboFonctions.setEnabled(false);	
-				
-				//IMPORTANT Correct focus bug on Mac
-				Shutter.frame.setVisible(false);
-				Shutter.frame.setVisible(true);
-			}
-			else		
-				resizeAll();
-					
-			if (Shutter.fileList.hasFocus() == false)
-			{
-				waveformContainer.requestFocus();
-			}
-    	}
+    	Thread t = new Thread(new Runnable()
+		{
+    		@Override
+    		public void run()
+    		{
+    			if (FFMPEG.isRunning == false
+    			    	|| (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
+    			    	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume")) == false
+    			    	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false))
+    			    	{
+    			   	    	//Updating video file
+    						if (Shutter.liste.getSize() > 0)
+    						{				
+    							if (Shutter.fileList.getSelectedIndices().length == 0)
+    				      		{
+    								Shutter.fileList.setSelectedIndex(0);
+    				      		}
+    															
+    							//set timecode & Shutter.fileName locations
+    							refreshTimecodeAndText();				
+    							
+    							if (Shutter.scanIsRunning)
+    							{
+    								File dir = new File(Shutter.liste.firstElement());
+    								for (File f : dir.listFiles()) {
+    									if (f.isHidden() == false && f.isFile()) {
+    										videoPath = f.toString();
+    										break;
+    									}
+    								}
+    							} 
+    							
+    							//Reset when changing file													
+    							if (Shutter.fileList.getSelectedValue().equals(videoPath) == false)
+    							{		
+    								if (Shutter.scanIsRunning == false)
+    									videoPath = Shutter.fileList.getSelectedValue();
+    													
+    								if (preview.exists())
+    									preview.delete();
+    								
+    								if (waveform.exists())
+    									waveform.delete();
+    													
+    								if (FFMPEG.isRunning)
+    									FFMPEG.process.destroy();
+    														
+    								String extension = videoPath.substring(videoPath.lastIndexOf("."));	
+    								
+    								try {
+    									
+    									if (extension.toLowerCase().equals(".pdf"))
+    									{	
+    										PDF.info(videoPath);	
+    										do
+    										{
+    											Thread.sleep(100);						 
+    										}
+    										while (PDF.isRunning);								 
+    									}				
+    									else
+    									{						
+    										FFPROBE.Data(videoPath);
+    										do 
+    										{								
+    											Thread.sleep(100);								
+    										} 
+    										while (FFPROBE.isRunning);	
+    										
+    										FFPROBE.FrameData(videoPath);	
+    										do 
+    										{								
+    											Thread.sleep(100);								
+    										} 
+    										while (FFPROBE.isRunning);
+    										
+    										FFMPEG.checkGPUCapabilities(videoPath, true);
+    										
+    										if (FFPROBE.interlaced == null)
+    										{
+    											MEDIAINFO.run(videoPath, false);
+    											
+    											do
+    											{
+    												Thread.sleep(100);
+    											}
+    											while (MEDIAINFO.isRunning);
+    											
+    											if (FFPROBE.interlaced == null)
+    											{
+    												FFPROBE.interlaced = "0";
+    												FFPROBE.fieldOrder = "0";
+    											}
+    										}
+    				
+    										boolean isRaw = false;
+    							    		
+    										//FFprobe with RAW files
+    										switch (extension.toLowerCase()) { 
+    											case ".3fr":
+    											case ".arw":
+    											case ".crw":
+    											case ".cr2":
+    											case ".cr3":
+    											case ".dng":
+    											case ".kdc":
+    											case ".mrw":
+    											case ".nef":
+    											case ".nrw":
+    											case ".orf":
+    											case ".ptx":
+    											case ".pef":
+    											case ".raf":
+    											case ".r3d":
+    											case ".rw2":
+    											case ".srw":
+    											case ".x3f":
+    												isRaw = true;
+    										}
+    														
+    										if (isRaw || Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG")
+    										|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionPicture")))
+    										{
+    											EXIFTOOL.run(videoPath);	
+    											do
+    											{
+    												Thread.sleep(100);						 
+    											}
+    											while (EXIFTOOL.isRunning);
+    										}
+    									}
+    															
+    								} catch (InterruptedException e) {}
+    									
+    								setPlayerButtons(true);	
+    								
+    								seekOnKeyFrames = false;
+    								
+    								if (FFPROBE.audioOnly == false
+    								&& (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut"))
+    								|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))
+    								|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionConform"))))
+    								{
+    									FFPROBE.AnalyzeGOP(videoPath, false);
+    									do {
+    										try {
+    											Thread.sleep(10);
+    										} catch (InterruptedException e) {}
+    										
+    										if (FFPROBE.gopCount > 2)
+    										{
+    											seekOnKeyFrames = true;
+    											FFPROBE.process.destroy();
+    											break;
+    										}
+    									} while (FFPROBE.isRunning);	
+    								}
+    								else
+    								{
+    									Shutter.caseEnableCrop.setEnabled(true);
+    									Shutter.caseAddWatermark.setEnabled(true);
+    									Shutter.caseSafeArea.setEnabled(true);
+    								}
+    								
+    								//Image sequence
+    								if (Shutter.caseEnableSequence.isSelected())
+    								{	
+    									//Create the concat text file
+    									FunctionUtils.setConcat(new File("concat.txt"), Shutter.dirTemp);						
+    									inputFramerateMS = Float.parseFloat(Shutter.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
+    								}
+    								else					
+    									inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);		
+    								
+    								totalFrames = (float) Math.round(FFPROBE.totalLength / inputFramerateMS);
+    								playerCurrentFrame = 0;
+    				
+    								caseInternalTc.setEnabled(true);	
+    								Shutter.caseShowTimecode.setEnabled(true);
+    								
+    								Shutter.textSubsWidth.setText(String.valueOf(FFPROBE.imageWidth));
+    								
+    								setInfo();
+    								
+    								btnPlay.setEnabled(true);
+    								btnPrevious.setEnabled(true);
+    								btnNext.setEnabled(true);
+    								btnStop.setEnabled(true);
+    								btnMarkIn.setEnabled(true);
+    								btnMarkOut.setEnabled(true);
+    								btnGoToIn.setEnabled(true);
+    								btnGoToOut.setEnabled(true);	
+    								
+    								caseInH.setEnabled(true);
+    								caseInM.setEnabled(true);
+    								caseInS.setEnabled(true);
+    								caseInF.setEnabled(true);
+    								caseOutH.setEnabled(true);
+    								caseOutM.setEnabled(true);
+    								caseOutS.setEnabled(true);
+    								caseOutF.setEnabled(true);
+    								
+    								if (FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
+    								{
+    									lblPosition.setVisible(true);
+    									lblDuration.setVisible(true);
+    								}
+    								
+    								btnStop.doClick();
+    								
+    								playerInMark = 0;
+    								playerOutMark = waveformContainer.getWidth() - 2;
+    								
+    								waveformContainer.repaint();
+    								
+    								//Reset boxes
+    								updateGrpIn(0);
+    								updateGrpOut(FFPROBE.totalLength);
+    								slider.setMaximum((int) (totalFrames));
+    												
+    								//Setup fileList
+    								getFileList(videoPath);
+    								setFileList();				
+    							}	
+    							
+    							Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    						}
+    						else
+    						{				
+    							btnStop.doClick();
+    							
+    							videoPath = null;
+    							showScale.setVisible(false);
+    							playerStop();
+    							slider.setValue(0);
+    				
+    							btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));	
+    							btnPlay.setName("play");
+    							
+    							btnPlay.setEnabled(false);
+    							btnPrevious.setEnabled(false);
+    							btnNext.setEnabled(false);
+    							btnStop.setEnabled(false);
+    							btnMarkIn.setEnabled(false);
+    							btnMarkOut.setEnabled(false);
+    							btnGoToIn.setEnabled(false);
+    							btnGoToOut.setEnabled(false);
+    							
+    							caseInH.setEnabled(false);
+    							caseInM.setEnabled(false);
+    							caseInS.setEnabled(false);
+    							caseInF.setEnabled(false);
+    							caseOutH.setEnabled(false);
+    							caseOutM.setEnabled(false);
+    							caseOutS.setEnabled(false);
+    							caseOutF.setEnabled(false);
+    							
+    							caseInternalTc.setEnabled(false);	
+    							caseInternalTc.setSelected(false);		
+    							
+    							lblPosition.setVisible(false);
+    							lblDuration.setVisible(false);	
+    							
+    							if (waveform.exists())
+    							{
+    								waveform.delete();
+    								waveformIcon.setIcon(null);
+    								waveformIcon.repaint();
+    							}
+    						}
+    						
+    						if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("processEnded")))
+    						{
+    							Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
+    						}
+    						
+    						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+    						{
+    							caseInH.setVisible(false);
+    							caseInM.setVisible(false);
+    							caseInS.setVisible(false);
+    							caseInF.setVisible(false);
+    							caseOutH.setVisible(false);
+    							caseOutM.setVisible(false);
+    							caseOutS.setVisible(false);
+    							caseOutF.setVisible(false);
+    						}
+    						else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
+    						{
+    							caseInH.setVisible(true);
+    							caseInM.setVisible(true);
+    							caseInS.setVisible(true);
+    							caseInF.setVisible(true);
+    							caseOutH.setVisible(false);
+    							caseOutM.setVisible(false);
+    							caseOutS.setVisible(false);
+    							caseOutF.setVisible(false);
+    						}
+    						else if (waveformContainer.isVisible())
+    						{
+    							caseInH.setVisible(true);
+    							caseInM.setVisible(true);
+    							caseInS.setVisible(true);
+    							caseInF.setVisible(true);
+    							caseOutH.setVisible(true);
+    							caseOutM.setVisible(true);
+    							caseOutS.setVisible(true);
+    							caseOutF.setVisible(true);
+    						}		
+    							
+    						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+    						{				
+    							File video = new File(VideoPlayer.videoPath);
+    							String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
+    							
+    							SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
+    							SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
+    										
+    							Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+    				    		Shutter.frame.setLocation(Shutter.frame.getLocation().x , dim.height/3 - Shutter.frame.getHeight()/2);
+    				
+    				    		if (Shutter.caseAddSubtitles.isSelected())
+    				    		{
+    				    			VideoPlayer.player.remove(Shutter.subsCanvas);
+    								Shutter.caseAddSubtitles.setSelected(false);	    	
+    				    		}
+    								    		    	
+    				    		if (SubtitlesTimeline.frame == null) 
+    				    		{	    	
+    				    			new SubtitlesTimeline(dim.width/2-500,Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);		
+    				    		}
+    				    		else
+    				    		{
+    				    			SubtitlesTimeline.frame.setVisible(true);
+    								SubtitlesTimeline.subtitlesNumber();					
+    								SubtitlesTimeline.timeline.remove(SubtitlesTimeline.waveform);
+    								SubtitlesTimeline.repaintTimeline();
+    								SubtitlesTimeline.timeline.removeAll();
+    								SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);	
+    				    		}
+    				    		
+    				    		playerFreeze();	
+    				    		
+    							Shutter.btnStart.setEnabled(false);						    		
+    							Shutter.comboFonctions.setEnabled(false);	
+    							
+    							//IMPORTANT Correct focus bug on Mac
+    							Shutter.frame.setVisible(false);
+    							Shutter.frame.setVisible(true);
+    						}
+    						else		
+    							resizeAll();
+    								
+    						if (Shutter.fileList.hasFocus() == false)
+    						{
+    							waveformContainer.requestFocus();
+    						}
+    			    	}
+    		}    		
+    		
+		});
+		t.start();
 	}
      
+    public static void setInfo() {
+    	
+    	String tff = "";
+		if (FFPROBE.interlaced.equals("1"))
+		{
+			if (FFPROBE.fieldOrder.equals("0"))
+			{
+				tff = " TFF";
+			}
+			else
+				tff = " BFF";
+		}
+		
+		if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
+		{
+			String vcodec = FFPROBE.videoCodec.replace("video", "");
+			for (String s : Shutter.functionsList)
+			{
+				if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
+				|| s.toLowerCase().contains(vcodec.toLowerCase()))
+				{
+					vcodec = s;
+					break;
+				}
+				else
+					vcodec = vcodec.toUpperCase();
+			}
+			
+			showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff);
+		}
+		else
+			showScale.setText(FFPROBE.imageResolution + tff);
+    }
+    
     public static void setPlayerButtons(boolean enable) {
     	    	
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -1687,8 +1713,7 @@ public class VideoPlayer {
 	public static String setVideoCommand(float inputTime, int width, int height, boolean isPlaying) throws InterruptedException {
 
 		//Deinterlacer		
-		String yadif = "";
-		yadif = AdvancedFeatures.setDeinterlace(true);		
+		String yadif = AdvancedFeatures.setDeinterlace(true);		
 				
 		//Speed slider
 		String speed = "";
@@ -1838,7 +1863,7 @@ public class VideoPlayer {
 		
 		if (FFPROBE.hasAudio == false && (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false || Shutter.liste.getSize() == 1))
 		{
-			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade + duration +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav pipe:-";				
+			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade + duration +  " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav pipe:-";				
 		}
 		else
 		{
@@ -1854,11 +1879,9 @@ public class VideoPlayer {
 				{
 					input = " -i " + '"' + Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1) + '"';
 				}
-				
-				System.out.println();
 			}
 
-			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ac 2 -f wav pipe:-";
+			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav pipe:-";
 		}		
 		
 	}
@@ -2074,7 +2097,7 @@ public class VideoPlayer {
 											Thread.sleep(1);
 										} catch (InterruptedException e) {}
 										
-										if (System.currentTimeMillis() - time > 1000)
+										if (System.currentTimeMillis() - time > 5000)
 											frameIsComplete = true;
 																	
 									} while (frameIsComplete == false);
@@ -2169,7 +2192,7 @@ public class VideoPlayer {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 						
-						if (System.currentTimeMillis() - time > 1000)
+						if (System.currentTimeMillis() - time > 5000)
 							break;
 						
 					} while (playerLoop);
@@ -2703,7 +2726,7 @@ public class VideoPlayer {
 								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 							
-							if (System.currentTimeMillis() - time > 1000)
+							if (System.currentTimeMillis() - time > 5000)
 								break;
 							
 						} while (playerLoop);
@@ -2833,6 +2856,22 @@ public class VideoPlayer {
 		lblVolume.setFont(new Font("", Font.PLAIN, 12));
 		lblVolume.setSize(lblVolume.getPreferredSize().width + 3, 16);			
 		lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, sliderVolume.getY() + 2);	
+		
+		lblVolume.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+
+				if (sliderVolume.getValue() > 0)
+				{
+					sliderVolume.setValue(0);
+				}
+				else
+					sliderVolume.setValue(50);
+				
+			}
+			
+		});	
 		
 		Shutter.frame.getContentPane().add(lblVolume);
 				
@@ -4338,11 +4377,43 @@ public class VideoPlayer {
 							}
 							else									
 							{
+								File upscaledFile = null;
+								
+								if (Shutter.comboResolution.getSelectedItem().toString().contains("upscale"))
+								{									
+									Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+									
+									String ratio = Shutter.comboResolution.getSelectedItem().toString().replace("upscale", "").replace("x", "");
+
+									String model = "models-upconv_7_anime_style_art_rgb";
+									if (Shutter.comboImageOption.getSelectedItem().toString().contains("Photo"))
+										model = "models-upconv_7_photo";
+									
+									String denoise[] = Shutter.comboImageOption.getSelectedItem().toString().replace(" ", "").split("-");
+									
+									WAIFU2X.run("-v -i " + '"' + file.toString() + '"' + " -m " + model + " -s " + ratio + " -n " + denoise[1] + " -o " + '"' + preview.toString().replace(".bmp", ".png") + '"');
+									
+									do
+									{
+										Thread.sleep(100);
+									}
+									while(WAIFU2X.runProcess.isAlive());
+
+									file = new File(preview.toString().replace(".bmp", ".png"));
+									
+									upscaledFile = file;
+								}
+								
 								FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');		
 								
 								do {
 					            	Thread.sleep(10);  
 					            } while (FFMPEG.isRunning && FFMPEG.error == false);
+								
+								if (upscaledFile != null)
+								{
+									upscaledFile.delete();
+								}
 							}						
 				            
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
@@ -4463,7 +4534,7 @@ public class VideoPlayer {
 		int height = player.getHeight();
 						
 		//Crop & Pad
-		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
+		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("upscale") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
 		{			
 			filter += settings.Image.setScale("", false);
 			filter += settings.Image.setPad("", false) + ",";
@@ -4852,7 +4923,8 @@ public class VideoPlayer {
 					ratio = Float.parseFloat(Shutter.comboDAR.getSelectedItem().toString());
 			}
 			else if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false
-			&& Shutter.comboResolution.getSelectedItem().toString().contains("x"))
+			&& Shutter.comboResolution.getSelectedItem().toString().contains("x")
+			&& Shutter.comboResolution.getSelectedItem().toString().contains("upscale") == false)
 			{
 				String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");		
 				ratio = (float) Integer.parseInt(s[0]) / Integer.parseInt(s[1]);
@@ -5129,7 +5201,7 @@ public class VideoPlayer {
 			Shutter.lblYears.setVisible(false);
 		}
 		
-		Shutter.lblYears.setLocation(Shutter.frame.getWidth() - Shutter.lblYears.getPreferredSize().width - 6, Shutter.lblBy.getY());
+		Shutter.lblYears.setLocation(Shutter.frame.getWidth() - Shutter.lblYears.getWidth() - 8, Shutter.lblBy.getY());
 		
 	}
 	

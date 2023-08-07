@@ -332,7 +332,12 @@ public class ReplaceAudio extends Shutter {
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
-				return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				if (System.getProperty("os.name").contains("Mac"))
+				{
+					return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				}
+				else
+					return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{
@@ -370,7 +375,14 @@ public class ReplaceAudio extends Shutter {
 			{			
 				case ".mp4":
 					if (audioExt.equals(".m4a") == false)
-						return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k";
+					{
+						if (System.getProperty("os.name").contains("Mac"))
+						{
+							return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a 256k";
+						}
+						else
+							return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k";
+					}
 					else
 						return  " -c:a copy";
 				case ".mp3":

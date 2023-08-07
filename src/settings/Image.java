@@ -67,7 +67,7 @@ public class Image extends Shutter {
 						}
 						else //ratio like 4:1 etc...
 						{
-							ow = Integer.parseInt(s[0]);
+							ow = Integer.parseInt(s[1]);
 						}
 					}
 
@@ -210,7 +210,7 @@ public class Image extends Shutter {
 		        	else
 		        	{
 			            o = comboResolution.getSelectedItem().toString().split(":");
-			    		float number =  (float) 1 / Integer.parseInt(o[0]);
+			    		float number =  (float) 1 / Integer.parseInt(o[1]);
 			    		filterComplex += "scale=iw*" + number + ":ih*" + number;
 		        	}
 		        }

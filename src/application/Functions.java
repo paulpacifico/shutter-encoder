@@ -27,7 +27,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.geom.Area;
-import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -104,7 +103,7 @@ public class Functions {
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
-		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
 		frame.setShape(shape1);
@@ -241,6 +240,7 @@ public class Functions {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				Shutter.btnReset.doClick();
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				Utils.loadSettings(new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue()));
@@ -407,7 +407,7 @@ public class Functions {
 				drag = false;
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
 				
-				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+				Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 	            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	            shape1.add(shape2);
 	    		frame.setShape(shape1);
@@ -444,7 +444,7 @@ public class Functions {
 				}
 				else
 				{
-					Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+					Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 		            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 		            shape1.add(shape2);
 		    		frame.setShape(shape1);
@@ -489,6 +489,7 @@ public class Functions {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
+				
 				if (accept)
 				{
 					Shutter.iconPresets.setVisible(true);

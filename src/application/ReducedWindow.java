@@ -81,7 +81,7 @@ public class ReducedWindow extends JDialog {
 		{
 			frame.setUndecorated(true);
 			frame.setBackground(new Color(1.0f,1.0f,1.0f,0.0f));
-			//frame.setShape(new RoundRectangle2D.Double(0, 0, 320, 94, 30, 30));
+			//frame.setShape(new AntiAliasedRoundRectangle(0, 0, 320, 94, 30, 30));
 			frame.setAlwaysOnTop(true);
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		}

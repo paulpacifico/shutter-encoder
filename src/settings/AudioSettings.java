@@ -203,7 +203,14 @@ public class AudioSettings extends Shutter {
 				audioBitrate = " -sample_fmt s32p";
 			}
 			else
-				audioCodec = "aac";
+			{
+				if (System.getProperty("os.name").contains("Mac"))
+				{
+					audioCodec = "aac_at";
+				}
+				else
+					audioCodec = "aac";
+			}
 			
 			String transitions = "";
 			

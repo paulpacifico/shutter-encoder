@@ -106,7 +106,7 @@ public class FunctionUtils extends Shutter {
 			 
 			//Check GPU
 			FFMPEG.checkGPUCapabilities(file.toString(), false);
-			 
+			 						
 			if (analyzeError(file.toString()))
 				return false;
 			 
@@ -119,7 +119,7 @@ public class FunctionUtils extends Shutter {
 				 Thread.sleep(100);						 
 			 }
 			 while (PDF.isRunning);
-			 
+			 			 
 			 if (analyzeError(file.toString()))
 				 return false;
 		}
@@ -169,7 +169,7 @@ public class FunctionUtils extends Shutter {
 	public  static boolean analyzeError(String file)
 	{						
 		 if (FFMPEG.error)// || EXIFTOOL.error || DCRAW.error || DVDAUTHOR.error || MKVMERGE.error || TSMUXER.error || XPDF.error)
-		 {
+		 {			 
 		 	errorList = new StringBuilder(file + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
 			return true;
 		 }
@@ -922,7 +922,7 @@ public class FunctionUtils extends Shutter {
 			case "H.265":
 			case "VP9":
 				
-				if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("VAAPI"))			
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("VAAPI"))			
 				{						
 					if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
 					{

@@ -35,7 +35,7 @@ public class AdvancedFeatures extends Shutter {
 			
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
 		}
-		else if (FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
+		else if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
 		|| FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
 		|| caseForcerDesentrelacement.isSelected())
 		{
@@ -65,7 +65,7 @@ public class AdvancedFeatures extends Shutter {
 				 }
 				 else
 				 {
-					 if (caseAccel.isSelected() == false)
+					 if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 					 {
 						 return " -preset 8";
 					 }
@@ -76,16 +76,16 @@ public class AdvancedFeatures extends Shutter {
 				
 		        if (caseQMax.isSelected())
 		        {
-		        	if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        		return " -preset p7";
-		        	else if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+		        	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 		        		return " -quality quality";
 			        else
 			        	return " -preset veryslow";
 		        }
 		        else if (caseForcePreset.isSelected())
 		        {
-		        	if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        		return " -preset p" + (comboForcePreset.getSelectedIndex() + 1);
 					else
 						return " -preset " + comboForcePreset.getSelectedItem().toString();
@@ -168,7 +168,7 @@ public class AdvancedFeatures extends Shutter {
 				if (caseForceLevel.isSelected())
 		        {
 		        	String profile = Shutter.comboForceProfile.getSelectedItem().toString().replace("base", "baseline");
-		            if (caseColorspace.isSelected() && profile.equals("high") && comboColorspace.getSelectedItem().toString().contains("10bits") && caseAccel.isSelected() == false)
+		            if (caseColorspace.isSelected() && profile.equals("high") && comboColorspace.getSelectedItem().toString().contains("10bits") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 		    			profile = "high10";
 		            
 		            return " -profile:v " + profile + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
@@ -176,7 +176,7 @@ public class AdvancedFeatures extends Shutter {
 		        else
 		        {
 		        	String profile = "high";
-		            if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits") && caseAccel.isSelected() == false)
+		            if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 		    			profile = "high10";
 		            
 		        	String s[] = FFPROBE.imageResolution.split("x");
@@ -311,7 +311,7 @@ public class AdvancedFeatures extends Shutter {
 
 		            if (width > 1920 || height > 1080 || FFPROBE.currentFPS >= 59.94f)
 		            {
-		            	if (caseAccel.isSelected() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		            	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		            	{
 		            		return " -profile:v " + profile + " -level 6.1";
 		            	}

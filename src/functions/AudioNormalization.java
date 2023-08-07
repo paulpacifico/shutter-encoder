@@ -162,24 +162,30 @@ public class AudioNormalization extends Shutter {
 							
 							if (FFMPEG.error)
 							{
+								String AACencoder = "aac";								
+								if (System.getProperty("os.name").contains("Mac"))
+								{
+									AACencoder = "aac_at";		
+								}
+
 								if (FFPROBE.stereo)
 								{
-									cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
+									cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								}
 							    else if (FFPROBE.channels > 1)	
 							    {
 							    	if (FFPROBE.channels >= 4)	    		
 							    	{
 										if (audioTracks == 0)
-											cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+											cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 								    	else
-								    		cmd = " -filter_complex " + '"' + "[0:a:2]" + normalization + "[a3];[0:a:3]" + normalization + "[a4]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+								    		cmd = " -filter_complex " + '"' + "[0:a:2]" + normalization + "[a3];[0:a:3]" + normalization + "[a4]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    	}
 							    	else
-							    		cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+							    		cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    }	
 							    else
-							    	cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
+							    	cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								
 								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
 							}
@@ -255,7 +261,12 @@ public class AudioNormalization extends Shutter {
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
-				return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
+				if (System.getProperty("os.name").contains("Mac"))
+				{
+					return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
+				}
+				else
+					return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{
@@ -284,8 +295,13 @@ public class AudioNormalization extends Shutter {
 			{			
 				case ".mp4":
 					
-					return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
-					
+					if (System.getProperty("os.name").contains("Mac"))
+					{
+						return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					}
+					else
+						return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+
 				case ".mp3":
 					
 					return " -c:a mp3 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";

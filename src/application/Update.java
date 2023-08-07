@@ -29,7 +29,6 @@ import java.awt.MouseInfo;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.RoundRectangle2D;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -85,7 +84,7 @@ public class Update {
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			frame.setShape(new RoundRectangle2D.Double(0, 0, frame.getWidth() + 15, frame.getHeight(), 15, 15));
+			frame.setShape(new AntiAliasedRoundRectangle(0, 0, frame.getWidth() + 15, frame.getHeight(), 15, 15));
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		}
 		

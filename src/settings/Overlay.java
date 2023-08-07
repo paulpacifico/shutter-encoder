@@ -297,7 +297,7 @@ public class Overlay extends Shutter {
 					}
 					else //ratio like 4:1 etc...
 					{
-						ow = Integer.parseInt(s[0]);
+						ow = Integer.parseInt(s[1]);
 					}
 				}
 
@@ -521,7 +521,7 @@ public class Overlay extends Shutter {
 					}
 					else //ratio like 4:1 etc...
 					{
-						ow = Integer.parseInt(s[0]);
+						ow = Integer.parseInt(s[1]);
 					}
 				}
 

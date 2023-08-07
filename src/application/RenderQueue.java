@@ -43,7 +43,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
-import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 
 import javax.swing.BorderFactory;
@@ -70,6 +69,7 @@ import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.TSMUXER;
+import library.WAIFU2X;
 import library.PDF;
 import settings.FunctionUtils;
 
@@ -109,7 +109,7 @@ import settings.FunctionUtils;
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
 			frame.setUndecorated(true);
-			Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	        shape1.add(shape2);
 			frame.setShape(shape1);
@@ -133,7 +133,7 @@ import settings.FunctionUtils;
 		    }
 			
 			public void windowClosed(WindowEvent arg0) {
-				if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+				if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || WAIFU2X.isRunning)
 					Shutter.btnCancel.doClick();
 				
 				if (Shutter.btnCancel.isEnabled() == false)		
@@ -193,7 +193,7 @@ import settings.FunctionUtils;
 				}
 				else
 				{
-					Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+					Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 		            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 		            shape1.add(shape2);
 		    		frame.setShape(shape1);
@@ -224,7 +224,7 @@ import settings.FunctionUtils;
 			public void mouseReleased(MouseEvent e) {
 				drag = false;
 				
-				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+				Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 	            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	            shape1.add(shape2);
 	    		frame.setShape(shape1);
@@ -443,7 +443,7 @@ import settings.FunctionUtils;
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{		  
-					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || WAIFU2X.isRunning)
 						Shutter.btnCancel.doClick();
 					
 					if (Shutter.btnCancel.isEnabled() == false)		
@@ -730,6 +730,9 @@ import settings.FunctionUtils;
 								case "dcraw" :
 									DCRAW.run(cmd.toString().replace("dcraw",""));
 									break;
+								case "waifu2x" :
+									WAIFU2X.run(cmd.toString().replace("waifu2x",""));
+									break;
 							}				
 							
 							table.setRowSelectionInterval(i, i);
@@ -740,7 +743,7 @@ import settings.FunctionUtils;
 							try {
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || WAIFU2X.isRunning);
 								
 								
 								//Permet d'attendre si un autre processus se lance
@@ -748,7 +751,7 @@ import settings.FunctionUtils;
 								
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || WAIFU2X.isRunning);
 							} catch (InterruptedException e) {}
 
 							lastActions(i, fichier, fileOut);

@@ -37,8 +37,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
-import java.awt.geom.RoundRectangle2D;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -85,7 +83,7 @@ import library.MEDIAINFO;
 		frame.setSize(600, 662);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
-		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
 		frame.setShape(shape1);
@@ -162,7 +160,7 @@ import library.MEDIAINFO;
 				if (MEDIAINFO.isRunning == false)
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
 				
-				Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+				Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 	            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	            shape1.add(shape2);
 	    		frame.setShape(shape1);				
@@ -229,7 +227,7 @@ import library.MEDIAINFO;
 				}
 				else
 				{
-					Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+					Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 		            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 		            shape1.add(shape2);
 		    		frame.setShape(shape1);

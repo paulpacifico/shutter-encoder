@@ -34,6 +34,7 @@ import library.DCRAW;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.PDF;
+import library.WAIFU2X;
 import settings.Colorimetry;
 import settings.Corrections;
 import settings.Filter;
@@ -82,7 +83,11 @@ public class Picture extends Shutter {
 						break;
 		            
 					if (videoPlayerCapture)
+					{
+						settings.FunctionUtils.yesToAll = false;
+						screenshotIsRunning = true;
 						file =  new File(VideoPlayer.videoPath);
+					}
 					
 					try {
 						
@@ -91,7 +96,7 @@ public class Picture extends Shutter {
 						
 						String extension = fileName.substring(fileName.lastIndexOf("."));	
 							
-						//Erreur FFPROBE avec les fileNames RAW
+						//FFPROBE Error with RAW files
 						boolean isRaw = false;
 						switch (extension.toLowerCase()) { 
 						
@@ -134,7 +139,7 @@ public class Picture extends Shutter {
 						FFMPEG.isGPUCompatible = false;
 						
 						//Scaling									
-			        	if (VideoEncoders.setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
+			        	if (VideoEncoders.setScalingFirst() && comboResolution.getSelectedItem().toString().contains("upscale") == false) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
 			        		filterComplex = Image.setScale(filterComplex, false);	
 			        		filterComplex = Image.setPad(filterComplex, false);		
@@ -186,7 +191,7 @@ public class Picture extends Shutter {
 				        filterComplex = Image.setCrop(filterComplex);
 				        
 				        //Scaling
-				        if (VideoEncoders.setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode		
+				        if (VideoEncoders.setScalingFirst() == false && comboResolution.getSelectedItem().toString().contains("upscale") == false) //Set scaling before or after depending on using a pad or stretch mode		
 			        	{
 				        	filterComplex = Image.setScale(filterComplex, false);
 				        	filterComplex = Image.setPad(filterComplex, false);		
@@ -320,8 +325,27 @@ public class Picture extends Shutter {
 							while(FFMPEG.runProcess.isAlive());
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (comboResolution.getSelectedItem().toString().contains("upscale") && cancelled == false)
 						{
+							String ratio = comboResolution.getSelectedItem().toString().replace("upscale", "").replace("x", "");
+
+							String model = "models-upconv_7_anime_style_art_rgb";
+							if (Shutter.comboImageOption.getSelectedItem().toString().contains("Photo"))
+								model = "models-upconv_7_photo";
+		
+							String denoise[] = Shutter.comboImageOption.getSelectedItem().toString().replace(" ", "").split("-");
+							
+							WAIFU2X.run("-v -i " + '"' + fileOut + '"' + " -m " + model + " -s " + ratio + " -n " + denoise + " -o " + '"' + fileOut + '"');
+							
+							do
+							{
+								Thread.sleep(100);
+							}
+							while(WAIFU2X.runProcess.isAlive());
+						}
+						
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						{							
 							if (lastActions(file, fileName, extension, fileOut, labelOutput) || videoPlayerCapture)
 								break;
 						}

@@ -47,7 +47,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
-import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -189,7 +188,7 @@ public class Settings {
 		frame.getContentPane().setLayout(null); 
 		frame.setResizable(false);			
 		frame.setUndecorated(true);
-		Area shape1 = new Area(new RoundRectangle2D.Double(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
 		frame.setShape(shape1);
@@ -1081,14 +1080,13 @@ public class Settings {
 		
 		});
 		
-		JLabel donate;
+		JButton donate;		
 		if (Shutter.getLanguage.equals(Locale.of("fr").getDisplayLanguage()))
-			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_FR.png")));
+			donate = new JButton("Faire un don");
 		else
-			donate = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("contents/donate_EN.png")));
+			donate = new JButton("Donate");
 		
 		donate.setName("donate");
-		donate.setHorizontalAlignment(SwingConstants.CENTER);
 		donate.setSize(donate.getPreferredSize().width, donate.getPreferredSize().height);
 		donate.setLocation(backgroundPanel.getWidth() / 2 + 14, backgroundPanel.getHeight() / 2 - donate.getHeight() / 2);
 		backgroundPanel.add(donate);
@@ -1462,7 +1460,7 @@ public class Settings {
 								
 							}
 							else if (p instanceof JComboBox)
-							{															
+							{				
 								//Value
 								((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 								
@@ -1471,7 +1469,6 @@ public class Settings {
 								
 								//Visible
 								((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								
 							}
 							else if (p instanceof JTextField)
 							{
@@ -1489,7 +1486,7 @@ public class Settings {
 					
 					for (Component p : Shutter.statusBar.getComponents())
 					{
-						if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
+						if (p.getName() != "" && p.getName() != null && p.getName().equals("comboAccel") == false && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 						{
 							if (p instanceof JComboBox)
 							{															
