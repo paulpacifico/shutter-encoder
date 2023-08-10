@@ -62,7 +62,7 @@ public class Console extends JFrame {
 	public static JTextArea consoleMEDIAINFO =  new JTextArea();
 	public static JTextArea consoleYOUTUBEDL =  new JTextArea();
 	public static JTextArea consoleEXIFTOOL =  new JTextArea();
-	public static JTextArea consoleWAIFU2X =  new JTextArea();
+	public static JTextArea consoleNCNN =  new JTextArea();
 	public static JTabbedPane tabbedPane;
 	private JScrollPane scrollFFMPEG;
 	private JScrollPane scrollFFPLAY;
@@ -73,7 +73,7 @@ public class Console extends JFrame {
 	private JScrollPane scrollMEDIAINFO;
 	private JScrollPane scrollYOUTUBEDL;
 	private JScrollPane scrollEXIFTOOL;
-	private JScrollPane scrollWAIFU2X;
+	private JScrollPane scrollNCNN;
 	
 	private JMenuBar menuBar;
 	private final JSpinner spinner;
@@ -136,7 +136,7 @@ public class Console extends JFrame {
 						consoleEXIFTOOL.setText("");
 						break;
 					case 9:
-						consoleWAIFU2X.setText("");
+						consoleNCNN.setText("");
 						break;
 				}
 			}
@@ -191,7 +191,7 @@ public class Console extends JFrame {
 									writer.write(consoleEXIFTOOL.getText());
 									break;
 								case 9:
-									writer.write(consoleWAIFU2X.getText());
+									writer.write(consoleNCNN.getText());
 									break;
 							}
 						writer.close();
@@ -264,7 +264,7 @@ public class Console extends JFrame {
 				consoleMEDIAINFO.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleYOUTUBEDL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleEXIFTOOL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleWAIFU2X.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleNCNN.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, (int) spinner.getValue()));
 			}
 			
 		});
@@ -314,11 +314,11 @@ public class Console extends JFrame {
 		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleEXIFTOOL.setWrapStyleWord(true);
 		consoleEXIFTOOL.addKeyListener(kl);
-		consoleWAIFU2X.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
-		consoleWAIFU2X.setBackground(new Color(35,35,35));
-		consoleWAIFU2X.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
-		consoleWAIFU2X.setWrapStyleWord(true);
-		consoleWAIFU2X.addKeyListener(kl);
+		consoleNCNN.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
+		consoleNCNN.setBackground(new Color(35,35,35));
+		consoleNCNN.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
+		consoleNCNN.setWrapStyleWord(true);
+		consoleNCNN.addKeyListener(kl);
 
 		scrollFFMPEG = new JScrollPane();	
 		scrollFFMPEG.getViewport().add(consoleFFMPEG);
@@ -347,8 +347,8 @@ public class Console extends JFrame {
 		scrollEXIFTOOL = new JScrollPane();	
 		scrollEXIFTOOL.getViewport().add(consoleEXIFTOOL); 
 		
-		scrollWAIFU2X = new JScrollPane();	
-		scrollWAIFU2X.getViewport().add(consoleWAIFU2X); 
+		scrollNCNN = new JScrollPane();	
+		scrollNCNN.getViewport().add(consoleNCNN); 
 		
 		scrollFFMPEG.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
@@ -413,7 +413,7 @@ public class Console extends JFrame {
 	        }
 	    });
 		
-		scrollWAIFU2X.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
+		scrollNCNN.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
@@ -431,7 +431,7 @@ public class Console extends JFrame {
 		tabbedPane.add("MEDIAINFO", scrollMEDIAINFO);
 		tabbedPane.add("YOUTUBEDL", scrollYOUTUBEDL);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
-		tabbedPane.add("WAIFU2X", scrollWAIFU2X);
+		tabbedPane.add("NCNN", scrollNCNN);
 		frmConsole.getContentPane().add(tabbedPane);		
 	}
 }

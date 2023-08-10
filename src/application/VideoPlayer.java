@@ -87,7 +87,7 @@ import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
 import library.PDF;
-import library.WAIFU2X;
+import library.NCNN;
 import settings.AdvancedFeatures;
 import settings.Colorimetry;
 import settings.Corrections;
@@ -1393,11 +1393,13 @@ public class VideoPlayer {
     								    		    	
     				    		if (SubtitlesTimeline.frame == null) 
     				    		{	    	
-    				    			new SubtitlesTimeline(dim.width/2-500,Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);		
+    				    			new SubtitlesTimeline();		
     				    		}
     				    		else
     				    		{
     				    			SubtitlesTimeline.frame.setVisible(true);
+    				    			SubtitlesTimeline.frame.setLocation((Shutter.frame.getLocation().x + Shutter.frame.getWidth() / 2) - SubtitlesTimeline.frame.getWidth() / 2, Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);
+    				    	    	
     								SubtitlesTimeline.subtitlesNumber();					
     								SubtitlesTimeline.timeline.remove(SubtitlesTimeline.waveform);
     								SubtitlesTimeline.repaintTimeline();
@@ -1532,14 +1534,8 @@ public class VideoPlayer {
 			lblSplitSec.setVisible(false);
 			btnGoToIn.setVisible(false);
 			btnMarkIn.setVisible(false);
-			
-			float ratio = FFPROBE.imageRatio;
-			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
-			{
-				ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
-			}
 
-			if (ratio > 0.8f && Shutter.liste.getSize() > 0)
+			if (Shutter.liste.getSize() > 0)
 				showScale.setVisible(true);
 			else
 				showScale.setVisible(false);
@@ -4243,7 +4239,7 @@ public class VideoPlayer {
 	}
 	
 	public static void loadImage(boolean forceRefresh) {
-					
+						
 		if (forceRefresh && videoPath != null)
 		{
 			Thread waitProcess = new Thread (new Runnable() {
@@ -4289,6 +4285,10 @@ public class VideoPlayer {
 				
 			        try
 			        {	
+			        	do {
+			        		Thread.sleep(10);
+			        	} while (videoPath == null);
+			        		
 			        	File file = new File(videoPath);
 			        			        						
 						String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
@@ -4344,7 +4344,7 @@ public class VideoPlayer {
 						{
 							cmd = deinterlace + " -vframes 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
 						}
-
+						
 						if (preview.exists() == false && Shutter.caseAddSubtitles.isSelected() == false)
 						{
 							if (extension.toLowerCase().equals(".pdf"))
@@ -4375,46 +4375,67 @@ public class VideoPlayer {
 					            	Thread.sleep(10);  
 					            } while (FFMPEG.isRunning && FFMPEG.error == false);
 							}
-							else									
-							{
-								File upscaledFile = null;
+							else if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))							
+							{										
+								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 								
-								if (Shutter.comboResolution.getSelectedItem().toString().contains("upscale"))
-								{									
-									Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-									
-									String ratio = Shutter.comboResolution.getSelectedItem().toString().replace("upscale", "").replace("x", "");
-
-									String model = "models-upconv_7_anime_style_art_rgb";
-									if (Shutter.comboImageOption.getSelectedItem().toString().contains("Photo"))
-										model = "models-upconv_7_photo";
-									
-									String denoise[] = Shutter.comboImageOption.getSelectedItem().toString().replace(" ", "").split("-");
-									
-									WAIFU2X.run("-v -i " + '"' + file.toString() + '"' + " -m " + model + " -s " + ratio + " -n " + denoise[1] + " -o " + '"' + preview.toString().replace(".bmp", ".png") + '"');
-									
-									do
-									{
-										Thread.sleep(100);
-									}
-									while(WAIFU2X.runProcess.isAlive());
-
-									file = new File(preview.toString().replace(".bmp", ".png"));
-									
-									upscaledFile = file;
-								}
+								preview = new File(preview.toString().replace(".bmp", ".png"));
 								
-								FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');		
+								FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -vframes 1 -an " + '"' + preview + '"');		
 								
 								do {
 					            	Thread.sleep(10);  
 					            } while (FFMPEG.isRunning && FFMPEG.error == false);
 								
-								if (upscaledFile != null)
+								String model = "models-DF2K_JPEG";	
+								String ratio = "4";
+								String denoise = "";
+								
+								if (Shutter.comboResolution.getSelectedItem().toString().contains("artwork"))
 								{
-									upscaledFile.delete();
+									model = "models-upconv_7_anime_style_art_rgb";
+									
+									String r[] = Shutter.comboResolution.getSelectedItem().toString().split(" ");								
+									ratio = r[2].replace("x", "");	
+									
+									String n[] = Shutter.comboImageOption.getSelectedItem().toString().split(" ");			
+									denoise = " -n " + n[1];
 								}
-							}						
+								else
+								{
+									Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+									Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
+								}
+																
+								NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + model + " -s " + ratio + denoise + " -o " + '"' + preview + '"');
+								
+								do {
+									Thread.sleep(10);
+								}
+								while (NCNN.runProcess.isAlive());
+								
+								Shutter.progressBar1.setValue(0);
+								Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
+
+								FFMPEG.run(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + '"' + preview.toString().replace(".png", ".bmp") + '"'); 
+																								
+								do {
+			    					Thread.sleep(10);
+								} while (FFMPEG.isRunning && FFMPEG.error == false);
+								
+								preview.delete();
+								
+								preview = new File(preview.toString().replace(".png", ".bmp"));
+							}		
+							else									
+							{							
+								FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + preview + '"');		
+								
+								do {
+					            	Thread.sleep(10);  
+					            } while (FFMPEG.isRunning && FFMPEG.error == false);
+
+							}		
 				            
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
 						}	
@@ -4435,7 +4456,7 @@ public class VideoPlayer {
 								FFMPEG.run(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -an -f image2pipe pipe:-"); 
 							}
 							else
-							{
+							{								
 								FFMPEG.run(" -v quiet -hide_banner -i " + '"' + preview + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -an -f image2pipe pipe:-"); 							    	
 							}
 						}
@@ -4534,7 +4555,7 @@ public class VideoPlayer {
 		int height = player.getHeight();
 						
 		//Crop & Pad
-		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("upscale") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
+		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
 		{			
 			filter += settings.Image.setScale("", false);
 			filter += settings.Image.setPad("", false) + ",";
@@ -4924,7 +4945,7 @@ public class VideoPlayer {
 			}
 			else if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false
 			&& Shutter.comboResolution.getSelectedItem().toString().contains("x")
-			&& Shutter.comboResolution.getSelectedItem().toString().contains("upscale") == false)
+			&& Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false)
 			{
 				String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");		
 				ratio = (float) Integer.parseInt(s[0]) / Integer.parseInt(s[1]);
@@ -5112,6 +5133,15 @@ public class VideoPlayer {
 			btnGoToOut.setBounds(btnMarkOut.getLocation().x + btnMarkOut.getSize().width + 4, btnMarkOut.getLocation().y, 40, 21);		
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			showScale.setBounds(player.getX(), showFPS.getY(), player.getWidth() / 2, showScale.getPreferredSize().height);
+			
+			if (showScale.getY() < Shutter.topPanel.getHeight())
+			{
+				showScale.setVisible(false);
+			}
+			else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.liste.getSize() > 0)
+			{
+				showScale.setVisible(true);
+			}
 			
 			//Group boxes
 			caseInH.setBounds(slider.getX() - 2, btnPrevious.getY(), 21, 21);

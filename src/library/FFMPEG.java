@@ -145,7 +145,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (cmd.contains("-pass 2") == false)
 					saveToXML(cmd);
 		}
-		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false)
+		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{			
 			//On récupère le nom précédent
 			if (lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")))
@@ -176,7 +176,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		else
 		{
 			isRunning = true;
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && screenshotIsRunning == false)
+			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false  && cmd.contains("preview.png") == false && screenshotIsRunning == false)
 				disableAll();
 			
 			runProcess = new Thread(new Runnable()  {
@@ -1586,16 +1586,14 @@ public static StringBuilder errorLog = new StringBuilder();
 		}  	    
 	    	    
 		  //Progression
-		  if (line.contains("time=") && line.contains("N/A") == false
+		  if (line.contains("time=") && line.contains("time=N/A") == false
 		  && lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
 		  && lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
 		  && lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
 		  {		  
 			  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
 			  	error = false;
-			  	
-			  	System.out.println(line);
-			  	
+
 		  		String str = line.substring(line.indexOf(":") - 2);
 	    		String[] split = str.split("b");	 
 	    	    

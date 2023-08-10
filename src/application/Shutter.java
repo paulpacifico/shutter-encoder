@@ -167,7 +167,7 @@ import library.MEDIAINFO;
 import library.PDF;
 import library.SEVENZIP;
 import library.TSMUXER;
-import library.WAIFU2X;
+import library.NCNN;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
 import settings.Corrections;
@@ -2662,12 +2662,12 @@ public class Shutter {
 					}
 				}
 				
-				if (WAIFU2X.runProcess != null)
+				if (NCNN.runProcess != null)
 				{
-					if (WAIFU2X.runProcess.isAlive())
+					if (NCNN.runProcess.isAlive())
 					{
 						cancelled = true;
-						WAIFU2X.process.destroy();
+						NCNN.process.destroy();
 					}
 				}
 
@@ -3584,22 +3584,36 @@ public class Shutter {
 						grpResolution.repaint();
 					}
 					
-					//Upscale models
-					if (comboResolution.getSelectedItem().toString().contains("upscale")
+					//AI models
+					if (comboResolution.getSelectedItem().toString().contains("AI")
 					&& (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG")))
 					{	
-						if (comboImageOption.getItemAt(0).equals("Artwork - 0") == false)
+						if (comboResolution.getSelectedItem().toString().contains("artwork"))
 						{
-							comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "Artwork - 0","Artwork - 1","Artwork - 2","Artwork - 3","Photo - 0","Photo - 1","Photo - 2","Photo - 3" }));	
+							if (comboImageOption.getItemAt(0).equals("denoise") == false)
+							{
+								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "denoise: 0","denoise: 1","denoise: 2","denoise: 3" }));	
+							}
+																
+							comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
+							comboImageOption.setSize(90, 16);
+							comboImageOption.setEditable(false);
+							grpResolution.remove(lblImageQuality);
+							grpResolution.add(comboImageOption);
+							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+							comboImageOption.repaint();				
+						}
+						else
+						{
+							grpResolution.remove(lblImageQuality);
+							grpResolution.remove(comboImageOption);
+							lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);		
 						}
 						
-						comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
-						comboImageOption.setSize(90, 16);
-						comboImageOption.setEditable(false);
-						grpResolution.remove(lblImageQuality);
-						grpResolution.add(comboImageOption);
-						lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-						comboImageOption.repaint();
+						if (VideoPlayer.preview.exists())
+							VideoPlayer.preview.delete();
+						
+						VideoPlayer.loadImage(true);
 					}
 
 					if (comboFonctions.getSelectedItem().toString().equals("DNxHD") 
@@ -4775,7 +4789,7 @@ public class Shutter {
 
 		comboResolution = new JComboBox<String>();
 		comboResolution.setName("comboResolution");
-		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "upscale 8x", "upscale 4x", "upscale 2x", "1:2", "1:4", "1:8", "1:16",
+		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI artwork 4x", "AI artwork 2x", "1:2", "1:4", "1:8", "1:16",
 				"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
 				"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 				"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
@@ -4796,27 +4810,35 @@ public class Shutter {
 					{
 						changeFilters();
 						
-						//Upscale models						
-						if (comboResolution.getSelectedItem().toString().contains("upscale"))
+						//AI models						
+						if (comboResolution.getSelectedItem().toString().contains("AI"))
 						{
-							if (comboImageOption.getItemAt(0).equals("Artwork - 0") == false)
+							if (comboResolution.getSelectedItem().toString().contains("artwork"))
 							{
-								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "Artwork - 0","Artwork - 1","Artwork - 2","Artwork - 3","Photo - 0","Photo - 1","Photo - 2","Photo - 3" }));	
+								if (comboImageOption.getItemAt(0).equals("denoise") == false)
+								{
+									comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "denoise: 0","denoise: 1","denoise: 2","denoise: 3" }));	
+								}
+																	
+								comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
+								comboImageOption.setSize(90, 16);
+								comboImageOption.setEditable(false);
+								grpResolution.remove(lblImageQuality);
+								grpResolution.add(comboImageOption);
+								lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+								comboImageOption.repaint();				
+							}
+							else
+							{
+								grpResolution.remove(lblImageQuality);
+								grpResolution.remove(comboImageOption);
+								lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);		
 							}
 							
-							comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
-							comboImageOption.setSize(90, 16);
-							comboImageOption.setEditable(false);
-							grpResolution.remove(lblImageQuality);
-							grpResolution.add(comboImageOption);
-							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-							comboImageOption.repaint();
+							if (VideoPlayer.preview.exists())
+								VideoPlayer.preview.delete();
 							
-							if (caseCreateSequence.isSelected())
-								caseCreateSequence.doClick();
-							
-							caseCreateSequence.setEnabled(false);
-							lblInterpretation.setEnabled(false);
+							VideoPlayer.loadImage(true);							
 						}
 						else
 						{
@@ -4826,9 +4848,6 @@ public class Shutter {
 								grpResolution.remove(comboImageOption);
 								lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
 							}
-							
-							caseCreateSequence.setEnabled(true);
-							lblInterpretation.setEnabled(true);
 						}
 					}
 					else
@@ -5151,9 +5170,12 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (comboResolution.getSelectedItem().toString().contains("upscale"))
+				if (comboResolution.getSelectedItem().toString().contains("AI"))
 				{
-					VideoPlayer.resizeAll();
+					if (VideoPlayer.preview.exists())
+						VideoPlayer.preview.delete();
+					
+					VideoPlayer.loadImage(true);
 				}
 				
 			}
@@ -9796,7 +9818,7 @@ public class Shutter {
 				
 				if (caseAddSubtitles.isSelected() && VideoPlayer.videoPath != null)
 				{	
-					if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")))
+					if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")))
 					{
 						Shutter.casePreserveSubs.setSelected(false);
 					}					
@@ -9998,13 +10020,14 @@ public class Shutter {
 									Object[] options = {Shutter.language.getProperty("subtitlesBurn"), Shutter.language.getProperty("subtitlesEmbed")};
 									
 									int sub = 0;
-									if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")))
+									if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")))
 										sub = 1;
 									
 									if (Shutter.comboFilter.getSelectedItem().toString().equals(".mxf") == false
 									&& Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC") == false
 									&& Shutter.caseCreateOPATOM.isSelected() == false
-									&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) == false)
+									&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) == false
+									&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) == false)
 									{
 										sub = JOptionPane.showOptionDialog(frame, Shutter.language.getProperty("chooseSubsIntegration"), Shutter.language.getProperty("caseAddSubtitles"),
 												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
@@ -14634,7 +14657,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (casePreserveSubs.isSelected() && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
+				if (casePreserveSubs.isSelected() && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")))
 				{
 					caseAddSubtitles.setSelected(false);
 				}
@@ -18145,7 +18168,6 @@ public class Shutter {
 								grpBitrate.setVisible(false);							
 								grpCrop.setVisible(false);
 								grpOverlay.setVisible(false);
-								grpSubtitles.setVisible(false);
 								grpWatermark.setVisible(false);					
 								grpColorimetry.setVisible(false);						
 								grpImageAdjustement.setVisible(false);
@@ -18175,8 +18197,10 @@ public class Shutter {
 								{
 									grpAdvanced.removeAll();
 									
+									grpSubtitles.setVisible(true);
+									grpSubtitles.setLocation(grpSubtitles.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 									grpAdvanced.setVisible(true);
-									grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+									grpAdvanced.setLocation(grpAdvanced.getX(), grpSubtitles.getSize().height + grpSubtitles.getLocation().y + 6);
 									casePreserveSubs.setLocation(7, 14);
 									grpAdvanced.add(casePreserveSubs);				
 									casePreserveMetadata.setLocation(7, casePreserveSubs.getLocation().y + 17);
@@ -20339,9 +20363,9 @@ public class Shutter {
 								
 								grpResolution.add(comboResolution);
 								
-								if (comboResolution.getItemCount() != 30)
+								if (comboResolution.getItemCount() != 31)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "upscale 8x", "upscale 4x", "upscale 2x", "1:2", "1:4", "1:8", "1:16",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI artwork 4x", "AI artwork 2x", "1:2", "1:4", "1:8", "1:16",
 											"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
 											"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 											"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
@@ -20407,20 +20431,34 @@ public class Shutter {
 									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
 									comboImageOption.repaint();
 								}								
-								else if (comboResolution.getSelectedItem().toString().contains("upscale")) //Upscale models
-								{							
-									if (comboImageOption.getItemAt(0).equals("Artwork - 0") == false)
+								else if (comboResolution.getSelectedItem().toString().contains("AI")) //AI models
+								{						
+									if (comboResolution.getSelectedItem().toString().contains("artwork"))
 									{
-										comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "Artwork - 0","Artwork - 1","Artwork - 2","Artwork - 3","Photo - 0","Photo - 1","Photo - 2","Photo - 3" }));	
+										if (comboImageOption.getItemAt(0).equals("denoise") == false)
+										{
+											comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "denoise: 0","denoise: 1","denoise: 2","denoise: 3" }));	
+										}
+																			
+										comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
+										comboImageOption.setSize(90, 16);
+										comboImageOption.setEditable(false);
+										grpResolution.remove(lblImageQuality);
+										grpResolution.add(comboImageOption);
+										lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+										comboImageOption.repaint();				
 									}
-																		
-									comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
-									comboImageOption.setSize(90, 16);
-									comboImageOption.setEditable(false);
-									grpResolution.remove(lblImageQuality);
-									grpResolution.add(comboImageOption);
-									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-									comboImageOption.repaint();									
+									else
+									{
+										grpResolution.remove(lblImageQuality);
+										grpResolution.remove(comboImageOption);
+										lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);		
+									}
+									
+									if (VideoPlayer.preview.exists())
+										VideoPlayer.preview.delete();
+									
+									VideoPlayer.loadImage(true);
 								}
 								else
 								{
@@ -20446,19 +20484,7 @@ public class Shutter {
 									iconTVInterpret.setLocation(lblIsInterpret.getX() + lblIsInterpret.getWidth() + 1, lblIsInterpret.getY() + 1);
 								grpResolution.add(iconTVInterpret);
 								
-								caseCreateSequence.setBounds(7, caseRotate.getLocation().y + caseRotate.getHeight(), caseCreateSequence.getPreferredSize().width, 23);
-								
-								if (comboResolution.getSelectedItem().toString().contains("upscale"))
-								{
-									caseCreateSequence.setEnabled(false);
-									lblIsInterpret.setEnabled(false);
-								}
-								else
-								{
-									caseCreateSequence.setEnabled(true);
-									lblIsInterpret.setEnabled(true);
-								}
-								
+								caseCreateSequence.setBounds(7, caseRotate.getLocation().y + caseRotate.getHeight(), caseCreateSequence.getPreferredSize().width, 23);							
 								grpResolution.add(caseCreateSequence);
 								
 								grpBitrate.setVisible(false);
@@ -21229,11 +21255,6 @@ public class Shutter {
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
 				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".webp", ".avif",".bmp", ".ico", ".gif", ".apng" };
-								
-				if (comboResolution.getSelectedItem().toString().contains("upscale"))
-				{
-					types = new String[]{ ".png" };
-				}
 				
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				
@@ -21630,9 +21651,6 @@ public class Shutter {
 		//.webp .avif
 		comboImageOption.setEnabled(true);
 		
-		if (comboResolution.getSelectedItem().toString().contains("upscale"))
-			lblInterpretation.setEnabled(false);
-		
 		if (caseCreateSequence.isSelected())
 			comboInterpret.setEnabled(true);
 		
@@ -21817,6 +21835,17 @@ public class Shutter {
 				components[i].setEnabled(true);
 		}
 		
+		if (caseAddSubtitles.isSelected() && subtitlesBurn == false)
+		{
+			for (Component c : grpSubtitles.getComponents())
+			{
+				if (c instanceof JCheckBox == false)
+				{
+					c.setEnabled(false);
+				}
+			}
+		}
+		
 		components = grpWatermark.getComponents();
 		for (int i = 0; i < components.length; i++)
 		{			
@@ -21858,7 +21887,7 @@ public class Shutter {
 			VideoPlayer.player.add(logo);
 		}
 		
-		if (caseAddSubtitles.isSelected())
+		if (caseAddSubtitles.isSelected() && subtitlesBurn)
 		{
 			VideoPlayer.player.add(subsCanvas);
 		}

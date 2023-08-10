@@ -34,7 +34,7 @@ import library.DCRAW;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.PDF;
-import library.WAIFU2X;
+import library.NCNN;
 import settings.Colorimetry;
 import settings.Corrections;
 import settings.Filter;
@@ -44,6 +44,8 @@ import settings.InputAndOutput;
 import settings.Overlay;
 
 public class Picture extends Shutter {
+	
+	private static int processedFiles = 0;
 	
 	public static void main(boolean encode, boolean videoPlayerCapture) {
 
@@ -139,7 +141,7 @@ public class Picture extends Shutter {
 						FFMPEG.isGPUCompatible = false;
 						
 						//Scaling									
-			        	if (VideoEncoders.setScalingFirst() && comboResolution.getSelectedItem().toString().contains("upscale") == false) //Set scaling before or after depending on using a pad or stretch mode			
+			        	if (VideoEncoders.setScalingFirst() && comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
 			        		filterComplex = Image.setScale(filterComplex, false);	
 			        		filterComplex = Image.setPad(filterComplex, false);		
@@ -191,7 +193,7 @@ public class Picture extends Shutter {
 				        filterComplex = Image.setCrop(filterComplex);
 				        
 				        //Scaling
-				        if (VideoEncoders.setScalingFirst() == false && comboResolution.getSelectedItem().toString().contains("upscale") == false) //Set scaling before or after depending on using a pad or stretch mode		
+				        if (VideoEncoders.setScalingFirst() == false && comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode		
 			        	{
 				        	filterComplex = Image.setScale(filterComplex, false);
 				        	filterComplex = Image.setPad(filterComplex, false);		
@@ -301,6 +303,20 @@ public class Picture extends Shutter {
 							
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
+						else if (comboResolution.getSelectedItem().toString().contains("AI"))
+						{
+							String ext = fileOut.toString().substring(fileOut.toString().lastIndexOf("."));
+							
+							fileOut = new File(fileOut.toString().replace(ext, "_temp.png"));							
+							
+							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
+							
+							do {
+								Thread.sleep(10);
+							} while(FFMPEG.runProcess.isAlive());
+							
+							upscale(fileOut, compression, flags, ext);
+						}
 						else
 						{
 							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
@@ -308,40 +324,17 @@ public class Picture extends Shutter {
 	
 						if (isRaw)
 						{
-							do
-							{
+							do {
 								Thread.sleep(100);
-							}
-							while (DCRAW.runProcess.isAlive());
+							} while (DCRAW.runProcess.isAlive());
 							
 							btnStart.setEnabled(true);	
 						}
 						else
 						{
-							do
-							{
+							do {
 								Thread.sleep(100);
-							}
-							while(FFMPEG.runProcess.isAlive());
-						}
-						
-						if (comboResolution.getSelectedItem().toString().contains("upscale") && cancelled == false)
-						{
-							String ratio = comboResolution.getSelectedItem().toString().replace("upscale", "").replace("x", "");
-
-							String model = "models-upconv_7_anime_style_art_rgb";
-							if (Shutter.comboImageOption.getSelectedItem().toString().contains("Photo"))
-								model = "models-upconv_7_photo";
-		
-							String denoise[] = Shutter.comboImageOption.getSelectedItem().toString().replace(" ", "").split("-");
-							
-							WAIFU2X.run("-v -i " + '"' + fileOut + '"' + " -m " + model + " -s " + ratio + " -n " + denoise + " -o " + '"' + fileOut + '"');
-							
-							do
-							{
-								Thread.sleep(100);
-							}
-							while(WAIFU2X.runProcess.isAlive());
+							} while(FFMPEG.runProcess.isAlive());
 						}
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
@@ -452,6 +445,144 @@ public class Picture extends Shutter {
 		}
 		else
 			return " -vframes 1";
+	}
+	
+	private static void upscale(File fileOut, String compression, String flags, String ext) throws InterruptedException {
+														
+		int f = 1;	
+		
+		if (caseCreateSequence.isSelected())
+		{
+			fileOut = new File(fileOut.toString().replace("%06d", String.format("%06d", f)));
+		}
+				
+		int processingFiles = 0;
+									
+		while (fileOut.exists() && cancelled == false)
+		{ 		
+			final File temp = fileOut;
+		
+			if (processingFiles == 5)
+			{
+				do {
+					Thread.sleep(100);
+				} while (processedFiles < processingFiles);
+				
+				processingFiles = 0;
+				processedFiles = 0;
+			}
+
+			processingFiles ++;
+			
+			Thread t = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					
+					try {
+			
+						String model = "models-DF2K_JPEG";	
+						String ratio = "4";
+						String denoise = "";
+						
+						if (Shutter.comboResolution.getSelectedItem().toString().contains("artwork"))
+						{
+							model = "models-upconv_7_anime_style_art_rgb";
+							
+							String r[] = Shutter.comboResolution.getSelectedItem().toString().split(" ");								
+							ratio = r[2].replace("x", "");	
+							
+							String n[] = Shutter.comboImageOption.getSelectedItem().toString().split(" ");			
+							denoise = " -n " + n[1];
+						}	
+						
+						NCNN.run(" -v -i " + '"' + temp + '"' + " -m " + model + " -s " + ratio + denoise + " -o " + '"' + temp + '"');
+							
+						do {
+							Thread.sleep(10);
+						} while(NCNN.runProcess.isAlive());
+						
+					} catch (Exception e) {}
+					finally
+					{
+						processedFiles ++;
+					}
+				}
+				
+			});
+			t.start();
+			
+			if (caseCreateSequence.isSelected())
+			{
+				f++;									
+				fileOut = new File(fileOut.toString().replace(String.format("%06d", f - 1), String.format("%06d", f)));
+			}
+			
+			if (caseCreateSequence.isSelected() == false)
+			{
+				do {
+					Thread.sleep(10);
+				} while(NCNN.runProcess.isAlive());
+				
+				break;
+			}
+		}	
+		
+		Shutter.screenshotIsRunning = true; //Workaround to avoid disableAll();
+																						
+		if (caseCreateSequence.isSelected())
+		{
+			fileOut = new File(fileOut.toString().replace(String.format("%06d", f), String.format("%06d", 1)));
+		}
+				
+		f = 1;
+		
+		while (fileOut.exists() && cancelled == false)
+		{	
+			if (comboFilter.getSelectedItem().toString().equals(".png") == false)
+			{									
+				String scale = "";								
+				if (Shutter.comboResolution.getSelectedItem().toString().equals("AI photo 2x"))
+				{
+					scale = " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags;
+				}
+				
+				FFMPEG.run(" -i " + '"' + fileOut + '"' + scale + compression + " -y " + '"' + fileOut.toString().replace("_temp.png", ext) + '"');
+			
+				do {
+					Thread.sleep(10);
+				} while(FFMPEG.runProcess.isAlive());
+				
+				//Delete the upscaled temp .png file
+				fileOut.delete();
+			}
+			else if (Shutter.comboResolution.getSelectedItem().toString().equals("AI photo 2x"))
+			{
+				FFMPEG.run(" -i " + '"' + fileOut + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags + " " + '"' + fileOut.toString().replace("_temp", "") + '"');
+				
+				do {
+					Thread.sleep(10);
+				} while(FFMPEG.runProcess.isAlive());
+				
+				//Delete the upscaled temp .png file
+				fileOut.delete();
+			}
+			else
+			{
+				fileOut.renameTo(new File(fileOut.toString().replace("_temp", "")));
+			}
+			
+			fileOut = new File(fileOut.toString().replace("_temp.png", ext));
+			
+			if (caseCreateSequence.isSelected())
+			{
+				f++;									
+				fileOut = new File(fileOut.toString().replace(String.format("%06d", f - 1), String.format("%06d", f)).replace(ext, "_temp.png"));
+			}
+			
+			if (caseCreateSequence.isSelected() == false)
+				break;
+		}
 	}
 	
 	private static boolean lastActions(File file, String fileName, String extension, File fileOut, String output) {		

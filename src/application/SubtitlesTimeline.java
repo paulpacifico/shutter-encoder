@@ -142,7 +142,7 @@ public class SubtitlesTimeline {
 	private static int MouseTextWidth;
 	private static int MouseTextLocationX;
 	
-	public SubtitlesTimeline(int positionX, int positionY) {
+	public SubtitlesTimeline() {
 		
     	frame = new JFrame();
     	frame.setResizable(true);
@@ -154,7 +154,7 @@ public class SubtitlesTimeline {
     	frame.setSize(1000, 270);
     	currentFrameHeight = 270;
     	frame.setMinimumSize(new Dimension (1000,270));
-    	frame.setLocation(positionX, positionY);
+    	frame.setLocation((Shutter.frame.getLocation().x + Shutter.frame.getWidth() / 2) - 500, Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);
 		frame.setForeground(Color.WHITE);
 		
 		//IMPORTANT

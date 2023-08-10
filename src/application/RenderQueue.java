@@ -69,7 +69,7 @@ import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.TSMUXER;
-import library.WAIFU2X;
+import library.NCNN;
 import library.PDF;
 import settings.FunctionUtils;
 
@@ -133,7 +133,7 @@ import settings.FunctionUtils;
 		    }
 			
 			public void windowClosed(WindowEvent arg0) {
-				if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || WAIFU2X.isRunning)
+				if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || NCNN.isRunning)
 					Shutter.btnCancel.doClick();
 				
 				if (Shutter.btnCancel.isEnabled() == false)		
@@ -443,7 +443,7 @@ import settings.FunctionUtils;
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{		  
-					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || WAIFU2X.isRunning)
+					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || NCNN.isRunning)
 						Shutter.btnCancel.doClick();
 					
 					if (Shutter.btnCancel.isEnabled() == false)		
@@ -730,8 +730,8 @@ import settings.FunctionUtils;
 								case "dcraw" :
 									DCRAW.run(cmd.toString().replace("dcraw",""));
 									break;
-								case "waifu2x" :
-									WAIFU2X.run(cmd.toString().replace("waifu2x",""));
+								case "ncnn" :
+									NCNN.run(cmd.toString().replace("ncnn",""));
 									break;
 							}				
 							
@@ -743,7 +743,7 @@ import settings.FunctionUtils;
 							try {
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || WAIFU2X.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || NCNN.isRunning);
 								
 								
 								//Permet d'attendre si un autre processus se lance
@@ -751,7 +751,7 @@ import settings.FunctionUtils;
 								
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || WAIFU2X.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || NCNN.isRunning);
 							} catch (InterruptedException e) {}
 
 							lastActions(i, fichier, fileOut);
