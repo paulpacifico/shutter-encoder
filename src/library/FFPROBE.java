@@ -496,7 +496,7 @@ public static boolean hasAlpha = false;
 			        	}
 			        	 
 		        	 	//Timecode
-			            if (line.contains("timecode") && line.contains("timecode is invalid") == false)
+			            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
 			            {		
 			            	//Drop frame / non drop frame
 			            	if (line.contains(";"))
@@ -519,10 +519,11 @@ public static boolean hasAlpha = false;
 		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
 		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))			            			
 	            			|| (VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
-				            {
+				            {			            		
 			            		if (FFPROBE.timecode1 == "")
 				                {			            					            			
 			            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
+			            			
 				                	timecode1 = str[1];
 				                	timecode2 = str[2];
 				                	timecode3 = str[3];

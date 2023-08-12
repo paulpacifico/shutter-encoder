@@ -45,7 +45,7 @@ import settings.Overlay;
 
 public class Picture extends Shutter {
 	
-	private static int processedFiles = 0;
+	public static int processedFiles = 0;
 	
 	public static void main(boolean encode, boolean videoPlayerCapture) {
 
@@ -457,60 +457,43 @@ public class Picture extends Shutter {
 		}
 				
 		int processingFiles = 0;
-									
-		while (fileOut.exists() && cancelled == false)
-		{ 		
-			final File temp = fileOut;
 		
+		int totalFiles = 0;		
+		for (File file : new File(lblDestination1.getText()).listFiles())
+		{
+			if (file.getName().contains("_temp"))
+			{
+				totalFiles ++;
+			}
+		}	
+		
+		progressBar1.setValue(0);
+		progressBar1.setMaximum(totalFiles);
+		int progressValue = 0;
+		
+		while (fileOut.exists() && cancelled == false)
+		{ 					
+			final File temp = fileOut;
+			
 			if (processingFiles == 5)
 			{
 				do {
 					Thread.sleep(100);
-				} while (processedFiles < processingFiles);
+				} while (processedFiles < processingFiles && cancelled == false);
 				
 				processingFiles = 0;
 				processedFiles = 0;
-			}
-
+			}			
+		
 			processingFiles ++;
 			
-			Thread t = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					
-					try {
+			String model = "realesr-general-wdn-x4v3";							
+			if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
+			{
+				model = "realesrgan-x4plus-anime";
+			}	
 			
-						String model = "models-DF2K_JPEG";	
-						String ratio = "4";
-						String denoise = "";
-						
-						if (Shutter.comboResolution.getSelectedItem().toString().contains("artwork"))
-						{
-							model = "models-upconv_7_anime_style_art_rgb";
-							
-							String r[] = Shutter.comboResolution.getSelectedItem().toString().split(" ");								
-							ratio = r[2].replace("x", "");	
-							
-							String n[] = Shutter.comboImageOption.getSelectedItem().toString().split(" ");			
-							denoise = " -n " + n[1];
-						}	
-						
-						NCNN.run(" -v -i " + '"' + temp + '"' + " -m " + model + " -s " + ratio + denoise + " -o " + '"' + temp + '"');
-							
-						do {
-							Thread.sleep(10);
-						} while(NCNN.runProcess.isAlive());
-						
-					} catch (Exception e) {}
-					finally
-					{
-						processedFiles ++;
-					}
-				}
-				
-			});
-			t.start();
+			NCNN.run(" -v -i " + '"' + temp + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + temp + '"');
 			
 			if (caseCreateSequence.isSelected())
 			{
@@ -519,14 +502,15 @@ public class Picture extends Shutter {
 			}
 			
 			if (caseCreateSequence.isSelected() == false)
-			{
-				do {
-					Thread.sleep(10);
-				} while(NCNN.runProcess.isAlive());
-				
 				break;
-			}
+			
+			progressValue ++;
+			progressBar1.setValue(progressValue);
 		}	
+		
+		do {
+			Thread.sleep(10);
+		} while (NCNN.runProcess.isAlive());		
 		
 		Shutter.screenshotIsRunning = true; //Workaround to avoid disableAll();
 																						
@@ -537,12 +521,15 @@ public class Picture extends Shutter {
 				
 		f = 1;
 		
+		progressBar1.setValue(0);
+		progressValue = 0;
+		
 		while (fileOut.exists() && cancelled == false)
 		{	
 			if (comboFilter.getSelectedItem().toString().equals(".png") == false)
 			{									
 				String scale = "";								
-				if (Shutter.comboResolution.getSelectedItem().toString().equals("AI photo 2x"))
+				if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 				{
 					scale = " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags;
 				}
@@ -556,7 +543,7 @@ public class Picture extends Shutter {
 				//Delete the upscaled temp .png file
 				fileOut.delete();
 			}
-			else if (Shutter.comboResolution.getSelectedItem().toString().equals("AI photo 2x"))
+			else if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 			{
 				FFMPEG.run(" -i " + '"' + fileOut + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags + " " + '"' + fileOut.toString().replace("_temp", "") + '"');
 				
@@ -582,6 +569,9 @@ public class Picture extends Shutter {
 			
 			if (caseCreateSequence.isSelected() == false)
 				break;
+			
+			progressValue ++;
+			progressBar1.setValue(progressValue);
 		}
 	}
 	

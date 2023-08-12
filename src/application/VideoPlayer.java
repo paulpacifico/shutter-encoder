@@ -1433,7 +1433,7 @@ public class VideoPlayer {
     public static void setInfo() {
     	
     	String tff = "";
-		if (FFPROBE.interlaced.equals("1"))
+		if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
 		{
 			if (FFPROBE.fieldOrder.equals("0"))
 			{
@@ -2772,6 +2772,11 @@ public class VideoPlayer {
 					
 					//FileList
 					setFileList();
+					
+					if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
+					{
+						loadImage(true);
+					}
                 }								
 			}
 			
@@ -4246,6 +4251,12 @@ public class VideoPlayer {
 				
 				@Override
 				public void run() {
+					
+					if (NCNN.isRunning)
+					{
+						NCNN.process.destroy();
+					}
+					
 					do {
 						try {
 							Thread.sleep(10);
@@ -4387,28 +4398,17 @@ public class VideoPlayer {
 					            	Thread.sleep(10);  
 					            } while (FFMPEG.isRunning && FFMPEG.error == false);
 								
-								String model = "models-DF2K_JPEG";	
-								String ratio = "4";
-								String denoise = "";
-								
-								if (Shutter.comboResolution.getSelectedItem().toString().contains("artwork"))
+								String model = "realesr-general-wdn-x4v3";							
+								if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
 								{
-									model = "models-upconv_7_anime_style_art_rgb";
-									
-									String r[] = Shutter.comboResolution.getSelectedItem().toString().split(" ");								
-									ratio = r[2].replace("x", "");	
-									
-									String n[] = Shutter.comboImageOption.getSelectedItem().toString().split(" ");			
-									denoise = " -n " + n[1];
-								}
-								else
-								{
-									Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-									Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
-								}
+									model = "realesrgan-x4plus-anime";
+								}	
+
+								Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+								Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
 																
-								NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + model + " -s " + ratio + denoise + " -o " + '"' + preview + '"');
-								
+								NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"');
+
 								do {
 									Thread.sleep(10);
 								}

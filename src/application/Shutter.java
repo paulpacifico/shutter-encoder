@@ -340,6 +340,8 @@ public class Shutter {
 	protected static JTextField gopSize;
 	protected static JCheckBox caseFilmGrain;
 	protected static JComboBox<String> comboFilmGrain;
+	protected static JCheckBox caseFilmGrainDenoise;
+	protected static JComboBox<String> comboFilmGrainDenoise;
 	protected static JCheckBox caseCABAC;
 	protected static JCheckBox caseForceLevel;
 	protected static JCheckBox caseForcePreset;
@@ -708,6 +710,18 @@ public class Shutter {
 			pathToFont = pathToFont.substring(0,(int) (pathToFont.lastIndexOf("/"))).replace("%20", " ");
 			pathToFont = "'" + pathToFont + "fonts/Montserrat.ttf" + "'";
 		}
+		
+		//Path for AI models
+		NCNN.modelsPath = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		if (System.getProperty("os.name").contains("Windows"))
+		{
+			NCNN.modelsPath = NCNN.modelsPath.substring(1,NCNN.modelsPath.length()-1);
+		}
+		else
+		{
+			NCNN.modelsPath = NCNN.modelsPath.substring(0,NCNN.modelsPath.length()-1);
+		}		
+		NCNN.modelsPath = NCNN.modelsPath.substring(0,(int) (NCNN.modelsPath.lastIndexOf("/"))).replace("%20", " ")  + "/Library/models";		
 		
 		//Checking java x86 or arm version
 		try {
@@ -3583,38 +3597,6 @@ public class Shutter {
 						
 						grpResolution.repaint();
 					}
-					
-					//AI models
-					if (comboResolution.getSelectedItem().toString().contains("AI")
-					&& (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG")))
-					{	
-						if (comboResolution.getSelectedItem().toString().contains("artwork"))
-						{
-							if (comboImageOption.getItemAt(0).equals("denoise") == false)
-							{
-								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "denoise: 0","denoise: 1","denoise: 2","denoise: 3" }));	
-							}
-																
-							comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
-							comboImageOption.setSize(90, 16);
-							comboImageOption.setEditable(false);
-							grpResolution.remove(lblImageQuality);
-							grpResolution.add(comboImageOption);
-							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-							comboImageOption.repaint();				
-						}
-						else
-						{
-							grpResolution.remove(lblImageQuality);
-							grpResolution.remove(comboImageOption);
-							lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);		
-						}
-						
-						if (VideoPlayer.preview.exists())
-							VideoPlayer.preview.delete();
-						
-						VideoPlayer.loadImage(true);
-					}
 
 					if (comboFonctions.getSelectedItem().toString().equals("DNxHD") 
 					|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
@@ -4789,7 +4771,7 @@ public class Shutter {
 
 		comboResolution = new JComboBox<String>();
 		comboResolution.setName("comboResolution");
-		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI artwork 4x", "AI artwork 2x", "1:2", "1:4", "1:8", "1:16",
+		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "1:2", "1:4", "1:8", "1:16",
 				"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
 				"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 				"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
@@ -4810,44 +4792,19 @@ public class Shutter {
 					{
 						changeFilters();
 						
-						//AI models						
-						if (comboResolution.getSelectedItem().toString().contains("AI"))
+						if (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFilter.getSelectedItem().toString().equals(".png"))
 						{
-							if (comboResolution.getSelectedItem().toString().contains("artwork"))
-							{
-								if (comboImageOption.getItemAt(0).equals("denoise") == false)
-								{
-									comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "denoise: 0","denoise: 1","denoise: 2","denoise: 3" }));	
-								}
-																	
-								comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
-								comboImageOption.setSize(90, 16);
-								comboImageOption.setEditable(false);
-								grpResolution.remove(lblImageQuality);
-								grpResolution.add(comboImageOption);
-								lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-								comboImageOption.repaint();				
-							}
-							else
-							{
-								grpResolution.remove(lblImageQuality);
-								grpResolution.remove(comboImageOption);
-								lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);		
-							}
-							
+							grpResolution.remove(lblImageQuality);
+							grpResolution.remove(comboImageOption);
+							lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
+						}
+						
+						if (comboResolution.getSelectedItem().toString().contains("AI"))
+						{	
 							if (VideoPlayer.preview.exists())
 								VideoPlayer.preview.delete();
 							
-							VideoPlayer.loadImage(true);							
-						}
-						else
-						{
-							if (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFilter.getSelectedItem().toString().equals(".png"))
-							{
-								grpResolution.remove(lblImageQuality);
-								grpResolution.remove(comboImageOption);
-								lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
-							}
+							VideoPlayer.loadImage(true);
 						}
 					}
 					else
@@ -5164,23 +5121,6 @@ public class Shutter {
 		comboImageOption.setSize(90, 16);
 		comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
 		grpResolution.add(comboImageOption);
-		
-		comboImageOption.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if (comboResolution.getSelectedItem().toString().contains("AI"))
-				{
-					if (VideoPlayer.preview.exists())
-						VideoPlayer.preview.delete();
-					
-					VideoPlayer.loadImage(true);
-				}
-				
-			}
-		
-		});
 	}
 
 	private void grpImageFilter() {
@@ -15063,8 +15003,7 @@ public class Shutter {
 			}
 			
 		});
-			
-		
+					
 		comboFilmGrain = new JComboBox<String>();
 		comboFilmGrain.setName("comboFilmGrain");
 		comboFilmGrain.setEnabled(false);
@@ -15079,6 +15018,38 @@ public class Shutter {
 		comboFilmGrain.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		comboFilmGrain.setEditable(false);
 		comboFilmGrain.setSize(40, 16);
+		
+		caseFilmGrainDenoise = new JCheckBox(language.getProperty("caseFilmGrainDenoise"));
+		caseFilmGrainDenoise.setName("caseFilmGrainDenoise");
+		caseFilmGrainDenoise.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseFilmGrainDenoise.setSize(caseFilmGrainDenoise.getPreferredSize().width + 4, 23);
+		
+		caseFilmGrainDenoise.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseFilmGrainDenoise.isSelected())
+				{
+					comboFilmGrainDenoise.setEnabled(true);
+				}
+				else
+				{
+					comboFilmGrainDenoise.setEnabled(false);		
+				}	
+			}
+			
+		});
+		
+		comboFilmGrainDenoise = new JComboBox<String>();
+		comboFilmGrainDenoise.setName("comboFilmGrainDenoise");
+		comboFilmGrainDenoise.setEnabled(false);
+		comboFilmGrainDenoise.setMaximumRowCount(15);
+		comboFilmGrainDenoise.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1"} ));
+		comboFilmGrainDenoise.setSelectedIndex(1);
+		comboFilmGrainDenoise.setFont(new Font(freeSansFont, Font.PLAIN, 10));
+		comboFilmGrainDenoise.setEditable(false);
+		comboFilmGrainDenoise.setSize(40, 16);
 		
 		caseCABAC = new JCheckBox(language.getProperty("caseCABAC"));
 		caseCABAC.setName("caseCABAC");
@@ -16597,6 +16568,8 @@ public class Shutter {
 				gopSize.setEnabled(false);
 				caseFilmGrain.setSelected(false);
 				comboFilmGrain.setEnabled(false);
+				caseFilmGrainDenoise.setSelected(false);
+				comboFilmGrainDenoise.setEnabled(false);
 				caseCABAC.setSelected(false);
 				gopSize.setText("250");
 				caseChunks.setSelected(false);
@@ -20065,8 +20038,12 @@ public class Shutter {
 									caseFilmGrain.setLocation(7, caseGOP.getLocation().y + 17);
 									grpAdvanced.add(caseFilmGrain);
 									comboFilmGrain.setLocation(caseFilmGrain.getX() + caseFilmGrain.getWidth() + 3, caseFilmGrain.getY() + 3);
-									grpAdvanced.add(comboFilmGrain);									
-									caseDecimate.setLocation(7, caseFilmGrain.getLocation().y + 17);
+									grpAdvanced.add(comboFilmGrain);
+									caseFilmGrainDenoise.setLocation(7, caseFilmGrain.getLocation().y + 17);
+									grpAdvanced.add(caseFilmGrainDenoise);	
+									comboFilmGrainDenoise.setLocation(caseFilmGrainDenoise.getX() + caseFilmGrainDenoise.getWidth() + 3, caseFilmGrainDenoise.getY() + 3);
+									grpAdvanced.add(comboFilmGrainDenoise);									
+									caseDecimate.setLocation(7, caseFilmGrainDenoise.getLocation().y + 17);
 								}	
 								else if ("MPEG-1".equals(function) || "MPEG-2".equals(function))
 								{
@@ -20365,7 +20342,7 @@ public class Shutter {
 								
 								if (comboResolution.getItemCount() != 31)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI artwork 4x", "AI artwork 2x", "1:2", "1:4", "1:8", "1:16",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "1:2", "1:4", "1:8", "1:16",
 											"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
 											"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 											"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
@@ -20431,40 +20408,19 @@ public class Shutter {
 									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
 									comboImageOption.repaint();
 								}								
-								else if (comboResolution.getSelectedItem().toString().contains("AI")) //AI models
-								{						
-									if (comboResolution.getSelectedItem().toString().contains("artwork"))
-									{
-										if (comboImageOption.getItemAt(0).equals("denoise") == false)
-										{
-											comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "denoise: 0","denoise: 1","denoise: 2","denoise: 3" }));	
-										}
-																			
-										comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
-										comboImageOption.setSize(90, 16);
-										comboImageOption.setEditable(false);
-										grpResolution.remove(lblImageQuality);
-										grpResolution.add(comboImageOption);
-										lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-										comboImageOption.repaint();				
-									}
-									else
-									{
-										grpResolution.remove(lblImageQuality);
-										grpResolution.remove(comboImageOption);
-										lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);		
-									}
-									
-									if (VideoPlayer.preview.exists())
-										VideoPlayer.preview.delete();
-									
-									VideoPlayer.loadImage(true);
-								}
 								else
 								{
 									grpResolution.remove(lblImageQuality);
 									grpResolution.remove(comboImageOption);
 									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);									
+								}
+								
+								if (comboResolution.getSelectedItem().toString().contains("AI"))
+								{	
+									if (VideoPlayer.preview.exists())
+										VideoPlayer.preview.delete();
+									
+									VideoPlayer.loadImage(true);
 								}
 								
 								grpResolution.repaint();							
@@ -21935,6 +21891,9 @@ public class Shutter {
 		
 		if (caseFilmGrain.isSelected() == false)
 			comboFilmGrain.setEnabled(false);
+		
+		if (caseFilmGrainDenoise.isSelected() == false)
+			comboFilmGrainDenoise.setEnabled(false);
 		
 		if (caseChunks.isSelected() == false)
 			chunksSize.setEnabled(false);

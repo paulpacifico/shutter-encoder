@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import application.Console;
 import application.RenderQueue;
 import application.Shutter;
+import functions.Picture;
 
 public class NCNN extends Shutter {
 	
@@ -34,18 +35,14 @@ public static boolean error = false;
 public static boolean isRunning = false;
 public static Thread runProcess;
 public static Process process;
+public static String modelsPath;
 
 	public static void run(final String cmd) {
 		
 		error = false;
 	    progressBar1.setValue(0);
-	    
-	    if (isRunning)
-	    {
-	    	process.destroy();
-	    }
 	    				    
-	    Console.consoleNCNN.append(Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleNCNN.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false  && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{
@@ -63,44 +60,43 @@ public static Process process;
 				
 				@Override
 				public void run() {
-					
+										
 					try {
 						
 						String PathToNCNN;
 						ProcessBuilder processNCNN;
-						
-						String binary = "realsr-ncnn-vulkan";						
-						if (Shutter.comboResolution.getSelectedItem().toString().contains("artwork"))
-							binary = "waifu2x-ncnn-vulkan";
-														
+													
 						if (System.getProperty("os.name").contains("Windows"))
 						{
 							PathToNCNN = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToNCNN = PathToNCNN.substring(1,PathToNCNN.length()-1);
-							PathToNCNN = '"' + PathToNCNN.substring(0,(int) (PathToNCNN.lastIndexOf("/"))).replace("%20", " ")  + "/Library/" + binary + ".exe" + '"';
+							PathToNCNN = '"' + PathToNCNN.substring(0,(int) (PathToNCNN.lastIndexOf("/"))).replace("%20", " ")  + "/Library/realesrgan-ncnn-vulkan.exe" + '"';
 							processNCNN = new ProcessBuilder(PathToNCNN + cmd);
 						}
 						else
 						{
 							PathToNCNN = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToNCNN = PathToNCNN.substring(0,PathToNCNN.length()-1);
-							PathToNCNN = PathToNCNN.substring(0,(int) (PathToNCNN.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + binary;
+							PathToNCNN = PathToNCNN.substring(0,(int) (PathToNCNN.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/realesrgan-ncnn-vulkan";
 							processNCNN = new ProcessBuilder("/bin/bash", "-c" , PathToNCNN + cmd);
 						}
-						
+
 						process = processNCNN.start();
 				         				        
 				        String line;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 						
-						progressBar1.setValue(0);
-						progressBar1.setMaximum(100);
+						if (caseCreateSequence.isSelected() == false)
+						{
+							progressBar1.setValue(0);
+							progressBar1.setMaximum(100);
+						}
 						
 						while ((line = input.readLine()) != null)
 						{							
 						    Console.consoleNCNN.append(line + System.lineSeparator());	
-						    
-						    if (line.contains("%"))
+
+						    if (line.contains("%") && caseCreateSequence.isSelected() == false)
 						    {
 						    	String s[] = line.split("\\.");
 								progressBar1.setValue(Integer.parseInt(s[0]));
@@ -108,18 +104,23 @@ public static Process process;
 						}													
 						process.waitFor();						
 																
-						} catch (IOException | InterruptedException e) {
+						} catch (IOException | InterruptedException e) {							
 							error = true;
 						} finally {							
 							
 							isRunning = false;
 							
-							if (cancelled == false)
+							if (caseCreateSequence.isSelected() == false)
 							{
-								progressBar1.setValue(100);
+								if (cancelled == false)
+								{
+									progressBar1.setValue(100);
+								}
+								else
+									progressBar1.setValue(0);
 							}
-							else
-								progressBar1.setValue(0);
+							
+							Picture.processedFiles ++;
 						}
 							
 				}				

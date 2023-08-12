@@ -744,6 +744,14 @@ public class AdvancedFeatures extends Shutter {
 					av1Flags += "film-grain=" + comboFilmGrain.getSelectedIndex();
 				}
 				
+				if (caseFilmGrainDenoise.isSelected())
+				{
+					if (av1Flags != "")
+						av1Flags += ":";
+					
+					av1Flags += "film-grain-denoise=" + comboFilmGrainDenoise.getSelectedIndex();
+				}
+				
 				//HDR
 				if (grpColorimetry.isVisible() && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
 				{
