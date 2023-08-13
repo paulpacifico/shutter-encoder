@@ -206,9 +206,7 @@ public static boolean hasAlpha = false;
 										
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-					
-					Console.consoleFFPROBE.append(System.lineSeparator());
-					
+
 					while ((line = input.readLine()) != null)
 					{						
 						Console.consoleFFPROBE.append(line + System.lineSeparator());		
@@ -542,6 +540,8 @@ public static boolean hasAlpha = false;
 			            
 				}		
 				process.waitFor();	
+
+				Console.consoleFFPROBE.append(System.lineSeparator());
 							
 				} catch (Exception e) {	
 					FFMPEG.error = true;
@@ -608,9 +608,7 @@ public static boolean hasAlpha = false;
 					
 					isRunning = true;	
 					Process process = processFFPROBE.start();			         			       
-			        
-			        Console.consoleFFPROBE.append(System.lineSeparator());	
-					
+
 			        //IMPORTANT avoid process hanging
 			        Thread stream = new Thread(new Runnable() {
 				      		        	
@@ -912,8 +910,6 @@ public static boolean hasAlpha = false;
 			        			        
 			        String line;
 			        			        
-			        Console.consoleFFPROBE.append(System.lineSeparator());
-			        
 					//Analyse des données	
 			        while ((line = br.readLine()) != null) 
 			        {	
@@ -951,7 +947,9 @@ public static boolean hasAlpha = false;
 						}
 			        }
 				
-			        process.waitFor();					
+			        process.waitFor();		
+			        
+			        Console.consoleFFPROBE.append(System.lineSeparator());
 							
 				} catch (Exception e) {				
 					FFMPEG.error = true;					
@@ -1005,6 +1003,8 @@ public static boolean hasAlpha = false;
 		        }
 			}									
 			process.waitFor();
+			
+			Console.consoleFFPROBE.append(System.lineSeparator());
 			
 			} catch (Exception e) {}
 			finally {

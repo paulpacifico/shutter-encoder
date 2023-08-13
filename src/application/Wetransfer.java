@@ -470,7 +470,9 @@ public class Wetransfer {
 			}//While				
 			
 			while ((errorStream = bre.readLine()) != null) {
+				
 				Console.consoleFFMPEG.append(errorStream + System.lineSeparator());		
+				
 				if (errorStream.contains("ERROR"))
 				{
 					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("checkIdentity"), Shutter.language.getProperty("wrongIdentity"), JOptionPane.ERROR_MESSAGE);
@@ -478,7 +480,9 @@ public class Wetransfer {
 				}
 			}
 			
-			process.waitFor();				
+			process.waitFor();		
+			
+			Console.consoleFFMPEG.append(System.lineSeparator());
 									
 			} catch (Exception e) {
 				error = true;
@@ -523,7 +527,7 @@ public class Wetransfer {
 					else
 						cmd = " upload" + uploadFileList.toString();
 					
-					Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+					Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " " + cmd);
 					
 					if (System.getProperty("os.name").contains("Windows"))
 					{
@@ -580,6 +584,8 @@ public class Wetransfer {
 					}
 					
 					process.waitFor();	
+					
+					Console.consoleFFMPEG.append(System.lineSeparator());
 					
 					if (casePlus.isSelected() == false && Shutter.cancelled == false)
 						sendMailForWT(error);

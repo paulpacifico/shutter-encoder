@@ -36,7 +36,8 @@ public static Thread runProcess;
 public static Process process;
 
 	public static void run(final String cmd) {				
-	    Console.consoleBMXTRANSWRAP.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+		
+	    Console.consoleBMXTRANSWRAP.append(Shutter.language.getProperty("command") + " " + cmd);
 	    
 		error = false;
 		
@@ -103,6 +104,8 @@ public static Process process;
 																			
 						} while(line !=null);					
 						process.waitFor();
+						
+						Console.consoleBMXTRANSWRAP.append(System.lineSeparator());
 										
 						} catch (IOException | InterruptedException e) {
 							error = true;

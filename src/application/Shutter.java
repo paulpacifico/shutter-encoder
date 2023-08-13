@@ -17772,9 +17772,17 @@ public class Shutter {
 		        break;
 		    }
 		}
-
-		int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
-		int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();			    
+		
+		double dpiScaleFactor = 1.0;
+        if (System.getProperty("os.name").contains("Windows"))
+        {
+        	double trueHorizontalLines = allScreens[screenIndex].getDefaultConfiguration().getBounds().getHeight();
+            double scaledHorizontalLines = allScreens[screenIndex].getDisplayMode().getHeight();
+        	dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
+        }
+        
+        int screenHeight = (int) (allScreens[screenIndex].getDisplayMode().getHeight() * dpiScaleFactor);	
+		int screenWidth = (int) (allScreens[screenIndex].getDisplayMode().getWidth() * dpiScaleFactor);			    
 		int screenX = (int) allScreens[screenIndex].getDefaultConfiguration().getBounds().getX();
 		
 		int height = 0;
@@ -18755,6 +18763,8 @@ public class Shutter {
 										@Override
 										public void run() {
 											
+											comboAccel.setEnabled(false);
+											
 											if ("Apple ProRes".equals(comboFonctions.getSelectedItem().toString()) && System.getProperty("os.name").contains("Mac") && arch.equals("arm64"))
 											{
 												FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v prores_videotoolbox -s 640x360 -f null -");
@@ -18778,6 +18788,8 @@ public class Shutter {
 													comboAccel.setSelectedItem(Utils.hwaccel); 
 												}												
 											}
+											
+											comboAccel.setEnabled(true);
 										}
 										
 									});
@@ -19068,6 +19080,8 @@ public class Shutter {
 										@Override
 										public void run() {
 
+											comboAccel.setEnabled(false);
+											
 											String codec = "h264";
 											if ("H.265".equals(comboFonctions.getSelectedItem().toString()))
 												codec = "hevc";
@@ -19162,7 +19176,7 @@ public class Shutter {
 												
 											} catch (Exception e) {}
 	
-												
+											comboAccel.setEnabled(true);	
 										}
 										
 									});
@@ -19568,6 +19582,8 @@ public class Shutter {
 										@Override
 										public void run() {
 											
+											comboAccel.setEnabled(false);
+											
 											try {
 												
 												if (System.getProperty("os.name").contains("Windows"))
@@ -19632,6 +19648,8 @@ public class Shutter {
 												}
 												
 											} catch (Exception e) {}
+											
+											comboAccel.setEnabled(true);
 										}
 										
 									});

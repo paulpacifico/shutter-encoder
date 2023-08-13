@@ -1811,7 +1811,7 @@ public class VideoPlayer {
 				cmd = " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
 			}
 
-			Console.consoleFFMPEG.append(System.lineSeparator() + cmd + System.lineSeparator());
+			Console.consoleFFMPEG.append(cmd + System.lineSeparator());
 
 			return cmd;			
 		}

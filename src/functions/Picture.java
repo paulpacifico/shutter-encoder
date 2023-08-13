@@ -343,7 +343,7 @@ public class Picture extends Shutter {
 								break;
 						}
 						
-					} catch (InterruptedException e) {
+					} catch (Exception e) {
 						FFMPEG.error  = true;
 					}
 				}	
@@ -509,8 +509,8 @@ public class Picture extends Shutter {
 		}	
 		
 		do {
-			Thread.sleep(10);
-		} while (NCNN.runProcess.isAlive());		
+			Thread.sleep(100);
+		} while (processedFiles < processingFiles && cancelled == false);	
 		
 		Shutter.screenshotIsRunning = true; //Workaround to avoid disableAll();
 																						
@@ -556,7 +556,12 @@ public class Picture extends Shutter {
 			}
 			else
 			{
-				fileOut.renameTo(new File(fileOut.toString().replace("_temp", "")));
+				File newName = new File(fileOut.toString().replace("_temp", ""));
+				fileOut.renameTo(newName);
+				
+				do {
+					Thread.sleep(10);
+				} while (newName.exists() == false && cancelled == false);
 			}
 			
 			fileOut = new File(fileOut.toString().replace("_temp.png", ext));

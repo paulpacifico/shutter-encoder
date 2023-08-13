@@ -136,7 +136,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
 		firstInput = true;
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd + System.lineSeparator());
+		
+	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd);
 	    
 	    getAll = new StringBuilder();
 
@@ -246,9 +247,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						//Permet d'écrire dans le flux
 						OutputStream stdin = process.getOutputStream();
 				        writer = new BufferedWriter(new OutputStreamWriter(stdin));				        
-				        
-				        Console.consoleFFMPEG.append(System.lineSeparator());
-				        				        
+		        
 				        if (cmd.contains("pipe:play"))
 						{				        	
 				        	VideoPlayer.playerStop();
@@ -298,6 +297,11 @@ public static StringBuilder errorLog = new StringBuilder();
 								break;																			
 						}					
 						process.waitFor();	
+						
+						if (cmd.contains("hide_banner") == false)
+						{
+							Console.consoleFFMPEG.append(System.lineSeparator());		
+						}
 												
 						if (cancelled == false)
 							postAnalyse();						
@@ -649,8 +653,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			}	
 			
-			Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-"
-					+  System.lineSeparator() + System.lineSeparator());
+			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
 			player.getContentPane().setBackground(new Color(50,50,50));
@@ -921,8 +924,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		error = false;	
 		isRunning = true;
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator());
-			
+
 		runProcess = new Thread(new Runnable()  {
 			@Override
 			public void run() {
@@ -960,14 +962,11 @@ public static StringBuilder errorLog = new StringBuilder();
 				        
 				        hwaccels.append("auto" + System.lineSeparator());
 				        
-				        Console.consoleFFMPEG.append(System.lineSeparator());
-				        
 				        while ((line = br.readLine()) != null) 
 				        {				        	
 				        	
 				        	if (line.contains("Hardware acceleration methods") == false && line.equals("") == false && line != null)
 				        	{
-				        		Console.consoleFFMPEG.append(line + System.lineSeparator());
 				        		hwaccels.append(line + System.lineSeparator());
 				        	}
 				        }
@@ -977,9 +976,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					else
 					{
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
-									
-						Console.consoleFFMPEG.append(System.lineSeparator());
-						
+
 						while ((line = input.readLine()) != null) {						
 							
 							Console.consoleFFMPEG.append(line + System.lineSeparator() );		
@@ -987,9 +984,10 @@ public static StringBuilder errorLog = new StringBuilder();
 							//Errors
 							checkForErrors(line);																										
 						}			
-					}
+					}					
+					process.waitFor();		
 					
-					process.waitFor();					
+					Console.consoleFFMPEG.append(System.lineSeparator());
 				   					     																		
 				} catch (IOException io) {//Bug Linux							
 				} catch (InterruptedException e) {
@@ -1125,7 +1123,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		error = false;	
 		
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd + System.lineSeparator());
+	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd);
 	    
 		runProcess = new Thread(new Runnable()  {
 			
@@ -1160,8 +1158,6 @@ public static StringBuilder errorLog = new StringBuilder();
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
 					
-			        Console.consoleFFMPEG.append(System.lineSeparator());
-			        
 					while ((line = input.readLine()) != null) {
 						
 						Console.consoleFFMPEG.append(line + System.lineSeparator());		
@@ -1170,7 +1166,9 @@ public static StringBuilder errorLog = new StringBuilder();
 						checkForErrors(line);					
 																		
 					}					
-					process.waitFor();					
+					process.waitFor();		
+					
+					Console.consoleFFMPEG.append(System.lineSeparator());
 						
 				} catch (IOException io) {//Bug Linux							
 				} catch (InterruptedException e) {
@@ -1186,7 +1184,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		error = false;		
 		isRunning = true;
 		
-	    Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + cmd + System.lineSeparator());
+	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + cmd);
 			
 		runProcess = new Thread(new Runnable()  {
 			@Override
@@ -1228,8 +1226,6 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					audioDevices = new StringBuilder();
 					audioDevices.append(language.getProperty("noAudio"));
-					
-					Console.consoleFFMPEG.append(System.lineSeparator());
 					
 					while ((line = input.readLine()) != null) {						
 						
@@ -1318,7 +1314,9 @@ public static StringBuilder errorLog = new StringBuilder();
 						checkForErrors(line);																		
 					}			
 					
-					process.waitFor();					
+					process.waitFor();		
+					
+					Console.consoleFFMPEG.append(System.lineSeparator());
 				   					     																		
 					} catch (IOException io) {//Bug Linux							
 					} catch (InterruptedException e) {
@@ -1418,14 +1416,12 @@ public static StringBuilder errorLog = new StringBuilder();
 				process = processFFMPEG.start();
 			}		
 						
-			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -" + System.lineSeparator());
+			Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -");
 			
 			String line;
 	
 			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
 								
-			Console.consoleFFMPEG.append(System.lineSeparator());
-			
 			while ((line = input.readLine()) != null) {						
 				
 				Console.consoleFFMPEG.append(line + System.lineSeparator() );		

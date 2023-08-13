@@ -40,7 +40,7 @@ public class SEVENZIP extends Shutter {
 	runProcess = new Thread(new Runnable()  {
 		@Override
 		public void run() {
-			Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator());			
+			Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " " + cmd);			
 			try {
 			String PathTo7za;
 			ProcessBuilder process7za;
@@ -73,10 +73,12 @@ public class SEVENZIP extends Shutter {
 			//Analyse des données	
 			do {
 				line = br.readLine();
-				Console.consoleFFMPEG.append(line + System.lineSeparator() );			
+				Console.consoleFFMPEG.append(line + System.lineSeparator());			
 			}while(line !=null);		
 				
 			process.waitFor();		
+			
+			Console.consoleFFMPEG.append(System.lineSeparator());
 			
 			isRunning = false;	        
 			

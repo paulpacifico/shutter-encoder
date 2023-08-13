@@ -116,7 +116,7 @@ public static Process process;
 							process = processDCRAW.start();
 						}
 						
-						Console.consoleFFMPEG.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG) + System.lineSeparator() + System.lineSeparator());
+						Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));
 						
 						isRunning = true;
 						
@@ -127,6 +127,8 @@ public static Process process;
 						    Console.consoleFFMPEG.append(line + System.lineSeparator());																		
 						}													
 						process.waitFor();
+						
+						Console.consoleFFMPEG.append(System.lineSeparator());
 										
 						} catch (IOException | InterruptedException e) {
 							error = true;
@@ -172,8 +174,7 @@ public static Process process;
 						process = processDCRAW.start();
 					}
 									
-					Console.consoleFFPLAY.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'
-					+  System.lineSeparator() + System.lineSeparator());
+					Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"');
 						
 					isRunning = true;
 					
@@ -204,7 +205,9 @@ public static Process process;
 						
 																		
 					}//While					
-					process.waitFor();															
+					process.waitFor();	
+					
+					Console.consoleFFPLAY.append(System.lineSeparator());
 				   					     																		
 					} catch (IOException | InterruptedException e) {
 						error = true;

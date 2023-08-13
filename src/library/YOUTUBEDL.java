@@ -158,6 +158,8 @@ public static String format = "";
 					} while(lineOutput != null && Shutter.cancelled == false);	
 					
 					process.waitFor();
+
+					Console.consoleYOUTUBEDL.append(System.lineSeparator());
 								     	
                     if (Shutter.cancelled)
                     	outputFile.delete();					
@@ -238,7 +240,9 @@ public static String format = "";
 					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());		                
 						          						        		
 					} while(lineOutput != null && Shutter.cancelled == false);	
-					process.waitFor();					
+					process.waitFor();			
+					
+					Console.consoleYOUTUBEDL.append(System.lineSeparator());
 														
 					} catch (IOException | InterruptedException e) {
 	                    JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("downloadError"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);

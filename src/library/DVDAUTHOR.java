@@ -36,7 +36,7 @@ public static Process process;
 
 	public static void run(final String cmd) {
 		
-	    Console.consoleDVDAUTHOR.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleDVDAUTHOR.append(Shutter.language.getProperty("command") + " " + cmd);
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
 		{
@@ -91,6 +91,8 @@ public static Process process;
 						    
 						}//While					
 						process.waitFor();
+						
+						Console.consoleDVDAUTHOR.append(System.lineSeparator());
 										
 						} catch (IOException | InterruptedException e) {
 							error = true;

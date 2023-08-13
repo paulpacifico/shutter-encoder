@@ -44,7 +44,7 @@ public static Thread runProcess;
 				
 		error = false;
 		
-	    Console.consoleMEDIAINFO.append(System.lineSeparator() + Shutter.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"' + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleMEDIAINFO.append(Shutter.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"');
 		
 		runProcess = new Thread(new Runnable()  {
 			@Override
@@ -161,6 +161,8 @@ public static Thread runProcess;
 					}
 									    
 					process.waitFor();
+					
+					Console.consoleMEDIAINFO.append(System.lineSeparator());
 					
 					String StrTotal = "";
 					

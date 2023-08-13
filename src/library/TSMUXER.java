@@ -37,7 +37,7 @@ public static Process process;
 
 	public static void run(final String cmd) {
 		
-	    Console.consoleTSMUXER.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleTSMUXER.append(Shutter.language.getProperty("command") + " " + cmd);
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
 		{
@@ -95,8 +95,10 @@ public static Process process;
 								}
 						    }
 							          						        		
-						} while (line !=null);  
+						} while (line != null);  
 						process.waitFor();
+						
+						Console.consoleTSMUXER.append(System.lineSeparator());
 										
 						} catch (IOException | InterruptedException e) {
 							error = true;

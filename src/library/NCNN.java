@@ -41,8 +41,9 @@ public static String modelsPath;
 		
 		error = false;
 	    progressBar1.setValue(0);
+	    tempsEcoule.setVisible(false);
 	    				    
-	    Console.consoleNCNN.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + cmd + System.lineSeparator() + System.lineSeparator());
+	    Console.consoleNCNN.append(Shutter.language.getProperty("command") + " " + cmd);
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false  && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{
@@ -99,11 +100,18 @@ public static String modelsPath;
 						    if (line.contains("%") && caseCreateSequence.isSelected() == false)
 						    {
 						    	String s[] = line.split("\\.");
+						    	if (System.getProperty("os.name").contains("Windows"))
+						    	{
+						    		s = line.split(",");
+						    	}
+						    	
 								progressBar1.setValue(Integer.parseInt(s[0]));
 						    }
 						}													
-						process.waitFor();						
-																
+						process.waitFor();	
+						
+						Console.consoleNCNN.append(System.lineSeparator());
+																						
 						} catch (IOException | InterruptedException e) {							
 							error = true;
 						} finally {							
