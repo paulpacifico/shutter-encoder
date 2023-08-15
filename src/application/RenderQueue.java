@@ -323,8 +323,16 @@ import settings.FunctionUtils;
 					    }
 					}
 
-					int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
-					int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();						
+					double dpiScaleFactor = 1.0;
+			        if (System.getProperty("os.name").contains("Windows"))
+			        {
+			        	double trueHorizontalLines = allScreens[screenIndex].getDefaultConfiguration().getBounds().getHeight();
+			            double scaledHorizontalLines = allScreens[screenIndex].getDisplayMode().getHeight();
+			        	dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
+			        }
+			        
+			        int screenHeight = (int) (allScreens[screenIndex].getDisplayMode().getHeight() * dpiScaleFactor);	
+					int screenWidth = (int) (allScreens[screenIndex].getDisplayMode().getWidth() * dpiScaleFactor);			    				
 
 					if (accept && frame.getHeight() < screenHeight - Shutter.taskBarHeight)
 					{		
@@ -532,9 +540,17 @@ import settings.FunctionUtils;
 					    }
 					}
 
-					int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
-					int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();
+					double dpiScaleFactor = 1.0;
+			        if (System.getProperty("os.name").contains("Windows"))
+			        {
+			        	double trueHorizontalLines = allScreens[screenIndex].getDefaultConfiguration().getBounds().getHeight();
+			            double scaledHorizontalLines = allScreens[screenIndex].getDisplayMode().getHeight();
+			        	dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
+			        }
 
+			        int screenHeight = (int) (allScreens[screenIndex].getDisplayMode().getHeight() * dpiScaleFactor);	
+					int screenWidth = (int) (allScreens[screenIndex].getDisplayMode().getWidth() * dpiScaleFactor);		
+			        
 					if (frame.getHeight() < screenHeight - Shutter.taskBarHeight)
 					{
 						frame.setSize(screenWidth, screenHeight - Shutter.taskBarHeight);

@@ -259,6 +259,7 @@ public class Shutter {
 	protected static JButton btnEmptyList;
 	protected static JComboBox<Object> comboFilter;
 	protected static JComboBox<Object> comboLUTs;
+	protected static JComboBox<Object> comboGamma;
 	protected static JComboBox<Object> comboInLevels;
 	protected static JComboBox<Object> comboOutLevels;
 	protected static JComboBox<Object> comboInColormatrix;
@@ -305,6 +306,7 @@ public class Shutter {
 	protected static JComboBox<String> comboFrom;
 	protected static JComboBox<String> comboTo;
 	protected static JCheckBox caseLUTs;
+	protected static JCheckBox caseGamma;
 	protected static JCheckBox caseLevels;
 	protected static JCheckBox caseColormatrix;
 	protected static JCheckBox caseColorspace;
@@ -5059,7 +5061,7 @@ public class Shutter {
 		
 		lblScreenshot = new JLabel(new FlatSVGIcon("contents/screenshot.svg", 16, 16));
 		lblScreenshot.setHorizontalAlignment(SwingConstants.CENTER);
-		lblScreenshot.setBounds(comboResolution.getX() + comboResolution.getWidth() + 9, 21, 16, 16);	
+		lblScreenshot.setBounds(comboResolution.getX() + comboResolution.getWidth() + 9, 21, 16, 16);
 		grpResolution.add(lblScreenshot);
 
 		lblScreenshot.addMouseListener(new MouseListener() {
@@ -11603,7 +11605,7 @@ public class Shutter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				extendSections(grpColorimetry, 143);
+				extendSections(grpColorimetry, 165);
 			}
 	
 			@Override
@@ -11627,10 +11629,43 @@ public class Shutter {
 	
 		});
 	
+		caseGamma = new JCheckBox(language.getProperty("caseGamma"));
+		caseGamma.setName("caseGamma");
+		caseGamma.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseGamma.setBounds(7, 16, caseGamma.getPreferredSize().width, 22);
+		grpColorimetry.add(caseGamma);
+		
+		caseGamma.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseGamma.isSelected()) 
+				{
+					comboGamma.setEnabled(true);
+				}
+				else
+				{
+					comboGamma.setEnabled(false);
+				}
+			}
+			
+		});
+		
+		comboGamma = new JComboBox<Object>(new String[] {"1.8","2.0","2.2","2.4","2.6"});		
+		comboGamma.setName("comboGamma");
+		comboGamma.setFont(new Font("Free Sans", Font.PLAIN, 10));
+		comboGamma.setEditable(false);
+		comboGamma.setEnabled(false);
+		comboGamma.setSelectedIndex(3);
+		comboGamma.setMaximumRowCount(20);
+		comboGamma.setBounds(grpColorimetry.getWidth() - 130 - 7, caseGamma.getLocation().y + 4, 42, 16);
+		grpColorimetry.add(comboGamma);
+		
 		caseLevels = new JCheckBox(language.getProperty("caseLevels"));
 		caseLevels.setName("caseLevels");
 		caseLevels.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseLevels.setBounds(7, 16, caseLevels.getPreferredSize().width, 22);
+		caseLevels.setBounds(7, caseGamma.getLocation().y + caseGamma.getHeight(), caseLevels.getPreferredSize().width, 22);
 		grpColorimetry.add(caseLevels);
 		
 		caseLevels.addActionListener(new ActionListener() {
@@ -16652,6 +16687,9 @@ public class Shutter {
 				if (caseLevels.isSelected())
 					caseLevels.doClick();
 				
+				if (caseGamma.isSelected())
+					caseGamma.doClick();
+				
 				if (caseColormatrix.isSelected())
 					caseColormatrix.doClick();
 				
@@ -17830,6 +17868,11 @@ public class Shutter {
 				VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
 				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
 			}
+		}
+		
+		if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
+		{
+			VideoPlayer.loadImage(true);
 		}
 	}
 	
@@ -21693,6 +21736,11 @@ public class Shutter {
 		{
 			comboInLevels.setEnabled(false);
 			comboOutLevels.setEnabled(false);
+		}
+		
+		if (caseGamma.isSelected() == false)
+		{
+			comboGamma.setEnabled(false);
 		}
 		
 		if (caseColormatrix.isSelected() == false)

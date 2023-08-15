@@ -79,6 +79,8 @@ public static Thread runProcess;
 					BufferedReader br = new BufferedReader(isr);
 					StringBuilder infoData = new StringBuilder();
 
+					Console.consoleMEDIAINFO.append(System.lineSeparator());
+					
 					String line;		       
 					while ((line = br.readLine()) != null)
 					{		

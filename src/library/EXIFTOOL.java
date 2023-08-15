@@ -87,6 +87,8 @@ private static Boolean horizontal = true;
 			        
 					String line;
 					
+					Console.consoleEXIFTOOL.append(System.lineSeparator());
+					
 					//Analyse des données	
 					while ((line = br.readLine()) != null) {	
 						
@@ -138,7 +140,7 @@ private static Boolean horizontal = true;
 							  scanOrientation = false;
 						  }
 
-					}//While					
+					}				
 					process.waitFor();
 					
 					Console.consoleEXIFTOOL.append(System.lineSeparator());

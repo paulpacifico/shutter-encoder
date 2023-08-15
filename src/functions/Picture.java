@@ -44,9 +44,7 @@ import settings.InputAndOutput;
 import settings.Overlay;
 
 public class Picture extends Shutter {
-	
-	public static int processedFiles = 0;
-	
+		
 	public static void main(boolean encode, boolean videoPlayerCapture) {
 
 		Thread thread = new Thread(new Runnable(){			
@@ -304,18 +302,20 @@ public class Picture extends Shutter {
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
 						else if (comboResolution.getSelectedItem().toString().contains("AI"))
-						{
-							String ext = fileOut.toString().substring(fileOut.toString().lastIndexOf("."));
+						{		
+							File upscaleFolder = new File(lblDestination1.getText() + "/upscale");		
+							upscaleFolder.mkdir();				
 							
-							fileOut = new File(fileOut.toString().replace(ext, "_temp.png"));							
-							
+							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
+							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
+
 							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
 							
 							do {
 								Thread.sleep(10);
 							} while(FFMPEG.runProcess.isAlive());
 							
-							upscale(fileOut, compression, flags, ext);
+							upscale(fileOut, compression, flags);
 						}
 						else
 						{
@@ -447,85 +447,50 @@ public class Picture extends Shutter {
 			return " -vframes 1";
 	}
 	
-	private static void upscale(File fileOut, String compression, String flags, String ext) throws InterruptedException {
+	private static void upscale(File fileOut, String compression, String flags) throws InterruptedException {
 														
-		int f = 1;	
-		
-		if (caseCreateSequence.isSelected())
-		{
-			fileOut = new File(fileOut.toString().replace("%06d", String.format("%06d", f)));
-		}
-				
-		int processingFiles = 0;
-		
 		int totalFiles = 0;		
-		for (File file : new File(lblDestination1.getText()).listFiles())
+		for (int i = 0 ; i < fileOut.getParentFile().listFiles().length ; i++)
 		{
-			if (file.getName().contains("_temp"))
-			{
-				totalFiles ++;
-			}
+			totalFiles ++;
 		}	
 		
 		progressBar1.setValue(0);
 		progressBar1.setMaximum(totalFiles);
-		int progressValue = 0;
 		
-		while (fileOut.exists() && cancelled == false)
-		{ 					
-			final File temp = fileOut;
-			
-			if (processingFiles == 5)
-			{
-				do {
-					Thread.sleep(100);
-				} while (processedFiles < processingFiles && cancelled == false);
-				
-				processingFiles = 0;
-				processedFiles = 0;
-			}			
-		
-			processingFiles ++;
-			
-			String model = "realesr-general-wdn-x4v3";							
-			if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
-			{
-				model = "realesrgan-x4plus-anime";
-			}	
-			
-			NCNN.run(" -v -i " + '"' + temp + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + temp + '"');
-			
-			if (caseCreateSequence.isSelected())
-			{
-				f++;									
-				fileOut = new File(fileOut.toString().replace(String.format("%06d", f - 1), String.format("%06d", f)));
-			}
-			
-			if (caseCreateSequence.isSelected() == false)
-				break;
-			
-			progressValue ++;
-			progressBar1.setValue(progressValue);
+		String model = "realesr-general-wdn-x4v3";							
+		if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
+		{
+			model = "realesrgan-x4plus-anime";
 		}	
+		
+		if (caseCreateSequence.isSelected())
+		{			
+			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"');
+		}
+		else		
+			NCNN.run(" -v -i " + '"' + fileOut + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut + '"');
 		
 		do {
 			Thread.sleep(100);
-		} while (processedFiles < processingFiles && cancelled == false);	
+		} while (NCNN.isRunning && cancelled == false);	
 		
 		Shutter.screenshotIsRunning = true; //Workaround to avoid disableAll();
-																						
-		if (caseCreateSequence.isSelected())
-		{
-			fileOut = new File(fileOut.toString().replace(String.format("%06d", f), String.format("%06d", 1)));
-		}
-				
-		f = 1;
-		
+																										
 		progressBar1.setValue(0);
-		progressValue = 0;
+		int progressValue = 0;
 		
-		while (fileOut.exists() && cancelled == false)
-		{	
+		File upscaleFolder = new File(lblDestination1.getText() + "/upscale");
+
+		for (File file : upscaleFolder.listFiles()) 
+		{			
+			if (comboFonctions.getSelectedItem().equals("JPEG"))
+			{
+				fileOut = new File(lblDestination1.getText() + "/" + file.getName().replace(".png", ".jpg"));
+			}
+			else
+				fileOut = new File(lblDestination1.getText() + "/" + file.getName().replace(".png", comboFilter.getSelectedItem().toString()));
+
 			if (comboFilter.getSelectedItem().toString().equals(".png") == false)
 			{									
 				String scale = "";								
@@ -534,50 +499,38 @@ public class Picture extends Shutter {
 					scale = " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags;
 				}
 				
-				FFMPEG.run(" -i " + '"' + fileOut + '"' + scale + compression + " -y " + '"' + fileOut.toString().replace("_temp.png", ext) + '"');
+				FFMPEG.run(" -i " + '"' + file + '"' + scale + compression + " -y " + '"' + fileOut + '"');
 			
 				do {
 					Thread.sleep(10);
 				} while(FFMPEG.runProcess.isAlive());
-				
-				//Delete the upscaled temp .png file
-				fileOut.delete();
 			}
 			else if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 			{
-				FFMPEG.run(" -i " + '"' + fileOut + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags + " " + '"' + fileOut.toString().replace("_temp", "") + '"');
+				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags + " " + '"' + fileOut + '"');
 				
 				do {
 					Thread.sleep(10);
-				} while(FFMPEG.runProcess.isAlive());
-				
-				//Delete the upscaled temp .png file
-				fileOut.delete();
+				} while(FFMPEG.runProcess.isAlive());				
 			}
 			else
 			{
-				File newName = new File(fileOut.toString().replace("_temp", ""));
-				fileOut.renameTo(newName);
-				
+				File newName = new File(lblDestination1.getText() + "/" + file.getName());
+				file.renameTo(newName);
+
 				do {
 					Thread.sleep(10);
 				} while (newName.exists() == false && cancelled == false);
 			}
 			
-			fileOut = new File(fileOut.toString().replace("_temp.png", ext));
-			
-			if (caseCreateSequence.isSelected())
-			{
-				f++;									
-				fileOut = new File(fileOut.toString().replace(String.format("%06d", f - 1), String.format("%06d", f)).replace(ext, "_temp.png"));
-			}
-			
-			if (caseCreateSequence.isSelected() == false)
-				break;
-			
 			progressValue ++;
 			progressBar1.setValue(progressValue);
+			
+			if (cancelled)
+				break;
 		}
+		
+		upscaleFolder.delete();		
 	}
 	
 	private static boolean lastActions(File file, String fileName, String extension, File fileOut, String output) {		

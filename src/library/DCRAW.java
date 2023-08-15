@@ -123,7 +123,9 @@ public static Process process;
 						String line;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 						
-						while ((line = input.readLine()) != null) {							
+						Console.consoleFFMPEG.append(System.lineSeparator());
+						
+						while((line = input.readLine()) != null) {							
 						    Console.consoleFFMPEG.append(line + System.lineSeparator());																		
 						}													
 						process.waitFor();
@@ -180,6 +182,8 @@ public static Process process;
 					
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
+					
+					Console.consoleFFPLAY.append(System.lineSeparator());
 					
 					while ((line = input.readLine()) != null) {
 						

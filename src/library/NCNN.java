@@ -26,7 +26,6 @@ import java.io.InputStreamReader;
 import application.Console;
 import application.RenderQueue;
 import application.Shutter;
-import functions.Picture;
 
 public class NCNN extends Shutter {
 	
@@ -93,6 +92,10 @@ public static String modelsPath;
 							progressBar1.setMaximum(100);
 						}
 						
+						Console.consoleNCNN.append(System.lineSeparator());	
+						
+						int progressValue = 0;
+						
 						while ((line = input.readLine()) != null)
 						{							
 						    Console.consoleNCNN.append(line + System.lineSeparator());	
@@ -106,6 +109,11 @@ public static String modelsPath;
 						    	}
 						    	
 								progressBar1.setValue(Integer.parseInt(s[0]));
+						    }
+						    else if (line.contains("done"))
+						    {
+						    	progressValue ++;
+								progressBar1.setValue(progressValue);
 						    }
 						}													
 						process.waitFor();	
@@ -127,8 +135,6 @@ public static String modelsPath;
 								else
 									progressBar1.setValue(0);
 							}
-							
-							Picture.processedFiles ++;
 						}
 							
 				}				

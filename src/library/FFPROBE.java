@@ -207,6 +207,8 @@ public static boolean hasAlpha = false;
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 
+					Console.consoleFFPROBE.append(System.lineSeparator());
+					
 					while ((line = input.readLine()) != null)
 					{						
 						Console.consoleFFPROBE.append(line + System.lineSeparator());		
@@ -618,6 +620,8 @@ public static boolean hasAlpha = false;
 					        InputStreamReader esr = new InputStreamReader(process.getErrorStream());
 					        BufferedReader bre = new BufferedReader(esr);
 							
+					        Console.consoleFFPROBE.append(System.lineSeparator());
+					        
 							String line;
 							try {
 								
@@ -627,6 +631,8 @@ public static boolean hasAlpha = false;
 								}
 								
 							} catch (IOException e) {}
+							
+							Console.consoleFFPROBE.append(System.lineSeparator());
 						}
 			        	
 			        });
@@ -637,6 +643,8 @@ public static boolean hasAlpha = false;
 
 			        String line;			        		      		      
 			        			        
+			        Console.consoleFFPROBE.append(System.lineSeparator());
+			        
 					//Analyse des données	
 			        while ((line = br.readLine()) != null)
 			        {		
@@ -909,6 +917,8 @@ public static boolean hasAlpha = false;
 			        BufferedReader br = new BufferedReader(isr);
 			        			        
 			        String line;
+			        
+			        Console.consoleFFPROBE.append(System.lineSeparator());
 			        			        
 					//Analyse des données	
 			        while ((line = br.readLine()) != null) 
@@ -1003,8 +1013,6 @@ public static boolean hasAlpha = false;
 		        }
 			}									
 			process.waitFor();
-			
-			Console.consoleFFPROBE.append(System.lineSeparator());
 			
 			} catch (Exception e) {}
 			finally {

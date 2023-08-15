@@ -113,7 +113,9 @@ public static String format = "";
 			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
 			        BufferedReader br = new BufferedReader(isr);
 			        String lineOutput;
-			        					
+			        		
+			        Console.consoleYOUTUBEDL.append(System.lineSeparator());
+			        
 					do {
 												
 						lineOutput = br.readLine();
@@ -233,7 +235,9 @@ public static String format = "";
 			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
 			        BufferedReader br = new BufferedReader(isr);
 			        String lineOutput;
-			        					
+			        	
+			        Console.consoleYOUTUBEDL.append(System.lineSeparator());
+			        
 					do {
 						lineOutput = br.readLine();		
 												
@@ -331,7 +335,9 @@ public static String format = "";
 			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
 			        BufferedReader br = new BufferedReader(isr);
 			        formatsOutput = new StringBuilder();		
-			        										
+			        	
+			        Console.consoleYOUTUBEDL.append(System.lineSeparator());
+			        
 					//Erreurs
 					while ((line = input.readLine()) != null && Shutter.cancelled == false) {		
 					    Console.consoleYOUTUBEDL.append(line  + System.lineSeparator());

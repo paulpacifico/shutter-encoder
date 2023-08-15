@@ -79,6 +79,8 @@ public static Process process;
 				        InputStreamReader isr = new InputStreamReader(process.getInputStream());
 				        BufferedReader br = new BufferedReader(isr);
 				        
+				        Console.consoleTSMUXER.append(System.lineSeparator());
+				        
 				        String line;	
 						do {
 							line = br.readLine();							

@@ -711,6 +711,11 @@ public class AdvancedFeatures extends Shutter {
 			flags += " -vsync " + Settings.comboSync.getSelectedItem();	
 		}
 		
+		if (caseGamma.isSelected())
+		{
+			flags += " -movflags write_colr+write_gama -mov_gamma " + comboGamma.getSelectedItem().toString();
+		}
+		
 		switch (comboFonctions.getSelectedItem().toString())
 		{	
 			case "H.265":	
@@ -819,7 +824,7 @@ public class AdvancedFeatures extends Shutter {
 			
 			case "Apple ProRes":
 				
-				flags += " -metadata:s " + '"' + "encoder=" + comboFonctions.getSelectedItem().toString() + " " + comboFilter.getSelectedItem().toString() + '"' + " -vendor apl0 -movflags write_colr+write_gama -flags bitexact";		
+				flags += " -metadata:s " + '"' + "encoder=" + comboFonctions.getSelectedItem().toString() + " " + comboFilter.getSelectedItem().toString() + '"' + " -vendor apl0 -flags bitexact";		
 				break;
 				
 			case "AVC-Intra 100":

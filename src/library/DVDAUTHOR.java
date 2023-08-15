@@ -78,6 +78,8 @@ public static Process process;
 						String line;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 						
+						Console.consoleDVDAUTHOR.append(System.lineSeparator());
+						
 						while ((line = input.readLine()) != null) {	
 							
 						    Console.consoleDVDAUTHOR.append(line + System.lineSeparator());																		

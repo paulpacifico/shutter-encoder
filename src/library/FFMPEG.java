@@ -276,6 +276,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					        playerThread.start();
 						}
 
+				        Console.consoleFFMPEG.append(System.lineSeparator());
+				        
 						while ((line = input.readLine()) != null)
 						{			
 							getAll.append(line);
@@ -954,6 +956,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					}		
 					
 					String line;
+					
+					Console.consoleFFMPEG.append(System.lineSeparator());
 						
 					if (cmd.contains("-hwaccels"))
 					{
@@ -1158,6 +1162,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
 					
+					Console.consoleFFMPEG.append(System.lineSeparator());
+					
 					while ((line = input.readLine()) != null) {
 						
 						Console.consoleFFMPEG.append(line + System.lineSeparator());		
@@ -1226,6 +1232,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					audioDevices = new StringBuilder();
 					audioDevices.append(language.getProperty("noAudio"));
+					
+					Console.consoleFFMPEG.append(System.lineSeparator());
 					
 					while ((line = input.readLine()) != null) {						
 						
@@ -1422,8 +1430,10 @@ public static StringBuilder errorLog = new StringBuilder();
 	
 			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
 								
-			while ((line = input.readLine()) != null) {						
-				
+			Console.consoleFFMPEG.append(System.lineSeparator());
+			
+			while ((line = input.readLine()) != null)
+			{			
 				Console.consoleFFMPEG.append(line + System.lineSeparator() );		
 				
 				//Erreurs
@@ -1441,10 +1451,11 @@ public static StringBuilder errorLog = new StringBuilder();
 					|| line.contains("Error"))
 				{
 					return false;
-				} 
-																		
+				} 																		
 			}			
-	   					     																		
+	   				
+			Console.consoleFFMPEG.append(System.lineSeparator());
+			
 		} catch (IOException io) {//Bug Linux							
 		} catch (Exception e) {
 			return false;

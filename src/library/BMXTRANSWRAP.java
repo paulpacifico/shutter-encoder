@@ -104,9 +104,7 @@ public static Process process;
 																			
 						} while(line !=null);					
 						process.waitFor();
-						
-						Console.consoleBMXTRANSWRAP.append(System.lineSeparator());
-										
+			
 						} catch (IOException | InterruptedException e) {
 							error = true;
 						} finally {

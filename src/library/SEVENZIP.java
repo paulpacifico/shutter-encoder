@@ -40,73 +40,77 @@ public class SEVENZIP extends Shutter {
 	runProcess = new Thread(new Runnable()  {
 		@Override
 		public void run() {
+			
 			Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " " + cmd);			
+			
 			try {
-			String PathTo7za;
-			ProcessBuilder process7za;
-			if (System.getProperty("os.name").contains("Windows"))
-			{
-				PathTo7za = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				PathTo7za = PathTo7za.substring(1,PathTo7za.length()-1);
-				PathTo7za = '"' + PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", " ")  + "/Library/7za.exe" + '"';
-				process7za = new ProcessBuilder(PathTo7za + " " + cmd);
-			}
-			else
-			{
-				PathTo7za = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				PathTo7za = PathTo7za.substring(0,PathTo7za.length()-1);
-				PathTo7za = PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/7za";
-				process7za = new ProcessBuilder("/bin/bash", "-c" , PathTo7za + " " + cmd);
-			}
+				String PathTo7za;
+				ProcessBuilder process7za;
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					PathTo7za = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					PathTo7za = PathTo7za.substring(1,PathTo7za.length()-1);
+					PathTo7za = '"' + PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", " ")  + "/Library/7za.exe" + '"';
+					process7za = new ProcessBuilder(PathTo7za + " " + cmd);
+				}
+				else
+				{
+					PathTo7za = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					PathTo7za = PathTo7za.substring(0,PathTo7za.length()-1);
+					PathTo7za = PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/7za";
+					process7za = new ProcessBuilder("/bin/bash", "-c" , PathTo7za + " " + cmd);
+				}
+					
+				isRunning = true;	
+				Process process = process7za.start();
+	
+				OutputStream out = process.getOutputStream();
+		        out.write("os get /value".getBytes());
+		        out.flush();
+		         
+		        InputStreamReader isr = new InputStreamReader(process.getInputStream());
+		        BufferedReader br = new BufferedReader(isr);
+		        String line;
+		        
+		        Console.consoleFFMPEG.append(System.lineSeparator());
+		        
+				//Analyse des données	
+				do {
+					line = br.readLine();
+					Console.consoleFFMPEG.append(line + System.lineSeparator());			
+				} while (line != null);		
+					
+				process.waitFor();		
 				
-			isRunning = true;	
-			Process process = process7za.start();
-
-			OutputStream out = process.getOutputStream();
-	        out.write("os get /value".getBytes());
-	        out.flush();
-	         
-	        InputStreamReader isr = new InputStreamReader(process.getInputStream());
-	        BufferedReader br = new BufferedReader(isr);
-	        String line;
-	        
-			//Analyse des données	
-			do {
-				line = br.readLine();
-				Console.consoleFFMPEG.append(line + System.lineSeparator());			
-			}while(line !=null);		
+				Console.consoleFFMPEG.append(System.lineSeparator());
 				
-			process.waitFor();		
-			
-			Console.consoleFFMPEG.append(System.lineSeparator());
-			
-			isRunning = false;	        
-			
-			} catch (IOException | InterruptedException e) {
-				System.out.println(cmd);
-				error = true;
-			}
-			
-			 if (notUpdate)
-			 {
-				 if (error == false)
+				isRunning = false;	        
+				
+				} catch (IOException | InterruptedException e) {
+					System.out.println(cmd);
+					error = true;
+				}
+				
+				 if (notUpdate)
 				 {
-			       	try {
-			       		Desktop.getDesktop().open(new File(lblDestination1.getText()));
-			        } catch (IOException e1) {}
+					 if (error == false)
+					 {
+				       	try {
+				       		Desktop.getDesktop().open(new File(lblDestination1.getText()));
+				        } catch (IOException e1) {}
+					 }
+					 else
+						 FFMPEG.cancelled = true;
+				        	
+					progressBar1.setIndeterminate(false);		
+									
+					FFMPEG.enfOfFunction();
+					FFMPEG.enableAll();
 				 }
-				 else
-					 FFMPEG.cancelled = true;
-			        	
-				progressBar1.setIndeterminate(false);		
-								
-				FFMPEG.enfOfFunction();
-				FFMPEG.enableAll();
-			 }
-			 
-		}				
-	});		
-	runProcess.start();
+				 
+			}				
+		});		
+		runProcess.start();
 	}
 
 }
