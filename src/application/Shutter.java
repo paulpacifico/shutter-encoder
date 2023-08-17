@@ -4800,14 +4800,6 @@ public class Shutter {
 							grpResolution.remove(comboImageOption);
 							lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
 						}
-						
-						if (comboResolution.getSelectedItem().toString().contains("AI"))
-						{	
-							if (VideoPlayer.preview.exists())
-								VideoPlayer.preview.delete();
-							
-							VideoPlayer.loadImage(true);
-						}
 					}
 					else
 					{
@@ -4825,8 +4817,18 @@ public class Shutter {
 					}
 				}
 				
-				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
-				VideoPlayer.resizeAll();				
+				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				{	
+					if (VideoPlayer.preview.exists())
+						VideoPlayer.preview.delete();
+					
+					VideoPlayer.loadImage(true);
+				}
+				else
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+					VideoPlayer.resizeAll();		
+				}
 		  }
 			
 		});
@@ -17849,7 +17851,7 @@ public class Shutter {
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), 0);	
 		}		
-		
+
 		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
 		{
 			VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
@@ -17868,11 +17870,6 @@ public class Shutter {
 				VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
 				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
 			}
-		}
-		
-		if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
-		{
-			VideoPlayer.loadImage(true);
 		}
 	}
 	
@@ -18651,9 +18648,9 @@ public class Shutter {
 								}
 								else
 								{
-									if (comboResolution.getItemCount() != 20)
+									if (comboResolution.getItemCount() != 24)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}							
@@ -18914,9 +18911,9 @@ public class Shutter {
 								}
 								else
 								{
-									if (comboResolution.getItemCount() != 20)
+									if (comboResolution.getItemCount() != 24)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}
@@ -19353,9 +19350,9 @@ public class Shutter {
 								grpResolution.add(comboDAR);							
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 								
-								if (comboResolution.getItemCount() != 20)
+								if (comboResolution.getItemCount() != 24)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 								}
 								
@@ -19732,9 +19729,9 @@ public class Shutter {
 								grpResolution.add(comboDAR);							
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 								
-								if (comboResolution.getItemCount() != 20)
+								if (comboResolution.getItemCount() != 24)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 								}
 								
@@ -20202,9 +20199,9 @@ public class Shutter {
 									grpResolution.add(comboDAR);							
 									comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 									
-									if (comboResolution.getItemCount() != 20)
+									if (comboResolution.getItemCount() != 24)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 									

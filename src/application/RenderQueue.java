@@ -747,7 +747,7 @@ import settings.FunctionUtils;
 									DCRAW.run(cmd.toString().replace("dcraw",""));
 									break;
 								case "ncnn" :
-									NCNN.run(cmd.toString().replace("ncnn",""));
+									NCNN.run(cmd.toString().replace("ncnn",""), false);
 									break;
 							}				
 							
