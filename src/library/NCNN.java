@@ -20,12 +20,16 @@
 package library;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import javax.imageio.ImageIO;
 
 import application.Console;
 import application.RenderQueue;
 import application.Shutter;
+import application.VideoPlayer;
 
 public class NCNN extends Shutter {
 	
@@ -36,21 +40,21 @@ public static Thread runProcess;
 public static Process process;
 public static String modelsPath;
 
-	public static void run(final String cmd) {
+	public static void run(final String cmd, boolean isVideoPlayer) {
 		
 		error = false;
 	    progressBar1.setValue(0);
 	    tempsEcoule.setVisible(false);
 	    				    
-	    Console.consoleNCNN.append(Shutter.language.getProperty("command") + " " + cmd);
+	    Console.consoleNCNN.append(language.getProperty("command") + " " + cmd);
 		
-		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false  && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
+		if (btnStart.getText().equals(language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false  && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{
 	        RenderQueue.tableRow.addRow(new Object[] { lblCurrentEncoding.getText(), "ncnn" + cmd, lblDestination1.getText()});
-	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
-				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
+				lblDestination1.setText(language.getProperty("sameAsSource"));
 		}
 		else
 		{			
@@ -86,7 +90,8 @@ public static String modelsPath;
 				        String line;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 						
-						if (caseCreateSequence.isSelected() == false)
+						if (caseCreateSequence.isSelected() == false
+						&& (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
 						{
 							progressBar1.setValue(0);
 							progressBar1.setMaximum(100);
@@ -100,7 +105,9 @@ public static String modelsPath;
 						{							
 						    Console.consoleNCNN.append(line + System.lineSeparator());	
 
-						    if (line.contains("%") && caseCreateSequence.isSelected() == false)
+						    if ((line.contains("%") && caseCreateSequence.isSelected() == false
+				    		&& (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
+				    		|| line.contains("%") && isVideoPlayer)
 						    {
 						    	String s[] = line.split("\\.");
 						    	if (System.getProperty("os.name").contains("Windows"))
@@ -114,6 +121,15 @@ public static String modelsPath;
 						    {
 						    	progressValue ++;
 								progressBar1.setValue(progressValue);
+								
+								if (comboFonctions.getSelectedItem().toString().equals("JPEG") == false
+								&& comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false
+								&& caseDisplay.isSelected())
+								{
+									String s[] = line.split(" ->");
+									VideoPlayer.frameVideo = ImageIO.read(new File(s[0].toString()));
+									VideoPlayer.player.repaint();
+								}
 						    }
 						}													
 						process.waitFor();	
@@ -126,7 +142,8 @@ public static String modelsPath;
 							
 							isRunning = false;
 							
-							if (caseCreateSequence.isSelected() == false)
+							if (caseCreateSequence.isSelected() == false
+							&& (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
 							{
 								if (cancelled == false)
 								{

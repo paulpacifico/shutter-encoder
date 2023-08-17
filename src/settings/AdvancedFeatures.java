@@ -189,6 +189,19 @@ public class AdvancedFeatures extends Shutter {
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
+		        		else if (comboResolution.getSelectedItem().toString().contains("AI"))
+						{
+							if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+							{
+								s[0] = String.valueOf(FFPROBE.imageWidth * 2);
+								s[1] = String.valueOf(FFPROBE.imageHeight * 2);
+							}
+							else
+							{
+								s[0] = String.valueOf(FFPROBE.imageWidth * 4);
+								s[1] = String.valueOf(FFPROBE.imageHeight * 4);
+							}
+						}
 		        		else if (comboResolution.getSelectedItem().toString().contains("x"))		
 						{
 							s = comboResolution.getSelectedItem().toString().split("x");
@@ -614,7 +627,7 @@ public class AdvancedFeatures extends Shutter {
 		{
 			//Null	
 		}
-		else
+		else if (Settings.comboSync.getSelectedItem().toString().equals("auto"))
 		{
 			if (FFPROBE.currentFPS == 59.94f)
 			{

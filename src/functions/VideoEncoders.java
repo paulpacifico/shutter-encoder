@@ -30,6 +30,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.FileUtils;
 
 import application.Ftp;
@@ -42,6 +44,7 @@ import library.BMXTRANSWRAP;
 import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.FFPROBE;
+import library.NCNN;
 import library.TSMUXER;
 import settings.AdvancedFeatures;
 import settings.AudioSettings;
@@ -388,82 +391,84 @@ public class VideoEncoders extends Shutter {
 						String inputCodec = Colorimetry.setInputCodec(extension);
 			        
 				        //Deinterlace
-						String filterComplex = "";						
-						switch (comboFonctions.getSelectedItem().toString())
+						String filterComplex = "";	
+						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Deinterlacing is made before upscaling
 						{
-							case "AV1":
-							case "H.264":
-							case "H.265":
-							case "MJPEG":
-							case "VP8":
-							case "VP9":
-							case "OGV":
-							case "WMV":
-							case "Xvid":
-							case "DNxHR":
+							switch (comboFonctions.getSelectedItem().toString())
+							{
+								case "AV1":
+								case "H.264":
+								case "H.265":
+								case "MJPEG":
+								case "VP8":
+								case "VP9":
+								case "OGV":
+								case "WMV":
+								case "Xvid":
+								case "DNxHR":
+									
+									filterComplex = AdvancedFeatures.setDeinterlace(true);									
+									break;
 								
-								filterComplex = AdvancedFeatures.setDeinterlace(true);									
-								break;
-							
-							case "MPEG-1":
+								case "MPEG-1":
+									
+									filterComplex = AdvancedFeatures.setDeinterlace(true);
+									break;
+									
+								case "MPEG-2":
+									
+									filterComplex = AdvancedFeatures.setDeinterlace(false);								
+									break;
 								
-								filterComplex = AdvancedFeatures.setDeinterlace(true);
-								break;
-								
-							case "MPEG-2":
-								
-								filterComplex = AdvancedFeatures.setDeinterlace(false);								
-								break;
-							
-							case "DNxHD":
-								
-								switch (comboFilter.getSelectedItem().toString())
-					            {
-					            	case "36":
-					            	case "75":
-					            	case "240":
-					            	case "365":
-					            	case "365 X":
-					            	case "90":
-					            	case "115":
-					            	case "175":
-					            	case "175 X":
+								case "DNxHD":
+									
+									switch (comboFilter.getSelectedItem().toString())
+						            {
+						            	case "36":
+						            	case "75":
+						            	case "240":
+						            	case "365":
+						            	case "365 X":
+						            	case "90":
+						            	case "115":
+						            	case "175":
+						            	case "175 X":
+						            		
+						            		filterComplex = AdvancedFeatures.setDeinterlace(true);					            		
+					            			break;
 					            		
-					            		filterComplex = AdvancedFeatures.setDeinterlace(true);					            		
-				            			break;
-				            		
-				            		default:
-				            			
-				            			filterComplex = AdvancedFeatures.setDeinterlace(false);				            			
-			            				break;
-					            }
+					            		default:
+					            			
+					            			filterComplex = AdvancedFeatures.setDeinterlace(false);				            			
+				            				break;
+						            }
+									
+									break;
+									
+								case "Apple ProRes":
+								case "AVC-Intra 100":
+								case "FFV1": 
+								case "GoPro CineForm":
+								case "HAP":
+								case "QT Animation":
+								case "Uncompressed":
+								case "XAVC":
+								case "XDCAM HD422":
+									
+									filterComplex = AdvancedFeatures.setDeinterlace(false);								
+									break;
 								
-								break;
-								
-							case "Apple ProRes":
-							case "AVC-Intra 100":
-							case "FFV1": 
-							case "GoPro CineForm":
-							case "HAP":
-							case "QT Animation":
-							case "Uncompressed":
-							case "XAVC":
-							case "XDCAM HD422":
-								
-								filterComplex = AdvancedFeatures.setDeinterlace(false);								
-								break;
-							
-							case "Blu-ray":
-							case "DVD":
-								
-								if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected())
-								{
-									filterComplex = "yadif=0:" + FFPROBE.fieldOrder + ":0"; 
-								}
-								
-								break;
-						}
-												
+								case "Blu-ray":
+								case "DVD":
+									
+									if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected())
+									{
+										filterComplex = "yadif=0:" + FFPROBE.fieldOrder + ":0"; 
+									}
+									
+									break;
+							}
+						}												
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
@@ -827,6 +832,71 @@ public class VideoEncoders extends Shutter {
 							
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
+						else if (comboResolution.getSelectedItem().toString().contains("AI"))
+						{		
+							File upscaleFolder = new File(lblDestination1.getText() + "/upscale");		
+							upscaleFolder.mkdir();				
+							
+							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
+							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, "%06d.png"));								
+							
+							String deinterlace = AdvancedFeatures.setDeinterlace(true);
+							if (deinterlace != "")
+							{
+								deinterlace = " -vf " + '"' + deinterlace + '"';
+							}
+							
+							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + deinterlace + " -an " + '"' + fileOut + '"');
+							
+							int current = 0;
+							do {
+
+								if (upscaleFolder.listFiles().length > 0 && current != upscaleFolder.listFiles().length && caseDisplay.isSelected())
+								{
+									current = upscaleFolder.listFiles().length;
+									
+									VideoPlayer.frameVideo = ImageIO.read(new File(fileOut.toString().replace("%06d", String.format("%06d", upscaleFolder.listFiles().length))));
+									VideoPlayer.player.repaint();
+								}
+								else
+								{
+									Thread.sleep(10);
+								}
+								
+							} while (FFMPEG.runProcess.isAlive());
+							
+							upscale(fileOut);
+
+							cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex.replace("0:a", "1:a").replace("-map a", "-map 1:a") + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
+							
+							if (cancelled == false)
+							{
+								FFMPEG.run(loop + stream + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);		
+								
+								do {
+									Thread.sleep(10);
+								} while(FFMPEG.runProcess.isAlive());	
+								
+								if (grpBitrate.isVisible() && case2pass.isSelected())
+								{
+									FFMPEG.run(loop + stream + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
+									
+									do {
+										Thread.sleep(10);
+									} while(FFMPEG.runProcess.isAlive());	
+								}
+							}
+							
+							for (File f : upscaleFolder.listFiles()) 
+							{
+								f.delete();
+							}
+							
+							upscaleFolder.delete();	
+							
+							//IMPORTANT
+							fileOut = new File(lblDestination1.getText() + "/" + fileOut.getName().replace("%06d.png", ext));
+						}
 						else
 						{
 							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
@@ -838,12 +908,14 @@ public class VideoEncoders extends Shutter {
 						
 						if (grpBitrate.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
-							if (FFMPEG.cancelled == false)
+							if (FFMPEG.cancelled == false && comboResolution.getSelectedItem().toString().contains("AI") == false)
+							{
 								FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
-							
-							do {
-								Thread.sleep(100);
-							} while (FFMPEG.runProcess.isAlive());			
+														
+								do {
+									Thread.sleep(100);
+								} while (FFMPEG.runProcess.isAlive());	
+							}
 						}
 																			
 						if (FFMPEG.saveCode == false && cancelled == false && FFMPEG.error == false)
@@ -1002,7 +1074,21 @@ public class VideoEncoders extends Shutter {
 			}					
 			else if (comboResolution.getSelectedItem().toString().contains("x"))
 			{
-				o = comboResolution.getSelectedItem().toString().split("x");
+				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				{
+					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					{
+						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
+						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
+					}
+					else
+					{
+						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 4));
+						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 4));
+					}
+				}
+				else
+					o = comboResolution.getSelectedItem().toString().split("x");
 			}
 			else
 				return false;
@@ -1659,6 +1745,30 @@ public class VideoEncoders extends Shutter {
             	Thread.sleep(100);
             } while (TSMUXER.isRunning);
 }
+	
+	private static void upscale(File fileOut) throws InterruptedException {
+		
+		int totalFiles = 0;		
+		for (int i = 0 ; i < fileOut.getParentFile().listFiles().length ; i++)
+		{
+			totalFiles ++;
+		}	
+		
+		progressBar1.setValue(0);
+		progressBar1.setMaximum(totalFiles);
+		
+		String model = "realesr-general-wdn-x4v3";							
+		if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
+		{
+			model = "realesrgan-x4plus-anime";
+		}	
+		
+		NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
+		
+		do {
+			Thread.sleep(100);
+		} while (NCNN.isRunning && cancelled == false);			
+	}
 	
 	private static boolean lastActions(File file, String fileName, File fileOut, String output) {
 		

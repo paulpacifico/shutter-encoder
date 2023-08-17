@@ -209,7 +209,7 @@ public class Picture extends Shutter {
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "");		
 						
 						//Hardware decoding
-						String hardwareDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
+						String gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
 						
 						//InOut		
 						VideoPlayer.getFileList(file.toString());
@@ -309,7 +309,7 @@ public class Picture extends Shutter {
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
 
-							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
+							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
 							
 							do {
 								Thread.sleep(10);
@@ -319,7 +319,7 @@ public class Picture extends Shutter {
 						}
 						else
 						{
-							FFMPEG.run(hardwareDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
+							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
 						}
 	
 						if (isRaw)
@@ -466,17 +466,15 @@ public class Picture extends Shutter {
 		
 		if (caseCreateSequence.isSelected())
 		{			
-			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"');
+			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
 		}
 		else		
-			NCNN.run(" -v -i " + '"' + fileOut + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut + '"');
+			NCNN.run(" -v -i " + '"' + fileOut + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut + '"', false);
 		
 		do {
 			Thread.sleep(100);
 		} while (NCNN.isRunning && cancelled == false);	
-		
-		Shutter.screenshotIsRunning = true; //Workaround to avoid disableAll();
-																										
+																				
 		progressBar1.setValue(0);
 		int progressValue = 0;
 		
@@ -528,6 +526,11 @@ public class Picture extends Shutter {
 			
 			if (cancelled)
 				break;
+		}
+		
+		for (File f : upscaleFolder.listFiles()) 
+		{
+			f.delete();
 		}
 		
 		upscaleFolder.delete();		

@@ -438,7 +438,7 @@ public class FunctionUtils extends Shutter {
 		    }
 		}
 		else
-		{
+		{			
 		    for (final File fileEntry : folder.listFiles())
 		    {
 		        if (fileEntry.isFile()) 
@@ -751,7 +751,20 @@ public class FunctionUtils extends Shutter {
 					
 					o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
 					o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
-				}					
+				}		
+				else if (comboResolution.getSelectedItem().toString().contains("AI"))
+				{
+					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					{
+						o[0] = String.valueOf(FFPROBE.imageWidth * 2);
+						o[1] = String.valueOf(FFPROBE.imageHeight * 2);
+					}
+					else
+					{
+						o[0] = String.valueOf(FFPROBE.imageWidth * 4);
+						o[1] = String.valueOf(FFPROBE.imageHeight * 4);
+					}
+				}
 				else if (comboResolution.getSelectedItem().toString().contains("x"))
 				{
 					o = comboResolution.getSelectedItem().toString().split("x");

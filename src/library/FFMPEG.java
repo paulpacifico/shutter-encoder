@@ -1471,14 +1471,29 @@ public static StringBuilder errorLog = new StringBuilder();
 		        				
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 			{
-				Runtime.getRuntime().exec("kill -SIGSTOP " + process.pid());
+				if (NCNN.isRunning)
+				{
+					Runtime.getRuntime().exec("kill -SIGSTOP " + NCNN.process.pid());
+				}
+				else
+				{
+					Runtime.getRuntime().exec("kill -SIGSTOP " + process.pid());
+				}
 			}
 			else
 			{					           	            
 				String pausep = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				pausep = pausep.substring(1,pausep.length()-1);
 				pausep = '"' + pausep.substring(0,(int) (pausep.lastIndexOf("/"))).replace("%20", " ")  + "/Library/pausep.exe" + '"';	
-				Runtime.getRuntime().exec(pausep + " " + process.pid());
+				
+				if (NCNN.isRunning)
+				{
+					Runtime.getRuntime().exec(pausep + " " + NCNN.process.pid());
+				}
+				else
+				{
+					Runtime.getRuntime().exec(pausep + " " + process.pid());
+				}
 			}
 			
 			if (System.getProperty("os.name").contains("Windows") && Taskbar.isTaskbarSupported())
@@ -1496,14 +1511,29 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))        
 			{
-				Runtime.getRuntime().exec("kill -SIGCONT " + process.pid());
+				if (NCNN.isRunning)
+				{
+					Runtime.getRuntime().exec("kill -SIGCONT " + NCNN.process.pid());
+				}
+				else
+				{
+					Runtime.getRuntime().exec("kill -SIGCONT " + process.pid());
+				}
 			}
 			else
 			{				
 				String pausep = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				pausep = pausep.substring(1,pausep.length()-1);
 				pausep = '"' + pausep.substring(0,(int) (pausep.lastIndexOf("/"))).replace("%20", " ")  + "/Library/pausep.exe" + '"';
-				Runtime.getRuntime().exec(pausep + " " + process.pid() + " /r");
+				
+				if (NCNN.isRunning)
+				{
+					Runtime.getRuntime().exec(pausep + " " + NCNN.process.pid() + " /r");
+				}
+				else
+				{
+					Runtime.getRuntime().exec(pausep + " " + process.pid() + " /r");
+				}
 			}
 			
 			btnStart.setText(language.getProperty("btnPauseFunction"));

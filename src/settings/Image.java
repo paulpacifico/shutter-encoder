@@ -50,8 +50,22 @@ public class Image extends Shutter {
 					}					
 					else if (comboResolution.getSelectedItem().toString().contains("x"))
 					{
-						String s[] = comboResolution.getSelectedItem().toString().split("x");					
-			        	ow = Integer.parseInt(s[0]);   
+						if (comboResolution.getSelectedItem().toString().contains("AI"))
+						{
+							if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+							{
+								ow = (int) Math.round(ow * 2);
+							}
+							else
+							{
+								ow = (int) Math.round(ow * 4);
+							}
+						}
+						else
+						{
+							String s[] = comboResolution.getSelectedItem().toString().split("x");					
+				        	ow = Integer.parseInt(s[0]); 
+						}
 					}
 					else if (comboResolution.getSelectedItem().toString().contains(":"))
 					{
@@ -162,7 +176,21 @@ public class Image extends Shutter {
 			}					
 			else if (comboResolution.getSelectedItem().toString().contains("x"))
 			{
-				o = comboResolution.getSelectedItem().toString().split("x");
+				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				{
+					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					{
+						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
+						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
+					}
+					else
+					{
+						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 4));
+						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 4));
+					}
+				}
+				else
+					o = comboResolution.getSelectedItem().toString().split("x");
 			}
 			else if (comboResolution.getSelectedItem().toString().contains(":"))
 			{
@@ -337,7 +365,21 @@ public class Image extends Shutter {
 			}					
 			else if (comboResolution.getSelectedItem().toString().contains("x"))
 			{
-				o = comboResolution.getSelectedItem().toString().split("x");
+				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				{
+					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					{
+						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
+						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
+					}
+					else
+					{
+						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 4));
+						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 4));
+					}
+				}
+				else
+					o = comboResolution.getSelectedItem().toString().split("x");
 			}
 			else if (comboResolution.getSelectedItem().toString().contains(":"))
 			{
