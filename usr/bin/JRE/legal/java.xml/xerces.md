@@ -1,4 +1,4 @@
-## Apache Xerces v2.12.0
+## Apache Xerces v2.12.2
 
 ### Apache Xerces Notice
 <pre>
@@ -6,11 +6,13 @@
     == NOTICE file corresponding to section 4(d) of the Apache License,    ==
     == Version 2.0, in this case for the Apache Xerces Java distribution.  ==
     =========================================================================
-    
+
     Apache Xerces Java
-    Copyright 1999-2018 The Apache Software Foundation
+    Copyright 1999-2022 The Apache Software Foundation
+
     This product includes software developed at
     The Apache Software Foundation (http://www.apache.org/).
+
     Portions of this software were originally based on the following:
     - software copyright (c) 1999, IBM Corporation., http://www.ibm.com.
     - software copyright (c) 1999, Sun Microsystems., http://www.sun.com.

@@ -1,26 +1,32 @@
-## Harfbuzz v2.3.1
+## Harfbuzz v4.4.1
 
 ### Harfbuzz License
 
-http://cgit.freedesktop.org/harfbuzz/tree/COPYING
+https://github.com/harfbuzz/harfbuzz/blob/4.4.1/COPYING
 
 <pre>
 
-HarfBuzz is licensed under the so-called "Old MIT" license. Details follow.
+HarfBuzz is licensed under the so-called "Old MIT" license.  Details follow.
 For parts of HarfBuzz that are licensed under different licenses see individual
 files names COPYING in subdirectories where applicable.
 
-Copyright © 2010,2011,2012  Google, Inc.
-Copyright © 2012  Mozilla Foundation
+Copyright © 2010-2022  Google, Inc.
+Copyright © 2018-2020  Ebrahim Byagowi
+Copyright © 2019-2020  Facebook, Inc.
+Copyright © 2012-2015  Mozilla Foundation.
 Copyright © 2011  Codethink Limited
-Copyright © 2008,2010  Nokia Corporation and/or its subsidiary(-ies)
+Copyright © 2008-2010  Nokia Corporation and/or its subsidiary(-ies)
 Copyright © 2009  Keith Stribley
 Copyright © 2009  Martin Hosken and SIL International
 Copyright © 2007  Chris Wilson
-Copyright © 2006  Behdad Esfahbod
+Copyright © 2005-2022 Behdad Esfahbod
 Copyright © 2005  David Turner
-Copyright © 2004,2007,2008,2009,2010  Red Hat, Inc.
+Copyright © 2004-2013  Red Hat, Inc.
 Copyright © 1998-2004  David Turner and Werner Lemberg
+Copyright © 2016  Elie Roux <elie.roux@telecom-bretagne.eu>
+Copyright © 2018-2019 Adobe Inc.
+Copyright © 2018  Khaled Hosny
+Copyright © 2016  Igalia S.L.
 
 For full copyright notices consult the individual files in the package.
 
@@ -46,6 +52,10 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 All source code, except for one section, is licensed as above. The one
 exception is licensed with a slightly different MIT variant:
 The contents of this directory are licensed under the following terms:
+
+---------------------------------
+The below license applies to the following files:
+libharfbuzz/hb-ucd.cc
 
 Copyright (C) 2012 Grigori Goronzy <greg@kinoho.net>
 

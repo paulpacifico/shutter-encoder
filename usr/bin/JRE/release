@@ -1,2 +1,2 @@
-JAVA_VERSION="13.0.2"
+JAVA_VERSION="20"
 MODULES="java.base java.datatransfer java.xml java.prefs java.desktop java.logging java.security.sasl jdk.crypto.ec"
