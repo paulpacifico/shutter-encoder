@@ -1329,7 +1329,7 @@ public class Shutter {
 				
 				if (accept)
 				{
-					toogleFullscreen();
+					toggleFullscreen();
 				}
 			}
 
@@ -1565,12 +1565,14 @@ public class Shutter {
 		
 		topImage.addMouseListener(new MouseAdapter() {
 			
+			int screenIndex = 0;
+			
 			@Override
 			public void mouseClicked(MouseEvent down) {
 				
 				if (down.getClickCount() == 2)
 				{
-					toogleFullscreen();
+					toggleFullscreen();
 				}
 			}
 			
@@ -1581,6 +1583,48 @@ public class Shutter {
 				MousePositionY = down.getPoint().y;
 				
 				frame.toFront();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent down) {
+
+				if (System.getProperty("os.name").contains("Windows"))
+		        {
+		        	GraphicsConfiguration config = frame.getGraphicsConfiguration();
+					GraphicsDevice myScreen = config.getDevice();
+					GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					GraphicsDevice[] allScreens = env.getScreenDevices();
+					int newScreenIndex = -1;
+					for (int i = 0; i < allScreens.length; i++) {
+					    if (allScreens[i].equals(myScreen))
+					    {
+					    	newScreenIndex = i;
+					        break;
+					    }
+					}
+		        	
+		            if (screenIndex != newScreenIndex)
+		            {		            	
+		            	screenIndex = newScreenIndex; 
+
+		            	frame.setSize(332, 662);
+
+				        if (comboFonctions.getSelectedItem().toString().isEmpty() == false)
+				        {
+				        	changeFunction(false);
+				        }
+
+		            	Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+		                Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		                shape1.add(shape2);
+		        		frame.setShape(shape1);
+		        		
+		        		if (FFMPEG.isRunning)
+		        		{
+		        			VideoPlayer.setPlayerButtons(false);
+		        		}
+		            }
+		        }		
 			}
 		});
 
@@ -4768,7 +4812,7 @@ public class Shutter {
 		grpResolution.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpResolution") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpResolution.setBackground(new Color(35,35,35));
-		grpResolution.setBounds(frame.getWidth() - 312 - 10, 30, 312, 102);
+		grpResolution.setBounds(frame.getWidth(), 30, 312, 102);
 		frame.getContentPane().add(grpResolution);
 
 		comboResolution = new JComboBox<String>();
@@ -4803,7 +4847,7 @@ public class Shutter {
 					}
 					else
 					{
-						if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+						if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
 						{
 							lblPad.setVisible(false);
 						}
@@ -5135,7 +5179,7 @@ public class Shutter {
 		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpImageFilter.setBackground(new Color(35,35,35));
-		grpImageFilter.setBounds(frame.getWidth() - 312 - 10, 199, 312, 17);
+		grpImageFilter.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageFilter);
 
 		grpImageFilter.addMouseListener(new MouseListener() {
@@ -5385,7 +5429,7 @@ public class Shutter {
 		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), language.getProperty("grpTimecode") + " ",
 				0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpSetTimecode.setBackground(new Color(35,35,35));
-		grpSetTimecode.setBounds(frame.getWidth() - 312 - 10, 258, 312, 17);
+		grpSetTimecode.setBounds(frame.getWidth(), 258, 312, 17);
 		frame.getContentPane().add(grpSetTimecode);
 
 		caseSetTimecode = new JCheckBox(language.getProperty("caseSetTimecode"));
@@ -5618,7 +5662,7 @@ public class Shutter {
 		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpSetAudio.setBackground(new Color(35,35,35));
-		grpSetAudio.setBounds(frame.getWidth() - 312 - 10, 343, 312, 47);
+		grpSetAudio.setBounds(frame.getWidth(), 343, 312, 47);
 		frame.getContentPane().add(grpSetAudio);
 		
 		grpSetAudio.addMouseListener(new MouseListener() {
@@ -6343,7 +6387,7 @@ public class Shutter {
 		grpAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpAudio.setBackground(new Color(35,35,35));
-		grpAudio.setBounds(frame.getWidth() - 312 - 10, 343, 312, 116);
+		grpAudio.setBounds(frame.getWidth(), 343, 312, 116);
 		frame.getContentPane().add(grpAudio);
 		
 		caseMixAudio = new JCheckBox(language.getProperty("caseMixAudio"));
@@ -6601,10 +6645,11 @@ public class Shutter {
 		
 		grpCrop = new JPanel();
 		grpCrop.setLayout(null);
+		grpCrop.setVisible(false);
 		grpCrop.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameCropImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpCrop.setBackground(new Color(35,35,35));
 		grpCrop.setSize(312, 17);
-		grpCrop.setLocation(frame.getWidth() - 312 - 10, grpImageAdjustement.getY());
+		grpCrop.setLocation(frame.getWidth(), grpImageAdjustement.getY());
 		frame.getContentPane().add(grpCrop);		
 		
 		grpCrop.addMouseListener(new MouseListener() {
@@ -7685,7 +7730,8 @@ public class Shutter {
 		grpOverlay.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpOverlay.setBackground(new Color(35,35,35));
 		grpOverlay.setSize(312, 17);
-		grpOverlay.setLocation(frame.getWidth() - 312 - 10, grpCrop.getY() + grpCrop.getHeight() + 6);
+		grpOverlay.setLocation(frame.getWidth(), grpCrop.getY() + grpCrop.getHeight() + 6);
+		grpOverlay.setVisible(false);
 		frame.getContentPane().add(grpOverlay);		
 		
 		grpOverlay.addMouseListener(new MouseListener() {
@@ -9715,7 +9761,8 @@ public class Shutter {
 		grpSubtitles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseSubtitles") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpSubtitles.setBackground(new Color(35,35,35));
 		grpSubtitles.setSize(312, 17);
-		grpSubtitles.setLocation(frame.getWidth() - 312 - 10, grpOverlay.getY() + grpOverlay.getHeight() + 6);
+		grpSubtitles.setLocation(frame.getWidth(), grpOverlay.getY() + grpOverlay.getHeight() + 6);
+		grpSubtitles.setVisible(false);
 		frame.getContentPane().add(grpSubtitles);		
 		
 		grpSubtitles.addMouseListener(new MouseListener() {
@@ -10872,7 +10919,8 @@ public class Shutter {
 		grpWatermark.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpWatermark.setBackground(new Color(35,35,35));
 		grpWatermark.setSize(312, 17);
-		grpWatermark.setLocation(frame.getWidth() - 312 - 10, grpSubtitles.getY() + grpSubtitles.getHeight() + 6);
+		grpWatermark.setLocation(frame.getWidth(), grpSubtitles.getY() + grpSubtitles.getHeight() + 6);
+		grpWatermark.setVisible(false);
 		frame.getContentPane().add(grpWatermark);
 		
 		grpWatermark.addMouseListener(new MouseListener() {
@@ -11599,7 +11647,7 @@ public class Shutter {
 		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpColorimetry.setBackground(new Color(35,35,35));
-		grpColorimetry.setBounds(frame.getWidth() - 312 - 10, 199, 312, 17);
+		grpColorimetry.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpColorimetry);
 		
 		grpColorimetry.addMouseListener(new MouseListener() {
@@ -12188,7 +12236,8 @@ public class Shutter {
 		grpImageAdjustement.setLayout(null);
 		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameColorImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpImageAdjustement.setBackground(new Color(35,35,35));
-		grpImageAdjustement.setBounds(frame.getWidth() - 312 - 10, 258, 312, 17);
+		grpImageAdjustement.setBounds(frame.getWidth(), 258, 312, 17);
+		grpImageAdjustement.setVisible(false);
 		
 		frame.getContentPane().add(grpImageAdjustement);		
 		
@@ -13365,9 +13414,10 @@ public class Shutter {
 		
 		grpCorrections = new JPanel();
 		grpCorrections.setLayout(null);
+		grpCorrections.setVisible(false);
 		grpCorrections.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("grpCorrections") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpCorrections.setBackground(new Color(35,35,35));
-		grpCorrections.setBounds(frame.getWidth() - 312 - 10, grpImageAdjustement.getY() + grpImageAdjustement.getHeight() + 6, 312, 17);
+		grpCorrections.setBounds(frame.getWidth(), grpImageAdjustement.getY() + grpImageAdjustement.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpCorrections);
 
 		grpCorrections.addMouseListener(new MouseListener() {
@@ -13730,11 +13780,11 @@ public class Shutter {
 		
 		grpTransitions = new JPanel();
 		grpTransitions.setLayout(null);
-		grpTransitions.setVisible(true);
+		grpTransitions.setVisible(false);
 		grpTransitions.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("grpTransitions") + " ", 0,
 				0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpTransitions.setBackground(new Color(35,35,35));
-		grpTransitions.setBounds(frame.getWidth() - 312 - 10, grpCorrections.getY() + grpCorrections.getHeight() + 6, 312, 17);
+		grpTransitions.setBounds(frame.getWidth(), grpCorrections.getY() + grpCorrections.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpTransitions);
 		
 		grpTransitions.addMouseListener(new MouseListener() {
@@ -14215,7 +14265,7 @@ public class Shutter {
 		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpImageSequence.setBackground(new Color(35,35,35));
-		grpImageSequence.setBounds(frame.getWidth() - 312 - 10, 199, 312, 17);
+		grpImageSequence.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageSequence);
 		
 		grpImageSequence.addMouseListener(new MouseListener() {
@@ -14386,7 +14436,7 @@ public class Shutter {
 		grpAdvanced.setVisible(false);
 		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpAdvanced.setBackground(new Color(35,35,35));
-		grpAdvanced.setBounds(frame.getWidth() - 312 - 10, 396, 312, 17);
+		grpAdvanced.setBounds(frame.getWidth(), 396, 312, 17);
 		frame.getContentPane().add(grpAdvanced);
 
 		grpAdvanced.addMouseListener(new MouseListener() {
@@ -16125,7 +16175,7 @@ public class Shutter {
 		btnReset = new JButton(language.getProperty("btnReset"));
 		btnReset.setVisible(false);
 		btnReset.setFont(new Font(montserratFont, Font.PLAIN, 12));
-		btnReset.setBounds(frame.getWidth() - 312 - 10, 569, 309, 21);
+		btnReset.setBounds(frame.getWidth(), 569, 309, 21);
 		frame.getContentPane().add(btnReset);
 
 		btnReset.addMouseListener(new MouseListener() {
@@ -16588,8 +16638,10 @@ public class Shutter {
 				comboDAR.setSelectedIndex(3);
 				changeFilters();		
 				
-				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+				{
 					lblPad.setVisible(false);
+				}
 				else
 				{
 					lblPad.setVisible(true);
@@ -17796,7 +17848,7 @@ public class Shutter {
 		resizeAll(frame.getWidth(), 0);		
 	}
 
-	private static void toogleFullscreen() {
+	private static void toggleFullscreen() {
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		
@@ -18626,7 +18678,7 @@ public class Shutter {
 								grpResolution.add(comboDAR);							
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 								
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
 								{
 									lblPad.setVisible(false);
 									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
@@ -18889,7 +18941,7 @@ public class Shutter {
 								grpResolution.add(comboDAR);							
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
 	
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
 								{
 									lblPad.setVisible(false);
 									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
@@ -19371,7 +19423,7 @@ public class Shutter {
 								case2pass.setLocation(7, grpBitrate.getHeight() - 32);
 								caseQMax.setLocation(case2pass.getX() + case2pass.getWidth() + 4, case2pass.getY());
 								
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
 								{
 									lblPad.setVisible(false);
 									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
@@ -19750,7 +19802,7 @@ public class Shutter {
 								case2pass.setLocation(7, grpBitrate.getHeight() - 32);
 								caseQMax.setLocation(case2pass.getX() + case2pass.getWidth() + 4, case2pass.getY());
 								
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
 								{
 									lblPad.setVisible(false);
 									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
@@ -19792,8 +19844,10 @@ public class Shutter {
 									lblVBR.setText("VBR");
 								}
 								
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+								{
 									lblPad.setVisible(false);
+								}
 								else
 								{
 									lblPad.setVisible(true);
@@ -20220,7 +20274,7 @@ public class Shutter {
 									case2pass.setLocation(7, grpBitrate.getHeight() - 32);
 									caseQMax.setLocation(case2pass.getX() + case2pass.getWidth() + 4, case2pass.getY());
 									
-									if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+									if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
 									{
 										lblPad.setVisible(false);
 										lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
