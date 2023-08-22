@@ -472,33 +472,40 @@ public class VideoEncoders extends Shutter {
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
-							switch (comboFonctions.getSelectedItem().toString())
-							{
-								//Limit to Full HD
-								case "AVC-Intra 100":
-								case "DNxHD":
-								case "XDCAM HD422":
-								case "DVD" : //Needed 16:9 aspect ratio
-									
-									if (FFPROBE.imageResolution.equals("1440x1080"))
-									{
+			        		if (comboResolution.getSelectedItem().toString().contains("AI") && caseEnableCrop.isSelected())
+			        		{
+			        			//Do nothing
+			        		}
+			        		else
+			        		{
+								switch (comboFonctions.getSelectedItem().toString())
+								{
+									//Limit to Full HD
+									case "AVC-Intra 100":
+									case "DNxHD":
+									case "XDCAM HD422":
+									case "DVD" : //Needed 16:9 aspect ratio
+										
+										if (FFPROBE.imageResolution.equals("1440x1080"))
+										{
+											filterComplex = Image.setScale(filterComplex, false);	
+											filterComplex = Image.setPad(filterComplex, false);			
+										}
+										else
+										{
+											filterComplex = Image.setScale(filterComplex, true);	
+											filterComplex = Image.setPad(filterComplex, true);		
+										}
+										
+										break;
+										
+									default:
+										
 										filterComplex = Image.setScale(filterComplex, false);	
 										filterComplex = Image.setPad(filterComplex, false);			
-									}
-									else
-									{
-										filterComplex = Image.setScale(filterComplex, true);	
-										filterComplex = Image.setPad(filterComplex, true);		
-									}
-									
-									break;
-									
-								default:
-									
-									filterComplex = Image.setScale(filterComplex, false);	
-									filterComplex = Image.setPad(filterComplex, false);			
-									break;
-							}	
+										break;
+								}	
+			        		}
 			        	}
 											
 						//Blend
@@ -565,38 +572,48 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), false);
 				        
 				    	//Crop
-				        filterComplex = Image.setCrop(filterComplex);
+						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Cropping is made before upscaling
+				        {
+							filterComplex = Image.setCrop(filterComplex);
+				        }
 						
 				        //Scaling									
 			        	if (setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
-							switch (comboFonctions.getSelectedItem().toString())
-							{
-								//Limit to Full HD
-								case "AVC-Intra 100":
-								case "DNxHD":
-								case "XDCAM HD422":
-								case "DVD" : //Needed 16:9 aspect ratio
-									
-									if (FFPROBE.imageResolution.equals("1440x1080"))
-									{
+			        		if (comboResolution.getSelectedItem().toString().contains("AI") && caseEnableCrop.isSelected())
+			        		{
+			        			//Do nothing
+			        		}
+			        		else
+			        		{
+								switch (comboFonctions.getSelectedItem().toString())
+								{
+									//Limit to Full HD
+									case "AVC-Intra 100":
+									case "DNxHD":
+									case "XDCAM HD422":
+									case "DVD" : //Needed 16:9 aspect ratio
+										
+										if (FFPROBE.imageResolution.equals("1440x1080"))
+										{
+											filterComplex = Image.setScale(filterComplex, false);	
+											filterComplex = Image.setPad(filterComplex, false);			
+										}
+										else
+										{
+											filterComplex = Image.setScale(filterComplex, true);	
+											filterComplex = Image.setPad(filterComplex, true);		
+										}
+										
+										break;
+										
+									default:
+										
 										filterComplex = Image.setScale(filterComplex, false);	
 										filterComplex = Image.setPad(filterComplex, false);			
-									}
-									else
-									{
-										filterComplex = Image.setScale(filterComplex, true);	
-										filterComplex = Image.setPad(filterComplex, true);		
-									}
-									
-									break;
-									
-								default:
-									
-									filterComplex = Image.setScale(filterComplex, false);	
-									filterComplex = Image.setPad(filterComplex, false);			
-									break;
-							}	
+										break;
+								}	
+			        		}
 			        	}
 				        
 						//DAR
@@ -840,13 +857,17 @@ public class VideoEncoders extends Shutter {
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, "%06d.png"));								
 							
-							String deinterlace = AdvancedFeatures.setDeinterlace(true);
-							if (deinterlace != "")
+							String filter = "";
+							
+							filter = AdvancedFeatures.setDeinterlace(true);
+							filter = Image.setCrop(filter);
+							
+							if (filter != "")
 							{
-								deinterlace = " -vf " + '"' + deinterlace + '"';
+								filter = " -vf " + '"' + filter + '"';
 							}
 							
-							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + deinterlace + " -an " + '"' + fileOut + '"');
+							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + filter + " -an " + '"' + fileOut + '"');
 							
 							int current = 0;
 							do {

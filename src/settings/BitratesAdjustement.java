@@ -54,10 +54,23 @@ public class BitratesAdjustement extends Shutter {
 			
 			if (Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
 			{
-				String s[] = Shutter.comboResolution.getSelectedItem().toString().split("x");
+				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				{
+					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					{
+						ow = (int) Math.round(ow * 2);
+					}
+					else
+					{
+						ow = (int) Math.round(ow * 4);
+					}
+				}
+				else
+				{
+					String s[] = comboResolution.getSelectedItem().toString().split("x");					
+		        	ow = Integer.parseInt(s[0]); 
+				}
 				
-	        	ow = Integer.parseInt(s[0]);   
-	        	
 				imageRatio = (float) FFPROBE.imageWidth / ow;
 			}
 			

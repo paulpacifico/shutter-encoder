@@ -280,8 +280,22 @@ public class Overlay extends Shutter {
 				}					
 				else if (comboResolution.getSelectedItem().toString().contains("x"))
 				{
-					String s[] = comboResolution.getSelectedItem().toString().split("x");					
-		        	ow = Integer.parseInt(s[0]);   
+					if (comboResolution.getSelectedItem().toString().contains("AI"))
+					{
+						if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+						{
+							ow = (int) Math.round(ow * 2);
+						}
+						else
+						{
+							ow = (int) Math.round(ow * 4);
+						}
+					}
+					else
+					{
+						String s[] = comboResolution.getSelectedItem().toString().split("x");					
+			        	ow = Integer.parseInt(s[0]); 
+					}
 				}
 				else if (comboResolution.getSelectedItem().toString().contains(":"))
 				{
@@ -436,7 +450,23 @@ public class Overlay extends Shutter {
 						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * value));
 					}					
 					else					
-						s = comboResolution.getSelectedItem().toString().split("x");
+					{
+						if (comboResolution.getSelectedItem().toString().contains("AI"))
+	    				{
+	    					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+	    					{
+	    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 2));
+	    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 2));
+	    					}
+	    					else
+	    					{
+	    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 4));
+	    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 4));
+	    					}
+	    				}
+	    				else
+	    					s = comboResolution.getSelectedItem().toString().split("x");
+					}
 					
 		        	int iw = Integer.parseInt(i[0]);
 		        	int ih = Integer.parseInt(i[1]);
@@ -504,8 +534,22 @@ public class Overlay extends Shutter {
 				}					
 				else if (comboResolution.getSelectedItem().toString().contains("x"))
 				{
-					String s[] = comboResolution.getSelectedItem().toString().split("x");					
-		        	ow = Integer.parseInt(s[0]);   
+					if (comboResolution.getSelectedItem().toString().contains("AI"))
+					{
+						if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+						{
+							ow = (int) Math.round(ow * 2);
+						}
+						else
+						{
+							ow = (int) Math.round(ow * 4);
+						}
+					}
+					else
+					{
+						String s[] = comboResolution.getSelectedItem().toString().split("x");					
+			        	ow = Integer.parseInt(s[0]); 
+					}
 				}
 				else if (comboResolution.getSelectedItem().toString().contains(":"))
 				{

@@ -36,7 +36,7 @@ public class AdvancedFeatures extends Shutter {
 			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
 		}
 		else if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
-		|| FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
+		|| FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
 		|| caseForcerDesentrelacement.isSelected())
 		{
 			int doubler = 0;
@@ -202,10 +202,24 @@ public class AdvancedFeatures extends Shutter {
 								s[1] = String.valueOf(FFPROBE.imageHeight * 4);
 							}
 						}
-		        		else if (comboResolution.getSelectedItem().toString().contains("x"))		
-						{
-							s = comboResolution.getSelectedItem().toString().split("x");
-						}
+		        		else if (comboResolution.getSelectedItem().toString().contains("x"))
+		    			{
+		    				if (comboResolution.getSelectedItem().toString().contains("AI"))
+		    				{
+		    					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+		    					{
+		    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 2));
+		    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 2));
+		    					}
+		    					else
+		    					{
+		    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 4));
+		    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 4));
+		    					}
+		    				}
+		    				else
+		    					s = comboResolution.getSelectedItem().toString().split("x");
+		    			}
 		        		else if (comboResolution.getSelectedItem().toString().contains(":"))
 						{
 		        			String i[] = FFPROBE.imageResolution.split("x");
@@ -293,10 +307,24 @@ public class AdvancedFeatures extends Shutter {
 							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
 							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
 						}
-		        		else if (comboResolution.getSelectedItem().toString().contains("x"))		
-						{
-							s = comboResolution.getSelectedItem().toString().split("x");
-						}
+		        		else if (comboResolution.getSelectedItem().toString().contains("x"))
+		    			{
+		    				if (comboResolution.getSelectedItem().toString().contains("AI"))
+		    				{
+		    					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+		    					{
+		    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 2));
+		    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 2));
+		    					}
+		    					else
+		    					{
+		    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 4));
+		    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 4));
+		    					}
+		    				}
+		    				else
+		    					s = comboResolution.getSelectedItem().toString().split("x");
+		    			}
 		        		else if (comboResolution.getSelectedItem().toString().contains(":"))
 						{
 		        			String i[] = FFPROBE.imageResolution.split("x");
