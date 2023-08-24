@@ -386,6 +386,7 @@ public class VideoWeb {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				comboFormats.removeAllItems();
 				
 				if (caseAuto.isSelected())

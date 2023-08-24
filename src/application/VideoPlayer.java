@@ -158,6 +158,7 @@ public class VideoPlayer {
 	public static JButton btnGoToIn;
 	public static JButton btnGoToOut;
 	public static JSlider slider;
+	public static JCheckBox caseShowWaveform = new JCheckBox(Shutter.language.getProperty("caseShowWaveform"));
 	public static JCheckBox caseVuMeter = new JCheckBox(Shutter.language.getProperty("caseVuMeter"));;
 	public static JCheckBox casePlaySound = new JCheckBox(Shutter.language.getProperty("casePlaySound"));;
 	public static JCheckBox caseInternalTc;
@@ -1516,6 +1517,7 @@ public class VideoPlayer {
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
 			caseInternalTc.setVisible(false);
+			caseShowWaveform.setVisible(false);
 			caseVuMeter.setVisible(true);
 			casePlaySound.setVisible(true);
 			showScale.setVisible(false);
@@ -1569,6 +1571,7 @@ public class VideoPlayer {
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
 			caseInternalTc.setVisible(false);
+			caseShowWaveform.setVisible(false);
 			caseVuMeter.setVisible(false);
 			casePlaySound.setVisible(false);
 			
@@ -1595,7 +1598,8 @@ public class VideoPlayer {
 			}
 													
 			waveformContainer.setVisible(true);
-			waveformIcon.setVisible(true);
+			if (caseShowWaveform.isSelected())
+				waveformIcon.setVisible(true);
 			caseInH.setVisible(true);
 			caseInM.setVisible(true);
 			caseInS.setVisible(true);
@@ -1646,6 +1650,7 @@ public class VideoPlayer {
 			btnStop.setVisible(true);
 			btnMarkOut.setVisible(true);
 			btnGoToOut.setVisible(true);
+			caseShowWaveform.setVisible(true);
 			caseVuMeter.setVisible(true);												
 			casePlaySound.setVisible(true);
 			
@@ -1909,125 +1914,141 @@ public class VideoPlayer {
 	}
 	        
 	public static void addWaveform(boolean newWaveform) {
-					
-		addWaveformIsRunning = true;
-		if (newWaveform || waveform.exists() == false)
-		{
-			waveformIcon.setVisible(false);
 			
-			if (newWaveform)
+		if (caseShowWaveform.isSelected())
+		{
+			addWaveformIsRunning = true;
+			if (newWaveform || waveform.exists() == false)
 			{
-				waveform.delete();
+				waveformIcon.setVisible(false);
+				
+				if (newWaveform)
+				{
+					waveform.delete();
+				}
 			}
-		}
-			
-		Thread addWaveform = new Thread(new Runnable()
-		{
-			@Override
-			public void run() {
+				
+			Thread addWaveform = new Thread(new Runnable()
+			{
+				@Override
+				public void run() {
+								
+					if (FFMPEG.isRunning || playerVideo == null)
+					{						
+						do  {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {}
+						} while (FFMPEG.isRunning && playerVideo == null);
+					}
+					
+					if (FFMPEG.isRunning == false || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")))
+					{			
+						//Si fichier audio seulement ou Sous titrage								
+						if (FFPROBE.hasAudio)
+						{						
+							if (newWaveform || waveform.exists() == false)
+							{							
+								long size = 1920;
+								
+								String start = "";
+								String duration = "";
+								if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+								{	
+									do {
+										try {
+											Thread.sleep(100);
+										} catch (InterruptedException e) {}
+									} while (SubtitlesTimeline.frame == null);
+									
+									if (SubtitlesTimeline.waveform == null)
+										SubtitlesTimeline.waveform = new JLabel();	
+									
+									long time = (long) (SubtitlesTimeline.timelineScrollBar.getValue() / SubtitlesTimeline.zoom);
+		
+									String h = Shutter.formatter.format(Math.floor(time / 1000) / 3600);
+									String m = Shutter.formatter.format((Math.floor(time / 1000) / 60) % 60);
+									String s = Shutter.formatter.format(Math.floor(time / 1000) % 60);    		
+									String f = Shutter.formatterToMs.format(time % 1000);
+									
+									start = " -ss " + h + ":" + m + ":" + s + "." + f;
+									duration = "atrim=duration=" + (SubtitlesTimeline.frame.getWidth() / 100) + ",";								
+									size = (long) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom);
+								}
 							
-				if (FFMPEG.isRunning || playerVideo == null)
-				{						
-					do  {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (FFMPEG.isRunning && playerVideo == null);
+								//IMPORTANT
+								if (size > 549944)
+									size = 549944;
+								
+								FFMPEG.run(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"'
+								+ " -filter:a aresample=8000 -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green" + '"' 
+								+ " -pix_fmt rgba -vn -vframes 1 -y " + '"' + waveform + '"');  																
+								
+								if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+									Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+								else
+									Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+															
+								do {
+									
+									try {
+										Thread.sleep(10);
+									} catch (InterruptedException e) {}		
+
+									if (VideoPlayer.caseShowWaveform.isSelected() == false)
+									{										
+										try {
+											FFMPEG.writer.write('q');
+											FFMPEG.writer.flush();
+											FFMPEG.writer.close();
+										} catch (IOException er) {}
+										
+										FFMPEG.process.destroy();
+									}
+									
+								} while (waveform.exists() == false && FFMPEG.isRunning);								
+							}
+							
+							//add Waveform		
+							try {
+								
+								if (Shutter.liste.getSize() > 0 && isPiping == false)
+								{
+									if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) //Ne charge plus l'image si la fenêtre est fermée entre temps
+									{
+										Image imageBMP = ImageIO.read(waveform);
+										ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
+										
+										waveformIcon.setIcon(null);
+										waveformIcon.repaint();
+										
+										SubtitlesTimeline.waveform.setIcon(resizedWaveform);							
+										SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
+										SubtitlesTimeline.waveform.repaint();
+									}
+									else
+									{	    
+										Image imageBMP = ImageIO.read(waveform);						
+										ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
+										 						
+										waveformIcon.setIcon(resizedWaveform);
+										waveformIcon.repaint();
+										waveformIcon.setVisible(true);
+									} 	
+								}
+							}
+							catch (Exception e) {}
+							finally
+							{
+								addWaveformIsRunning = false;
+							}
+						}
+					}			
 				}
 				
-				if (FFMPEG.isRunning == false || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")))
-				{			
-					//Si fichier audio seulement ou Sous titrage								
-					if (FFPROBE.hasAudio)
-					{						
-						if (newWaveform || waveform.exists() == false)
-						{							
-							long size = 1920;
-							
-							String start = "";
-							String duration = "";
-							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-							{	
-								do {
-									try {
-										Thread.sleep(100);
-									} catch (InterruptedException e) {}
-								} while (SubtitlesTimeline.frame == null);
-								
-								if (SubtitlesTimeline.waveform == null)
-									SubtitlesTimeline.waveform = new JLabel();	
-								
-								long time = (long) (SubtitlesTimeline.timelineScrollBar.getValue() / SubtitlesTimeline.zoom);
-	
-								String h = Shutter.formatter.format(Math.floor(time / 1000) / 3600);
-								String m = Shutter.formatter.format((Math.floor(time / 1000) / 60) % 60);
-								String s = Shutter.formatter.format(Math.floor(time / 1000) % 60);    		
-								String f = Shutter.formatterToMs.format(time % 1000);
-								
-								start = " -ss " + h + ":" + m + ":" + s + "." + f;
-								duration = "atrim=duration=" + (SubtitlesTimeline.frame.getWidth() / 100) + ",";								
-								size = (long) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom);
-							}
-						
-							//IMPORTANT
-							if (size > 549944)
-								size = 549944;
-							
-							FFMPEG.run(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"'
-							+ " -filter:a aresample=8000 -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green" + '"' 
-							+ " -pix_fmt rgba -vn -vframes 1 -y " + '"' + waveform + '"');  																
-							
-							if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
-								Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
-							else
-								Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
-														
-							do {
-								try {
-									Thread.sleep(10);
-								} catch (InterruptedException e) {}										
-							} while (waveform.exists() == false && FFMPEG.isRunning);								
-						}
-						
-						//add Waveform		
-						try {
-							
-							if (Shutter.liste.getSize() > 0)
-							{
-								if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) //Ne charge plus l'image si la fenêtre est fermée entre temps
-								{
-									Image imageBMP = ImageIO.read(waveform);
-									ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
-									
-									waveformIcon.setIcon(null);
-									waveformIcon.repaint();
-									
-									SubtitlesTimeline.waveform.setIcon(resizedWaveform);							
-									SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
-									SubtitlesTimeline.waveform.repaint();
-								}
-								else
-								{	    
-									Image imageBMP = ImageIO.read(waveform);						
-									ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
-									 						
-									waveformIcon.setIcon(resizedWaveform);
-									waveformIcon.repaint();
-									waveformIcon.setVisible(true);
-								} 	
-							}
-						}
-						catch (Exception e) {}
-						finally
-						{
-							addWaveformIsRunning = false;
-						}
-					}
-				}			
-			}
-			
-		});
-		addWaveform.start();
+			});
+			addWaveform.start();
+		}
 	}
 	
 	private void buttons() {		 
@@ -3705,6 +3726,33 @@ public class VideoPlayer {
 	
 	private void playerOptions() {
 		
+		caseShowWaveform.setName("caseShowWaveform");	
+		caseShowWaveform.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
+		caseShowWaveform.setSelected(true);
+		Shutter.frame.getContentPane().add(caseShowWaveform);
+		
+		caseShowWaveform.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseShowWaveform.isSelected())
+				{
+					if (waveform.exists())
+					{
+						addWaveform(false);
+					}
+					else
+						addWaveform(true);
+				}
+				else
+				{
+					waveformIcon.setVisible(false);
+				}
+			}
+
+		});
+		
 		caseVuMeter.setName("caseVuMeter");	
 		caseVuMeter.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
 		caseVuMeter.setSelected(true);
@@ -3859,6 +3907,7 @@ public class VideoPlayer {
 								
 				lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);			
 				caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY(), caseVuMeter.getPreferredSize().width, 23);	
+				caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 5, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
 				
 				waveformContainer.repaint();
 			}
@@ -4267,6 +4316,7 @@ public class VideoPlayer {
 					
 					if (NCNN.isRunning)
 					{
+						System.out.println("ok");
 						NCNN.process.destroy();
 					}
 					
@@ -5187,6 +5237,7 @@ public class VideoPlayer {
 			
 			lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);			
 			caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY(), caseVuMeter.getPreferredSize().width, 23);
+			caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 5, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
 
 			//Sliders
 			sliderSpeed.setLocation(btnGoToIn.getX() -  sliderSpeed.getWidth() - 4, btnPrevious.getY() + 1);

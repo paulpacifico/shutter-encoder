@@ -1539,7 +1539,13 @@ public class Settings {
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseVuMeter"))
 					{
 						VideoPlayer.caseVuMeter.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-					}		
+					}	
+					
+					//caseShowWaveform video player
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseShowWaveform"))
+					{
+						VideoPlayer.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+					}	
 					
 					//caseGPU video player
 					/*
@@ -1936,6 +1942,27 @@ public class Settings {
 			//Value
 			cValue = document.createElement("Value");
 			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseVuMeter.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//caseShowWaveform video player
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("caseShowWaveform"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseShowWaveform.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);

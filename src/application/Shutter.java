@@ -22392,7 +22392,7 @@ class ListeFileTransferHandler extends TransferHandler {
 		{
 			DataFlavor flavor = arg1[i];
 			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.inputDeviceIsRunning == false
-			&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false)
+			&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false)
 			{
 				Shutter.fileList.setBorder(BorderFactory.createLineBorder(Utils.themeColor, 1));
 				return true;
@@ -22411,8 +22411,8 @@ class ListeFileTransferHandler extends TransferHandler {
 			
 			try {
 				
-				if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false) {
-
+				if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false)
+				{
 					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					Iterator<?> iter = l.iterator();
 					while (iter.hasNext()) {
