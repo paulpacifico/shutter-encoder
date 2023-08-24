@@ -277,7 +277,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						}
 
 				        Console.consoleFFMPEG.append(System.lineSeparator());
-				        
+
 						while ((line = input.readLine()) != null)
 						{			
 							getAll.append(line);
@@ -286,8 +286,8 @@ public static StringBuilder errorLog = new StringBuilder();
 							Console.consoleFFMPEG.append(line + System.lineSeparator());		
 							
 							//Errors
-							checkForErrors(line);						
-																	
+							checkForErrors(line);		
+																								
 							if (cancelled == false)
 							{
 								if (cmd.contains("-pass 2"))	

@@ -315,6 +315,17 @@ public class Picture extends Shutter {
 								Thread.sleep(10);
 							} while(FFMPEG.runProcess.isAlive());
 							
+							if (NCNN.isRunning)
+							{
+								NCNN.process.destroy();
+											
+								do {
+									Thread.sleep(100);
+								} while (NCNN.isRunning);
+								
+								lblCurrentEncoding.setText(fileName);
+							}
+							
 							upscale(fileOut, compression, flags);
 						}
 						else
@@ -448,7 +459,7 @@ public class Picture extends Shutter {
 	}
 	
 	private static void upscale(File fileOut, String compression, String flags) throws InterruptedException {
-														
+							
 		int totalFiles = 0;		
 		for (int i = 0 ; i < fileOut.getParentFile().listFiles().length ; i++)
 		{

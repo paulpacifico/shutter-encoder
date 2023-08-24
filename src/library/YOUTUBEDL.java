@@ -337,12 +337,13 @@ public static String format = "";
 			        formatsOutput = new StringBuilder();		
 			        	
 			        Console.consoleYOUTUBEDL.append(System.lineSeparator());
-			        
-					//Erreurs
-					while ((line = input.readLine()) != null && Shutter.cancelled == false) {		
+
+					while ((line = input.readLine()) != null && Shutter.cancelled == false)
+					{							
 					    Console.consoleYOUTUBEDL.append(line  + System.lineSeparator());
 					    
-				        if (line.contains("Not Found") || line.contains("Invalid URL") || line.contains("ERROR")) {
+				        if (line.contains("Not Found") || line.contains("Invalid URL") || line.contains("ERROR"))
+				        {
 				             error = true;
 				             Shutter.cancelled = true;
 				        }
