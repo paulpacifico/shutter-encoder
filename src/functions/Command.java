@@ -84,8 +84,12 @@ public class Command extends Shutter {
 						if(fileOut.exists())
 						{						
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, "_", comboFilter.getEditor().getItem().toString());
+							
 							if (fileOut == null)
-								continue;						
+							{
+								cancelled = true;
+								break;
+							}					
 						}
 						
 						//Command

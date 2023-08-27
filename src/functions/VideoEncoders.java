@@ -281,7 +281,10 @@ public class VideoEncoders extends Shutter {
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", container);
 							
 							if (fileOut == null)
-								continue;						
+							{
+								cancelled = true;
+								break;
+							}
 						}
 												
 						//Concat mode or Image sequence

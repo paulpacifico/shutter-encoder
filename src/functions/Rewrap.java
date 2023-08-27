@@ -180,7 +180,10 @@ public class Rewrap extends Shutter {
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", newExtension);
 							
 							if (fileOut == null)
-								continue;						
+							{
+								cancelled = true;
+								break;
+							}					
 						}
 						
 						//OPATOM creation

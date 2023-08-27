@@ -249,8 +249,12 @@ public class Picture extends Shutter {
 						if(fileOut.exists())
 						{						
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, "_", container);
+							
 							if (fileOut == null)
-								continue;	
+							{
+								cancelled = true;
+								break;
+							}
 						}
 						
 						//Command
@@ -516,7 +520,7 @@ public class Picture extends Shutter {
 			}
 			else if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 			{
-				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags + " " + '"' + fileOut + '"');
+				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags + " -y " + '"' + fileOut + '"');
 				
 				do {
 					Thread.sleep(10);

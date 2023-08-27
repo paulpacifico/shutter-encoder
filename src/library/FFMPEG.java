@@ -89,11 +89,14 @@ public class FFMPEG extends Shutter {
 public static int fileLength = 0; 
 public static boolean error = false;
 public static boolean isRunning = false;
+public static boolean waveformIsRunning = false;
 public static BufferedWriter writer;
 public static Thread runProcess = new Thread();
 private static Thread displayThread;
 public static Process process;
 private static Process processAudio;
+public static Process waveformProcess;
+public static BufferedWriter waveformWriter;
 private static InputStream audio = null;	
 private static AudioInputStream audioInputStream = null;
 private static SourceDataLine line = null;
@@ -244,7 +247,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						InputStream video = process.getInputStream();				
 						BufferedInputStream videoInputStream = new BufferedInputStream(video);	
 						
-						//Permet d'écrire dans le flux
+						//Allows to write into the stream
 						OutputStream stdin = process.getOutputStream();
 				        writer = new BufferedWriter(new OutputStreamWriter(stdin));				        
 		        
@@ -1332,6 +1335,56 @@ public static StringBuilder errorLog = new StringBuilder();
 					} finally {
 						isRunning = false;
 					}
+				
+			}				
+		});		
+		runProcess.start();
+	}
+	
+	public static void playerWaveform(final String cmd) {
+		
+		waveformIsRunning = true;
+		
+		runProcess = new Thread(new Runnable()  {
+			
+			@Override
+			public void run() {
+				
+				try {
+					
+					String PathToFFMPEG;
+					ProcessBuilder processFFMPEG;
+					if (System.getProperty("os.name").contains("Windows"))
+					{							
+						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
+						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+														
+						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd);
+						waveformProcess = processFFMPEG.start();
+					}
+					else
+					{
+						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
+						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
+
+						
+						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd);									
+						waveformProcess = processFFMPEG.start();
+					}		
+					
+					//Allows to write into the stream
+					OutputStream stdin = process.getOutputStream();
+					waveformWriter = new BufferedWriter(new OutputStreamWriter(stdin));
+					
+					waveformProcess.waitFor();
+				   					     																		
+				} catch (IOException io) {//Bug Linux							
+				} catch (Exception e) {}
+				finally {
+					waveformIsRunning = false;
+				}
 				
 			}				
 		});		

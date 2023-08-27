@@ -108,7 +108,10 @@ public class Conform extends Shutter {
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", extension);
 							
 							if (fileOut == null)
-								continue;						
+							{
+								cancelled = true;
+								break;
+							}					
 						}
 										
 						//Command		    		

@@ -113,7 +113,10 @@ public class Extract extends Shutter {
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", container);
 							
 							if (fileOut == null)
-								continue;						
+							{
+								cancelled = true;
+								break;
+							}				
 						}		
 									
 						//Command

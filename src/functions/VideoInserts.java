@@ -139,8 +139,11 @@ public class VideoInserts extends Shutter {
 					if(fileOut.exists())
 					{
 						fileOut = FunctionUtils.fileReplacement(labelOutput, masterName, extension, extensionName + "_", extension);
+						
 						if (fileOut == null)
-							cancelled = true;	
+						{
+							cancelled = true;
+						}
 					}
 					
 					//Liste de fichiers pour le Bout à Bout

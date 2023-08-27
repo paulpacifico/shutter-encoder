@@ -240,7 +240,10 @@ public class AudioEncoders extends Shutter {
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", container);
 							
 							if (fileOut == null)
-								continue;						
+							{
+								cancelled = true;
+								break;
+							}				
 						}	
 						
 						//Concat mode
@@ -461,8 +464,7 @@ public class AudioEncoders extends Shutter {
 		}
 		
 		if (FFPROBE.channels == 1 && lblSplit.getText().equals(language.getProperty("mono")))
-		{			
-			
+		{		
 			for (int i = 1 ; i < 3; i ++)
 			{
 				//Si le fichier existe
