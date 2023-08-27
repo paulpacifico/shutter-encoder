@@ -16813,6 +16813,11 @@ public class Shutter {
 				}
 				
 				windowDrag = false;
+				
+				//IMPORTANT
+				if (FFPROBE.totalLength <= 40 && VideoPlayer.preview.exists())
+					VideoPlayer.preview.delete();
+				
 				resizeAll(frame.getWidth(), 0);
 			}
 			
@@ -17849,6 +17854,10 @@ public class Shutter {
 	}
 
 	private static void toggleFullscreen() {
+		
+		//IMPORTANT
+		if (FFPROBE.totalLength <= 40 && VideoPlayer.preview.exists())
+			VideoPlayer.preview.delete();
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		
