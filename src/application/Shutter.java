@@ -4824,7 +4824,7 @@ public class Shutter {
 		comboResolution.setFont(new Font(freeSansFont, Font.PLAIN, 11));
 		comboResolution.setEditable(true);
 		comboResolution.setBounds(58, 18, 118, 22);
-		comboResolution.setMaximumRowCount(21);
+		comboResolution.setMaximumRowCount(30);
 		grpResolution.add(comboResolution);
 
 		comboResolution.addActionListener(new ActionListener() {
