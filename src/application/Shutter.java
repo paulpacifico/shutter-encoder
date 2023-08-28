@@ -3126,6 +3126,7 @@ public class Shutter {
 									|| "MJPEG".equals(function)
 									|| "Xvid".equals(function)
 									|| "XDCAM HD422".equals(function)
+									|| "XDCAM HD 35".equals(function)
 									|| "AVC-Intra 100".equals(function)
 									|| "XAVC".equals(function)
 									|| "HAP".equals(function)
@@ -3252,7 +3253,7 @@ public class Shutter {
 				
 				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "VP8", "VP9", "AV1", "OGV", "MPEG-2",		
 				
-				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "AVC-Intra 100", "XAVC", "HAP",
+				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC", "HAP",
 				
 				language.getProperty("itemOldCodecs"), "DV PAL", "MJPEG", "Xvid", "WMV", "MPEG-1",
 				
@@ -3370,6 +3371,7 @@ public class Shutter {
 					newList.clear();
 					
 					newList.add("XDCAM HD422");
+					newList.add("XDCAM HD 35");
 					newList.add("AVC-Intra 100");
 					newList.add("XAVC");
 					newList.add("HAP");
@@ -4861,7 +4863,7 @@ public class Shutter {
 					}
 				}
 				
-				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				if (FFPROBE.totalLength <= 40 || comboResolution.getSelectedItem().toString().contains("AI"))
 				{	
 					if (VideoPlayer.preview.exists())
 						VideoPlayer.preview.delete();
@@ -5887,7 +5889,7 @@ public class Shutter {
 					
 					extendSections(grpSetAudio, 128);
 				}
-				else if (comboFonctions.getSelectedItem().equals("XDCAM HD422") == false && comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")  == false && comboFonctions.getSelectedItem().toString().equals("XAVC") == false)
+				else if (comboFonctions.getSelectedItem().toString().contains("XDCAM") == false && comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")  == false && comboFonctions.getSelectedItem().toString().equals("XAVC") == false)
 				{
 					if (lblAudioMapping.getText().equals("Multi"))
 					{
@@ -15305,7 +15307,7 @@ public class Shutter {
 				
 				if (caseAS10.isSelected())
 				{
-					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422"))
+					if (comboFonctions.getSelectedItem().toString().contains("XDCAM"))
 					{
 						final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(new String[] {".mxf"});						
 						comboFilter.setModel(model);
@@ -15342,7 +15344,7 @@ public class Shutter {
 					comboAudio7.setSelectedIndex(16);
 					comboAudio8.setSelectedIndex(16);
 					
-					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422"))
+					if (comboFonctions.getSelectedItem().toString().contains("XDCAM"))
 					{
 						final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(new String[] { ".mxf", ".mov" });						
 						comboFilter.setModel(model);
@@ -15367,7 +15369,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (caseAS10.isSelected() && comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") && comboAS10.getSelectedItem().toString().equals("NRK_HD_2012"))
+				if (caseAS10.isSelected() && comboFonctions.getSelectedItem().toString().contains("XDCAM") && comboAS10.getSelectedItem().toString().equals("NRK_HD_2012"))
 				{
 					comboAudioCodec.setSelectedIndex(0);
 				}
@@ -16264,7 +16266,7 @@ public class Shutter {
 						|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
 						|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
 						|| comboFonctions.getSelectedItem().toString().equals("Uncompressed") 	
-						|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
+						|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
 						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 						|| comboFonctions.getSelectedItem().toString().equals("XAVC")
 						|| comboFonctions.getSelectedItem().toString().equals("HAP")
@@ -16285,7 +16287,7 @@ public class Shutter {
 				comboAudio2.setSelectedIndex(1);
 				comboAudio3.setSelectedIndex(2);
 				comboAudio4.setSelectedIndex(3);				
-				if (comboFonctions.getSelectedItem().equals("XDCAM HD422") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100") || comboFonctions.getSelectedItem().toString().equals("XAVC"))
+				if (comboFonctions.getSelectedItem().toString().contains("XDCAM") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100") || comboFonctions.getSelectedItem().toString().equals("XAVC"))
 				{
 					comboAudio5.setSelectedIndex(16);
 					comboAudio6.setSelectedIndex(16);
@@ -16519,7 +16521,7 @@ public class Shutter {
 				{
 					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 
-					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
+					if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
 					|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 					|| comboFonctions.getSelectedItem().toString().equals("XAVC"))
 					{
@@ -16562,7 +16564,7 @@ public class Shutter {
 						|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
 						|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
 						|| comboFonctions.getSelectedItem().toString().equals("Uncompressed") 	
-						|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
+						|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
 						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 						|| comboFonctions.getSelectedItem().toString().equals("XAVC")
 						|| comboFonctions.getSelectedItem().toString().equals("HAP")
@@ -17408,7 +17410,7 @@ public class Shutter {
 				|| "DNxHD".equals(function)	|| "DNxHR".equals(function) || "Apple ProRes".equals(function) || "QT Animation".equals(function) || ("GoPro CineForm").equals(function) || "Uncompressed".equals(function)
 				|| "H.264".equals(function) || "H.265".equals(function) || "DV PAL".equals(function)
 				|| "WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function) || "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function) || "OGV".equals(function)
-				|| "MJPEG".equals(function) || "Xvid".equals(function) || "XDCAM HD422".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)
+				|| "MJPEG".equals(function) || "Xvid".equals(function) || "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)
 				|| "DVD".equals(function) || "Blu-ray".equals(function) || "QT JPEG".equals(function)
 				|| language.getProperty("functionPicture").equals(function)
 				|| "JPEG".equals(function)
@@ -17718,7 +17720,7 @@ public class Shutter {
 		{		
 			if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 			{
-				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY(), 332, frame.getHeight());	
+				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
 				lblArrows.setVisible(true);
 				lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 				lblGpuDecoding.setVisible(false);
@@ -17782,7 +17784,7 @@ public class Shutter {
 			{
 				frame.setBounds(frame.getX() + (1350 - 654) / 2, frame.getY(), 654, frame.getHeight());
 			}
-
+			
 			VideoPlayer.setPlayerButtons(false);
 			VideoPlayer.player.setVisible(false);
 			
@@ -17827,8 +17829,8 @@ public class Shutter {
 		    lblYears.setVisible(true);
 		}
 		else if (bigger == false && frame.getSize().width > 332)
-		{
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY(), 332, frame.getHeight());	
+		{			
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -17912,7 +17914,7 @@ public class Shutter {
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), 0);	
 		}		
-
+		
 		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
 		{
 			VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
@@ -17992,9 +17994,9 @@ public class Shutter {
 		fileList.setSize(fileList.getWidth(), frame.getHeight() - 387);
 		addToList.setSize(fileList.getSize());					
 		scrollBar.setSize(scrollBar.getWidth(), fileList.getHeight());
-		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFunction.getY() + height);
-		grpDestination.setLocation(grpDestination.getX(), grpDestination.getY() + height);
-		grpProgression.setLocation(grpProgression.getX(), grpProgression.getY() + height);
+		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 6);
+		grpDestination.setLocation(grpDestination.getX(), grpChooseFunction.getY() + grpChooseFunction.getHeight() + 6);
+		grpProgression.setLocation(grpProgression.getX(), grpDestination.getY() + grpDestination.getHeight() + 6);
         
         //On récupère le groupe qui est le plus haut
 		JPanel top;
@@ -18564,9 +18566,9 @@ public class Shutter {
 								grpAdvanced.setVisible(false);
 								btnReset.setVisible(false);
 								
-							} else if ("XDCAM HD422".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)) {
+							} else if ("XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)) {
 								
-								if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") && caseAS10.isSelected())
+								if (comboFonctions.getSelectedItem().toString().contains("XDCAM") && caseAS10.isSelected())
 								{
 									final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(new String[] {".mxf"});						
 									comboFilter.setModel(model);
@@ -18582,7 +18584,7 @@ public class Shutter {
 									caseChangeAudioCodec.setSelected(true);
 									comboAudioCodec.setEnabled(true);
 									
-									if ("XDCAM HD422".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function))
+									if ("XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function))
 									{
 										comboAudioCodec.setSelectedIndex(1);
 									}
@@ -18700,7 +18702,7 @@ public class Shutter {
 								
 								grpResolution.add(comboResolution);
 								
-								if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100"))
+								if (comboFonctions.getSelectedItem().toString().contains("XDCAM") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100"))
 								{
 									if (comboResolution.getItemCount() > 3)
 									{
@@ -18802,7 +18804,7 @@ public class Shutter {
 								caseForcerEntrelacement.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 								grpAdvanced.add(caseForcerEntrelacement);						
 															
-								if (function.equals("XDCAM HD422"))
+								if (function.contains("XDCAM"))
 								{															
 									casePreserveMetadata.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);	
@@ -21162,7 +21164,7 @@ public class Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 				
-			} else if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")) {				
+			} else if (comboFonctions.getSelectedItem().toString().contains("XDCAM") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")) {				
 
 				lblFilter.setText(" ");	
 				lblFilter.setVisible(true);

@@ -5223,7 +5223,7 @@ public class VideoPlayer {
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			showScale.setBounds(player.getX(), showFPS.getY(), player.getWidth() / 2, showScale.getPreferredSize().height);
 			
-			if (showScale.getY() < Shutter.topPanel.getHeight())
+			if (showScale.getY() < Shutter.topPanel.getHeight() || FFPROBE.audioOnly)
 			{
 				showScale.setVisible(false);
 			}
