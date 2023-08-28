@@ -67,7 +67,7 @@ public class AudioSettings extends Shutter {
 		{
 			audioBitrate = " -b:a 320k";
 		}
-		else if (comboFonctions.getSelectedItem().equals("XDCAM HD422")
+		else if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
 		|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 		|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Broadcast codecs
 		{

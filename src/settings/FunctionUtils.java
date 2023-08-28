@@ -1172,7 +1172,7 @@ public class FunctionUtils extends Shutter {
 				{
 					silentTrack = " -f lavfi -i anullsrc=r=" + lbl48k.getText() + ":cl=mono";
 					
-					if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422"))
+					if (comboFonctions.getSelectedItem().toString().contains("XDCAM"))
 						silentTrack += " -shortest -map_metadata -1";
 					
 					if (Shutter.caseAddWatermark.isSelected() && (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))

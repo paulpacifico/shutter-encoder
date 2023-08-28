@@ -28,37 +28,34 @@ public class Timecode extends Shutter {
 
 	public static String setTimecode() {
 		
-		if (grpSetTimecode.isVisible())
-		{
-	   		String dropFrame = ":";
-	        if (isDropFrame())
-        	{
-	        	dropFrame = ";";
-        	}
-	        
-	   		if (Shutter.caseConform.isSelected())
-	   		{
-	   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
-	   			{
-	   				dropFrame = ";";
-	   			}
-	   			else 
-	   				dropFrame = ":";
-	   		}
+   		String dropFrame = ":";
+        if (isDropFrame())
+    	{
+        	dropFrame = ";";
+    	}
+        
+   		if (Shutter.caseConform.isSelected())
+   		{
+   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+   			{
+   				dropFrame = ";";
+   			}
+   			else 
+   				dropFrame = ":";
+   		}
 
-			if (caseGenerateFromDate.isSelected())
-			{
-				String s[] = EXIFTOOL.creationHours.split(":");
-				return " -timecode " + '"' + s[0] + ":" + s[1] + ":" + s[2] + dropFrame + "00" + '"';
-			}		
-			else if (caseSetTimecode.isSelected())
-			{
-				return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"';
-			}
-			else if (FFPROBE.timecode1 != "")
-			{						
-				return " -timecode " + '"' + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + dropFrame + FFPROBE.timecode4 + '"';
-			}
+		if (caseGenerateFromDate.isSelected())
+		{
+			String s[] = EXIFTOOL.creationHours.split(":");
+			return " -timecode " + '"' + s[0] + ":" + s[1] + ":" + s[2] + dropFrame + "00" + '"';
+		}		
+		else if (caseSetTimecode.isSelected())
+		{
+			return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"';
+		}
+		else if (FFPROBE.timecode1 != "")
+		{						
+			return " -timecode " + '"' + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + dropFrame + FFPROBE.timecode4 + '"';
 		}
 		
 		return "";

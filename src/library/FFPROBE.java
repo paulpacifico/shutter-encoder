@@ -507,7 +507,7 @@ public static boolean hasAlpha = false;
 			            		dropFrameTC = ":";
 			            	
 			            	if (Shutter.caseShowTimecode.isSelected()
-		            		|| comboFonctions.getSelectedItem().equals("XDCAM HD422")
+		            		|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
 		            		|| comboFonctions.getSelectedItem().equals("XAVC")
 		            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
 		            		|| comboFonctions.getSelectedItem().equals("DNxHD")

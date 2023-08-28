@@ -456,6 +456,7 @@ public class AdvancedFeatures extends Shutter {
 			case "HAP":
 			case "XAVC":
 			case "XDCAM HD422":
+			case "XDCAM HD 35":				
 				
 				if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
 				{
@@ -676,7 +677,7 @@ public class AdvancedFeatures extends Shutter {
 
 	public static String setForceTFF(String filterComplex) {
 		
-		if (comboFonctions.getSelectedItem().toString().equals("XDCAM HD422") && caseForcerEntrelacement.isSelected())
+		if (comboFonctions.getSelectedItem().toString().contains("XDCAM") && caseForcerEntrelacement.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 				filterComplex += "setfield=tff";
@@ -694,6 +695,7 @@ public class AdvancedFeatures extends Shutter {
 			case "DNxHD":
 			case "XAVC":
 			case "XDCAM HD422":
+			case "XDCAM HD 35":
 			case "FFV1":
 			case "GoPro CineForm":
 			case "HAP":

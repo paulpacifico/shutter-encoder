@@ -147,7 +147,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		if (saveCode)
 		{
 			if (cmd.contains("-pass 2") == false)
-					saveToXML(cmd);
+				saveToXML(cmd);
 		}
 		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{			
@@ -176,6 +176,8 @@ public static StringBuilder errorLog = new StringBuilder();
 			RenderQueue.frame.toFront();
 			
 			lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
+			
+			 Console.consoleFFMPEG.append(System.lineSeparator());
 		}
 		else
 		{

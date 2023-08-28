@@ -55,7 +55,7 @@ public class InputAndOutput extends Shutter {
         	else if (FFPROBE.audioOnly || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false) 
         	|| comboFonctions.getSelectedItem().toString().equals("VP8")
         	|| comboFonctions.getSelectedItem().toString().equals("VP9")
-        	|| comboFonctions.getSelectedItem().toString().equals("XDCAM HD422")
+        	|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
 			|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 			|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Issue for audio, libvpx & added mute track
         	{

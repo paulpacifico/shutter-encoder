@@ -85,6 +85,7 @@ import settings.Transitions;
  * Uncompressed
  * XAVC
  * XDCAM HD422
+ * XDCAM HD 35
  */
 
 public class VideoEncoders extends Shutter {
@@ -314,6 +315,7 @@ public class VideoEncoders extends Shutter {
 								case "AVC-Intra 100":
 								case "DNxHD":
 								case "XDCAM HD422":
+								case "XDCAM HD 35":
 									
 									subtitles = Overlay.setSubtitles(true);
 									
@@ -377,6 +379,7 @@ public class VideoEncoders extends Shutter {
 							case "AVC-Intra 100":
 							case "DNxHD":
 							case "XDCAM HD422":
+							case "XDCAM HD 35":
 								
 								resolution = Image.limitToFHD();									
 								break;
@@ -457,6 +460,7 @@ public class VideoEncoders extends Shutter {
 								case "Uncompressed":
 								case "XAVC":
 								case "XDCAM HD422":
+								case "XDCAM HD 35":
 									
 									filterComplex = AdvancedFeatures.setDeinterlace(false);								
 									break;
@@ -487,6 +491,7 @@ public class VideoEncoders extends Shutter {
 									case "AVC-Intra 100":
 									case "DNxHD":
 									case "XDCAM HD422":
+									case "XDCAM HD 35":
 									case "DVD" : //Needed 16:9 aspect ratio
 										
 										if (FFPROBE.imageResolution.equals("1440x1080"))
@@ -595,6 +600,7 @@ public class VideoEncoders extends Shutter {
 									case "AVC-Intra 100":
 									case "DNxHD":
 									case "XDCAM HD422":
+									case "XDCAM HD 35":
 									case "DVD" : //Needed 16:9 aspect ratio
 										
 										if (FFPROBE.imageResolution.equals("1440x1080"))
@@ -635,6 +641,7 @@ public class VideoEncoders extends Shutter {
 								case "AVC-Intra 100":
 								case "DNxHD":
 								case "XDCAM HD422":
+								case "XDCAM HD 35":
 									
 									filterComplex = Overlay.setOverlay(filterComplex, true);									
 									break;
@@ -687,6 +694,7 @@ public class VideoEncoders extends Shutter {
 								case "AVC-Intra 100":
 								case "XAVC":
 								case "XDCAM HD422":
+								case "XDCAM HD 35":
 									
 									filterComplex = FunctionUtils.setFilterComplexBroadcastCodecs(filterComplex, audio);								
 									break;
@@ -781,6 +789,7 @@ public class VideoEncoders extends Shutter {
 								case "DNxHD":
 								case "DNxHR":								
 								case "XDCAM HD422":
+								case "XDCAM HD 35":
 								case "Apple ProRes":
 								case "FFV1":
 								case "GoPro CineForm":
@@ -974,6 +983,7 @@ public class VideoEncoders extends Shutter {
 								{
 									case "DNxHD":
 									case "XDCAM HD422":
+									case "XDCAM HD 35":
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																												
@@ -998,7 +1008,8 @@ public class VideoEncoders extends Shutter {
 							{
 								switch (comboFonctions.getSelectedItem().toString())
 								{
-									case "XDCAM HD422":										
+									case "XDCAM HD422":	
+									case "XDCAM HD 35":
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createAS10Format"));
 										
@@ -1409,8 +1420,12 @@ public class VideoEncoders extends Shutter {
 				
 			case "XDCAM HD422":
 				
-				return " -c:v mpeg2video -g 12 -pix_fmt yuv422p -color_range 1 -non_linear_quant 1 -dc 10 -intra_vlc 1 -q:v 2 -qmin 2 -qmax 12 -lmin " + '"' + "1*QP2LAMBDA" + '"' + " -rc_max_vbv_use 1 -rc_min_vbv_use 1 -b:v 50000000 -minrate 50000000 -maxrate 50000000 -bufsize 17825792 -rc_init_occupancy 17825792 -sc_threshold 1000000000 -bf 2";
+				return " -c:v mpeg2video -g 12 -pix_fmt yuv422p -color_range 1 -non_linear_quant 1 -dc 10 -intra_vlc 1 -q:v 2 -qmin 2 -qmax 12 -lmin " + '"' + "1*QP2LAMBDA" + '"' + " -rc_max_vbv_use 1 -rc_min_vbv_use 1 -b:v 50000k -minrate 50000k -maxrate 50000k -bufsize 17825792 -rc_init_occupancy 17825792 -sc_threshold 1000000000 -bf 2";
 		
+			case "XDCAM HD 35":
+				
+				return " -c:v mpeg2video -g 12 -pix_fmt yuv420p -color_range 1 -non_linear_quant 1 -dc 10 -intra_vlc 1 -q:v 2 -qmin 2 -qmax 12 -lmin " + '"' + "1*QP2LAMBDA" + '"' + " -rc_max_vbv_use 1 -rc_min_vbv_use 1 -b:v 35000k -minrate 35000k -maxrate 35000k -bufsize 17825792 -rc_init_occupancy 17825792 -sc_threshold 1000000000 -bf 2";
+								
 			case "XAVC":
 				
 				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
