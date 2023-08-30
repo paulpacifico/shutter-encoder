@@ -41,7 +41,7 @@ public static Process process;
 public static String modelsPath;
 
 	public static void run(final String cmd, boolean isVideoPlayer) {
-		
+				
 		error = false;
 	    progressBar1.setValue(0);
 	    tempsEcoule.setVisible(false);
@@ -100,6 +100,9 @@ public static String modelsPath;
 						Console.consoleNCNN.append(System.lineSeparator());	
 						
 						int progressValue = 0;
+						
+						if (isVideoPlayer == false)
+							btnStart.setText(language.getProperty("btnPauseFunction"));
 						
 						while ((line = input.readLine()) != null)
 						{							

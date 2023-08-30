@@ -319,12 +319,14 @@ public class Picture extends Shutter {
 								Thread.sleep(10);
 							} while(FFMPEG.runProcess.isAlive());
 							
-							if (NCNN.isRunning)
+							if (NCNN.isRunning && NCNN.process != null)
 							{
 								NCNN.process.destroy();
-											
+								
 								do {
-									Thread.sleep(100);
+									try {
+										Thread.sleep(1000);
+									} catch (InterruptedException e) {}
 								} while (NCNN.isRunning);
 								
 								lblCurrentEncoding.setText(fileName);

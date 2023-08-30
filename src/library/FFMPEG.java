@@ -358,9 +358,11 @@ public static StringBuilder errorLog = new StringBuilder();
 	}
 	
  	private static String checkList(String cmd) {
-		
+
 		if (cmd.contains("pass 2"))
+		{
 			return RenderQueue.tableRow.getValueAt(RenderQueue.tableRow.getRowCount() - 1, 1).toString().replace("ffmpeg", "").replace("pass 1", "pass 2");
+		}
 		else
 		{		
 			//On vérifie que le fichier n'existe pas déjà dans le cas contraire on l'incrémente
