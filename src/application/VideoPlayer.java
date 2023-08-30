@@ -2493,7 +2493,7 @@ public class VideoPlayer {
 		            	showFPS.setVisible(false);
                 }
                                 
-                if (Shutter.stabilisation != "" || (previewUpscale && FFPROBE.totalLength > 40))
+                if (Shutter.stabilisation != "" || (previewUpscale && preview.exists() && FFPROBE.totalLength > 40))
                 {
                 	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -2732,6 +2732,9 @@ public class VideoPlayer {
 				if (NCNN.isRunning)
 				{
 					NCNN.process.destroy();
+					
+					if (preview.exists())
+						preview.delete();
 				}
 								
 				if (Shutter.liste.getSize() > 0)
@@ -4327,19 +4330,14 @@ public class VideoPlayer {
 	}
 	
 	public static void loadImage(boolean forceRefresh) {
-						
+					
 		if (forceRefresh && videoPath != null)
 		{
 			Thread waitProcess = new Thread (new Runnable() {
 				
 				@Override
 				public void run() {
-					
-					if (NCNN.isRunning)
-					{
-						NCNN.process.destroy();
-					}
-					
+										
 					do {
 						try {
 							Thread.sleep(10);
@@ -4487,12 +4485,9 @@ public class VideoPlayer {
 									model = "realesrgan-x4plus-anime";
 								}	
 
-								if (videoPath != null)
-								{
-									Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-									Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
-								}
-																
+								Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+								Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
+																								
 								NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
 
 								do {									
@@ -4502,15 +4497,22 @@ public class VideoPlayer {
 								Shutter.progressBar1.setValue(0);
 								Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
 								
-								FFMPEG.run(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + '"' + preview.toString().replace(".png", ".bmp") + '"'); 
-																								
-								do {
-			    					Thread.sleep(10);			    					
-								} while (FFMPEG.isRunning && FFMPEG.error == false);
-								
-								if (mouseIsPressed == false)
+								if (preview.exists())
+								{									
+									FFMPEG.run(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + '"' + preview.toString().replace(".png", ".bmp") + '"'); 
+																									
+									do {
+				    					Thread.sleep(10);			    					
+									} while (FFMPEG.isRunning && FFMPEG.error == false);
+									
+									if (mouseIsPressed == false)
+									{
+										previewUpscale = true;
+									}
+								}
+								else
 								{
-									previewUpscale = true;
+									FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + preview.toString().replace(".png", ".bmp") + '"');
 								}
 								
 								preview.delete();
@@ -4554,12 +4556,15 @@ public class VideoPlayer {
 	    					Thread.sleep(10);
 	    				} while (FFMPEG.process.isAlive() == false);
 						
-						InputStream videoInput = FFMPEG.process.getInputStream();		
-						frameVideo = ImageIO.read(videoInput);
-
-						if (frameVideo != null)
+						if (preview.exists())
 						{
-							player.repaint();
+							InputStream videoInput = FFMPEG.process.getInputStream();		
+							frameVideo = ImageIO.read(videoInput);
+							
+							if (frameVideo != null)
+							{
+								player.repaint();
+							}
 						}
 			        }
 				    catch (Exception e)

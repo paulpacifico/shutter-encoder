@@ -181,7 +181,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.3";
+	public static String actualVersion = "17.4";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -4861,8 +4861,22 @@ public class Shutter {
 						changeFilters();
 						FFPROBE.setFilesize();	
 					}
+				}		
+
+				if (NCNN.isRunning && NCNN.process != null)
+				{
+					NCNN.process.destroy();
+					
+					do {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {}
+					} while (NCNN.isRunning);
+					
+					if (VideoPlayer.preview.exists())
+						VideoPlayer.preview.delete();
 				}
-				
+								
 				if (FFPROBE.totalLength <= 40 || comboResolution.getSelectedItem().toString().contains("AI"))
 				{	
 					if (VideoPlayer.preview.exists())
@@ -4875,7 +4889,43 @@ public class Shutter {
 					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
 					VideoPlayer.resizeAll();		
 				}
-		  }
+				
+				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				{
+					iconList.setVisible(false);		
+					
+					if (iconPresets.isVisible())
+					{
+						iconPresets.setBounds(180, 45, 21, 21);
+						btnCancel.setBounds(207, 46, 97, 21);
+					}
+					else
+					{
+						btnCancel.setBounds(184, 46, 120, 21);
+					}
+					
+					if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+					{
+						Utils.changeFrameVisibility(RenderQueue.frame, true);
+						btnStart.setText(language.getProperty("btnStartFunction"));
+					}
+				}
+				else if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
+				{
+					iconList.setVisible(true);			
+					
+					if (iconPresets.isVisible())
+					{
+						iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
+						btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
+					}
+					else
+					{
+						iconPresets.setBounds(180, 45, 21, 21);
+						btnCancel.setBounds(207, 46, 97, 21);
+					}
+				}
+			}
 			
 		});
 		
@@ -17464,7 +17514,8 @@ public class Shutter {
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("VMAF")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
-				&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false))
+				&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)
+				&& comboResolution.getSelectedItem().toString().contains("AI") == false)
 		{
 			iconList.setVisible(true);			
 			

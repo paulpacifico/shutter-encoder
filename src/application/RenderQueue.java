@@ -69,7 +69,6 @@ import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.TSMUXER;
-import library.NCNN;
 import library.PDF;
 import settings.FunctionUtils;
 
@@ -133,7 +132,8 @@ import settings.FunctionUtils;
 		    }
 			
 			public void windowClosed(WindowEvent arg0) {
-				if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || NCNN.isRunning)
+				
+				if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
 					Shutter.btnCancel.doClick();
 				
 				if (Shutter.btnCancel.isEnabled() == false)		
@@ -150,7 +150,8 @@ import settings.FunctionUtils;
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlackDetection")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionOfflineDetection")) == false
 							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false) {
+							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false)
+					{
 						Shutter.iconList.setVisible(true);
 						if (Shutter.iconPresets.isVisible())
 						{
@@ -451,7 +452,7 @@ import settings.FunctionUtils;
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{		  
-					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning || NCNN.isRunning)
+					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
 						Shutter.btnCancel.doClick();
 					
 					if (Shutter.btnCancel.isEnabled() == false)		
@@ -468,8 +469,10 @@ import settings.FunctionUtils;
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlackDetection")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionOfflineDetection")) == false
 								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false) {
+								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false)
+						{
 							Shutter.iconList.setVisible(true);
+							
 							if (Shutter.iconPresets.isVisible())
 							{
 								Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
@@ -746,9 +749,6 @@ import settings.FunctionUtils;
 								case "dcraw" :
 									DCRAW.run(cmd.toString().replace("dcraw",""));
 									break;
-								case "ncnn" :
-									NCNN.run(cmd.toString().replace("ncnn",""), false);
-									break;
 							}				
 							
 							table.setRowSelectionInterval(i, i);
@@ -759,7 +759,7 @@ import settings.FunctionUtils;
 							try {
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || NCNN.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 								
 								
 								//Permet d'attendre si un autre processus se lance
@@ -767,7 +767,7 @@ import settings.FunctionUtils;
 								
 								do {
 									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || NCNN.isRunning);
+								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 							} catch (InterruptedException e) {}
 
 							lastActions(i, fichier, fileOut);
@@ -918,8 +918,7 @@ import settings.FunctionUtils;
 		
 		//Suppression fihciers résiduels Conform
 		if (cli[0].toString().equals("ffmpeg"))
-		{
-					    		
+		{					    		
 			File tempMKV = new File(Shutter.dirTemp + "fileToRewrap.mkv");
 			if (tempMKV.exists())
 				tempMKV.delete();
