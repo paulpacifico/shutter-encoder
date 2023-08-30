@@ -1,10 +1,11 @@
+ffmpeg: ffmpeg.org
 7za: www.7-zip.org
+exiftool: exiftool.org
 dcraw: www.dechifro.org/dcraw
 yt-dlp: github.com/yt-dlp/yt-dlp
-ffmpeg: ffmpeg.org
-exiftool: exiftool.org
+dvdauthor: dvdauthor.sourceforge.net
 tsMuxeR: github.com/justdan96/tsMuxer
 mediainfo: mediaarea.net/fr/MediaInfo
-dvdauthor: dvdauthor.sourceforge.net
 WeTransfer: developers.wetransfer.com
 bmxtranswrap: sourceforge.net/p/bmxlib/home/Home
+ncnn: https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan
