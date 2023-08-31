@@ -19740,25 +19740,28 @@ public class Shutter {
 											
 											try {
 												
-												if (System.getProperty("os.name").contains("Windows"))
+												if ("VP9".equals(comboFonctions.getSelectedItem().toString()))
 												{
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -s 640x360 -f null -" + '"');
-													do {
-														Thread.sleep(10);
-													} while (FFMPEG.runProcess.isAlive());
-							
-													if (FFMPEG.error == false)
-														graphicsAccel.add("Intel Quick Sync");
-												}
-												else if (System.getProperty("os.name").contains("Linux"))
-												{
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -s 640x360 -f null -");
-													do {
-														Thread.sleep(10);
-													} while (FFMPEG.runProcess.isAlive());
-							
-													if (FFMPEG.error == false)
-														graphicsAccel.add("VAAPI");
+													if (System.getProperty("os.name").contains("Windows"))
+													{
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -s 640x360 -f null -" + '"');
+														do {
+															Thread.sleep(10);
+														} while (FFMPEG.runProcess.isAlive());
+								
+														if (FFMPEG.error == false)
+															graphicsAccel.add("Intel Quick Sync");
+													}
+													else if (System.getProperty("os.name").contains("Linux"))
+													{
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -s 640x360 -f null -");
+														do {
+															Thread.sleep(10);
+														} while (FFMPEG.runProcess.isAlive());
+								
+														if (FFMPEG.error == false)
+															graphicsAccel.add("VAAPI");
+													}
 												}
 												else if ("AV1".equals(comboFonctions.getSelectedItem().toString()))
 												{
