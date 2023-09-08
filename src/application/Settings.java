@@ -1546,13 +1546,6 @@ public class Settings {
 					{
 						VideoPlayer.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 					}	
-					
-					//caseGPU video player
-					/*
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseGPU"))
-					{
-						VideoPlayer.caseGPU.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-					}*/
 										
 					//FTP
 					if (eElement.getParentNode().getNodeName().equals("Ftp"))
@@ -1564,32 +1557,6 @@ public class Settings {
 						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textUser"))
 						{
 							Ftp.textUser.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-					}
-					else if (eElement.getParentNode().getNodeName().equals("Wetransfer")) //Wetransfer
-					{
-						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textFrom"))
-						{
-							Wetransfer.textFrom.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textTo"))
-						{
-							Wetransfer.textTo.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePlus"))
-						{
-							//Value
-							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-							{
-								Wetransfer.casePlus.doClick();
-							}
-							
-							//State
-							Wetransfer.casePlus.setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-						}
-						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textUser"))
-						{
-							Wetransfer.textUser.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 						}
 					}
 					
@@ -2039,111 +2006,7 @@ public class Settings {
 			
 			if (Ftp.textFtp != null && Ftp.textFtp.getText().length() > 0 || Ftp.textUser != null && Ftp.textUser.getText().length() > 0)
 				root.appendChild(ftp);
-			
-			//Wetransfer
-			Element wetransfer = document.createElement("Wetransfer");
-			
-			if (Wetransfer.textFrom != null && Wetransfer.textFrom.getText().length() > 0)
-			{
-				//Component
-				component = document.createElement("Component");
-				
-				//Type
-				cType = document.createElement("Type");
-				cType.appendChild(document.createTextNode("JTextField"));
-				component.appendChild(cType);
-				
-				//Name
-				cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode("textFrom"));
-				component.appendChild(cName);
-				
-				//Value
-				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(Wetransfer.textFrom.getText().toString()));
-				component.appendChild(cValue);
-							
-				wetransfer.appendChild(component);
-			}
-			
-			if (Wetransfer.textTo != null && Wetransfer.textTo.getText().length() > 0)
-			{
-				//Component
-				component = document.createElement("Component");
-				
-				//Type
-				cType = document.createElement("Type");
-				cType.appendChild(document.createTextNode("JTextField"));
-				component.appendChild(cType);
-				
-				//Name
-				cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode("textTo"));
-				component.appendChild(cName);
-				
-				//Value
-				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(Wetransfer.textTo.getText().toString()));
-				component.appendChild(cValue);
-							
-				wetransfer.appendChild(component);
-			}
-			
-			//Component
-			component = document.createElement("Component");
-			
-			//Type
-			cType = document.createElement("Type");
-			cType.appendChild(document.createTextNode("JCheckBox"));
-			component.appendChild(cType);
-			
-			//Name
-			cName = document.createElement("Name");
-			cName.appendChild(document.createTextNode("casePlus"));
-			component.appendChild(cName);
-			
-			//Value
-			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(Wetransfer.casePlus.isSelected())));
-			component.appendChild(cValue);
-			
-			//State
-			Element cState = document.createElement("Enable");
-			cState.appendChild(document.createTextNode(String.valueOf(Wetransfer.casePlus.isEnabled())));
-			component.appendChild(cState);	
-			
-			wetransfer.appendChild(component);
-			
-			if (Wetransfer.textUser != null && Wetransfer.textUser.getText().length() > 0)
-			{
-				//Component
-				component = document.createElement("Component");
-				
-				//Type
-				cType = document.createElement("Type");
-				cType.appendChild(document.createTextNode("JTextField"));
-				component.appendChild(cType);
-				
-				//Name
-				cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode("textUser"));
-				component.appendChild(cName);
-				
-				//Value
-				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(Wetransfer.textUser.getText().toString()));
-				component.appendChild(cValue);
-							
-				wetransfer.appendChild(component);
-			}
-			
-			if (Wetransfer.textFrom.getText().length() > 0
-			|| Wetransfer.textTo.getText().length() > 0
-			|| Wetransfer.textUser.getText().length() > 0)
-			{
-				root.appendChild(wetransfer);
-			}
-			
+						
 			//CaseSendMail	
 			if (Shutter.textMail != null && Shutter.textMail.getText().length() > 0 && Shutter.textMail.getText().equals(Shutter.language.getProperty("textMail")) == false)
 			{

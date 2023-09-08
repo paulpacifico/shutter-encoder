@@ -926,7 +926,6 @@ import settings.FunctionUtils;
 		
 		//Envoi par e-mail et FTP
 		FunctionUtils.addFileForMail(file);
-		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		
 		if (tableRow.getValueAt(item, 2).toString().contains("|"))

@@ -20,6 +20,7 @@
 package application;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.GraphicsConfiguration;
@@ -458,6 +459,12 @@ public class RecordInputDevice {
 				
 				//Important
 				Shutter.inputDeviceIsRunning = true;
+				Shutter.grpImageAdjustement.setEnabled(false);
+				Component[] components = Shutter.grpImageAdjustement.getComponents();
+				for (int i = 0; i < components.length; i++) {
+					components[i].setEnabled(false);
+				}
+				
 				inputDeviceResolution = "";
 
 				//Permet d'injecter la resolution à FFPROBE

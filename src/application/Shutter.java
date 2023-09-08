@@ -244,7 +244,6 @@ public class Shutter {
 	private static JLabel help;
 	private static JLabel newInstance;
 	
-	private static ImageIcon wetransferIcon;
 	private static ImageIcon mailIcon;
 	private static ImageIcon streamIcon;
 
@@ -1005,12 +1004,7 @@ public class Shutter {
 					            	Settings.saveSettings();
 									
 									Utils.killProcesses();
-									
-									if (VideoPlayer.preview.exists())
-									{
-										VideoPlayer.preview.delete();
-									}
-									
+																		
 									if (VideoPlayer.waveform.exists())
 									{
 										VideoPlayer.waveform.delete();
@@ -1277,12 +1271,7 @@ public class Shutter {
 					Utils.changeFrameVisibility(frame, true);
 
 					Utils.killProcesses();
-					
-					if (VideoPlayer.preview.exists())
-					{
-						VideoPlayer.preview.delete();
-					}
-					
+										
 					if (VideoPlayer.waveform.exists())
 					{
 						VideoPlayer.waveform.delete();
@@ -1369,7 +1358,8 @@ public class Shutter {
 			@SuppressWarnings("static-access")
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (accept) 
+				
+				if (accept) 					
 				{
 					if (inputDeviceIsRunning == false && Settings.btnDisableMinimizedWindow.isSelected() == false
 					&& lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
@@ -1607,8 +1597,6 @@ public class Shutter {
 		            {		            	
 		            	screenIndex = newScreenIndex; 
 
-		            	frame.setSize(332, 662);
-
 				        if (comboFonctions.getSelectedItem().toString().isEmpty() == false)
 				        {
 				        	changeFunction(false);
@@ -1686,7 +1674,13 @@ public class Shutter {
 					// Screen record
 					if (inputDeviceIsRunning)
 						caseDisplay.setSelected(false);
-					inputDeviceIsRunning = false;
+										
+					inputDeviceIsRunning = false;					
+					grpImageAdjustement.setEnabled(true);
+					Component[] components = Shutter.grpImageAdjustement.getComponents();
+					for (int i = 0; i < components.length; i++) {
+						components[i].setEnabled(true);
+					}
 					
 					if (overlayDeviceIsRunning)
 					{
@@ -1751,7 +1745,14 @@ public class Shutter {
 				{
 					if (inputDeviceIsRunning)
 						caseDisplay.setSelected(false);
+					
 					inputDeviceIsRunning = false;
+					grpImageAdjustement.setEnabled(true);
+					Component[] components = Shutter.grpImageAdjustement.getComponents();
+					for (int i = 0; i < components.length; i++) {
+						components[i].setEnabled(true);
+					}
+					
 					if (overlayDeviceIsRunning)
 					{
 						caseAddWatermark.setSelected(false);
@@ -2124,7 +2125,8 @@ public class Shutter {
 
 					@Override
 					public void run() {
-					//list devices		
+						
+						//list devices		
 						if (System.getProperty("os.name").contains("Mac"))
 						{				
 							FFMPEG.devices("-f avfoundation -list_devices true -i dummy");	
@@ -2735,6 +2737,7 @@ public class Shutter {
 				{
 					cancelled = true;
 				}
+				
 				if (scanIsRunning) {
 					cancelled = true;
 					enableAll();
@@ -2744,6 +2747,7 @@ public class Shutter {
 					
 					FunctionUtils.watchFolder.setLength(0);			
 				}
+				
 				if (Ftp.isRunning) {
 					cancelled = true;
 					try {
@@ -2752,14 +2756,7 @@ public class Shutter {
 						System.out.println(e1);
 					}
 				}
-				if (Wetransfer.isRunning) {
-					cancelled = true;
-					try {
-						Wetransfer.process.destroy();
-					} catch (Exception e1) {
-						System.out.println(e1);
-					}
-				}
+
 				if (Settings.btnWaitFileComplete.isSelected())
 					cancelled = true;
 
@@ -2846,6 +2843,7 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				
 				if (accept)
 				{
 					iconPresets.setVisible(false);
@@ -2855,8 +2853,26 @@ public class Shutter {
 						btnCancel.setBounds(184, 46, 120, 21);
 					
 					if (Functions.frame == null)
+					{
+						if (frame.getCursor().equals(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)))
+						{			
+							long time = System.currentTimeMillis();
+							
+							do {
+								
+								try {
+									Thread.sleep(1000);
+								} catch (InterruptedException e1) {}
+								
+								if (System.currentTimeMillis() - time > 3000)
+									break;
+								
+							} while (frame.getCursor().equals(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)));
+						}
 						new Functions();
-					else {
+					}
+					else
+					{
 						if (Functions.listeDeFonctions.getModel().getSize() > 0) {
 							Functions.lblSave.setVisible(false);
 							Functions.lblDrop.setVisible(false);
@@ -2882,7 +2898,6 @@ public class Shutter {
 
 		});
 			
-		
 		btnStart = new JButton(language.getProperty("btnStartFunction"));
 		btnStart.setFont(new Font(montserratFont, Font.PLAIN, 12));
 		btnStart.setMargin(new Insets(0,0,0,0));
@@ -3274,27 +3289,7 @@ public class Shutter {
 				language.getProperty("functionWeb")
 				
 		};
-		
-		/*
-		int itemsLength = fonctions.length;
-		if (System.getProperty("os.name").contains("Linux") == false || new File("/usr/local/bin/youtube-dl").exists())
-			itemsLength += 2;
-			
-		final String[] items = new String[itemsLength];
-		
-		int i = 0;
-		for (String item : fonctions)
-		{
-			items[i] = item;
-			i++;
-		}
-				
-		if (System.getProperty("os.name").contains("Linux") == false || new File("/usr/local/bin/youtube-dl").exists())
-		{
-			items[i] = language.getProperty("itemDownload");
-			items[i+1] = language.getProperty("functionWeb");		
-		}*/
-
+	
 		comboFonctions = new JComboBox<String[]>();
 		comboFonctions.setName("comboFonctions");
 		comboFonctions.setModel(new DefaultComboBoxModel(functionsList));	
@@ -4502,18 +4497,19 @@ public class Shutter {
 		
 		
 		//Destinations icons
-		wetransferIcon = new FlatSVGIcon("contents/wetransfer.svg", 18, 18);
 		mailIcon = new FlatSVGIcon("contents/mail.svg", 18, 18);
 		streamIcon = new FlatSVGIcon("contents/stream.svg", 18, 18);
 		
 		//Ajout des tabs	
-		setDestinationTabs(6);
+		setDestinationTabs(5);
 		
 		grpDestination.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {	
-				try {				
+				
+				try {	
+					
 					if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("FTP"))
 					{
 						grpDestination.setSelectedComponent(destinationMail);
@@ -4523,15 +4519,7 @@ public class Shutter {
 						new Ftp();
 						frame.setOpacity(1.0f);
 					}
-					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("WeTransfer"))
-					{
-						grpDestination.setSelectedIndex(0);
-						try {
-							frame.setOpacity(0.5f);
-						} catch (Exception er) {}
-						new Wetransfer();
-						frame.setOpacity(1.0f);
-					}
+
 				} catch (Exception e) {}				
 			}
 
@@ -4873,14 +4861,14 @@ public class Shutter {
 						} catch (InterruptedException e) {}
 					} while (NCNN.isRunning);
 					
-					if (VideoPlayer.preview.exists())
-						VideoPlayer.preview.delete();
+					if (VideoPlayer.preview != null)
+						VideoPlayer.preview = null;
 				}
 								
 				if (FFPROBE.totalLength <= 40 || comboResolution.getSelectedItem().toString().contains("AI"))
 				{	
-					if (VideoPlayer.preview.exists())
-						VideoPlayer.preview.delete();
+					if (VideoPlayer.preview != null)
+						VideoPlayer.preview = null;
 					
 					VideoPlayer.loadImage(true);
 				}
@@ -10117,6 +10105,8 @@ public class Shutter {
 										{
 											c.setEnabled(true);
 										}
+										
+										VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
 									}
 									else
 									{											
@@ -11104,6 +11094,11 @@ public class Shutter {
 							caseAddWatermark.doClick();
 							Shutter.inputDevice.doClick();		
 							Shutter.inputDeviceIsRunning = false;
+							grpImageAdjustement.setEnabled(true);
+							Component[] components = Shutter.grpImageAdjustement.getComponents();
+							for (int i = 0; i < components.length; i++) {
+								components[i].setEnabled(true);
+							}
 						}
 						else
 						{
@@ -14708,15 +14703,25 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (caseCreateTree.isSelected())
 				{
 					setDestinationTabs(2);					
-				} else {
+				}
+				else
+				{
 					if (caseChangeFolder1.isSelected() == false)
 						lblDestination1.setText(language.getProperty("sameAsSource"));
 					
 					if (caseCreateOPATOM.isSelected() == false)
-						setDestinationTabs(6);		
+					{
+						if (comboFonctions.getSelectedItem().toString().equals("H.264"))
+						{
+							setDestinationTabs(6);						
+						}
+						else
+							setDestinationTabs(5);	
+					}
 				}	
 			}	
 		});
@@ -14780,7 +14785,9 @@ public class Shutter {
 						lblDestination1.setText(language.getProperty("sameAsSource"));
 					
 					if (caseCreateTree.isSelected() == false)
-						setDestinationTabs(6);		
+					{
+						setDestinationTabs(5);		
+					}
 					
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
 					{
@@ -16867,8 +16874,8 @@ public class Shutter {
 				windowDrag = false;
 				
 				//IMPORTANT
-				if (FFPROBE.totalLength <= 40 && VideoPlayer.preview.exists())
-					VideoPlayer.preview.delete();
+				if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
+					VideoPlayer.preview = null;
 				
 				resizeAll(frame.getWidth(), 0);
 			}
@@ -17626,12 +17633,14 @@ public class Shutter {
 			
 			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")))
 			{
-				setDestinationTabs(6);
+				setDestinationTabs(5);
 			}
 			else
 			{			
 				if (comboFonctions.getSelectedItem().equals("Loudness & True Peak"))
+				{
 					setDestinationTabs(2);
+				}
 				else if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")))
 				{
 					caseOpenFolderAtEnd1.setEnabled(true);
@@ -17652,10 +17661,10 @@ public class Shutter {
 			}
 			else if (comboFonctions.getSelectedItem().toString().equals("H.264"))
 			{
-				setDestinationTabs(7);
+				setDestinationTabs(6);
 			}
 			else
-				setDestinationTabs(6);
+				setDestinationTabs(5);
 			
 			caseOpenFolderAtEnd1.setEnabled(true);
 			caseChangeFolder1.setEnabled(true);
@@ -17909,8 +17918,8 @@ public class Shutter {
 	private static void toggleFullscreen() {
 		
 		//IMPORTANT
-		if (FFPROBE.totalLength <= 40 && VideoPlayer.preview.exists())
-			VideoPlayer.preview.delete();
+		if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
+			VideoPlayer.preview = null;
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		
@@ -20594,8 +20603,8 @@ public class Shutter {
 								
 								if (comboResolution.getSelectedItem().toString().contains("AI"))
 								{	
-									if (VideoPlayer.preview.exists())
-										VideoPlayer.preview.delete();
+									if (VideoPlayer.preview != null)
+										VideoPlayer.preview = null;
 									
 									VideoPlayer.loadImage(true);
 								}
@@ -21457,26 +21466,11 @@ public class Shutter {
 			output3.setFont(tabFont);			
 			JLabel ftpTab = new JLabel("FTP");
 			ftpTab.setFont(tabFont);		
-			JLabel wetransferTab = new JLabel(wetransferIcon);
-			wetransferTab.setFont(tabFont);	
 			JLabel mailTab = new JLabel(mailIcon);
 			mailTab.setFont(tabFont);
 			JLabel streamTab = new JLabel(streamIcon);	
 			streamTab.setFont(tabFont);					
-			
-			boolean addWetransfer = true;
-			
-			String PathToWTCLIENT = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			PathToWTCLIENT = PathToWTCLIENT.substring(0,PathToWTCLIENT.length()-1);
-			PathToWTCLIENT = PathToWTCLIENT.substring(0,(int) (PathToWTCLIENT.lastIndexOf("/"))).replace("%20", " ")  + "/Library/wtclient";
-				
-			if (System.getProperty("os.name").contains("Mac") && new File (PathToWTCLIENT).exists() == false)
-			{
-				addWetransfer = false;
-				if (tabs > 2)
-					tabs = tabs - 1;
-			}
-				
+							
 			if (tabs != grpDestination.getTabCount())
 			{
 				grpDestination.removeAll();
@@ -21494,43 +21488,26 @@ public class Shutter {
 					grpDestination.setTabComponentAt(0, output);
 					grpDestination.setTabComponentAt(1, mailTab);
 				}
-				else if (addWetransfer && tabs == 6 || addWetransfer == false && tabs == 5)
+				else if (tabs == 5)
 				{			
 					grpDestination.addTab(language.getProperty("output") + "1", destination1);
 					grpDestination.addTab(language.getProperty("output") + "2", destination2);
 					grpDestination.addTab(language.getProperty("output") + "3", destination3);	
-					grpDestination.addTab("FTP", new JPanel());
-					
-					if (addWetransfer)
-						grpDestination.addTab("WeTransfer", new JPanel());
-					
+					grpDestination.addTab("FTP", new JPanel());									
 					grpDestination.addTab("Mail", destinationMail);;
 					
 					grpDestination.setTabComponentAt(0, output1);
 					grpDestination.setTabComponentAt(1, output2);
 					grpDestination.setTabComponentAt(2, output3);
 					grpDestination.setTabComponentAt(3, ftpTab);
-					
-					if (addWetransfer)
-					{	
-						grpDestination.setTabComponentAt(4, wetransferTab);			
-						grpDestination.setTabComponentAt(5, mailTab);
-					}
-					else
-					{
-						grpDestination.setTabComponentAt(4, mailTab);
-					}
+					grpDestination.setTabComponentAt(4, mailTab);					
 				}
-				else if (addWetransfer && tabs == 7 || addWetransfer == false && tabs == 6)
+				else if (tabs == 6)
 				{			
 					grpDestination.addTab(language.getProperty("output") + "1", destination1);
 					grpDestination.addTab(language.getProperty("output") + "2", destination2);
 					grpDestination.addTab(language.getProperty("output") + "3", destination3);	
 					grpDestination.addTab("FTP", new JPanel());
-					
-					if (addWetransfer)
-						grpDestination.addTab("WeTransfer", new JPanel());
-					
 					grpDestination.addTab("Mail", destinationMail);
 					grpDestination.addTab("Stream", destinationStream);
 					
@@ -21538,18 +21515,8 @@ public class Shutter {
 					grpDestination.setTabComponentAt(1, output2);
 					grpDestination.setTabComponentAt(2, output3);
 					grpDestination.setTabComponentAt(3, ftpTab);
-					
-					if (addWetransfer)
-					{		
-						grpDestination.setTabComponentAt(4, wetransferTab);			
-						grpDestination.setTabComponentAt(5, mailTab);
-						grpDestination.setTabComponentAt(6, streamTab);
-					}
-					else
-					{
-						grpDestination.setTabComponentAt(4, mailTab);
-						grpDestination.setTabComponentAt(5, streamTab);
-					}
+					grpDestination.setTabComponentAt(4, mailTab);
+					grpDestination.setTabComponentAt(5, streamTab);
 				}
 			}
 		} catch (Exception e) {}
@@ -21995,9 +21962,12 @@ public class Shutter {
 				components[i].setEnabled(true);
 		}
 				
-		components = grpImageAdjustement.getComponents();
-		for (int i = 0; i < components.length; i++) {
-			components[i].setEnabled(true);
+		if (inputDeviceIsRunning == false)
+		{
+			components = grpImageAdjustement.getComponents();
+			for (int i = 0; i < components.length; i++) {
+				components[i].setEnabled(true);
+			}
 		}
 		
 		components = grpCorrections.getComponents();
@@ -22294,7 +22264,6 @@ public class Shutter {
 		screenshotIsRunning = false;
 		
 		FunctionUtils.sendMail();
-		Wetransfer.sendToWeTransfer();
 		lastActions();
 	}
 
@@ -22307,12 +22276,11 @@ public class Shutter {
 			@SuppressWarnings("deprecation")
 			public void run() {
 				
-				do
+				do {
 					try {
 						Thread.sleep(1000);
-					} catch (InterruptedException e1) {
-					}
-				while (Wetransfer.isRunning || Ftp.isRunning || sendMailIsRunning);
+					} catch (InterruptedException e1) {}
+				} while (Ftp.isRunning || sendMailIsRunning);
 		
 				if (Settings.btnEndingAction.isSelected() && cancelled == false)
 				{	

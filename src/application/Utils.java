@@ -1907,12 +1907,7 @@ public class Utils extends Shutter {
 		File file = new File(dirTemp + "offline.png");
 		if (file.exists())
 			file.delete();
-		
-		//Delete preview file
-		file = VideoPlayer.preview;
-		if (file.exists())
-			file.delete();
-		
+				
 		//Stats_file
 		File stats_file = new File(Shutter.dirTemp + "stats_file");					
 		if (System.getProperty("os.name").contains("Windows"))
