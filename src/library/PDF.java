@@ -26,7 +26,6 @@ import java.io.File;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
 import application.Shutter;
 import application.VideoPlayer;
@@ -59,9 +58,7 @@ public static int pagesCount = 1;
 					
 					pagesCount = document.getNumberOfPages();	
 					
-					BufferedImage image = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.RGB);
-										
-					ImageIOUtil.writeImage(image, VideoPlayer.preview.toString(), 300);					
+					VideoPlayer.preview = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.RGB);				
 															
 					document.close();
 				

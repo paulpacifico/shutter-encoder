@@ -105,8 +105,11 @@ public static String modelsPath;
 							btnStart.setText(language.getProperty("btnPauseFunction"));
 						
 						while ((line = input.readLine()) != null)
-						{							
-						    Console.consoleNCNN.append(line + System.lineSeparator());	
+						{		
+							if (line.contains("%") == false)
+							{
+								Console.consoleNCNN.append(line + System.lineSeparator());	
+							}
 
 						    if ((line.contains("%") && caseCreateSequence.isSelected() == false
 				    		&& (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))

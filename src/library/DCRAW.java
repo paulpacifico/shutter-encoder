@@ -45,14 +45,19 @@
 package library;
 
 import java.awt.Cursor;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import javax.imageio.ImageIO;
 
 import application.Console;
 import application.RenderQueue;
 import application.Shutter;
+import application.VideoPlayer;
 
 public class DCRAW extends Shutter {
 	
@@ -125,7 +130,24 @@ public static Process process;
 						
 						Console.consoleFFMPEG.append(System.lineSeparator());
 						
-						while((line = input.readLine()) != null) {							
+						InputStream is = process.getInputStream();				
+						BufferedInputStream inputStream = new BufferedInputStream(is);
+						
+						if (cmd.contains("image2pipe"))
+						{
+							VideoPlayer.preview = ImageIO.read(inputStream);
+							VideoPlayer.frameVideo = VideoPlayer.preview;
+							
+							inputStream.close();
+
+							if (VideoPlayer.frameVideo != null)
+							{
+								VideoPlayer.player.repaint();
+							}
+						}
+						
+						while((line = input.readLine()) != null)
+						{							
 						    Console.consoleFFMPEG.append(line + System.lineSeparator());																		
 						}													
 						process.waitFor();

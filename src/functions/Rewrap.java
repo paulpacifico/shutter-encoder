@@ -30,7 +30,6 @@ import application.Shutter;
 import application.SubtitlesEmbed;
 import application.Utils;
 import application.VideoPlayer;
-import application.Wetransfer;
 import library.BMXTRANSWRAP;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -421,7 +420,6 @@ public class Rewrap extends Shutter {
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileName);
-		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
 		

@@ -20,8 +20,11 @@
 package functions;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import javax.imageio.ImageIO;
 
 import application.Ftp;
 import application.RecordInputDevice;
@@ -29,12 +32,11 @@ import application.Settings;
 import application.Shutter;
 import application.Utils;
 import application.VideoPlayer;
-import application.Wetransfer;
 import library.DCRAW;
 import library.FFMPEG;
 import library.FFPROBE;
-import library.PDF;
 import library.NCNN;
+import library.PDF;
 import settings.Colorimetry;
 import settings.Corrections;
 import settings.Filter;
@@ -206,7 +208,7 @@ public class Picture extends Shutter {
 						}
 						
 						//filterComplex
-						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "");		
+						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "", true);		
 						
 						//Hardware decoding
 						String gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
@@ -279,13 +281,26 @@ public class Picture extends Shutter {
 									fileOut = new File(labelOutput + "/" + fileName.replace(extension, "_" + n + container));
 									n++;
 								} while (fileOut.exists());
-								
-								FFMPEG.run(" -i " + '"' + VideoPlayer.preview + '"' + logo + cmd + '"' + fileOut + '"');
-								
-								do {
-									Thread.sleep(10);
-								}
-								while(FFMPEG.isRunning);
+
+								Process process;
+								if (System.getProperty("os.name").contains("Windows"))
+								{							
+									ProcessBuilder pbv = new ProcessBuilder('"' + VideoPlayer.PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
+									process = pbv.start();	
+								}	
+								else
+								{
+									ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", VideoPlayer.PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
+									process = pbv.start();	
+								}	
+																			
+								if (VideoPlayer.preview != null)
+								{
+							        OutputStream outputStream = process.getOutputStream();
+							        
+							        ImageIO.write(VideoPlayer.preview, "bmp", outputStream);		        
+							        outputStream.close();
+								}	
 							}							
 						}
 						else if (isRaw)
@@ -308,7 +323,16 @@ public class Picture extends Shutter {
 						else if (comboResolution.getSelectedItem().toString().contains("AI"))
 						{		
 							File upscaleFolder = new File(lblDestination1.getText() + "/upscale");		
-							upscaleFolder.mkdir();				
+							
+							if (upscaleFolder.exists())
+							{
+								for (File f : upscaleFolder.listFiles()) 
+								{
+									f.delete();
+								}
+							}
+							else
+								upscaleFolder.mkdir();				
 							
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
@@ -335,7 +359,7 @@ public class Picture extends Shutter {
 							upscale(fileOut, compression, flags);
 						}
 						else
-						{
+						{				
 							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
 						}
 	
@@ -560,7 +584,6 @@ public class Picture extends Shutter {
 		
 		//Sending processes
 		FunctionUtils.addFileForMail(fileName);
-		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
 		

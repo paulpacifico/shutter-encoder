@@ -23,7 +23,6 @@ import java.io.File;
 
 import application.Ftp;
 import application.Shutter;
-import application.Wetransfer;
 import library.FFMPEG;
 import settings.FunctionUtils;
 
@@ -152,7 +151,6 @@ public class Command extends Shutter {
 		
 		//Sending processes
 		FunctionUtils.addFileForMail(fileName);	
-		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		FunctionUtils.copyFile(fileOut);
 		

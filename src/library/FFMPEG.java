@@ -140,7 +140,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		error = false;	
 		firstInput = true;
 		
-	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd);
+		Console.consoleFFMPEG.append(System.lineSeparator());
+	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
 	    getAll = new StringBuilder();
 
@@ -212,11 +213,11 @@ public static StringBuilder errorLog = new StringBuilder();
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
-								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
+								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 							}
 							else
 							{
-								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG.toString() + '"' + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));
+								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG.toString() + '"' + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));
 								process = processFFMPEG.start();	
 							}					
 						}
@@ -232,7 +233,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -an -c:v bmp -f image2pipe pipe:-";
 							}
 							
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
 							process = processFFMPEG.start();
 						}	
 						
@@ -304,11 +305,6 @@ public static StringBuilder errorLog = new StringBuilder();
 								break;																			
 						}					
 						process.waitFor();	
-						
-						if (cmd.contains("hide_banner") == false)
-						{
-							Console.consoleFFMPEG.append(System.lineSeparator());		
-						}
 												
 						if (cancelled == false)
 							postAnalyse();						
@@ -613,7 +609,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 				
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");
+				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");
 				process = pbv.start();
 								
 				//AUDIO STREAM
@@ -640,7 +636,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
 				
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");	
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");	
 				process = processFFMPEG.start();
 			
 				//AUDIO STREAM
@@ -662,7 +658,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			}	
 			
-			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
+			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
 			player.getContentPane().setBackground(new Color(50,50,50));
@@ -948,7 +944,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
 						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 														
-						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
+						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hide_banner " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
 						process = processFFMPEG.start();
 					}
 					else
@@ -958,14 +954,12 @@ public static StringBuilder errorLog = new StringBuilder();
 						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
 
 						
-						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
+						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
 						process = processFFMPEG.start();
 					}		
 					
 					String line;
-					
-					Console.consoleFFMPEG.append(System.lineSeparator());
-						
+
 					if (cmd.contains("-hwaccels"))
 					{
 						InputStreamReader isr = new InputStreamReader(process.getInputStream());
@@ -982,7 +976,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				        	}
 				        }
 				        
-				        hwaccels.append(language.getProperty("aucun"));
+				        hwaccels.append(language.getProperty("aucun"));				        
 				    }
 					else
 					{
@@ -994,12 +988,12 @@ public static StringBuilder errorLog = new StringBuilder();
 														
 							//Errors
 							checkForErrors(line);																										
-						}			
+						}	
+						
+						Console.consoleFFMPEG.append(System.lineSeparator());
 					}					
-					process.waitFor();		
-					
-					Console.consoleFFMPEG.append(System.lineSeparator());
-				   					     																		
+					process.waitFor();	
+									     																		
 				} catch (IOException io) {//Bug Linux							
 				} catch (InterruptedException e) {
 					error = true;
@@ -1134,7 +1128,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		error = false;	
 		
-	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -threads " + Settings.txtThreads.getText() + cmd);
+	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
 		runProcess = new Thread(new Runnable()  {
 			

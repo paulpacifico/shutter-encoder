@@ -39,7 +39,6 @@ import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
-import application.Wetransfer;
 import library.BMXTRANSWRAP;
 import library.DVDAUTHOR;
 import library.FFMPEG;
@@ -701,7 +700,7 @@ public class VideoEncoders extends Shutter {
 								
 								default:
 									
-									filterComplex = FunctionUtils.setFilterComplex(filterComplex, audio);									
+									filterComplex = FunctionUtils.setFilterComplex(filterComplex, audio, false);									
 									break;
 							}
 						}	
@@ -864,7 +863,16 @@ public class VideoEncoders extends Shutter {
 						else if (comboResolution.getSelectedItem().toString().contains("AI"))
 						{		
 							File upscaleFolder = new File(lblDestination1.getText() + "/upscale");		
-							upscaleFolder.mkdir();				
+							
+							if (upscaleFolder.exists())
+							{
+								for (File f : upscaleFolder.listFiles()) 
+								{
+									f.delete();
+								}
+							}
+							else
+								upscaleFolder.mkdir();					
 							
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, "%06d.png"));								
@@ -1090,7 +1098,7 @@ public class VideoEncoders extends Shutter {
 		try {
 			
 			//Crop need to be before scaling
-			if (Shutter.caseEnableCrop.isSelected())
+			if (Shutter.caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI"))
 			{
 				FFMPEG.isGPUCompatible = false;
 				return false;
@@ -1815,12 +1823,7 @@ public class VideoEncoders extends Shutter {
 			return true;
 
 		//Sending processes
-		FunctionUtils.addFileForMail(fileName);
-		if (caseAS10.isSelected())
-			Wetransfer.addFile(new File(output + "/" + fileName.replace(fileName.substring(fileName.lastIndexOf(".")), "_AS11" + comboFilter.getSelectedItem().toString())));
-		else
-			Wetransfer.addFile(fileOut);
-		
+		FunctionUtils.addFileForMail(fileName);		
 		Ftp.sendToFtp(fileOut);
 		FunctionUtils.copyFile(fileOut);
 		

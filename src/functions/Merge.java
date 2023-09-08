@@ -30,7 +30,6 @@ import application.Ftp;
 import application.Settings;
 import application.Shutter;
 import application.Utils;
-import application.Wetransfer;
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
@@ -256,7 +255,6 @@ public class Merge extends Shutter {
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileOut.toString());
-		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
 		

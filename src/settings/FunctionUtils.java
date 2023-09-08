@@ -863,12 +863,13 @@ public class FunctionUtils extends Shutter {
 		String metadata = " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 				
 		if (casePreserveMetadata.isSelected())
-		{
-			if (FFPROBE.creationTime != "") metadata = " -metadata creation_time=" + '"' + FFPROBE.creationTime + '"';
+		{			
+			metadata = " -map_metadata 0 -map_metadata:s:v 0:s:v";
 			
-			metadata += " -map_metadata 0 -map_metadata:s:v 0:s:v";
-			
-			if (FFPROBE.hasAudio) metadata += " -map_metadata:s:a 0:s:a";
+			if (FFPROBE.hasAudio)
+			{
+				metadata += " -map_metadata:s:a 0:s:a";
+			}
 			
 			metadata += " -movflags use_metadata_tags";
 		}
@@ -917,10 +918,10 @@ public class FunctionUtils extends Shutter {
 		return subsMapping;
 	}
 	
-	public static String setFilterComplex(String filterComplex, String audio) {
+	public static String setFilterComplex(String filterComplex, String audio, boolean picture) {
 
 		//No audio
-		if (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+		if (picture)
 		{
 			if (filterComplex != "")   	   
 	        	filterComplex = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"';

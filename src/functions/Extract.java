@@ -25,7 +25,6 @@ import application.Ftp;
 import application.Shutter;
 import application.Utils;
 import application.VideoPlayer;
-import application.Wetransfer;
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
@@ -263,7 +262,6 @@ public class Extract extends Shutter {
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileName);
-		Wetransfer.addFile(fileOut);
 		Ftp.sendToFtp(fileOut);
 		Utils.copyFile(fileOut);
 		
