@@ -105,7 +105,7 @@ public class Image extends Shutter {
 	
 	public static String setRotate(String filterComplex) {
 		
-		if (grpResolution.isVisible() || grpImageSequence.isVisible())
+		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")))
 		{
 			String rotate = "";
 			if (caseRotate.isSelected()) 

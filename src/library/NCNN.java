@@ -132,9 +132,11 @@ public static String modelsPath;
 								&& comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false
 								&& caseDisplay.isSelected())
 								{
-									String s[] = line.split(" ->");
-									VideoPlayer.frameVideo = ImageIO.read(new File(s[0].toString()));
-									VideoPlayer.player.repaint();
+									try {
+										String s[] = line.split(" ->");
+										VideoPlayer.frameVideo = ImageIO.read(new File(s[0].toString()));
+										VideoPlayer.player.repaint();
+									} catch (Exception e) {}
 								}
 						    }
 						}													

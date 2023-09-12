@@ -86,7 +86,10 @@ public class Rewrap extends Shutter {
 							continue;
 						
 						lblCurrentEncoding.setText(fileName);
-										
+								
+						//Rotate
+						String rotate = setRotate();
+						
 						//Metadatas
 			    		String metadatas = FunctionUtils.setMetadatas();
 						
@@ -125,7 +128,7 @@ public class Rewrap extends Shutter {
 								frameRate = " -r " + FFPROBE.currentFPS;
 																	
 						}
-						
+												
 						//Subtitles
 						subtitles = setSubtitles();
 						
@@ -214,7 +217,7 @@ public class Rewrap extends Shutter {
 														
 							//Command
 							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
-							FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
+							FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 							
 							do
 							{
@@ -225,7 +228,7 @@ public class Rewrap extends Shutter {
 							if (FFMPEG.error)
 							{
 								cmd = " -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
-								FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
+								FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 								
 								do
 								{
@@ -256,6 +259,16 @@ public class Rewrap extends Shutter {
 		
     }
 
+	private static String setRotate() {
+		
+		if (caseRotate.isSelected())
+		{
+			return " -display_rotation " + comboRotate.getSelectedItem().toString();
+		}
+		
+		return "";
+	}
+	
 	private static String setAudio() {
 
 		if (caseChangeAudioCodec.isSelected())

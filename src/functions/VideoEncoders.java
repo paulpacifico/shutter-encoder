@@ -1794,15 +1794,9 @@ public class VideoEncoders extends Shutter {
 }
 	
 	private static void upscale(File fileOut) throws InterruptedException {
-		
-		int totalFiles = 0;		
-		for (int i = 0 ; i < fileOut.getParentFile().listFiles().length ; i++)
-		{
-			totalFiles ++;
-		}	
-		
+				
 		progressBar1.setValue(0);
-		progressBar1.setMaximum(totalFiles);
+		progressBar1.setMaximum(fileOut.getParentFile().listFiles().length);
 		
 		String model = "realesr-general-wdn-x4v3";							
 		if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
