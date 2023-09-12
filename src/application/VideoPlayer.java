@@ -539,7 +539,7 @@ public class VideoPlayer {
 				playerVideo = pbv.start();	
 					
 				//AUDIO STREAM
-				if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)					       
+				if ((casePlaySound.isSelected() && inputTime > 0 && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)					       
 				{		
 					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + setAudioCommand(inputTime, false));	
 					playerAudio = pba.start();
@@ -552,7 +552,7 @@ public class VideoPlayer {
 				playerVideo = pbv.start();	
 								
 				//AUDIO STREAM
-				if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)			       
+				if ((casePlaySound.isSelected() && inputTime > 0 && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)			       
 				{
 					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setAudioCommand(inputTime, false));	
 					playerAudio = pba.start();
@@ -562,7 +562,7 @@ public class VideoPlayer {
 			InputStream video = playerVideo.getInputStream();				
 			videoInputStream = new BufferedInputStream(video);
 
-			if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
+			if ((casePlaySound.isSelected() && inputTime > 0 && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
 			{				
 				audio = playerAudio.getInputStream();							
 				audioInputStream = AudioSystem.getAudioInputStream(audio);		    
@@ -603,7 +603,7 @@ public class VideoPlayer {
 							try {	
 								
 								//Audio volume	
-								if (casePlaySound.isSelected() || (sliderChange == false && frameControl == false))					       
+								if ((casePlaySound.isSelected() && inputTime > 0) || (sliderChange == false && frameControl == false))					       
 								{								
 									closeAudioStream = true;
 									double gain = (double) sliderVolume.getValue() / 100;   
@@ -840,7 +840,7 @@ public class VideoPlayer {
 					
 					if (t < 0)
 						t = 0;
-
+					
 					//Buffer is not used on NDF timecode, too many issues
 					boolean useBuffer = false;
 					if (preview != null || Shutter.caseAddSubtitles.isSelected())
@@ -947,8 +947,8 @@ public class VideoPlayer {
 								}
 							}
 						}
-												
-						writeCurrentSubs(t);
+						
+						writeCurrentSubs(t, false);
 						
 						playerPlayVideo = false;
 						
@@ -1034,6 +1034,8 @@ public class VideoPlayer {
 					frameVideo = null;
 					
 					playerPlayVideo = false;
+					
+					writeCurrentSubs(0, false);
 					
 					if (playerThread != null)
 					{						
@@ -2272,7 +2274,7 @@ public class VideoPlayer {
 				}
 				else if (btnPlay.getName().equals("play"))
 				{									
-					if (bufferedFrames.size() > 0 || preview != null)
+					if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected())
 					{				
 						//Clear the buffer
 						bufferedFrames.clear();						
@@ -2304,7 +2306,7 @@ public class VideoPlayer {
 				{				
 					playerCurrentFrame = 0;
 					if (playerVideo != null)
-					{
+					{						
 						playerStop();						
 						do {
 							try {
@@ -2312,7 +2314,7 @@ public class VideoPlayer {
 							} catch (InterruptedException e1) {};
 						} while (playerVideo.isAlive());
 												
-						slider.setValue(0);
+						slider.setValue(0);						
 					}
 					
 					resizeAll();
@@ -4162,7 +4164,7 @@ public class VideoPlayer {
 		loadImage(false);
 	}
 	
-	public static void writeCurrentSubs(float inputTime) {	
+	public static void writeCurrentSubs(float inputTime, boolean firstSub) {	
 				
 		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{
@@ -4197,7 +4199,7 @@ public class VideoPlayer {
 	    				int inF = Integer.parseInt(inTimecode[3]);
 	    				float subsInTime = (inH + inM + inS) * FFPROBE.currentFPS + inF / inputFramerateMS;
 	    				
-	    				if (subNumber == 1)
+	    				if (subNumber == 1 && firstSub)
 	            		{
 	    					sliderChange = true;
 	    					slider.setValue((int) subsInTime);
@@ -4349,11 +4351,11 @@ public class VideoPlayer {
 			});
 			waitProcess.start();
 		}
-				
+		
 		if ((forceRefresh || runProcess.isAlive() == false) && videoPath != null && Shutter.liste.getSize() >  0 && Shutter.doNotLoadImage == false)
-		{	
+		{				
 			runProcess = new Thread (new Runnable() {
-			
+
 			@Override
 			public void run() {
 								
@@ -4503,7 +4505,9 @@ public class VideoPlayer {
 									generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v bmp -f image2pipe pipe:-");
 								}
 								
-								preview.delete();
+								do {
+									preview.delete();
+								} while (preview.exists());
 							}		
 							else									
 							{		
@@ -4513,7 +4517,7 @@ public class VideoPlayer {
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
 						}	
 						
-						if (Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && preview != null)
+						if ((Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && preview != null) || Shutter.caseAddSubtitles.isSelected())
 						{						
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
@@ -4549,8 +4553,8 @@ public class VideoPlayer {
 
 	private static void generatePreview(String cmd) {
 		
-		try {
-			
+		try {		
+						
 			Process process;
 			
 			if (System.getProperty("os.name").contains("Windows"))
@@ -4575,7 +4579,7 @@ public class VideoPlayer {
 	        InputStream is = process.getInputStream();				
 			BufferedInputStream inputStream = new BufferedInputStream(is);
 
-			if (preview == null)
+			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 			{
 				VideoPlayer.preview = ImageIO.read(inputStream);
 				frameVideo = preview;
@@ -4655,7 +4659,7 @@ public class VideoPlayer {
 		//Scaling
 		int width = player.getWidth();
 		int height = player.getHeight();
-						
+
 		//Crop & Pad
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
 		{			
@@ -4677,7 +4681,7 @@ public class VideoPlayer {
 			width = (width - (width % 4));
 			height = (height - (height % 4));
 		}
-		
+				
 		String algorithm = "bilinear";
 		if (mouseIsPressed)
 		{

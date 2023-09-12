@@ -1166,12 +1166,12 @@ public class Shutter {
 
 				@Override
 				public void run() {
-					
+
 					do {
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
-					} while (liste.getSize() == 0);
+					} while (liste.getSize() == 0 || FFMPEG.isRunning || FFPROBE.isRunning);
 					
 					Shutter.btnReset.doClick();
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -1637,7 +1637,7 @@ public class Shutter {
 							
 		grpChooseFiles = new JPanel();
 		grpChooseFiles.setLayout(null);
-		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 327);
+		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 331);
 		grpChooseFiles.setBackground(new Color(35,35,35));
 		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
@@ -1647,7 +1647,7 @@ public class Shutter {
 		fileList.setBackground(new Color(50,50,50));
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
-		fileList.setBounds(10, 50, 292, frame.getHeight() - 387);
+		fileList.setBounds(10, 50, 292, frame.getHeight() - 391);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 				
 		addToList.setText(language.getProperty("dropFilesHere"));
@@ -2648,7 +2648,7 @@ public class Shutter {
 
 		grpChooseFunction = new JPanel();
 		grpChooseFunction.setLayout(null);
-		grpChooseFunction.setBounds(10, grpChooseFiles.getY() + grpChooseFiles.getHeight() + 6, 312, 76);
+		grpChooseFunction.setBounds(10, grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4, 312, 76);
 		grpChooseFunction.setBackground(new Color(35,35,35));
 		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
@@ -3690,7 +3690,7 @@ public class Shutter {
 	private void grpDestination() {
 		
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);	
-		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 6, 308, 76);
+		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 76);
 		grpDestination.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true)));		
 		grpDestination.setFont(new Font(montserratFont, Font.PLAIN, 11));	
 		frame.getContentPane().add(grpDestination);		
@@ -10105,8 +10105,6 @@ public class Shutter {
 										{
 											c.setEnabled(true);
 										}
-										
-										VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
 									}
 									else
 									{											
@@ -10234,7 +10232,7 @@ public class Shutter {
 				
 				try {
 	
-					VideoPlayer.writeCurrentSubs(VideoPlayer.playerCurrentFrame);
+					VideoPlayer.writeCurrentSubs(VideoPlayer.playerCurrentFrame, true);
 					VideoPlayer.loadImage(true);
 	
 				} catch (Exception e) {
@@ -10754,7 +10752,8 @@ public class Shutter {
 					
 					lblSubsOutline.setText(Shutter.language.getProperty("lblSize"));
 				}
-				
+					
+				VideoPlayer.writeCurrentSubs(VideoPlayer.playerCurrentFrame, false);
 				VideoPlayer.loadImage(true);					
 			}
 			
@@ -18050,12 +18049,12 @@ public class Shutter {
 		help.setLocation(reduce.getLocation().x - 20, 4);
 		newInstance.setLocation(help.getLocation().x - 20, 4);
   		
-		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 327);
-		fileList.setSize(fileList.getWidth(), frame.getHeight() - 387);
+		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 331);
+		fileList.setSize(fileList.getWidth(), frame.getHeight() - 391);
 		addToList.setSize(fileList.getSize());					
 		scrollBar.setSize(scrollBar.getWidth(), fileList.getHeight());
-		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 6);
-		grpDestination.setLocation(grpDestination.getX(), grpChooseFunction.getY() + grpChooseFunction.getHeight() + 6);
+		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);
+		grpDestination.setLocation(grpDestination.getX(), grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10);
 		grpProgression.setLocation(grpProgression.getX(), grpDestination.getY() + grpDestination.getHeight() + 6);
         
         //On récupère le groupe qui est le plus haut
@@ -18356,7 +18355,11 @@ public class Shutter {
 										caseForcerDAR.setLocation(7, casePreserveMetadata.getLocation().y + 17);
 										grpAdvanced.add(comboDAR);							
 										comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4, caseForcerDAR.getLocation().y + 3);
-										caseCreateOPATOM.setLocation(7, caseForcerDAR.getLocation().y + 17);
+										grpAdvanced.add(caseRotate);
+										caseRotate.setLocation(7, caseForcerDAR.getLocation().y + 17);								
+										grpAdvanced.add(comboRotate);
+										comboRotate.setLocation(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3);
+										caseCreateOPATOM.setLocation(7, caseRotate.getLocation().y + 17);
 										caseCreateOPATOM.setEnabled(true);
 										grpAdvanced.add(caseCreateOPATOM);						
 										lblOPATOM.setLocation(caseCreateOPATOM.getLocation().x + caseCreateOPATOM.getWidth() + 4, caseCreateOPATOM.getLocation().y + 3);
@@ -18742,7 +18745,9 @@ public class Shutter {
 								grpResolution.add(lblPad);
 								grpResolution.add(lblScreenshot);
 								grpResolution.add(caseRotate);
+								caseRotate.setLocation(7, 47);								
 								grpResolution.add(comboRotate);
+								comboRotate.setLocation(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3);
 								grpResolution.add(caseMiror);
 								grpResolution.add(caseForcerDAR);
 								caseForcerDAR.setLocation(7, caseRotate.getLocation().y + caseRotate.getHeight());
@@ -19005,7 +19010,9 @@ public class Shutter {
 								grpResolution.add(lblPad);
 								grpResolution.add(lblScreenshot);
 								grpResolution.add(caseRotate);
+								caseRotate.setLocation(7, 47);								
 								grpResolution.add(comboRotate);
+								comboRotate.setLocation(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3);
 								grpResolution.add(caseMiror);
 								grpResolution.add(caseForcerDAR);
 								caseForcerDAR.setLocation(7, caseRotate.getLocation().y + caseRotate.getHeight());
@@ -19466,7 +19473,9 @@ public class Shutter {
 								grpResolution.add(lblPad);
 								grpResolution.add(lblScreenshot);
 								grpResolution.add(caseRotate);
+								caseRotate.setLocation(7, 47);								
 								grpResolution.add(comboRotate);
+								comboRotate.setLocation(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3);
 								grpResolution.add(caseMiror);
 								grpResolution.add(caseForcerDAR);
 								caseForcerDAR.setLocation(7, caseRotate.getLocation().y + caseRotate.getHeight());
@@ -19848,7 +19857,9 @@ public class Shutter {
 								grpResolution.add(lblPad);
 								grpResolution.add(lblScreenshot);
 								grpResolution.add(caseRotate);
+								caseRotate.setLocation(7, 47);								
 								grpResolution.add(comboRotate);
+								comboRotate.setLocation(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3);
 								grpResolution.add(caseMiror);
 								grpResolution.add(caseForcerDAR);
 								caseForcerDAR.setLocation(7, caseRotate.getLocation().y + caseRotate.getHeight());
@@ -20320,7 +20331,9 @@ public class Shutter {
 									grpResolution.add(lblPad);
 									grpResolution.add(lblScreenshot);
 									grpResolution.add(caseRotate);
+									caseRotate.setLocation(7, 47);								
 									grpResolution.add(comboRotate);
+									comboRotate.setLocation(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3);
 									grpResolution.add(caseMiror);
 									grpResolution.add(caseForcerDAR);
 									caseForcerDAR.setLocation(7, caseRotate.getLocation().y + caseRotate.getHeight());
@@ -20518,7 +20531,9 @@ public class Shutter {
 								grpResolution.add(lblImageSize);
 								grpResolution.add(comboResolution);
 								grpResolution.add(caseRotate);
+								caseRotate.setLocation(7, 47);								
 								grpResolution.add(comboRotate);
+								comboRotate.setLocation(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3);
 								grpResolution.add(caseMiror);
 								grpResolution.add(iconTVInterpret);
 								grpResolution.add(lblScreenshot);
