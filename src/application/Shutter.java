@@ -6854,16 +6854,16 @@ public class Shutter {
 							
 							String cmd;
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-								cmd =  " -an -t 1 -vf cropdetect -f null -";					
+								cmd =  " -an -vframes 1 -vf cropdetect -f null -";					
 							else
-								cmd =  " -an -t 1 -vf cropdetect -f null -" + '"';	
+								cmd =  " -an -vframes 1 -vf cropdetect -f null -" + '"';	
 							
 							FFMPEG.cropdetect = "";
 							
 							//Input point
 							String inputPoint = " -ss " + (float) (VideoPlayer.playerCurrentFrame) * VideoPlayer.inputFramerateMS + "ms";
 							if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
-								inputPoint = "";
+								inputPoint = " -loop 1";
 							
 							screenshotIsRunning = true; //Workaround to not change the frame size
 							
@@ -10042,7 +10042,9 @@ public class Shutter {
 							if (input.equals(".srt") || input.equals(".vtt") || input.equals(".ssa") || input.equals(".ass") || input.equals(".scc"))
 							{
 								if (System.getProperty("os.name").contains("Windows"))
+								{
 									Shutter.subtitlesFile = new File(dialog.getFile());
+								}
 								else
 									Shutter.subtitlesFile = new File(Shutter.dirTemp + dialog.getFile());
 								
@@ -10072,23 +10074,20 @@ public class Shutter {
 																
 										//Conversion du .vtt en .srt
 										if (input.equals(".vtt"))
-										{	
-											Shutter.subtitlesFile = new File(subtitlesFilePath.toString().replace(".vtt", ".srt"));
+										{
+											subtitlesFilePath = new File(Shutter.subtitlesFile.toString().replace(".vtt", ".srt"));
 											
 											FFMPEG.run(" -i " + '"' + dialog.getDirectory() + dialog.getFile().toString() + '"' + " -y " + '"' + subtitlesFilePath.toString().replace(".srt", "_vtt.srt") + '"');
 											
-											//Attente de la fin de FFMPEG
-											do
-											{
+											do {
 												try {
 													Thread.sleep(10);
 												} catch (InterruptedException e) {}
-											}
-											while(FFMPEG.runProcess.isAlive());
+											} while(FFMPEG.runProcess.isAlive());
 											
 											Shutter.enableAll();
 											
-											subtitlesFilePath = new File(subtitlesFilePath.toString().replace(".srt", "_vtt.srt"));
+											Shutter.subtitlesFile = new File(subtitlesFilePath.toString().replace(".srt", "_vtt.srt"));
 										}
 										else											
 											subtitlesFilePath = new File(dialog.getDirectory() + dialog.getFile().toString());			
@@ -11744,6 +11743,8 @@ public class Shutter {
 				{
 					comboGamma.setEnabled(false);
 				}
+				
+				//VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
 			}
 			
 		});
@@ -11757,6 +11758,16 @@ public class Shutter {
 		comboGamma.setMaximumRowCount(20);
 		comboGamma.setBounds(grpColorimetry.getWidth() - 130 - 7, caseGamma.getLocation().y + 4, 42, 16);
 		grpColorimetry.add(comboGamma);
+		
+		comboGamma.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				//VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+			}
+			
+		});
 		
 		caseLevels = new JCheckBox(language.getProperty("caseLevels"));
 		caseLevels.setName("caseLevels");

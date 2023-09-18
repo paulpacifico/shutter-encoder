@@ -4517,7 +4517,7 @@ public class VideoPlayer {
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
 						}	
 						
-						if ((Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && preview != null) || Shutter.caseAddSubtitles.isSelected())
+						if (preview != null || Shutter.caseAddSubtitles.isSelected())
 						{						
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
