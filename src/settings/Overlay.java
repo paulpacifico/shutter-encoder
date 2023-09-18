@@ -309,7 +309,7 @@ public class Overlay extends Shutter {
 					{
 						ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
 					}
-					else //ratio like 4:1 etc...
+					else //ratio like 1:4 etc...
 					{
 						ow = Integer.parseInt(s[1]);
 					}
@@ -320,7 +320,7 @@ public class Overlay extends Shutter {
 	        		imageRatio = (float) FFPROBE.imageWidth / ow;
 				}
 			}
-
+			
 	      	if (Shutter.caseShowFileName.isSelected())
 	      	{
 	      		if (filterComplex != "") filterComplex += ",";

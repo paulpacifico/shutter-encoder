@@ -204,7 +204,7 @@ public class Picture extends Shutter {
 						{
 							if (filterComplex != "") filterComplex += ",";
 							
-							filterComplex += "split[a][b];[a]palettegen[p];[b][p]paletteuse,fps=" + comboImageOption.getSelectedItem().toString().replace(",", ".").replace(" " + Shutter.language.getProperty("fps"), "");
+							filterComplex += "split[a][b];[a]palettegen[p];[b][p]paletteuse";
 						}
 						
 						//filterComplex
@@ -478,7 +478,7 @@ public class Picture extends Shutter {
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".gif"))
 		{
-			return "";
+			return " -r " + comboImageOption.getSelectedItem().toString().replace(",", ".").replace(" " + Shutter.language.getProperty("fps"), "");
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".apng"))
 		{
