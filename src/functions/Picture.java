@@ -484,8 +484,14 @@ public class Picture extends Shutter {
 		{
 			return " -r " + comboImageOption.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".");
 		}
+		else if (comboFilter.getSelectedItem().toString().equals(".webp"))
+		{
+			return "";
+		}
 		else
+		{
 			return " -vframes 1";
+		}
 	}
 	
 	private static void upscale(File fileOut, String compression, String flags) throws InterruptedException {

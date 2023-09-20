@@ -34,8 +34,8 @@ public class InputAndOutput extends Shutter {
 		
 		//NTSC timecode
 		timeIn = Timecode.getNonDropFrameTC(timeIn);
-					
-		if (timeIn > 0)
+		
+		if (timeIn > 0.0f)
         {		        
 			inPoint = " -ss " + (long) (timeIn * VideoPlayer.inputFramerateMS) + "ms";
 	    }
@@ -53,6 +53,8 @@ public class InputAndOutput extends Shutter {
 	    		outPoint = " -vframes " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
         	}
         	else if (FFPROBE.audioOnly || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false) 
+			|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
+			|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
         	|| comboFonctions.getSelectedItem().toString().equals("VP8")
         	|| comboFonctions.getSelectedItem().toString().equals("VP9")
         	|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
