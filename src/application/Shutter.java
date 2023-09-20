@@ -181,7 +181,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.4";
+	public static String actualVersion = "17.5";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -6854,9 +6854,9 @@ public class Shutter {
 							
 							String cmd;
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-								cmd =  " -an -vframes 1 -vf cropdetect -f null -";					
+								cmd =  " -an -vframes 5 -vf cropdetect -f null -";					
 							else
-								cmd =  " -an -vframes 1 -vf cropdetect -f null -" + '"';	
+								cmd =  " -an -vframes 5 -vf cropdetect -f null -" + '"';	
 							
 							FFMPEG.cropdetect = "";
 							
@@ -17959,31 +17959,32 @@ public class Shutter {
 		int screenX = (int) allScreens[screenIndex].getDefaultConfiguration().getBounds().getX();
 		
 		int height = 0;
-						
+		int screenOffset = allScreens[screenIndex].getDefaultConfiguration().getBounds().y;
+		
 		if ((frame.getHeight() < screenHeight - taskBarHeight || frame.getWidth() < screenWidth) && frame.getWidth() > 332 && frame.getWidth() != 654 && frame.getWidth() != (1350 - 312))
 		{		
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(screenWidth, height);
-			frame.setLocation(screenX, 0);	        		
+			frame.setLocation(screenX, screenOffset);	        		
 		}
 		else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth))
 		{		
 			height = 662 - frame.getHeight();
 			resizeAll(1350, height);
-			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2 + screenOffset);
 		}
 		else if (frame.getHeight() >= screenHeight - taskBarHeight)
 		{
 			height = 662 - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
-			frame.setLocation(frame.getX(), dim.height/2-frame.getSize().height/2);	
+			frame.setLocation(frame.getX(), dim.height/2-frame.getSize().height/2 + screenOffset);	
 		}
 		else
 		{
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
-			frame.setLocation(frame.getX(), 0);	
-		}		
+			frame.setLocation(frame.getX(), screenOffset);	
+		}				
 		
 		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
 		{

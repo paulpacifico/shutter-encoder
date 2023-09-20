@@ -1368,9 +1368,12 @@ public class Utils extends Shutter {
 													{
 														//Value
 														((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																							
-														//State
-														((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+																
+														if (p.getName().equals("comboAccel") == false && p.getName().equals("comboGPUDecoding") == false && p.getName().equals("comboGPUFilter") == false)
+														{
+															//State
+															((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+														}														
 														
 														//Visible
 														((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
