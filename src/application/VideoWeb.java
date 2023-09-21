@@ -399,9 +399,7 @@ public class VideoWeb {
 				else
 				{
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					
-					//Récupération des formats disponibles
-					
+										
 					YOUTUBEDL.getAvailableFormats(textURL.getText(), options());
 					
 					do {
