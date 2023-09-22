@@ -6,6 +6,5 @@ yt-dlp: github.com/yt-dlp/yt-dlp
 dvdauthor: dvdauthor.sourceforge.net
 tsMuxeR: github.com/justdan96/tsMuxer
 mediainfo: mediaarea.net/fr/MediaInfo
-WeTransfer: developers.wetransfer.com
 bmxtranswrap: sourceforge.net/p/bmxlib/home/Home
 ncnn: https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan
