@@ -397,10 +397,16 @@ public class Update {
 			
 			public void run() {			
 				
-				File appPath = new File(System.getProperty("user.home") + "/Downloads/" + newVersion);
-				if (new File(System.getProperty("user.home") + "/Downloads").exists() == false)
+				String userFolder = System.getProperty("user.home");
+				if (System.getProperty("os.name").contains("Windows"))
+            	{
+					userFolder = System.getenv("USERPROFILE");
+            	}				
+				
+				File appPath = new File(userFolder + "/Downloads/" + newVersion);
+				if (new File(userFolder + "/Downloads").exists() == false)
 				{
-					appPath = new File(System.getProperty("user.home") + "/Desktop/" + newVersion);
+					appPath = new File(userFolder + "/Desktop/" + newVersion);
 				}
 				
 				//Download
@@ -434,10 +440,9 @@ public class Update {
 					
 					frame.dispose();
 				}
-	 
-				}
-			});
-			download.start();
+			}
+		});
+		download.start();
 
 	}
 	

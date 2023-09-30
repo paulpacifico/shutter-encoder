@@ -80,7 +80,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -215,6 +214,8 @@ public class Shutter {
 	public static boolean saveCode = false;
 	protected static boolean copyFileIsRunning = false;
 	protected static boolean subtitlesBurn = true;
+    public static boolean autoBurn = false;
+    public static boolean autoEmbed = false;
 	public static StringBuilder errorList = new StringBuilder();
 	public static NumberFormat formatter = new DecimalFormat("00");
 	public static NumberFormat formatterToMs = new DecimalFormat("000");
@@ -779,7 +780,7 @@ public class Shutter {
 	}
 
 	public Shutter() {
-		
+				
 		frame.getContentPane().setBackground(new Color(35,35,35));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
@@ -1005,9 +1006,9 @@ public class Shutter {
 									
 									Utils.killProcesses();
 																		
-									if (VideoPlayer.waveform.exists())
+									if (VideoPlayer.waveform != null)
 									{
-										VideoPlayer.waveform.delete();
+										VideoPlayer.waveform = null;
 									}
 					            }
 					        });
@@ -1272,9 +1273,9 @@ public class Shutter {
 
 					Utils.killProcesses();
 										
-					if (VideoPlayer.waveform.exists())
+					if (VideoPlayer.waveform != null)
 					{
-						VideoPlayer.waveform.delete();
+						VideoPlayer.waveform = null;
 					}				
 					
 					System.exit(0);
@@ -1706,9 +1707,9 @@ public class Shutter {
 					textF.setText("00");
 					
 					// Lecteur
-					if (VideoPlayer.waveform.exists())
+					if (VideoPlayer.waveform != null)
 					{
-						VideoPlayer.waveform.delete();
+						VideoPlayer.waveform = null;
 						VideoPlayer.waveformIcon.setIcon(null);
 						VideoPlayer.waveformIcon.repaint();
 					}
@@ -6852,53 +6853,7 @@ public class Shutter {
 							
 							File file = new File(VideoPlayer.videoPath);
 							
-							String cmd;
-							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-								cmd =  " -an -vframes 5 -vf cropdetect -f null -";					
-							else
-								cmd =  " -an -vframes 5 -vf cropdetect -f null -" + '"';	
-							
-							FFMPEG.cropdetect = "";
-							
-							//Input point
-							String inputPoint = " -ss " + (float) (VideoPlayer.playerCurrentFrame) * VideoPlayer.inputFramerateMS + "ms";
-							if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
-								inputPoint = " -loop 1";
-							
-							screenshotIsRunning = true; //Workaround to not change the frame size
-							
-							FFMPEG.run(inputPoint + " -i " + '"' + file + '"' + cmd);	
-							
-							try {
-								do {
-									Thread.sleep(100);
-								} while(FFMPEG.isRunning);
-							} catch (Exception er) {}	
-							
-							screenshotIsRunning = false;
-	
-							if (FFMPEG.cropdetect != "")
-							{
-								String c[] = FFMPEG.cropdetect.split(":");
-								
-								textCropPosX.setText(c[2]);						
-								textCropWidth.setText(c[0]);
-								Shutter.textCropHeight.setText(c[1]);
-								textCropPosY.setText(c[3]);
-								
-								int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);	
-								int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
-								int width = (int) Math.ceil((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
-								int height = (int) Math.floor((float) (Integer.valueOf(Shutter.textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
-								
-								if (width > VideoPlayer.player.getWidth())
-									width = VideoPlayer.player.getWidth();
-								
-								if (height > VideoPlayer.player.getHeight())
-									height = VideoPlayer.player.getHeight();
-								
-								selection.setBounds(x, y, width, height);
-							}	
+							FFMPEG.setCropDetect(file);
 							
 							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						}						
@@ -9878,7 +9833,7 @@ public class Shutter {
 							
 							Shutter.subtitlesBurn = true;		
 							subtitlesFilePath = SubtitlesTimeline.srt;
-							writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);	
+							VideoPlayer.writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);	
 													
 							subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
 						    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
@@ -9990,8 +9945,7 @@ public class Shutter {
 						}
 					}
 					else
-					{
-					
+					{					
 						File video = new File(fileList.getSelectedValue().toString());
 						String ext = video.toString().substring(video.toString().lastIndexOf("."));
 						
@@ -10050,22 +10004,29 @@ public class Shutter {
 								
 								if (input.equals(".srt") || input.equals(".vtt"))
 								{
-									Object[] options = {Shutter.language.getProperty("subtitlesBurn"), Shutter.language.getProperty("subtitlesEmbed")};
-									
-									int sub = 0;
-									if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")))
-										sub = 1;
-									
-									if (Shutter.comboFilter.getSelectedItem().toString().equals(".mxf") == false
-									&& Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC") == false
-									&& Shutter.caseCreateOPATOM.isSelected() == false
-									&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) == false
-									&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) == false)
+									int sub = 0;									
+									if (autoBurn == false && autoEmbed == false)
 									{
-										sub = JOptionPane.showOptionDialog(frame, Shutter.language.getProperty("chooseSubsIntegration"), Shutter.language.getProperty("caseAddSubtitles"),
-												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-											    options,
-											    options[0]);
+										Object[] options = {Shutter.language.getProperty("subtitlesBurn"), Shutter.language.getProperty("subtitlesEmbed")};
+										
+										if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")))
+											sub = 1;
+										
+										if (Shutter.comboFilter.getSelectedItem().toString().equals(".mxf") == false
+										&& Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC") == false
+										&& Shutter.caseCreateOPATOM.isSelected() == false
+										&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) == false
+										&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) == false)
+										{
+											sub = JOptionPane.showOptionDialog(frame, Shutter.language.getProperty("chooseSubsIntegration"), Shutter.language.getProperty("caseAddSubtitles"),
+													JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												    options,
+												    options[0]);
+										}
+									}
+									else if (autoEmbed)
+									{
+										sub = 1;
 									}
 										
 									if (sub == 0) //Burn
@@ -10092,7 +10053,7 @@ public class Shutter {
 										else											
 											subtitlesFilePath = new File(dialog.getDirectory() + dialog.getFile().toString());			
 										
-										writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);		
+										VideoPlayer.writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);		
 										
 										subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
 									    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
@@ -10143,15 +10104,21 @@ public class Shutter {
 									Object[] options = {Shutter.language.getProperty("subtitlesBurn"), Shutter.language.getProperty("subtitlesEmbed")};
 									
 									int sub = 0;
-									
-									if (Shutter.comboFilter.getSelectedItem().toString().equals(".mxf") == false
-									&& Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC") == false
-									&& Shutter.caseCreateOPATOM.isSelected() == false)
+									if (autoBurn == false && autoEmbed == false)
 									{
-										sub = JOptionPane.showOptionDialog(frame, Shutter.language.getProperty("chooseSubsIntegration"), Shutter.language.getProperty("caseAddSubtitles"),
-												JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-											    options,
-											    options[0]);
+										if (Shutter.comboFilter.getSelectedItem().toString().equals(".mxf") == false
+										&& Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC") == false
+										&& Shutter.caseCreateOPATOM.isSelected() == false)
+										{
+											sub = JOptionPane.showOptionDialog(frame, Shutter.language.getProperty("chooseSubsIntegration"), Shutter.language.getProperty("caseAddSubtitles"),
+													JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+												    options,
+												    options[0]);
+										}
+									}
+									else if (autoEmbed)
+									{
+										sub = 1;
 									}
 										
 									if (sub == 0) //Burn
@@ -10212,7 +10179,11 @@ public class Shutter {
 					changeSections(false);
 					
 					VideoPlayer.player.remove(subsCanvas);
-					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+					
+					if (autoBurn == false && autoEmbed == false)
+					{
+						VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+					}
 	
 					for (Component c : grpSubtitles.getComponents())
 					{
@@ -10224,30 +10195,7 @@ public class Shutter {
 					
 					VideoPlayer.sliderSpeed.setEnabled(true);
 				}
-			}
-			
-			private void writeSub(String srt, Charset encoding) 
-			{
-				
-				try {
-	
-					VideoPlayer.writeCurrentSubs(VideoPlayer.playerCurrentFrame, true);
-					VideoPlayer.loadImage(true);
-	
-				} catch (Exception e) {
-					
-					if (encoding == StandardCharsets.UTF_8)
-					{						
-						writeSub(srt, StandardCharsets.ISO_8859_1);
-					}
-					else					
-					{		
-						caseAddSubtitles.setSelected(false);
-						VideoPlayer.player.remove(subsCanvas);
-					}
-				}
-			}
-	
+			}			
 		});	
 		
 		JLabel lblFont = new JLabel(Shutter.language.getProperty("lblFont"));
@@ -22622,7 +22570,7 @@ class ListeFileTransferHandler extends TransferHandler {
 						}
 						break;
 					}
-
+					
 					// VideoPlayer.player					
 					Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);					
 						

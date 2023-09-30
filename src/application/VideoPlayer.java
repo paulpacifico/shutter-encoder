@@ -56,6 +56,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -145,7 +146,7 @@ public class VideoPlayer {
 	public static boolean playTransition = false;
     private static boolean closeAudioStream = false;
     public static boolean isPiping = false;
-    private static boolean previewUpscale = false;
+    private static boolean previewUpscale = false;    
     
 	//Buttons & Checkboxes
 	public static JLabel btnPreview;
@@ -194,7 +195,7 @@ public class VideoPlayer {
 	
 	//Waveform
 	public static boolean addWaveformIsRunning = false;
-	public static File waveform = new File(Shutter.dirTemp + "waveform.png");
+	public static BufferedImage waveform = null;
 	public static JLabel waveformIcon;
 	public static JLabel waveformContainer;
 	public static JPanel cursorWaveform;
@@ -564,7 +565,7 @@ public class VideoPlayer {
 
 			if ((casePlaySound.isSelected() && inputTime > 0 && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
 			{				
-				audio = playerAudio.getInputStream();							
+				audio = playerAudio.getInputStream();								
 				audioInputStream = AudioSystem.getAudioInputStream(audio);		    
 			    AudioFormat audioFormat = audioInputStream.getFormat();
 		        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
@@ -700,14 +701,14 @@ public class VideoPlayer {
 					} catch (IOException e) {}
 					
 					if (audio != null && closeAudioStream)	       
-					{
+					{						
 						try {
 							audio.close();
 						} catch (IOException e) {}
 						try {
 							audioInputStream.close();
 						} catch (IOException e) {}
-						line.close();	
+						line.close();
 					}
 				}
 				
@@ -1121,8 +1122,8 @@ public class VideoPlayer {
 							if (preview != null)
 								preview = null;
 							
-							if (waveform.exists())
-								waveform.delete();
+							if (waveform != null)
+								waveform = null;
 												
 							if (FFMPEG.waveformIsRunning)
 							{
@@ -1252,6 +1253,48 @@ public class VideoPlayer {
 								Shutter.caseSafeArea.setEnabled(true);
 							}
 							
+							//Autocrop
+							if (Shutter.caseEnableCrop.isSelected() && Shutter.comboPreset.getSelectedIndex() == 1)
+				    		{
+				    			FFMPEG.setCropDetect(new File(videoPath));	  
+				    		}
+							
+							//Burn subtitles
+							if (Shutter.caseAddSubtitles.isSelected())
+							{	
+								if (Shutter.subtitlesBurn)
+								{
+									Shutter.autoBurn = true;
+								}
+								else
+									Shutter.autoEmbed = true;
+								
+								String ext = videoPath.substring(videoPath.lastIndexOf("."));
+																
+								if (new File(videoPath.replace(ext, ".srt")).exists()
+								|| new File (videoPath.replace(ext, ".vtt")).exists()
+								|| new File (videoPath.replace(ext, ".ass")).exists()
+								|| new File (videoPath.replace(ext, ".ssa")).exists()
+								|| new File (videoPath.replace(ext, ".scc")).exists())
+								{
+									Shutter.caseAddSubtitles.doClick();
+									Shutter.caseAddSubtitles.doClick();
+								}
+								else
+								{
+									Shutter.caseAddSubtitles.doClick();
+								}	
+								
+								Shutter.autoBurn = false;
+								Shutter.autoEmbed = false;
+								
+								try {
+									do {
+										Thread.sleep(100);
+									} while (FFMPEG.isRunning);
+								} catch (InterruptedException e) {}		
+							}
+							
 							//Image sequence
 							if (Shutter.caseEnableSequence.isSelected())
 							{	
@@ -1351,9 +1394,9 @@ public class VideoPlayer {
 						lblPosition.setVisible(false);
 						lblDuration.setVisible(false);	
 						
-						if (waveform.exists())
+						if (waveform != null)
 						{
-							waveform.delete();
+							waveform = null;
 							waveformIcon.setIcon(null);
 							waveformIcon.repaint();
 						}
@@ -1943,13 +1986,13 @@ public class VideoPlayer {
 		if (caseShowWaveform.isSelected())
 		{
 			addWaveformIsRunning = true;
-			if (newWaveform || waveform.exists() == false)
+			if (newWaveform || waveform != null == false)
 			{
 				waveformIcon.setVisible(false);
 				
 				if (newWaveform)
 				{
-					waveform.delete();
+					waveform = null;
 				}
 			}
 				
@@ -1972,7 +2015,7 @@ public class VideoPlayer {
 						//Si fichier audio seulement ou Sous titrage								
 						if (FFPROBE.hasAudio)
 						{						
-							if (newWaveform || waveform.exists() == false)
+							if (newWaveform || waveform != null == false)
 							{							
 								long size = 1920;
 								
@@ -2005,9 +2048,9 @@ public class VideoPlayer {
 								if (size > 549944)
 									size = 549944;
 								
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"'
-								+ " -filter:a aresample=8000 -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green" + '"' 
-								+ " -pix_fmt rgba -vn -vframes 1 -y " + '"' + waveform + '"');  																
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -f lavfi -i color=s=" + size + "x360:c=0x252525 -i " + '"' + videoPath + '"'
+								+ " -filter_complex " + '"' + "[1:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[0:v][fg]overlay=format=rgb" + '"' 
+								+ " -vn -frames:v 1 -c:v bmp -f image2pipe pipe:-");  																
 								
 								if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 									Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
@@ -2031,7 +2074,7 @@ public class VideoPlayer {
 										FFMPEG.waveformProcess.destroy();
 									}
 									
-								} while (waveform.exists() == false && FFMPEG.waveformIsRunning);								
+								} while (waveform != null == false && FFMPEG.waveformIsRunning);								
 							}
 							
 							//add Waveform		
@@ -2041,8 +2084,7 @@ public class VideoPlayer {
 								{
 									if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) //Ne charge plus l'image si la fenêtre est fermée entre temps
 									{
-										Image imageBMP = ImageIO.read(waveform);
-										ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
+										ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
 										
 										waveformIcon.setIcon(null);
 										waveformIcon.repaint();
@@ -2052,9 +2094,8 @@ public class VideoPlayer {
 										SubtitlesTimeline.waveform.repaint();
 									}
 									else
-									{	    
-										Image imageBMP = ImageIO.read(waveform);						
-										ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(imageBMP).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
+									{	    						
+										ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
 										 						
 										waveformIcon.setIcon(resizedWaveform);
 										waveformIcon.repaint();
@@ -3766,7 +3807,7 @@ public class VideoPlayer {
 				
 				if (caseShowWaveform.isSelected())
 				{
-					if (waveform.exists())
+					if (waveform != null)
 					{
 						addWaveform(false);
 					}
@@ -4283,10 +4324,10 @@ public class VideoPlayer {
 			
 			if (Shutter.overlayDeviceIsRunning)
 			{
-				FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
+				FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
 			}
 			else
-				FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -vframes 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
+				FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
 
 			do {
 				Thread.sleep(10);
@@ -4435,10 +4476,10 @@ public class VideoPlayer {
 							inputPoint = "";
 												
 						//Creating preview file																
-						String cmd = deinterlace + " -vframes 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
+						String cmd = deinterlace + " -frames:v 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
 						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
 						{
-							cmd = deinterlace + " -vframes 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
+							cmd = deinterlace + " -frames:v 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
 						}
 												
 						if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
@@ -4467,7 +4508,7 @@ public class VideoPlayer {
 								
 								File preview = new File(Shutter.dirTemp + "preview.png");
 								
-								FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -vframes 1 -an " + '"' + preview + '"');		
+								FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -frames:v 1 -an " + '"' + preview + '"');		
 								
 								do {
 					            	Thread.sleep(10);  
@@ -4511,7 +4552,7 @@ public class VideoPlayer {
 							}		
 							else									
 							{		
-								generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -vframes 1 -c:v bmp -an -f image2pipe pipe:-");
+								generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -frames:v 1 -c:v bmp -an -f image2pipe pipe:-");
 							}		
 				            
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
@@ -4522,11 +4563,11 @@ public class VideoPlayer {
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
 							{				
-								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -vframes 1 -c:v bmp -an -f image2pipe pipe:-"); 
+								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -frames:v 1 -c:v bmp -an -f image2pipe pipe:-"); 
 							}
 							else
 							{		
-								generatePreview(" -v quiet -hide_banner -i pipe:0" + setFilter("","", true) + " -vframes 1 -c:v bmp -f image2pipe pipe:-");
+								generatePreview(" -v quiet -hide_banner -i pipe:0" + setFilter("","", true) + " -frames:v 1 -c:v bmp -f image2pipe pipe:-");
 							}
 						}
 			        }
@@ -4598,6 +4639,27 @@ public class VideoPlayer {
 			player.repaint();
 		}
 		
+	}
+	
+	public static void writeSub(String srt, Charset encoding) 
+	{
+		try {
+
+			writeCurrentSubs(playerCurrentFrame, true);
+			loadImage(true);
+
+		} catch (Exception e) {
+			
+			if (encoding == StandardCharsets.UTF_8)
+			{						
+				writeSub(srt, StandardCharsets.ISO_8859_1);
+			}
+			else					
+			{		
+				Shutter.caseAddSubtitles.setSelected(false);
+				player.remove(Shutter.subsCanvas);
+			}
+		}
 	}
 	
 	private static String setFilter(String yadif, String speed, boolean noGPU) {

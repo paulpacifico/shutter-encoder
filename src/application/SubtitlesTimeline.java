@@ -260,8 +260,8 @@ public class SubtitlesTimeline {
 					} catch (IOException e) {}
 				}
 				
-				if (VideoPlayer.waveform.exists())
-					VideoPlayer.waveform.delete();
+				if (VideoPlayer.waveform != null)
+					VideoPlayer.waveform = null;
 				
 				timeline.removeAll();
 			}
@@ -2083,9 +2083,9 @@ public class SubtitlesTimeline {
 						Thread addWaveform = new Thread(new Runnable() {
 							public void run() {	
 								
-								if (VideoPlayer.waveform.exists() == false)
+								if (VideoPlayer.waveform != null == false)
 								{
-									while (VideoPlayer.waveform.exists() == false)
+									while (VideoPlayer.waveform != null == false)
 									{
 										try {
 											Thread.sleep(100);
@@ -2108,7 +2108,7 @@ public class SubtitlesTimeline {
 		}
 		else //Mise à jour du placement des subs
 		{
-			if (VideoPlayer.waveform.exists() && caseShowWaveform.isSelected() && waveform != null)
+			if (VideoPlayer.waveform != null && caseShowWaveform.isSelected() && waveform != null)
 				timeline.remove(waveform);
 						
 			for (int index = number; index > 1 ; index--)
@@ -2137,7 +2137,7 @@ public class SubtitlesTimeline {
 			}
 			
 			//On décale aussi la waveform
-			if (VideoPlayer.waveform.exists() && caseShowWaveform.isSelected() && waveform != null)
+			if (VideoPlayer.waveform != null && caseShowWaveform.isSelected() && waveform != null)
 			{
 				timeline.add(waveform);
 			}

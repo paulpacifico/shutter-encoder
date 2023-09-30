@@ -772,7 +772,7 @@ import javax.swing.JScrollPane;
 						
 						//Command
 						String cmd;
-						cmd = " -f image2 -vframes 1 ";
+						cmd = " -f image2 -frames:v 1 ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/0.png" + '"');
 						
 						do
