@@ -1124,6 +1124,58 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 	}
 	
+	public static void setCropDetect(File file) {
+	
+		cropdetect = "";
+		
+		String cmd =  " -an -frames:v 5 -vf cropdetect -f null -" + '"';
+		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+		{
+			cmd =  " -an -frames:v 5 -vf cropdetect -f null -";						
+		}
+				
+		//Input point
+		String inputPoint = " -ss " + (float) (VideoPlayer.playerCurrentFrame) * VideoPlayer.inputFramerateMS + "ms";
+		if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
+			inputPoint = " -loop 1";
+		
+		screenshotIsRunning = true; //Workaround to not change the frame size
+		
+		FFMPEG.run(inputPoint + " -i " + '"' + file + '"' + cmd);	
+		
+		try {
+			do {
+				Thread.sleep(100);
+			} while(FFMPEG.isRunning);
+		} catch (Exception er) {}	
+		
+		screenshotIsRunning = false;
+		
+		if (cropdetect != "")
+		{
+			String c[] = FFMPEG.cropdetect.split(":");
+			
+			textCropPosX.setText(c[2]);						
+			textCropWidth.setText(c[0]);
+			textCropHeight.setText(c[1]);
+			textCropPosY.setText(c[3]);
+			
+			int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);	
+			int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
+			int width = (int) Math.ceil((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+			int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
+			
+			if (width > VideoPlayer.player.getWidth())
+				width = VideoPlayer.player.getWidth();
+			
+			if (height > VideoPlayer.player.getHeight())
+				height = VideoPlayer.player.getHeight();
+			
+			selection.setBounds(x, y, width, height);
+		}	
+		
+	}
+	
 	public static void gpuFilter(final String cmd) {
 		
 		error = false;	
@@ -1373,8 +1425,13 @@ public static StringBuilder errorLog = new StringBuilder();
 					}		
 					
 					//Allows to write into the stream
-					OutputStream stdin = process.getOutputStream();
+					OutputStream stdin = waveformProcess.getOutputStream();
 					waveformWriter = new BufferedWriter(new OutputStreamWriter(stdin));
+					
+					InputStream is = waveformProcess.getInputStream();				
+					BufferedInputStream inputStream = new BufferedInputStream(is);
+
+					VideoPlayer.waveform = ImageIO.read(inputStream);
 					
 					waveformProcess.waitFor();
 				   					     																		

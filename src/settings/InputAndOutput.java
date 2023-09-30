@@ -50,7 +50,7 @@ public class InputAndOutput extends Shutter {
         	{		        	
 	    		float outputFPS = FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 	    		
-	    		outPoint = " -vframes " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
+	    		outPoint = " -frames:v " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
         	}
         	else if (FFPROBE.audioOnly || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false) 
 			|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
@@ -65,7 +65,7 @@ public class InputAndOutput extends Shutter {
         	}
         	else
         	{
-	        	outPoint = " -vframes " + Integer.parseInt(frames[frames.length - 1]);
+	        	outPoint = " -frames:v " + Integer.parseInt(frames[frames.length - 1]);
         	}
         }
         else

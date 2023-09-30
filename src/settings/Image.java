@@ -19,6 +19,8 @@
 
 package settings;
 
+import java.io.File;
+
 import application.Shutter;
 import application.VideoPlayer;
 import functions.VideoEncoders;
@@ -27,12 +29,17 @@ import library.FFMPEG;
 
 public class Image extends Shutter {
 
-	public static String setCrop(String filterComplex) {		
+	public static String setCrop(String filterComplex, File file) {		
 		
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 		{	    	
-	    	if (Shutter.caseEnableCrop.isSelected())
-			{
+	    	if (caseEnableCrop.isSelected())
+			{	    		
+	    		if (comboPreset.getSelectedIndex() == 1)
+	    		{
+	    			FFMPEG.setCropDetect(file);	  
+	    		}
+	    		
 				if (filterComplex != "")
 					filterComplex += "[w];[w]";
 

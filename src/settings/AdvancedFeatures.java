@@ -246,7 +246,7 @@ public class AdvancedFeatures extends Shutter {
 		            int height = Integer.parseInt(s[1]); 
 		
 		            if (width > 1920 || height > 1080)
-		            	return " -profile:v " + profile + " -level 5.2";
+		            	return " -profile:v " + profile; //level is auto selected by ffmpeg
 		            else
 		            	return " -profile:v " + profile + " -level 5.1";
 		        }  

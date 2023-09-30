@@ -31,6 +31,7 @@ import functions.VideoEncoders;
 import application.RecordInputDevice;
 import application.Shutter;
 import application.SubtitlesEmbed;
+import library.FFMPEG;
 import library.FFPROBE;
 
 public class Overlay extends Shutter {
@@ -110,7 +111,13 @@ public class Overlay extends Shutter {
 			
 			String rate = String.valueOf(FFPROBE.currentFPS);
 			if (caseConform.isSelected())
+			{
 				rate = comboFPS.getSelectedItem().toString().replace(",", ".");
+			}
+			else if (caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+			{
+				rate = String.valueOf(FFPROBE.currentFPS * 2);
+			}
 			
 			String overlayFont = "";
 			if (System.getProperty("os.name").contains("Mac"))
@@ -366,9 +373,49 @@ public class Overlay extends Shutter {
 		return filterComplex;
 	}
 
-	public static String setSubtitles(boolean limitToFHD) {
+	public static String setSubtitles(boolean limitToFHD, String file) {
+				
+		//Auto add subs
+		if (caseAddSubtitles.isSelected())
+		{
+			caseAddSubtitles.setEnabled(true);
+			Shutter.fileList.setSelectedValue(file, true);
+			
+			if (Shutter.subtitlesBurn)
+			{
+				autoBurn = true;
+			}
+			else
+				autoEmbed = true;
+			
+			String ext = file.substring(file.lastIndexOf("."));
+											
+			if (new File(file.replace(ext, ".srt")).exists()
+			|| new File (file.replace(ext, ".vtt")).exists()
+			|| new File (file.replace(ext, ".ass")).exists()
+			|| new File (file.replace(ext, ".ssa")).exists()
+			|| new File (file.replace(ext, ".scc")).exists())
+			{
+				caseAddSubtitles.doClick();
+				caseAddSubtitles.doClick();
+			}
+			else
+			{
+				caseAddSubtitles.doClick();
+			}	
+						
+			autoBurn = false;
+			autoEmbed = false;
+			caseAddSubtitles.setEnabled(false);
 		
-    	if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+			try {
+				do {
+					Thread.sleep(100);
+				} while (FFMPEG.isRunning);
+			} catch (InterruptedException e) {}		
+		}
+		
+    	if (caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    	
 			if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
     		{	
@@ -482,7 +529,7 @@ public class Overlay extends Shutter {
 					return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
 			}
 		}
-		else if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+		else if (caseAddSubtitles.isSelected() && subtitlesBurn == false)
     	{	
 			String subsFiles = "";
 			for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())

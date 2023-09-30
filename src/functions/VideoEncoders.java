@@ -304,7 +304,7 @@ public class VideoEncoders extends Shutter {
 						String subtitles = "";
 						if (grpBitrate.isVisible())
 						{
-							subtitles = Overlay.setSubtitles(false);
+							subtitles = Overlay.setSubtitles(false, file.toString());
 						}
 						else if (grpResolution.isVisible())
 						{
@@ -316,20 +316,20 @@ public class VideoEncoders extends Shutter {
 								case "XDCAM HD422":
 								case "XDCAM HD 35":
 									
-									subtitles = Overlay.setSubtitles(true);
+									subtitles = Overlay.setSubtitles(true, file.toString());
 									
 									break;
 									
 								default:
 									
-									subtitles = Overlay.setSubtitles(false);
+									subtitles = Overlay.setSubtitles(false, file.toString());
 									
 									break;
 							}
 						}
 						else if (comboFonctions.getSelectedItem().toString().equals("DVD"))
 						{	
-							subtitles = Overlay.setSubtitles(false);	
+							subtitles = Overlay.setSubtitles(false, file.toString());	
 						}
 						
 						//Interlace
@@ -581,7 +581,7 @@ public class VideoEncoders extends Shutter {
 				    	//Crop
 						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Cropping is made before upscaling
 				        {
-							filterComplex = Image.setCrop(filterComplex);
+							filterComplex = Image.setCrop(filterComplex, file);
 				        }
 						
 				        //Scaling									
@@ -880,7 +880,7 @@ public class VideoEncoders extends Shutter {
 							String filter = "";
 							
 							filter = AdvancedFeatures.setDeinterlace(true);
-							filter = Image.setCrop(filter);
+							filter = Image.setCrop(filter, file);
 							
 							if (filter != "")
 							{

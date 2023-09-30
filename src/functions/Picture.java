@@ -190,7 +190,7 @@ public class Picture extends Shutter {
 						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), videoPlayerCapture);			         
 	
 						//Crop
-				        filterComplex = Image.setCrop(filterComplex);
+				        filterComplex = Image.setCrop(filterComplex, file);
 				        
 				        //Scaling
 				        if (VideoEncoders.setScalingFirst() == false && comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode		
@@ -490,7 +490,7 @@ public class Picture extends Shutter {
 		}
 		else
 		{
-			return " -vframes 1";
+			return " -frames:v 1";
 		}
 	}
 	

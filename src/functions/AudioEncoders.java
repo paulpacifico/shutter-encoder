@@ -134,7 +134,7 @@ public class AudioEncoders extends Shutter {
 									audioCodec = "aac_at -b:a " + comboFilter.getSelectedItem().toString() + "k";	
 								}
 								else
-									audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k";	
+									audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k";
 								
 								container = ".m4a";	
 								stereoOutput = false;
