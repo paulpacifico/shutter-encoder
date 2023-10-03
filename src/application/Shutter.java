@@ -17778,11 +17778,11 @@ public class Shutter {
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(true);
 			comboGPUDecoding.setVisible(true);			
-			if (System.getProperty("os.name").contains("Windows"))
+			if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 			{
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
-			}			
+			}
 			
 			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
 			lblYears.setLocation(frame.getWidth()  - lblYears.getWidth() - 8, lblBy.getY());
@@ -17836,11 +17836,11 @@ public class Shutter {
 			lblArrows.setVisible(false);
 			lblGpuDecoding.setVisible(true);
 			comboGPUDecoding.setVisible(true);
-			if (System.getProperty("os.name").contains("Windows"))
+			if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 			{
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
-			}		
+			}
 			
 			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
 			lblYears.setLocation(frame.getWidth()  - lblYears.getWidth() - 8, lblBy.getY());
@@ -17863,7 +17863,7 @@ public class Shutter {
 		{
 			lblGpuDecoding.setVisible(true);
 			comboGPUDecoding.setVisible(true);
-			if (System.getProperty("os.name").contains("Windows"))
+			if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 			{
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
@@ -18102,7 +18102,7 @@ public class Shutter {
 		
 		if (frame.getWidth() > 332)
 		{
-			if (System.getProperty("os.name").contains("Windows"))
+			if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 			{
 				if (lblHWaccel.isVisible())
 				{
@@ -19292,7 +19292,7 @@ public class Shutter {
 													if (FFMPEG.error == false)								
 														graphicsAccel.add("OSX VideoToolbox");										
 												}
-												
+
 												if (comboAccel.getModel().getSize() != graphicsAccel.size())
 												{	
 													comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
