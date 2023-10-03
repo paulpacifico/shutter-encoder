@@ -802,7 +802,7 @@ public class VideoEncoders extends Shutter {
 						
 						//GPU decoding
 						String gpuDecoding = "";						
-						if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+						if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt")))
 						{
 							if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 							{
@@ -813,6 +813,10 @@ public class VideoEncoders extends Shutter {
 								else if (FFMPEG.qsvAvailable)
 								{
 									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
+								}
+								else if (FFMPEG.videotoolboxAvailable)
+								{
+									gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
 								}
 							}
 							else
@@ -1489,7 +1493,7 @@ public class VideoEncoders extends Shutter {
 				else
 				{
 					//Switching to GPU nv12 or p010 to avoid useless pix_fmt conversion
-					if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+					if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt")))
 					{
 						if (filterComplex.contains("format=p010"))
 						{
@@ -1513,7 +1517,7 @@ public class VideoEncoders extends Shutter {
 				else				
 				{
 					//Switching to GPU nv12 to avoid useless pix_fmt conversion
-					if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+					if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt")))
 					{
 						return "";				
 					}
@@ -1534,7 +1538,7 @@ public class VideoEncoders extends Shutter {
 			case "Xvid":
 				
 				//Switching to GPU nv12 to avoid useless pix_fmt conversion
-				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv")))
+				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt")))
 				{
 					return "";				
 				}

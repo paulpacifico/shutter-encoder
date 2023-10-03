@@ -432,7 +432,7 @@ public static boolean hasAlpha = false;
 			        			 qantization = 32;
 			        			 
 			        		 channels ++;
-			        		 
+					        		 
 			        		 if (line.contains("Hz"))
 			        		 {
 			        			 String s[] = line.split(",");

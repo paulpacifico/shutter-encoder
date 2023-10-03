@@ -81,6 +81,7 @@ import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
 import settings.BitratesAdjustement;
+import settings.Colorimetry;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 
@@ -89,7 +90,6 @@ public class FFMPEG extends Shutter {
 public static int fileLength = 0; 
 public static boolean error = false;
 public static boolean isRunning = false;
-public static boolean waveformIsRunning = false;
 public static BufferedWriter writer;
 public static Thread runProcess = new Thread();
 private static Thread displayThread;
@@ -119,6 +119,7 @@ public static StringBuilder hwaccels = new StringBuilder();
 public static boolean isGPUCompatible = false;
 public static boolean cudaAvailable = false;
 public static boolean qsvAvailable = false;
+public static boolean videotoolboxAvailable = false;
 public static int differenceMax;
 
 //Moyenne de fps		
@@ -200,9 +201,9 @@ public static StringBuilder errorLog = new StringBuilder();
 							PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-																														
+
 							if (cmd.contains("image2pipe") || cmd.contains("pipe:play") || cmd.contains("pipe:stab") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
-							|| Shutter.caseEnableColorimetry.isSelected()
+							|| caseEnableColorimetry.isSelected() && Colorimetry.setEQ(true) != ""
 							|| caseLUTs.isSelected() && grpColorimetry.isVisible()
 							|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpColorimetry.isVisible())
 							{
@@ -211,13 +212,15 @@ public static StringBuilder errorLog = new StringBuilder();
 								{
 									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -an -c:v bmp -f image2pipe pipe:-";
 								}
+								else
+									btnStart.setEnabled(false);
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
 								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 							}
-							else
+							else //Allow to suspend FFmpeg process
 							{
-								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG.toString() + '"' + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));
+								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));								
 								process = processFFMPEG.start();	
 							}					
 						}
@@ -1016,10 +1019,10 @@ public static StringBuilder errorLog = new StringBuilder();
 		qsvAvailable = false;
 		
 		//Check is GPU can decode				
-		if (System.getProperty("os.name").contains("Windows")
+		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-		|| System.getProperty("os.name").contains("Windows") && force)
+		|| (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) && force)
 		{
 			String vcodec = "";
 			if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
@@ -1064,40 +1067,55 @@ public static StringBuilder errorLog = new StringBuilder();
 						//Check for Nvidia or Intel GPU
 						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") || force)
 						{
-							//Cuda
-							FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
-							
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
-							
-							if (FFMPEG.error == false)
-								cudaAvailable = true;
-							
-							//QSV
-							FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
-							
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
-							
-							if (FFMPEG.error == false)
-								qsvAvailable = true;
-							
-							if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
-							{								
-								if (comboAccel.getSelectedItem().equals("Intel Quick Sync")) //Cannot use CUDA decoding with QSV encoding
-								{
-									cudaAvailable = false;
+							if (System.getProperty("os.name").contains("Windows"))
+							{
+								//Cuda
+								FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+								
+								do {
+									Thread.sleep(100);
+								} while(FFMPEG.runProcess.isAlive());
+								
+								if (FFMPEG.error == false)
+									cudaAvailable = true;
+								
+								//QSV
+								FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+								
+								do {
+									Thread.sleep(100);
+								} while(FFMPEG.runProcess.isAlive());
+								
+								if (FFMPEG.error == false)
+									qsvAvailable = true;
+								
+								if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
+								{								
+									if (comboAccel.getSelectedItem().equals("Intel Quick Sync")) //Cannot use CUDA decoding with QSV encoding
+									{
+										cudaAvailable = false;
+									}
+									else if (comboAccel.getSelectedItem().equals("Nvidia NVENC")) //Cannot use QSV decoding with NVENC encoding
+									{
+										qsvAvailable = false;
+									}
 								}
-								else if (comboAccel.getSelectedItem().equals("Nvidia NVENC")) //Cannot use QSV decoding with NVENC encoding
-								{
-									qsvAvailable = false;
-								}
-							}								
+							}
+							else //Mac
+							{
+								//videotoolbox
+								FFMPEG.gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -");
+								
+								do {
+									Thread.sleep(100);
+								} while(FFMPEG.runProcess.isAlive());
+								
+								if (FFMPEG.error == false)
+									videotoolboxAvailable = true;
+							}
 							
-							//Disable GPU if both are not available
-							if (cudaAvailable == false && qsvAvailable == false)
+							//Disable GPU if not available
+							if (cudaAvailable == false && qsvAvailable == false && videotoolboxAvailable == false)
 								isGPUCompatible = false;
 						}
 						else //Check the current selection
@@ -1392,58 +1410,46 @@ public static StringBuilder errorLog = new StringBuilder();
 	}
 	
 	public static void playerWaveform(final String cmd) {
-		
-		waveformIsRunning = true;
-		
-		runProcess = new Thread(new Runnable()  {
-			
-			@Override
-			public void run() {
-				
-				try {
-					
-					String PathToFFMPEG;
-					ProcessBuilder processFFMPEG;
-					if (System.getProperty("os.name").contains("Windows"))
-					{							
-						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
-						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-														
-						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd);
-						waveformProcess = processFFMPEG.start();
-					}
-					else
-					{
-						PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
-						PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
-
 						
-						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd);									
-						waveformProcess = processFFMPEG.start();
-					}		
-					
-					//Allows to write into the stream
-					OutputStream stdin = waveformProcess.getOutputStream();
-					waveformWriter = new BufferedWriter(new OutputStreamWriter(stdin));
-					
-					InputStream is = waveformProcess.getInputStream();				
-					BufferedInputStream inputStream = new BufferedInputStream(is);
+		try {
+			
+			String PathToFFMPEG;
+			ProcessBuilder processFFMPEG;
+			if (System.getProperty("os.name").contains("Windows"))
+			{							
+				PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
+				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 
-					VideoPlayer.waveform = ImageIO.read(inputStream);
-					
-					waveformProcess.waitFor();
-				   					     																		
-				} catch (IOException io) {//Bug Linux							
-				} catch (Exception e) {}
-				finally {
-					waveformIsRunning = false;
-				}
+				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + cmd + '"');
+				waveformProcess = processFFMPEG.start();
+			}
+			else
+			{
+				PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
+				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
+
 				
-			}				
-		});		
-		runProcess.start();
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + cmd);									
+				waveformProcess = processFFMPEG.start();
+			}	
+
+			//Allows to write into the stream
+			OutputStream stdin = waveformProcess.getOutputStream();
+			waveformWriter = new BufferedWriter(new OutputStreamWriter(stdin));
+			
+			InputStream is = waveformProcess.getInputStream();				
+			BufferedInputStream inputStream = new BufferedInputStream(is);
+
+			VideoPlayer.waveform = ImageIO.read(inputStream);
+			
+			inputStream.close();
+			
+			waveformProcess.waitFor();
+		   					     																		
+		} catch (IOException io) {//Bug Linux							
+		} catch (Exception e) {}
 	}
 	
 	private static void saveToXML(String cmd) {	  
