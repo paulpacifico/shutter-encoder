@@ -465,6 +465,13 @@ public class VideoEncoders extends Shutter {
 									break;
 								
 								case "Blu-ray":
+									
+									if (FFPROBE.interlaced.equals("1") && (caseForcerProgressif.isSelected() || comboFilter.getSelectedIndex() == 1)) //H.265
+									{
+										filterComplex = "yadif=0:" + FFPROBE.fieldOrder + ":0"; 
+									}
+									break;
+									
 								case "DVD":
 									
 									if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected())
@@ -1196,19 +1203,34 @@ public class VideoEncoders extends Shutter {
 				
 			case "Blu-ray":
 				
-				String interlace = "";
-				if (FFPROBE.currentFPS != 24.0 && FFPROBE.currentFPS != 23.98 && caseForcerProgressif.isSelected() == false)
-		        	interlace = ":tff=1";
-				
-				String maxrate = "40000";
-				
-				if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+				if (comboFilter.getSelectedIndex() == 0)
 				{
-					maxrate = maximumBitrate.getSelectedItem().toString();
+					String interlace = "";
+					if (FFPROBE.currentFPS != 24.0 && FFPROBE.currentFPS != 23.98 && caseForcerProgressif.isSelected() == false)
+			        	interlace = ":tff=1";
+					
+					String maxrate = "40000";
+					
+					if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+					{
+						maxrate = maximumBitrate.getSelectedItem().toString();
+					}
+					
+					return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=" + maxrate + ":vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";		
 				}
+				else //H.265
+				{
+					String maxrate = "75000";
+					
+					if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+					{
+						maxrate = maximumBitrate.getSelectedItem().toString();
+					}
+					
+					return " -c:v libx265 -pix_fmt yuv420p10le -profile:v main10 -tune grain -level 5.1 -x265-params keyint=60:bframes=3:vbv-maxrate=" + maxrate + ":vbv-bufsize=75000:bitrate=" + FunctionUtils.setVideoBitrate() + ":colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc";		
 				
-				return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=" + maxrate + ":vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";
-				
+				}
+
 			case "DVD":
 				
 				if (FFPROBE.currentFPS == 25.0f)

@@ -19,6 +19,7 @@
 
 package library;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +44,7 @@ public static String format = "";
 
 	public static void run(final String cmd, final String options) {
 		
+		lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
         lblCurrentEncoding.setText(language.getProperty("getVideoName"));
 		error = false;
 		Shutter.cancelled  = false;
@@ -126,6 +128,7 @@ public static String format = "";
 					    {
 					    	if (lineOutput.contains("Destination"))
 					    	{
+					    		 lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 					    		 lblCurrentEncoding.setText(lineOutput.substring(24).replace(lblDestination1.getText(), "").substring(1));
 					    		 outputFile = new File(lblDestination1.getText() + "/" + lblCurrentEncoding.getText());
 					    	}
@@ -263,6 +266,7 @@ public static String format = "";
 
 	public static void getAvailableFormats(final String cmd, final String options) {
 		
+		lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 		lblCurrentEncoding.setText(Shutter.language.getProperty("getAvailableFormats"));
 		error = false;
 		Shutter.cancelled  = false;
@@ -270,6 +274,7 @@ public static String format = "";
 		Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -F " + cmd + options + System.lineSeparator());
 		
 		runProcess = new Thread(new Runnable()  {
+			
 			@Override
 			public void run() {
 				try {

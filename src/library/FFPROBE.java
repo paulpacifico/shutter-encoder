@@ -1084,10 +1084,20 @@ public static boolean hasAlpha = false;
 			    		    {
 			    				float debit = (float) ((float) 23000000 / FFPROBE.totalLength) * 8;
 			    				
-			    				if (debit > 38)
-			    					Shutter.debitVideo.setSelectedItem(38000);
-			    				else
-			    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+			    				if (comboFilter.getSelectedIndex() == 0) //H.264
+								{
+			    					if (debit > 38)
+				    					Shutter.debitVideo.setSelectedItem(38000);
+				    				else
+				    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+								}
+								else //H.265
+								{
+									if (debit > 50)
+				    					Shutter.debitVideo.setSelectedItem(50000);
+				    				else
+				    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+								}
 		    		    	}	
 			         		
 				        	NumberFormat formatter = new DecimalFormat("00");

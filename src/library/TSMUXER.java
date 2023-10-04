@@ -37,6 +37,7 @@ public static Process process;
 
 	public static void run(final String cmd) {
 		
+		Console.consoleFFMPEG.append(System.lineSeparator());
 	    Console.consoleTSMUXER.append(Shutter.language.getProperty("command") + " " + cmd);
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
