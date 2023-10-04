@@ -165,11 +165,21 @@ public class VideoWeb {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
+				
 				if (accept)		
 				{
+					if (YOUTUBEDL.runProcess != null)
+					{
+						if (YOUTUBEDL.runProcess.isAlive())
+						{
+							YOUTUBEDL.process.destroy();
+						}
+					}
+					
 					Shutter.lblCurrentEncoding.setForeground(Color.RED);
 					Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("processCancelled"));
-					Shutter.progressBar1.setValue(0);		            
+					Shutter.progressBar1.setValue(0);		        
+					
 					Utils.changeDialogVisibility(frame, true);
 				}
 			}
@@ -390,7 +400,19 @@ public class VideoWeb {
 				comboFormats.removeAllItems();
 				
 				if (caseAuto.isSelected())
-				{		
+				{
+					if (YOUTUBEDL.runProcess != null)
+					{
+						if (YOUTUBEDL.runProcess.isAlive())
+						{
+							YOUTUBEDL.process.destroy();
+						}
+						
+						Shutter.lblCurrentEncoding.setForeground(Color.RED);
+						Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("processCancelled"));
+						Shutter.progressBar1.setValue(0);	
+					}
+										
 					comboFormats.addItem("default");
 					comboFormats.addItem("bestvideo+bestaudio");
 					comboFormats.addItem("bestvideo");
@@ -399,34 +421,52 @@ public class VideoWeb {
 				else
 				{
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-										
-					YOUTUBEDL.getAvailableFormats(textURL.getText(), options());
-					
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (Exception er){}
-					}while (YOUTUBEDL.runProcess.isAlive() && Shutter.cancelled == false);
-					
-					if (YOUTUBEDL.error == false)
-					{
-						String allFormats = YOUTUBEDL.formatsOutput.substring(YOUTUBEDL.formatsOutput.lastIndexOf(":") + 2).replace("null", "").replace("DASH audio", "").replace("DASH video", "");
 						
-						for (String format : allFormats.split(System.lineSeparator()))
-						{
-							if (format.contains("format") == false)
-								comboFormats.addItem(format);
+					Thread getFormats = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							
+							btnOK.setEnabled(false);
+							comboFormats.addItem(Shutter.language.getProperty("getAvailableFormats") + "...");
+							
+							YOUTUBEDL.getAvailableFormats(textURL.getText(), options());
+							
+							do {
+								try {
+									Thread.sleep(100);
+								} catch (Exception er){}
+							} while (YOUTUBEDL.runProcess.isAlive() && Shutter.cancelled == false);
+							
+							if (caseAuto.isSelected() == false && frame.isVisible())
+							{
+								if (YOUTUBEDL.error == false)
+								{
+									comboFormats.removeAllItems();
+									
+									String allFormats = YOUTUBEDL.formatsOutput.substring(YOUTUBEDL.formatsOutput.lastIndexOf(":") + 2).replace("null", "").replace("DASH audio", "").replace("DASH video", "");
+									
+									for (String format : allFormats.split(System.lineSeparator()))
+									{
+										if (format.contains("format") == false)
+											comboFormats.addItem(format);
+									}
+								}
+								else
+								{
+									if (caseAuto.isSelected() == false)
+										caseAuto.doClick();
+									
+									JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("invalidUrl"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);
+								}
+							}
+												
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+							btnOK.setEnabled(true);
 						}
-					}
-					else
-					{
-						if (caseAuto.isSelected() == false)
-							caseAuto.doClick();
 						
-						JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("invalidUrl"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);
-					}
-										
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					});
+					getFormats.start();
 				}
 			}
 			
@@ -492,6 +532,7 @@ public class VideoWeb {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				startDownload();
 			}
 		});

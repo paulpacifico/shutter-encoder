@@ -2121,7 +2121,13 @@ public class VideoPlayer {
 								
 								waveformIcon.setIcon(resizedWaveform);
 								waveformIcon.repaint();
-								waveformIcon.setVisible(true);
+
+								if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && FFMPEG.isRunning)
+								{
+									waveformIcon.setVisible(false);
+								}
+								else
+									waveformIcon.setVisible(true);
 							} 	
 						}
 					}
