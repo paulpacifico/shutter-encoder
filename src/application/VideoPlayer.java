@@ -532,7 +532,7 @@ public class VideoPlayer {
 	}
 	
 	public static void playerProcess(float inputTime) {
-
+		
 		try {	
 			
 			if (System.getProperty("os.name").contains("Windows"))
@@ -779,7 +779,7 @@ public class VideoPlayer {
 	}
 	
 	public static void playerPlay() {
-		
+
 		if (playerVideo == null || playerVideo.isAlive() == false)		
 		{		
 			playerProcess(playerCurrentFrame);							
@@ -829,7 +829,7 @@ public class VideoPlayer {
 	}
 	
 	public static void playerSetTime(float time) {
-							
+			
 		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
 		{				
 			setTime = new Thread(new Runnable() {
@@ -1017,16 +1017,6 @@ public class VideoPlayer {
 
 	public static void playerFreeze() {
 				
-		if (FFPROBE.isRunning)
-		{
-			do {								
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {}								
-			} 
-			while (FFPROBE.isRunning);
-		}
-		
 		if ((setTime == null || setTime.isAlive() == false) && (playerVideo == null || playerVideo.isAlive() == false))
 		{				
 			setTime = new Thread(new Runnable() {
@@ -1895,21 +1885,21 @@ public class VideoPlayer {
 			}	
 
 			String gpuDecoding = "";
-			
+
 			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && mouseIsPressed == false)
 			{
 				if (FFMPEG.isGPUCompatible)
 				{
 					//Auto GPU Shutter.selection
-					if (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
+					if (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_cuda"))
 					{
 						gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
 					}
-					else if (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
+					else if (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_qsv"))
 					{
 						gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
 					}	
-					else if (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
+					else if (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_vt"))
 					{
 						gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
 					}
@@ -4613,7 +4603,7 @@ public class VideoPlayer {
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
 						}	
 						
-						if (preview != null || Shutter.caseAddSubtitles.isSelected())
+						if (Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && (preview != null || Shutter.caseAddSubtitles.isSelected()))
 						{						
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
@@ -4679,7 +4669,7 @@ public class VideoPlayer {
 
 			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 			{
-				VideoPlayer.preview = ImageIO.read(inputStream);
+				preview = ImageIO.read(inputStream);
 				frameVideo = preview;
 			}
 			else
@@ -5120,17 +5110,7 @@ public class VideoPlayer {
 	}
 	
 	public static void resizeAll() {
-				
-		if (FFPROBE.isRunning)
-		{
-			do {								
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {}								
-			} 
-			while (FFPROBE.isRunning);
-		}
-		
+						
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
 		{					
 			//Clear the buffer
@@ -5407,9 +5387,9 @@ public class VideoPlayer {
 						
 			lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, lblSpeed.getY());	
 			sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() + 1, sliderSpeed.getY(), sliderSpeed.getWidth(), 22);	
-	
+
 			if (Shutter.windowDrag == false && videoPath != null && isPiping == false)
-			{	
+			{					
 				if (preview != null && FFPROBE.totalLength > 40)
 					preview = null;
 				

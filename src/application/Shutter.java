@@ -3641,6 +3641,16 @@ public class Shutter {
 						
 						grpResolution.repaint();
 					}
+					
+					if (comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+					{
+						if (comboFilter.getSelectedIndex() == 0) //H.264
+						{
+							debitVideo.setSelectedItem(38000);
+						}
+						else //H.265
+							debitVideo.setSelectedItem(50000);
+					}
 
 					if (comboFonctions.getSelectedItem().toString().equals("DNxHD") 
 					|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
@@ -17981,7 +17991,7 @@ public class Shutter {
 		
 		if (frame.getWidth() > 332)
 		{
-			int grpX = frame.getWidth() - 312 - 10;
+			int grpX = frame.getWidth() - 312 - 12;
 			grpResolution.setLocation(grpX, grpResolution.getLocation().y);
 			grpBitrate.setLocation(grpX, grpBitrate.getLocation().y);								
 			grpSetAudio.setLocation(grpX, grpSetAudio.getLocation().y);
@@ -18148,7 +18158,7 @@ public class Shutter {
 							
 							if (frame.getSize().width >= 1350 && action)
 							{							
-								int i = frame.getWidth() - 312 - 10;
+								int i = frame.getWidth() - 312 - 12;
 								
 								do {
 									
@@ -18271,6 +18281,7 @@ public class Shutter {
 								grpBitrate.setVisible(false);							
 								grpCrop.setVisible(false);
 								grpOverlay.setVisible(false);
+								grpSubtitles.setVisible(false);
 								grpWatermark.setVisible(false);					
 								grpColorimetry.setVisible(false);						
 								grpImageAdjustement.setVisible(false);
@@ -20277,7 +20288,12 @@ public class Shutter {
 								{
 									if (action)
 									{
-										debitVideo.setSelectedItem(38000);
+										if (comboFilter.getSelectedIndex() == 0) //H.264
+										{
+											debitVideo.setSelectedItem(38000);
+										}
+										else //H.265
+											debitVideo.setSelectedItem(50000);
 									}
 									
 									// Ajout partie résolution
@@ -20689,7 +20705,7 @@ public class Shutter {
 									
 									changeGroupes = true;
 									if (Settings.btnDisableAnimations.isSelected())
-										i2 = frame.getWidth() - 312 - 10;
+										i2 = frame.getWidth() - 312 - 12;
 									else
 										i2 -= 4;
 									
@@ -20714,7 +20730,7 @@ public class Shutter {
 									//Animate size
 									animateSections(startTime, true);	
 									
-								} while (i2 > frame.getWidth() - 312 - 10);
+								} while (i2 > frame.getWidth() - 312 - 12);
 								
 								changeGroupes = false;
 								changeSections(false); // une fois l'action terminé on vérifie que les groupes correspondent
@@ -21071,6 +21087,28 @@ public class Shutter {
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
 				String[] extensions = new String[] {".mp4", ".mkv", ".webm" };
+								
+				String types[] = extensions;
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
+			} else if (comboFonctions.getSelectedItem().toString().equals("Blu-ray")) {
+
+				/*
+				lblFilter.setText(" ");	
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
+				lblFilter.setLocation(165, 23);
+				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));*/
+				
+				lblFilter.setVisible(false);
+				comboFilter.setVisible(false);
+				lblFilter.setLocation(164, 21);
+				lblFilter.setIcon(null);
+				
+				String[] extensions = new String[] { "H.264", "H.265" };
 								
 				String types[] = extensions;
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
@@ -22195,6 +22233,21 @@ public class Shutter {
 			RenderQueue.tableRow.setRowCount(0);
 		}
 		
+		if (scanIsRunning == false && screenshotIsRunning == false)
+		{
+			VideoPlayer.videoPath = null;
+			VideoPlayer.setMedia();	
+		}
+		
+		if (FFPROBE.isRunning)
+		{
+			do {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {}
+			} while(FFPROBE.isRunning);
+		}
+		
 		if (scanIsRunning == false)
 		{
 			enableAll();
@@ -22228,13 +22281,7 @@ public class Shutter {
 		
 		if (grpDestination.isEnabled())
 			grpDestination.setSelectedIndex(0);
-				
-		if (scanIsRunning == false && screenshotIsRunning == false)
-		{
-			VideoPlayer.videoPath = null;
-			VideoPlayer.setMedia();	
-		}
-		
+						
 		//IMPORTANT
 		screenshotIsRunning = false;
 		
