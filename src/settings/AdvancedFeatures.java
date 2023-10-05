@@ -57,7 +57,12 @@ public class AdvancedFeatures extends Shutter {
 				
 				 if (caseQMax.isSelected())
 				 {
-					 return " -preset 0";
+					 if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	 {
+			        	return " -preset p7";
+	        		 }
+					 else
+						return " -preset 0";
 				 }
 				 else if (caseForceSpeed.isSelected())
 				 {
@@ -77,16 +82,22 @@ public class AdvancedFeatures extends Shutter {
 		        if (caseQMax.isSelected())
 		        {
 		        	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	{
 		        		return " -preset p7";
+		        	}
 		        	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+		        	{
 		        		return " -quality quality";
+		        	}
 			        else
 			        	return " -preset veryslow";
 		        }
 		        else if (caseForcePreset.isSelected())
 		        {
 		        	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	{
 		        		return " -preset p" + (comboForcePreset.getSelectedIndex() + 1);
+		        	}
 					else
 						return " -preset " + comboForcePreset.getSelectedItem().toString();
 		        }

@@ -356,7 +356,7 @@ public class Image extends Shutter {
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
 			}
-			else if ((autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_vt=");
 				
