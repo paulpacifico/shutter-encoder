@@ -566,16 +566,21 @@ public class VideoPlayer {
 			videoInputStream = new BufferedInputStream(video);
 
 			if ((casePlaySound.isSelected() && inputTime > 0 && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
-			{			
-				audio = playerAudio.getInputStream();	
-				audioInputStream = AudioSystem.getAudioInputStream(audio);		    
-			    AudioFormat audioFormat = audioInputStream.getFormat();
-		        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
-		        line = (SourceDataLine) AudioSystem.getLine(info);
-		        
-	            line.open(audioFormat);
-	            gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
-	            line.start();		            
+			{	
+				//Avoid a crashing issue
+				try {
+					audio = playerAudio.getInputStream();	
+					audioInputStream = AudioSystem.getAudioInputStream(audio);		    
+				    AudioFormat audioFormat = audioInputStream.getFormat();
+			        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
+			        line = (SourceDataLine) AudioSystem.getLine(info);
+			        
+		            line.open(audioFormat);
+		            gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+		            line.start();	
+				} catch (Exception e) {
+					btnStop.doClick();
+				}
 			}
 						
 			playerThread = new Thread(new Runnable() {
@@ -985,7 +990,7 @@ public class VideoPlayer {
 									Thread.sleep(1);
 								} catch (InterruptedException e) {}
 								
-								if (System.currentTimeMillis() - time > 5000)
+								if (System.currentTimeMillis() - time > 3000)
 									frameIsComplete = true;
 															
 							} while (frameIsComplete == false);
@@ -1053,7 +1058,7 @@ public class VideoPlayer {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {}
 						
-						if (System.currentTimeMillis() - time > 5000)
+						if (System.currentTimeMillis() - time > 3000)
 							frameIsComplete = true;
 													
 					} while (frameIsComplete == false);
@@ -1072,7 +1077,7 @@ public class VideoPlayer {
 	}
 		
     public static void setMedia() {
-
+    	
     	Thread loadMedia = new Thread(new Runnable()
 		{
     		@Override
@@ -2207,7 +2212,7 @@ public class VideoPlayer {
 											Thread.sleep(1);
 										} catch (InterruptedException e) {}
 										
-										if (System.currentTimeMillis() - time > 5000)
+										if (System.currentTimeMillis() - time > 3000)
 											frameIsComplete = true;
 																	
 									} while (frameIsComplete == false);
@@ -2302,7 +2307,7 @@ public class VideoPlayer {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}
 						
-						if (System.currentTimeMillis() - time > 5000)
+						if (System.currentTimeMillis() - time > 3000)
 							break;
 						
 					} while (playerLoop);
@@ -2867,7 +2872,7 @@ public class VideoPlayer {
 								Thread.sleep(10);
 							} catch (InterruptedException e1) {}
 							
-							if (System.currentTimeMillis() - time > 5000)
+							if (System.currentTimeMillis() - time > 3000)
 								break;
 							
 						} while (playerLoop);
