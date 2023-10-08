@@ -49,6 +49,7 @@ public static Thread processVideoLevels;
 public static Thread processGOP;
 public static Thread processFindStreams;
 public static Thread processSetLength;
+private static String analyzedMedia = null;
 public static String subtitlesCodec = "";
 public static int subtitleStreams = 0;
 public static int audioStreams = 0;
@@ -92,472 +93,476 @@ public static int gopSpace = 124;
 public static boolean hasAlpha = false;
 
 	public static void Data(final String file) {	
-				
-		getVideoLengthTC = null;
-		
-		if (inputDeviceIsRunning == false)
+			
+		if (file.equals(analyzedMedia) == false)
 		{
-			channels = 0;
-			stereo = false;	
-		}
-				
-		dropFrameTC = "";
-		surround = false;
-		totalLength = 0;
-		qantization = 16;
-		subtitlesCodec = "";
- 		subtitleStreams = 0;
- 		audioSampleRate = 48000;
- 		audioStreams = 0;
-		if (calcul == false) //pour ne pas réactive audioOnly lors de l'analyse calculH264
-			audioOnly = true;
-		creationTime = "";
-		lumaLevel = "unavailable";
-		videoCodec = null;
-		audioCodec = null;
-		audioBitrate = null;
-		FFMPEG.error = false;
-		hasAudio = false; 		
-		btnStart.setEnabled(false);
-		
-		imageRatio = 1.777777f;
-		
-		timecode1 = "";
-		timecode2 = "";
-		timecode3 = "";
-		timecode4 = "";
-		
-		processData = new Thread(new Runnable() {
+			analyzedMedia = file;
 
-			@Override
-			public void run() {
-				
-				try {	
+			getVideoLengthTC = null;
+			
+			if (inputDeviceIsRunning == false)
+			{
+				channels = 0;
+				stereo = false;	
+			}
+					
+			dropFrameTC = "";
+			surround = false;
+			totalLength = 0;
+			qantization = 16;
+			subtitlesCodec = "";
+	 		subtitleStreams = 0;
+	 		audioSampleRate = 48000;
+	 		audioStreams = 0;
+			if (calcul == false) //pour ne pas réactive audioOnly lors de l'analyse calculH264
+				audioOnly = true;
+			creationTime = "";
+			lumaLevel = "unavailable";
+			videoCodec = null;
+			audioCodec = null;
+			audioBitrate = null;
+			FFMPEG.error = false;
+			hasAudio = false; 		
+			btnStart.setEnabled(false);
+			
+			imageRatio = 1.777777f;
+			
+			timecode1 = "";
+			timecode2 = "";
+			timecode3 = "";
+			timecode4 = "";
+			
+			processData = new Thread(new Runnable() {
+	
+				@Override
+				public void run() {
+					
+					try {	
+								
+						String PathToFFPROBE;
+						ProcessBuilder processFFPROBE;
+											
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
+							PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';						
 							
-					String PathToFFPROBE;
-					ProcessBuilder processFFPROBE;
-										
-					if (System.getProperty("os.name").contains("Windows"))
-					{
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';						
-						
-						if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
-						{
-							if (file.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
-							{		
-								String s[] = RecordInputDevice.setInputDevices().split("-f ");
-								if (overlayDeviceIsRunning)
-									s = RecordInputDevice.setOverlayDevice().split("-f ");
-								
-								String id[] = s[1].split("\"");
-								String inputDevice = id[0] + '"' + id[1] + '"';
-
-								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -f " + inputDevice);
-							}
-							else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
+							if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
 							{
-								String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
-								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
-							}
-							else
-								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0" + '"');	
-						}	
-						else
-							processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -i " + '"' + file + '"');
-					}
-					else
-					{
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";						
-						
-						if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
-						{
-							if (file.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
-							{
-								String s[] = RecordInputDevice.setInputDevices().split("-f ");
-								if (overlayDeviceIsRunning)
-									s = RecordInputDevice.setOverlayDevice().split("-f ");
-								
-								String id[] = s[1].split("\"");
-								if (RecordInputDevice.audioDeviceIndex > 0 && overlayDeviceIsRunning == false)
-									id =  s[2].split("\"");;
-
-								String inputDevice = id[0] + '"' + id[1] + '"';
-								
-								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -f " + inputDevice);
-							}
-							else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
-							{
-								String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
-								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
-							}
-							else
-								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0");	
-						}
-						else
-							processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -i " + '"' + file + '"');
-					}
-					
-					isRunning = true;
-					process = processFFPROBE.start();
-										
-					String line;
-					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-
-					Console.consoleFFPROBE.append(System.lineSeparator());
-					
-					while ((line = input.readLine()) != null)
-					{						
-						Console.consoleFFPROBE.append(line + System.lineSeparator());		
+								if (file.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
+								{		
+									String s[] = RecordInputDevice.setInputDevices().split("-f ");
+									if (overlayDeviceIsRunning)
+										s = RecordInputDevice.setOverlayDevice().split("-f ");
 									
-						//Errors
-						FFMPEG.checkForErrors(line);
-												
-						//Entrelacement
-						if (line.contains("top first") || line.contains("top coded first"))
-						{
-							interlaced = "1";
-							if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
-								fieldOrder = "0";
+									String id[] = s[1].split("\"");
+									String inputDevice = id[0] + '"' + id[1] + '"';
+	
+									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -f " + inputDevice);
+								}
+								else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
+								{
+									String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
+									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
+								}
+								else
+									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0" + '"');	
+							}	
+							else
+								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -i " + '"' + file + '"');
 						}
-						else if (line.contains("bottom first") || line.contains("bottom coded first"))
+						else
 						{
-							interlaced = "1";
-							if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
-								fieldOrder = "1";
+							PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+							PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
+							PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";						
+							
+							if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
+							{
+								if (file.equals("Capture.input.device") && RecordInputDevice.inputDeviceResolution == "")
+								{
+									String s[] = RecordInputDevice.setInputDevices().split("-f ");
+									if (overlayDeviceIsRunning)
+										s = RecordInputDevice.setOverlayDevice().split("-f ");
+									
+									String id[] = s[1].split("\"");
+									if (RecordInputDevice.audioDeviceIndex > 0 && overlayDeviceIsRunning == false)
+										id =  s[2].split("\"");;
+	
+									String inputDevice = id[0] + '"' + id[1] + '"';
+									
+									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -f " + inputDevice);
+								}
+								else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
+								{
+									String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
+									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
+								}
+								else
+									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0");	
+							}
+							else
+								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -i " + '"' + file + '"');
 						}
 						
-		                // Durée
-			            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false)
-			            {			            	 
-				    		String str = line.substring(line.indexOf(":") + 2);
-				    		String s[] = str.split(",");	 
-				    		
-				    		String ffmpegTime = s[0].replace(".", ":");	  
-				    					    							    		
-				    		getVideoLengthTC = ffmpegTime;
-				    		totalLength = (getTimeToMS(ffmpegTime));
-				    		    		
-				         	if (grpBitrate.isVisible() && totalLength != 0)
-							{     						         		
-					        	 NumberFormat formatter = new DecimalFormat("00");
-					        	 int hours = ((totalLength) / 3600000);
-					        	 int min =  ((totalLength) / 60000) % 60;
-					             int sec = ((totalLength) / 1000) % 60;
-					             int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
-					             
-					             textH.setText(formatter.format(hours));
-					             textM.setText(formatter.format(min));
-					             textS.setText(formatter.format(sec));
-					             textF.setText(formatter.format(frames));
-					             
-					      		if (VideoPlayer.playerVideo != null)	
-					     			VideoPlayer.totalDuration();
-
-					            setFilesize();
-							}
-			            }
- 			            
-			            // Détection YUVJ
-						if (line.contains("Video:") && line.contains("attached pic") == false)
+						isRunning = true;
+						process = processFFPROBE.start();
+											
+						String line;
+						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
+	
+						Console.consoleFFPROBE.append(System.lineSeparator());
+						
+						while ((line = input.readLine()) != null)
 						{						
-							//Codec vidéo
-							String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
-							videoCodec = splitVideo[1].replace(",", "");
-						
-							if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
+							Console.consoleFFPROBE.append(line + System.lineSeparator());		
+										
+							//Errors
+							FFMPEG.checkForErrors(line);
+													
+							//Entrelacement
+							if (line.contains("top first") || line.contains("top coded first"))
 							{
-								videoCodec = "dnxhr";
+								interlaced = "1";
+								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+									fieldOrder = "0";
+							}
+							else if (line.contains("bottom first") || line.contains("bottom coded first"))
+							{
+								interlaced = "1";
+								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+									fieldOrder = "1";
 							}
 							
-							if (videoCodec.equals("qtrle"))
-							{
-								videoCodec = "qt animation";
-							}
-							
-							//Création de la waveform pour le lecteur vidéo
-				            audioOnly = false;
-							 
-							// Niveaux					 
-			                if (line.contains("tv"))
-			                   lumaLevel = "16-235";
-			                else if (line.contains("(pc)"))
-			                   lumaLevel = "0-255";
-			                			                
-			                // Lecture
-						 	String data = line;
-			                data = line.substring(data.indexOf("Video:"));
-
-			                // Timecode Size
-			                String split[] = data.split(",");
-			                int i = 0;
-			                do {
-			                    i ++;
-			                } while ((split[i].contains("x") == false || split[i].contains("xyz")) && i < split.length - 1);
-			                
-			                if (split[i].contains("["))
-			                {
-			                	String s[] = split[i].split("\\[");
-			                	split[i] = s[0].replace(" ","");
-			                }
-		
-			                //Bug workaround when it shows "unspecified size" && is a scale form like 1920x1080
-			                if (split[i].contains("unspecified size") == false && split[i].contains("x"))
-			                {		
-				                String resolution = split[i].substring(split[i].indexOf("x") + 1);
-				              	String splitr[] = resolution.split(" ");
+			                // Durée
+				            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false)
+				            {			            	 
+					    		String str = line.substring(line.indexOf(":") + 2);
+					    		String s[] = str.split(",");	 
+					    		
+					    		String ffmpegTime = s[0].replace(".", ":");	  
+					    					    							    		
+					    		getVideoLengthTC = ffmpegTime;
+					    		totalLength = (getTimeToMS(ffmpegTime));
+					    		    		
+					         	if (grpBitrate.isVisible() && totalLength != 0)
+								{     						         		
+						        	 NumberFormat formatter = new DecimalFormat("00");
+						        	 int hours = ((totalLength) / 3600000);
+						        	 int min =  ((totalLength) / 60000) % 60;
+						             int sec = ((totalLength) / 1000) % 60;
+						             int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
+						             
+						             textH.setText(formatter.format(hours));
+						             textM.setText(formatter.format(min));
+						             textS.setText(formatter.format(sec));
+						             textF.setText(formatter.format(frames));
+						             
+						      		if (VideoPlayer.playerVideo != null)	
+						     			VideoPlayer.totalDuration();
 	
-				              	// Crop Image
-				                String height = split[i];
-				                
-				                String splitx[]= height.split("x");
-				                
-				                String getHeight[] = splitx[1].split(" ");
-	
-					            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
-					            imageHeight = Integer.parseInt(splitr[0]);
-				                imageResolution = imageWidth + "x" + getHeight[0];
-	              			               
-				                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
-				                {
-				                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
-				                	imageWidth = RecordInputDevice.screenWidth;
-				                	imageHeight = RecordInputDevice.screenHeigth;
-				                }
-				                			               			                
-				                //Ratio du lecteur
-				                if (line.contains("DAR"))
-				                {
-				                	String[] splitDAR = line.split("DAR");
-				                	String[] splitDAR2 = splitDAR[1].split(",");
-				                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
-				                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
-				                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
-				                	imageRatio = (float) ratioWidth / ratioHeight;
-				                }
-				                else
-				                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
-				                			                
-				                // Crop Form
-				                int largeur = 0;
-				                int hauteur = 0;			               
-			                	
-				                // Pixels cropés
-				                if (ratioFinal < ((float) imageWidth / imageHeight))
-				                {
-					                int pixelsWidth = (imageWidth - hauteur);
-					                cropPixelsWidth =  (int) (float) pixelsWidth / 2;
-					                cropPixelsHeight = 0;
-				                }
-				                else 
-				                {
-					                int pixelsHeight = (imageHeight - largeur);
-					                cropPixelsHeight = (int) (float) pixelsHeight / 2;
-					                cropPixelsWidth = 0;
-				                }	
-				                
-				                // FPS
-				                if (inputDeviceIsRunning)
-				            	{
-				            		if (file.equals("Capture.current.screen"))
-				            			currentFPS = Float.parseFloat(RecordInputDevice.txtScreenRecord.getText());
-				            		else
-				            			currentFPS = Float.parseFloat(RecordInputDevice.txtInputDevice.getText());
-				            	}
-				                else
-				                {
-						            if (line.contains("fps")) 
-						            {						            	
-						                String str[] = line.split("fps");
-						                							                
-						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-						                
-						                currentFPS = Float.parseFloat(str[1].replace("k", "")); //I don't know why there is a 'k' character with dv files...
-						                
-						                //Used for VFR						      
-						                str = String.valueOf(currentFPS).split("\\.");	
-
-						                if (str[1].length() == 2 && str[1].equals("00") == false)
-						                {
-						                	if (str[1].equals("88") == false //119.88
-						                	&& str[1].equals("94") == false //59.94
-						                	&& str[1].equals("97") == false //29.97
-						                	&& str[1].equals("98") == false) //23.98
-						                	{						                	
-							                	str = line.split("tbr");
-								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-								                currentFPS = Float.parseFloat(str[1]);
-						                	}
-						                }
-						            } 
-						            else if (line.contains("tbr"))
-						            {
-						            	String str[] = line.split("tbr");
-					                	
-						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-						                
-						                currentFPS = Float.parseFloat(str[1]);
-						                
-						                //Used for VFR						      
-						                str = String.valueOf(currentFPS).split("\\.");	
-
-						                if (str[1].length() == 2 && str[1].equals("00") == false)
-						                {
-						                	if (str[1].equals("88") == false //119.88
-						                	&& str[1].equals("94") == false //59.94
-						                	&& str[1].equals("97") == false //29.97
-						                	&& str[1].equals("98") == false) //23.98
-						                	{						                	
-							                	str = line.split("tbr");
-								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-								                currentFPS = Float.parseFloat(str[1]);
-						                	}
-						                }
-						            }
-				                }
-			                }
-						 }
-						 
-			        	 if (line.contains("Audio:") && (line.contains("0 channels")) == false)
-			        	 {
-			        		 hasAudio = true;
-			        		 
-			        		 if (line.contains("pcm_s24"))
-			        			 qantization = 24;
-			        		 
-			        		 if (line.contains("pcm_s32"))
-			        			 qantization = 32;
-			        			 
-			        		 channels ++;
-					        		 
-			        		 if (line.contains("Hz"))
-			        		 {
-			        			 String s[] = line.split(",");
-			        			 
-			        			 int i = 0;
-			        			 do {			        						 
-			        				 i++;
-			        			 } while (s[i].contains("Hz") == false);
-			        			 audioSampleRate = Integer.parseInt(s[i].replace(" ", "").replace("Hz", ""));
-			        		 }
-			        		 
-			        		 if (line.contains("2 channels") || line.contains("stereo"))
-			        		 {
-			        			 stereo = true;
-			        			 surround = false;
-			        		 }
-			        		 else if (line.contains("1 channels") || line.contains("mono"))
-			        		 {
-			        			 stereo = false;
-			        			 surround = false;
-			        		 }
-			        		 else if  (line.contains("5.1") || line.contains("6.1") || line.contains("7.1"))
-			        		 {
-			        			 stereo = true;//permet de l'utiliser tel quel avec les codecs audio car il est embedded
-			        			 surround = true;
-			        		 }
-			        		 
-			        		 //Codec audio
-							 String[] splitAudio = line.substring(line.indexOf("Audio:")).split(" ");							
-							 audioCodec = splitAudio[1].replace(",", "");
-							 
-							 String[] splitBitrate = line.substring(line.indexOf("Audio:")).split(" kb/s");	
-							 String[] bitrate = splitBitrate[0].split(" ");
-							 audioBitrate =	bitrate[bitrate.length - 1];		
-			        		 
-			        	 }
-			        	 
-			        	 //Extract Audio	
-			        	 if (line.contains("Audio:"))
-			        		 audioStreams ++;
-			        	 
-			        	 //Extract Subtitles			     		
-			        	 if (line.contains("Subtitle:"))
-			        	 {
-			        		 subtitleStreams ++;
-			        		 
-			        		 String s[] = line.substring(line.lastIndexOf(":") + 1).split(" ");	
-			        		 subtitlesCodec = s[1].replace(",", "");			        	 }
-			        	 
-			        	//Timecode from XML
-			        	if (line.contains("StartTimecode"))
-			        	{
-			        		String s1[] = line.split(">");
-			        		String s2[] = s1[1].split("<");
-			        					        		
-			        		String str[] = s2[0].replace(";" , ":").split(":");
-		                	timecode1 = str[0].replace(" ", "");
-		                	timecode2 = str[1].replace(" ", "");
-		                	timecode3 = str[2].replace(" ", "");
-		                	timecode4 = str[3].replace(" ", "");
-			        	}
-			        	 
-		        	 	//Timecode
-			            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
-			            {		
-			            	//Drop frame / non drop frame
-			            	if (line.contains(";"))
-			            	{
-			            		dropFrameTC = ";";
-			            	}
-			            	else
-			            		dropFrameTC = ":";
-			            	
-			            	if (Shutter.caseShowTimecode.isSelected()
-		            		|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
-		            		|| comboFonctions.getSelectedItem().equals("XAVC")
-		            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
-		            		|| comboFonctions.getSelectedItem().equals("DNxHD")
-		            		|| comboFonctions.getSelectedItem().equals("DNxHR")
-		            		|| comboFonctions.getSelectedItem().equals("Apple ProRes")
-		            		|| comboFonctions.getSelectedItem().equals("QT Animation")
-							|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
-		            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
-		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
-		            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))			            			
-	            			|| (VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
-				            {			            		
-			            		if (FFPROBE.timecode1 == "")
-				                {			            					            			
-			            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
-			            			
-				                	timecode1 = str[1];
-				                	timecode2 = str[2];
-				                	timecode3 = str[3];
-				                	timecode4 = str[4];
-				                }
+						            setFilesize();
+								}
 				            }
-			            }
-			            
-		                // Creation time
-		                if (line.contains("creation_time") && creationTime.equals(""))
-		                {
-		                	//Example   : 2021-05-20T09:55:22.000000Z
-		                	String s[] =  line.substring(line.indexOf(":") + 1).replace(" ", "").replace("T", " ").split("\\.");
-
-		                	creationTime = s[0];
-		                }
-			            
-				}		
-				process.waitFor();	
-
-				Console.consoleFFPROBE.append(System.lineSeparator());
+	 			            
+				            // Détection YUVJ
+							if (line.contains("Video:") && line.contains("attached pic") == false)
+							{						
+								//Codec vidéo
+								String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
+								videoCodec = splitVideo[1].replace(",", "");
 							
-				} catch (Exception e) {	
-					FFMPEG.error = true;
-				} finally {
-					isRunning = false;
-					btnStart.setEnabled(true);
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				}
-						
-			}			
-		});
-		processData.start();
+								if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
+								{
+									videoCodec = "dnxhr";
+								}
+								
+								if (videoCodec.equals("qtrle"))
+								{
+									videoCodec = "qt animation";
+								}
+								
+								//Création de la waveform pour le lecteur vidéo
+					            audioOnly = false;
+								 
+								// Niveaux					 
+				                if (line.contains("tv"))
+				                   lumaLevel = "16-235";
+				                else if (line.contains("(pc)"))
+				                   lumaLevel = "0-255";
+				                			                
+				                // Lecture
+							 	String data = line;
+				                data = line.substring(data.indexOf("Video:"));
+	
+				                // Timecode Size
+				                String split[] = data.split(",");
+				                int i = 0;
+				                do {
+				                    i ++;
+				                } while ((split[i].contains("x") == false || split[i].contains("xyz")) && i < split.length - 1);
+				                
+				                if (split[i].contains("["))
+				                {
+				                	String s[] = split[i].split("\\[");
+				                	split[i] = s[0].replace(" ","");
+				                }
+			
+				                //Bug workaround when it shows "unspecified size" && is a scale form like 1920x1080
+				                if (split[i].contains("unspecified size") == false && split[i].contains("x"))
+				                {		
+					                String resolution = split[i].substring(split[i].indexOf("x") + 1);
+					              	String splitr[] = resolution.split(" ");
 		
+					              	// Crop Image
+					                String height = split[i];
+					                
+					                String splitx[]= height.split("x");
+					                
+					                String getHeight[] = splitx[1].split(" ");
+		
+						            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
+						            imageHeight = Integer.parseInt(splitr[0]);
+					                imageResolution = imageWidth + "x" + getHeight[0];
+		              			               
+					                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
+					                {
+					                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
+					                	imageWidth = RecordInputDevice.screenWidth;
+					                	imageHeight = RecordInputDevice.screenHeigth;
+					                }
+					                			               			                
+					                //Ratio du lecteur
+					                if (line.contains("DAR"))
+					                {
+					                	String[] splitDAR = line.split("DAR");
+					                	String[] splitDAR2 = splitDAR[1].split(",");
+					                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
+					                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
+					                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
+					                	imageRatio = (float) ratioWidth / ratioHeight;
+					                }
+					                else
+					                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
+					                			                
+					                // Crop Form
+					                int largeur = 0;
+					                int hauteur = 0;			               
+				                	
+					                // Pixels cropés
+					                if (ratioFinal < ((float) imageWidth / imageHeight))
+					                {
+						                int pixelsWidth = (imageWidth - hauteur);
+						                cropPixelsWidth =  (int) (float) pixelsWidth / 2;
+						                cropPixelsHeight = 0;
+					                }
+					                else 
+					                {
+						                int pixelsHeight = (imageHeight - largeur);
+						                cropPixelsHeight = (int) (float) pixelsHeight / 2;
+						                cropPixelsWidth = 0;
+					                }	
+					                
+					                // FPS
+					                if (inputDeviceIsRunning)
+					            	{
+					            		if (file.equals("Capture.current.screen"))
+					            			currentFPS = Float.parseFloat(RecordInputDevice.txtScreenRecord.getText());
+					            		else
+					            			currentFPS = Float.parseFloat(RecordInputDevice.txtInputDevice.getText());
+					            	}
+					                else
+					                {
+							            if (line.contains("fps")) 
+							            {						            	
+							                String str[] = line.split("fps");
+							                							                
+							                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+							                
+							                currentFPS = Float.parseFloat(str[1].replace("k", "")); //I don't know why there is a 'k' character with dv files...
+							                
+							                //Used for VFR						      
+							                str = String.valueOf(currentFPS).split("\\.");	
+	
+							                if (str[1].length() == 2 && str[1].equals("00") == false)
+							                {
+							                	if (str[1].equals("88") == false //119.88
+							                	&& str[1].equals("94") == false //59.94
+							                	&& str[1].equals("97") == false //29.97
+							                	&& str[1].equals("98") == false) //23.98
+							                	{						                	
+								                	str = line.split("tbr");
+									                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+									                currentFPS = Float.parseFloat(str[1]);
+							                	}
+							                }
+							            } 
+							            else if (line.contains("tbr"))
+							            {
+							            	String str[] = line.split("tbr");
+						                	
+							                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+							                
+							                currentFPS = Float.parseFloat(str[1]);
+							                
+							                //Used for VFR						      
+							                str = String.valueOf(currentFPS).split("\\.");	
+	
+							                if (str[1].length() == 2 && str[1].equals("00") == false)
+							                {
+							                	if (str[1].equals("88") == false //119.88
+							                	&& str[1].equals("94") == false //59.94
+							                	&& str[1].equals("97") == false //29.97
+							                	&& str[1].equals("98") == false) //23.98
+							                	{						                	
+								                	str = line.split("tbr");
+									                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+									                currentFPS = Float.parseFloat(str[1]);
+							                	}
+							                }
+							            }
+					                }
+				                }
+							 }
+							 
+				        	 if (line.contains("Audio:") && (line.contains("0 channels")) == false)
+				        	 {
+				        		 hasAudio = true;
+				        		 
+				        		 if (line.contains("pcm_s24"))
+				        			 qantization = 24;
+				        		 
+				        		 if (line.contains("pcm_s32"))
+				        			 qantization = 32;
+				        			 
+				        		 channels ++;
+						        		 
+				        		 if (line.contains("Hz"))
+				        		 {
+				        			 String s[] = line.split(",");
+				        			 
+				        			 int i = 0;
+				        			 do {			        						 
+				        				 i++;
+				        			 } while (s[i].contains("Hz") == false);
+				        			 audioSampleRate = Integer.parseInt(s[i].replace(" ", "").replace("Hz", ""));
+				        		 }
+				        		 
+				        		 if (line.contains("2 channels") || line.contains("stereo"))
+				        		 {
+				        			 stereo = true;
+				        			 surround = false;
+				        		 }
+				        		 else if (line.contains("1 channels") || line.contains("mono"))
+				        		 {
+				        			 stereo = false;
+				        			 surround = false;
+				        		 }
+				        		 else if  (line.contains("5.1") || line.contains("6.1") || line.contains("7.1"))
+				        		 {
+				        			 stereo = true;//permet de l'utiliser tel quel avec les codecs audio car il est embedded
+				        			 surround = true;
+				        		 }
+				        		 
+				        		 //Codec audio
+								 String[] splitAudio = line.substring(line.indexOf("Audio:")).split(" ");							
+								 audioCodec = splitAudio[1].replace(",", "");
+								 
+								 String[] splitBitrate = line.substring(line.indexOf("Audio:")).split(" kb/s");	
+								 String[] bitrate = splitBitrate[0].split(" ");
+								 audioBitrate =	bitrate[bitrate.length - 1];		
+				        		 
+				        	 }
+				        	 
+				        	 //Extract Audio	
+				        	 if (line.contains("Audio:"))
+				        		 audioStreams ++;
+				        	 
+				        	 //Extract Subtitles			     		
+				        	 if (line.contains("Subtitle:"))
+				        	 {
+				        		 subtitleStreams ++;
+				        		 
+				        		 String s[] = line.substring(line.lastIndexOf(":") + 1).split(" ");	
+				        		 subtitlesCodec = s[1].replace(",", "");			        	 }
+				        	 
+				        	//Timecode from XML
+				        	if (line.contains("StartTimecode"))
+				        	{
+				        		String s1[] = line.split(">");
+				        		String s2[] = s1[1].split("<");
+				        					        		
+				        		String str[] = s2[0].replace(";" , ":").split(":");
+			                	timecode1 = str[0].replace(" ", "");
+			                	timecode2 = str[1].replace(" ", "");
+			                	timecode3 = str[2].replace(" ", "");
+			                	timecode4 = str[3].replace(" ", "");
+				        	}
+				        	 
+			        	 	//Timecode
+				            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
+				            {		
+				            	//Drop frame / non drop frame
+				            	if (line.contains(";"))
+				            	{
+				            		dropFrameTC = ";";
+				            	}
+				            	else
+				            		dropFrameTC = ":";
+				            	
+				            	if (Shutter.caseShowTimecode.isSelected()
+			            		|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
+			            		|| comboFonctions.getSelectedItem().equals("XAVC")
+			            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
+			            		|| comboFonctions.getSelectedItem().equals("DNxHD")
+			            		|| comboFonctions.getSelectedItem().equals("DNxHR")
+			            		|| comboFonctions.getSelectedItem().equals("Apple ProRes")
+			            		|| comboFonctions.getSelectedItem().equals("QT Animation")
+								|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
+			            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
+			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
+			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))			            			
+		            			|| (VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
+					            {			            		
+				            		if (FFPROBE.timecode1 == "")
+					                {			            					            			
+				            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
+				            			
+					                	timecode1 = str[1];
+					                	timecode2 = str[2];
+					                	timecode3 = str[3];
+					                	timecode4 = str[4];
+					                }
+					            }
+				            }
+				            
+			                // Creation time
+			                if (line.contains("creation_time") && creationTime.equals(""))
+			                {
+			                	//Example   : 2021-05-20T09:55:22.000000Z
+			                	String s[] =  line.substring(line.indexOf(":") + 1).replace(" ", "").replace("T", " ").split("\\.");
+	
+			                	creationTime = s[0];
+			                }
+				            
+					}		
+					process.waitFor();	
+	
+					Console.consoleFFPROBE.append(System.lineSeparator());
+								
+					} catch (Exception e) {	
+						FFMPEG.error = true;
+					} finally {
+						isRunning = false;
+						btnStart.setEnabled(true);
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					}
+							
+				}			
+			});
+			processData.start();
+		}		
 	}
 
 	public static void FrameData(final String file) {	
@@ -1129,7 +1134,7 @@ public static boolean hasAlpha = false;
 	}
 	
 	public static void setFilesize() {
-		
+
 		if (grpBitrate.isVisible())
         {
 			int multi = 0;
