@@ -6826,7 +6826,7 @@ public class Shutter {
 		lblPresets.setBounds(caseEnableCrop.getX() + caseEnableCrop.getWidth() + 7, caseEnableCrop.getY() + 3, lblPresets.getPreferredSize().width, 16);		
 		grpCrop.add(lblPresets);
 		
-		final String presetsList[] = { language.getProperty("aucun"), "auto", "2.75", "2.55", "2.39", "2.35", "2.33", "1.91", "1.85", "16/9", "4/3", "1", "9/16"};
+		final String presetsList[] = { language.getProperty("aucun"), "auto", "2.75", "2.55", "2.39", "2.35", "2.33", "1.91", "1.85", "16/9", "4/3", "4/5", "1", "9/16"};
 		
 		comboPreset = new JComboBox<String>();
 		comboPreset.setName("comboPreset");
@@ -16997,7 +16997,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (System.getProperty("os.name").contains("Windows"))
+				if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 				{
 					if (comboGPUDecoding.getSelectedItem().equals("auto"))
 					{
@@ -17046,7 +17046,7 @@ public class Shutter {
 		comboGPUFilter.setBounds(lblGpuFiltering.getX() + lblGpuFiltering.getWidth() + 6, comboGPUDecoding.getY(), comboGPUFilter.getPreferredSize().width, 16);
 		comboGPUFilter.setMaximumRowCount(10);
 				
-		if (System.getProperty("os.name").contains("Windows") && comboGPUDecoding.getSelectedItem().equals(language.getProperty("aucun")) == false)
+		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) && comboGPUDecoding.getSelectedItem().equals(language.getProperty("aucun")) == false)
 		{
 			comboGPUFilter.setSelectedItem("auto");
 			comboGPUFilter.setEnabled(true);
@@ -22238,14 +22238,14 @@ public class Shutter {
 			VideoPlayer.videoPath = null;
 			VideoPlayer.setMedia();	
 		}
-		
-		if (FFPROBE.isRunning)
+
+		if (VideoPlayer.videoPath == null || FFPROBE.isRunning)
 		{
 			do {
 				try {
-					Thread.sleep(10);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {}
-			} while(FFPROBE.isRunning);
+			} while (VideoPlayer.videoPath == null || FFPROBE.isRunning);
 		}
 		
 		if (scanIsRunning == false)
