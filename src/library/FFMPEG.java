@@ -1017,6 +1017,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		isGPUCompatible = false;
 		cudaAvailable = false;
 		qsvAvailable = false;
+		videotoolboxAvailable = false;
 		
 		//Check is GPU can decode				
 		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
@@ -1109,9 +1110,9 @@ public static StringBuilder errorLog = new StringBuilder();
 								do {
 									Thread.sleep(100);
 								} while(FFMPEG.runProcess.isAlive());
-								
+	
 								if (FFMPEG.error == false)
-									videotoolboxAvailable = true;
+									videotoolboxAvailable = true;								
 							}
 							
 							//Disable GPU if not available
@@ -1198,7 +1199,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		error = false;	
 		
-	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
+	    //Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
 		runProcess = new Thread(new Runnable()  {
 			
@@ -1233,11 +1234,11 @@ public static StringBuilder errorLog = new StringBuilder();
 					String line;
 					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
 					
-					Console.consoleFFMPEG.append(System.lineSeparator());
+					//Console.consoleFFMPEG.append(System.lineSeparator());
 					
 					while ((line = input.readLine()) != null) {
 						
-						Console.consoleFFMPEG.append(line + System.lineSeparator());		
+						//Console.consoleFFMPEG.append(line + System.lineSeparator());		
 						
 						//Errors
 						checkForErrors(line);					
@@ -1245,7 +1246,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					}					
 					process.waitFor();		
 					
-					Console.consoleFFMPEG.append(System.lineSeparator());
+					//Console.consoleFFMPEG.append(System.lineSeparator());
 						
 				} catch (IOException io) {//Bug Linux							
 				} catch (InterruptedException e) {
