@@ -154,6 +154,7 @@ public class VideoPlayer {
 	public static JTextField splitValue;
 	private static JLabel lblSplitSec;
 	public static JButton btnPrevious;
+	private static boolean previousFrame = false;
 	public static JButton btnNext;
 	public static JButton btnStop;
 	public static JButton btnPlay;
@@ -497,7 +498,7 @@ public class VideoPlayer {
 				if (playerVideo != null)
 				{
 					if (e.getKeyCode() == KeyEvent.VK_LEFT)
-	            		btnPrevious.doClick();	
+						btnPrevious.doClick();	
 					
 					if (e.getKeyCode() == KeyEvent.VK_RIGHT)
 						btnNext.doClick();
@@ -981,7 +982,7 @@ public class VideoPlayer {
 							frameIsComplete = false;		
 							playerLoop = true;
 							playerProcess(t);							
-														
+										
 							long time = System.currentTimeMillis();
 							
 							do {
@@ -990,7 +991,7 @@ public class VideoPlayer {
 									Thread.sleep(1);
 								} catch (InterruptedException e) {}
 								
-								if (System.currentTimeMillis() - time > 3000)
+								if (System.currentTimeMillis() - time > 5000)
 									frameIsComplete = true;
 															
 							} while (frameIsComplete == false);
@@ -1058,7 +1059,7 @@ public class VideoPlayer {
 							Thread.sleep(1);
 						} catch (InterruptedException e) {}
 						
-						if (System.currentTimeMillis() - time > 3000)
+						if (System.currentTimeMillis() - time > 5000)
 							frameIsComplete = true;
 													
 					} while (frameIsComplete == false);
@@ -1729,7 +1730,7 @@ public class VideoPlayer {
 				
 				//Add Audio tracks
 				comboAudioTrack.removeAllItems();
-				if (FFPROBE.channels > 1)
+				if (FFPROBE.channels > 1 && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 				{							
 					for (int i = 0 ; i < FFPROBE.channels ; i++)
 					{
@@ -1891,7 +1892,7 @@ public class VideoPlayer {
 
 			String gpuDecoding = "";
 
-			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && mouseIsPressed == false)
+			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && mouseIsPressed == false && previousFrame == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 			{
 				if (FFMPEG.isGPUCompatible)
 				{
@@ -1916,7 +1917,7 @@ public class VideoPlayer {
 					gpuDecoding = " -hwaccel auto";
 				}
 			}
-			
+
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 			
 			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
@@ -1979,7 +1980,8 @@ public class VideoPlayer {
 		else
 		{
 			String input = " -i " + '"' + videoPath + '"';
-						
+			String channel = "";
+			
 			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) && Shutter.fileList.getSelectedIndex() + 1 < Shutter.liste.getSize())
 			{
 				if (Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1).contains("lavfi"))
@@ -1991,11 +1993,12 @@ public class VideoPlayer {
 					input = " -i " + '"' + Shutter.liste.getElementAt(Shutter.fileList.getSelectedIndex() + 1) + '"';
 				}
 			}
-			
-			String channel = "";
-			if (FFPROBE.channels > 0 && comboAudioTrack.isVisible())
-			{
-				channel = " -map a:" + comboAudioTrack.getSelectedIndex();
+			else
+			{	
+				if (FFPROBE.channels > 0 && comboAudioTrack.isVisible())
+				{
+					channel = " -map a:" + comboAudioTrack.getSelectedIndex();
+				}
 			}
 			
 			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1 " + channel + " -f wav pipe:-";
@@ -2151,6 +2154,8 @@ public class VideoPlayer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				previousFrame = true;
+				
 				i ++;
 
 				if (frameVideo != null && i <= 1)
@@ -2167,7 +2172,7 @@ public class VideoPlayer {
 								lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);
 								playerSetTime(playerCurrentFrame - 1);
 							}
-			
+										
 							frameControl = true;
 														
 							if (playerVideo != null && frameVideo != null)
@@ -2202,20 +2207,10 @@ public class VideoPlayer {
 								}
 								else
 								{
-									playerSetTime(playerCurrentFrame - 1);					
-																									
-									long time = System.currentTimeMillis();
-									
-									do {
-	
-										try {
-											Thread.sleep(1);
-										} catch (InterruptedException e) {}
-										
-										if (System.currentTimeMillis() - time > 3000)
-											frameIsComplete = true;
-																	
-									} while (frameIsComplete == false);
+									if (setTime.isAlive() == false)
+									{	
+										playerSetTime(playerCurrentFrame - 1);		
+									}
 								}
 								
 							}	
@@ -2298,20 +2293,12 @@ public class VideoPlayer {
 			public void actionPerformed(ActionEvent e) {
 
 				//Allows to wait for the last frame to load					
-				long time = System.currentTimeMillis();
-
-				if (playerIsPlaying() == false)
+				while (setTime.isAlive())
 				{
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-						
-						if (System.currentTimeMillis() - time > 3000)
-							break;
-						
-					} while (playerLoop);
-				}
+					try {
+						Thread.sleep(10);
+					} catch (InterruptedException e1) {}						
+				} 
 				
 				if (btnPlay.getName().equals("pause"))
 				{
@@ -2336,10 +2323,20 @@ public class VideoPlayer {
 				}
 				else if (btnPlay.getName().equals("play"))
 				{									
-					if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected())
+					if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected() || previousFrame)
 					{				
-						//Clear the buffer
-						bufferedFrames.clear();						
+						if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected())
+						{	
+							//Clear the buffer
+							bufferedFrames.clear();			
+						}
+						
+						if (previousFrame)
+						{
+							//IMPORTANT enable GPU decoding after using btnPrevious
+							previousFrame = false;
+						}
+						
 						playerSetTime(playerCurrentFrame);
 					}
 					
@@ -2863,20 +2860,12 @@ public class VideoPlayer {
 				if (Shutter.liste.getSize() > 0)
                 {	
 					//Allows to wait for the last frame to load					
-					long time = System.currentTimeMillis();
-
-					if (playerIsPlaying() == false)
+					while (setTime.isAlive())
 					{
-						do {
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e1) {}
-							
-							if (System.currentTimeMillis() - time > 3000)
-								break;
-							
-						} while (playerLoop);
-					}		
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {}						
+					}	
 					
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 					float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
@@ -4811,8 +4800,8 @@ public class VideoPlayer {
 		else if (FFMPEG.isGPUCompatible
 		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto")
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto")
-		&& noGPU == false
-		&& mouseIsPressed == false
+		&& noGPU == false && previousFrame == false
+		&& mouseIsPressed == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
 		&& Colorimetry.setInputCodec(extension) == ""
 		&& Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")))
 		{

@@ -1698,7 +1698,7 @@ public class Shutter {
 					liste.clear();
 					addToList.setVisible(true);
 					lblFilesEnded.setVisible(false);
-	
+					
 					// H264 Settings
 					lblH264.setVisible(false);
 					textH.setText("00");
