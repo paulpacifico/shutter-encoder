@@ -2206,10 +2206,14 @@ public class VideoPlayer {
 									playerSetTime(playerCurrentFrame - 2);	
 								}
 								else
-								{
-									if (setTime.isAlive() == false)
-									{	
-										playerSetTime(playerCurrentFrame - 1);		
+								{									
+									playerSetTime(playerCurrentFrame - 1);	
+									
+									while (setTime.isAlive())
+									{
+										try {
+											Thread.sleep(1);
+										} catch (InterruptedException e) {}
 									}
 								}
 								
