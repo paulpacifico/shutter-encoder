@@ -850,7 +850,7 @@ public class VideoEncoders extends Shutter {
 			    			}	
 			    			
 			    			//When there is no filter AND it's 8bit only
-			    			if (filterComplex.contains("format=" + bitDepth + "[out]") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && caseColorspace.isSelected() == false)
+			    			if (FFPROBE.imageDepth == 8 && filterComplex.contains("format=" + bitDepth + "[out]") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && caseColorspace.isSelected() == false)
 			    			{
 			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, "");
 			    			}
