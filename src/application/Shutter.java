@@ -22234,19 +22234,25 @@ public class Shutter {
 			RenderQueue.tableRow.setRowCount(0);
 		}
 		
+		//Unlock the file to be deletable
 		if (scanIsRunning == false && screenshotIsRunning == false)
 		{
-			VideoPlayer.videoPath = null;
-			VideoPlayer.setMedia();	
+			VideoPlayer.videoPath = null;	
+			fileList.clearSelection();
+			VideoPlayer.frameVideo = null;	
+			VideoPlayer.playerRepaint();
+			
+			// Lecteur
+			if (VideoPlayer.waveform != null)
+			{
+				VideoPlayer.waveform = null;
+				VideoPlayer.waveformIcon.setIcon(null);
+				VideoPlayer.waveformIcon.repaint();
+			}
 		}
-
-		if (VideoPlayer.videoPath == null || FFPROBE.isRunning)
+		else if (screenshotIsRunning)
 		{
-			do {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {}
-			} while (VideoPlayer.videoPath == null || FFPROBE.isRunning);
+			VideoPlayer.addWaveform(false);
 		}
 		
 		if (scanIsRunning == false)
