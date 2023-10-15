@@ -247,17 +247,20 @@ public static boolean hasAlpha = false;
 					    		totalLength = (getTimeToMS(ffmpegTime));
 					    		    		
 					         	if (grpBitrate.isVisible() && totalLength != 0)
-								{     						         		
-						        	 NumberFormat formatter = new DecimalFormat("00");
-						        	 int hours = ((totalLength) / 3600000);
-						        	 int min =  ((totalLength) / 60000) % 60;
-						             int sec = ((totalLength) / 1000) % 60;
-						             int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
-						             
-						             textH.setText(formatter.format(hours));
-						             textM.setText(formatter.format(min));
-						             textS.setText(formatter.format(sec));
-						             textF.setText(formatter.format(frames));
+								{     				
+					         		lblH264.setText(new File(file).getName());
+						            lblH264.setVisible(true);
+					         		
+						        	NumberFormat formatter = new DecimalFormat("00");
+						        	int hours = ((totalLength) / 3600000);
+						        	int min =  ((totalLength) / 60000) % 60;
+						            int sec = ((totalLength) / 1000) % 60;
+						            int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
+						            
+						            textH.setText(formatter.format(hours));
+						            textM.setText(formatter.format(min));
+						            textS.setText(formatter.format(sec));
+						            textF.setText(formatter.format(frames));
 						             
 						      		if (VideoPlayer.playerVideo != null)	
 						     			VideoPlayer.totalDuration();
@@ -1031,7 +1034,7 @@ public static boolean hasAlpha = false;
 	}
 	
 	public static void setLength() {
-		
+
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		processSetLength = new Thread(new Runnable()  {
@@ -1065,14 +1068,10 @@ public static boolean hasAlpha = false;
 								}
 							}
 						} 
-						else
-						{	
-							if (Shutter.fileList.getSelectedIndices().length == 0)
-				      		{
-								Shutter.fileList.setSelectedIndex(0);
-				      		}
-							
+						else if (Shutter.fileList.getSelectedIndices().length != 0)
+						{
 							lblH264.setText(new File(Shutter.fileList.getSelectedValue()).getName());
+				            lblH264.setVisible(true);
 							
 							//Sending to Data()
 							if (inputDeviceIsRunning == false)					
@@ -1081,48 +1080,54 @@ public static boolean hasAlpha = false;
 							do {
 								Thread.sleep(100);
 							} while (processData.isAlive()); 
+							
+							if (totalLength != 0 && inputDeviceIsRunning == false)
+							{           		
+				    		    if (Shutter.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+				    		    {
+				    				float debit = (float) ((float) 23000000 / FFPROBE.totalLength) * 8;
+				    				
+				    				if (comboFilter.getSelectedIndex() == 0) //H.264
+									{
+				    					if (debit > 38)
+					    					Shutter.debitVideo.setSelectedItem(38000);
+					    				else
+					    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+									}
+									else //H.265
+									{
+										if (debit > 50)
+					    					Shutter.debitVideo.setSelectedItem(50000);
+					    				else
+					    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+									}
+			    		    	}	
+				         		
+					        	NumberFormat formatter = new DecimalFormat("00");
+				
+					            textH.setText(formatter.format((totalLength) / 3600000));
+					            textM.setText(formatter.format(((totalLength) / 60000) % 60) );
+					            textS.setText(formatter.format((totalLength / 1000) % 60));				        
+					            textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
+					             			             
+					            if (VideoPlayer.playerVideo != null)	
+						     		VideoPlayer.totalDuration();
+					             
+					            setFilesize();
+							}
 						}
-						
-						if (totalLength != 0 && inputDeviceIsRunning == false)
-						{           		
-			    		    if (Shutter.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
-			    		    {
-			    				float debit = (float) ((float) 23000000 / FFPROBE.totalLength) * 8;
-			    				
-			    				if (comboFilter.getSelectedIndex() == 0) //H.264
-								{
-			    					if (debit > 38)
-				    					Shutter.debitVideo.setSelectedItem(38000);
-				    				else
-				    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
-								}
-								else //H.265
-								{
-									if (debit > 50)
-				    					Shutter.debitVideo.setSelectedItem(50000);
-				    				else
-				    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
-								}
-		    		    	}	
-			         		
-				        	NumberFormat formatter = new DecimalFormat("00");
-			
-				            textH.setText(formatter.format((totalLength) / 3600000));
-				            textM.setText(formatter.format(((totalLength) / 60000) % 60) );
-				            textS.setText(formatter.format((totalLength / 1000) % 60));				        
-				            textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
-				             			             
-				            if (VideoPlayer.playerVideo != null)	
-					     		VideoPlayer.totalDuration();
-				             
-				            setFilesize();
-				            lblH264.setVisible(true);
+						else
+						{
+							lblH264.setVisible(false);
+							textH.setText("00");
+							textM.setText("00");
+							textS.setText("00");
+							textF.setText("00");
+							bitrateSize.setText("-");
 						}
 					}
 					
-				} catch (Exception e) {
-					System.out.println(e);		
-				}
+				} catch (Exception e) {}
 				finally {
 					calcul = false;
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
