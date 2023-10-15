@@ -98,10 +98,6 @@ public static String format = "";
 							}
 							
 							youtubedl = "yt-dlp_macos";
-							if (arch.equals("x86_64") && Integer.parseInt(macVersion) < 1015)
-							{
-								youtubedl = "yt-dlp_macos_x86";
-							}
 						}
 
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
