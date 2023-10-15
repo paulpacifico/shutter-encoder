@@ -1113,6 +1113,12 @@ public class VideoPlayer {
 							}
 						} 
 						
+						if (Shutter.grpBitrate.isVisible())
+						{     				
+							Shutter.lblH264.setText(new File(Shutter.fileList.getSelectedValue()).getName());
+							Shutter.lblH264.setVisible(true);
+						}
+						
 						//Reset when changing file													
 						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false)
 						{

@@ -1705,6 +1705,7 @@ public class Shutter {
 					textM.setText("00");
 					textS.setText("00");
 					textF.setText("00");
+					bitrateSize.setText("-");
 					
 					// Lecteur
 					if (VideoPlayer.waveform != null)
