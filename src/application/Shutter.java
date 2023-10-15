@@ -180,7 +180,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.5";
+	public static String actualVersion = "17.6";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
