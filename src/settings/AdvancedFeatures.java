@@ -782,8 +782,16 @@ public class AdvancedFeatures extends Shutter {
 				
 				String av1Flags = "";
 				
+				if (lblVBR.getText().equals("CQ") == false)
+				{
+					av1Flags += "enable-force-key-frames=0";
+				}
+				
 				if (caseFastDecode.isSelected())
 				{
+					if (av1Flags != "")
+						av1Flags += ":";
+					
 					av1Flags += "fast-decode=1";
 				}
 				
