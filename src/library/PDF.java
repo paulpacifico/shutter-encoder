@@ -65,6 +65,7 @@ public static int pagesCount = 1;
 				} catch (Exception e) {
 					error = true;					
 				} finally {
+					btnStart.setEnabled(true);
 					isRunning = false;
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}

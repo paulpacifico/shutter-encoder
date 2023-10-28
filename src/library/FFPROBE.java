@@ -49,7 +49,7 @@ public static Thread processVideoLevels;
 public static Thread processGOP;
 public static Thread processFindStreams;
 public static Thread processSetLength;
-private static String analyzedMedia = null;
+public static String analyzedMedia = null;
 public static String subtitlesCodec = "";
 public static int subtitleStreams = 0;
 public static int audioStreams = 0;

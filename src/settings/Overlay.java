@@ -399,10 +399,6 @@ public class Overlay extends Shutter {
 				caseAddSubtitles.doClick();
 				caseAddSubtitles.doClick();
 			}
-			else
-			{
-				caseAddSubtitles.doClick();
-			}	
 						
 			autoBurn = false;
 			autoEmbed = false;
