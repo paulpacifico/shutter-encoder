@@ -1869,6 +1869,7 @@ public class Shutter {
 				
 				int totalLength = 0;
 				FFPROBE.totalLength = 0;
+				FFPROBE.analyzedMedia = null;
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
 				
@@ -1881,7 +1882,7 @@ public class Shutter {
 						} catch (InterruptedException e1) {}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 					
-					// IMPORTANT
+					//IMPORTANT
 					do {
 						try {
 							Thread.sleep(1);
@@ -1891,6 +1892,24 @@ public class Shutter {
 					totalLength += FFPROBE.totalLength;
 					FFPROBE.totalLength = 0;
 				}
+				
+				//IMPORTANT
+				if (VideoPlayer.videoPath != null)
+				{
+					FFPROBE.Data(VideoPlayer.videoPath);
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+					
+					//IMPORTANT
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e1) {}
+					} while (FFPROBE.isRunning);
+				}				
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 

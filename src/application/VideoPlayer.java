@@ -1122,6 +1122,7 @@ public class VideoPlayer {
 						//Reset when changing file													
 						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false)
 						{
+							
 							//IMPORTANT
 							if (FFPROBE.isRunning)
 							{
@@ -1229,9 +1230,8 @@ public class VideoPlayer {
 											isRaw = true;
 									}
 													
-									if (isRaw || Shutter.comboFonctions.getSelectedItem().toString().equals("JPEG")
-									|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionPicture")))
-									{
+									if (isRaw || FFPROBE.totalLength <= 40)
+									{										
 										EXIFTOOL.run(videoPath);	
 										do
 										{
