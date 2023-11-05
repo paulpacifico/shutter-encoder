@@ -923,7 +923,7 @@ public class VideoEncoders extends Shutter {
 							
 							if (cancelled == false)
 							{
-								FFMPEG.run(loop + stream + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);		
+								FFMPEG.run(loop + stream + frameRate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);		
 								
 								do {
 									Thread.sleep(10);
@@ -931,7 +931,7 @@ public class VideoEncoders extends Shutter {
 								
 								if (grpBitrate.isVisible() && case2pass.isSelected())
 								{
-									FFMPEG.run(loop + stream + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
+									FFMPEG.run(loop + stream + frameRate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									do {
 										Thread.sleep(10);

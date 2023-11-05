@@ -74,7 +74,7 @@ public class ReplaceAudio extends Shutter {
 		{							
 			String audio = setAudio(extension, audioExt);
 			String shortest = " -t " + shortestLength + "ms";
-			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
+			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || (liste.getSize() < 2 && (caseChangeAudioCodec.isSelected() || caseAudioOffset.isSelected())))
 				shortest = "";
 								
 			//Command				
@@ -211,8 +211,40 @@ public class ReplaceAudio extends Shutter {
 					
 					if (liste.getSize() <= 2 || videoStream == 1) //Replace one video file
 					{
-						if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) == false || caseChangeAudioCodec.isSelected() == false)
-						{									
+						if (liste.getSize() < 2 && (caseChangeAudioCodec.isSelected() || caseAudioOffset.isSelected()))
+						{	
+							videoFile = new File(liste.getElementAt(0));
+							if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
+							{
+								audioFiles = " -map v:0?";
+							}
+							else
+								audioFiles = " -map v:0? -map a?";
+							
+float 						offset = 0;
+							
+							if (caseAudioOffset.isSelected())
+							{
+								FFPROBE.Data(videoFile.toString());
+								
+								do {
+									Thread.sleep(100);
+								} while (FFPROBE.isRunning);
+								
+								if (caseAudioOffset.isSelected())
+								{
+									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
+								}
+								else
+									offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+								
+								audioFiles = " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(0)  + '"';;
+							}
+							
+							audioFiles += " -map 0:v -map 1:a";
+						}	
+						else
+						{
 							//Stream analyze		
 							if (FFPROBE.FindStreams(liste.getElementAt(1)))
 							{
@@ -244,7 +276,9 @@ public class ReplaceAudio extends Shutter {
 								} while (FFPROBE.isRunning);
 								
 								if (caseAudioOffset.isSelected())
+								{
 									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
+								}
 								else
 									offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 								
@@ -260,11 +294,6 @@ public class ReplaceAudio extends Shutter {
 								Thread.sleep(100);
 							} while (FFPROBE.isRunning);	
 						}
-						else
-						{
-							videoFile = new File(liste.getElementAt(0));
-							audioFiles = " -map v:0?";
-						}	
 						
 						//Start replacement
 						main(audioFiles, audioExt, videoFile);
