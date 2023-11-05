@@ -412,9 +412,16 @@ public class VideoWeb {
 						Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("processCancelled"));
 						Shutter.progressBar1.setValue(0);	
 					}
-										
+															
 					comboFormats.addItem("default");
-					comboFormats.addItem("bestvideo+bestaudio");
+					comboFormats.addItem("bestvideo+bestaudio");					
+					comboFormats.addItem("up to 4K");
+					comboFormats.addItem("up to 1440p");
+					comboFormats.addItem("up to 1080p");
+					comboFormats.addItem("up to 720p");
+					comboFormats.addItem("up to 480p");
+					comboFormats.addItem("up to 360p");
+					comboFormats.addItem("up to 240p");
 					comboFormats.addItem("bestvideo");
 					comboFormats.addItem("bestaudio");
 				}
@@ -488,7 +495,14 @@ public class VideoWeb {
 		
 		comboFormats = new JComboBox<String>();
 		comboFormats.addItem("default");
-		comboFormats.addItem("bestvideo+bestaudio");
+		comboFormats.addItem("bestvideo+bestaudio");					
+		comboFormats.addItem("up to 4K");
+		comboFormats.addItem("up to 1440p");
+		comboFormats.addItem("up to 1080p");
+		comboFormats.addItem("up to 720p");
+		comboFormats.addItem("up to 480p");
+		comboFormats.addItem("up to 360p");
+		comboFormats.addItem("up to 240p");
 		comboFormats.addItem("bestvideo");
 		comboFormats.addItem("bestaudio");
 		comboFormats.setLocation(16, 224);	
@@ -500,8 +514,11 @@ public class VideoWeb {
 
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+				
 				if (comboFormats.getPreferredSize().getWidth() > 380)
+				{
 					comboFormats.setSize(comboFormats.getPreferredSize());				
+				}
 			}
 
 			@Override
@@ -546,12 +563,13 @@ public class VideoWeb {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
 				if (caseMP3.isSelected())
 				{
 					caseWAV.setSelected(false);
 					
 					if (caseAuto.isSelected())
-						comboFormats.setSelectedIndex(3);
+						comboFormats.setSelectedItem("bestaudio");
 				}
 				else
 				{
@@ -576,7 +594,7 @@ public class VideoWeb {
 					caseMP3.setSelected(false);
 					
 					if (caseAuto.isSelected())
-						comboFormats.setSelectedIndex(3);
+						comboFormats.setSelectedItem("bestaudio");
 				}
 				else
 				{
@@ -742,9 +760,23 @@ public class VideoWeb {
 								{
 									YOUTUBEDL.format = "";
 								}
+								else if (comboFormats.getSelectedItem().toString().contains("up to "))
+								{
+									switch (comboFormats.getSelectedItem().toString().replace("up to ", ""))
+									{
+										case "4K": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?4096][height<=?2160]+bestaudio/best[width<=?4096][height<=?2160]" + '"'; break;
+										case "1440p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?2560][height<=?1440]+bestaudio/best[width<=?2560][height<=?1440]" + '"'; break;
+										case "1080p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1920][height<=?1080]+bestaudio/best[width<=?1920][height<=?1080]" + '"'; break;
+										case "720p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1280][height<=?720]+bestaudio/best[width<=?1280][height<=?720]" + '"'; break;
+										case "480p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?854][height<=?480]+bestaudio/best[width<=?854][height<=?480]" + '"'; break;
+										case "360p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?640][height<=?360]+bestaudio/best[width<=?640][height<=?360]" + '"'; break;
+										case "240p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?426][height<=?240]+bestaudio/best[width<=?426][height<=?240]" + '"'; break;
+									}
+								}	
 								else
 									YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
-							}
+								
+							}							
 							else
 							{
 								String[] f = comboFormats.getSelectedItem().toString().split(" ");		

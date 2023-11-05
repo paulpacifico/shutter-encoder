@@ -135,7 +135,7 @@ public class VideoPlayer {
     public static boolean frameIsComplete = false;
     public static boolean playerPlayVideo = true;
 	public static boolean sliderChange = false;
-	private static JLabel lblVolume;
+	public static JLabel lblVolume;
 	public static JSlider sliderVolume = new JSlider();
 	public static JLabel lblPosition;
 	public static JLabel lblDuration;
@@ -1024,9 +1024,9 @@ public class VideoPlayer {
 	}
 
 	public static void playerFreeze() {
-				
+					
 		if ((setTime == null || setTime.isAlive() == false) && (playerVideo == null || playerVideo.isAlive() == false))
-		{				
+		{		
 			setTime = new Thread(new Runnable() {
 
 				@Override
@@ -1353,7 +1353,7 @@ public class VideoPlayer {
 							caseOutS.setEnabled(true);
 							caseOutF.setEnabled(true);
 							
-							if (FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
+							if (FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && Shutter.frame.getSize().width > 654)
 							{
 								lblPosition.setVisible(true);
 								lblDuration.setVisible(true);
@@ -1461,9 +1461,9 @@ public class VideoPlayer {
 						caseOutF.setVisible(true);
 					}		
 						
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) && videoPath != null)
 					{				
-						File video = new File(VideoPlayer.videoPath);
+						File video = new File(videoPath);
 						String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 						
 						SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
@@ -1576,7 +1576,7 @@ public class VideoPlayer {
 			}
 			else
 				lblPosition.setVisible(false);
-			
+						
 			lblVolume.setVisible(true);
 			sliderVolume.setVisible(true);
 			lblSpeed.setVisible(false);
@@ -1601,8 +1601,8 @@ public class VideoPlayer {
 			showScale.setVisible(false);
 			comboAudioTrack.setVisible(false);
 		}
-		else if (Shutter.frame.getSize().width == 654 || FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || enable == false) //Image or disableAll()
-		{
+		else if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || enable == false) //Image or disableAll()
+		{			
 			waveformContainer.setVisible(false);
 			waveformIcon.setVisible(false);
 			caseInH.setVisible(false);
@@ -1660,8 +1660,8 @@ public class VideoPlayer {
 				Shutter.caseAddSubtitles.setEnabled(true);
 			}
 		}
-		else
-		{				
+		else if (Shutter.frame.getSize().width > 654)
+		{	
 			if (FFPROBE.audioOnly)
 			{
 				Shutter.caseVideoFadeIn.setEnabled(false);
@@ -1695,10 +1695,13 @@ public class VideoPlayer {
 				lblDuration.setVisible(false);
 				lblPosition.setVisible(false);
 			}
-			lblVolume.setVisible(true);
-			sliderVolume.setVisible(true);
-			lblSpeed.setVisible(true);
-			sliderSpeed.setVisible(true);
+			if (Shutter.frame.getWidth() >= 1320)
+			{
+				lblVolume.setVisible(true);
+				sliderVolume.setVisible(true);
+				lblSpeed.setVisible(true);
+				sliderSpeed.setVisible(true);
+			}
 			lblMode.setVisible(true);
 			comboMode.setVisible(true);
 			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
@@ -1764,12 +1767,16 @@ public class VideoPlayer {
 			if (FFPROBE.audioOnly || Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 			{
 				caseInternalTc.setVisible(false);
+				casePlaySound.setBounds(caseInternalTc.getX(), caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);	
+				
 				showScale.setVisible(false);
 				showFPS.setVisible(false);
 			}
 			else
 			{
 				caseInternalTc.setVisible(true);
+				caseInternalTc.setBounds(caseInH.getX() - 2, btnPrevious.getY() + btnPrevious.getHeight() + 6, caseInternalTc.getPreferredSize().width, 23);	
+				casePlaySound.setBounds(caseInternalTc.getX() + caseInternalTc.getWidth() + 4, caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
 				
 				if (Shutter.liste.getSize() > 0)
 				{
@@ -2034,7 +2041,7 @@ public class VideoPlayer {
 	        
 	public static void addWaveform(boolean newWaveform) {
 		
-		if (caseShowWaveform.isSelected() && FFPROBE.hasAudio && addWaveformIsRunning == false)
+		if (caseShowWaveform.isSelected() && FFPROBE.hasAudio && addWaveformIsRunning == false && Shutter.frame.getSize().width > 654)
 		{			
 			addWaveformIsRunning = true;
 
@@ -5182,7 +5189,7 @@ public class VideoPlayer {
 			{
 				int maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2;
 				
-				if (Shutter.frame.getWidth() == (1350 - 312))
+				if (Shutter.noSettings)
 				{
 					maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth();
 				}
@@ -5203,13 +5210,13 @@ public class VideoPlayer {
 				y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2;
 			}
 			
-			if (Shutter.frame.getWidth() < 1350)
+			if (Shutter.noSettings)
 			{
 				player.setLocation((1350 - player.getSize().width) / 2, y);
 			}
 			else
 			{
-				player.setLocation((Shutter.frame.getSize().width - player.getSize().width) / 2, y);
+				player.setLocation((Shutter.frame.getWidth() - player.getSize().width) / 2, y);
 			}
 			
 			//IMPORTANT video canvas must be a multiple of 4!
@@ -5221,7 +5228,7 @@ public class VideoPlayer {
 			Shutter.playerRatio = (float) FFPROBE.imageWidth / player.getWidth();
 			
 			//Sliders
-			if (Shutter.frame.getWidth() == (1350 - 312))
+			if (Shutter.noSettings)
 			{
 				slider.setBounds(Shutter.grpChooseFiles.getWidth() + 20, player.getY() + player.getHeight() + 26, Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth(), 40);
 			}
@@ -5353,7 +5360,7 @@ public class VideoPlayer {
 			showScale.setBounds(player.getX(), showFPS.getY(), player.getWidth() / 2, showScale.getPreferredSize().height);
 			comboAudioTrack.setBounds(waveformContainer.getX() + 7, waveformContainer.getY() + (waveformContainer.getHeight() / 2) - 8, 40, 16);
 
-			if (showScale.getY() < Shutter.topPanel.getHeight() || FFPROBE.audioOnly || videoPath == null)
+			if (showScale.getY() < Shutter.topPanel.getHeight() || FFPROBE.audioOnly || videoPath == null || Shutter.frame.getSize().width <= 654)
 			{
 				showScale.setVisible(false);
 			}
@@ -5376,8 +5383,14 @@ public class VideoPlayer {
 			caseOutF.setBounds(caseOutS.getX() + caseOutS.getWidth(), caseOutH.getY(), 21, 21);
 		
 			caseInternalTc.setBounds(caseInH.getX() - 2, btnPrevious.getY() + btnPrevious.getHeight() + 6, caseInternalTc.getPreferredSize().width, 23);	
-			casePlaySound.setBounds(caseInternalTc.getX() + caseInternalTc.getWidth() + 4, caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
-	
+			
+			if (caseInternalTc.isVisible())
+			{
+				casePlaySound.setBounds(caseInternalTc.getX() + caseInternalTc.getWidth() + 4, caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
+			}
+			else
+				casePlaySound.setBounds(caseInternalTc.getX(), caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
+			
 			btnPreview.setBounds(slider.getX() + slider.getWidth() - 16, caseInternalTc.getY() + 2, 16, 16);
 			lblSplitSec.setBounds(btnPreview.getX() + 10, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
 			splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);		
@@ -5390,15 +5403,26 @@ public class VideoPlayer {
 				comboMode.setLocation(btnPreview.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);		
 			
 			lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);			
-			caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY(), caseVuMeter.getPreferredSize().width, 23);
-			caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 5, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
 
 			//Sliders
 			sliderSpeed.setLocation(btnGoToIn.getX() -  sliderSpeed.getWidth() - 4, btnPrevious.getY() + 1);
-			lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);
-						
+			lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);			
 			lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, lblSpeed.getY());	
-			sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() + 1, sliderSpeed.getY(), sliderSpeed.getWidth(), 22);	
+			
+			if (Shutter.frame.getWidth() < 1320 && Shutter.noSettings == false)
+			{
+				caseShowWaveform.setBounds(caseInternalTc.getX(), caseInternalTc.getY() + caseInternalTc.getHeight(), caseShowWaveform.getPreferredSize().width, 23);
+				caseVuMeter.setBounds(caseShowWaveform.getX() + caseShowWaveform.getWidth() + 4, caseShowWaveform.getY(), caseVuMeter.getPreferredSize().width, 23);
+				
+				sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() - lblVolume.getWidth(), sliderSpeed.getY(), sliderSpeed.getWidth(), 22);
+			}
+			else
+			{
+				caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY(), caseVuMeter.getPreferredSize().width, 23);
+				caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 5, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
+
+				sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() + 1, sliderSpeed.getY(), sliderSpeed.getWidth(), 22);
+			}
 
 			if (Shutter.windowDrag == false && videoPath != null && isPiping == false)
 			{					
@@ -5443,7 +5467,7 @@ public class VideoPlayer {
 		
 		Shutter.statusBar.setBounds(0, Shutter.frame.getHeight() - 23, Shutter.frame.getWidth(), 22);
 		
-		if (Shutter.frame.getWidth() >= 1350)
+		if (Shutter.frame.getWidth() >= 1130)
 		{
 			Shutter.lblArrows.setLocation(Shutter.statusBar.getWidth() / 2 - Shutter.lblArrows.getWidth() / 2, Shutter.lblArrows.getY());			
 			Shutter.lblYears.setVisible(true);

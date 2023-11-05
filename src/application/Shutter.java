@@ -49,6 +49,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
@@ -119,6 +121,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -197,6 +200,8 @@ public class Shutter {
 	public static URL soundURL;
 	public static URL soundErrorURL;
 	public static JFrame frame = new JFrame();
+	public static int extendedWidth = 1350;
+	public static boolean noSettings = true;
 	public static int taskBarHeight;
 	public static boolean cancelled = false;
 	public static float ratioFinal = 0; // CropVideo
@@ -497,6 +502,9 @@ public class Shutter {
 	public static JPanel grpAdvanced;
 	public static JPanel grpBitrate;	
 	private static boolean extendSectionsIsRunning = false;
+	private static Thread scrollThread;
+	private static JScrollBar settingsScrollBar;
+	private boolean allowScrolling = false;
 	
 	//grpImageAdjustement
 	public static JPanel grpImageAdjustement;
@@ -902,7 +910,145 @@ public class Shutter {
 		Splash.increment();
 		new VideoPlayer();
 		Splash.increment();	
+
+		settingsScrollBar = new JScrollBar();
+		settingsScrollBar.setVisible(false);
+		settingsScrollBar.setValue(45);
+		settingsScrollBar.setMaximum(100);
+		settingsScrollBar.setBackground(new Color(35,35,35));
+		settingsScrollBar.setOrientation(JScrollBar.VERTICAL);
+		settingsScrollBar.setBounds(extendedWidth - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11, frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
+		frame.getContentPane().add(settingsScrollBar);
+		
+		settingsScrollBar.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+				allowScrolling = true;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				
+				allowScrolling = false;
+				settingsScrollBar.setValue(45);
+			}
 			
+		});
+		
+		settingsScrollBar.addAdjustmentListener(new AdjustmentListener(){
+			
+			public void adjustmentValueChanged(AdjustmentEvent ae) {			
+				
+				if (scrollThread == null || scrollThread.isAlive() == false)
+				{				
+					scrollThread = new Thread(new Runnable() {
+	
+						@Override
+						public void run() {
+							
+							if (allowScrolling && settingsScrollBar.isVisible())
+							{	
+								while (allowScrolling)
+								{										
+									int i = Math.round((float) (45 - settingsScrollBar.getValue()) / 3);
+																		
+									//On récupère le groupe qui est le plus haut
+									JPanel top;
+									
+									if (grpResolution.isVisible())
+									{
+										top = grpResolution;
+									}
+									else if (grpSetTimecode.isVisible())
+									{
+										top = grpSetTimecode;
+									}
+									else if (grpSetAudio.isVisible())
+									{
+										top = grpSetAudio;
+									}
+									else
+									{
+										top = grpAudio;
+									}
+									
+									if (extendSectionsIsRunning == false)
+									{
+										if (canScroll 
+											&& comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
+											&& frame.getWidth() > 332
+											&& frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) <= 31
+											|| 
+											canScroll 
+											&& comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
+											&& frame.getWidth() > 332
+											&& Settings.btnDisableAnimations.isSelected()
+											&& top.getY() < 30) 
+											{							
+												//Empêche de faire un scroll vers le bas pour ne pas dépasser la position minimale de top
+												if (i < 0 && Settings.btnDisableAnimations.isSelected() && frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31)
+												{
+													i = 0;
+												}
+												
+												//Pré calcul
+												if (top.getY() + i >= grpChooseFiles.getY() && i > 0)
+												{
+													i = grpChooseFiles.getY() - top.getY();	
+												}
+												
+												if (frame.getSize().getHeight() - (btnReset.getLocation().y + i + btnReset.getHeight()) >= 31 && i < 0)						
+												{
+													if (i < frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()))
+														i = (int) (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) - 31);
+													else
+														i = 0;	
+												}
+												
+												grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + i);
+												grpBitrate.setLocation(grpBitrate.getLocation().x, grpBitrate.getLocation().y + i);								
+												grpSetAudio.setLocation(grpSetAudio.getLocation().x, grpSetAudio.getLocation().y + i);
+												grpAudio.setLocation(grpAudio.getLocation().x, grpAudio.getLocation().y + i);								
+												grpCrop.setLocation(grpCrop.getLocation().x, grpCrop.getLocation().y + i);								
+												grpOverlay.setLocation(grpOverlay.getLocation().x, grpOverlay.getLocation().y + i);
+												grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y + i);
+												grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y + i);
+												grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y + i);								
+												grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x, grpImageAdjustement.getLocation().y + i);								
+												grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + i);	
+												grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + i);	
+												grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + i);
+												grpImageFilter.setLocation(grpImageFilter.getLocation().x, grpImageFilter.getLocation().y + i);
+												grpSetTimecode.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getLocation().y + i);
+												grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + i);
+												btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + i);				
+											}
+									}
+									
+									if ((frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31) && top.getY() == 30)
+									{
+										settingsScrollBar.setVisible(false);
+									}
+									
+									long startTime = System.nanoTime();
+									
+									//Animate size
+									animateSections(startTime, true);	
+								}
+								
+							}
+						}
+						
+					});
+					scrollThread.start();
+					
+				}
+	      }		
+
+		});
+		
 		comboFonctions.addItemListener(new ItemListener() {
 			
 			@Override
@@ -1090,7 +1236,9 @@ public class Shutter {
 							
 							//Empêche de faire un scroll vers le bas pour ne pas dépasser la position minimale de top
 							if (i < 0 && Settings.btnDisableAnimations.isSelected() && frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31)
+							{
 								i = 0;
+							}
 							
 							//Pré calcul
 							if (top.getY() + i >= grpChooseFiles.getY() && i > 0)
@@ -1103,7 +1251,7 @@ public class Shutter {
 								if (i < frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()))
 									i = (int) (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) - 31);
 								else
-									i = 0;						
+									i = 0;	
 							}
 							
 							grpResolution.setLocation(grpResolution.getLocation().x, grpResolution.getLocation().y + i);
@@ -1123,7 +1271,6 @@ public class Shutter {
 							grpSetTimecode.setLocation(grpSetTimecode.getLocation().x, grpSetTimecode.getLocation().y + i);
 							grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + i);
 							btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + i);				
-		
 						}
 					}				
 				}
@@ -1194,7 +1341,7 @@ public class Shutter {
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
 		topPanel.setBackground(new Color(35,35,35));
-		topPanel.setBounds(0, 0, 1350, 28);
+		topPanel.setBounds(0, 0, extendedWidth, 28);
 
 		settings = new JLabel(new FlatSVGIcon("contents/settings.svg", 13, 13));
 		settings.setHorizontalAlignment(SwingConstants.CENTER);
@@ -3051,8 +3198,10 @@ public class Shutter {
 								{
 									if (liste.getSize() < 2)
 									{
-										if (caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
+										if (caseChangeAudioCodec.isSelected() || caseAudioOffset.isSelected())
+										{
 											ReplaceAudio.setStreams();
+										}
 										else
 											JOptionPane.showMessageDialog(frame, language.getProperty("replaceAudioMissing"), language.getProperty("missingElement"), JOptionPane.ERROR_MESSAGE);
 									}
@@ -3468,6 +3617,11 @@ public class Shutter {
 						new VideoWeb();
 						frame.setOpacity(1.0f);
 					}
+				}
+				
+				if (frame.getWidth() > 654)
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
 				}
 			}
 			
@@ -11507,7 +11661,7 @@ public class Shutter {
 					}
 					else
 						textWatermarkSize.setText(String.valueOf(value));
-					
+
 					VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
 					textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
 					textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
@@ -16821,7 +16975,7 @@ public class Shutter {
 		statusBar.setOpaque(true);
 		statusBar.setLayout(null);
 		statusBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(65, 65, 65)));
-		statusBar.setBounds(0, frame.getHeight() - 23, 1350, 22);
+		statusBar.setBounds(0, frame.getHeight() - 23, extendedWidth, 22);
 		
 		statusBar.addMouseListener(new MouseListener() {
 
@@ -17329,7 +17483,7 @@ public class Shutter {
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYears.setForeground(Color.WHITE);
 		lblYears.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblYears.setBounds(1350 - lblYears.getPreferredSize().width - 10, lblBy.getY(), lblYears.getPreferredSize().width + 4, 15);
+		lblYears.setBounds(extendedWidth - lblYears.getPreferredSize().width - 10, lblBy.getY(), lblYears.getPreferredSize().width + 4, 15);
 		statusBar.add(lblYears);
 
 		lblYears.addMouseListener(new MouseListener() {
@@ -17764,9 +17918,13 @@ public class Shutter {
 	public static void changeWidth(final boolean bigger) {
 						
 		String function = comboFonctions.getSelectedItem().toString();
-				
+			
+		noSettings = false;
+		
 		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false)
 		{		
+			noSettings = true;
+			
 			if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 			{
 				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
@@ -17789,6 +17947,8 @@ public class Shutter {
 		|| language.getProperty("functionOfflineDetection").equals(function)
 		|| "VMAF".equals(function))
 		{
+			noSettings = true;
+			
 			if (frame.getSize().width == 332)
 			{
 				frame.setBounds(frame.getX() - (1350 - 312 - 332) / 2, frame.getY(), 1350 - 312, frame.getHeight());
@@ -17797,9 +17957,9 @@ public class Shutter {
 			{
 				frame.setBounds(frame.getX() - (1350 - 312 - 654) / 2, frame.getY(), 1350 - 312, frame.getHeight());
 			}
-			else if (frame.getSize().width >= 1350)
+			else if (frame.getSize().width != (1350 - 312))
 			{
-				frame.setBounds(frame.getX() + 312 / 2, frame.getY(), 1350 - 312, frame.getHeight());
+				frame.setBounds(frame.getX() - (1350 - 312 - extendedWidth) / 2, frame.getY(), 1350 - 312, frame.getHeight());
 			}
 			
 			VideoPlayer.setPlayerButtons(true);
@@ -17820,7 +17980,9 @@ public class Shutter {
 		    lblYears.setVisible(false);
 		}
 		else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionNormalization").equals(function))
-		{
+		{						
+			noSettings = true;
+			
 			if (frame.getSize().width == 332)
 			{
 				frame.setBounds(frame.getX() - (654 - 332) / 2, frame.getY(), 654, frame.getHeight());
@@ -17829,9 +17991,9 @@ public class Shutter {
 			{
 				frame.setBounds(frame.getX() - (654 - (1350 - 312)) / 2, frame.getY(), 654, frame.getHeight());
 			}
-			else if (frame.getSize().width >= 1350)
+			else if (frame.getSize().width != 654)
 			{
-				frame.setBounds(frame.getX() + (1350 - 654) / 2, frame.getY(), 654, frame.getHeight());
+				frame.setBounds(frame.getX() + (extendedWidth - 654) / 2, frame.getY(), 654, frame.getHeight());
 			}
 			
 			VideoPlayer.setPlayerButtons(false);
@@ -17849,17 +18011,19 @@ public class Shutter {
 		    lblYears.setVisible(false);
 		}
 		else if (bigger && frame.getSize().width < 1350)
-		{
+		{			
 			if (frame.getSize().width == (1350 - 312))
 			{
-				frame.setBounds(frame.getX() - 312 / 2, frame.getY(), 1350, frame.getHeight());
+				frame.setBounds(frame.getX() - (extendedWidth - (1350 - 312)) / 2, frame.getY(), extendedWidth, frame.getHeight());
 			}
 			else if (frame.getSize().width == 654)
 			{
-				frame.setBounds(frame.getX() - (1350 - 654) / 2, frame.getY(), 1350, frame.getHeight());
+				frame.setBounds(frame.getX() - (extendedWidth - 654) / 2, frame.getY(), extendedWidth, frame.getHeight());
 			}
-			else
-				frame.setBounds(frame.getX() - (1350 - 332) / 2, frame.getY(), 1350, frame.getHeight());
+			else if (frame.getSize().width == 332)
+			{
+				frame.setBounds(frame.getX() - (extendedWidth - 332) / 2, frame.getY(), extendedWidth, frame.getHeight());
+			}
 			
 			VideoPlayer.setPlayerButtons(true);
 			VideoPlayer.player.setVisible(true);
@@ -17879,6 +18043,8 @@ public class Shutter {
 		}
 		else if (bigger == false && frame.getSize().width > 332)
 		{			
+			noSettings = true;
+			
 			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
@@ -17940,7 +18106,7 @@ public class Shutter {
 		int height = 0;
 		int screenOffset = allScreens[screenIndex].getDefaultConfiguration().getBounds().y;
 		
-		if ((frame.getHeight() < screenHeight - taskBarHeight || frame.getWidth() < screenWidth) && frame.getWidth() > 332 && frame.getWidth() != 654 && frame.getWidth() != (1350 - 312))
+		if ((frame.getHeight() < screenHeight - taskBarHeight || frame.getWidth() < screenWidth) && frame.getWidth() > 332 && frame.getWidth() != 654 && frame.getWidth() != (extendedWidth - 312))
 		{		
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(screenWidth, height);
@@ -17949,7 +18115,7 @@ public class Shutter {
 		else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth))
 		{		
 			height = 662 - frame.getHeight();
-			resizeAll(1350, height);
+			resizeAll(extendedWidth, height);
 			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2 + screenOffset);
 		}
 		else if (frame.getHeight() >= screenHeight - taskBarHeight)
@@ -17987,14 +18153,43 @@ public class Shutter {
 	}
 	
 	public static void resizeAll(int width, int height) {
-		
-		if (frame.getWidth() >= 1350 && width >= 1350)
+				
+		if (frame.getWidth() >= 1130 && width >= 1130)
 		{
 			frame.setSize(width, frame.getHeight() + height);					
 		}
 		else
 		    frame.setSize(frame.getSize().width, frame.getHeight() + height);
-								
+
+		if (frame.getWidth() < 1350 && frame.getWidth() >= 1130)
+		{
+			extendedWidth = frame.getWidth();
+		}
+		
+		if (frame.getWidth() < 1320 && noSettings == false)
+		{
+			VideoPlayer.lblSpeed.setVisible(false);
+			VideoPlayer.lblVolume.setVisible(false);
+			
+			if (frame.getWidth() < 1300)
+			{
+				VideoPlayer.sliderSpeed.setVisible(false);
+				VideoPlayer.sliderVolume.setVisible(false);
+			}
+			else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
+			{
+				VideoPlayer.sliderSpeed.setVisible(true);
+				VideoPlayer.sliderVolume.setVisible(true);
+			}
+		}	
+		else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
+		{
+			VideoPlayer.lblSpeed.setVisible(true);
+			VideoPlayer.lblVolume.setVisible(true);
+			VideoPlayer.sliderSpeed.setVisible(true);
+			VideoPlayer.sliderVolume.setVisible(true);
+		}
+				
 		if (frame.getWidth() > 332)
 		{
 			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);	
@@ -18041,9 +18236,9 @@ public class Shutter {
 		newInstance.setLocation(help.getLocation().x - 20, 4);
   		
 		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 331);
-		fileList.setSize(fileList.getWidth(), frame.getHeight() - 391);
+		fileList.setSize(292, frame.getHeight() - 391);
 		addToList.setSize(fileList.getSize());					
-		scrollBar.setSize(scrollBar.getWidth(), fileList.getHeight());
+		scrollBar.setSize(292, fileList.getHeight());
 		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);
 		grpDestination.setLocation(grpDestination.getX(), grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10);
 		grpProgression.setLocation(grpProgression.getX(), grpDestination.getY() + grpDestination.getHeight() + 6);
@@ -18070,7 +18265,9 @@ public class Shutter {
 							
 		//Empêche de faire dépasser la position minimale de top
 		if (height < 0 && frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31)
+		{
 			height = 0;
+		}
 		
 		//Pré calcul
 		if (top.getY() + height >= grpChooseFiles.getY() && height > 0)
@@ -18098,6 +18295,13 @@ public class Shutter {
 			grpAdvanced.setLocation(grpAdvanced.getLocation().x, grpAdvanced.getLocation().y + height);
 			btnReset.setLocation(btnReset.getLocation().x, btnReset.getLocation().y + height);		
 		}
+		
+		if (noSettings == false && (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31 || top.getY() < 30))
+		{
+			settingsScrollBar.setVisible(true);
+		}
+		else
+			settingsScrollBar.setVisible(false);
 							
 		if (System.getProperty("os.name").contains("Mac") && windowDrag)
 		{
@@ -18111,6 +18315,8 @@ public class Shutter {
     		frame.setShape(shape1);
 		}
 		
+		settingsScrollBar.setBounds(frame.getWidth() - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11, frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
+
 		VideoPlayer.resizeAll();
 	}
 		
@@ -18177,7 +18383,7 @@ public class Shutter {
 					{
 						try {
 							
-							if (frame.getSize().width >= 1350 && action)
+							if (frame.getSize().width >= 1130 && action)
 							{							
 								int i = frame.getWidth() - 312 - 12;
 								
@@ -18221,15 +18427,29 @@ public class Shutter {
 								
 							List<String> graphicsAccel = new ArrayList<String>();
 							graphicsAccel.add(language.getProperty("aucune").toLowerCase());
+									
+							if (noSettings == false && frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31)
+							{
+								settingsScrollBar.setVisible(true);
+							}
+							else
+								settingsScrollBar.setVisible(false);
 							
 							if (action)
-							{
-								grpAdvanced.setSize(grpAdvanced.getSize().width, 17);
-								grpImageFilter.setSize(grpImageFilter.getSize().width, 17);
-								grpSetAudio.setSize(grpSetAudio.getSize().width, 17);
-								grpImageSequence.setSize(grpImageSequence.getSize().width, 17);
-								grpColorimetry.setSize(grpColorimetry.getSize().width, 17);
+							{															
 								grpSetTimecode.setSize(grpSetTimecode.getSize().width, 17);
+								grpSetAudio.setSize(grpSetAudio.getSize().width, 17);								
+								grpCrop.setSize(grpCrop.getSize().width, 17);
+								grpOverlay.setSize(grpOverlay.getSize().width, 17);
+								grpSubtitles.setSize(grpSubtitles.getSize().width, 17);
+								grpWatermark.setSize(grpWatermark.getSize().width, 17);					
+								grpColorimetry.setSize(grpColorimetry.getSize().width, 17);						
+								grpImageAdjustement.setSize(grpImageAdjustement.getSize().width, 17);
+								grpCorrections.setSize(grpCorrections.getSize().width, 17);
+								grpTransitions.setSize(grpTransitions.getSize().width, 17);						
+								grpImageSequence.setSize(grpImageSequence.getSize().width, 17);
+								grpImageFilter.setSize(grpImageFilter.getSize().width, 17);
+								grpAdvanced.setSize(grpAdvanced.getSize().width, 17);
 																
 								//Reset Screenshot icon
 								if (grpResolution.isVisible())
@@ -20841,6 +21061,14 @@ public class Shutter {
 									
 									grpPanel.setSize(312, maxSize);									
 									btnReset.setLocation(btnReset.getX(), lastComponent.getY() + lastComponent.getHeight() + 6);
+									
+									if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31)
+									{
+										settingsScrollBar.setVisible(true);
+									}
+									else
+										settingsScrollBar.setVisible(false);
+
 									break;
 								}
 								else
@@ -20858,6 +21086,8 @@ public class Shutter {
 								
 								if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) < 31)
 								{
+									settingsScrollBar.setVisible(true);
+									
 									if (grpPanel.getName() == null || grpPanel.getName().equals("grpImageAdjustement") == false)
 									{
 										for (Component c2 : frame.getContentPane().getComponents())
@@ -20868,10 +21098,12 @@ public class Shutter {
 											}
 										}
 									}									
-								}	
-								
+								}
+								else
+									settingsScrollBar.setVisible(false);
+		
 								btnReset.setLocation(btnReset.getX(), lastComponent.getY() + lastComponent.getHeight() + 6);
-								
+																
 								//Animate size
 								animateSections(startTime, false);	
 																		
@@ -20899,7 +21131,7 @@ public class Shutter {
 									for (Component c : frame.getContentPane().getComponents())
 									{
 										if (c instanceof JPanel && c.isVisible() && c.getX() == grpPanel.getX() && c.getY() > grpPanel.getY() + grpPanel.getHeight())
-										{
+										{			
 											//Used for grpAudio
 											if (grpPanel.getHeight() > maxSize)
 											{
@@ -20911,7 +21143,13 @@ public class Shutter {
 									}
 									
 									grpPanel.setSize(312, minSize);									
-									btnReset.setLocation(btnReset.getX(), lastComponent.getY() + lastComponent.getHeight() + 6);
+									btnReset.setLocation(btnReset.getX(), lastComponent.getY() + lastComponent.getHeight() + 6);	
+
+									if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31 && firstComponent.getY() == 30)
+									{
+										settingsScrollBar.setVisible(false);
+									}
+									
 									break;
 								}
 								else
@@ -20939,13 +21177,18 @@ public class Shutter {
 								}	
 								
 								btnReset.setLocation(btnReset.getX(), lastComponent.getY() + lastComponent.getHeight() + 6);
+									
+								if (frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) >= 31)
+								{
+									settingsScrollBar.setVisible(false);
+								}
 								
 								//Animate size
 								animateSections(startTime, false);	
 																		
 							} while (i > minSize);
+							
 						}
-						
 						
 					} catch (Exception e1) {						
 					}
