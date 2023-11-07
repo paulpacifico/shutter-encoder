@@ -863,12 +863,19 @@ public class FunctionUtils extends Shutter {
 		String metadata = " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 				
 		if (casePreserveMetadata.isSelected())
-		{			
-			metadata = " -map_metadata 0 -map_metadata:s:v 0:s:v";
-			
-			if (FFPROBE.hasAudio)
+		{		
+			if (FFPROBE.audioOnly == false)
 			{
-				metadata += " -map_metadata:s:a 0:s:a";
+				metadata = " -map_metadata 0 -map_metadata:s:v 0:s:v";
+				
+				if (FFPROBE.hasAudio)
+				{
+					metadata += " -map_metadata:s:a 0:s:a";
+				}
+			}
+			else			
+			{
+				metadata = " -map_metadata:s:a 0:s:a";
 			}
 			
 			metadata += " -movflags use_metadata_tags";
