@@ -631,6 +631,8 @@ public class Shutter {
 	public static JPanel grpWatermark;
 	public static JPanel logo; 
 	public static Image logoPNG;
+	public static int logoWidth;
+	public static int logoHeight;
 	public static JCheckBox caseAddWatermark;
 	public static JTextField textWatermarkPosX;
 	public static JTextField textWatermarkPosY;
@@ -11137,7 +11139,9 @@ public class Shutter {
 	  			}
 	  			
 	  			if (logoPNG != null)
+	  			{
 	  				g2d.drawImage(logoPNG, 0, 0, null);
+	  			}
 	  		}
 	  	};
 		logo.setLayout(null);        
@@ -11322,11 +11326,9 @@ public class Shutter {
 					VideoPlayer.player.remove(logo);
 					logoPNG = null;
 				}	
+
+				VideoPlayer.player.repaint();
 				
-				if (VideoPlayer.frameVideo != null)
-				{
-					VideoPlayer.player.repaint();
-				}
 			}
 	
 		});
@@ -11655,9 +11657,9 @@ public class Shutter {
 				{	
 					int value = MouseLogoPosition.offsetX + (e.getX() - MouseLogoPosition.mouseX);
 					
-					if (value < 1)
+					if (value < 2)
 					{
-						textWatermarkSize.setText("1");
+						textWatermarkSize.setText("2");
 					}
 					else
 						textWatermarkSize.setText(String.valueOf(value));
@@ -17916,7 +17918,42 @@ public class Shutter {
 	}
 
 	public static void changeWidth(final boolean bigger) {
-						
+			
+		//Checking maximum screen width
+		if (bigger)
+		{
+			GraphicsConfiguration config = frame.getGraphicsConfiguration();
+			GraphicsDevice myScreen = config.getDevice();
+			GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsDevice[] allScreens = env.getScreenDevices();
+			int screenIndex = -1;
+			for (int i = 0; i < allScreens.length; i++) {
+			    if (allScreens[i].equals(myScreen))
+			    {
+			    	screenIndex = i;
+			        break;
+			    }
+			}
+			
+			double dpiScaleFactor = 1.0;
+	        if (System.getProperty("os.name").contains("Windows"))
+	        {
+	        	double trueHorizontalLines = allScreens[screenIndex].getDefaultConfiguration().getBounds().getHeight();
+	            double scaledHorizontalLines = allScreens[screenIndex].getDisplayMode().getHeight();
+	        	dpiScaleFactor = trueHorizontalLines / scaledHorizontalLines;
+	        }
+	        
+			int screenWidth = (int) (allScreens[screenIndex].getDisplayMode().getWidth() * dpiScaleFactor);		
+			int screenX = (int) allScreens[screenIndex].getDefaultConfiguration().getBounds().getX();
+			int screenOffset = allScreens[screenIndex].getDefaultConfiguration().getBounds().y;
+			
+			if (extendedWidth >= screenWidth)
+			{
+				extendedWidth = screenWidth;
+				frame.setLocation(screenX, screenOffset);;
+			}
+		}
+		
 		String function = comboFonctions.getSelectedItem().toString();
 			
 		noSettings = false;

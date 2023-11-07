@@ -129,6 +129,7 @@ public class VideoPlayer {
     public static ArrayList<Image> bufferedFrames = new ArrayList<Image>();
     public static int maxBufferedFrames = 500;
     public static Image frameVideo;
+    private static Image fullSizeWatermark;
 	public static double screenRefreshRate = 16.7; //Vsync in ms
 	private static long lastEvTime = 0;
     public static boolean playerLoop = false;
@@ -4357,24 +4358,50 @@ public class VideoPlayer {
 	public static boolean loadWatermark(int size) {
 		
 		try {
-
-			if (Shutter.overlayDeviceIsRunning)
+			
+			if (Shutter.logoPNG == null)
 			{
-				RecordInputDevice.setOverlayDevice();
-			}
-			else
-			{
-				FFPROBE.Data(Shutter.logoFile);					
-				do {
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e) {}
-				} while (FFPROBE.isRunning);
+				//IMPORTANT
+				if (FFPROBE.isRunning)
+				{
+					do {								
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {}								
+					} 
+					while (FFPROBE.isRunning);
+				}
+				
+				if (Shutter.overlayDeviceIsRunning)
+				{
+					RecordInputDevice.setOverlayDevice();
+				}
+				else 
+				{
+					FFPROBE.Data(Shutter.logoFile);					
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {}
+					} while (FFPROBE.isRunning);
+				}
+				
+				Shutter.logoWidth = FFPROBE.imageWidth;
+				Shutter.logoHeight = FFPROBE.imageHeight;
+				
+				//IMPORTANT keeps original source file data			
+				try {					
+					FFPROBE.Data(videoPath);
+					do {								
+						Thread.sleep(10);								
+					} while (FFPROBE.isRunning);
+					
+				} catch (InterruptedException e) {}
 			}
 									
-			int logoFinalSizeWidth = (int) Math.floor((float) FFPROBE.imageWidth / Shutter.playerRatio);		
-			int logoFinalSizeHeight = (int) Math.floor((float) FFPROBE.imageHeight / Shutter.playerRatio);
-	
+			int logoFinalSizeWidth = (int) Math.floor((float) Shutter.logoWidth / Shutter.playerRatio);		
+			int logoFinalSizeHeight = (int) Math.floor((float) Shutter.logoHeight / Shutter.playerRatio);
+			
 			//Adapt to size
 			logoFinalSizeWidth = (int) Math.floor((float) logoFinalSizeWidth * ((double) size / 100));
 			logoFinalSizeHeight = (int) Math.floor((float) logoFinalSizeHeight * ((double) size / 100));
@@ -4383,23 +4410,32 @@ public class VideoPlayer {
 			int newPosX = (int) Math.floor((Shutter.logo.getWidth() - logoFinalSizeWidth) / 2);
 			int newPosY = (int) Math.floor((Shutter.logo.getHeight() - logoFinalSizeHeight) / 2);
 			
-			if (Shutter.overlayDeviceIsRunning)
+			if (Shutter.logoPNG == null)
 			{
-				FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
+				if (Shutter.overlayDeviceIsRunning)
+				{
+					FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
+				}
+				else if (Shutter.logoPNG == null)
+				{
+					FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
+				}
+				
+				do {
+					Thread.sleep(10);
+				} while (FFMPEG.process.isAlive() == false);
+				
+				InputStream videoInput = FFMPEG.process.getInputStream(); 
+				InputStream is = new BufferedInputStream(videoInput);		
+				fullSizeWatermark = ImageIO.read(is);
 			}
-			else
-				FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -vf scale=" + logoFinalSizeWidth + ":" + logoFinalSizeHeight + " -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
-
-			do {
-				Thread.sleep(10);
-			} while (FFMPEG.process.isAlive() == false);
 			
-			InputStream videoInput = FFMPEG.process.getInputStream(); 
-			InputStream is = new BufferedInputStream(videoInput);
-			Shutter.logoPNG = ImageIO.read(is);
-
+			Shutter.logoPNG = new ImageIcon(fullSizeWatermark).getImage().getScaledInstance(logoFinalSizeWidth, logoFinalSizeHeight, Image.SCALE_AREA_AVERAGING);
+						
 			if (Shutter.logo.getWidth() == 0)
+			{
 				Shutter.logo.setLocation((int) Math.floor(player.getWidth() / 2 - logoFinalSizeWidth / 2), (int) Math.floor(player.getHeight() / 2 - logoFinalSizeHeight / 2));	
+			}
 			else
 				Shutter.logo.setLocation(Shutter.logo.getLocation().x + newPosX, Shutter.logo.getLocation().y + newPosY);
 			
@@ -4413,19 +4449,10 @@ public class VideoPlayer {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("cantLoadShutter.logo"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 		} 
 		finally {
 			
-			//IMPORTANT keeps original source file data			
-			try {					
-				FFPROBE.Data(videoPath);
-				do {								
-					Thread.sleep(10);								
-				} while (FFPROBE.isRunning);
-				
-			} catch (InterruptedException e) {}
-
         	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 			else
