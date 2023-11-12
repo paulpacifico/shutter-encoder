@@ -81,7 +81,7 @@ public class AudioEncoders extends Shutter {
 							continue;
 						}							
 					}
-					
+										
 					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
 					
 					if (file == null)
@@ -307,12 +307,16 @@ public class AudioEncoders extends Shutter {
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
 						}								
 						
-						do
-						{
+						do {
 							Thread.sleep(100);
-						}
-						while(FFMPEG.runProcess.isAlive());
+						} while(FFMPEG.runProcess.isAlive());
 							
+						//MixAudio
+						if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && caseMixAudio.isSelected() && FFPROBE.surround == false)
+						{
+							break;
+						}
+						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
 						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))

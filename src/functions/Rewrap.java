@@ -214,7 +214,24 @@ public class Rewrap extends Shutter {
 								file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 							else
 								concat = " -noaccurate_seek";
-														
+										
+							//Audio normalization
+				        	if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+				        	{
+					        	AudioNormalization.main(file);
+					        							
+					        	do {
+									Thread.sleep(100);
+								} while (AudioNormalization.thread.isAlive());
+					        	
+					        	if (cancelled)
+					        	{
+					        		break;
+					        	}
+					        	else				        	
+					        		lblCurrentEncoding.setText(fileName);
+				        	}
+							
 							//Command
 							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
@@ -273,48 +290,56 @@ public class Rewrap extends Shutter {
 
 		if (caseChangeAudioCodec.isSelected())
 		{
+			//Simple volume compensation
+			String normalization = "";
+			
+			if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+			{
+				normalization = " -af volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";	
+			}
+			
 			if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
 			{
 				switch (comboAudioCodec.getSelectedIndex()) 
 				{
 					case 0 :
-						return " -c:a pcm_f32le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_f32le -ar " + lbl48k.getText() + " -b:a 1536k" + normalization;
 					case 1 :
-						return " -c:a pcm_s32le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s32le -ar " + lbl48k.getText() + " -b:a 1536k" + normalization;
 					case 2 :
-						return " -c:a pcm_s24le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s24le -ar " + lbl48k.getText() + " -b:a 1536k" + normalization;
 					case 3 :
-						return " -c:a pcm_s16le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s16le -ar " + lbl48k.getText() + " -b:a 1536k" + normalization;
 				}
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
 				if (System.getProperty("os.name").contains("Mac"))
 				{
-					return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+					return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 				}
 				else
-					return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+					return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{
-				return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 			{
-				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
 			{
-				return " -c:a libopus -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libopus -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("OGG"))
 			{
-				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 			{
-				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
 			{

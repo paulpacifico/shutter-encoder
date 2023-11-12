@@ -681,7 +681,18 @@ public class VideoEncoders extends Shutter {
 			            	audio = " -c:a pcm_s16le -ar 48000 -map v:0 -map a?";
 			            }
 			            else
-			            	audio = AudioSettings.setAudioMapping(filterComplex, comboAudioCodec.getSelectedItem().toString(), audio);	
+			            	audio = AudioSettings.setAudioMapping(filterComplex, comboAudioCodec.getSelectedItem().toString(), audio, file);	
+			            			            
+			            //Audio normalization		
+			            if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+						{				
+				        	if (cancelled)
+				        	{
+				        		break;
+				        	}
+				        	else				        	
+				        		lblCurrentEncoding.setText(file.getName());										
+						}
 			            
 		            	//filterComplex					
 						if (comboFonctions.getSelectedItem().toString().equals("DV PAL"))
@@ -855,7 +866,7 @@ public class VideoEncoders extends Shutter {
 			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, "");
 			    			}
 			    		}
-						
+			        	
 						//Command
 						String cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 										

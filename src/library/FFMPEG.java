@@ -1965,7 +1965,9 @@ public static StringBuilder errorLog = new StringBuilder();
 	private static void postAnalyse() {
 		
 		 //Loudness & Normalization
-	     if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")))
+	     if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak")
+	    || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization"))
+	    || (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible()))
 	     {
                analyseLufs = null;
                analyseLufs = getAll.toString().substring(getAll.toString().lastIndexOf("Summary:") + 12);
@@ -2034,6 +2036,11 @@ public static StringBuilder errorLog = new StringBuilder();
                    String lufs[] = analyseLufs.split(":");
                    String lufsFinal[] = lufs[2].split("L");
                    String db[] = comboFilter.getSelectedItem().toString().split(" ");
+                   if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak")  == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")) == false)
+                   {
+                	   db = comboNormalizeAudio.getSelectedItem().toString().split(" ");
+                   }
+                   
                    newVolume = Float.parseFloat(db[0]) - Float.parseFloat(lufsFinal[0].replace(" ", ""));
                }
 	     }	

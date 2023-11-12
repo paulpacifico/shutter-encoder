@@ -33,11 +33,13 @@ import settings.FunctionUtils;
 
 public class AudioNormalization extends Shutter {
 	
+	public static Thread thread;
 	private static int audioTracks;
 	
-	public static void main() {
+	public static void main(File input) {
 		
-		Thread thread = new Thread(new Runnable(){			
+		thread = new Thread(new Runnable() {	
+			
 			@Override
 			public void run() {
 				
@@ -49,6 +51,12 @@ public class AudioNormalization extends Shutter {
 				for (int i = 0 ; i < liste.getSize() ; i++)
 				{
 					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
+					
+					//Audio normalization from a video codec
+					if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
+					{
+						file = input;
+					}
 					
 					if (file == null)
 						break;
@@ -100,17 +108,23 @@ public class AudioNormalization extends Shutter {
 						if (caseTruePeak.isSelected() == false && caseLRA.isSelected() == false)
 						{							
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+							{
 								cmd =  " -vn" + filterComplex + " -f null -";					
+							}
 							else
 								cmd =  " -vn" + filterComplex + " -f null -" + '"';	
 							
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd);		
 							
-							do
-							{
+							do {
 								Thread.sleep(100);
-							}
-							while(FFMPEG.runProcess.isAlive());
+							} while(FFMPEG.runProcess.isAlive());
+						}
+						
+						//Audio normalization from a video codec
+						if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
+						{
+							break;
 						}
 						
 						lblCurrentEncoding.setText(fileName);	
@@ -156,11 +170,9 @@ public class AudioNormalization extends Shutter {
 	
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');							
 							
-							do
-							{
+							do {
 								Thread.sleep(100);
-							}
-							while(FFMPEG.runProcess.isAlive());
+							} while (FFMPEG.runProcess.isAlive());
 							
 							if (FFMPEG.error)
 							{
@@ -210,7 +222,7 @@ public class AudioNormalization extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
 					enfOfFunction();
 			}
 			
@@ -351,7 +363,7 @@ public class AudioNormalization extends Shutter {
 		if (Shutter.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
-			AudioNormalization.main();
+			AudioNormalization.main(new File(""));
 			return true;
 		}
 		return false;
