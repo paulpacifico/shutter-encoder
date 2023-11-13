@@ -18039,19 +18039,16 @@ public class Shutter {
 		{		
 			noSettings = true;
 			
-			if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
-			{
-				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
-				lblArrows.setVisible(true);
-				lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
-				lblGpuDecoding.setVisible(false);
-				comboGPUDecoding.setVisible(false);
-				lblGpuFiltering.setVisible(false);
-				comboGPUFilter.setVisible(false);
-				
-			    lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
-			    lblYears.setVisible(false);
-			}
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
+			lblArrows.setVisible(true);
+			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
+			lblGpuDecoding.setVisible(false);
+			comboGPUDecoding.setVisible(false);
+			lblGpuFiltering.setVisible(false);
+			comboGPUFilter.setVisible(false);
+			
+		    lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
+		    lblYears.setVisible(false);
 		}
 		else if (language.getProperty("functionConform").equals(function)
 		|| "DV PAL".equals(function)
@@ -18320,13 +18317,13 @@ public class Shutter {
 				VideoPlayer.sliderSpeed.setVisible(false);
 				VideoPlayer.sliderVolume.setVisible(false);
 			}
-			else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
+			else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false)
 			{
 				VideoPlayer.sliderSpeed.setVisible(true);
 				VideoPlayer.sliderVolume.setVisible(true);
 			}
 		}	
-		else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false)
+		else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false)
 		{
 			VideoPlayer.lblSpeed.setVisible(true);
 			VideoPlayer.lblVolume.setVisible(true);

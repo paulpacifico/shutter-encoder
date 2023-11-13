@@ -5163,9 +5163,10 @@ public class VideoPlayer {
 			}
 			
 			isPiping = false;
-			if (FFMPEG.isRunning && (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
+			
+			if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume"))
-			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording"))))
+			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
 			{
 				isPiping = true;
 			}

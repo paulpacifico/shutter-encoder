@@ -450,6 +450,7 @@ import settings.FunctionUtils;
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
+				
 				if (accept)		
 				{		  
 					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
@@ -724,11 +725,12 @@ import settings.FunctionUtils;
 							{
 								String s[] = fileOut.toString().split("\\|");
 								fileOut = new File(s[0]); 
-							}
-							
+							}							
 							
 							if (cmd.contains("pipe:play"))
+							{
 								Shutter.caseDisplay.setSelected(true);
+							}
 							else
 								Shutter.caseDisplay.setSelected(false);
 							
@@ -757,17 +759,18 @@ import settings.FunctionUtils;
 							Shutter.lblCurrentEncoding.setText(fichier);
 							
 							try {
+								
 								do {
 									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
-								
-								
+																
 								//Permet d'attendre si un autre processus se lance
 								Thread.sleep(1000);
 								
 								do {
 									Thread.sleep(100);
 								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+								
 							} catch (InterruptedException e) {}
 
 							lastActions(i, fichier, fileOut);
