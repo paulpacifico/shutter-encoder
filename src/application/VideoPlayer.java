@@ -1301,10 +1301,6 @@ public class VideoPlayer {
 									Shutter.caseAddSubtitles.doClick();
 									Shutter.caseAddSubtitles.doClick();
 								}
-								else
-								{
-									Shutter.caseAddSubtitles.doClick();
-								}	
 								
 								Shutter.autoBurn = false;
 								Shutter.autoEmbed = false;
@@ -4452,6 +4448,8 @@ public class VideoPlayer {
 			JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 		} 
 		finally {
+			
+			Shutter.btnStart.setEnabled(true);
 			
         	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));

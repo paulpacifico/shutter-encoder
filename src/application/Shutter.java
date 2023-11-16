@@ -183,7 +183,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.6";
+	public static String actualVersion = "17.7";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -5132,7 +5132,7 @@ public class Shutter {
 				}
 				
 				char caracter = e.getKeyChar();
-				if (caracter != 'x' && caracter != '%' && caracter != ':')
+				if (caracter != 'x' && caracter != '%' && caracter != ':' && caracter != 'a' && caracter != 'u' && caracter != 't' && caracter != 'o')
 				{
 					if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
 						e.consume();

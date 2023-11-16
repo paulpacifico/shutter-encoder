@@ -1810,6 +1810,8 @@ public class Utils extends Shutter {
 		
 		UIManager.put("TitledBorder.titleColor", new Color(240,240,240));
 		
+		UIManager.put("ScrollBar.minimumThumbSize", new Dimension(11, 100));
+		
 		FlatInspector.install("ctrl shift alt X");		
 	}
 	
