@@ -1795,11 +1795,11 @@ public static StringBuilder errorLog = new StringBuilder();
 			tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
 		         
 		  //Remaining time
-		  if ((line.contains("frame=") || line.contains("time=")) && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
+		  if ((line.contains("frame=") || line.contains("time=")) && line.contains("N/A") == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
 		  {
 			 String[] split = line.split("=");	
 			 int frames = 0;
-			 
+			 			 
 			 if (line.contains("frame="))
 			 {
 				 frames = Integer.parseInt(split[1].replace("fps", "").replace(" ", ""));			 
