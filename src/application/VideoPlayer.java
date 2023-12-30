@@ -4563,7 +4563,7 @@ public class VideoPlayer {
 												
 						//Creating preview file																
 						String cmd = deinterlace + " -frames:v 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
-						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
+						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
 						{
 							cmd = deinterlace + " -frames:v 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
 						}
@@ -4818,7 +4818,7 @@ public class VideoPlayer {
 		}
 		else			
 		{
-			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
+			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
 			{
 				width = player.getHeight();
 				height = player.getWidth();		
@@ -5171,7 +5171,7 @@ public class VideoPlayer {
 											
 			//Players 		
 			float ratio = FFPROBE.imageRatio;
-			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 0 || Shutter.comboRotate.getSelectedIndex() == 1))
+			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
 			{
 				ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
 			}

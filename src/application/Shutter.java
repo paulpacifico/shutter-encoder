@@ -1617,12 +1617,16 @@ public class Shutter {
 					
 					try {
 						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
+						
+						if (System.getProperty("os.name").contains("Windows"))
+						{
 							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
 							String[] arguments = new String[] { newShutter };
 							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
+						}
+						else if (System.getProperty("os.name").contains("Mac"))
+						{
 							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 							newShutter = newShutter.substring(0, newShutter.length() - 1);
 							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
@@ -1630,7 +1634,9 @@ public class Shutter {
 							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ","\\ ");
 							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
 							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
+						}
+						else //Linux
+						{ 
 							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
 							Process proc = new ProcessBuilder(arguments).start();
 						}
@@ -3200,17 +3206,7 @@ public class Shutter {
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else
 								{
-									if (liste.getSize() < 2)
-									{
-										if (caseChangeAudioCodec.isSelected() || caseAudioOffset.isSelected())
-										{
-											ReplaceAudio.setStreams();
-										}
-										else
-											JOptionPane.showMessageDialog(frame, language.getProperty("replaceAudioMissing"), language.getProperty("missingElement"), JOptionPane.ERROR_MESSAGE);
-									}
-									else
-										ReplaceAudio.setStreams();
+									ReplaceAudio.setStreams();
 								}
 							
 							} else if (language.getProperty("functionNormalization").equals(function)) {
@@ -3337,15 +3333,13 @@ public class Shutter {
 									VideoEncoders.main();
 							} else if (language.getProperty("functionPicture").equals(function) || "JPEG".equals(function)) {
 									Picture.main(true, false);
-							} else if (language.getProperty("functionRewrap").equals(function)) {
+							}
+							else if (language.getProperty("functionRewrap").equals(function))
+							{
 								if (inputDeviceIsRunning)
+								{
 									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
-								else if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
-										|| comboFilter.getEditor().getItem().toString().equals("")
-										|| comboFilter.getEditor().getItem().toString().equals(" ")
-										|| comboFilter.getEditor().getItem().toString().contains(".") == false)
-									JOptionPane.showMessageDialog(frame, language.getProperty("chooseExtension"),
-											language.getProperty("extensionError"), JOptionPane.INFORMATION_MESSAGE);
+								}
 								else
 									Rewrap.main();
 							}
@@ -5175,8 +5169,8 @@ public class Shutter {
 		comboRotate = new JComboBox<String>();
 		comboRotate.setName("comboRotate");
 		comboRotate.setEnabled(false);
-		comboRotate.setModel(new DefaultComboBoxModel<String>(new String[] { "90", "-90", "180" }));
-		comboRotate.setSelectedIndex(2);
+		comboRotate.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "90", "-90", "180" }));
+		comboRotate.setSelectedIndex(3);
 		comboRotate.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		comboRotate.setEditable(false);
 		comboRotate.setBounds(caseRotate.getWidth() + caseRotate.getLocation().x + 4, caseRotate.getLocation().y + 3, 46, 16);
@@ -10345,7 +10339,10 @@ public class Shutter {
 											}
 										}
 										
-										JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("previewNotAvailable"), Shutter.language.getProperty("caseSubtitles"), JOptionPane.INFORMATION_MESSAGE);
+										if (autoEmbed == false)
+										{
+											JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("previewNotAvailable"), Shutter.language.getProperty("caseSubtitles"), JOptionPane.INFORMATION_MESSAGE);
+										}
 									}	
 									
 									//Important
@@ -10406,8 +10403,11 @@ public class Shutter {
 										}
 									}
 									
-									JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("previewNotAvailable"), Shutter.language.getProperty("caseSubtitles"), JOptionPane.INFORMATION_MESSAGE);
-								}	
+									if (autoEmbed == false)
+									{
+										JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("previewNotAvailable"), Shutter.language.getProperty("caseSubtitles"), JOptionPane.INFORMATION_MESSAGE);
+									}	
+								}
 								
 								//Important
 								VideoPlayer.sliderSpeed.setEnabled(false);
@@ -16481,7 +16481,7 @@ public class Shutter {
 				comboInterpret.setEnabled(false);
 				comboInterpret.setSelectedIndex(7);
 				caseRotate.setSelected(false);
-				comboRotate.setSelectedIndex(2);
+				comboRotate.setSelectedIndex(3);
 				comboRotate.setEnabled(false);
 				caseMiror.setSelected(false);
 
@@ -20865,7 +20865,8 @@ public class Shutter {
 								grpAudio.setVisible(false);							
 								grpCrop.setVisible(false);
 								grpOverlay.setVisible(false);
-								grpSubtitles.setVisible(false);
+								grpSubtitles.setVisible(true);
+								grpSubtitles.setLocation(grpSubtitles.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 								grpWatermark.setVisible(false);					
 								grpColorimetry.setVisible(false);						
 								grpImageAdjustement.setVisible(false);
@@ -20875,7 +20876,7 @@ public class Shutter {
 								grpImageFilter.setVisible(false);
 								grpSetTimecode.setVisible(false);							
 								grpAdvanced.setVisible(true);
-								grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+								grpAdvanced.setLocation(grpAdvanced.getX(), grpSubtitles.getSize().height + grpSubtitles.getLocation().y + 6);
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	;
 	
 								// CalculH264
