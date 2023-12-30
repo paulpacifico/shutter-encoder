@@ -1070,26 +1070,34 @@ public class FunctionUtils extends Shutter {
 	public static String setFilterComplexBroadcastCodecs(String filterComplex, String audio) {
 		
 		String mapping = "";		
-		String transitions = "";	
+		String audioFiltering = "";	
 		
 		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
-			transitions += Transitions.setAudioFadeIn(false);
+			audioFiltering += Transitions.setAudioFadeIn(false);
 		}
 		
 		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
-			if (transitions != "")	transitions += ",";
+			if (audioFiltering != "")	audioFiltering += ",";
 			
-			transitions += Transitions.setAudioFadeOut(false);
+			audioFiltering += Transitions.setAudioFadeOut(false);
 		}
 		
 		if (Transitions.setAudioSpeed() !=  "")
 		{
-			if (transitions != "")	transitions += ",";
+			if (audioFiltering != "")	audioFiltering += ",";
 			
-			transitions += Transitions.setAudioSpeed();
+			audioFiltering += Transitions.setAudioSpeed();
 		}		
+		
+		//Audio normalization		
+		if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+		{				
+			if (audioFiltering != "") audioFiltering += ",";
+			
+			audioFiltering += "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
+		}
 		
 		//No audio
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
@@ -1139,19 +1147,19 @@ public class FunctionUtils extends Shutter {
 					}
 					else if (FFPROBE.channels == 1) //Si le son est stereo alors on split
 					{
-						if (transitions != "")
-				    		transitions = transitions + ",";
+						if (audioFiltering != "")
+				    		audioFiltering = audioFiltering + ",";
 						
 						if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 						{
-							mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]" + transitions + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
+							mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]" + audioFiltering + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
 						}
 						else if (filterComplex != "")
 						{
-							mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out];[0:a]" + transitions + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
+							mapping += " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out];[0:a]" + audioFiltering + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
 						}
 						else
-							mapping += " -map v:0 -filter_complex [0:a]" + transitions + "channelsplit[a1][a2] -map [a1] -map [a2]" + audio;
+							mapping += " -map v:0 -filter_complex [0:a]" + audioFiltering + "channelsplit[a1][a2] -map [a1] -map [a2]" + audio;
 						
 						m ++;
 					}
@@ -1161,7 +1169,7 @@ public class FunctionUtils extends Shutter {
 						int map = m;
 						for (Component c : grpSetAudio.getComponents())
 						{
-							if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false)
+							if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false && c.getName().equals("comboNormalizeAudio") == false)
 							{								
 								if (i == m)
 								{
@@ -1170,9 +1178,9 @@ public class FunctionUtils extends Shutter {
 									break;
 								}
 								i++;
-							}						
+							}	
 						}
-						
+
 						mapping += " -map 0:" + map;						
 					}					
 				}
@@ -1195,15 +1203,15 @@ public class FunctionUtils extends Shutter {
 		
 		if (FFPROBE.channels != 1) //On ajoute le filterComplex lorsque il n'y a pas de split des pistes son	
 		{
-			if (transitions != "")
-	    		transitions = " -filter:a " + '"' + transitions + '"';
+			if (audioFiltering != "")
+	    		audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
 			
 			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
-				mapping = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + transitions + mapping + audio;
+				mapping = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audioFiltering + mapping + audio;
 			else if (filterComplex != "")
-				mapping = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + transitions + mapping + audio;
+				mapping = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audioFiltering + mapping + audio;
 			else
-				mapping = " -map v:0" + transitions + mapping + audio;	
+				mapping = " -map v:0" + audioFiltering + mapping + audio;	
 		}		
 		
 		//On map les sous-titres que l'on intègre        
@@ -1211,7 +1219,7 @@ public class FunctionUtils extends Shutter {
         {        				
 			mapping += " -c:s mov_text" + setMapSubtitles();
         }
-		
+		        
 		return mapping;
 	}
 	

@@ -681,8 +681,8 @@ public class VideoEncoders extends Shutter {
 			            	audio = " -c:a pcm_s16le -ar 48000 -map v:0 -map a?";
 			            }
 			            else
-			            	audio = AudioSettings.setAudioMapping(filterComplex, comboAudioCodec.getSelectedItem().toString(), audio, file);	
-			            			            
+			            	audio = AudioSettings.setAudioMapping(filterComplex, comboAudioCodec.getSelectedItem().toString(), audio, file);
+		            
 			            //Audio normalization		
 			            if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
 						{				

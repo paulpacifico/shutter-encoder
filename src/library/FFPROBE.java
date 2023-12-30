@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import application.Console;
 import application.GOP;
 import application.RecordInputDevice;
+import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
 import settings.FunctionUtils;
@@ -94,7 +95,7 @@ public static boolean hasAlpha = false;
 
 	public static void Data(final String file) {	
 			
-		if (file.equals(analyzedMedia) == false)
+		if (file.equals(analyzedMedia) == false || scanIsRunning || Settings.btnWaitFileComplete.isSelected())
 		{
 			analyzedMedia = file;
 

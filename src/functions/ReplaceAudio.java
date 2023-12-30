@@ -74,7 +74,7 @@ public class ReplaceAudio extends Shutter {
 		{							
 			String audio = setAudio(extension, audioExt);
 			String shortest = " -t " + shortestLength + "ms";
-			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || (liste.getSize() < 2 && (caseChangeAudioCodec.isSelected() || caseAudioOffset.isSelected())))
+			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || liste.getSize() < 2)
 				shortest = "";
 								
 			//Command				
@@ -211,17 +211,17 @@ public class ReplaceAudio extends Shutter {
 					
 					if (liste.getSize() <= 2 || videoStream == 1) //Replace one video file
 					{
-						if (liste.getSize() < 2 && (caseChangeAudioCodec.isSelected() || caseAudioOffset.isSelected()))
+						if (liste.getSize() < 2)
 						{	
 							videoFile = new File(liste.getElementAt(0));
-							if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
+							if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) || (liste.getSize() == 1 && caseChangeAudioCodec.isSelected() == false))
 							{
 								audioFiles = " -map v:0?";
 							}
 							else
 								audioFiles = " -map v:0? -map a?";
 							
-float 						offset = 0;
+							float offset = 0;
 							
 							if (caseAudioOffset.isSelected())
 							{
@@ -238,10 +238,8 @@ float 						offset = 0;
 								else
 									offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 								
-								audioFiles = " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(0)  + '"';;
+								audioFiles = " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(0)  + '"' + " -map 0:v -map 1:a";
 							}
-							
-							audioFiles += " -map 0:v -map 1:a";
 						}	
 						else
 						{

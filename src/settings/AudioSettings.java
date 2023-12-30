@@ -322,8 +322,14 @@ public class AudioSettings extends Shutter {
 							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
     				}
 					
-		    		if (audioFiltering != "")
+				    if (isBroadcastCodec) //Managed from FunctionUtils
+		    		{
+				    	audioFiltering = "";
+		    		}
+				    else if (audioFiltering != "")
+		    		{
 		    			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
+		    		}
 		    		
 		    		FFPROBE.stereo = false; //permet de contourner le split audio	
 		    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + audioFiltering + mapping;
@@ -463,17 +469,29 @@ public class AudioSettings extends Shutter {
 						if (comboAudio8.getSelectedIndex() != 16)
 							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
     				}
-						
-		    		if (audioFiltering != "")
+		    								
+		    		if (isBroadcastCodec) //Managed from FunctionUtils
+		    		{
+				    	audioFiltering = "";
+		    		}
+				    else if (audioFiltering != "")
+		    		{
 		    			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
+		    		}
 		    		
 		    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + audioFiltering + mapping;
 		    	 }		    	 
 		    }
 		    else
 		    {
-		    	if (audioFiltering != "")
-		    		audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
+		    	if (isBroadcastCodec) //Managed from FunctionUtils
+	    		{
+			    	audioFiltering = "";
+	    		}
+			    else if (audioFiltering != "")
+	    		{
+	    			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
+	    		}
 		    	
 		    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + audioFiltering + " -map a?";
 		    }

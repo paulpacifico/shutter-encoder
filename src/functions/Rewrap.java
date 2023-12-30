@@ -92,6 +92,28 @@ public class Rewrap extends Shutter {
 						
 						//Metadatas
 			    		String metadatas = FunctionUtils.setMetadatas();
+			    		
+			    		String flags = "";
+			    		if (FFPROBE.videoCodec != null)
+			    		{
+			    			String vcodec = FFPROBE.videoCodec.replace("video", "");
+			    			for (String s : Shutter.functionsList)
+			    			{
+			    				if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
+			    				|| s.toLowerCase().contains(vcodec.toLowerCase()))
+			    				{
+			    					vcodec = s;
+			    					break;
+			    				}
+			    				else
+			    					vcodec = vcodec.toUpperCase();
+			    			}
+			    			
+			    			if (vcodec.equals("HEVC"))
+			    			{
+			    				flags =  " -tag:v hvc1"; 
+			    			}
+			    		}
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -143,7 +165,15 @@ public class Rewrap extends Shutter {
 						else
 						{								
 							//Output extension
-							newExtension = comboFilter.getSelectedItem().toString();
+							if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
+							|| comboFilter.getEditor().getItem().toString().equals("")
+							|| comboFilter.getEditor().getItem().toString().equals(" ")
+							|| comboFilter.getEditor().getItem().toString().contains(".") == false)
+							{
+								newExtension = extension;
+							}
+							else
+								newExtension = comboFilter.getSelectedItem().toString();
 						}
 						
 						if (Settings.btnExtension.isSelected())
@@ -233,7 +263,7 @@ public class Rewrap extends Shutter {
 				        	}
 							
 							//Command
-							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + " -y ";
+							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + flags + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 							
 							do
@@ -244,7 +274,7 @@ public class Rewrap extends Shutter {
 							
 							if (FFMPEG.error)
 							{
-								cmd = " -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + " -y ";
+								cmd = " -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + flags + " -y ";
 								FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
 								
 								do
