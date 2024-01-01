@@ -500,7 +500,7 @@ public class Picture extends Shutter {
 		progressBar1.setMaximum(fileOut.getParentFile().listFiles().length);
 		
 		String model = "realesr-general-wdn-x4v3";							
-		if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
+		if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
 		{
 			model = "realesrgan-x4plus-anime";
 		}	

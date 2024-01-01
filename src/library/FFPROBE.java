@@ -77,6 +77,7 @@ public static String timecode4 = "";
 public static int audioSampleRate = 48000;
 public static boolean stereo = true;	
 public static boolean surround = false;
+public static String channelLayout = "";
 public static int channels;	
 public static int qantization;
 public static String videoCodec;
@@ -109,6 +110,7 @@ public static boolean hasAlpha = false;
 					
 			dropFrameTC = "";
 			surround = false;
+			channelLayout = "";
 			totalLength = 0;
 			qantization = 16;
 			subtitlesCodec = "";
@@ -463,8 +465,21 @@ public static boolean hasAlpha = false;
 				        			 stereo = false;
 				        			 surround = false;
 				        		 }
-				        		 else if  (line.contains("5.1") || line.contains("6.1") || line.contains("7.1"))
+				        		 else if (line.contains("5.1") || line.contains("6.1") || line.contains("7.1"))
 				        		 {
+				        			 if (line.contains("5.1"))
+				        			 {
+				        				 channelLayout = "5.1";
+				        			 }
+				        			 else if (line.contains("6.1"))
+				        			 {
+				        				 channelLayout = "6.1";
+				        			 }
+				        			 else if (line.contains("7.1"))
+				        			 {
+				        				 channelLayout = "7.1";
+				        			 }
+				        			 				        			 
 				        			 stereo = true;//permet de l'utiliser tel quel avec les codecs audio car il est embedded
 				        			 surround = true;
 				        		 }

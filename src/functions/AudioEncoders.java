@@ -197,7 +197,13 @@ public class AudioEncoders extends Shutter {
 								
 							case "OPUS":
 								
-								audioCodec = "libopus -b:a " + comboFilter.getSelectedItem().toString() + "k";									
+								audioCodec = "libopus -b:a " + comboFilter.getSelectedItem().toString() + "k";		
+								
+								if (FFPROBE.surround && FFPROBE.channelLayout != "")
+								{
+									audioCodec += " -channel_layout " + FFPROBE.channelLayout;
+								}
+								
 								container = ".opus";
 								stereoOutput = false;
 								break;

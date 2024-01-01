@@ -986,10 +986,6 @@ public class FunctionUtils extends Shutter {
         	{
         		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
         	}
-        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")))
-        	{
-        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' + "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
-        	}
         	else
         		filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
         
@@ -1014,10 +1010,6 @@ public class FunctionUtils extends Shutter {
         	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.surround == false)
         	{
         		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
-        	}
-        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals("Multi") && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")))
-        	{
-        		filterComplex = audio + " -map v:0 -map " + '"'+ "[a1]" + '"' + " -map " + '"'+ "[a2]" + '"';
         	}
         	else
         		filterComplex = " -map v:0" + audio;
@@ -1132,8 +1124,8 @@ public class FunctionUtils extends Shutter {
 						channels ++;
 				}
 			}
-			
-			for (int m = 1 ; m < channels + 1; m++) 
+
+			for (int m = 1 ; m < channels; m++) 
 			{	
 				//On map les pistes existantes
 				if (m <= FFPROBE.channels)
@@ -1192,9 +1184,13 @@ public class FunctionUtils extends Shutter {
 						silentTrack += " -shortest -map_metadata -1";
 					
 					if (Shutter.caseAddWatermark.isSelected() && (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+					{
 						mapping += " -map 3";	
+					}
 					else if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+					{
 						mapping += " -map 2";
+					}
 					else
 						mapping += " -map 1";	
 				}
@@ -1207,9 +1203,13 @@ public class FunctionUtils extends Shutter {
 	    		audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
 			
 			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+			{
 				mapping = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audioFiltering + mapping + audio;
+			}
 			else if (filterComplex != "")
+			{
 				mapping = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audioFiltering + mapping + audio;
+			}
 			else
 				mapping = " -map v:0" + audioFiltering + mapping + audio;	
 		}		

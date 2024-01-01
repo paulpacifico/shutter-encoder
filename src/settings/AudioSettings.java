@@ -263,7 +263,7 @@ public class AudioSettings extends Shutter {
 	        {
 	        	return audioFiles + audio + " -ar " + lbl48k.getText();
 	        }
-						
+			
 		    if (FFPROBE.stereo)
 		    {
 		    	if (FFPROBE.surround && lblAudioMapping.getText().equals("Multi") == false)
@@ -280,9 +280,9 @@ public class AudioSettings extends Shutter {
 			    	audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getText() + audioBitrate + " -filter:a " + '"' + audioFiltering + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " -map a?";
 			    }
 		    	else if (lblAudioMapping.getText().equals("Multi"))
-		    	{				    
+		    	{					    		
 				    String mapping = "";
-				    
+				    				
 				    if (comboAudio1.getSelectedIndex() == 0
     				&& comboAudio2.getSelectedIndex() == 1
     				&& comboAudio3.getSelectedIndex() == 2
@@ -321,6 +321,11 @@ public class AudioSettings extends Shutter {
 						if (comboAudio8.getSelectedIndex() != 16)
 							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
     				}
+
+				    if (audioCodec.equals("libopus") && FFPROBE.channelLayout != "")
+				    {
+				    	mapping += " -channel_layout " + FFPROBE.channelLayout;
+				    }
 					
 				    if (isBroadcastCodec) //Managed from FunctionUtils
 		    		{
@@ -330,8 +335,7 @@ public class AudioSettings extends Shutter {
 		    		{
 		    			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
 		    		}
-		    		
-		    		FFPROBE.stereo = false; //permet de contourner le split audio	
+
 		    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getText() + audioBitrate + audioFiltering + mapping;
 		    	}
 		    	else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
