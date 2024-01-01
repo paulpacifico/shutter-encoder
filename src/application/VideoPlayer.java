@@ -4601,7 +4601,7 @@ public class VideoPlayer {
 					            } while (FFMPEG.isRunning && FFMPEG.error == false);
 								
 								String model = "realesr-general-wdn-x4v3";							
-								if (Shutter.comboResolution.getSelectedItem().toString().contains("2D"))
+								if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
 								{
 									model = "realesrgan-x4plus-anime";
 								}	

@@ -4991,7 +4991,7 @@ public class Shutter {
 
 		comboResolution = new JComboBox<String>();
 		comboResolution.setName("comboResolution");
-		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "1:2", "1:4", "1:8", "1:16",
+		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "1:2", "1:4", "1:8", "1:16",
 				"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
 				"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 				"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
@@ -17593,7 +17593,7 @@ public class Shutter {
 			
 		});
 
-		lblYears = new JLabel("2013-2023");
+		lblYears = new JLabel("2013-2024");
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYears.setForeground(Color.WHITE);
 		lblYears.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -19142,7 +19142,7 @@ public class Shutter {
 								{
 									if (comboResolution.getItemCount() != 24)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}							
@@ -19407,7 +19407,7 @@ public class Shutter {
 								{
 									if (comboResolution.getItemCount() != 24)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}
@@ -19851,7 +19851,7 @@ public class Shutter {
 								
 								if (comboResolution.getItemCount() != 24)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 								}
 								
@@ -20239,7 +20239,7 @@ public class Shutter {
 								
 								if (comboResolution.getItemCount() != 24)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 								}
 								
@@ -20722,7 +20722,7 @@ public class Shutter {
 									
 									if (comboResolution.getItemCount() != 24)
 									{
-										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
+										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160", "2560x1440", "1920x1080",
 												"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 									
@@ -20927,7 +20927,7 @@ public class Shutter {
 								
 								if (comboResolution.getItemCount() != 31)
 								{
-									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI 3D 4x", "AI 3D 2x", "AI 2D 4x", "AI 2D 2x", "1:2", "1:4", "1:8", "1:16",
+									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"), "AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "1:2", "1:4", "1:8", "1:16",
 											"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720",
 											"4096x2160", "3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000",
 											"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));

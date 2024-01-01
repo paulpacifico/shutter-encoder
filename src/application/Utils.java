@@ -606,6 +606,27 @@ public class Utils extends Shutter {
 				
 				Element settings = document.createElement("Settings");
 				
+				//Suffix
+				//Component
+				Element component = document.createElement("Component");
+				
+				//Type
+				Element cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				Element cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("txtExtension"));
+				component.appendChild(cName);
+				
+				//Value
+				Element cValue = document.createElement("Value");				
+				cValue.appendChild(document.createTextNode(Settings.txtExtension.getText().toString()));
+				component.appendChild(cValue);
+				
+				settings.appendChild(component);
+				
 				for (Component c : frame.getContentPane().getComponents())
 				{
 					if (c instanceof JPanel)
@@ -617,20 +638,20 @@ public class Utils extends Shutter {
 								if (p instanceof JButton)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JButton"));
 									component.appendChild(cType);
 									
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");								
+									cValue = document.createElement("Value");								
 									cValue.appendChild(document.createTextNode(((JButton) p).getForeground().toString()));
 									component.appendChild(cValue);
 									
@@ -649,22 +670,22 @@ public class Utils extends Shutter {
 								else if (p instanceof JLabel)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JLabel"));
 									component.appendChild(cType);
 									
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
 									if (p.getName().equals("lock") == false && p.getName().equals("unlock") == false)
 									{
-										Element cValue = document.createElement("Value");
+										cValue = document.createElement("Value");
 										cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
 										component.appendChild(cValue);
 									}
@@ -684,20 +705,20 @@ public class Utils extends Shutter {
 								else if (p instanceof JCheckBox)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JCheckBox"));
 									component.appendChild(cType);
 									
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");
+									cValue = document.createElement("Value");
 									cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 									component.appendChild(cValue);
 									
@@ -716,20 +737,20 @@ public class Utils extends Shutter {
 								else if (p instanceof JComboBox)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JComboBox"));
 									component.appendChild(cType);
 																		
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");
+									cValue = document.createElement("Value");
 									cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
 									component.appendChild(cValue);
 									
@@ -748,20 +769,20 @@ public class Utils extends Shutter {
 								else if (p instanceof JTextField)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JTextField"));
 									component.appendChild(cType);
 									
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");
+									cValue = document.createElement("Value");
 									cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
 									component.appendChild(cValue);
 									
@@ -780,20 +801,20 @@ public class Utils extends Shutter {
 								else if (p instanceof JSlider)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JSlider"));
 									component.appendChild(cType);
 	
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");
+									cValue = document.createElement("Value");
 									cValue.appendChild(document.createTextNode(String.valueOf(((JSlider) p).getValue())));
 									component.appendChild(cValue);
 									
@@ -812,20 +833,20 @@ public class Utils extends Shutter {
 								else if (p instanceof JSpinner)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JSpinner"));
 									component.appendChild(cType);
 		
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");
+									cValue = document.createElement("Value");
 									cValue.appendChild(document.createTextNode(String.valueOf(((JSpinner) p).getValue())));
 									component.appendChild(cValue);
 									
@@ -844,20 +865,20 @@ public class Utils extends Shutter {
 								else if (p instanceof JPanel)
 								{
 									//Component
-									Element component = document.createElement("Component");
+									component = document.createElement("Component");
 									
 									//Type
-									Element cType = document.createElement("Type");
+									cType = document.createElement("Type");
 									cType.appendChild(document.createTextNode("JPanel"));
 									component.appendChild(cType);
 
 									//Name
-									Element cName = document.createElement("Name");
+									cName = document.createElement("Name");
 									cName.appendChild(document.createTextNode(p.getName()));
 									component.appendChild(cName);
 									
 									//Value
-									Element cValue = document.createElement("Value");
+									cValue = document.createElement("Value");
 									cValue.appendChild(document.createTextNode(String.valueOf(((JPanel) p).getBackground())));
 									component.appendChild(cValue);
 									
@@ -1205,9 +1226,9 @@ public class Utils extends Shutter {
 	
 					color.appendChild(componentvibranceB);
 					
-				root.appendChild(color);
-				}				
-																															
+					root.appendChild(color);
+				}	
+																														
 				// creation du fichier XML
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
@@ -1275,8 +1296,20 @@ public class Utils extends Shutter {
 						for (int temp = 0; temp < nList.getLength(); temp++)
 						{
 							Node nNode = nList.item(temp);
-							if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+							if (nNode.getNodeType() == Node.ELEMENT_NODE)
+							{
 								Element eElement = (Element) nNode;
+								
+								//Suffix
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									{
+										Settings.txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									}
+									else
+										Settings.txtExtension.setText("");
+								}
 								
 								//Type						
 								for (Component c : frame.getContentPane().getComponents())
