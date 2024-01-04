@@ -176,9 +176,9 @@ public class VideoEncoders extends Shutter {
 							extensionName += "_" + comboFilter.getSelectedItem().toString().replace(" ","_");
 						}
 						
-						if (Settings.btnExtension.isSelected())
+						if (btnExtension.isSelected())
 						{
-							extensionName = Settings.txtExtension.getText();
+							extensionName = txtExtension.getText();
 						}
 						else
 						{
@@ -1006,8 +1006,8 @@ public class VideoEncoders extends Shutter {
 							{							
 								String key = FunctionUtils.getRandomHexString().toUpperCase();
 								
-								if (Settings.btnExtension.isSelected())
-									key = Settings.txtExtension.getText();
+								if (btnExtension.isSelected())
+									key = txtExtension.getText();
 								
 								switch (comboFonctions.getSelectedItem().toString())
 								{

@@ -107,9 +107,9 @@ public class AudioEncoders extends Shutter {
 													
 						//File output name
 						String extensionName = "";	
-						if (Settings.btnExtension.isSelected())
+						if (btnExtension.isSelected())
 						{
-							extensionName = Settings.txtExtension.getText();
+							extensionName = txtExtension.getText();
 						}	
 						else if (caseMixAudio.isSelected())	
 							extensionName +=  "_MIX";
@@ -257,8 +257,19 @@ public class AudioEncoders extends Shutter {
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 																						
 						//Audio
-						String audio = setAudio(audioCodec, stereoOutput);
-													
+						String audio = setAudio(audioCodec, stereoOutput, file);
+								
+						//Audio normalization		
+			            if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+						{				
+				        	if (cancelled)
+				        	{
+				        		break;
+				        	}
+				        	else				        	
+				        		lblCurrentEncoding.setText(file.getName());										
+						}
+						
 						//Command				
 						if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio
 						{
@@ -345,24 +356,40 @@ public class AudioEncoders extends Shutter {
 		
     }
 
-	private static String setAudio(String codec, boolean stereoOutput) {        
+	private static String setAudio(String codec, boolean stereoOutput, File file) {        
 		
 		String audio = "";	
-		String audioFilter = "";	
+		String audioFiltering = "";	
 		
 		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeIn(false);
+			audioFiltering += "," + Transitions.setAudioFadeIn(false);
 		}
 		
 		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeOut(false);
+			audioFiltering += "," + Transitions.setAudioFadeOut(false);
 		}
 		
 		if (Transitions.setAudioSpeed() !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioSpeed();
+			audioFiltering += "," + Transitions.setAudioSpeed();
+		}
+		
+		//Audio normalization		
+		if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+		{				
+        	AudioNormalization.main(file);
+        							
+        	do {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {}
+			} while (AudioNormalization.thread.isAlive());
+        	
+        	lblCurrentEncoding.setText(file.getName());
+						
+			audioFiltering += ",volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
 		}
 		
 		if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")) && FFPROBE.surround)		
@@ -377,7 +404,7 @@ public class AudioEncoders extends Shutter {
 			}
 			
 			if (FFPROBE.stereo)
-				audio += "-filter_complex amerge=inputs=" + liste.size() + audioFilter + " -ac 2 ";
+				audio += "-filter_complex amerge=inputs=" + liste.size() + audioFiltering + " -ac 2 ";
 			else
 			{
 				audio += "-filter_complex " + '"';
@@ -400,16 +427,16 @@ public class AudioEncoders extends Shutter {
 				}
 				audio += left + "amerge=inputs=" + cl + ",channelmap=map=FL[left];" + right + "amerge=inputs=" + cr + ",channelmap=map=FR[right];";
 						
-				audio += "[left][right]amerge=inputs=2" + audioFilter + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + " -ac 2 ";
+				audio += "[left][right]amerge=inputs=2" + audioFiltering + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + " -ac 2 ";
 			}							
 		}
 		else if (caseMixAudio.isSelected() && lblMix.getText().equals("2.1"))
 		{
-			audio = "-filter_complex " + '"' + "[0:a][1:a][2:a]join=inputs=3:channel_layout=2.1" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";
+			audio = "-filter_complex " + '"' + "[0:a][1:a][2:a]join=inputs=3:channel_layout=2.1" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";
 		}
 		else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 		{
-			audio = "-filter_complex " + '"' + "[0:a][1:a][2:a][3:a][4:a][5:a]join=inputs=6:channel_layout=5.1" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";
+			audio = "-filter_complex " + '"' + "[0:a][1:a][2:a][3:a][4:a][5:a]join=inputs=6:channel_layout=5.1" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";
 		}
 		else if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("mono")))						
 		{
@@ -418,29 +445,29 @@ public class AudioEncoders extends Shutter {
 				audio += "-i " + '"' + liste.elementAt(n) + '"' + " ";
 			}
 			
-			audio += "-filter_complex amerge=inputs=" + liste.size() + audioFilter + " -ac 1 ";
+			audio += "-filter_complex amerge=inputs=" + liste.size() + audioFiltering + " -ac 1 ";
 			
 		}
 		else if (FFPROBE.stereo)
 		{
-			if (audioFilter != "")     
-				audio = audioFilter.replaceFirst(",", " -filter_complex ") + " ";
+			if (audioFiltering != "")     
+				audio = audioFiltering.replaceFirst(",", " -filter_complex ") + " ";
 		}
 		else if (FFPROBE.channels > 1)
 		{
 			if (stereoOutput)
 			{
-				audio = "-filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";	
+				audio = "-filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";	
 			}
 			else
 			{
-				audio = audioFilter.replaceFirst(",", " -filter_complex ") + " -map a? ";
+				audio = audioFiltering.replaceFirst(",", " -filter_complex ") + " -map a? ";
 			}
 		}
 		else //Fichier Mono
 		{
-			if (audioFilter != "")     
-				audio += audioFilter.replaceFirst(",", " -filter_complex ") + " ";
+			if (audioFiltering != "")     
+				audio += audioFiltering.replaceFirst(",", " -filter_complex ") + " ";
 		}
 			
 		//Quantization

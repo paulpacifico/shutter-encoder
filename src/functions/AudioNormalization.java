@@ -24,7 +24,6 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import application.Ftp;
-import application.Settings;
 import application.Shutter;
 import application.Utils;
 import library.FFMPEG;
@@ -81,8 +80,8 @@ public class AudioNormalization extends Shutter {
 						//File output name
 						String extensionName = "_Norm";
 						
-						if (Settings.btnExtension.isSelected())
-							extensionName = Settings.txtExtension.getText();
+						if (btnExtension.isSelected())
+							extensionName = txtExtension.getText();
 						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 

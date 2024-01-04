@@ -446,7 +446,7 @@ public class AdvancedFeatures extends Shutter {
 			case "DNxHD":
 				
 				if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
-		        {               
+		        {        					
 		            //Interlacing only for 50i          	 
 		            switch (comboFilter.getSelectedItem().toString())
 		            {

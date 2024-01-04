@@ -658,11 +658,31 @@ public class FunctionUtils extends Shutter {
 					}	
 				}
 			}
+			else if (caseSubFolder.isSelected() && txtSubFolder.getText().equals("") == false)
+			{
+				output = new File (lblDestination1.getText() + "/" + txtSubFolder.getText()).toString();
+				
+				if (new File(output).exists() == false)
+				{
+					new File(output).mkdirs();
+				}
+			}
 		}
 		else
 		{
 			output = file.getParent();
+			
 			lblDestination1.setText(output);
+			
+			if (caseSubFolder.isSelected() && txtSubFolder.getText().equals("") == false)
+			{
+				output = new File (file.getParent() + "/" + txtSubFolder.getText()).toString();
+				
+				if (new File(output).exists() == false)
+				{
+					new File(output).mkdirs();
+				}
+			}
 		}
 		
 		return output;
@@ -1356,6 +1376,7 @@ public class FunctionUtils extends Shutter {
 	}
 
 	public static void copyFile(File file) {		
+		
 		//Destination 2
 		if (caseChangeFolder2.isSelected())
 		{
@@ -1363,6 +1384,17 @@ public class FunctionUtils extends Shutter {
 			grpDestination.setSelectedIndex(1);
 			File filein  = file;
 	        File fileout = new File(lblDestination2.getText() + "/" + file.getName());
+
+	        if (caseSubFolder.isSelected() && txtSubFolder.getText().equals("") == false)
+			{
+	        	fileout = new File (lblDestination2.getText() + "/" + txtSubFolder.getText() + "/" + file.getName());
+				
+				if (new File(lblDestination2.getText() + "/" + txtSubFolder.getText()).exists() == false)
+				{
+					fileout.mkdirs();
+				}
+			}
+	        
 			try {		
 		        long length  = filein.length();
 				progressBar1.setMaximum((int) length);
@@ -1402,6 +1434,17 @@ public class FunctionUtils extends Shutter {
 			grpDestination.setSelectedIndex(2);
 			File filein  = file;
 	        File fileout = new File(lblDestination3.getText() + "/" + file.getName());
+	        
+	        if (caseSubFolder.isSelected() && txtSubFolder.getText().equals("") == false)
+			{
+	        	fileout = new File (lblDestination3.getText() + "/" + txtSubFolder.getText() + "/" + file.getName());
+				
+	        	if (new File(lblDestination3.getText() + "/" + txtSubFolder.getText()).exists() == false)
+				{
+					fileout.mkdirs();
+				}
+			}
+	        
 			try {		
 		        long length  = filein.length();
 		        progressBar1.setMaximum((int) length);

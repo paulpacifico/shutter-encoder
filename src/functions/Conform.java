@@ -22,7 +22,6 @@ package functions;
 import java.io.File;
 
 import application.Ftp;
-import application.Settings;
 import application.Shutter;
 import application.Utils;
 import application.VideoPlayer;
@@ -87,8 +86,8 @@ public class Conform extends Shutter {
 						//File output name
 						String extensionName = "_Conform";
 						
-						if (Settings.btnExtension.isSelected())
-							extensionName = Settings.txtExtension.getText();
+						if (btnExtension.isSelected())
+							extensionName = txtExtension.getText();
 	
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 

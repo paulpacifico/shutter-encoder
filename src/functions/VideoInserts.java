@@ -122,8 +122,8 @@ public class VideoInserts extends Shutter {
 					
 					//File output name
 					String extensionName = "_Edit";
-					if (Settings.btnExtension.isSelected())
-						extensionName = Settings.txtExtension.getText();
+					if (btnExtension.isSelected())
+						extensionName = txtExtension.getText();
 					
 					//Output folder		
 					String labelOutput = FunctionUtils.setOutputDestination("", new File(master[1].replace("\"", "")));							

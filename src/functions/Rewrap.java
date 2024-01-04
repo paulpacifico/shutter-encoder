@@ -176,8 +176,8 @@ public class Rewrap extends Shutter {
 								newExtension = comboFilter.getSelectedItem().toString();
 						}
 						
-						if (Settings.btnExtension.isSelected())
-							extensionName = Settings.txtExtension.getText();
+						if (btnExtension.isSelected())
+							extensionName = txtExtension.getText();
 						
 						//Split video
 						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
@@ -223,8 +223,8 @@ public class Rewrap extends Shutter {
 						{							
 							String key = FunctionUtils.getRandomHexString().toUpperCase();
 							
-							if (Settings.btnExtension.isSelected())
-								key = Settings.txtExtension.getText();
+							if (btnExtension.isSelected())
+								key = txtExtension.getText();
 
 							lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																									

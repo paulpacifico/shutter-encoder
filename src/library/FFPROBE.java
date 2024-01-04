@@ -107,7 +107,13 @@ public static boolean hasAlpha = false;
 				channels = 0;
 				stereo = false;	
 			}
-					
+			
+			interlaced = null;
+			if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+			{
+				fieldOrder = null;
+			}
+			
 			dropFrameTC = "";
 			surround = false;
 			channelLayout = "";
@@ -226,13 +232,13 @@ public static boolean hasAlpha = false;
 													
 							//Entrelacement
 							if (line.contains("top first") || line.contains("top coded first"))
-							{
+							{								
 								interlaced = "1";
 								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
 									fieldOrder = "0";
 							}
 							else if (line.contains("bottom first") || line.contains("bottom coded first"))
-							{
+							{								
 								interlaced = "1";
 								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
 									fieldOrder = "1";
@@ -585,17 +591,7 @@ public static boolean hasAlpha = false;
 	}
 
 	public static void FrameData(final String file) {	
-		
-		if (caseForcerEntrelacement.isSelected() == false)
-		{
-			interlaced = null;
-		}
-		
-		if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
-		{
-			fieldOrder = null;
-		}
-		
+						
 		videoStream = false;
 		pixelformat = "";
 		imageDepth = 8;		
