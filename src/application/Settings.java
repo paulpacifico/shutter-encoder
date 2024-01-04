@@ -42,8 +42,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
@@ -117,7 +115,6 @@ public class Settings {
 	private static JPanel accentColor = new JPanel();
 	public static JComboBox<String> comboLanguage = new JComboBox<String>();
 	public static JCheckBox btnSetBab = new JCheckBox(Shutter.language.getProperty("btnSetBab"));
-	public static JCheckBox btnExtension = new JCheckBox(Shutter.language.getProperty("btnExtension"));
 	public static JCheckBox btnExclude = new JCheckBox(Shutter.language.getProperty("btnExclude"));
 	public static JCheckBox btnHidePath = new JCheckBox(Shutter.language.getProperty("btnHidePath"));
 	public static JCheckBox btnLoadPreset = new JCheckBox(Shutter.language.getProperty("btnLoadPreset"));
@@ -130,7 +127,6 @@ public class Settings {
 	public static JCheckBox btnDisableSound = new JCheckBox(Shutter.language.getProperty("btnDisableSound"));
 	public static JCheckBox btnDisableUpdate = new JCheckBox(Shutter.language.getProperty("btnDisableUpdate"));
 	public static JCheckBox btnDisableMinimizedWindow = new JCheckBox(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
-	public static JTextField txtExtension = new JTextField();
 	public static JTextField txtExclude = new JTextField();
 	private JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1 " + Shutter.language.getProperty("toDefault"));
 	private JLabel defaultOutput2 = new JLabel(Shutter.language.getProperty("output") + "2 " + Shutter.language.getProperty("toDefault"));
@@ -149,8 +145,6 @@ public class Settings {
 	public Settings() {
 				
 		//For saving	
-		btnExtension.setName("btnExtension");
-		txtExtension.setName("txtExtension");
 		btnExclude.setName("btnExclude");
 		txtExclude.setName("txtExclude");
 		btnHidePath.setName("btnHidePath");
@@ -232,7 +226,7 @@ public class Settings {
 			
 		});
 		
-		frame.getContentPane().add(scrollBar);
+		//frame.getContentPane().add(scrollBar);
 				
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setName("backgroundPanel");
@@ -327,39 +321,9 @@ public class Settings {
 		btnWaitFileComplete.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnWaitFileComplete.setBounds(12, btnLoadPreset.getLocation().y + btnLoadPreset.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnWaitFileComplete);
-		
-		btnExtension.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnExtension.setBounds(12, btnWaitFileComplete.getLocation().y + btnWaitFileComplete.getHeight() + 10, btnExtension.getPreferredSize().width, 16);
-		frame.getContentPane().add(btnExtension);
-		
-		btnExtension.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				if (btnExtension.isSelected())
-				{
-					txtExtension.setEnabled(true);
-				}
-				else
-				{
-					txtExtension.setEnabled(false);
-				}
-			}
-			
-		});
 				
-		if (btnExtension.isSelected())
-			txtExtension.setEnabled(true);
-		else
-			txtExtension.setEnabled(false);
-		
-		txtExtension.setColumns(10);
-		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y - 2, frame.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 32, 21);
-		frame.getContentPane().add(txtExtension);	
-		
 		btnExclude.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnExclude.setBounds(12, btnExtension.getLocation().y + btnExtension.getHeight() + 10, btnExclude.getPreferredSize().width, 16);
+		btnExclude.setBounds(12, btnWaitFileComplete.getLocation().y + btnWaitFileComplete.getHeight() + 10, btnExclude.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnExclude);
 		
 		btnExclude.addActionListener(new ActionListener(){
@@ -1130,7 +1094,7 @@ public class Settings {
 			}
 			
 		});
-					
+		/*			
 		frame.addMouseWheelListener(new MouseWheelListener(){
 
 			@Override
@@ -1138,7 +1102,7 @@ public class Settings {
 				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
 			}
 			
-		});	
+		});*/
 		
 		frame.addMouseListener(new MouseListener() {
 
@@ -1397,7 +1361,8 @@ public class Settings {
 								
 				Node nNode = nList.item(temp);
 				
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+				if (nNode.getNodeType() == Node.ELEMENT_NODE)
+				{
 					Element eElement = (Element) nNode;
 
 					for (Component p : frame.getContentPane().getComponents())
@@ -1522,7 +1487,53 @@ public class Settings {
 							Shutter.caseChangeFolder1.doClick();
 						}
 					}
-										
+					
+					//btnExtension
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("btnExtension"))
+					{
+						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+						{
+							Shutter.btnExtension.setSelected(true);
+							Shutter.txtExtension.setEnabled(true);
+						}
+						else
+							Shutter.btnExtension.setSelected(false);
+					}
+						
+					//Suffix
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
+					{
+						if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+						{
+							Shutter.txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						else
+							Shutter.txtExtension.setText("");
+					}
+					
+					//caseSubFolder
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseSubFolder"))
+					{
+						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+						{
+							Shutter.caseSubFolder.setSelected(true);							
+							Shutter.txtSubFolder.setEnabled(true);
+						}
+						else
+							Shutter.caseSubFolder.setSelected(false);
+					}
+					
+					//SubFolder
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtSubFolder"))
+					{
+						if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+						{
+							Shutter.txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						else
+							Shutter.txtSubFolder.setText("");
+					}
+					
 					//Volume video player
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderVolume"))
 					{
@@ -1846,6 +1857,90 @@ public class Settings {
 			//Value
 			cValue = document.createElement("Value");
 			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseChangeFolder1.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//btnExtension
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode(Shutter.btnExtension.getName()));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.btnExtension.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//Suffix
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JTextField"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode("txtExtension"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");				
+			cValue.appendChild(document.createTextNode(Shutter.txtExtension.getText().toString()));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//caseSubFolder
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode(Shutter.caseSubFolder.getName()));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseSubFolder.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//SubFolder
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JTextField"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode("txtSubFolder"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");				
+			cValue.appendChild(document.createTextNode(Shutter.txtSubFolder.getText().toString()));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);

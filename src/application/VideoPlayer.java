@@ -1179,14 +1179,14 @@ public class VideoPlayer {
 										Thread.sleep(100);								
 									} 
 									while (FFPROBE.isRunning);
-									
+
 									FFPROBE.FrameData(videoPath);	
 									do 
 									{								
 										Thread.sleep(100);								
 									} 
 									while (FFPROBE.isRunning);
-									
+
 									FFMPEG.checkGPUCapabilities(videoPath, true);
 									
 									if (FFPROBE.interlaced == null)
@@ -1205,7 +1205,7 @@ public class VideoPlayer {
 											FFPROBE.fieldOrder = "0";
 										}
 									}
-			
+
 									boolean isRaw = false;
 						    		
 									//FFprobe with RAW files

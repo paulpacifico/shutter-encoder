@@ -603,30 +603,93 @@ public class Utils extends Shutter {
 				
 				Element root = document.createElement("Shutter");
 				document.appendChild(root);
+								
+				Element settings = document.createElement("Settings");				
 				
-				Element settings = document.createElement("Settings");
-				
-				//Suffix
+				//btnExtension
 				//Component
 				Element component = document.createElement("Component");
 				
 				//Type
 				Element cType = document.createElement("Type");
-				cType.appendChild(document.createTextNode("JTextField"));
+				cType.appendChild(document.createTextNode("JCheckBox"));
 				component.appendChild(cType);
 				
 				//Name
 				Element cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode("txtExtension"));
+				cName.appendChild(document.createTextNode(Shutter.btnExtension.getName()));
 				component.appendChild(cName);
 				
 				//Value
-				Element cValue = document.createElement("Value");				
-				cValue.appendChild(document.createTextNode(Settings.txtExtension.getText().toString()));
+				Element cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.btnExtension.isSelected())));
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
 				
+				//Suffix
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("txtExtension"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");				
+				cValue.appendChild(document.createTextNode(Shutter.txtExtension.getText().toString()));
+				component.appendChild(cValue);
+				
+				settings.appendChild(component);
+				
+				//caseSubFolder
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JCheckBox"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode(Shutter.caseSubFolder.getName()));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseSubFolder.isSelected())));
+				component.appendChild(cValue);
+				
+				settings.appendChild(component);
+				
+				//SubFolder
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("txtSubFolder"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");				
+				cValue.appendChild(document.createTextNode(Shutter.txtSubFolder.getText().toString()));
+				component.appendChild(cValue);
+				
+				settings.appendChild(component);
+								
 				for (Component c : frame.getContentPane().getComponents())
 				{
 					if (c instanceof JPanel)
@@ -1299,18 +1362,7 @@ public class Utils extends Shutter {
 							if (nNode.getNodeType() == Node.ELEMENT_NODE)
 							{
 								Element eElement = (Element) nNode;
-								
-								//Suffix
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
-								{
-									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
-									{
-										Settings.txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-									}
-									else
-										Settings.txtExtension.setText("");
-								}
-								
+																
 								//Type						
 								for (Component c : frame.getContentPane().getComponents())
 								{
@@ -1503,7 +1555,59 @@ public class Utils extends Shutter {
 											}
 										}
 									}
-								}					
+								}
+								
+								//btnExtension
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("btnExtension"))
+								{
+									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+									{
+										btnExtension.setSelected(true);
+										txtExtension.setEnabled(true);
+									}
+									else
+									{
+										btnExtension.setSelected(false);
+										txtExtension.setEnabled(false);
+									}
+								}
+									
+								//Suffix
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									{
+										txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									}
+									else
+										txtExtension.setText("");
+								}
+								
+								//caseSubFolder
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseSubFolder"))
+								{
+									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+									{
+										caseSubFolder.setSelected(true);							
+										txtSubFolder.setEnabled(true);
+									}
+									else
+									{
+										caseSubFolder.setSelected(false);
+										txtSubFolder.setEnabled(false);
+									}
+								}
+								
+								//SubFolder
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtSubFolder"))
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									{
+										txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									}
+									else
+										txtSubFolder.setText("");
+								}
 							}
 						}
 						

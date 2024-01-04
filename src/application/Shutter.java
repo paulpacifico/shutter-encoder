@@ -283,6 +283,10 @@ public class Shutter {
 	protected static JCheckBox caseChangeFolder1;
 	protected static JCheckBox caseChangeFolder2;
 	protected static JCheckBox caseChangeFolder3;
+	protected static JCheckBox btnExtension;
+	protected static JTextField txtExtension;
+	protected static JCheckBox caseSubFolder;
+	protected static JTextField txtSubFolder;
 	protected static JCheckBox caseRunInBackground;
 	protected static JCheckBox caseDisplay;
 	protected static JLabel iconTVInterpret;
@@ -493,6 +497,7 @@ public class Shutter {
 	public static JPanel destination3;
 	public static JPanel destinationMail;
 	public static JPanel destinationStream;
+	public static JPanel optionsPanel;
 	public static JPanel grpProgression;
 	public static JPanel grpResolution;
 	public static JPanel grpImageSequence;
@@ -799,8 +804,8 @@ public class Shutter {
 		frame.setBackground(new Color(35,35,35));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(332, 662);
-		frame.setMinimumSize(new Dimension(332, 662));
+		frame.setSize(332, 708);
+		frame.setMinimumSize(new Dimension(332, 708));
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100, 100, 100)));
@@ -1795,7 +1800,7 @@ public class Shutter {
 							
 		grpChooseFiles = new JPanel();
 		grpChooseFiles.setLayout(null);
-		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 331);
+		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 377);
 		grpChooseFiles.setBackground(new Color(35,35,35));
 		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
@@ -1805,7 +1810,7 @@ public class Shutter {
 		fileList.setBackground(new Color(50,50,50));
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
-		fileList.setBounds(10, 50, 292, frame.getHeight() - 391);
+		fileList.setBounds(10, 50, 292, frame.getHeight() - 437);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 				
 		addToList.setText(language.getProperty("dropFilesHere"));
@@ -3874,7 +3879,7 @@ public class Shutter {
 	private void grpDestination() {
 		
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);	
-		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 76);
+		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 122);
 		grpDestination.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true)));		
 		grpDestination.setFont(new Font(montserratFont, Font.PLAIN, 11));	
 		frame.getContentPane().add(grpDestination);		
@@ -4101,7 +4106,7 @@ public class Shutter {
 		lblDestination1.setText(language.getProperty("sameAsSource"));
 		lblDestination1.setBounds(6, 0, 290, 22);
 		destination1.add(lblDestination1);
-		
+				
 		//DESTINATION 2
 		
 		destination2 = new JPanel();
@@ -4524,7 +4529,7 @@ public class Shutter {
 		caseSendMail.setName("caseSendMail");
 		caseSendMail.setSelected(false);
 		caseSendMail.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseSendMail.setBounds(6, -2, caseSendMail.getPreferredSize().width, 23);
+		caseSendMail.setBounds(6, 1, caseSendMail.getPreferredSize().width, 23);
 		destinationMail.add(caseSendMail);
 		
 		caseSendMail.addActionListener(new ActionListener() {
@@ -4556,7 +4561,7 @@ public class Shutter {
 		textMail.setEnabled(false);
 		textMail.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		textMail.setForeground(Color.LIGHT_GRAY);
-		textMail.setBounds(6, 23, 290, 21);
+		textMail.setBounds(6, 24, 290, 21);
 		textMail.setColumns(1);
 		textMail.setText(language.getProperty("textMail"));
 		destinationMail.add(textMail);
@@ -4602,7 +4607,7 @@ public class Shutter {
 		caseStream.setName("caseStream");
 		caseStream.setSelected(false);
 		caseStream.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseStream.setBounds(6, -2, caseStream.getPreferredSize().width, 23);
+		caseStream.setBounds(6, 1, caseStream.getPreferredSize().width, 23);
 		destinationStream.add(caseStream);
 		
 		caseLoop = new JCheckBox(Shutter.language.getProperty("caseLoop"));
@@ -4645,7 +4650,7 @@ public class Shutter {
 		textStream.setEnabled(false);
 		textStream.setFont(new Font("SansSerif", Font.ITALIC, 12));
 		textStream.setForeground(Color.LIGHT_GRAY);
-		textStream.setBounds(6, 23, 290, 21);
+		textStream.setBounds(6, 24, 290, 21);
 		textStream.setColumns(1);
 		textStream.setText("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx");
 		destinationStream.add(textStream);
@@ -4678,14 +4683,76 @@ public class Shutter {
 			}
 
 		});
-		
-		
+				
 		//Destinations icons
 		mailIcon = new FlatSVGIcon("contents/mail.svg", 18, 18);
 		streamIcon = new FlatSVGIcon("contents/stream.svg", 18, 18);
 		
 		//Ajout des tabs	
 		setDestinationTabs(5);
+			
+		btnExtension = new JCheckBox(Shutter.language.getProperty("btnExtension"));
+		btnExtension.setName("btnExtension");
+		btnExtension.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnExtension.setBounds(6, caseOpenFolderAtEnd1.getLocation().y + caseOpenFolderAtEnd1.getHeight(), btnExtension.getPreferredSize().width, 23);
+		destination1.add(btnExtension);
+		
+		txtExtension = new JTextField();
+		txtExtension.setName("txtExtension");
+		txtExtension.setColumns(10);
+		txtExtension.setEnabled(false);
+		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y + 1, grpDestination.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 18, 21);
+		destination1.add(txtExtension);	
+		
+		btnExtension.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (btnExtension.isSelected())
+				{
+					txtExtension.setEnabled(true);
+				}
+				else
+				{
+					txtExtension.setEnabled(false);
+				}
+			}
+			
+		});
+										
+		caseSubFolder = new JCheckBox(Shutter.language.getProperty("caseSubFolder"));
+		caseSubFolder.setName("caseSubFolder");
+		caseSubFolder.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseSubFolder.setBounds(6, btnExtension.getY() + btnExtension.getHeight(), caseSubFolder.getPreferredSize().width, 23);
+		destination1.add(caseSubFolder);
+		
+		txtSubFolder = new JTextField();
+		txtSubFolder.setName("txtSubFolder");
+		txtSubFolder.setColumns(10);
+		txtSubFolder.setEnabled(false);
+		txtSubFolder.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtSubFolder.setBounds(caseSubFolder.getLocation().x + caseSubFolder.getWidth() + 6, caseSubFolder.getLocation().y + 1, grpDestination.getWidth() - (caseSubFolder.getLocation().x + caseSubFolder.getWidth()) - 18, 21);
+		destination1.add(txtSubFolder);	
+		
+		caseSubFolder.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseSubFolder.isSelected())
+				{
+					txtSubFolder.setEnabled(true);
+				}
+				else
+				{
+					txtSubFolder.setEnabled(false);
+				}
+			}
+			
+		});	
+		
 		
 		grpDestination.addChangeListener(new ChangeListener() {
 
@@ -4694,7 +4761,28 @@ public class Shutter {
 				
 				try {	
 					
-					if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("FTP"))
+					if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "1"))
+					{
+						destination1.add(btnExtension);
+						destination1.add(txtExtension);	
+						destination1.add(caseSubFolder);
+						destination1.add(txtSubFolder);
+					}
+					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "2"))
+					{
+						destination2.add(btnExtension);
+						destination2.add(txtExtension);	
+						destination2.add(caseSubFolder);
+						destination2.add(txtSubFolder);
+					}
+					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "3"))
+					{
+						destination3.add(btnExtension);
+						destination3.add(txtExtension);	
+						destination3.add(caseSubFolder);
+						destination3.add(txtSubFolder);
+					}
+					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("FTP"))
 					{
 						grpDestination.setSelectedComponent(destinationMail);
 						try {
@@ -4702,6 +4790,25 @@ public class Shutter {
 						} catch (Exception er) {}
 						new Ftp();
 						frame.setOpacity(1.0f);
+						
+						destinationMail.add(btnExtension);
+						destinationMail.add(txtExtension);	
+						destinationMail.add(caseSubFolder);
+						destinationMail.add(txtSubFolder);
+					}
+					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("Mail"))
+					{
+						destinationMail.add(btnExtension);
+						destinationMail.add(txtExtension);
+						destinationMail.add(caseSubFolder);	
+						destinationMail.add(txtSubFolder);
+					}
+					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("Stream"))
+					{
+						destinationStream.add(btnExtension);
+						destinationStream.add(txtExtension);
+						destinationStream.add(caseSubFolder);
+						destinationStream.add(txtSubFolder);
 					}
 
 				} catch (Exception e) {}				
@@ -6677,13 +6784,13 @@ public class Shutter {
 		grpAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
 				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
 		grpAudio.setBackground(new Color(35,35,35));
-		grpAudio.setBounds(frame.getWidth(), 343, 312, 116);
+		grpAudio.setBounds(frame.getWidth(), 343, 312, 139);
 		frame.getContentPane().add(grpAudio);
-		
+				
 		caseMixAudio = new JCheckBox(language.getProperty("caseMixAudio"));
 		caseMixAudio.setName("caseMixAudio");
 		caseMixAudio.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseMixAudio.setBounds(7, 16, caseMixAudio.getPreferredSize().width, 23);
+		caseMixAudio.setBounds(7, 39, caseMixAudio.getPreferredSize().width, 23);
 		caseMixAudio.setToolTipText(language.getProperty("tooltipMixAudio"));
 		grpAudio.add(caseMixAudio);
 
@@ -6778,7 +6885,7 @@ public class Shutter {
 		caseSplitAudio = new JCheckBox(language.getProperty("caseSplitAudio"));
 		caseSplitAudio.setName("caseSplitAudio");
 		caseSplitAudio.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		caseSplitAudio.setBounds(7, caseMixAudio.getY() +  caseMixAudio.getHeight(), caseSplitAudio.getPreferredSize().width, 23);
+		caseSplitAudio.setBounds(7, caseMixAudio.getY() + caseMixAudio.getHeight(), caseSplitAudio.getPreferredSize().width, 23);
 		grpAudio.add(caseSplitAudio);
 
 		caseSplitAudio.addActionListener(new ActionListener() {
@@ -17146,7 +17253,7 @@ public class Shutter {
 				
 				int i = e.getY() - 10;
 				
-				if (frame.getSize().getHeight() + i < 662)
+				if (frame.getSize().getHeight() + i < 708)
 					i = 0;
 				
 				int width = e.getX() + 10;
@@ -18039,7 +18146,7 @@ public class Shutter {
 		{		
 			noSettings = true;
 			
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 708) / 2, 332, 708);	
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -18156,7 +18263,7 @@ public class Shutter {
 		{			
 			noSettings = true;
 			
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 662) / 2, 332, 662);	
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 708) / 2, 332, 708);	
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -18255,13 +18362,13 @@ public class Shutter {
 		}
 		else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth))
 		{		
-			height = 662 - frame.getHeight();
+			height = 708 - frame.getHeight();
 			resizeAll(extendedWidth, height);
 			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2 + screenOffset);
 		}
 		else if (frame.getHeight() >= screenHeight - taskBarHeight)
 		{
-			height = 662 - frame.getHeight();
+			height = 708 - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), dim.height/2-frame.getSize().height/2 + screenOffset);	
 		}
@@ -18376,8 +18483,8 @@ public class Shutter {
 		help.setLocation(reduce.getLocation().x - 20, 4);
 		newInstance.setLocation(help.getLocation().x - 20, 4);
   		
-		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 331);
-		fileList.setSize(292, frame.getHeight() - 391);
+		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 377);
+		fileList.setSize(292, frame.getHeight() - 437);
 		addToList.setSize(fileList.getSize());					
 		scrollBar.setSize(292, fileList.getHeight());
 		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);
@@ -18677,6 +18784,13 @@ public class Shutter {
 									grpSetTimecode.setVisible(true);
 									grpSetTimecode.setLocation(grpSetTimecode.getX(), 30);
 									grpSetAudio.setLocation(grpSetAudio.getX(), grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
+																		
+									if (caseChangeAudioCodec.isSelected() == false && caseNormalizeAudio.isEnabled())
+									{
+										caseNormalizeAudio.setSelected(false);
+										caseNormalizeAudio.setEnabled(false);
+										comboNormalizeAudio.setEnabled(false);
+									}
 								}
 								else
 								{
@@ -18685,12 +18799,14 @@ public class Shutter {
 								}
 								
 								grpSetAudio.setVisible(true);
+								caseNormalizeAudio.setLocation(7, caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);							
 								if (action)
 									grpSetAudio.setSize(312, 17);
 								grpAudio.setVisible(false);
 								
 								if (language.getProperty("functionRewrap").equals(function) || language.getProperty("functionCut").equals(function))	
-								{
+								{										
 									grpAdvanced.removeAll();
 									
 									grpSubtitles.setVisible(true);
@@ -18735,11 +18851,6 @@ public class Shutter {
 									caseOpenGop.setLocation(7, casePreserveMetadata.getLocation().y + 17);													
 									grpAdvanced.add(caseOpenGop);	
 									btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);	
-								}
-								else
-								{
-									grpAdvanced.setVisible(false);
-									btnReset.setLocation(btnReset.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);	
 								}
 								
 								//grpSetAudio
@@ -18837,6 +18948,10 @@ public class Shutter {
 								grpResolution.setVisible(false);
 								grpBitrate.setVisible(false);
 								grpSetAudio.setVisible(true);
+								caseNormalizeAudio.setLocation(7, caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);
+								grpSetAudio.add(caseNormalizeAudio);
+								grpSetAudio.add(comboNormalizeAudio);
 								grpSetAudio.setLocation(grpSetAudio.getX(), 30);
 								grpSetAudio.setSize(312, 70);
 								grpAudio.setVisible(false);
@@ -18927,6 +19042,11 @@ public class Shutter {
 								grpSetAudio.setVisible(false);														
 								grpAudio.setVisible(true);
 								grpAudio.setLocation(grpAudio.getX(), 30);
+								caseNormalizeAudio.setLocation(7, 16);
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);
+								grpAudio.add(caseNormalizeAudio);
+								caseNormalizeAudio.setEnabled(true);
+								grpAudio.add(comboNormalizeAudio);
 								grpAudio.add(lbl48k);
 								lbl48k.setLocation(caseSampleRate.getLocation().x + caseSampleRate.getWidth() + 3, caseSampleRate.getLocation().y + 3);			
 								grpCrop.setVisible(false);
@@ -19160,6 +19280,8 @@ public class Shutter {
 								grpBitrate.setVisible(false);						
 								grpAudio.setVisible(false);
 								grpSetAudio.setVisible(true);
+								caseNormalizeAudio.setLocation(7, caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);
 								if (function.equals("HAP") == false && function.equals("FFV1") == false)
 								{
 									lblAudioMapping.setText("Multi");
@@ -19416,6 +19538,8 @@ public class Shutter {
 								grpSetTimecode.setVisible(false);							
 								grpAudio.setVisible(false);
 								grpSetAudio.setVisible(true);
+								caseNormalizeAudio.setLocation(7, caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);
 								if (action)
 									grpSetAudio.setSize(312, 17);
 								grpSetAudio.setLocation(grpSetAudio.getX(), grpResolution.getSize().height + grpResolution.getLocation().y + 6);						
@@ -19883,6 +20007,8 @@ public class Shutter {
 								
 								grpSetTimecode.setVisible(false);
 								grpSetAudio.setVisible(true);
+								caseNormalizeAudio.setLocation(7, caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);
 								if (action)
 									grpSetAudio.setSize(312, 17);
 								grpSetAudio.setLocation(grpSetAudio.getX(), grpBitrate.getSize().height + grpBitrate.getLocation().y + 6);
@@ -20310,6 +20436,8 @@ public class Shutter {
 								}
 								grpSetTimecode.setVisible(false);							
 								grpSetAudio.setVisible(true);
+								caseNormalizeAudio.setLocation(7, caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);							
 								if (action)
 									grpSetAudio.setSize(312, 17);
 								grpSetAudio.setLocation(grpSetAudio.getX(), grpBitrate.getSize().height + grpBitrate.getLocation().y + 6);
@@ -20751,10 +20879,11 @@ public class Shutter {
 										lblPad.setVisible(true);
 										lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 									}
-								}
-								
+								}								
 								
 								grpSetAudio.setVisible(true);
+								caseNormalizeAudio.setLocation(7, caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
+								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);								
 								if (action)
 									grpSetAudio.setSize(312, 17);
 								
@@ -22186,6 +22315,13 @@ public class Shutter {
 				textStream.setEnabled(false);		
 			}
 		}
+		
+		if (btnExtension.isSelected() == false)
+			txtExtension.setEnabled(false);
+		
+		if (caseSubFolder.isSelected() == false)
+			txtSubFolder.setEnabled(false);
+		
 		components = grpResolution.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			if (components[i] instanceof JComboBox == false)
@@ -22280,12 +22416,7 @@ public class Shutter {
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(true);
 		}
-		
-		if (caseNormalizeAudio.isSelected() == false)
-		{
-			comboNormalizeAudio.setEnabled(false);	
-		}
-		
+				
 		if (caseChangeAudioCodec.isSelected() == false)
 		{
 			comboAudioCodec.setEnabled(false);					
@@ -22305,6 +22436,11 @@ public class Shutter {
 				components[i].setEnabled(false);
 			else
 				components[i].setEnabled(true);
+		}
+		
+		if (caseNormalizeAudio.isSelected() == false)
+		{
+			comboNormalizeAudio.setEnabled(false);	
 		}
 		
 		if (caseGenerateFromDate.isSelected())
