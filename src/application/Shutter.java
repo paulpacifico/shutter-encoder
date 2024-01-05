@@ -4753,7 +4753,6 @@ public class Shutter {
 			
 		});	
 		
-		
 		grpDestination.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -4761,7 +4760,14 @@ public class Shutter {
 				
 				try {	
 					
-					if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "1"))
+					if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output")))
+					{
+						destination1.add(btnExtension);
+						destination1.add(txtExtension);	
+						destination1.add(caseSubFolder);
+						destination1.add(txtSubFolder);
+					}
+					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "1"))
 					{
 						destination1.add(btnExtension);
 						destination1.add(txtExtension);	
@@ -17995,6 +18001,11 @@ public class Shutter {
 			caseChangeFolder1.setEnabled(false);
 			lblDestination1.setVisible(false);
 			
+			btnExtension.setEnabled(false);
+			txtExtension.setEnabled(false);
+			caseSubFolder.setEnabled(false);
+			txtSubFolder.setEnabled(false);
+			
 			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")))
 			{
 				setDestinationTabs(5);
@@ -18010,6 +18021,12 @@ public class Shutter {
 					caseOpenFolderAtEnd1.setEnabled(true);
 					caseChangeFolder1.setEnabled(true);
 					lblDestination1.setVisible(true);
+					
+					btnExtension.setEnabled(true);
+					txtExtension.setEnabled(true);
+					caseSubFolder.setEnabled(true);
+					txtSubFolder.setEnabled(true);
+					
 					setDestinationTabs(2);
 				}
 				else
@@ -18034,6 +18051,10 @@ public class Shutter {
 			caseChangeFolder1.setEnabled(true);
 			lblDestination1.setVisible(true);
 
+			btnExtension.setEnabled(true);
+			txtExtension.setEnabled(true);
+			caseSubFolder.setEnabled(true);
+			txtSubFolder.setEnabled(true);
 		}
 
 		// btnStart text

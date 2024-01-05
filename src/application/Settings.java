@@ -168,7 +168,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 662);
+		frame.setSize(370, 670);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
