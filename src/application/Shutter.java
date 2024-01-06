@@ -18035,7 +18035,7 @@ public class Shutter {
 			
 		} 
 		else
-		{
+		{			
 			if (((comboFonctions.getSelectedItem().toString().equals("DNxHD") || (comboFonctions.getSelectedItem().toString().equals("DNxHR"))) && caseCreateOPATOM.isSelected()) || caseCreateTree.isSelected()) //OP-Atom
 			{
 				setDestinationTabs(2);		
@@ -18051,11 +18051,27 @@ public class Shutter {
 			caseChangeFolder1.setEnabled(true);
 			lblDestination1.setVisible(true);
 
-			btnExtension.setEnabled(true);
-			txtExtension.setEnabled(true);
-			caseSubFolder.setEnabled(true);
-			txtSubFolder.setEnabled(true);
+			if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+			{
+				btnExtension.setEnabled(false);
+				txtExtension.setEnabled(false);
+				caseSubFolder.setEnabled(false);
+				txtSubFolder.setEnabled(false);
+			}
+			else
+			{
+				btnExtension.setEnabled(true);
+				txtExtension.setEnabled(true);
+				caseSubFolder.setEnabled(true);
+				txtSubFolder.setEnabled(true);
+			}
 		}
+		
+		if (btnExtension.isSelected() == false)
+			txtExtension.setEnabled(false);
+		
+		if (caseSubFolder.isSelected() == false)
+			txtSubFolder.setEnabled(false);
 
 		// btnStart text
 		if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")))
@@ -22336,13 +22352,7 @@ public class Shutter {
 				textStream.setEnabled(false);		
 			}
 		}
-		
-		if (btnExtension.isSelected() == false)
-			txtExtension.setEnabled(false);
-		
-		if (caseSubFolder.isSelected() == false)
-			txtSubFolder.setEnabled(false);
-		
+
 		components = grpResolution.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			if (components[i] instanceof JComboBox == false)
