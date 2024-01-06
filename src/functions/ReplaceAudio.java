@@ -54,10 +54,11 @@ public class ReplaceAudio extends Shutter {
 		String labelOutput = FunctionUtils.setOutputDestination("", videoFile);
 		
 		//File output name
-		String extensionName = "_MIX";
-		
+		String extensionName = "";	
 		if (btnExtension.isSelected())
+		{
 			extensionName = txtExtension.getText();
+		}
 			
 		//Output name
 		String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 

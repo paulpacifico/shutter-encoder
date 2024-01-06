@@ -111,8 +111,6 @@ public class AudioEncoders extends Shutter {
 						{
 							extensionName = txtExtension.getText();
 						}	
-						else if (caseMixAudio.isSelected())	
-							extensionName +=  "_MIX";
 						
 						//DRC
 						String DRC = "";

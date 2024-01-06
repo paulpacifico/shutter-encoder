@@ -119,7 +119,11 @@ public class Rewrap extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 						
 						//File output name
-						String extensionName = "";
+						String extensionName = "";	
+						if (btnExtension.isSelected())
+						{
+							extensionName = txtExtension.getText();
+						}
 												
 						//Function cut without re-encoding
 						String newExtension = extension;
@@ -156,29 +160,18 @@ public class Rewrap extends Shutter {
 						
 						//Map subtitles
 						mapSubtitles = setMapSubtitles();
-						
-						if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut")))
-						{							
-							//File output name
-							extensionName = "_" + Shutter.language.getProperty("cutUpper");
+													
+						//Output extension
+						if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
+						|| comboFilter.getEditor().getItem().toString().equals("")
+						|| comboFilter.getEditor().getItem().toString().equals(" ")
+						|| comboFilter.getEditor().getItem().toString().contains(".") == false)
+						{
+							newExtension = extension;
 						}
 						else
-						{								
-							//Output extension
-							if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
-							|| comboFilter.getEditor().getItem().toString().equals("")
-							|| comboFilter.getEditor().getItem().toString().equals(" ")
-							|| comboFilter.getEditor().getItem().toString().contains(".") == false)
-							{
-								newExtension = extension;
-							}
-							else
-								newExtension = comboFilter.getSelectedItem().toString();
-						}
-						
-						if (btnExtension.isSelected())
-							extensionName = txtExtension.getText();
-						
+							newExtension = comboFilter.getSelectedItem().toString();
+												
 						//Split video
 						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 						{

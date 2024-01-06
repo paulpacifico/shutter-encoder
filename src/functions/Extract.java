@@ -82,14 +82,29 @@ public class Extract extends Shutter {
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
 						{
 							extensionName =  "_" + Shutter.language.getProperty("video");
+							
+							if (btnExtension.isSelected())
+							{
+								extensionName = txtExtension.getText();
+							}
 						}
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 						{
 							extensionName =  "_" + Shutter.language.getProperty("audio") + "_" + (audioStream + 1);
+							
+							if (btnExtension.isSelected())
+							{
+								extensionName = txtExtension.getText() + "_" + (audioStream + 1);
+							}
 						}
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
 						{
 							extensionName =  "_" + Shutter.language.getProperty("subtitles") + "_" + (subStream + 1);
+							
+							if (btnExtension.isSelected())
+							{
+								extensionName = txtExtension.getText() + "_" + (subStream + 1);
+							}
 						}
 							
 						String container = extension;

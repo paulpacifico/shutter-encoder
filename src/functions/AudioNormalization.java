@@ -78,10 +78,11 @@ public class AudioNormalization extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);	
 	
 						//File output name
-						String extensionName = "_Norm";
-						
+						String extensionName = "";	
 						if (btnExtension.isSelected())
+						{
 							extensionName = txtExtension.getText();
+						}
 						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 

@@ -84,10 +84,11 @@ public class Conform extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);						
 						
 						//File output name
-						String extensionName = "_Conform";
-						
+						String extensionName = "";	
 						if (btnExtension.isSelected())
+						{
 							extensionName = txtExtension.getText();
+						}
 	
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 

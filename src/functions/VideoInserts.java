@@ -121,9 +121,11 @@ public class VideoInserts extends Shutter {
 					} while (FFPROBE.isRunning);	
 					
 					//File output name
-					String extensionName = "_Edit";
+					String extensionName = "";	
 					if (btnExtension.isSelected())
+					{
 						extensionName = txtExtension.getText();
+					}
 					
 					//Output folder		
 					String labelOutput = FunctionUtils.setOutputDestination("", new File(master[1].replace("\"", "")));							

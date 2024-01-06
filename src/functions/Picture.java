@@ -235,7 +235,14 @@ public class Picture extends Shutter {
 						String compression = setCompression();
 						
 						//Output folder
-						String labelOutput = FunctionUtils.setOutputDestination("", file);				
+						String labelOutput = FunctionUtils.setOutputDestination("", file);	
+						
+						//File output name
+						String extensionName = "";	
+						if (btnExtension.isSelected())
+						{
+							extensionName = txtExtension.getText();
+						}
 						
 						//Container
 						String container = setExtension();
@@ -244,7 +251,7 @@ public class Picture extends Shutter {
 						String singleFrame = setFrame();	
 						
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, container); 
+						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
 									
 						//File output
 						File fileOut = new File(fileOutputName);
