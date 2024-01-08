@@ -13844,7 +13844,7 @@ public class Shutter {
 					caseStabilisation.setSelected(false);
 				}
 				
-				if (caseStabilisation.isSelected() && Shutter.inputDeviceIsRunning == false && FFPROBE.totalLength > 40)
+				if (caseStabilisation.isSelected() && Shutter.inputDeviceIsRunning == false && FFPROBE.totalLength > 40 && VideoPlayer.videoPath != null)
 				{
 					Thread t = new Thread(new Runnable() {
 
@@ -17633,13 +17633,10 @@ public class Shutter {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				
-				if (caseDisplay.isSelected() == false)
-				{
-					tempsRestant.setVisible(false);
-					
-					if (tempsEcoule != null && tempsEcoule.getText().equals(language.getProperty("tempsEcoule")) == false)
-						tempsEcoule.setVisible(true);
-				}
+				tempsRestant.setVisible(false);
+				
+				if (tempsEcoule != null && tempsEcoule.getText().equals(language.getProperty("tempsEcoule")) == false)
+					tempsEcoule.setVisible(true);
 			}
 
 			@Override

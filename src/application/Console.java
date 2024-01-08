@@ -20,8 +20,12 @@
 package application;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -86,9 +90,13 @@ public class Console extends JFrame {
 		frmConsole.setLayout(null);
 		frmConsole.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frmConsole.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frmConsole.setSize(500, Shutter.frame.getHeight());
-		frmConsole.setLocation(Shutter.frame.getLocation().x + Shutter.frame.getSize().width + 20, Shutter.frame.getLocation().y);			
+		frmConsole.setSize(800, 670);
 		frmConsole.getContentPane().setLayout(null);
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+		frmConsole.setLocation(dim.width / 2 - frmConsole.getSize().width / 2, dim.height / 2 - frmConsole.getSize().height / 2);
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "false");
 		
