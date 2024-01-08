@@ -1795,7 +1795,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
 		         
 		  //Remaining time
-		  if ((line.contains("frame=") || line.contains("time=")) && line.contains("N/A") == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
+		  if ((line.contains("frame=") || line.contains("time=")) && line.contains("time=N/A") == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
 		  {
 			 String[] split = line.split("=");	
 			 int frames = 0;
@@ -1864,7 +1864,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				 
 				 int restant = ((total - frames) / fps);
 		 	 
-				 if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false && comboFonctions.getSelectedItem().equals("Synchronisation automatique") == false)
+				 if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false)
 				 {
 					 String pass = "";
 					 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
@@ -1908,6 +1908,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					 
 					 if (heures != "" || minutes != "" || secondes != "")
 					 {
+						 tempsEcoule.setVisible(false);
 						 tempsRestant.setVisible(true);	
 						 lblArrows.setVisible(false);
 					 }
@@ -1919,10 +1920,6 @@ public static StringBuilder errorLog = new StringBuilder();
 			 }	
 			 		 
 		  }		
-		  else if (line.contains("frame=")) //Pour afficher le temps écoulé
-		  {
-			  tempsEcoule.setVisible(true);
-		  }
 		  
 		  //Cut detection
 		  if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) && line.contains("pts"))

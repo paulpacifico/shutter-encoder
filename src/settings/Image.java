@@ -228,9 +228,7 @@ public class Image extends Shutter {
 			
         	if (filterComplex != "") filterComplex += ",";
 			
-			if (lblPad.getText().equals(language.getProperty("lblCrop"))
-			|| comboFonctions.getSelectedItem().toString().equals("JPEG")
-			|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+			if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible())
 			{
 				if (comboResolution.getSelectedItem().toString().contains(":"))
 		        {
@@ -266,7 +264,7 @@ public class Image extends Shutter {
 			}
 			else
 			{
-				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or)
+				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
 				{
 					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
 				}
@@ -426,9 +424,7 @@ public class Image extends Shutter {
         	float ir = (float) iw / ih;
         	float or = (float) ow / oh;
 			
-			if (lblPad.getText().equals(language.getProperty("lblCrop"))
-			|| comboFonctions.getSelectedItem().toString().equals("JPEG")
-			|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+			if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible())
 			{
 				if (comboResolution.getSelectedItem().toString().contains(":") == false)		       
 				{					       	
@@ -445,7 +441,7 @@ public class Image extends Shutter {
 			}
 			else
 			{
-				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or)
+				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
 				{
 					filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
 				}
