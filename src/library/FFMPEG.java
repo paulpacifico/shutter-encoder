@@ -1966,9 +1966,18 @@ public static StringBuilder errorLog = new StringBuilder();
 	    || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization"))
 	    || (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible()))
 	     {
-               analyseLufs = null;
-               analyseLufs = getAll.toString().substring(getAll.toString().lastIndexOf("Summary:") + 12);
-                              
+               analyseLufs = "";
+               
+               for (String line : getAll.toString().substring(getAll.toString().lastIndexOf("Summary:") + 12).split(System.lineSeparator()))
+               {
+            	   if (line.contains("[out#"))
+            	   {
+            		  break;
+            	   }
+            	   else
+            		   analyseLufs += line + System.lineSeparator();
+               }
+                                             
                shortTermValues = new StringBuilder();
                
                float momentaryTerm = (float) -1000.0;
