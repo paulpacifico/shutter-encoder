@@ -72,6 +72,7 @@ public class Renamer {
 	private String ext;
 
 	public Renamer() {
+				
 		frame = new JDialog();
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
@@ -86,7 +87,10 @@ public class Renamer {
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
-		frame.setLocation(Shutter.frame.getLocation().x - 85, Shutter.frame.getLocation().y + 200);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, Shutter.frame.getY() + 200);
 			
 		String fullName = new File(Shutter.fileList.getSelectedValuesList().get(0)).getName();
 		
@@ -408,6 +412,8 @@ public class Renamer {
 						Shutter.lblFiles.setText(Utils.filesNumber());
 						
 						frame.dispose();
+						
+						Shutter.fileList.clearSelection();
 					}
 				});
 				rename.start();

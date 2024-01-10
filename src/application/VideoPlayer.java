@@ -27,6 +27,7 @@ import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -2997,7 +2998,19 @@ public class VideoPlayer {
 		
 		});
 			
-		cursorWaveform = new JPanel();
+		cursorWaveform = new JPanel() {
+	        @Override
+	        protected void paintComponent(Graphics grphcs) {
+	            super.paintComponent(grphcs);
+	            Graphics2D g2d = (Graphics2D) grphcs;
+	            GradientPaint gp = new GradientPaint(0, 0, new Color(140,0,0), 0, getHeight() / 2, Color.RED);
+	            GradientPaint gp2 = new GradientPaint(0, getHeight() / 2, Color.RED, 0, getHeight(), new Color(140,0,0));
+	            g2d.setPaint(gp);
+	            g2d.fillRect(0, 0, getWidth(), getHeight() / 2);
+	            g2d.setPaint(gp2);
+	            g2d.fillRect(0, getHeight() / 2, getWidth(), getHeight());
+	        }
+		};
 		cursorWaveform.setBackground(Color.RED);
 		cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);
 		waveformContainer.add(cursorWaveform);		

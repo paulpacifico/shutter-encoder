@@ -183,7 +183,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.7";
+	public static String actualVersion = "17.8";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -2287,6 +2287,24 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				//Unlock the file to be deletable		
+				if (VideoPlayer.videoPath != null)
+				{					
+					VideoPlayer.videoPath = null;	
+					VideoPlayer.frameVideo = null;	
+					VideoPlayer.playerRepaint();
+					
+					// Lecteur
+					if (VideoPlayer.waveform != null)
+					{
+						VideoPlayer.waveform = null;
+						VideoPlayer.waveformIcon.setIcon(null);
+						VideoPlayer.waveformIcon.repaint();
+					}
+					
+					VideoPlayer.playerStop();
+				}
+				
 				try {
 					frame.setOpacity(0.5f);
 				} catch (Exception er) {}
@@ -9249,7 +9267,7 @@ public class Shutter {
 			@Override
 		    protected void paintComponent(Graphics g)
 		    {			
-				if ((caseShowFileName.isSelected() || caseAddText.isSelected() && text.getText().length() > 0) && liste.getSize() > 0)
+				if ((caseShowFileName.isSelected() || caseAddText.isSelected() && text.getText().length() > 0) && liste.getSize() > 0 && VideoPlayer.videoPath != null)
 				{
 			        super.paintComponent(g);		
 					
