@@ -1249,7 +1249,7 @@ public class FunctionUtils extends Shutter {
 		File fileOut = new File(path + "/" + file.replace(oldExt, surname.substring(0, surname.length() - 1) + newExt));
 		
 		//Nom identique à la source
-		if (file.equals(file.replace(oldExt, surname.substring(0, surname.length() - 1) + newExt)) && caseChangeFolder1.isSelected() == false)
+		if (file.equals(file.replace(oldExt.toLowerCase(), surname.substring(0, surname.length() - 1) + newExt)) && caseChangeFolder1.isSelected() == false)
 		{
 			do {
 				fileOut = new File(path + "/" + file.replace(oldExt, surname + n + newExt));
