@@ -40,10 +40,10 @@ import settings.Transitions;
  * AC3
  * AIFF
  * FLAC
- * OGG
+ * Vorbis
  * Dolby Digital Plus
  * Dolby TrueHD
- * OPUS
+ * Opus
  * MP3
  * WAV
  */
@@ -172,10 +172,10 @@ public class AudioEncoders extends Shutter {
 								stereoOutput = true;
 								break;
 								
-							case "OGG":	
+							case "Vorbis":	
 								
 								audioCodec = "libvorbis -b:a " + comboFilter.getSelectedItem().toString() + "k";									
-								container = ".ogg";
+								container = ".oga";
 								stereoOutput = true;
 								break;
 								
@@ -193,7 +193,7 @@ public class AudioEncoders extends Shutter {
 								stereoOutput = true;
 								break;
 								
-							case "OPUS":
+							case "Opus":
 								
 								audioCodec = "libopus -b:a " + comboFilter.getSelectedItem().toString() + "k";		
 								

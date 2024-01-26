@@ -534,7 +534,7 @@ public class AdvancedFeatures extends Shutter {
 			case "MPEG-1":
 			case "MPEG-2":
 			case "MJPEG":
-			case "OGV":
+			case "Theora":
 			case "WMV":
 			case "Xvid":				
 				
@@ -873,7 +873,7 @@ public class AdvancedFeatures extends Shutter {
 			case "MPEG-1":
 			case "MPEG-2":
 			case "MJPEG":
-			case "OGV":
+			case "Theora":
 			case "WMV":
 			case "Xvid":
 				

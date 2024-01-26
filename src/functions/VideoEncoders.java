@@ -67,7 +67,7 @@ import settings.Transitions;
  * MJPEG
  * VP8
  * VP9
- * OGV
+ * Theora
  * WMV
  * Xvid
  * Blu-ray
@@ -170,8 +170,27 @@ public class VideoEncoders extends Shutter {
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = txtExtension.getText();
-						}
+							if (txtExtension.getText().isEmpty())
+							{
+								extensionName = "_" + comboFonctions.getSelectedItem().toString().replace(" ","_");	
+								
+								if (comboFilter.getSelectedItem().toString().contains(".") == false
+								&& comboFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
+								&& comboFilter.getSelectedItem().toString().contains("/") == false)
+								{
+									extensionName += "_" + comboFilter.getSelectedItem().toString().replace(" ","_");
+								}
+								
+								if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected()))
+								{
+									extensionName += "_TC";
+								}
+							}
+							else
+							{
+								extensionName = txtExtension.getText();
+							}
+						}												
 						
 						//Container
 						String container = comboFilter.getSelectedItem().toString();						
@@ -205,7 +224,7 @@ public class VideoEncoders extends Shutter {
 								container = ".mpg";								
 								break;
 							
-							case "OGV":
+							case "Theora":
 								
 								container = ".ogv";								
 								break;
@@ -260,7 +279,7 @@ public class VideoEncoders extends Shutter {
 								fileOutputName =  authoringFolder.toString().replace("\\", "/") + "/" + fileName.replace(extension, container); 																
 								break;
 						}	
-										
+						
 						//File output
 						File fileOut = new File(fileOutputName);				
 						if (fileOut.exists())		
@@ -394,7 +413,7 @@ public class VideoEncoders extends Shutter {
 								case "MJPEG":
 								case "VP8":
 								case "VP9":
-								case "OGV":
+								case "Theora":
 								case "WMV":
 								case "Xvid":
 								case "DNxHR":
@@ -773,7 +792,7 @@ public class VideoEncoders extends Shutter {
 								case "MPEG-1":
 								case "MPEG-2":
 								case "MJPEG":
-								case "OGV":
+								case "Theora":
 								case "VP8":
 								case "VP9":
 								case "WMV":
@@ -1305,7 +1324,7 @@ public class VideoEncoders extends Shutter {
 				
 				return " -c:v mjpeg";
 				
-			case "OGV":
+			case "Theora":
 				
 				return " -c:v libtheora";
 						
@@ -1553,7 +1572,7 @@ public class VideoEncoders extends Shutter {
 				}
 				
 			case "MPEG-1":
-			case "OGV":
+			case "Theora":
 			case "WMV":
 			case "Xvid":
 				
@@ -1691,7 +1710,7 @@ public class VideoEncoders extends Shutter {
 			case "MPEG-1":
 			case "MPEG-2":
 			case "MJPEG":
-			case "OGV":
+			case "Theora":
 			case "WMV":
 			case "Xvid":
 				

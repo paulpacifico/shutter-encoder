@@ -664,9 +664,9 @@ public static StringBuilder errorLog = new StringBuilder();
 			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
-			player.getContentPane().setBackground(new Color(50,50,50));
+			player.getContentPane().setBackground(new Color(42,42,47));
 			player.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	
-			player.setBackground(new Color(50,50,50));
+			player.setBackground(new Color(42,42,47));
 			player.getContentPane().setLayout(null);
 			player.setIconImage(frame.getIconImage());
 						
@@ -1718,7 +1718,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
 			|| comboFonctions.getSelectedItem().toString().equals("WebM")
 			|| comboFonctions.getSelectedItem().toString().equals("AV1")
-			|| comboFonctions.getSelectedItem().toString().equals("OGV")
+			|| comboFonctions.getSelectedItem().toString().equals("Theora")
 			|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
 			|| comboFonctions.getSelectedItem().toString().equals("Xvid")
 			|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
@@ -1847,7 +1847,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
 							|| comboFonctions.getSelectedItem().toString().equals("WebM")
 							|| comboFonctions.getSelectedItem().toString().equals("AV1")
-							|| comboFonctions.getSelectedItem().toString().equals("OGV")
+							|| comboFonctions.getSelectedItem().toString().equals("Theora")
 							|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
 							|| comboFonctions.getSelectedItem().toString().equals("Xvid")
 						 	|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
@@ -1874,7 +1874,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
 								|| comboFonctions.getSelectedItem().toString().equals("WebM")
 								|| comboFonctions.getSelectedItem().toString().equals("AV1")
-							 	|| comboFonctions.getSelectedItem().toString().equals("OGV")
+							 	|| comboFonctions.getSelectedItem().toString().equals("Theora")
 								|| comboFonctions.getSelectedItem().toString().equals("MJPEG")
 								|| comboFonctions.getSelectedItem().toString().equals("Xvid")
 							 	|| comboFonctions.getSelectedItem().toString().equals("Blu-ray"))

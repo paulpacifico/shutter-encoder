@@ -104,7 +104,7 @@ public static Thread runProcess;
 					   }*/
 					   
 					   //Timecode
-					   if (line.contains("Time code of first frame"))
+					   if (line.contains("Time code of first frame") && FFPROBE.timecode1 == "")
 					   {
 						   infoData.append(System.lineSeparator());
 						   
@@ -194,10 +194,10 @@ public static Thread runProcess;
 					   }
 					   
 					   	JLabel content = new JLabel("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator()
-					   	+ StrTotal.toString().replace(htmlSize, informationsFrameSize).replace("<body>", "<body style=background-color:rgb(35,35,35);>").replace("border:1px solid Navy", "border-bottom:1px solid rgb(55,55,55); border-top:1px solid rgb(55,55,55)"));
+					   	+ StrTotal.toString().replace(htmlSize, informationsFrameSize).replace("<body>", "<body style=background-color:rgb(30,30,35);>").replace("border:1px solid Navy", "border-bottom:1px solid rgb(55,55,55); border-top:1px solid rgb(55,55,55)"));
 					   	
-				       	content.setBackground(new Color(35,35,35));
-				       	content.setForeground(new Color(240,240,240));
+				       	content.setBackground(new Color(30,30,35));
+				       	content.setForeground(new Color(235,235,240));
 				       	content.setOpaque(true);
 				       		
 				       	JScrollPane scrollPane = new JScrollPane();

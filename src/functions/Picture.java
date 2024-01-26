@@ -254,7 +254,7 @@ public class Picture extends Shutter {
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
 									
 						//File output
-						File fileOut = new File(fileOutputName);
+						File fileOut = new File(fileOutputName);						
 						if(fileOut.exists())
 						{						
 							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, "_", container);

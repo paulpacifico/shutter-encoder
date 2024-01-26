@@ -373,11 +373,11 @@ public class ReplaceAudio extends Shutter {
 			{
 				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
-			else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
+			else if (comboAudioCodec.getSelectedItem().toString().equals("Opus"))
 			{
 				return " -c:a libopus -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
-			else if (comboAudioCodec.getSelectedItem().toString().equals("OGG"))
+			else if (comboAudioCodec.getSelectedItem().toString().equals("Vorbis"))
 			{
 				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}

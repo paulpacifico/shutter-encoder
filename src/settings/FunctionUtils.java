@@ -746,7 +746,7 @@ public class FunctionUtils extends Shutter {
 			{
 				compValue = 41472; //20000kbps
 			} 			 
-			else if ("MPEG-2".equals(function) || "Xvid".equals(function) || "OGV".equals(function))
+			else if ("MPEG-2".equals(function) || "Xvid".equals(function) || "Theora".equals(function))
 			{
 				compValue = 103680; //8000kbps
 			}

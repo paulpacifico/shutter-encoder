@@ -77,7 +77,7 @@ public static String format = "";
 								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], opts[3], opts[4], opts[5], opts[6], "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
 						}
 						else
-							processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
+							processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, "--restrict-filenames", "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
 					}
 					else
 					{
@@ -101,7 +101,7 @@ public static String format = "";
 						}
 
 						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
-						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace(youtubedl, "ffmpeg") + " --no-part -o " + '"' + outputFile + '"');	
+						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --restrict-filenames --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace(youtubedl, "ffmpeg") + " --no-part -o " + '"' + outputFile + '"');	
 						
 					}
 									

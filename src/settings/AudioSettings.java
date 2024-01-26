@@ -133,11 +133,11 @@ public class AudioSettings extends Shutter {
 			{
 				audioCodec = "ac3";
 			}
-			else if (audioCodec.equals("OPUS"))
+			else if (audioCodec.equals("Opus"))
 			{
 				audioCodec = "libopus";	
 			}
-			else if (audioCodec.equals("OGG"))
+			else if (audioCodec.equals("Vorbis"))
 			{
 				audioCodec = "libvorbis";	
 			}
