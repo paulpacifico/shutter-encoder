@@ -99,7 +99,7 @@ import javax.swing.JScrollPane;
 	public SceneDetection(boolean runAnalyse) {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(35,35,35));
+		frame.getContentPane().setBackground(new Color(30,30,35));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameDetectionCoupe"));
 		frame.setForeground(Color.WHITE);
@@ -232,7 +232,7 @@ import javax.swing.JScrollPane;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(35,35,35));
+		topPanel.setBackground(new Color(30,30,35));
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -245,7 +245,7 @@ import javax.swing.JScrollPane;
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(40,40,40));
+		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));	
 		topImage.setBounds(title.getBounds());
@@ -390,7 +390,7 @@ import javax.swing.JScrollPane;
 	private void content() {
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBackground(new Color(35,35,35));
+		scrollPane.setBackground(new Color(30,30,35));
 		scrollPane.setBounds(9, 65, 380, frame.getSize().height - 136);
 		frame.getContentPane().add(scrollPane);
 			
@@ -629,7 +629,7 @@ import javax.swing.JScrollPane;
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setRowHeight(80);
-		table.setBackground(new Color(50,50,50));
+		table.setBackground(new Color(42,42,47));
 		table.getColumnModel().getColumn(0).setPreferredWidth(18);
 		table.getColumnModel().getColumn(1).setPreferredWidth(table.getColumnModel().getColumn(1).getPreferredWidth());
 		table.setBounds(9, 65, 380, frame.getHeight() - 134);

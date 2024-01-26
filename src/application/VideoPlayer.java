@@ -2094,13 +2094,13 @@ public class VideoPlayer {
 
 						if (FFPROBE.channels > 0 && comboAudioTrack.isVisible())
 						{
-							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x252525"
+							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
 									+ " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
 									+ " -vn -frames:v 1 -c:v bmp -f image2pipe pipe:-"); 
 						}
 						else
 						{
-							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x252525"
+							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
 							+ " -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
 							+ " -vn -frames:v 1 -c:v bmp -f image2pipe pipe:-");  																
 						}
@@ -2785,7 +2785,7 @@ public class VideoPlayer {
 	                }
 	                	                
 	                //Masks
-	                g2.setColor(new Color(40,40,40, 120)); 
+	                g2.setColor(new Color(35,35,40,120)); 
 	                if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 	                {
 	                	g2.fillRoundRect(playerInMark + 2, 1, playerOutMark - playerInMark - 1, getHeight() - 2, 5, 5);
@@ -4898,7 +4898,7 @@ public class VideoPlayer {
 		//Alpha channel
 		if (FFPROBE.hasAlpha)
 		{
-			filter += ",split=2[bg][fg];[bg]drawbox=c=0x252525:replace=1:t=fill[bg];[bg][fg]overlay=0:0,format=rgb24";		
+			filter += ",split=2[bg][fg];[bg]drawbox=c=0x202025:replace=1:t=fill[bg];[bg][fg]overlay=0:0,format=rgb24";		
 		}
 		
 		//Speed
@@ -5562,7 +5562,7 @@ public class VideoPlayer {
 					case "VP8":
 					case "VP9":
 					case "AV1":
-					case "OGV":
+					case "Theora":
 					case "MJPEG":
 					case "Xvid":
 					case "Blu-ray":

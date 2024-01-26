@@ -106,7 +106,7 @@ public class VideoWeb {
 	public VideoWeb() {	
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(35,35,35));
+		frame.getContentPane().setBackground(new Color(30,30,35));
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
@@ -141,7 +141,7 @@ public class VideoWeb {
 		
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(35,35,35));
+		topPanel.setBackground(new Color(30,30,35));
 		topPanel.setBounds(0, 0, 420, 28);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -248,7 +248,7 @@ public class VideoWeb {
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(40,40,40));
+		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));	
 		topImage.setBounds(title.getBounds());
@@ -304,8 +304,8 @@ public class VideoWeb {
 		grpURL.setLayout(null);
 		grpURL.setLocation(6, 28);
 		grpURL.setSize(408, frame.getHeight() - 34);
-		grpURL.setBackground(new Color(35,35,35));
-		grpURL.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+		grpURL.setBackground(new Color(30,30,35));
+		grpURL.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		
 		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);

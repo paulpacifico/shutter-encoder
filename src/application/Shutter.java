@@ -798,10 +798,10 @@ public class Shutter {
 
 	public Shutter() {
 				
-		frame.getContentPane().setBackground(new Color(35,35,35));
+		frame.getContentPane().setBackground(new Color(30,30,35));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
-		frame.setBackground(new Color(35,35,35));
+		frame.setBackground(new Color(30,30,35));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(332, 708);
@@ -924,7 +924,7 @@ public class Shutter {
 		settingsScrollBar.setVisible(false);
 		settingsScrollBar.setValue(45);
 		settingsScrollBar.setMaximum(100);
-		settingsScrollBar.setBackground(new Color(35,35,35));
+		settingsScrollBar.setBackground(new Color(30,30,35));
 		settingsScrollBar.setOrientation(JScrollBar.VERTICAL);
 		settingsScrollBar.setBounds(extendedWidth - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11, frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
 		frame.getContentPane().add(settingsScrollBar);
@@ -1349,7 +1349,7 @@ public class Shutter {
 
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(35,35,35));
+		topPanel.setBackground(new Color(30,30,35));
 		topPanel.setBounds(0, 0, extendedWidth, 28);
 
 		settings = new JLabel(new FlatSVGIcon("contents/settings.svg", 13, 13));
@@ -1708,7 +1708,7 @@ public class Shutter {
 		});
 	
 		topImage = new JLabel();
-		topImage.setBackground(new Color(40,40,40));
+		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
@@ -1801,18 +1801,18 @@ public class Shutter {
 		grpChooseFiles = new JPanel();
 		grpChooseFiles.setLayout(null);
 		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 377);
-		grpChooseFiles.setBackground(new Color(35,35,35));
+		grpChooseFiles.setBackground(new Color(30,30,35));
 		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		frame.getContentPane().add(grpChooseFiles);
 
 		fileList = new JList<String>(liste);
-		fileList.setBackground(new Color(50,50,50));
+		fileList.setBackground(new Color(42,42,47));
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
 		fileList.setBounds(10, 50, 292, frame.getHeight() - 437);
 		fileList.setToolTipText(language.getProperty("rightClick"));
-				
+	
 		addToList.setText(language.getProperty("dropFilesHere"));
 		addToList.setSize(fileList.getSize());
 		addToList.setForeground(new Color(120,120,120));
@@ -2826,7 +2826,7 @@ public class Shutter {
 					case "VP8":
 					case "VP9":
 					case "AV1":
-					case "OGV":
+					case "Theora":
 					case "MJPEG":
 					case "Xvid":
 					case "Blu-ray":
@@ -2851,9 +2851,9 @@ public class Shutter {
 		grpChooseFunction = new JPanel();
 		grpChooseFunction.setLayout(null);
 		grpChooseFunction.setBounds(10, grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4, 312, 76);
-		grpChooseFunction.setBackground(new Color(35,35,35));
+		grpChooseFunction.setBackground(new Color(30,30,35));
 		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		frame.getContentPane().add(grpChooseFunction);
 
 		btnCancel = new JButton(language.getProperty("btnCancel"));
@@ -3174,8 +3174,8 @@ public class Shutter {
 							else if ("WAV".equals(function)
 									|| "MP3".equals(function)
 									|| "AC3".equals(function)
-									|| "OPUS".equals(function)
-									|| "OGG".equals(function)
+									|| "Opus".equals(function)
+									|| "Vorbis".equals(function)
 									|| "AIFF".equals(function)
 									|| "FLAC".equals(function)
 									|| "ALAC".equals(function)
@@ -3331,7 +3331,7 @@ public class Shutter {
 									|| "VP8".equals(function)
 									|| "VP9".equals(function)
 									|| "AV1".equals(function)
-									|| "OGV".equals(function)
+									|| "Theora".equals(function)
 									|| "MJPEG".equals(function)
 									|| "Xvid".equals(function)
 									|| "XDCAM HD422".equals(function)
@@ -3454,15 +3454,15 @@ public class Shutter {
 				language.getProperty("functionSubtitles"),
 				language.getProperty("functionInsert"),
 				
-				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "ALAC", "MP3", "AAC", "AC3", "OPUS", "OGG", "Dolby Digital Plus", "Dolby TrueHD",
+				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "ALAC", "MP3", "AAC", "AC3", "Opus", "Vorbis", "Dolby Digital Plus", "Dolby TrueHD",
 				
 				language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation", "GoPro CineForm" ,"Uncompressed",
 				
-				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "VP8", "VP9", "AV1", "OGV", "MPEG-2",		
+				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "VP8", "VP9", "AV1",		
 				
 				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC", "HAP",
 				
-				language.getProperty("itemOldCodecs"), "DV PAL", "MJPEG", "Xvid", "WMV", "MPEG-1",
+				language.getProperty("itemOldCodecs"), "Theora", "MPEG-2", "MJPEG", "Xvid", "DV PAL", "WMV", "MPEG-1",
 				
 				language.getProperty("itemArchiveCodecs"), "FFV1",		
 				
@@ -3525,8 +3525,8 @@ public class Shutter {
 					newList.add("MP3");
 					newList.add("AAC");
 					newList.add("AC3");
-					newList.add("OPUS");
-					newList.add("OGG");
+					newList.add("Opus");
+					newList.add("Vorbis");
 					newList.add("Dolby Digital Plus");
 					newList.add("Dolby TrueHD");					
 				}
@@ -3550,7 +3550,7 @@ public class Shutter {
 					newList.add("VP8");
 					newList.add("VP9");
 					newList.add("AV1");
-					newList.add("OGV");
+					newList.add("Theora");
 
 				}
 				else if (comboFonctions.getSelectedItem().equals(language.getProperty("itemBroadcastCodecs")))
@@ -4097,14 +4097,15 @@ public class Shutter {
 			    		c = new Color(150,75,75);			    		
 			    		
 			    	// Fill
-					GradientPaint gp = new GradientPaint(0, 0, new Color(35,35,35), fill, lblDestination1.getHeight(),  c);
+					GradientPaint gp = new GradientPaint(0, 0, new Color(30,30,35), fill, lblDestination1.getHeight(),  c);
 				    g2d.setPaint(gp);
 				    g2d.fill(new Rectangle2D.Double(0, 0, fill, lblDestination1.getHeight()));	
 				    
 				    // Borders
-				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(35,35,35), lblDestination1.getWidth(), lblDestination1.getHeight(),  new Color(75,75,75));
+				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(30,30,35), lblDestination1.getWidth(), lblDestination1.getHeight(),  new Color(75,75,75));
 				    g2d.setPaint(gp2);
-				    g2d.drawRect(0, 0, lblDestination1.getWidth() - 1, lblDestination1.getHeight() - 1);
+				   	g2d.drawRoundRect(0, 0, lblDestination1.getWidth() - 1, lblDestination1.getHeight() - 1, 10,10);
+				    
 			    }
 			    
 			    g2d.setPaint(Utils.themeColor);
@@ -4120,7 +4121,7 @@ public class Shutter {
 		lblDestination1.setForeground(Utils.themeColor);
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination1.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblDestination1.setBackground(new Color(35,35,35));
+		lblDestination1.setBackground(new Color(30,30,35));
 		lblDestination1.setText(language.getProperty("sameAsSource"));
 		lblDestination1.setBounds(6, 0, 290, 22);
 		destination1.add(lblDestination1);
@@ -4310,14 +4311,14 @@ public class Shutter {
 			    		c = new Color(150,75,75);			    		
 			    		
 			    	// Fill
-					GradientPaint gp = new GradientPaint(0, 0, new Color(35,35,35), fill, lblDestination2.getHeight(),  c);
+					GradientPaint gp = new GradientPaint(0, 0, new Color(30,30,35), fill, lblDestination2.getHeight(),  c);
 				    g2d.setPaint(gp);
 				    g2d.fill(new Rectangle2D.Double(0, 0, fill, lblDestination2.getHeight()));	
 				    
 				    // Borders
-				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(35,35,35), lblDestination2.getWidth(), lblDestination2.getHeight(),  new Color(75,75,75));
+				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(30,30,35), lblDestination2.getWidth(), lblDestination2.getHeight(),  new Color(75,75,75));
 				    g2d.setPaint(gp2);
-				    g2d.drawRect(0, 0, lblDestination2.getWidth() - 1, lblDestination2.getHeight() - 1);
+				    g2d.drawRoundRect(0, 0, lblDestination2.getWidth() - 1, lblDestination2.getHeight() - 1, 10,10);
 			    }
 			    
 			    g2d.setPaint(Utils.themeColor);
@@ -4333,7 +4334,7 @@ public class Shutter {
 		lblDestination2.setForeground(Utils.themeColor);
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination2.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblDestination2.setBackground(new Color(35,35,35));
+		lblDestination2.setBackground(new Color(30,30,35));
 		lblDestination2.setText(language.getProperty("aucune"));
 		lblDestination2.setBounds(6, 0, 290, 22);
 		destination2.add(lblDestination2);
@@ -4510,14 +4511,14 @@ public class Shutter {
 			    		c = new Color(150,75,75);			    		
 			    		
 			    	// Fill
-					GradientPaint gp = new GradientPaint(0, 0, new Color(35,35,35), fill, lblDestination3.getHeight(),  c);
+					GradientPaint gp = new GradientPaint(0, 0, new Color(30,30,35), fill, lblDestination3.getHeight(),  c);
 				    g2d.setPaint(gp);
 				    g2d.fill(new Rectangle2D.Double(0, 0, fill, lblDestination3.getHeight()));	
 				    
 				    // Borders
-				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(35,35,35), lblDestination3.getWidth(), lblDestination3.getHeight(),  new Color(75,75,75));
+				    GradientPaint gp2 = new GradientPaint(0, 0, new Color(30,30,35), lblDestination3.getWidth(), lblDestination3.getHeight(),  new Color(75,75,75));
 				    g2d.setPaint(gp2);
-				    g2d.drawRect(0, 0, lblDestination3.getWidth() - 1, lblDestination3.getHeight() - 1);
+				    g2d.drawRoundRect(0, 0, lblDestination3.getWidth() - 1, lblDestination3.getHeight() - 1, 10,10);
 			    }
 			    
 			    g2d.setPaint(Utils.themeColor);
@@ -4533,7 +4534,7 @@ public class Shutter {
 		lblDestination3.setForeground(Utils.themeColor);
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination3.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblDestination3.setBackground(new Color(35,35,35));
+		lblDestination3.setBackground(new Color(30,30,35));
 		lblDestination3.setText(language.getProperty("aucune"));
 		lblDestination3.setBounds(6, 0, 290, 22);
 		destination3.add(lblDestination3);
@@ -4967,10 +4968,10 @@ public class Shutter {
 		grpProgression = new JPanel();
 		grpProgression.setLayout(null);
 		grpProgression.setBounds(10, grpDestination.getY() + grpDestination.getHeight() + 6, 312, 94);
-		grpProgression.setBackground(new Color(35,35,35));
+		grpProgression.setBackground(new Color(30,30,35));
 		grpProgression.setToolTipText(language.getProperty("rightClick"));
 		grpProgression.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpProgression") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
+				language.getProperty("grpProgression") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		frame.getContentPane().add(grpProgression);
 
 		caseRunInBackground = new JCheckBox(language.getProperty("caseRunInBackground"));
@@ -5115,8 +5116,8 @@ public class Shutter {
 		grpResolution.setLayout(null);
 		grpResolution.setVisible(false);
 		grpResolution.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpResolution") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpResolution.setBackground(new Color(35,35,35));
+				language.getProperty("grpResolution") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpResolution.setBackground(new Color(30,30,35));
 		grpResolution.setBounds(frame.getWidth(), 30, 312, 102);
 		frame.getContentPane().add(grpResolution);
 
@@ -5546,8 +5547,8 @@ public class Shutter {
 		grpImageFilter.setLayout(null);
 		grpImageFilter.setVisible(false);
 		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpImageFilter.setBackground(new Color(35,35,35));
+				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpImageFilter.setBackground(new Color(30,30,35));
 		grpImageFilter.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageFilter);
 
@@ -5796,8 +5797,8 @@ public class Shutter {
 		grpSetTimecode.setLayout(null);
 		grpSetTimecode.setVisible(false);
 		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), language.getProperty("grpTimecode") + " ",
-				0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpSetTimecode.setBackground(new Color(35,35,35));
+				0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpSetTimecode.setBackground(new Color(30,30,35));
 		grpSetTimecode.setBounds(frame.getWidth(), 258, 312, 17);
 		frame.getContentPane().add(grpSetTimecode);
 
@@ -6029,8 +6030,8 @@ public class Shutter {
 		grpSetAudio.setLayout(null);
 		grpSetAudio.setVisible(false);
 		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpSetAudio.setBackground(new Color(35,35,35));
+				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpSetAudio.setBackground(new Color(30,30,35));
 		grpSetAudio.setBounds(frame.getWidth(), 343, 312, 47);
 		frame.getContentPane().add(grpSetAudio);
 		
@@ -6140,7 +6141,7 @@ public class Shutter {
 		comboAudioCodec.setName("comboAudioCodec");
 		comboAudioCodec.setEnabled(false);
 		comboAudioCodec.setMaximumRowCount(20);
-		comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
+		comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "Opus", "Vorbis", "Dolby Digital Plus", language.getProperty("noAudio") }));
 		comboAudioCodec.setSelectedIndex(3);
 		comboAudioCodec.setFont(new Font(freeSansFont, Font.PLAIN, 10));
 		comboAudioCodec.setEditable(false);
@@ -6167,7 +6168,7 @@ public class Shutter {
 		
 		lblAudioMapping = new JLabel(language.getProperty("stereo"));
 		lblAudioMapping.setName("lblAudioMapping");
-		lblAudioMapping.setBackground(new Color(50,50,50));
+		lblAudioMapping.setBackground(new Color(42,42,47));
 		lblAudioMapping.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAudioMapping.setOpaque(true);
 		lblAudioMapping.setFont(new Font(montserratFont, Font.PLAIN, 11));
@@ -6255,7 +6256,7 @@ public class Shutter {
 				
 		lbl48k = new JLabel("48k");
 		lbl48k.setName("lbl48k");
-		lbl48k.setBackground(new Color(50,50,50));
+		lbl48k.setBackground(new Color(42,42,47));
 		lbl48k.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl48k.setOpaque(true);
 		lbl48k.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -6356,7 +6357,7 @@ public class Shutter {
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(0);
 				}	
-				else if (comboAudioCodec.getSelectedItem().toString().equals("OPUS"))
+				else if (comboAudioCodec.getSelectedItem().toString().equals("Opus"))
 				{
 					lblAudioBitrate.setText(language.getProperty("lblAudioBitrate"));
 					comboAudioBitrate.setModel(new DefaultComboBoxModel<String>(audioValues));
@@ -6806,8 +6807,8 @@ public class Shutter {
 		grpAudio.setLayout(null);
 		grpAudio.setVisible(false);
 		grpAudio.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpAudio.setBackground(new Color(35,35,35));
+				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpAudio.setBackground(new Color(30,30,35));
 		grpAudio.setBounds(frame.getWidth(), 343, 312, 139);
 		frame.getContentPane().add(grpAudio);
 				
@@ -6845,7 +6846,7 @@ public class Shutter {
 		
 		lblMix = new JLabel(language.getProperty("stereo"));
 		lblMix.setName("lblMix");
-		lblMix.setBackground(new Color(50,50,50));
+		lblMix.setBackground(new Color(42,42,47));
 		lblMix.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMix.setOpaque(true);
 		lblMix.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -6924,7 +6925,7 @@ public class Shutter {
 
 		lblSplit = new JLabel(language.getProperty("mono"));
 		lblSplit.setName("lblSplit");
-		lblSplit.setBackground(new Color(50,50,50));
+		lblSplit.setBackground(new Color(42,42,47));
 		lblSplit.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSplit.setOpaque(true);
 		lblSplit.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -7067,8 +7068,8 @@ public class Shutter {
 		grpCrop = new JPanel();
 		grpCrop.setLayout(null);
 		grpCrop.setVisible(false);
-		grpCrop.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameCropImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpCrop.setBackground(new Color(35,35,35));
+		grpCrop.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameCropImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpCrop.setBackground(new Color(30,30,35));
 		grpCrop.setSize(312, 17);
 		grpCrop.setLocation(frame.getWidth(), grpImageAdjustement.getY());
 		frame.getContentPane().add(grpCrop);		
@@ -8102,8 +8103,8 @@ public class Shutter {
 	
 		grpOverlay = new JPanel();
 		grpOverlay.setLayout(null);
-		grpOverlay.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpOverlay.setBackground(new Color(35,35,35));
+		grpOverlay.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpOverlay.setBackground(new Color(30,30,35));
 		grpOverlay.setSize(312, 17);
 		grpOverlay.setLocation(frame.getWidth(), grpCrop.getY() + grpCrop.getHeight() + 6);
 		grpOverlay.setVisible(false);
@@ -8264,7 +8265,7 @@ public class Shutter {
 		
 		lblTcBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOn"));
 		lblTcBackground.setName("lblTcBackground");
-		lblTcBackground.setBackground(new Color(50,50,50));
+		lblTcBackground.setBackground(new Color(42,42,47));
 		lblTcBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTcBackground.setOpaque(true);
 		lblTcBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -8431,7 +8432,7 @@ public class Shutter {
 						tcS = Integer.valueOf(TC3.getText());
 						tcF = Integer.valueOf(TC4.getText());
 					}
-					else if (caseShowTimecode.isSelected() && FFPROBE.timecode1.equals("") == false)
+					else if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "" == false)
 					{
 						tcH = Integer.valueOf(FFPROBE.timecode1);
 						tcM = Integer.valueOf(FFPROBE.timecode2);
@@ -8582,7 +8583,7 @@ public class Shutter {
 				
 		lblTimecode = new JLabel(Shutter.language.getProperty("lblTimecode"));
 		lblTimecode.setName("lblTimecode");
-		lblTimecode.setBackground(new Color(50,50,50));
+		lblTimecode.setBackground(new Color(42,42,47));
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimecode.setOpaque(true);
 		lblTimecode.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -9942,21 +9943,30 @@ public class Shutter {
 					
 					//Timecode info
 					if (Utils.inputDeviceIsRunning == false)
-					{						
-						if (FFPROBE.timecode1.equals(""))
+					{			
+						FFPROBE.analyzedMedia = null;
+						FFPROBE.Data(VideoPlayer.videoPath);
+						
+						do
+						{
+							try {
+		        				Thread.sleep(100);
+		        			} catch (InterruptedException e1) {}
+						}
+						while (FFPROBE.isRunning);
+						
+						if (FFPROBE.timecode1 == "")
 		    			{
-		    				MEDIAINFO.run(VideoPlayer.videoPath, false);
+							MEDIAINFO.run(VideoPlayer.videoPath, false);
 		    				
-		    				do
-		    				{
+		    				do {
 		    					try {
 			        				Thread.sleep(100);
 			        			} catch (InterruptedException e1) {}
-		    				}
-		    				while (MEDIAINFO.isRunning);		    				
+		    				} while (MEDIAINFO.isRunning);		    				
 		    			}
 						
-						if (FFPROBE.timecode1.equals(""))
+						if (FFPROBE.timecode1 == "")
 						{
 							caseShowTimecode.setSelected(false);
 							caseAddTimecode.doClick();
@@ -10133,8 +10143,8 @@ public class Shutter {
 	
 		grpSubtitles = new JPanel();
 		grpSubtitles.setLayout(null);
-		grpSubtitles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseSubtitles") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpSubtitles.setBackground(new Color(35,35,35));
+		grpSubtitles.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseSubtitles") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpSubtitles.setBackground(new Color(30,30,35));
 		grpSubtitles.setSize(312, 17);
 		grpSubtitles.setLocation(frame.getWidth(), grpOverlay.getY() + grpOverlay.getHeight() + 6);
 		grpSubtitles.setVisible(false);
@@ -11060,7 +11070,7 @@ public class Shutter {
 		
 		lblSubsBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOff"));
 		lblSubsBackground.setName("lblSubsBackground");
-		lblSubsBackground.setBackground(new Color(50,50,50));
+		lblSubsBackground.setBackground(new Color(42,42,47));
 		lblSubsBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubsBackground.setOpaque(true);
 		lblSubsBackground.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 11));
@@ -11290,8 +11300,8 @@ public class Shutter {
 			
 		grpWatermark = new JPanel();
 		grpWatermark.setLayout(null);
-		grpWatermark.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpWatermark.setBackground(new Color(35,35,35));
+		grpWatermark.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpWatermark.setBackground(new Color(30,30,35));
 		grpWatermark.setSize(312, 17);
 		grpWatermark.setLocation(frame.getWidth(), grpSubtitles.getY() + grpSubtitles.getHeight() + 6);
 		grpWatermark.setVisible(false);
@@ -12024,8 +12034,8 @@ public class Shutter {
 		grpColorimetry.setLayout(null);
 		grpColorimetry.setVisible(false);
 		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpColorimetry.setBackground(new Color(35,35,35));
+				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpColorimetry.setBackground(new Color(30,30,35));
 		grpColorimetry.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpColorimetry);
 		
@@ -12625,8 +12635,8 @@ public class Shutter {
 		grpImageAdjustement = new JPanel();
 		grpImageAdjustement.setName("grpImageAdjustement");
 		grpImageAdjustement.setLayout(null);
-		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameColorImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpImageAdjustement.setBackground(new Color(35,35,35));
+		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("frameColorImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpImageAdjustement.setBackground(new Color(30,30,35));
 		grpImageAdjustement.setBounds(frame.getWidth(), 258, 312, 17);
 		grpImageAdjustement.setVisible(false);
 		
@@ -13806,8 +13816,8 @@ public class Shutter {
 		grpCorrections = new JPanel();
 		grpCorrections.setLayout(null);
 		grpCorrections.setVisible(false);
-		grpCorrections.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("grpCorrections") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpCorrections.setBackground(new Color(35,35,35));
+		grpCorrections.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("grpCorrections") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpCorrections.setBackground(new Color(30,30,35));
 		grpCorrections.setBounds(frame.getWidth(), grpImageAdjustement.getY() + grpImageAdjustement.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpCorrections);
 
@@ -14173,8 +14183,8 @@ public class Shutter {
 		grpTransitions.setLayout(null);
 		grpTransitions.setVisible(false);
 		grpTransitions.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), Shutter.language.getProperty("grpTransitions") + " ", 0,
-				0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpTransitions.setBackground(new Color(35,35,35));
+				0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpTransitions.setBackground(new Color(30,30,35));
 		grpTransitions.setBounds(frame.getWidth(), grpCorrections.getY() + grpCorrections.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpTransitions);
 		
@@ -14275,7 +14285,7 @@ public class Shutter {
 				
 		lblFadeInColor = new JLabel(Shutter.language.getProperty("black"));
 		lblFadeInColor.setName("lblFadeInColor");
-		lblFadeInColor.setBackground(new Color(50,50,50));
+		lblFadeInColor.setBackground(new Color(42,42,47));
 		lblFadeInColor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFadeInColor.setOpaque(true);
 		lblFadeInColor.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -14482,7 +14492,7 @@ public class Shutter {
 		
 		lblFadeOutColor = new JLabel(Shutter.language.getProperty("black"));
 		lblFadeOutColor.setName("lblFadeOutColor");
-		lblFadeOutColor.setBackground(new Color(50,50,50));
+		lblFadeOutColor.setBackground(new Color(42,42,47));
 		lblFadeOutColor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFadeOutColor.setOpaque(true);
 		lblFadeOutColor.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
@@ -14654,8 +14664,8 @@ public class Shutter {
 		grpImageSequence.setLayout(null);
 		grpImageSequence.setVisible(false);
 		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpImageSequence.setBackground(new Color(35,35,35));
+				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpImageSequence.setBackground(new Color(30,30,35));
 		grpImageSequence.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageSequence);
 		
@@ -14825,8 +14835,8 @@ public class Shutter {
 		grpAdvanced = new JPanel();
 		grpAdvanced.setLayout(null);
 		grpAdvanced.setVisible(false);
-		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpAdvanced.setBackground(new Color(35,35,35));
+		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpAdvanced.setBackground(new Color(30,30,35));
 		grpAdvanced.setBounds(frame.getWidth(), 396, 312, 17);
 		frame.getContentPane().add(grpAdvanced);
 
@@ -14944,7 +14954,7 @@ public class Shutter {
 		
 		lblTFF = new JLabel("TFF");
 		lblTFF.setName("lblTFF");
-		lblTFF.setBackground(new Color(50,50,50));
+		lblTFF.setBackground(new Color(42,42,47));
 		lblTFF.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTFF.setOpaque(true);
 		lblTFF.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -15143,12 +15153,12 @@ public class Shutter {
 		
 		lblCreateOPATOM = new JLabel(language.getProperty("lblCreateOPATOM"));
 		lblCreateOPATOM.setFont(new Font(freeSansFont, Font.PLAIN, 12));
-		lblCreateOPATOM.setBackground(new Color(35,35,35));
+		lblCreateOPATOM.setBackground(new Color(30,30,35));
 		lblCreateOPATOM.setSize((int) lblCreateOPATOM.getPreferredSize().getWidth(), 23);
 		
 		lblOPATOM = new JLabel("OP-Atom");
 		lblOPATOM.setName("lblOPATOM");
-		lblOPATOM.setBackground(new Color(50,50,50));
+		lblOPATOM.setBackground(new Color(42,42,47));
 		lblOPATOM.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOPATOM.setOpaque(true);
 		lblOPATOM.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -15369,7 +15379,7 @@ public class Shutter {
 
 		lblNiveaux = new JLabel("0-255");
 		lblNiveaux.setName("lblNiveaux");
-		lblNiveaux.setBackground(new Color(50,50,50));
+		lblNiveaux.setBackground(new Color(42,42,47));
 		lblNiveaux.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNiveaux.setOpaque(true);
 		lblNiveaux.setFont(new Font(montserratFont, Font.PLAIN, 12));
@@ -15907,8 +15917,8 @@ public class Shutter {
 		grpBitrate.setLayout(null);
 		grpBitrate.setVisible(false);
 		grpBitrate.setBorder(BorderFactory.createTitledBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true),
-				language.getProperty("grpBitrate") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(240,240,240)));
-		grpBitrate.setBackground(new Color(35,35,35));
+				language.getProperty("grpBitrate") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpBitrate.setBackground(new Color(30,30,35));
 		grpBitrate.setBounds(658, 30, 312, 208);
 		frame.getContentPane().add(grpBitrate);	
 		
@@ -16080,7 +16090,7 @@ public class Shutter {
 					if (lblPad.getText().equals(Shutter.language.getProperty("lblPad")))
 						g.setColor(Color.BLACK);
 					else
-						g.setColor(new Color(35,35,35));
+						g.setColor(new Color(30,30,35));
 					
 					g.fillRect(0, 0, 8, 16);
 					g.fillRect((70 - 8), 0, (70 - 8), 16);
@@ -16089,7 +16099,7 @@ public class Shutter {
 		};
 		lblPad.setText(language.getProperty("lblPad"));
 		lblPad.setName("lblPad");
-		lblPad.setBackground(new Color(50,50,50));
+		lblPad.setBackground(new Color(42,42,47));
 		lblPad.setHorizontalAlignment(SwingConstants.CENTER);
 		lblPad.setOpaque(true);
 		lblPad.setVisible(false);
@@ -16474,7 +16484,7 @@ public class Shutter {
 				}
 			}
 		};
-		h264lines.setBackground(new Color(35,35,35));
+		h264lines.setBackground(new Color(30,30,35));
 		h264lines.setBounds(212, lblKbsH264.getY() - 7, 53, 105);
 		grpBitrate.add(h264lines);
 		grpBitrate.validate();
@@ -16496,7 +16506,7 @@ public class Shutter {
 				
 		lblVBR = new JLabel("VBR");
 		lblVBR.setName("lblVBR");
-		lblVBR.setBackground(new Color(50,50,50));
+		lblVBR.setBackground(new Color(42,42,47));
 		lblVBR.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVBR.setOpaque(true);
 		lblVBR.setFont(new Font(montserratFont, Font.PLAIN, 11));
@@ -16730,7 +16740,7 @@ public class Shutter {
 				|| language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString())
 				|| language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "Opus", "Vorbis", "Dolby Digital Plus", language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(3);
 					caseNormalizeAudio.setEnabled(false);
 					caseNormalizeAudio.setSelected(false);
@@ -16790,7 +16800,7 @@ public class Shutter {
 				}
 				else if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "MP3", "AC3", "OPUS", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", "ALAC 16Bits", "ALAC 24Bits", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "MP3", "AC3", "Opus", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", "ALAC 16Bits", "ALAC 24Bits", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);						
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(10);
@@ -16846,7 +16856,7 @@ public class Shutter {
 				}
 				else if ("VP8".equals(comboFonctions.getSelectedItem().toString()) || "VP9".equals(comboFonctions.getSelectedItem().toString()))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "OPUS", "AAC", "OGG", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Opus", "AAC", "Vorbis", "FLAC", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(11);	
@@ -16865,7 +16875,7 @@ public class Shutter {
 				}
 				else if ("AV1".equals(comboFonctions.getSelectedItem().toString()))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "OPUS", "AAC", "OGG", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Opus", "AAC", "Vorbis", "FLAC", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(11);	
@@ -16882,9 +16892,9 @@ public class Shutter {
 					if (grpSetAudio.getHeight() > 92)
 						extendSections(grpSetAudio, 92);
 				}
-				else if ("OGV".equals(comboFonctions.getSelectedItem().toString()))
+				else if ("Theora".equals(comboFonctions.getSelectedItem().toString()))
 				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "OGG", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Vorbis", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 					comboAudioCodec.setSelectedIndex(0);
 					debitAudio.setModel(comboAudioBitrate.getModel());
 					debitAudio.setSelectedIndex(10);	
@@ -16952,8 +16962,8 @@ public class Shutter {
 				|| comboFonctions.getSelectedItem().toString().equals("MP3")
 				|| comboFonctions.getSelectedItem().toString().equals("AAC")
 				|| comboFonctions.getSelectedItem().toString().equals("AC3")
-				|| comboFonctions.getSelectedItem().toString().equals("OPUS")
-				|| comboFonctions.getSelectedItem().toString().equals("OGG")
+				|| comboFonctions.getSelectedItem().toString().equals("Opus")
+				|| comboFonctions.getSelectedItem().toString().equals("Vorbis")
 				|| comboFonctions.getSelectedItem().toString().equals("Dolby Digital Plus")
 				|| comboFonctions.getSelectedItem().toString().equals("Dolby TrueHD"))
 				{
@@ -17216,7 +17226,7 @@ public class Shutter {
 		
 		statusBar = new JPanel();
 		statusBar.setName("statusBar");
-		statusBar.setBackground(new Color(40,40,40));
+		statusBar.setBackground(new Color(35,35,40));
 		statusBar.setOpaque(true);
 		statusBar.setLayout(null);
 		statusBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(65, 65, 65)));
@@ -17733,7 +17743,7 @@ public class Shutter {
 			public void mouseClicked(MouseEvent arg0) {
 				final JFrame oldVersions = new JFrame();
 				oldVersions.setUndecorated(true);
-				oldVersions.getContentPane().setBackground(new Color(35,35,35));
+				oldVersions.getContentPane().setBackground(new Color(30,30,35));
 				oldVersions.setBackground(new Color(1.0f, 1.0f, 1.0f, 1.0f));
 				oldVersions.setSize(1600, 423);
 				oldVersions.setShape(new AntiAliasedRoundRectangle(0, 0, oldVersions.getWidth() + 18,
@@ -17846,12 +17856,12 @@ public class Shutter {
 				|| language.getProperty("functionMerge").equals(function)
 				|| language.getProperty("functionReplaceAudio").equals(function)
 				|| "WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function)
-				|| "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "OPUS".equals(function)
-				|| "OGG".equals(function) || "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function) || "Loudness & True Peak".equals(function)
+				|| "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "Opus".equals(function)
+				|| "Vorbis".equals(function) || "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function) || "Loudness & True Peak".equals(function)
 				|| language.getProperty("functionBlackDetection").equals(function) || language.getProperty("functionOfflineDetection").equals(function) || "VMAF".equals(function)
 				|| "DNxHD".equals(function)	|| "DNxHR".equals(function) || "Apple ProRes".equals(function) || "QT Animation".equals(function) || ("GoPro CineForm").equals(function) || "Uncompressed".equals(function)
 				|| "H.264".equals(function) || "H.265".equals(function) || "DV PAL".equals(function)
-				|| "WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function) || "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function) || "OGV".equals(function)
+				|| "WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function) || "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function) || "Theora".equals(function)
 				|| "MJPEG".equals(function) || "Xvid".equals(function) || "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)
 				|| "DVD".equals(function) || "Blu-ray".equals(function) || "QT JPEG".equals(function)
 				|| language.getProperty("functionPicture").equals(function)
@@ -18921,7 +18931,7 @@ public class Shutter {
 								if ((comboAudioCodec.getItemCount() != 11 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
 								{
 									lblAudioMapping.setText(language.getProperty("stereo"));
-									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
+									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "Opus", "Vorbis", "Dolby Digital Plus", language.getProperty("noAudio") }));
 									comboAudioCodec.setSelectedIndex(3);	
 									caseNormalizeAudio.setEnabled(false);
 									caseNormalizeAudio.setSelected(false);
@@ -19015,7 +19025,7 @@ public class Shutter {
 								if ((comboAudioCodec.getItemCount() != 11 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false) && action)
 								{
 									lblAudioMapping.setText(language.getProperty("stereo"));
-									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "OPUS", "OGG", "Dolby Digital Plus", language.getProperty("noAudio") }));
+									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "Opus", "Vorbis", "Dolby Digital Plus", language.getProperty("noAudio") }));
 									comboAudioCodec.setSelectedIndex(3);
 									caseNormalizeAudio.setEnabled(false);
 									caseNormalizeAudio.setSelected(false);
@@ -19068,11 +19078,11 @@ public class Shutter {
 									btnReset.setLocation(btnReset.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 								}
 								
-							} else if ("WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function) || "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "OPUS".equals(function) || "OGG".equals(function) || "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)) {
+							} else if ("WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function) || "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "Opus".equals(function) || "Vorbis".equals(function) || "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)) {
 											
 								if (action)
 								{
-									if (comboFonctions.getSelectedItem().toString().equals("MP3") || comboFonctions.getSelectedItem().toString().equals("AAC") || comboFonctions.getSelectedItem().toString().equals("OGG"))
+									if (comboFonctions.getSelectedItem().toString().equals("MP3") || comboFonctions.getSelectedItem().toString().equals("AAC") || comboFonctions.getSelectedItem().toString().equals("Vorbis"))
 									{
 										comboFilter.setSelectedIndex(9);
 									}
@@ -19080,7 +19090,7 @@ public class Shutter {
 									{
 										comboFilter.setSelectedIndex(7);
 									}
-									else if (comboFonctions.getSelectedItem().toString().equals("OPUS"))
+									else if (comboFonctions.getSelectedItem().toString().equals("Opus"))
 									{						
 										comboFilter.setSelectedIndex(11);
 									}
@@ -20073,7 +20083,7 @@ public class Shutter {
 								if (comboAudioCodec.getItemCount() != 13 || comboAudioCodec.getModel().getElementAt(0).equals("AAC") == false)
 								{
 									lblAudioMapping.setText(language.getProperty("stereo"));
-									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "MP3", "AC3", "OPUS", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", "ALAC 16Bits", "ALAC 24Bits", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "MP3", "AC3", "Opus", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", "ALAC 16Bits", "ALAC 24Bits", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 									comboAudioCodec.setSelectedIndex(0);
 									caseChangeAudioCodec.setSelected(true);
 									comboAudioCodec.setEnabled(true);
@@ -20290,7 +20300,7 @@ public class Shutter {
 								casePreserveSubs.setLocation(7, casePreserveMetadata.getLocation().y + 17);
 								grpAdvanced.add(casePreserveSubs);							
 								
-							} else if ("WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function) || "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function) || "OGV".equals(function)
+							} else if ("WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function) || "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function) || "Theora".equals(function)
 									|| "MJPEG".equals(function) || "Xvid".equals(function)) {
 															
 								addToList.setText(language.getProperty("filesVideoOrPicture"));	
@@ -20522,16 +20532,16 @@ public class Shutter {
 										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP2", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 										comboAudioCodec.setSelectedIndex(0);
 									}
-									else if (comboAudioCodec.getModel().getElementAt(0).equals("OPUS") == false && ("VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function)))
+									else if (comboAudioCodec.getModel().getElementAt(0).equals("Opus") == false && ("VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function)))
 									{
 										lblAudioMapping.setText(language.getProperty("stereo"));
-										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "OPUS", "AAC", "OGG", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Opus", "AAC", "Vorbis", "FLAC", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 										comboAudioCodec.setSelectedIndex(0);
 									}
-									else if (comboAudioCodec.getModel().getElementAt(0).equals("OGG") == false && "OGV".equals(function))
+									else if (comboAudioCodec.getModel().getElementAt(0).equals("Vorbis") == false && "Theora".equals(function))
 									{
 										lblAudioMapping.setText(language.getProperty("stereo"));
-										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "OGG", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Vorbis", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
 										comboAudioCodec.setSelectedIndex(0);
 									}
 									else if (comboAudioCodec.getModel().getElementAt(0).equals("MP3") == false && "Xvid".equals(function))
@@ -20677,7 +20687,7 @@ public class Shutter {
 								if (liste.getSize() > 0 && FFPROBE.calcul == false)
 									FFPROBE.setLength();
 								// Qualité Max
-								if (comboFonctions.getSelectedItem().equals("OGV") || comboFonctions.getSelectedItem().equals("MJPEG"))
+								if (comboFonctions.getSelectedItem().equals("Theora") || comboFonctions.getSelectedItem().equals("MJPEG"))
 									caseQMax.setEnabled(false);
 								else
 									caseQMax.setEnabled(true);
@@ -21808,8 +21818,8 @@ public class Shutter {
 			}  else if (comboFonctions.getSelectedItem().toString().equals("MP3")
 					|| comboFonctions.getSelectedItem().toString().equals("AAC")
 					|| comboFonctions.getSelectedItem().toString().equals("AC3")
-					|| comboFonctions.getSelectedItem().toString().equals("OPUS")
-					|| comboFonctions.getSelectedItem().toString().equals("OGG")					
+					|| comboFonctions.getSelectedItem().toString().equals("Opus")
+					|| comboFonctions.getSelectedItem().toString().equals("Vorbis")					
 					|| comboFonctions.getSelectedItem().toString().equals("Dolby Digital Plus")) {
 				
 				lblFilter.setText(" ");	
@@ -21822,7 +21832,7 @@ public class Shutter {
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 
-					if (comboFonctions.getSelectedItem().toString().equals("MP3") || comboFonctions.getSelectedItem().toString().equals("AAC") || comboFonctions.getSelectedItem().toString().equals("OGG"))
+					if (comboFonctions.getSelectedItem().toString().equals("MP3") || comboFonctions.getSelectedItem().toString().equals("AAC") || comboFonctions.getSelectedItem().toString().equals("Vorbis"))
 					{
 						comboFilter.setSelectedIndex(9);
 					}
@@ -21830,7 +21840,7 @@ public class Shutter {
 					{
 						comboFilter.setSelectedIndex(7);
 					}
-					else if (comboFonctions.getSelectedItem().toString().equals("OPUS"))
+					else if (comboFonctions.getSelectedItem().toString().equals("Opus"))
 					{						
 						comboFilter.setSelectedIndex(11);
 					}
@@ -23017,14 +23027,14 @@ class FilesCellRenderer extends JLabel implements ListCellRenderer {
 		
 		if (isSelected)
 		{
-			setBackground(new Color(80, 80, 80));
+			setBackground(new Color(75,75,80));
 		}
 		else
 		{			
 			if (index % 2 == 1)
-				setBackground(new Color(50,50,50));
+				setBackground(new Color(42,42,47));
 			else
-				setBackground(new Color(56,56,56));
+				setBackground(new Color(51,51,56));
 		}
 		return this;
 	}
@@ -23044,7 +23054,7 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 		}
 		else
 		{	
-			setBackground(new Color(50,50,50));
+			setBackground(new Color(42,42,47));
 		}
 		
 		if (value.toString().contains(":") || value.toString().equals(Shutter.language.getProperty("itemMyFunctions")))
@@ -23213,7 +23223,7 @@ class ListeFileTransferHandler extends TransferHandler {
 					case "VP8":
 					case "VP9":
 					case "AV1":
-					case "OGV":
+					case "Theora":
 					case "MJPEG":
 					case "Xvid":
 					case "Blu-ray":											

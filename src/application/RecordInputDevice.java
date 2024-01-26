@@ -82,7 +82,7 @@ public class RecordInputDevice {
 		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
 		
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(new Color(35,35,35));
+		frame.getContentPane().setBackground(new Color(30,30,35));
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			

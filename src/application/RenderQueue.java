@@ -97,7 +97,7 @@ import settings.FunctionUtils;
 	public RenderQueue() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(35,35,35));
+		frame.getContentPane().setBackground(new Color(30,30,35));
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFileDeRendus"));
 		frame.setForeground(Color.WHITE);
@@ -282,7 +282,7 @@ import settings.FunctionUtils;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(35,35,35));
+		topPanel.setBackground(new Color(30,30,35));
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -381,7 +381,7 @@ import settings.FunctionUtils;
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(40,40,40));
+		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
@@ -625,6 +625,7 @@ import settings.FunctionUtils;
 		columnFile.setFont(new Font("SansSerif", Font.PLAIN, 11));
 		
 		tableRow = new DefaultTableModel(new Object[][] {}, new String[] {Shutter.language.getProperty("columnFile"), Shutter.language.getProperty("columnCommand"), Shutter.language.getProperty("destination")});
+		
 		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
 		dtcr.setHorizontalAlignment(SwingConstants.CENTER);
         table = new JTable(tableRow)
@@ -640,7 +641,7 @@ import settings.FunctionUtils;
                return true;
             }                   
         };
-        table.setForeground(new Color(240,240,240));
+        table.setForeground(new Color(235,235,240));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -686,7 +687,7 @@ import settings.FunctionUtils;
 		
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(table);
-		scrollPane.setBackground(new Color(50,50,50));
+		scrollPane.setBackground(new Color(42,42,47));
 		scrollPane.setOpaque(true);
 		scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
@@ -999,14 +1000,14 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 		
 		if (isSelected)
 		{
-			setBackground(new Color(80, 80, 80));
+			setBackground(new Color(75,75,80));
 		}
 		else
 		{			
 			if (index % 2 == 1)
-				setBackground(new Color(50,50,50));
+				setBackground(new Color(42,42,47));
 			else
-				setBackground(new Color(56,56,56));
+				setBackground(new Color(51,51,56));
 		}
 		
 	    setBorder(new LineBorder(new Color(0,0,0,0)));	    

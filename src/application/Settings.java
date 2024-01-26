@@ -174,7 +174,7 @@ public class Settings {
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
 		}
 		
-		frame.getContentPane().setBackground(new Color(35,35,35));
+		frame.getContentPane().setBackground(new Color(30,30,35));
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
@@ -198,7 +198,7 @@ public class Settings {
 		
 		JScrollBar scrollBar = new JScrollBar();
 		scrollBar.setMaximum(40);
-		scrollBar.setBackground(new Color(35,35,35));
+		scrollBar.setBackground(new Color(30,30,35));
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
 		scrollBar.setLocation(frame.getWidth() - scrollBar.getWidth() - 2, topPanel.getHeight());
@@ -231,7 +231,7 @@ public class Settings {
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setName("backgroundPanel");
 		backgroundPanel.setLayout(null);
-		backgroundPanel.setBackground(new Color(35,35,35));
+		backgroundPanel.setBackground(new Color(30,30,35));
 		backgroundPanel.setOpaque(true);
 		backgroundPanel.setSize(frame.getWidth(), 50);
 		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
@@ -256,9 +256,11 @@ public class Settings {
 		frame.getContentPane().add(btnLoadPreset);
 		
 		btnLoadPreset.addActionListener(new ActionListener() {
-
+			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+
+				int index = comboLoadPreset.getSelectedIndex();
 				
 				if (btnLoadPreset.isSelected())
 				{
@@ -282,6 +284,8 @@ public class Settings {
 							btnLoadPreset.setSelected(false);
 							comboLoadPreset.setEnabled(false);
 						}
+						
+						comboLoadPreset.setSelectedIndex(index);
 					}
 					else
 					{
@@ -290,7 +294,9 @@ public class Settings {
 					}
 				}
 				else
+				{
 					comboLoadPreset.setEnabled(false);
+				}
 			}
 			
 		});
@@ -631,7 +637,7 @@ public class Settings {
 			lblDestination1.setForeground(Utils.themeColor);
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination1.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination1.setBackground(new Color(35,35,35));
+		lblDestination1.setBackground(new Color(30,30,35));
 		if (lblDestination1.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -758,7 +764,7 @@ public class Settings {
 			lblDestination2.setForeground(Utils.themeColor);
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination2.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination2.setBackground(new Color(35,35,35));
+		lblDestination2.setBackground(new Color(30,30,35));
 		if (lblDestination2.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -877,7 +883,7 @@ public class Settings {
 			lblDestination3.setForeground(Utils.themeColor);
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination3.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination3.setBackground(new Color(35,35,35));
+		lblDestination3.setBackground(new Color(30,30,35));
 		if (lblDestination3.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -1149,7 +1155,7 @@ public class Settings {
 		
 		topPanel = new JPanel();	
 		topPanel.setName("topPanel");
-		topPanel.setBackground(new Color(35,35,35));
+		topPanel.setBackground(new Color(30,30,35));
 		topPanel.setLayout(null);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -1293,7 +1299,7 @@ public class Settings {
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(40,40,40));
+		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
 		topImage.setBounds(title.getBounds());
