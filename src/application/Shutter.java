@@ -3769,6 +3769,69 @@ public class Shutter {
 					// Add quality selection
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 					{
+						setGPUOptions();
+						
+						if (comboFilter.getSelectedItem().toString().equals(".avif"))
+						{
+							List<String> graphicsAccel = new ArrayList<String>();
+							graphicsAccel.add(language.getProperty("aucune").toLowerCase());
+							
+							Thread hwaccel = new Thread(new Runnable() {
+
+								@Override
+								public void run() {
+									
+									comboAccel.setEnabled(false);
+									
+									try {
+										
+										if (System.getProperty("os.name").contains("Windows"))
+										{
+											FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -s 640x360 -f null -" + '"');
+											do {
+												Thread.sleep(10);
+											} while (FFMPEG.runProcess.isAlive());
+					
+											if (FFMPEG.error == false)
+												graphicsAccel.add("Nvidia NVENC");
+					
+											FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_qsv -s 640x360 -f null -" + '"');
+											do {
+												Thread.sleep(10);
+											} while (FFMPEG.runProcess.isAlive());
+					
+											if (FFMPEG.error == false)
+												graphicsAccel.add("Intel Quick Sync");
+	
+											FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_amf -s 640x360 -f null -" + '"');
+											do {
+												Thread.sleep(10);
+											} while (FFMPEG.runProcess.isAlive());
+					
+											if (FFMPEG.error == false)
+												graphicsAccel.add("AMD AMF Encoder");
+										}
+										
+										if (comboAccel.getModel().getSize() != graphicsAccel.size())
+										{	
+											comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
+										}
+										
+										//load hwaccel value after checking gpu capabilities
+										if (Utils.loadEncFile != null && Utils.hwaccel != "")
+										{
+											comboAccel.setSelectedItem(Utils.hwaccel); 
+										}
+										
+									} catch (Exception e) {}
+									
+									comboAccel.setEnabled(true);
+								}
+								
+							});
+							hwaccel.start();
+						}
+						
 						if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
 						{							
 							if (comboImageOption.getItemAt(0).equals("100%") == false)
@@ -18633,10 +18696,11 @@ public class Shutter {
 	private static void setGPUOptions() {
 		
 		String function = comboFonctions.getSelectedItem().toString();
-		
+
 		if ("Apple ProRes".equals(function) && System.getProperty("os.name").contains("Mac") && arch.equals("arm64")
 		|| "H.264".equals(function) || "H.265".equals(function)
-		|| System.getProperty("os.name").contains("Windows") && ("VP9".equals(function) || "AV1".equals(function)))
+		|| System.getProperty("os.name").contains("Windows") && ("VP9".equals(function) || "AV1".equals(function))
+		|| System.getProperty("os.name").contains("Windows") && language.getProperty("functionPicture").equals(function) && comboFilter.getSelectedItem().toString().equals(".avif"))
 		{
 			lblHWaccel.setVisible(true);
 			comboAccel.setVisible(true);
@@ -22031,7 +22095,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { ".png", ".tif", ".tga", ".dpx", ".exr", ".webp", ".avif",".bmp", ".ico", ".gif", ".apng" };
+				String types[] = { ".png", ".tif", ".tga", ".dpx", ".j2k", ".exr", ".webp", ".avif",".bmp", ".ico", ".gif", ".apng" };
 				
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				
