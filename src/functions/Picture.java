@@ -448,7 +448,25 @@ public class Picture extends Shutter {
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".avif"))
 		{
-			return " -crf " +  Math.round((float) 63 - (float) ((float) ((float) Integer.valueOf(comboImageOption.getSelectedItem().toString().replace("%", "")) * 63) / 100));
+			String encoder = " -c:v libsvtav1";
+			
+			if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
+			{
+				if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+				{
+					encoder = " -c:v av1_nvenc";	
+				}
+				else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+				{
+					encoder = " -c:v av1_qsv";	
+				}	
+				else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+				{
+					encoder = " -c:v av1_amf";
+				}
+			}
+			
+			return encoder + " -crf " +  Math.round((float) 63 - (float) ((float) ((float) Integer.valueOf(comboImageOption.getSelectedItem().toString().replace("%", "")) * 63) / 100));
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".tif"))
 		{

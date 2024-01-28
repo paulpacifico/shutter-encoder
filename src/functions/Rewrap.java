@@ -156,7 +156,7 @@ public class Rewrap extends Shutter {
 						}
 												
 						//Subtitles
-						subtitles = setSubtitles();
+						subtitles = setSubtitles(file.toString());
 						
 						//Map subtitles
 						mapSubtitles = setMapSubtitles();
@@ -410,8 +410,38 @@ public class Rewrap extends Shutter {
 		return mapping;
 	}
 	
-	private static String setSubtitles() {
+	private static String setSubtitles(String file) {
 				
+		//Auto add subs
+		if (caseAddSubtitles.isSelected())
+		{
+			caseAddSubtitles.setEnabled(true);
+			Shutter.fileList.setSelectedValue(file, true);
+			
+			autoEmbed = true;
+			
+			String ext = file.substring(file.lastIndexOf("."));
+											
+			if (new File(file.replace(ext, ".srt")).exists()
+			|| new File (file.replace(ext, ".vtt")).exists()
+			|| new File (file.replace(ext, ".ass")).exists()
+			|| new File (file.replace(ext, ".ssa")).exists()
+			|| new File (file.replace(ext, ".scc")).exists())
+			{
+				caseAddSubtitles.doClick();
+				caseAddSubtitles.doClick();
+			}
+
+			autoEmbed = false;
+			caseAddSubtitles.setEnabled(false);
+		
+			try {
+				do {
+					Thread.sleep(100);
+				} while (FFMPEG.isRunning);
+			} catch (InterruptedException e) {}		
+		}
+		
 		if (Shutter.caseAddSubtitles.isSelected())
     	{		
 			String subsFiles = "";
