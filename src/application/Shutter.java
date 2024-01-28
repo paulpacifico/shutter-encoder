@@ -7346,7 +7346,7 @@ public class Shutter {
 						if (outputRatio < Float.parseFloat(inputRatio))
 						{		
 							textCropPosY.setText("0");
-							Shutter.textCropHeight.setText(s[1]);
+							textCropHeight.setText(s[1]);
 							textCropWidth.setText(String.valueOf(Math.round(h * outputRatio)));							
 							textCropPosX.setText(String.valueOf((w - Integer.parseInt(textCropWidth.getText())) / 2));				
 						}
@@ -7354,14 +7354,14 @@ public class Shutter {
 						{	
 							textCropPosX.setText("0");						
 							textCropWidth.setText(s[0]);
-							Shutter.textCropHeight.setText(String.valueOf(Math.round(w / outputRatio)));
-							textCropPosY.setText(String.valueOf((h - Integer.parseInt(Shutter.textCropHeight.getText())) / 2));			
+							textCropHeight.setText(String.valueOf(Math.round(w / outputRatio)));
+							textCropPosY.setText(String.valueOf((h - Integer.parseInt(textCropHeight.getText())) / 2));			
 						}
 						
 						int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);	
 						int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
 						int width = (int) Math.ceil((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
-						int height = (int) Math.floor((float) (Integer.valueOf(Shutter.textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
+						int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
 						
 						if (width > VideoPlayer.player.getWidth())
 							width = VideoPlayer.player.getWidth();
@@ -7977,7 +7977,6 @@ public class Shutter {
 				{
 					int value = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
 					selection.setSize(value, selection.getHeight());
-					VideoPlayer.checkSelection();
 				}
 			}
 
@@ -8030,7 +8029,6 @@ public class Shutter {
 					textCropWidth.setText(String.valueOf(mouseCropOffsetX + (e.getX() - MousePositionX)));
 					int value = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
 					selection.setSize(value , selection.getHeight());
-					VideoPlayer.checkSelection();
 				}
 			}
 
@@ -8052,14 +8050,14 @@ public class Shutter {
 		lblHeight.setEnabled(false);
 		lblHeight.setBounds(textCropPosY.getX() - lblHeight.getPreferredSize().width - 2, cropPosY.getY() + cropPosY.getHeight() + 4, lblHeight.getPreferredSize().width, 16);
 		
-		Shutter.textCropHeight = new JTextField("0");
-		Shutter.textCropHeight.setName("textCropHeight");
-		Shutter.textCropHeight.setBounds(lblHeight.getLocation().x + lblHeight.getWidth() + 2, textCropWidth.getY(), textCropPosX.getWidth(), 16);
-		Shutter.textCropHeight.setHorizontalAlignment(SwingConstants.RIGHT);
-		Shutter.textCropHeight.setEnabled(false);
-		Shutter.textCropHeight.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		textCropHeight = new JTextField("0");
+		textCropHeight.setName("textCropHeight");
+		textCropHeight.setBounds(lblHeight.getLocation().x + lblHeight.getWidth() + 2, textCropWidth.getY(), textCropPosX.getWidth(), 16);
+		textCropHeight.setHorizontalAlignment(SwingConstants.RIGHT);
+		textCropHeight.setEnabled(false);
+		textCropHeight.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
-		Shutter.textCropHeight.addKeyListener(new KeyListener(){
+		textCropHeight.addKeyListener(new KeyListener(){
 
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -8068,11 +8066,10 @@ public class Shutter {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				
-				if (Shutter.textCropHeight.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
+				if (textCropHeight.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					int value = (int) Math.round((float) (Integer.valueOf(Shutter.textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
+					int value = (int) Math.round((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
 					selection.setSize(selection.getWidth(), value);
-					VideoPlayer.checkSelection();
 				}
 			}
 
@@ -8081,33 +8078,33 @@ public class Shutter {
 				char caracter = e.getKeyChar();											
 				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
 					e.consume(); 
-				else if (Shutter.textCropHeight.getText().length() >= 4)
-					Shutter.textCropHeight.setText("");				
+				else if (textCropHeight.getText().length() >= 4)
+					textCropHeight.setText("");				
 			}			
 			
 		});
 		
-		Shutter.textCropHeight.addMouseListener(new MouseListener(){
+		textCropHeight.addMouseListener(new MouseListener(){
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Shutter.textCropHeight.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+				textCropHeight.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e) {	
-				Shutter.textCropHeight.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+				textCropHeight.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				Shutter.textCropHeight.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+				textCropHeight.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 				MousePositionY = e.getY();
-				mouseCropOffsetY = Integer.parseInt(Shutter.textCropHeight.getText());
+				mouseCropOffsetY = Integer.parseInt(textCropHeight.getText());
 			}
 
 			@Override
@@ -8116,16 +8113,15 @@ public class Shutter {
 			
 		});
 		
-		Shutter.textCropHeight.addMouseMotionListener(new MouseMotionListener(){
+		textCropHeight.addMouseMotionListener(new MouseMotionListener(){
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
-				if (Shutter.textCropHeight.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
+				if (textCropHeight.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 				{
-					Shutter.textCropHeight.setText(String.valueOf(mouseCropOffsetY + (e.getY() - MousePositionY)));
-					int value = (int) Math.round((float)  (Integer.valueOf(Shutter.textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+					textCropHeight.setText(String.valueOf(mouseCropOffsetY + (e.getY() - MousePositionY)));
+					int value = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
 					selection.setSize(selection.getWidth(), value);
-					VideoPlayer.checkSelection();
 				}
 			}
 
@@ -8150,7 +8146,7 @@ public class Shutter {
 		grpCrop.add(textCropWidth);
 		grpCrop.add(cropPx3);
 		grpCrop.add(lblHeight);
-		grpCrop.add(Shutter.textCropHeight);	
+		grpCrop.add(textCropHeight);	
 		grpCrop.add(cropPx4);
 		
 		for (Component c : grpCrop.getComponents())
@@ -23169,8 +23165,8 @@ class ListeFileTransferHandler extends TransferHandler {
 				{
 					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					Iterator<?> iter = l.iterator();
-					while (iter.hasNext()) {
-						
+					while (iter.hasNext())
+					{						
 						File file = (File) iter.next();
 						
 						//Montage du chemin UNC
@@ -23239,8 +23235,8 @@ class ListeFileTransferHandler extends TransferHandler {
 										boolean allowed = true;
 										if (Settings.btnExclude.isSelected())
 										{	
-											for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
-											{
+											for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
+											{					
 												if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
 												{
 													allowed = false;

@@ -520,7 +520,7 @@ public class Utils extends Shutter {
 						if (Settings.btnExclude.isSelected())
 						{		
 							boolean allowed = true;
-							for (String excludeExt : Settings.txtExclude.getText().split("\\*"))
+							for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
 							{
 								if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
 									allowed = false;

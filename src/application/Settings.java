@@ -359,7 +359,7 @@ public class Settings {
 		txtExclude.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExclude.setBounds(btnExclude.getLocation().x + btnExclude.getWidth() + 6, btnExclude.getLocation().y - 2, frame.getWidth() - (btnExclude.getLocation().x + btnExclude.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExclude);	
-		
+				
 		btnSetBab.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		btnSetBab.setBounds(12, btnExclude.getLocation().y + btnExclude.getHeight() + 10, btnSetBab.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnSetBab);
