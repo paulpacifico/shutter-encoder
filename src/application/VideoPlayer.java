@@ -2756,12 +2756,23 @@ public class VideoPlayer {
 						
 						playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
 						
-						//Load filter before removing groups
-						do {
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException e1) {}
-						} while (setTime.isAlive());
+						//Load filter before removing groups								
+						if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
+						{
+							do {
+								try {
+									Thread.sleep(10);
+								} catch (InterruptedException er) {}
+							} while (runProcess.isAlive());
+						}
+						else
+						{
+							do {
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e1) {}
+							} while (setTime.isAlive());
+						}
 												
 						Shutter.frame.requestFocus();
 						
@@ -2824,12 +2835,15 @@ public class VideoPlayer {
 				
 					sliderChange = false;								
 	
-					//Reload the frame to apply bicubic filter					
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}
-					} while (setTime.isAlive());
+					//Reload the frame to apply bicubic filter			
+					if (setTime != null)
+					{
+						do {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e1) {}
+						} while (setTime.isAlive());
+					}
 	
 					playerSetTime(playerCurrentFrame);
 				}
