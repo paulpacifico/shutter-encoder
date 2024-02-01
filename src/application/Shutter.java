@@ -1149,6 +1149,27 @@ public class Shutter {
 							frame.requestFocus();
 						}
 						
+						if (VideoPlayer.fullscreenPlayer)
+						{
+							if (ke.getKeyCode() == KeyEvent.VK_K || ke.getKeyCode() == KeyEvent.VK_SPACE)
+							{
+								ke.consume();
+								VideoPlayer.btnPlay.doClick();
+							}
+							
+							if (ke.getKeyCode() == KeyEvent.VK_J)
+							{
+								VideoPlayer.previousFrame = true;
+								VideoPlayer.playerSetTime((float) (VideoPlayer.playerCurrentFrame - 10));
+			  				}
+								
+							if (ke.getKeyCode() == KeyEvent.VK_L)
+							{
+								VideoPlayer.previousFrame = true;
+								VideoPlayer.playerSetTime((float) (VideoPlayer.playerCurrentFrame + 10));
+							}
+						}
+						
 						//CMD + Q
 						if (System.getProperty("os.name").contains("Mac") && (ke.getKeyCode() == KeyEvent.VK_Q) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0))
 						{							
@@ -4795,10 +4816,34 @@ public class Shutter {
 				if (btnExtension.isSelected())
 				{
 					txtExtension.setEnabled(true);
+					
+					if (txtExtension.getText().isEmpty())
+					{
+						String extensionName = "_" + comboFonctions.getSelectedItem().toString().replace(" ","_");	
+						
+						if (comboFilter.getSelectedItem().toString().contains(".") == false
+						&& comboFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
+						&& comboFilter.getSelectedItem().toString().contains("/") == false)
+						{
+							extensionName += "_" + comboFilter.getSelectedItem().toString().replace(" ","_");
+						}
+						
+						if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected()))
+						{
+							extensionName += "_TC";
+						}
+						
+						txtExtension.setText(extensionName);
+					}
 				}
 				else
 				{
 					txtExtension.setEnabled(false);
+					
+					if (txtExtension.getText().contains(comboFonctions.getSelectedItem().toString().replace(" ","_")))
+					{
+						txtExtension.setText("");
+					}
 				}
 			}
 			
@@ -5287,7 +5332,7 @@ public class Shutter {
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("VMAF")) == false
+				&& comboFonctions.getSelectedItem().equals("VMAF") == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
 				&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
 				&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)
@@ -17972,7 +18017,7 @@ public class Shutter {
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
-		&& comboFonctions.getSelectedItem().equals(language.getProperty("VMAF")) == false
+		&& comboFonctions.getSelectedItem().equals("VMAF") == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
 		&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)
@@ -18069,13 +18114,13 @@ public class Shutter {
 			if (caseChangeFolder1.isSelected() == false)
 				lblDestination1.setText(language.getProperty("sameAsSource"));
 		}
-				
+		
 		// Modifications du statut des cases
 		if (comboFonctions.getSelectedItem().equals("Loudness & True Peak")
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection"))
-		|| comboFonctions.getSelectedItem().equals(language.getProperty("VMAF"))
+		|| comboFonctions.getSelectedItem().equals("VMAF")
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) 
@@ -18096,7 +18141,7 @@ public class Shutter {
 			}
 			else
 			{			
-				if (comboFonctions.getSelectedItem().equals("Loudness & True Peak"))
+				if (comboFonctions.getSelectedItem().equals("Loudness & True Peak") || comboFonctions.getSelectedItem().equals("VMAF"))
 				{
 					setDestinationTabs(2);
 				}
@@ -18174,7 +18219,7 @@ public class Shutter {
 					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
 					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
 					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
-					&& comboFonctions.getSelectedItem().equals(language.getProperty("VMAF")) == false)
+					&& comboFonctions.getSelectedItem().equals("VMAF") == false)
 			{
 				btnStart.setText(language.getProperty("btnAddToRender"));
 			}
@@ -18677,7 +18722,7 @@ public class Shutter {
 			frame.setShape(null);
 		}
 		else
-		{
+		{			
 			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
             Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
             shape1.add(shape2);

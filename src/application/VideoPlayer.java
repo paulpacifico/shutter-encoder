@@ -36,6 +36,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -49,6 +50,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -150,13 +152,15 @@ public class VideoPlayer {
     private static boolean closeAudioStream = false;
     public static boolean isPiping = false;
     private static boolean previewUpscale = false;    
+	public static boolean fullscreenPlayer = false;
+	private static String fullscreenFilter = "";
     
 	//Buttons & Checkboxes
 	public static JLabel btnPreview;
 	public static JTextField splitValue;
 	private static JLabel lblSplitSec;
 	public static JButton btnPrevious;
-	private static boolean previousFrame = false;
+	public static boolean previousFrame = false;
 	public static JButton btnNext;
 	public static JButton btnStop;
 	public static JButton btnPlay;
@@ -804,7 +808,9 @@ public class VideoPlayer {
 		if (playerVideo != null)
 		{
 			playerVideo.destroy();
-			playerThread.interrupt();
+			try {
+				playerThread.interrupt();
+			} catch(Exception e) {}
 		}
 		
 		if (playerAudio != null)
@@ -1625,8 +1631,10 @@ public class VideoPlayer {
 			btnGoToIn.setVisible(false);
 			btnMarkIn.setVisible(false);
 
-			if (Shutter.liste.getSize() > 0 && videoPath != null)
+			if (Shutter.liste.getSize() > 0 && videoPath != null && fullscreenPlayer == false)
+			{
 				showScale.setVisible(true);
+			}
 			else
 				showScale.setVisible(false);
 			
@@ -2574,7 +2582,7 @@ public class VideoPlayer {
 					}	              
 	                	                
 	                //Display current fps
-		            if (displayCurrentFPS > 0 && playerLoop && sliderSpeed.getValue() == 2)
+		            if (displayCurrentFPS > 0 && playerLoop && sliderSpeed.getValue() == 2 && fullscreenPlayer == false)
 		            {
 		            	showFPS.setVisible(true);		            	
 		            	if ((float) displayCurrentFPS >= FFPROBE.currentFPS)
@@ -2702,10 +2710,159 @@ public class VideoPlayer {
         // Drag & Drop
  		player.setTransferHandler(new ListeFileTransferHandler());
         
+ 		player.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				if (e.getClickCount() == 2 && videoPath != null && isPiping == false)
+				{
+					if (fullscreenPlayer)
+					{
+						fullscreenPlayer = false;
+						fullscreenFilter = "";
+						
+						Shutter.topPanel.setVisible(true);
+						Shutter.grpChooseFiles.setVisible(true);
+						Shutter.grpChooseFunction.setVisible(true);
+						Shutter.grpDestination.setVisible(true);
+						Shutter.grpProgression.setVisible(true);
+						Shutter.statusBar.setVisible(true);
+						
+						Shutter.frame.getContentPane().setBackground(new Color(30,30,35));
+						
+						setPlayerButtons(true);
+						
+						Shutter.changeSections(false);
+						
+						resizeAll();
+						
+						Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
+			            Area shape2 = new Area(new Rectangle(0, Shutter.frame.getHeight()-15, Shutter.frame.getWidth(), 15));
+			            shape1.add(shape2);
+			    		Shutter.frame.setShape(shape1);
+						
+						playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
+						
+						btnPlay.requestFocus();
+					}
+					else
+					{
+						fullscreenPlayer = true;	
+						
+						resizeAll();
+						
+						Shutter.frame.setShape(null);
+						
+						playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
+						
+						//Load filter before removing groups
+						do {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e1) {}
+						} while (setTime.isAlive());
+												
+						Shutter.frame.requestFocus();
+						
+						Shutter.topPanel.setVisible(false);
+						Shutter.grpChooseFiles.setVisible(false);
+						Shutter.grpChooseFunction.setVisible(false);
+						Shutter.grpDestination.setVisible(false);
+						Shutter.grpProgression.setVisible(false);
+						Shutter.statusBar.setVisible(false);
+						
+						Shutter.frame.getContentPane().setBackground(new Color(0,0,0));
+						
+						setPlayerButtons(false);
+						
+						Shutter.grpResolution.setVisible(false);
+						Shutter.grpBitrate.setVisible(false);
+						Shutter.grpSetAudio.setVisible(false);
+						Shutter.grpAudio.setVisible(false);							
+						Shutter.grpCrop.setVisible(false);
+						Shutter.grpOverlay.setVisible(false);
+						Shutter.grpSubtitles.setVisible(false);
+						Shutter.grpWatermark.setVisible(false);					
+						Shutter.grpAudio.setVisible(false);
+						Shutter.grpColorimetry.setVisible(false);						
+						Shutter.grpImageAdjustement.setVisible(false);
+						Shutter.grpCorrections.setVisible(false);
+						Shutter.grpTransitions.setVisible(false);						
+						Shutter.grpImageSequence.setVisible(false);
+						Shutter.grpImageFilter.setVisible(false);	
+						Shutter.grpSetTimecode.setVisible(false);							
+						Shutter.grpAdvanced.setVisible(false);
+						Shutter.btnReset.setVisible(false);
+					}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {		
+				
+				if (fullscreenPlayer)
+				{
+					mouseIsPressed = true;
+				}
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				
+				if (fullscreenPlayer)
+				{
+					mouseIsPressed = false;
+				
+					sliderChange = false;								
+	
+					//Reload the frame to apply bicubic filter					
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e1) {}
+					} while (setTime.isAlive());
+	
+					playerSetTime(playerCurrentFrame);
+				}
+			}
+ 			
+ 		});
+
+ 		player.addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				
+				if (fullscreenPlayer)
+				{
+					int value = (int) ((long) slider.getMaximum() * e.getX() / player.getSize().width);
+					sliderChange = true;					
+					cursorWaveform.setLocation(e.getX(), cursorWaveform.getLocation().y);
+					
+					//Make sure the value is not more than file length less one frame
+					if (value < (totalFrames))
+						slider.setValue(value);
+				}
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent arg0) {
+			}
+ 			
+ 		});
+ 		
 		player.setLayout(null);
 		player.setBackground(Color.BLACK);
-		Shutter.frame.getContentPane().add(player);
-		
+		Shutter.frame.getContentPane().add(player);		
 	}
 	    
 	@SuppressWarnings("serial")
@@ -5050,16 +5207,28 @@ public class VideoPlayer {
 			int subsWidth = (int) ((float) (Integer.parseInt(Shutter.textSubsWidth.getText()) / Shutter.playerRatio));
 			int subsPosY = (int) ((float) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / Shutter.playerRatio);
 			
-			return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + subsWidth + ":" + player.getHeight() + "+" + subsPosY
+			filter = " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + subsWidth + ":" + player.getHeight() + "+" + subsPosY
           			+ ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + Shutter.textSubsSize.getText() + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"'
-          			+ " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "").replace("\"", "") + "[v];[v][1:v]overlay=x=" + (int) ((player.getWidth() - subsWidth) / 2) + ",scale=" + player.getWidth() + ":" + player.getHeight() + '"'; 
+          			+ " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "").replace("\"", "") + "[v];[v][1:v]overlay=x=" + (int) ((player.getWidth() - subsWidth) / 2) + ",scale=" + player.getWidth() + ":" + player.getHeight() + '"';	
 		}
 		else
 		{
-			caseVuMeter.setEnabled(true);	
-			return filter;
+			caseVuMeter.setEnabled(true);				
 		}
-
+		
+		if (fullscreenPlayer)
+		{
+			if (fullscreenFilter == "")
+			{
+				fullscreenFilter = filter;		
+			}
+			else 
+			{
+				return fullscreenFilter;
+			}
+		}
+		
+		return filter;
 	}
 
 	public static void getFileList(String file) {
@@ -5222,6 +5391,11 @@ public class VideoPlayer {
 					maxHeight = Shutter.frame.getHeight() - (Shutter.grpChooseFiles.getY() + 8) - (Shutter.frame.getHeight() - (Shutter.grpProgression.getY() + Shutter.grpProgression.getHeight()));
 				}
 				
+				if (fullscreenPlayer)
+				{
+					maxHeight = Shutter.frame.getHeight();
+				}
+				
 				player.setSize((int) (maxHeight * ratio), maxHeight);
 			}
 			else
@@ -5233,10 +5407,15 @@ public class VideoPlayer {
 					maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth();
 				}
 				
+				if (fullscreenPlayer)
+				{
+					maxWidth = Shutter.frame.getWidth();
+				}
+				
 				player.setSize(maxWidth, (int) (maxWidth / ratio));		
 			}	
 			
-			if (Shutter.frame.getHeight() - player.getHeight() < 220 && (FFPROBE.totalLength > 40 || Shutter.caseEnableSequence.isSelected()))
+			if (fullscreenPlayer == false && Shutter.frame.getHeight() - player.getHeight() < 220 && (FFPROBE.totalLength > 40 || Shutter.caseEnableSequence.isSelected()))
 			{
 				int p = 220 - (Shutter.frame.getHeight() - player.getHeight());				
 				player.setSize((int) (player.getWidth() - (float) p * ratio), player.getHeight() - p);
@@ -5253,14 +5432,18 @@ public class VideoPlayer {
 			{
 				player.setLocation((1350 - player.getSize().width) / 2, y);
 			}
+			else if (fullscreenPlayer)
+			{
+				player.setLocation(Shutter.frame.getWidth() / 2 - player.getWidth() / 2, Shutter.frame.getHeight() / 2 - player.getHeight() / 2);
+			}
 			else
 			{
 				player.setLocation((Shutter.frame.getWidth() - player.getSize().width) / 2, y);
 			}
-			
+
 			//IMPORTANT video canvas must be a multiple of 4!
-			player.setSize(player.getWidth() - (player.getWidth() % 4), player.getHeight());
-			
+			player.setSize(player.getWidth() - (player.getWidth() % 4), player.getHeight() - (player.getHeight() % 4));
+						
 			//Define bufferSize
 			maxBufferedFrames = (int) ((float) (Shutter.availableMemory / 3) / (player.getWidth() * player.getHeight() * 3));
 			
@@ -5278,7 +5461,7 @@ public class VideoPlayer {
 			waveformIcon.setBounds(waveformContainer.getBounds());
 			
 			//Waveforms
-			if (isPiping == false && Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false && Shutter.liste.getSize() > 0 && addWaveform.isAlive() == false)
+			if (fullscreenPlayer == false && isPiping == false && Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false && Shutter.liste.getSize() > 0 && addWaveform.isAlive() == false)
 			{	
 				addWaveform(false);				 					
 			}
@@ -5398,8 +5581,8 @@ public class VideoPlayer {
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			showScale.setBounds(player.getX(), showFPS.getY(), player.getWidth() / 2, showScale.getPreferredSize().height);
 			comboAudioTrack.setBounds(waveformContainer.getX() + 7, waveformContainer.getY() + (waveformContainer.getHeight() / 2) - 8, 40, 16);
-
-			if (showScale.getY() < Shutter.topPanel.getHeight() || FFPROBE.audioOnly || videoPath == null || Shutter.frame.getSize().width <= 654)
+			
+			if (showScale.getY() < Shutter.topPanel.getHeight() || FFPROBE.audioOnly || videoPath == null || Shutter.frame.getSize().width <= 654 || fullscreenPlayer)
 			{
 				showScale.setVisible(false);
 			}
