@@ -531,7 +531,7 @@ public static boolean hasAlpha = false;
 			                	timecode3 = str[2].replace(" ", "");
 			                	timecode4 = str[3].replace(" ", "");
 				        	}
-				        	 
+
 			        	 	//Timecode
 				            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
 				            {		
@@ -542,8 +542,9 @@ public static boolean hasAlpha = false;
 				            	}
 				            	else
 				            		dropFrameTC = ":";
-				            	
+
 				            	if (Shutter.caseShowTimecode.isSelected()
+				            	|| comboFonctions.getSelectedItem().equals("") //IMPORTANT allow first scan without selecting a function
 			            		|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
 			            		|| comboFonctions.getSelectedItem().equals("XAVC")
 			            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
@@ -556,7 +557,7 @@ public static boolean hasAlpha = false;
 			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
 			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))			            			
 		            			|| (VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
-					            {			            		
+					            {			
 				            		if (FFPROBE.timecode1 == "")
 					                {			            					            			
 				            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");

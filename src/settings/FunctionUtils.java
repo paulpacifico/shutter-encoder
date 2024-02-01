@@ -136,7 +136,7 @@ public class FunctionUtils extends Shutter {
 			 						
 			if (analyzeError(file.toString()))
 				return false;
-									
+					
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
 			{
 				MEDIAINFO.run(file.toString(), false);

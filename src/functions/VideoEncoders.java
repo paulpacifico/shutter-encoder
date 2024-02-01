@@ -170,26 +170,7 @@ public class VideoEncoders extends Shutter {
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							if (txtExtension.getText().isEmpty())
-							{
-								extensionName = "_" + comboFonctions.getSelectedItem().toString().replace(" ","_");	
-								
-								if (comboFilter.getSelectedItem().toString().contains(".") == false
-								&& comboFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
-								&& comboFilter.getSelectedItem().toString().contains("/") == false)
-								{
-									extensionName += "_" + comboFilter.getSelectedItem().toString().replace(" ","_");
-								}
-								
-								if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected()))
-								{
-									extensionName += "_TC";
-								}
-							}
-							else
-							{
-								extensionName = txtExtension.getText();
-							}
+							extensionName = txtExtension.getText();
 						}												
 						
 						//Container
