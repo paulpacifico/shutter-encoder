@@ -20,12 +20,13 @@
 package settings;
 
 import application.Shutter;
+import application.VideoPlayer;
 
 public class ImageSequence extends Shutter {
 		
 	public static String setBlend(String filterComplex) {
 		
-		if (grpImageSequence.isVisible() && caseBlend.isSelected())
+		if ((grpImageSequence.isVisible() || VideoPlayer.fullscreenPlayer) && caseBlend.isSelected())
 		{			
 			int value = sliderBlend.getValue();
 			StringBuilder blend = new StringBuilder();
@@ -46,7 +47,7 @@ public class ImageSequence extends Shutter {
 	
 	public static String setMotionBlur(String filterComplex) {
 		
-		if (grpImageSequence.isVisible() && caseMotionBlur.isSelected())
+		if ((grpImageSequence.isVisible() || VideoPlayer.fullscreenPlayer) && caseMotionBlur.isSelected())
 		{			
 			float fps = Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) * 2;
 			

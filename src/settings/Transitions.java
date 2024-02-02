@@ -28,7 +28,7 @@ public class Transitions extends Shutter {
 
 	public static String setVideoFade(String filterComplex, boolean isVideoPlayer) {
 		
-		if (grpTransitions.isEnabled())
+		if (grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer)
 		{
 			//Fade-in
 	    	if (Shutter.caseVideoFadeIn.isSelected())
@@ -120,7 +120,7 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 		
 		//Fade-in
-		if (grpTransitions.isEnabled() && Shutter.caseAudioFadeIn.isSelected())
+		if ((grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer) && Shutter.caseAudioFadeIn.isSelected())
     	{ 
     		long audioInValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 			
@@ -145,7 +145,7 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 
     	//Fade-out
-		if (grpTransitions.isEnabled() && Shutter.caseAudioFadeOut.isSelected())
+		if ((grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer) && Shutter.caseAudioFadeOut.isSelected())
     	{
     		long audioOutValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
@@ -193,7 +193,7 @@ public class Transitions extends Shutter {
 		
 		String audioFilter = "";
 		
-		if (grpTransitions.isEnabled() || grpAudio.isVisible() || grpSetAudio.isVisible())
+		if (grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer || grpAudio.isVisible() || grpSetAudio.isVisible())
 		{
 	    	//Audio Speed				        
 			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed"))

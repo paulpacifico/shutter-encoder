@@ -20,6 +20,7 @@
 package settings;
 
 import application.Shutter;
+import application.VideoPlayer;
 import library.FFPROBE;
 
 public class Colorimetry extends Shutter {
@@ -62,7 +63,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setLevels(String filterComplex) {
 		
-		if (grpColorimetry.isVisible() && caseLevels.isSelected())
+		if ((grpColorimetry.isVisible() || VideoPlayer.fullscreenPlayer) && caseLevels.isSelected())
 		{			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -74,7 +75,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setColormatrix(String filterComplex) {
 		
-		if (grpColorimetry.isVisible() && caseColormatrix.isSelected())
+		if ((grpColorimetry.isVisible() || VideoPlayer.fullscreenPlayer) && caseColormatrix.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -144,7 +145,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setLUT(String filterComplex) {
 		
-		if (grpColorimetry.isVisible() && caseLUTs.isSelected())
+		if ((grpColorimetry.isVisible() || VideoPlayer.fullscreenPlayer) && caseLUTs.isSelected())
 		{			
 			String pathToLuts;
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
