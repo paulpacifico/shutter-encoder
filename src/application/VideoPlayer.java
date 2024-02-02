@@ -153,7 +153,6 @@ public class VideoPlayer {
     public static boolean isPiping = false;
     private static boolean previewUpscale = false;    
 	public static boolean fullscreenPlayer = false;
-	private static String fullscreenFilter = "";
     
 	//Buttons & Checkboxes
 	public static JLabel btnPreview;
@@ -2392,6 +2391,9 @@ public class VideoPlayer {
 				if (playerVideo != null)
 				{				
 					playerCurrentFrame = 0;
+					
+					long time = System.currentTimeMillis();
+					
 					if (playerVideo != null)
 					{						
 						playerStop();						
@@ -2399,11 +2401,15 @@ public class VideoPlayer {
 							try {
 								Thread.sleep(100);
 							} catch (InterruptedException e1) {};
+							
+							if (System.currentTimeMillis() - time > 5000)
+								break;
+							
 						} while (playerVideo.isAlive());
 												
 						slider.setValue(0);						
 					}
-					
+										
 					resizeAll();
 
 					btnPlay.setIcon(new FlatSVGIcon("contents/play.svg", 15, 15));
@@ -2715,12 +2721,11 @@ public class VideoPlayer {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				if (e.getClickCount() == 2 && videoPath != null && isPiping == false)
+				if (e.getClickCount() == 2)
 				{
 					if (fullscreenPlayer)
 					{
-						fullscreenPlayer = false;
-						fullscreenFilter = "";
+						fullscreenPlayer = false;						
 						
 						Shutter.topPanel.setVisible(true);
 						Shutter.grpChooseFiles.setVisible(true);
@@ -2730,10 +2735,17 @@ public class VideoPlayer {
 						Shutter.statusBar.setVisible(true);
 						
 						Shutter.frame.getContentPane().setBackground(new Color(30,30,35));
-						
-						setPlayerButtons(true);
-						
+												
 						Shutter.changeSections(false);
+						
+						if (isPiping == false)
+						{			
+							setPlayerButtons(true);
+							
+				    		mouseIsPressed = false;
+				    		
+							playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
+						}
 						
 						resizeAll();
 						
@@ -2741,10 +2753,9 @@ public class VideoPlayer {
 			            Area shape2 = new Area(new Rectangle(0, Shutter.frame.getHeight()-15, Shutter.frame.getWidth(), 15));
 			            shape1.add(shape2);
 			    		Shutter.frame.setShape(shape1);
-						
-						playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
-						
-						btnPlay.requestFocus();
+			    		
+			    		if (isPiping == false)
+			    			btnPlay.requestFocus();
 					}
 					else
 					{
@@ -2754,24 +2765,27 @@ public class VideoPlayer {
 						
 						Shutter.frame.setShape(null);
 						
-						playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
-						
-						//Load filter before removing groups								
-						if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
+						if (isPiping == false)
 						{
-							do {
-								try {
-									Thread.sleep(10);
-								} catch (InterruptedException er) {}
-							} while (runProcess.isAlive());
-						}
-						else
-						{
-							do {
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e1) {}
-							} while (setTime.isAlive());
+							playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
+							
+							//Load filter before removing groups								
+							if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
+							{
+								do {
+									try {
+										Thread.sleep(10);
+									} catch (InterruptedException er) {}
+								} while (runProcess.isAlive());
+							}
+							else
+							{
+								do {
+									try {
+										Thread.sleep(1);
+									} catch (InterruptedException e1) {}
+								} while (setTime.isAlive());
+							}
 						}
 												
 						Shutter.frame.requestFocus();
@@ -2820,16 +2834,16 @@ public class VideoPlayer {
 			@Override
 			public void mousePressed(MouseEvent arg0) {		
 				
-				if (fullscreenPlayer)
+				if (fullscreenPlayer && isPiping == false)
 				{
 					mouseIsPressed = true;
 				}
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
+			public void mouseReleased(MouseEvent e) {
 				
-				if (fullscreenPlayer)
+				if (fullscreenPlayer && isPiping == false)
 				{
 					mouseIsPressed = false;
 				
@@ -2856,8 +2870,8 @@ public class VideoPlayer {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				
-				if (fullscreenPlayer)
-				{
+				if (fullscreenPlayer && isPiping == false)
+				{					
 					int value = (int) ((long) slider.getMaximum() * e.getX() / player.getSize().width);
 					sliderChange = true;					
 					cursorWaveform.setLocation(e.getX(), cursorWaveform.getLocation().y);
@@ -5228,18 +5242,6 @@ public class VideoPlayer {
 		else
 		{
 			caseVuMeter.setEnabled(true);				
-		}
-		
-		if (fullscreenPlayer)
-		{
-			if (fullscreenFilter == "")
-			{
-				fullscreenFilter = filter;		
-			}
-			else 
-			{
-				return fullscreenFilter;
-			}
 		}
 		
 		return filter;

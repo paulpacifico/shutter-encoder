@@ -22967,6 +22967,35 @@ public class Shutter {
 			RenderQueue.tableRow.setRowCount(0);
 		}
 		
+		if (VideoPlayer.fullscreenPlayer)
+		{
+			VideoPlayer.fullscreenPlayer = false;						
+			
+			topPanel.setVisible(true);
+			grpChooseFiles.setVisible(true);
+			grpChooseFunction.setVisible(true);
+			grpDestination.setVisible(true);
+			grpProgression.setVisible(true);
+			statusBar.setVisible(true);
+			
+			Shutter.frame.getContentPane().setBackground(new Color(30,30,35));
+									
+			Shutter.changeSections(false);
+					
+			VideoPlayer.setPlayerButtons(true);
+			
+			VideoPlayer.mouseIsPressed = false;
+    		
+    		VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
+			
+			VideoPlayer.resizeAll();
+			
+			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
+            Area shape2 = new Area(new Rectangle(0, Shutter.frame.getHeight()-15, Shutter.frame.getWidth(), 15));
+            shape1.add(shape2);
+    		Shutter.frame.setShape(shape1);
+		}
+		
 		//Unlock the file to be deletable
 		if (scanIsRunning == false && screenshotIsRunning == false)
 		{
