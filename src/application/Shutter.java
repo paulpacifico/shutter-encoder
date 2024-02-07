@@ -183,7 +183,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.8";
+	public static String actualVersion = "17.9";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -1168,6 +1168,94 @@ public class Shutter {
 								VideoPlayer.previousFrame = true;
 								VideoPlayer.playerSetTime((float) (VideoPlayer.playerCurrentFrame + 10));
 							}
+							
+							if (ke.getID() == KeyEvent.KEY_PRESSED)
+			        		{           	  
+								if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
+									shift = true;
+			        		}
+							
+							if (ke.getKeyCode() == KeyEvent.VK_I)
+							{
+								if (shift)
+								{						
+									VideoPlayer.btnGoToIn.doClick();
+								}
+								else
+								{							
+									VideoPlayer.btnMarkIn.doClick();
+								}
+							}
+												
+							if (ke.getKeyCode() == KeyEvent.VK_O)
+							{
+								if (shift)
+								{
+									VideoPlayer.btnGoToOut.doClick();
+								}
+								else
+								{
+									VideoPlayer.btnMarkOut.doClick();
+								}
+							}	
+
+							if (ke.getKeyCode() == KeyEvent.VK_LEFT)
+								VideoPlayer.btnPrevious.doClick();	
+							
+							if (ke.getKeyCode() == KeyEvent.VK_RIGHT)
+								VideoPlayer.btnNext.doClick();
+							
+							if (ke.getKeyCode() == KeyEvent.VK_UP)
+								VideoPlayer.btnGoToOut.doClick();	
+							
+							if (ke.getKeyCode() == KeyEvent.VK_DOWN)
+								VideoPlayer.btnGoToIn.doClick();					
+							
+							//Volume up
+							if (ke.getKeyCode() == 107 && VideoPlayer.sliderVolume.getValue() < VideoPlayer.sliderVolume.getMaximum())
+							{
+								VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() + 10);
+							}
+							
+							//Volume down
+							if (ke.getKeyCode() == 109 && VideoPlayer.sliderVolume.getValue() > 0)
+							{
+								VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() - 10);			
+							}
+							if (ke.getKeyCode() == KeyEvent.VK_ESCAPE)
+							{
+								VideoPlayer.fullscreenPlayer = false;						
+								
+								topPanel.setVisible(true);
+								grpChooseFiles.setVisible(true);
+								grpChooseFunction.setVisible(true);
+								grpDestination.setVisible(true);
+								grpProgression.setVisible(true);
+								statusBar.setVisible(true);
+								
+								frame.getContentPane().setBackground(new Color(30,30,35));
+														
+								changeSections(false);
+								
+								if (VideoPlayer.isPiping == false)
+								{			
+									VideoPlayer.setPlayerButtons(true);
+									
+									VideoPlayer.mouseIsPressed = false;
+						    		
+						    		VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
+								}
+								
+								VideoPlayer.resizeAll();
+								
+								Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
+					            Area shape2 = new Area(new Rectangle(0, Shutter.frame.getHeight()-15, Shutter.frame.getWidth(), 15));
+					            shape1.add(shape2);
+					    		frame.setShape(shape1);
+					    		
+					    		if (VideoPlayer.isPiping == false)
+					    			VideoPlayer.btnPlay.requestFocus();
+							}
 						}
 						
 						//CMD + Q
@@ -1215,7 +1303,12 @@ public class Shutter {
 							}
 						}
 						
-					}					
+					}	
+					else if (ke.getID() == KeyEvent.KEY_RELEASED)
+		        	{
+						if (ke.getKeyCode() == KeyEvent.VK_SHIFT)
+							shift = false;		
+		        	}
 				}	
 			}
 		}, AWTEvent.KEY_EVENT_MASK);

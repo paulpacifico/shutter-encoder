@@ -153,6 +153,7 @@ public class VideoPlayer {
     public static boolean isPiping = false;
     private static boolean previewUpscale = false;    
 	public static boolean fullscreenPlayer = false;
+	private static Thread mouseClickThread;
     
 	//Buttons & Checkboxes
 	public static JLabel btnPreview;
@@ -2760,14 +2761,22 @@ public class VideoPlayer {
 					else
 					{
 						fullscreenPlayer = true;	
-						
+												
 						resizeAll();
 						
 						Shutter.frame.setShape(null);
 						
 						if (isPiping == false)
 						{
-							playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
+							if (FFPROBE.totalLength <= 40 || Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
+							{	
+								if (preview != null)
+									preview = null;
+								
+								loadImage(true);
+							}
+							else						
+								playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
 							
 							//Load filter before removing groups								
 							if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
@@ -2844,22 +2853,46 @@ public class VideoPlayer {
 			public void mouseReleased(MouseEvent e) {
 				
 				if (fullscreenPlayer && isPiping == false)
-				{
-					mouseIsPressed = false;
-				
-					sliderChange = false;								
+				{					
+					if (e.getClickCount() < 2)
+					{						
+						mouseClickThread = new Thread(new Runnable() {
 	
-					//Reload the frame to apply bicubic filter			
-					if (setTime != null)
-					{
-						do {
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException e1) {}
-						} while (setTime.isAlive());
+							@Override
+							public void run() {
+
+								try {
+									
+									//Wait to check simple or double click
+									Thread.sleep(500);
+									
+									mouseIsPressed = false;
+									
+									sliderChange = false;								
+									
+									//Reload the frame to apply bicubic filter			
+									if (setTime != null)
+									{
+										do {
+											Thread.sleep(1);
+										} while (setTime.isAlive());
+									}
+										
+									playerSetTime(playerCurrentFrame);
+									
+								} catch (InterruptedException e) {}
+							}
+							
+						});
+						mouseClickThread.start();	
 					}
-	
-					playerSetTime(playerCurrentFrame);
+					else
+					{
+						if (mouseClickThread != null && mouseClickThread.isAlive())
+						{
+							mouseClickThread.interrupt();
+						}
+					}
 				}
 			}
  			
