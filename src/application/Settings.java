@@ -482,7 +482,7 @@ public class Settings {
 				char caracter = e.getKeyChar();											
 				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
 					e.consume(); 
-				else if (txtImageDuration.getText().length() >= 3)
+				else if (txtImageDuration.getText().length() >= 4)
 					txtImageDuration.setText("");				
 			}			
 			

@@ -24,6 +24,8 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.RenderingHints;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -60,14 +62,13 @@ public class ReducedWindow extends JDialog {
 	private JLabel iconImage;
 	private JProgressBar progressBar;
 	private JLabel lblTempsRestant;
-	private boolean mouseFocusWindow = false;
-	float opacity = 0.5f;	
 	private ImageIcon icon;
 	private boolean drag = false;
 
 	private static int MousePositionY;
 	
 	public ReducedWindow() {
+		
 		frame = new JDialog();
 		frame.setContentPane(new MiniWindowBackground());
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);	
@@ -137,8 +138,7 @@ public class ReducedWindow extends JDialog {
 		
 		Shutter.caseRunInBackground.setBounds(100, 53, Shutter.caseRunInBackground.getPreferredSize().width, 16);	
 		frame.getContentPane().add(Shutter.caseRunInBackground);
-		
-				
+						
 		lblTempsRestant = new JLabel(Shutter.language.getProperty("tempsRestant") + " ");
 		lblTempsRestant.setVisible(false);
 		lblTempsRestant.setHorizontalAlignment(SwingConstants.LEFT);
@@ -148,9 +148,7 @@ public class ReducedWindow extends JDialog {
 		frame.getContentPane().add(lblTempsRestant);
 				
 		frame.setVisible(true);
-		
-		opacity = 1.0f;
-		
+				
 		//Mise à jour
 		TimerTask task = new TimerTask()
 		{
@@ -190,18 +188,6 @@ public class ReducedWindow extends JDialog {
 				progressBar.setMaximum(Shutter.progressBar1.getMaximum());
 				progressBar.setValue(Shutter.progressBar1.getValue());
 				
-				//Opacity
-				if (mouseFocusWindow && drag == false)
-				{
-					 if (opacity < 0.99f)
-					 {
-						 opacity +=  0.01f;
-						 try {
-							 frame.setOpacity(opacity);
-						 } catch (Exception e) {}
-					 }
-				}
-				
 				//RotateIcon
 				if (Shutter.progressBar1.isIndeterminate() == false && progressBar.getValue() != 0)
 					rotateIcon(( (long) progressBar.getValue() * 360) / ( (long) progressBar.getMaximum()));		
@@ -212,7 +198,7 @@ public class ReducedWindow extends JDialog {
 			}	
 		};    			
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(task, 0, 10); 		
+		timer.scheduleAtFixedRate(task, 0, 100); 		
 		
 		frame.addMouseMotionListener(new MouseMotionListener(){
 
@@ -262,7 +248,8 @@ public class ReducedWindow extends JDialog {
 
 			@SuppressWarnings("static-access")
 			@Override
-			public void mouseClicked(MouseEvent e) {					
+			public void mouseClicked(MouseEvent e) {	
+				
 				if (drag == false)				 
 				{
 					frame.setVisible(false);
@@ -287,31 +274,67 @@ public class ReducedWindow extends JDialog {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				mouseFocusWindow = true;
+								
+				if (drag == false && frame.getOpacity() < 1f)
+				{	
+					do {		
+						
+						try {								
+							frame.setOpacity(frame.getOpacity() + 0.01f);
+							Thread.sleep(5);							
+						 } catch (InterruptedException e1) {}
+							
+					} while (frame.getOpacity() < 1f);
+				}
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				mouseFocusWindow = false;
 
 				if (drag == false)
 				{
-					do {
-						opacity -= 0.01f;
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
+					do {		
 						
-						 try {
-							 frame.setOpacity(opacity);
-						 } catch (Exception e2) {}
-						
-					} while (opacity > 0.5f);
+						try {								
+							frame.setOpacity(frame.getOpacity() - 0.01f);
+							Thread.sleep(5);							
+						 } catch (InterruptedException e1) {}
+							
+					} while (frame.getOpacity() > 0.5f);		
 				}
 			}
 			
 		});
-	
+			
+		frame.addComponentListener(new ComponentListener() {
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+			}
+
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				
+				do {		
+					
+					try {								
+						frame.setOpacity(frame.getOpacity() - 0.01f);
+						Thread.sleep(10);							
+					 } catch (InterruptedException e1) {}
+						
+				} while (frame.getOpacity() > 0.5f);
+				
+			}
+			
+		});
 	}
 		
 	private void rotateIcon(long l) {

@@ -2212,11 +2212,13 @@ public class Shutter {
 		});
 
 		poids.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				int totalLength = 0;
 				FFPROBE.totalLength = 0;
+				FFPROBE.analyzedMedia = null;
 				
 				for (String file : fileList.getSelectedValuesList()) {
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

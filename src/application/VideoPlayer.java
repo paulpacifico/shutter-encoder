@@ -1179,20 +1179,20 @@ public class VideoPlayer {
 									while (PDF.isRunning);								 
 								}				
 								else
-								{						
-									FFPROBE.Data(videoPath);
-									do 
-									{								
-										Thread.sleep(100);								
-									} 
-									while (FFPROBE.isRunning);
-
+								{	
 									FFPROBE.FrameData(videoPath);	
 									do 
 									{								
 										Thread.sleep(100);								
 									} 
 									while (FFPROBE.isRunning);
+									
+									FFPROBE.Data(videoPath);
+									do 
+									{								
+										Thread.sleep(100);								
+									} 
+									while (FFPROBE.isRunning);									
 
 									FFMPEG.checkGPUCapabilities(videoPath, true);
 									
@@ -1915,7 +1915,7 @@ public class VideoPlayer {
 			}	
 
 			String gpuDecoding = "";
-
+			
 			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && mouseIsPressed == false && previousFrame == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 			{
 				if (FFMPEG.isGPUCompatible)
@@ -5075,7 +5075,7 @@ public class VideoPlayer {
 		{
 			filter += "null";
 		}
-		else if (FFMPEG.isGPUCompatible
+		else if (FFMPEG.isGPUCompatible && FFPROBE.isRotated == false
 		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto")
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto")
 		&& noGPU == false && previousFrame == false
@@ -5399,14 +5399,14 @@ public class VideoPlayer {
 			{
 				isPiping = true;
 			}
-											
+
 			//Players 		
 			float ratio = FFPROBE.imageRatio;
 			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
 			{
 				ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
 			}
-						
+							
 			//CaseForceDAR
 			if (Shutter.caseForcerDAR.isSelected())
 			{
