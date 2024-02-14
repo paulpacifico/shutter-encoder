@@ -57,7 +57,7 @@ public static int audioStreams = 0;
 public static int totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
-public static float currentFPS = 25.0f; //Used to play audio with the Video Player
+public static float currentFPS;
 public static String interlaced;
 public static String fieldOrder;
 private static boolean videoStream = false;
@@ -93,6 +93,7 @@ public static float keyFrame = 0;
 public static int gopCount = 0;
 public static int gopSpace = 124;
 public static boolean hasAlpha = false;
+public static boolean isRotated = false;
 
 	public static void Data(final String file) {	
 			
@@ -114,6 +115,7 @@ public static boolean hasAlpha = false;
 				fieldOrder = null;
 			}
 			
+			currentFPS = 25.0f; //Used to play audio with the Video Player
 			dropFrameTC = "";
 			surround = false;
 			channelLayout = "";
@@ -357,7 +359,18 @@ public static boolean hasAlpha = false;
 					                }
 					                else
 					                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
-					                			                
+					                
+									
+									if (isRotated)
+									{						    				
+										Integer h = imageHeight;
+										Integer w = imageWidth;
+										  
+										imageWidth =  h;
+										imageHeight = w;
+										imageRatio = (float) imageWidth / imageHeight;
+									}
+					                						                
 					                // Crop Form
 					                int largeur = 0;
 					                int hauteur = 0;			               
@@ -609,6 +622,7 @@ public static boolean hasAlpha = false;
 		maxCLL = 1000;
 		maxFALL = 400;
 		hasAlpha = false;
+		isRotated = false;
 
 		FFMPEG.error = false;
 		btnStart.setEnabled(false);
@@ -687,6 +701,7 @@ public static boolean hasAlpha = false;
 							  String interlace = line.substring(line.indexOf("interlaced_frame") + 17);
 							  interlaced = interlace;
 						  }
+						  
 						  if (line.contains("top_field_first")) 
 						  {
 							  String field = line.substring(line.indexOf("top_field_first") + 16);
@@ -700,6 +715,16 @@ public static boolean hasAlpha = false;
 							  }
 						  }
 						  
+			              if (line.contains("rotation"))
+			              {			            	  
+			            	  String s[] = line.split("=");
+			                	
+			            	  if (s[1].equals("-90"))
+			            	  {
+				            	  isRotated = true;
+			            	  }			            	  
+			              }
+			                						  
 						  if (line.contains("codec_type=video"))
 							  videoStream = true;
 	

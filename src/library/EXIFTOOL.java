@@ -132,7 +132,7 @@ private static Boolean horizontal = true;
 						  
 						  if (line.contains("Orientation") && scanOrientation)
 						  {
-							  if (line.substring(line.indexOf(":") + 2).contains("Horizontal") == false)
+							  if (line.substring(line.indexOf(":") + 2).contains("Horizontal") == false && line.substring(line.indexOf(":") + 2).contains("Rotate 180") == false)
 							  {
 								  horizontal = false;
 							  }
