@@ -1927,7 +1927,10 @@ public class Shutter {
 		fileList.setBounds(10, 50, 292, frame.getHeight() - 437);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 	
+		addToList.setIcon(new FlatSVGIcon("contents/drop.svg", 40, 40));
 		addToList.setText(language.getProperty("dropFilesHere"));
+		addToList.setVerticalTextPosition(JLabel.BOTTOM);
+		addToList.setHorizontalTextPosition(JLabel.CENTER);
 		addToList.setSize(fileList.getSize());
 		addToList.setForeground(new Color(120,120,120));
 		addToList.setBackground(new Color(0,0,0,0));
@@ -1998,6 +2001,7 @@ public class Shutter {
 	
 					lblFiles.setText(Utils.filesNumber());
 					
+					FFPROBE.analyzedMedia = null;
 					VideoPlayer.videoPath = null;
 				}
 			}
@@ -16726,8 +16730,8 @@ public class Shutter {
 					lblVBR.setText("CBR");
 				}
 				else if (lblVBR.getText().equals("CBR")
-						|| lblVBR.getText().equals("VBR") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") == false || System.getProperty("os.arch").equals("aarch64")) && comboFonctions.getSelectedItem().toString().contains("H.26")
-						|| (comboFonctions.getSelectedItem().toString().contains("H.26") == false && (comboFonctions.getSelectedItem().toString().equals("VP9") || comboFonctions.getSelectedItem().toString().equals("AV1")) && lblVBR.getText().equals("VBR")))
+				|| lblVBR.getText().equals("VBR") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") == false || System.getProperty("os.arch").equals("aarch64")) && comboFonctions.getSelectedItem().toString().contains("H.26")
+				|| (comboFonctions.getSelectedItem().toString().contains("H.26") == false && (comboFonctions.getSelectedItem().toString().equals("VP9") || comboFonctions.getSelectedItem().toString().equals("AV1")) && lblVBR.getText().equals("VBR")))
 				{
 					lblVBR.setText("CQ");
 					bitrateSize.setText("-");
@@ -16757,6 +16761,11 @@ public class Shutter {
 					if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) || comboFonctions.getSelectedItem().toString().equals("VP8") == false && comboFonctions.getSelectedItem().toString().equals("VP9") == false && comboFonctions.getSelectedItem().toString().contains("H.26") == false)
 						case2pass.setEnabled(true);
 					FFPROBE.setLength();
+				}
+				
+				if (comboFonctions.getSelectedItem().toString().equals("AV1"))
+				{
+					changeSections(false);
 				}
 			}
 
@@ -16814,142 +16823,387 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 
-				// Resolution
-				comboResolution.setSelectedIndex(0);
-				comboImageOption.setSelectedIndex(0);
-				caseCreateSequence.setSelected(false);
-				comboInterpret.setEnabled(false);
-				comboInterpret.setSelectedIndex(7);
-				caseRotate.setSelected(false);
-				comboRotate.setSelectedIndex(3);
-				comboRotate.setEnabled(false);
-				caseMiror.setSelected(false);
-
-				// SetTimecode
-				TCset1.setEnabled(false);
-				TCset1.setText("00");
-				TCset2.setEnabled(false);
-				TCset2.setText("00");
-				TCset3.setEnabled(false);
-				TCset3.setText("00");
-				TCset4.setEnabled(false);
-				TCset4.setText("00");
-				caseSetTimecode.setSelected(false);
-				caseSetTimecode.setEnabled(true);
-				caseIncrementTimecode.setEnabled(false);
-				caseIncrementTimecode.setSelected(false);
-				caseGenerateFromDate.setSelected(false);
-				caseGenerateFromDate.setEnabled(true);
-
-				// grpH264
-				lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
-				isLocked = false;
-				textH.setEnabled(true);
-				textM.setEnabled(true);
-				textS.setEnabled(true);
-				textF.setEnabled(true);
-				comboResolution.setEnabled(true);
-				debitVideo.setEnabled(true);
-				debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", language.getProperty("lblBest").toLowerCase(), language.getProperty("lblGood").toLowerCase(), "auto" }));
-				debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);				
-				maximumBitrate.setEnabled(true);
-				maximumBitrate.setSelectedIndex(maximumBitrate.getModel().getSize() - 1);
-				bitrateSize.setEnabled(true);
-				bitrateSize.setText("2000");
-				lblVBR.setText("VBR");
-				lblVideoBitrate.setText(language.getProperty("lblVideoBitrate"));
-				lblKbsH264.setVisible(true);
-				h264lines.setVisible(true);
-				
-				if (comboFonctions.getSelectedItem().toString().contains("Blu-ray"))
-					FFPROBE.setLength();
-				
-				case2pass.setSelected(false);
-				case2pass.setEnabled(true);
-				caseQMax.setSelected(false);
-				
-				// grpSetAudio	
-				grpSetAudio.removeAll();
-				
-				if (caseNormalizeAudio.isSelected())
-				{
-					caseNormalizeAudio.doClick();
-					comboNormalizeAudio.setSelectedIndex(23);
-				}
-				if (comboFonctions.getSelectedItem().toString().equals("DNxHD")
-						|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
-						|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
-						|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
-						|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-						|| comboFonctions.getSelectedItem().toString().equals("Uncompressed") 	
-						|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
-						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-						|| comboFonctions.getSelectedItem().toString().equals("XAVC")
-						|| comboFonctions.getSelectedItem().toString().equals("HAP")
-						|| comboFonctions.getSelectedItem().toString().equals("FFV1"))
-				{
-					lblAudioMapping.setText("Multi");
-				}
-				else
-				{
-					lblAudioMapping.setText(language.getProperty("stereo"));
-				}				
-				lbl48k.setText("48k");
-				
-				caseAudioOffset.setSelected(false);
-				txtAudioOffset.setEnabled(false);
-				
-				comboAudio1.setSelectedIndex(0);
-				comboAudio2.setSelectedIndex(1);
-				comboAudio3.setSelectedIndex(2);
-				comboAudio4.setSelectedIndex(3);				
-				if (comboFonctions.getSelectedItem().toString().contains("XDCAM") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100") || comboFonctions.getSelectedItem().toString().equals("XAVC"))
-				{
-					comboAudio5.setSelectedIndex(16);
-					comboAudio6.setSelectedIndex(16);
-					comboAudio7.setSelectedIndex(16);
-					comboAudio8.setSelectedIndex(16);
-				}
-				else
-				{
-					comboAudio5.setSelectedIndex(4);
-					comboAudio6.setSelectedIndex(5);
-					comboAudio7.setSelectedIndex(6);
-					comboAudio8.setSelectedIndex(7);
-				}
-				
-				if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
-				{
-					grpSetAudio.add(lblAudio1);
-					grpSetAudio.add(comboAudio1);
-					grpSetAudio.add(lblAudio2);
-					grpSetAudio.add(comboAudio2);
-				}
-				else
-				{
-					grpSetAudio.add(caseAudioOffset);
-					grpSetAudio.add(txtAudioOffset);
-					txtAudioOffset.setText("0");
-					grpSetAudio.add(lblOffsetFPS);
-				}
-												
-				if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString()) 
-				|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
-				|| language.getProperty("functionMerge").equals(comboFonctions.getSelectedItem().toString())
-				|| language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString())
-				|| language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "Opus", "Vorbis", "Dolby Digital Plus", language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(3);
-					caseNormalizeAudio.setEnabled(false);
-					caseNormalizeAudio.setSelected(false);
-					comboNormalizeAudio.setEnabled(false);
-					caseChangeAudioCodec.setSelected(false);
-					comboAudioCodec.setEnabled(false);
-					comboAudioBitrate.setEnabled(false);
+				if (btnReset.isEnabled())
+				{				
+					// Resolution
+					comboResolution.setSelectedIndex(0);
+					comboImageOption.setSelectedIndex(0);
+					caseCreateSequence.setSelected(false);
+					comboInterpret.setEnabled(false);
+					comboInterpret.setSelectedIndex(7);
+					caseRotate.setSelected(false);
+					comboRotate.setSelectedIndex(3);
+					comboRotate.setEnabled(false);
+					caseMiror.setSelected(false);
+	
+					// SetTimecode
+					TCset1.setEnabled(false);
+					TCset1.setText("00");
+					TCset2.setEnabled(false);
+					TCset2.setText("00");
+					TCset3.setEnabled(false);
+					TCset3.setText("00");
+					TCset4.setEnabled(false);
+					TCset4.setText("00");
+					caseSetTimecode.setSelected(false);
+					caseSetTimecode.setEnabled(true);
+					caseIncrementTimecode.setEnabled(false);
+					caseIncrementTimecode.setSelected(false);
+					caseGenerateFromDate.setSelected(false);
+					caseGenerateFromDate.setEnabled(true);
+	
+					// grpH264
+					lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+					isLocked = false;
+					textH.setEnabled(true);
+					textM.setEnabled(true);
+					textS.setEnabled(true);
+					textF.setEnabled(true);
+					comboResolution.setEnabled(true);
+					debitVideo.setEnabled(true);
+					debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", language.getProperty("lblBest").toLowerCase(), language.getProperty("lblGood").toLowerCase(), "auto" }));
+					debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);				
+					maximumBitrate.setEnabled(true);
+					maximumBitrate.setSelectedIndex(maximumBitrate.getModel().getSize() - 1);
+					bitrateSize.setEnabled(true);
+					bitrateSize.setText("2000");
+					lblVBR.setText("VBR");
+					lblVideoBitrate.setText(language.getProperty("lblVideoBitrate"));
+					lblKbsH264.setVisible(true);
+					h264lines.setVisible(true);
+					
+					if (comboFonctions.getSelectedItem().toString().contains("Blu-ray"))
+						FFPROBE.setLength();
+					
+					case2pass.setSelected(false);
+					case2pass.setEnabled(true);
+					caseQMax.setSelected(false);
+					
+					// grpSetAudio	
+					grpSetAudio.removeAll();
+					
+					if (caseNormalizeAudio.isSelected())
+					{
+						caseNormalizeAudio.doClick();
+						comboNormalizeAudio.setSelectedIndex(23);
+					}
+					if (comboFonctions.getSelectedItem().toString().equals("DNxHD")
+							|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
+							|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
+							|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
+							|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
+							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed") 	
+							|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
+							|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
+							|| comboFonctions.getSelectedItem().toString().equals("XAVC")
+							|| comboFonctions.getSelectedItem().toString().equals("HAP")
+							|| comboFonctions.getSelectedItem().toString().equals("FFV1"))
+					{
+						lblAudioMapping.setText("Multi");
+					}
+					else
+					{
+						lblAudioMapping.setText(language.getProperty("stereo"));
+					}				
+					lbl48k.setText("48k");
+					
+					caseAudioOffset.setSelected(false);
+					txtAudioOffset.setEnabled(false);
+					
+					comboAudio1.setSelectedIndex(0);
+					comboAudio2.setSelectedIndex(1);
+					comboAudio3.setSelectedIndex(2);
+					comboAudio4.setSelectedIndex(3);				
+					if (comboFonctions.getSelectedItem().toString().contains("XDCAM") || comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100") || comboFonctions.getSelectedItem().toString().equals("XAVC"))
+					{
+						comboAudio5.setSelectedIndex(16);
+						comboAudio6.setSelectedIndex(16);
+						comboAudio7.setSelectedIndex(16);
+						comboAudio8.setSelectedIndex(16);
+					}
+					else
+					{
+						comboAudio5.setSelectedIndex(4);
+						comboAudio6.setSelectedIndex(5);
+						comboAudio7.setSelectedIndex(6);
+						comboAudio8.setSelectedIndex(7);
+					}
 					
 					if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
 					{
+						grpSetAudio.add(lblAudio1);
+						grpSetAudio.add(comboAudio1);
+						grpSetAudio.add(lblAudio2);
+						grpSetAudio.add(comboAudio2);
+					}
+					else
+					{
+						grpSetAudio.add(caseAudioOffset);
+						grpSetAudio.add(txtAudioOffset);
+						txtAudioOffset.setText("0");
+						grpSetAudio.add(lblOffsetFPS);
+					}
+													
+					if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString()) 
+					|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
+					|| language.getProperty("functionMerge").equals(comboFonctions.getSelectedItem().toString())
+					|| language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString())
+					|| language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 32Float", "PCM 32Bits", "PCM 24Bits", "PCM 16Bits", "AAC", "MP3", "AC3", "Opus", "Vorbis", "Dolby Digital Plus", language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(3);
+						caseNormalizeAudio.setEnabled(false);
+						caseNormalizeAudio.setSelected(false);
+						comboNormalizeAudio.setEnabled(false);
+						caseChangeAudioCodec.setSelected(false);
+						comboAudioCodec.setEnabled(false);
+						comboAudioBitrate.setEnabled(false);
+						
+						if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
+						{
+							grpSetAudio.add(lblAudio3);
+							grpSetAudio.add(comboAudio3);
+							grpSetAudio.add(lblAudio4);
+							grpSetAudio.add(comboAudio4);
+							grpSetAudio.add(lblAudio5);
+							grpSetAudio.add(comboAudio5);
+							grpSetAudio.add(lblAudio6);
+							grpSetAudio.add(comboAudio6);
+							grpSetAudio.add(lblAudio7);
+							grpSetAudio.add(comboAudio7);
+							grpSetAudio.add(lblAudio8);
+							grpSetAudio.add(comboAudio8);
+						}
+						
+						if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false
+						&& language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
+						{
+							grpSetAudio.add(caseNormalizeAudio);
+							grpSetAudio.add(comboNormalizeAudio);
+						}
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(comboAudioBitrate);
+						grpSetAudio.add(lblKbs);
+	
+					}
+					else if ("MJPEG".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);						
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(0);
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if (comboFonctions.getSelectedItem().toString().contains("H.26"))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "MP3", "AC3", "Opus", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", "ALAC 16Bits", "ALAC 24Bits", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);						
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(10);
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if ("WMV".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "WMA", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(10);	
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if ("MPEG-1".equals(comboFonctions.getSelectedItem().toString()) || "MPEG-2".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP2", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(10);	
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if ("VP8".equals(comboFonctions.getSelectedItem().toString()) || "VP9".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Opus", "AAC", "Vorbis", "FLAC", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(11);	
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if ("AV1".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Opus", "AAC", "Vorbis", "FLAC", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(11);	
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if ("Theora".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Vorbis", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(10);	
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if ("Xvid".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						comboAudioCodec.setSelectedIndex(0);
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(10);
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}	
+					else if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+					{
+						if (comboFonctions.getSelectedItem().toString().equals("DVD"))
+						{
+							comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						}
+						else
+							comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+						
+						comboAudioCodec.setSelectedIndex(0);						
+						debitAudio.setModel(comboAudioBitrate.getModel());
+						debitAudio.setSelectedIndex(5);
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
+						if (grpSetAudio.getHeight() > 92)
+							extendSections(grpSetAudio, 92);
+					}
+					else if (comboFonctions.getSelectedItem().toString().equals("WAV")
+					|| comboFonctions.getSelectedItem().toString().equals("AIFF")
+					|| comboFonctions.getSelectedItem().toString().equals("FLAC")
+					|| comboFonctions.getSelectedItem().toString().equals("ALAC")
+					|| comboFonctions.getSelectedItem().toString().equals("MP3")
+					|| comboFonctions.getSelectedItem().toString().equals("AAC")
+					|| comboFonctions.getSelectedItem().toString().equals("AC3")
+					|| comboFonctions.getSelectedItem().toString().equals("Opus")
+					|| comboFonctions.getSelectedItem().toString().equals("Vorbis")
+					|| comboFonctions.getSelectedItem().toString().equals("Dolby Digital Plus")
+					|| comboFonctions.getSelectedItem().toString().equals("Dolby TrueHD"))
+					{
+						//Don't change anything
+					}
+					else //Editing codecs
+					{
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
+	
+						if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
+						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
+						|| comboFonctions.getSelectedItem().toString().equals("XAVC"))
+						{
+							comboAudioCodec.setSelectedIndex(1);
+						}
+						else
+						{
+							comboAudioCodec.setSelectedIndex(0);
+						}
+						
+						caseNormalizeAudio.setEnabled(true);
+						caseChangeAudioCodec.setEnabled(false);
+						grpSetAudio.add(caseNormalizeAudio);
+						grpSetAudio.add(comboNormalizeAudio);
+						grpSetAudio.add(caseChangeAudioCodec);
+						grpSetAudio.add(comboAudioCodec);
+						grpSetAudio.add(lbl48k);
+						lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
+						grpSetAudio.add(lblAudioMapping);
+						
 						grpSetAudio.add(lblAudio3);
 						grpSetAudio.add(comboAudio3);
 						grpSetAudio.add(lblAudio4);
@@ -16962,459 +17216,217 @@ public class Shutter {
 						grpSetAudio.add(comboAudio7);
 						grpSetAudio.add(lblAudio8);
 						grpSetAudio.add(comboAudio8);
-					}
-					
-					if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false
-					&& language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
-					{
-						grpSetAudio.add(caseNormalizeAudio);
-						grpSetAudio.add(comboNormalizeAudio);
-					}
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(comboAudioBitrate);
-					grpSetAudio.add(lblKbs);
-
-				}
-				else if ("MJPEG".equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);						
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(0);
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if (comboFonctions.getSelectedItem().toString().contains("H.26"))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AAC", "MP3", "AC3", "Opus", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", "ALAC 16Bits", "ALAC 24Bits", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);						
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(10);
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if ("WMV".equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "WMA", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(10);	
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if ("MPEG-1".equals(comboFonctions.getSelectedItem().toString()) || "MPEG-2".equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP2", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(10);	
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if ("VP8".equals(comboFonctions.getSelectedItem().toString()) || "VP9".equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Opus", "AAC", "Vorbis", "FLAC", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(11);	
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if ("AV1".equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Opus", "AAC", "Vorbis", "FLAC", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(11);	
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if ("Theora".equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "Vorbis", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(10);	
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if ("Xvid".equals(comboFonctions.getSelectedItem().toString()))
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					comboAudioCodec.setSelectedIndex(0);
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(10);
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}	
-				else if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
-				{
-					if (comboFonctions.getSelectedItem().toString().equals("DVD"))
-					{
-						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					}
-					else
-						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {"AC3", "Dolby Digital Plus", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-					
-					comboAudioCodec.setSelectedIndex(0);						
-					debitAudio.setModel(comboAudioBitrate.getModel());
-					debitAudio.setSelectedIndex(5);
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					if (grpSetAudio.getHeight() > 92)
-						extendSections(grpSetAudio, 92);
-				}
-				else if (comboFonctions.getSelectedItem().toString().equals("WAV")
-				|| comboFonctions.getSelectedItem().toString().equals("AIFF")
-				|| comboFonctions.getSelectedItem().toString().equals("FLAC")
-				|| comboFonctions.getSelectedItem().toString().equals("ALAC")
-				|| comboFonctions.getSelectedItem().toString().equals("MP3")
-				|| comboFonctions.getSelectedItem().toString().equals("AAC")
-				|| comboFonctions.getSelectedItem().toString().equals("AC3")
-				|| comboFonctions.getSelectedItem().toString().equals("Opus")
-				|| comboFonctions.getSelectedItem().toString().equals("Vorbis")
-				|| comboFonctions.getSelectedItem().toString().equals("Dolby Digital Plus")
-				|| comboFonctions.getSelectedItem().toString().equals("Dolby TrueHD"))
-				{
-					//Don't change anything
-				}
-				else //Editing codecs
-				{
-					comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"), language.getProperty("noAudio") }));
-
-					if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
-					|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-					|| comboFonctions.getSelectedItem().toString().equals("XAVC"))
-					{
-						comboAudioCodec.setSelectedIndex(1);
-					}
-					else
-					{
-						comboAudioCodec.setSelectedIndex(0);
-					}
-					
-					caseNormalizeAudio.setEnabled(true);
-					caseChangeAudioCodec.setEnabled(false);
-					grpSetAudio.add(caseNormalizeAudio);
-					grpSetAudio.add(comboNormalizeAudio);
-					grpSetAudio.add(caseChangeAudioCodec);
-					grpSetAudio.add(comboAudioCodec);
-					grpSetAudio.add(lbl48k);
-					lbl48k.setLocation(lblKbs.getLocation().x + lblKbs.getSize().width - 5, lblKbs.getLocation().y);
-					grpSetAudio.add(lblAudioMapping);
-					
-					grpSetAudio.add(lblAudio3);
-					grpSetAudio.add(comboAudio3);
-					grpSetAudio.add(lblAudio4);
-					grpSetAudio.add(comboAudio4);
-					grpSetAudio.add(lblAudio5);
-					grpSetAudio.add(comboAudio5);
-					grpSetAudio.add(lblAudio6);
-					grpSetAudio.add(comboAudio6);
-					grpSetAudio.add(lblAudio7);
-					grpSetAudio.add(comboAudio7);
-					grpSetAudio.add(lblAudio8);
-					grpSetAudio.add(comboAudio8);
-					
-					if (grpSetAudio.getHeight() < 146 && grpSetAudio.getHeight() > 17)
-						extendSections(grpSetAudio, 146);
-				}
-				
-				grpSetAudio.repaint();
-				
-				if (comboFonctions.getSelectedItem().toString().equals("DNxHD")
-						|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
-						|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
-						|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
-						|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
-						|| comboFonctions.getSelectedItem().toString().equals("Uncompressed") 	
-						|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
-						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-						|| comboFonctions.getSelectedItem().toString().equals("XAVC")
-						|| comboFonctions.getSelectedItem().toString().equals("HAP")
-						|| comboFonctions.getSelectedItem().toString().equals("FFV1"))
-				{
-						lblPad.setVisible(true);
-				}
 						
-				
-				// grpAudio
-				caseSampleRate.setSelected(false);				
-				if (caseMixAudio.isSelected())
-					caseMixAudio.doClick();
-				caseSplitAudio.setSelected(false);
-				caseConvertAudioFramerate.setSelected(false);
-				comboAudioIn.setEnabled(false);
-				comboAudioOut.setEnabled(false);
-				
-				//grpCrop		
-				if (caseEnableCrop.isSelected())
-					caseEnableCrop.doClick();
-				
-				//grpOverlay
-				if (caseShowTimecode.isSelected())
-					caseShowTimecode.doClick();
-				
-				if (caseAddTimecode.isSelected())
-					caseAddTimecode.doClick();
-				
-				if (caseShowFileName.isSelected())
-					caseShowFileName.doClick();
-				
-				if (caseAddText.isSelected())
-					caseAddText.doClick();
-				
-				//grpSubtitles
-				if (caseAddSubtitles.isSelected())
-					caseAddSubtitles.doClick();
-				
-				//grpWatermark
-				if (caseAddWatermark.isSelected())
-					caseAddWatermark.doClick();
-				
-				//grpCorrections
-				for (Component c : grpCorrections.getComponents())
-				{
-					if (c != null && c instanceof JCheckBox && ((JCheckBox) c).isSelected())
-					{
-						((JCheckBox) c).doClick();
+						if (grpSetAudio.getHeight() < 146 && grpSetAudio.getHeight() > 17)
+							extendSections(grpSetAudio, 146);
 					}
-				}
-				
-				//grpTransitions
-				for (Component c : grpTransitions.getComponents())
-				{
-					if (c != null && c instanceof JCheckBox && ((JCheckBox) c).isSelected())
+					
+					grpSetAudio.repaint();
+					
+					if (comboFonctions.getSelectedItem().toString().equals("DNxHD")
+							|| comboFonctions.getSelectedItem().toString().equals("DNxHR")
+							|| comboFonctions.getSelectedItem().toString().equals("Apple ProRes")
+							|| comboFonctions.getSelectedItem().toString().equals("QT Animation")
+							|| comboFonctions.getSelectedItem().toString().equals("GoPro CineForm")
+							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed") 	
+							|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
+							|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
+							|| comboFonctions.getSelectedItem().toString().equals("XAVC")
+							|| comboFonctions.getSelectedItem().toString().equals("HAP")
+							|| comboFonctions.getSelectedItem().toString().equals("FFV1"))
 					{
-						((JCheckBox) c).doClick();
+							lblPad.setVisible(true);
 					}
+							
+					
+					// grpAudio
+					caseSampleRate.setSelected(false);				
+					if (caseMixAudio.isSelected())
+						caseMixAudio.doClick();
+					caseSplitAudio.setSelected(false);
+					caseConvertAudioFramerate.setSelected(false);
+					comboAudioIn.setEnabled(false);
+					comboAudioOut.setEnabled(false);
+					
+					//grpCrop		
+					if (caseEnableCrop.isSelected())
+						caseEnableCrop.doClick();
+					
+					//grpOverlay
+					if (caseShowTimecode.isSelected())
+						caseShowTimecode.doClick();
+					
+					if (caseAddTimecode.isSelected())
+						caseAddTimecode.doClick();
+					
+					if (caseShowFileName.isSelected())
+						caseShowFileName.doClick();
+					
+					if (caseAddText.isSelected())
+						caseAddText.doClick();
+					
+					//grpSubtitles
+					if (caseAddSubtitles.isSelected())
+						caseAddSubtitles.doClick();
+					
+					//grpWatermark
+					if (caseAddWatermark.isSelected())
+						caseAddWatermark.doClick();
+					
+					//grpCorrections
+					for (Component c : grpCorrections.getComponents())
+					{
+						if (c != null && c instanceof JCheckBox && ((JCheckBox) c).isSelected())
+						{
+							((JCheckBox) c).doClick();
+						}
+					}
+					
+					//grpTransitions
+					for (Component c : grpTransitions.getComponents())
+					{
+						if (c != null && c instanceof JCheckBox && ((JCheckBox) c).isSelected())
+						{
+							((JCheckBox) c).doClick();
+						}
+					}
+					
+	
+					comboAccel.setSelectedIndex(0);
+					
+					caseForcerProgressif.setSelected(false);
+					caseForcerEntrelacement.setSelected(false);
+					caseForcerInversion.setSelected(false);
+					caseForcerDesentrelacement.setSelected(false);
+					comboForcerDesentrelacement.setEnabled(false);
+					comboForcerDesentrelacement.setSelectedIndex(0);
+					caseForcerDAR.setSelected(false);
+					comboDAR.setEnabled(false);
+					comboDAR.setSelectedIndex(3);
+					changeFilters();		
+					
+					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+					{
+						lblPad.setVisible(false);
+					}
+					else
+					{
+						lblPad.setVisible(true);
+					}
+					lblPad.setText(language.getProperty("lblPad"));
+					
+					caseOpenGop.setSelected(false);
+					caseForceOutput.setSelected(false);
+					caseFastStart.setSelected(false);
+					caseFastDecode.setSelected(false);
+					caseAlpha.setSelected(false);
+					caseGOP.setSelected(false);
+					gopSize.setEnabled(false);
+					caseFilmGrain.setSelected(false);
+					comboFilmGrain.setEnabled(false);
+					caseFilmGrainDenoise.setSelected(false);
+					comboFilmGrainDenoise.setEnabled(false);
+					caseCABAC.setSelected(false);
+					gopSize.setText("250");
+					caseChunks.setSelected(false);
+					chunksSize.setEnabled(false);
+					chunksSize.setSelectedIndex(3);
+					caseDRC.setSelected(false);				
+					caseTruePeak.setSelected(false);
+					comboTruePeak.setEnabled(false);
+					comboTruePeak.setSelectedIndex(3);
+					caseLRA.setSelected(false);
+					comboLRA.setEnabled(false);
+					comboLRA.setSelectedIndex(15);				
+					caseForceLevel.setSelected(false);
+					comboForceProfile.setEnabled(false);
+					comboForceLevel.setEnabled(false);
+					caseForcePreset.setSelected(false);
+					caseForcePreset.setEnabled(true);
+					comboForcePreset.setEnabled(false);
+					caseForceTune.setSelected(false);
+					comboForceTune.setEnabled(false);
+					caseForceQuality.setSelected(false);
+					caseForceQuality.setEnabled(true);
+					comboForceQuality.setEnabled(false);
+					caseForceSpeed.setSelected(false);
+					caseForceSpeed.setEnabled(true);
+					comboForceSpeed.setEnabled(false);			
+					if (caseCreateTree.isSelected())
+						caseCreateTree.doClick();
+					if (casePreserveMetadata.isSelected())
+						casePreserveMetadata.doClick();
+					if (casePreserveSubs.isSelected())
+						casePreserveSubs.doClick();
+					if (caseCreateOPATOM.isSelected())
+						caseCreateOPATOM.doClick();
+					lblOPATOM.setText("OP-Atom");
+					caseOPATOM.setSelected(false);
+					if (caseAddSubtitles != null)
+						caseAddSubtitles.setSelected(false);
+					caseConform.setSelected(false);
+					comboConform.setEnabled(false);
+					caseDecimate.setSelected(false);
+					comboConform.setSelectedIndex(3);
+					comboFPS.setEnabled(false);
+					comboFPS.setSelectedIndex(2);
+					lblTFF.setText("TFF");
+					if (caseAS10.isSelected())
+						caseAS10.doClick();
+					
+					// grpSequenceImages
+					caseEnableSequence.setSelected(false);
+					caseSequenceFPS.setSelectedIndex(2);
+					caseSequenceFPS.setEnabled(false);
+					caseMotionBlur.setSelected(false);
+					if (caseBlend.isSelected())
+						caseBlend.doClick();
+					
+					// grpFiltreImage
+					caseYear.setSelected(false);
+					comboYear.setSelectedIndex(0);
+					comboYear.setEnabled(false);
+					caseMonth.setSelected(false);
+					comboMonth.setSelectedIndex(0);
+					comboMonth.setEnabled(false);
+					caseDay.setSelected(false);
+					comboDay.setSelectedIndex(0);
+					comboDay.setEnabled(false);
+					caseFrom.setSelected(false);
+					comboFrom.setEnabled(false);
+					comboFrom.setSelectedIndex(0);
+					comboTo.setEnabled(false);
+					comboTo.setSelectedIndex(48);
+	
+					// grpLUTs
+					if (caseLUTs.isSelected())
+						caseLUTs.doClick();
+					if (caseColorspace.isSelected())
+						caseColorspace.doClick();
+					comboColorspace.setSelectedIndex(0);
+					
+					if (caseLevels.isSelected())
+						caseLevels.doClick();
+					
+					if (caseGamma.isSelected())
+						caseGamma.doClick();
+					
+					if (caseColormatrix.isSelected())
+						caseColormatrix.doClick();
+					
+					comboInColormatrix.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 601", "Rec. 709", "Rec. 2020", "HDR"}));
+					comboInColormatrix.setSelectedIndex(0);
+					comboOutColormatrix.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 601", "Rec. 709", "Rec. 2020", "SDR"}));
+					comboOutColormatrix.setSelectedIndex(1);
+					
+					topPanel.repaint();
+					statusBar.repaint();
+					topImage.repaint();
+					
+					doNotLoadImage = false;
+					
+					VideoPlayer.resizeAll();
 				}
-				
-
-				comboAccel.setSelectedIndex(0);
-				
-				caseForcerProgressif.setSelected(false);
-				caseForcerEntrelacement.setSelected(false);
-				caseForcerInversion.setSelected(false);
-				caseForcerDesentrelacement.setSelected(false);
-				comboForcerDesentrelacement.setEnabled(false);
-				comboForcerDesentrelacement.setSelectedIndex(0);
-				caseForcerDAR.setSelected(false);
-				comboDAR.setEnabled(false);
-				comboDAR.setSelectedIndex(3);
-				changeFilters();		
-				
-				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
-				{
-					lblPad.setVisible(false);
-				}
-				else
-				{
-					lblPad.setVisible(true);
-				}
-				lblPad.setText(language.getProperty("lblPad"));
-				
-				caseOpenGop.setSelected(false);
-				caseForceOutput.setSelected(false);
-				caseFastStart.setSelected(false);
-				caseFastDecode.setSelected(false);
-				caseAlpha.setSelected(false);
-				caseGOP.setSelected(false);
-				gopSize.setEnabled(false);
-				caseFilmGrain.setSelected(false);
-				comboFilmGrain.setEnabled(false);
-				caseFilmGrainDenoise.setSelected(false);
-				comboFilmGrainDenoise.setEnabled(false);
-				caseCABAC.setSelected(false);
-				gopSize.setText("250");
-				caseChunks.setSelected(false);
-				chunksSize.setEnabled(false);
-				chunksSize.setSelectedIndex(3);
-				caseDRC.setSelected(false);				
-				caseTruePeak.setSelected(false);
-				comboTruePeak.setEnabled(false);
-				comboTruePeak.setSelectedIndex(3);
-				caseLRA.setSelected(false);
-				comboLRA.setEnabled(false);
-				comboLRA.setSelectedIndex(15);				
-				caseForceLevel.setSelected(false);
-				comboForceProfile.setEnabled(false);
-				comboForceLevel.setEnabled(false);
-				caseForcePreset.setSelected(false);
-				caseForcePreset.setEnabled(true);
-				comboForcePreset.setEnabled(false);
-				caseForceTune.setSelected(false);
-				comboForceTune.setEnabled(false);
-				caseForceQuality.setSelected(false);
-				caseForceQuality.setEnabled(true);
-				comboForceQuality.setEnabled(false);
-				caseForceSpeed.setSelected(false);
-				caseForceSpeed.setEnabled(true);
-				comboForceSpeed.setEnabled(false);			
-				if (caseCreateTree.isSelected())
-					caseCreateTree.doClick();
-				if (casePreserveMetadata.isSelected())
-					casePreserveMetadata.doClick();
-				if (casePreserveSubs.isSelected())
-					casePreserveSubs.doClick();
-				if (caseCreateOPATOM.isSelected())
-					caseCreateOPATOM.doClick();
-				lblOPATOM.setText("OP-Atom");
-				caseOPATOM.setSelected(false);
-				if (caseAddSubtitles != null)
-					caseAddSubtitles.setSelected(false);
-				caseConform.setSelected(false);
-				comboConform.setEnabled(false);
-				caseDecimate.setSelected(false);
-				comboConform.setSelectedIndex(3);
-				comboFPS.setEnabled(false);
-				comboFPS.setSelectedIndex(2);
-				lblTFF.setText("TFF");
-				if (caseAS10.isSelected())
-					caseAS10.doClick();
-				
-				// grpSequenceImages
-				caseEnableSequence.setSelected(false);
-				caseSequenceFPS.setSelectedIndex(2);
-				caseSequenceFPS.setEnabled(false);
-				caseMotionBlur.setSelected(false);
-				if (caseBlend.isSelected())
-					caseBlend.doClick();
-				
-				// grpFiltreImage
-				caseYear.setSelected(false);
-				comboYear.setSelectedIndex(0);
-				comboYear.setEnabled(false);
-				caseMonth.setSelected(false);
-				comboMonth.setSelectedIndex(0);
-				comboMonth.setEnabled(false);
-				caseDay.setSelected(false);
-				comboDay.setSelectedIndex(0);
-				comboDay.setEnabled(false);
-				caseFrom.setSelected(false);
-				comboFrom.setEnabled(false);
-				comboFrom.setSelectedIndex(0);
-				comboTo.setEnabled(false);
-				comboTo.setSelectedIndex(48);
-
-				// grpLUTs
-				if (caseLUTs.isSelected())
-					caseLUTs.doClick();
-				if (caseColorspace.isSelected())
-					caseColorspace.doClick();
-				comboColorspace.setSelectedIndex(0);
-				
-				if (caseLevels.isSelected())
-					caseLevels.doClick();
-				
-				if (caseGamma.isSelected())
-					caseGamma.doClick();
-				
-				if (caseColormatrix.isSelected())
-					caseColormatrix.doClick();
-				
-				comboInColormatrix.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 601", "Rec. 709", "Rec. 2020", "HDR"}));
-				comboInColormatrix.setSelectedIndex(0);
-				comboOutColormatrix.setModel(new DefaultComboBoxModel<Object>(new String[] {"Rec. 601", "Rec. 709", "Rec. 2020", "SDR"}));
-				comboOutColormatrix.setSelectedIndex(1);
-				
-				topPanel.repaint();
-				statusBar.repaint();
-				topImage.repaint();
-				
-				doNotLoadImage = false;
-				
-				VideoPlayer.resizeAll();
 			}
 			
 		});
@@ -20631,13 +20643,25 @@ public class Shutter {
 											"1440x1080", "1280x720", "1024x768", "1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 								}
 								
-								grpBitrate.setVisible(true);
-								grpBitrate.setBounds(grpBitrate.getX(), grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312, 182);
-								lblMaximumBitrate.setVisible(false);
-								maximumBitrate.setVisible(false);
-								lblMaximumKbs.setVisible(false);
-								lblAudioBitrate.setLocation(lblBitrateTimecode.getX(), lblVideoBitrate.getY() + lblVideoBitrate.getHeight() + 11);
-								debitAudio.setLocation(debitVideo.getX(), debitVideo.getY() + debitVideo.getHeight() + 5);
+								grpBitrate.setVisible(true);								
+								if ("AV1".equals(function) && lblVBR.getText().equals("CQ"))
+								{
+									grpBitrate.setBounds(grpBitrate.getX(), grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312, 208);
+									lblMaximumBitrate.setVisible(true);
+									maximumBitrate.setVisible(true);
+									lblMaximumKbs.setVisible(true);
+									lblAudioBitrate.setLocation(lblBitrateTimecode.getX(), lblMaximumBitrate.getY() + lblMaximumBitrate.getHeight() + 11);
+									debitAudio.setLocation(debitVideo.getX(), maximumBitrate.getY() + maximumBitrate.getHeight() + 5);
+								}
+								else
+								{
+									grpBitrate.setBounds(grpBitrate.getX(), grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312, 182);
+									lblMaximumBitrate.setVisible(false);
+									maximumBitrate.setVisible(false);
+									lblMaximumKbs.setVisible(false);			
+									lblAudioBitrate.setLocation(lblBitrateTimecode.getX(), lblVideoBitrate.getY() + lblVideoBitrate.getHeight() + 11);
+									debitAudio.setLocation(debitVideo.getX(), debitVideo.getY() + debitVideo.getHeight() + 5);
+								}	
 								lblAudioKbs.setLocation(lblKbsH264.getX(), debitAudio.getY() + 3);
 								lblSize.setLocation(lblBitrateTimecode.getX(), lblAudioBitrate.getY() + lblAudioBitrate.getHeight() + 11);
 								bitrateSize.setLocation(debitVideo.getX(), debitAudio.getY() + debitAudio.getHeight() + 5);
