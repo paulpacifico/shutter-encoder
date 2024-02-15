@@ -921,7 +921,22 @@ public class VideoEncoders extends Shutter {
 							
 							if (cancelled == false)
 							{
-								FFMPEG.run(loop + stream + frameRate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);		
+								String inputFramerate = " -r " + FFPROBE.currentFPS;
+								
+								if (FFPROBE.currentFPS == 59.94f)
+								{
+									inputFramerate = " -r 60000/1001";
+								}
+								else if (FFPROBE.currentFPS == 29.97f)
+								{
+									inputFramerate = " -r 30000/1001";
+								}
+								else if (FFPROBE.currentFPS == 23.98f)
+								{
+									inputFramerate = " -r 24000/1001";
+								}
+								
+								FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);		
 								
 								do {
 									Thread.sleep(10);
@@ -929,7 +944,7 @@ public class VideoEncoders extends Shutter {
 								
 								if (grpBitrate.isVisible() && case2pass.isSelected())
 								{
-									FFMPEG.run(loop + stream + frameRate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
+									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									do {
 										Thread.sleep(10);
@@ -1583,9 +1598,18 @@ public class VideoEncoders extends Shutter {
 		{
 		
 			case "AV1":
-							
+															
 				if (lblVBR.getText().equals("CQ"))
 		        {
+					String limitedBitrate = "";
+					
+					int maxrate = FunctionUtils.setVideoBitrate();		
+					if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+					{
+						maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
+						limitedBitrate = " -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+					}
+					
 					String gpu = "";
 					if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
@@ -1596,7 +1620,7 @@ public class VideoEncoders extends Shutter {
 						gpu = " -global_quality " + FunctionUtils.setVideoBitrate();
 					}
 						
-		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu;          
+		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu + limitedBitrate;         
 		        }
 		        else
 		        	return " -b:v " + FunctionUtils.setVideoBitrate() + "k";
