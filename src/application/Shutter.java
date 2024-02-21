@@ -766,29 +766,20 @@ public class Shutter {
 				droppedFiles.add(i, args[i]);
 			}
 		}
-		
-		//Settings & Functions location for the portable version
-		if (System.getProperty("os.name").contains("Windows"))
-		{
-			if (new File("settings.xml").exists())
-			{
-				settingsXML = new File("settings.xml");
-			}
-
-			if (new File("Functions").exists())
-			{
-				Functions.functionsFolder = new File("Functions");
-			}
-		}		
 
 		Utils.setLanguage();
 		Utils.loadThemes();		
 		Splash.increment();
-				
-		// Documents Shutter Encoder		
-		if (Shutter.documents.exists() == false)
+						
+		// Documents Shutter Encoder
+		if (documents.exists() == false)
 		{
-			Shutter.documents.mkdirs();
+			// Do not create it if the location is different
+			if (new File("settings.xml").exists() == false)
+				documents.mkdirs();			
+			
+			if (new File("Functions").exists() == false)
+				documents.mkdirs();
 		}
 
 		new Shutter();

@@ -132,6 +132,17 @@ public class Utils extends Shutter {
 					+ "/Languages/";		
 			
 			try {
+				
+				//Settings & Functions location for the portable version
+				if (new File("settings.xml").exists())
+				{
+					settingsXML = new File("settings.xml");
+				}
+
+				if (new File("Functions").exists())
+				{
+					Functions.functionsFolder = new File("Functions");
+				}
 
 				File oldDocumentsPath = new File(System.getProperty("user.home") + "/Documents/Shutter Encoder");
 				
@@ -580,7 +591,9 @@ public class Utils extends Shutter {
 		}
 		
 		if (Functions.functionsFolder.exists() == false)
+		{
 			Functions.functionsFolder.mkdir();
+		}
 		
 		
 		FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveSettings"), FileDialog.SAVE);

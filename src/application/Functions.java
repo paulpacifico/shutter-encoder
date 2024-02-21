@@ -115,32 +115,6 @@ public class Functions {
 		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
 		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);	
 		
-		frame.addMouseListener(new MouseListener(){
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {	
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-		 		//Border
-				listeDeFonctions.setBorder(BorderFactory.createLineBorder(Color.BLUE, 0));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {	
-			}
-			
-		});
-		
 		frame.addWindowListener(new WindowListener(){
 			
 			@Override
@@ -757,7 +731,6 @@ public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
   for (int i = 0; i < arg1.length; i++) {
     DataFlavor flavor = arg1[i];
     if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-  	  Functions.listeDeFonctions.setBorder(BorderFactory.createLineBorder(Color.BLUE, 1));
       return true;
     }
   }
@@ -820,9 +793,6 @@ public boolean importData(JComponent comp, Transferable t) {
 	
 	        }
 	 
-	 		//Border
-			Functions.listeDeFonctions.setBorder(BorderFactory.createLineBorder(Color.BLUE, 0));
-			
 			Functions.addFonctions();
 			
   			Functions.lblSave.setVisible(false);
