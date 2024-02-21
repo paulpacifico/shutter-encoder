@@ -497,6 +497,11 @@ public class AudioEncoders extends Shutter {
 			audioFilter += "," + Transitions.setAudioSpeed();
 		}
 		
+		//Frequence d'échantillonnage
+		String sampleRate = "";
+		if (caseSampleRate.isSelected())
+			sampleRate = " -ar " + lbl48k.getText();
+		
 		if (FFPROBE.channels == 1 && lblSplit.getText().equals(language.getProperty("mono")))
 		{		
 			for (int i = 1 ; i < 3; i ++)
@@ -511,7 +516,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFilter + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + " -vn" + yesno;
+				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFilter + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + " -vn" + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
@@ -547,7 +552,7 @@ public class AudioEncoders extends Shutter {
 				if (audioFilter != "")     
 					audioFilter = audioFilter.replaceFirst(",", " -filter_complex ");
 				
-				String cmd = audioFilter + " -map a:" + (i - 1) + " -c:a " + codec + " -vn" + yesno;
+				String cmd = audioFilter + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + " -vn" + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
@@ -579,7 +584,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + " -vn" + yesno;
+				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + " -vn" + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do

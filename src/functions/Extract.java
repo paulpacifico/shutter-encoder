@@ -108,10 +108,45 @@ public class Extract extends Shutter {
 						}
 							
 						String container = extension;
-						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")) && FFPROBE.audioCodec.contains("pcm"))
+						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 						{
-							container = ".wav";						
-						}
+							if (FFPROBE.audioCodec.contains("pcm"))
+							{
+								container = ".wav";	
+							}
+							else if (FFPROBE.audioCodec.contains("aac"))
+							{
+								container = ".m4a";						
+							}
+							else if (FFPROBE.audioCodec.contains("ac3"))
+							{
+								container = ".ac3";	
+							}
+							else if (FFPROBE.audioCodec.contains("opus"))
+							{
+								container = ".opus";
+							}
+							else if (FFPROBE.audioCodec.contains("vorbis"))
+							{
+								container = ".oga";	
+							}
+							else if (FFPROBE.audioCodec.contains("eac3"))
+							{
+								container = ".eac3";
+							}
+							else if (FFPROBE.audioCodec.contains("wma"))
+							{
+								container = ".wma";
+							}
+							else if (FFPROBE.audioCodec.contains("mp3"))
+							{
+								container = ".mp3";	
+							}
+							else if (FFPROBE.audioCodec.contains("mp2"))
+							{
+								container = ".mp2";	
+							}
+						}						
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
 						{
 							container = ".srt";						
