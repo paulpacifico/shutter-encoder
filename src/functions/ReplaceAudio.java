@@ -309,7 +309,7 @@ public class ReplaceAudio extends Shutter {
 		
 		for (int i = 0 ; i < liste.getSize() ; i++)
 		{
-			if (liste.getElementAt(i).equals(" -f lavfi -i anullsrc=r=" + lbl48k.getText() + ":cl=mono")) //Si le fichier est une piste muette
+			if (liste.getElementAt(i).equals(" -f lavfi -i anullsrc=r=" + lbl48k.getSelectedItem().toString() + ":cl=mono")) //Si le fichier est une piste muette
 			{
 				audioFiles += liste.getElementAt(i) ;
 			}
@@ -347,43 +347,43 @@ public class ReplaceAudio extends Shutter {
 				switch (comboAudioCodec.getSelectedIndex()) 
 				{
 					case 0 :
-						return " -c:a pcm_f32le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_f32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 					case 1 :
-						return " -c:a pcm_s32le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 					case 2 :
-						return " -c:a pcm_s24le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s24le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 					case 3 :
-						return " -c:a pcm_s16le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 				}
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
 				if (System.getProperty("os.name").contains("Mac"))
 				{
-					return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+					return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 				}
 				else
-					return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+					return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{
-				return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libmp3lame -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 			{
-				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a ac3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Opus"))
 			{
-				return " -c:a libopus -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libopus -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Vorbis"))
 			{
-				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libvorbis -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 			{
-				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a eac3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else //No audio
 			{
@@ -404,32 +404,32 @@ public class ReplaceAudio extends Shutter {
 					{
 						if (System.getProperty("os.name").contains("Mac"))
 						{
-							return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a 256k";
+							return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";
 						}
 						else
-							return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k";
+							return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";
 					}
 					else
 						return  " -c:a copy";
 				case ".mp3":
 					if (audioExt.equals(".mp3") == false)
-						return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a 256k";
+						return " -c:a libmp3lame -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";
 					else
 						return  " -c:a copy";
 				case ".wmv":
 					if (audioExt.equals(".wma") == false)
-						return " -c:a wmav2 -ar " + lbl48k.getText() + " -b:a 256k";
+						return " -c:a wmav2 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";
 					else
 						return  " -c:a copy";
 				case ".mpg":
 					if (audioExt.equals(".mp2") == false)
-						return " -c:a mp2 -ar " + lbl48k.getText() + " -b:a 256k";
+						return " -c:a mp2 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";
 					else
 						return  " -c:a copy";
 				case ".ogv":
 				case ".av1":
 				case ".webm":
-					return " -c:a libopus -ar " + lbl48k.getText() + " -b:a 192k";
+					return " -c:a libopus -ar " + lbl48k.getSelectedItem().toString() + " -b:a 192k";
 			}
 		}
 		

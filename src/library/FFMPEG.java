@@ -205,6 +205,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							if (cmd.contains("image2pipe") || cmd.contains("pipe:play") || cmd.contains("pipe:stab") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 							|| caseEnableColorimetry.isSelected() && Colorimetry.setEQ(true) != ""
 							|| caseLUTs.isSelected() && grpColorimetry.isVisible()
+							|| caseForcerDAR.isSelected()
 							|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpColorimetry.isVisible())
 							{
 								String pipe = "";								

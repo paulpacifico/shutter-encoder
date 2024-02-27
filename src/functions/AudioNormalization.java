@@ -184,22 +184,22 @@ public class AudioNormalization extends Shutter {
 
 								if (FFPROBE.stereo)
 								{
-									cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
+									cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								}
 							    else if (FFPROBE.channels > 1)	
 							    {
 							    	if (FFPROBE.channels >= 4)	    		
 							    	{
 										if (audioTracks == 0)
-											cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+											cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 								    	else
-								    		cmd = " -filter_complex " + '"' + "[0:a:2]" + normalization + "[a3];[0:a:3]" + normalization + "[a4]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+								    		cmd = " -filter_complex " + '"' + "[0:a:2]" + normalization + "[a3];[0:a:3]" + normalization + "[a4]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map 0:a:0 -map 0:a:1 -map [a3] -map [a4] -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    	}
 							    	else
-							    		cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
+							    		cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
 							    }	
 							    else
-							    	cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getText() + " -b:a 320k -map v:0? -map a? -map s? -y ";
+							    	cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a " + AACencoder + " -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								
 								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
 							}
@@ -264,43 +264,43 @@ public class AudioNormalization extends Shutter {
 				switch (comboAudioCodec.getSelectedIndex()) 
 				{
 					case 0 :
-						return " -c:a pcm_f32le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_f32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
 					case 1 :
-						return " -c:a pcm_s32le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_s32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
 					case 2 :
-						return " -c:a pcm_s24le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_s24le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
 					case 3 :
-						return " -c:a pcm_s16le -ar " + lbl48k.getText() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
 				}
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
 				if (System.getProperty("os.name").contains("Mac"))
 				{
-					return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
+					return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
 				}
 				else
-					return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
+					return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{
-				return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
+				return " -c:a libmp3lame -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 			{
-				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
+				return " -c:a ac3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k -map v:0? -map a? -map s?";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Opus"))
 			{
-				return " -c:a libopus -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libopus -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Vorbis"))
 			{
-				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libvorbis -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 			{
-				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a eac3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 		}
 		else //Mode Auto
@@ -311,28 +311,28 @@ public class AudioNormalization extends Shutter {
 					
 					if (System.getProperty("os.name").contains("Mac"))
 					{
-						return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+						return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
 					}
 					else
-						return " -c:a aac -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+						return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
 
 				case ".mp3":
 					
-					return " -c:a mp3 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					return " -c:a mp3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
 					
 				case ".wmv":
 					
-					return " -c:a wmav2 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					return " -c:a wmav2 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
 					
 				case ".mpg":
 					
-					return " -c:a mp2 -ar " + lbl48k.getText() + " -b:a 256k -map v:0? -map a? -map s?";
+					return " -c:a mp2 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
 					
 				case ".ogv":
 				case ".av1":
 				case ".webm":
 					
-					return " -c:a libopus -ar " + lbl48k.getText() + " -b:a 192k -map v:0? -map a? -map s?";
+					return " -c:a libopus -ar " + lbl48k.getSelectedItem().toString() + " -b:a 192k -map v:0? -map a? -map s?";
 			}
 		}
 		

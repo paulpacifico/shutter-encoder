@@ -165,43 +165,43 @@ public class Merge extends Shutter {
 				switch (comboAudioCodec.getSelectedIndex()) 
 				{
 					case 0 :
-						return " -c:a pcm_f32le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_f32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 					case 1 :
-						return " -c:a pcm_s32le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 					case 2 :
-						return " -c:a pcm_s24le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s24le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 					case 3 :
-						return " -c:a pcm_s16le -ar " + lbl48k.getText() + " -b:a 1536k";
+						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 				}
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
 				if (System.getProperty("os.name").contains("Mac"))
 				{
-					return " -c:a aac_at -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+					return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 				}
 				else
-					return " -c:a aac -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";				
+					return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";				
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{
-				return " -c:a libmp3lame -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libmp3lame -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AC3"))
 			{
-				return " -c:a ac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a ac3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Opus"))
 			{
-				return " -c:a libopus -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libopus -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Vorbis"))
 			{
-				return " -c:a libvorbis -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a libvorbis -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("Dolby Digital Plus"))
 			{
-				return " -c:a eac3 -ar " + lbl48k.getText() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
+				return " -c:a eac3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")))
 			{

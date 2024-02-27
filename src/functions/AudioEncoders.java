@@ -473,7 +473,7 @@ public class AudioEncoders extends Shutter {
 		
 		//Frequence d'échantillonnage
 		if (caseSampleRate.isSelected())
-			audio += "-ar " + lbl48k.getText() + " ";
+			audio += "-ar " + lbl48k.getSelectedItem().toString() + " ";
 		
 		return audio;
 	}
@@ -500,7 +500,7 @@ public class AudioEncoders extends Shutter {
 		//Frequence d'échantillonnage
 		String sampleRate = "";
 		if (caseSampleRate.isSelected())
-			sampleRate = " -ar " + lbl48k.getText();
+			sampleRate = " -ar " + lbl48k.getSelectedItem().toString();
 		
 		if (FFPROBE.channels == 1 && lblSplit.getText().equals(language.getProperty("mono")))
 		{		

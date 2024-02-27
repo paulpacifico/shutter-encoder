@@ -362,7 +362,7 @@ public static boolean isRotated = false;
 					                
 									
 									if (isRotated)
-									{						    				
+									{	
 										Integer h = imageHeight;
 										Integer w = imageWidth;
 										  
@@ -719,12 +719,12 @@ public static boolean isRotated = false;
 			              {			            	  
 			            	  String s[] = line.split("=");
 			                	
-			            	  if (s[1].equals("-90"))
+			            	  if (s[1].contains("90"))
 			            	  {
 				            	  isRotated = true;
 			            	  }			            	  
 			              }
-			                						  
+			              
 						  if (line.contains("codec_type=video"))
 							  videoStream = true;
 	
