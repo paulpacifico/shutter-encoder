@@ -424,6 +424,8 @@ public class VideoWeb {
 					comboFormats.addItem("up to 240p");
 					comboFormats.addItem("bestvideo");
 					comboFormats.addItem("bestaudio");
+					
+					btnOK.setEnabled(true);
 				}
 				else
 				{

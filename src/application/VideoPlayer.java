@@ -154,7 +154,7 @@ public class VideoPlayer {
     private static boolean previewUpscale = false;    
 	public static boolean fullscreenPlayer = false;
 	private static Thread mouseClickThread;
-    
+	
 	//Buttons & Checkboxes
 	public static JLabel btnPreview;
 	public static JTextField splitValue;
@@ -326,6 +326,11 @@ public class VideoPlayer {
 							Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
 							Shutter.logoLocX = Shutter.logo.getLocation().x;
 							Shutter.logoLocY = Shutter.logo.getLocation().y;
+							
+							if (Shutter.caseWatermarkPositions.isSelected())
+							{
+								Shutter.caseWatermarkPositions.doClick();
+							}
 						}
 	        		}
 	        	}
@@ -1129,8 +1134,7 @@ public class VideoPlayer {
 						
 						//Reset when changing file													
 						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false)
-						{
-							
+						{							
 							//IMPORTANT
 							if (FFPROBE.isRunning)
 							{
@@ -1192,7 +1196,7 @@ public class VideoPlayer {
 									{								
 										Thread.sleep(100);								
 									} 
-									while (FFPROBE.isRunning);									
+									while (FFPROBE.isRunning);		
 
 									FFMPEG.checkGPUCapabilities(videoPath, true);
 									
@@ -1328,7 +1332,7 @@ public class VideoPlayer {
 							}
 							else					
 								inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);		
-							
+														
 							totalFrames = (float) Math.round(FFPROBE.totalLength / inputFramerateMS);
 							playerCurrentFrame = 0;
 			
@@ -1377,7 +1381,27 @@ public class VideoPlayer {
 											
 							//Setup fileList
 							getFileList(videoPath);
-							setFileList();				
+							setFileList();		
+							
+							//Watermark
+							if (Shutter.caseAddWatermark.isSelected() && FFPROBE.previousImageWidth != Shutter.logoWidth)
+							{			
+								float scale = 0.0f;
+								if (FFPROBE.previousImageWidth > 0)	
+								{
+									scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+								}
+								
+								if (scale != 0.0f)
+								{			
+									Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
+								}
+								
+								loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));	
+								
+								Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
+								Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
+							}
 						}	
 						
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -4583,11 +4607,13 @@ public class VideoPlayer {
 	}
 	
 	public static boolean loadWatermark(int size) {
-		
+				
 		try {
-			
+
 			if (Shutter.logoPNG == null)
-			{
+			{				
+				int previousImageWidth = FFPROBE.previousImageWidth;
+				
 				//IMPORTANT
 				if (FFPROBE.isRunning)
 				{
@@ -4598,6 +4624,9 @@ public class VideoPlayer {
 					} 
 					while (FFPROBE.isRunning);
 				}
+				
+				//Keep media size
+				FFPROBE.previousImageWidth = previousImageWidth;
 				
 				if (Shutter.overlayDeviceIsRunning)
 				{
@@ -4617,21 +4646,28 @@ public class VideoPlayer {
 				Shutter.logoHeight = FFPROBE.imageHeight;
 				
 				//IMPORTANT keeps original source file data			
-				try {					
+				try {	
+					
 					FFPROBE.Data(videoPath);
 					do {								
 						Thread.sleep(10);								
 					} while (FFPROBE.isRunning);
-					
+										
 				} catch (InterruptedException e) {}
 			}
 									
 			int logoFinalSizeWidth = (int) Math.floor((float) Shutter.logoWidth / Shutter.playerRatio);		
 			int logoFinalSizeHeight = (int) Math.floor((float) Shutter.logoHeight / Shutter.playerRatio);
-			
+					
 			//Adapt to size
 			logoFinalSizeWidth = (int) Math.floor((float) logoFinalSizeWidth * ((double) size / 100));
 			logoFinalSizeHeight = (int) Math.floor((float) logoFinalSizeHeight * ((double) size / 100));
+			
+			if (logoFinalSizeWidth < 1)
+				logoFinalSizeWidth = 1;
+			
+			if (logoFinalSizeHeight < 1)
+				logoFinalSizeHeight = 1;
 
 			//Preserve location
 			int newPosX = (int) Math.floor((Shutter.logo.getWidth() - logoFinalSizeWidth) / 2);
@@ -4665,8 +4701,8 @@ public class VideoPlayer {
 			}
 			else
 				Shutter.logo.setLocation(Shutter.logo.getLocation().x + newPosX, Shutter.logo.getLocation().y + newPosY);
-			
-            Shutter.logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);
+
+			Shutter.logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);        
             
             //Saving location
 			Shutter.logoLocX = Shutter.logo.getLocation().x;
@@ -4689,6 +4725,66 @@ public class VideoPlayer {
         }
 		
 		return true;
+	}
+	
+	public static void watermarkPositions() {
+
+		int offsetX = (int) ((float) player.getWidth() * 0.036);
+		int offsetY = (int) ((float) player.getHeight() * 0.036);
+		
+		switch (Shutter.comboWatermarkPresets.getSelectedIndex())
+		{
+			case 0://TOP LEFT
+				
+				Shutter.logo.setLocation(offsetX, offsetY);	
+				break;
+				
+			case 1://LEFT
+				
+				Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));	
+				break;		
+				
+			case 2://BOTTOM LEFT
+				
+				Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);	
+				break;
+				
+			case 3://TOP
+				
+				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), offsetY);	
+				break;
+				
+			case 4://CENTER
+				
+				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));	 						
+				break;
+				
+			case 5://BOTTOM
+				
+				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
+				break;
+				
+			case 6://TOP RIGHT
+				
+				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, offsetY);
+				break;
+				
+			case 7://RIGHT
+				
+				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));
+				break;
+				
+			case 8://BOTTOM RIGHT
+				
+				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
+				break;
+		
+		}
+		
+		Shutter.logoLocX = Shutter.logo.getLocation().x;
+		Shutter.logoLocY = Shutter.logo.getLocation().y;
+		Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
+		Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );
 	}
 	
 	public static void loadImage(boolean forceRefresh) {
@@ -4846,6 +4942,7 @@ public class VideoPlayer {
 									Thread.sleep(10);
 								} while (NCNN.isRunning);
 								
+								Shutter.btnStart.setEnabled(true);								
 								Shutter.progressBar1.setValue(0);
 								Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
 																

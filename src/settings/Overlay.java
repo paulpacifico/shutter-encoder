@@ -562,7 +562,30 @@ public class Overlay extends Shutter {
 	public static String setWatermark(String filterComplex) {
 		
 		if (Shutter.caseAddWatermark.isSelected())
-        {		     
+	    {			
+			if (VideoPlayer.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayer.videoPath).getName()) == false) //Do not process scaling if it's the first item
+			{		
+				VideoPlayer.videoPath = null; //IMPORTANT RESET SCALING
+				
+				float scale = 0.0f;
+				if (FFPROBE.previousImageWidth > 0)	
+				{
+					scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+
+					Shutter.playerRatio = (float) FFPROBE.imageWidth / VideoPlayer.player.getWidth();
+					
+					if (scale != 0.0f)
+					{			
+						Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
+					}
+					
+					VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));	
+					
+					Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
+					Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
+				}
+			}
+			
 			float imageRatio = 1.0f;
 			
 			int ow = FFPROBE.imageWidth;  

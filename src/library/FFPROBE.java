@@ -64,6 +64,7 @@ private static boolean videoStream = false;
 public static String pixelformat = "";
 public static int imageDepth = 8;
 public static String imageResolution;
+public static int previousImageWidth;
 public static int imageWidth;
 public static int imageHeight;
 public static float imageRatio = 1.777777f;
@@ -137,6 +138,9 @@ public static boolean isRotated = false;
 			btnStart.setEnabled(false);
 			
 			imageRatio = 1.777777f;
+						
+			//Watermark scaling
+			previousImageWidth = imageWidth;
 			
 			timecode1 = "";
 			timecode2 = "";
@@ -370,7 +374,7 @@ public static boolean isRotated = false;
 										imageHeight = w;
 										imageRatio = (float) imageWidth / imageHeight;
 									}
-					                						                
+									
 					                // Crop Form
 					                int largeur = 0;
 					                int hauteur = 0;			               
