@@ -18547,8 +18547,8 @@ public class Shutter {
 		String function = comboFonctions.getSelectedItem().toString();
 			
 		noSettings = false;
-		
-		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false)
+
+		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false && caseAddWatermark.isSelected() == false)
 		{		
 			noSettings = true;
 			
@@ -18665,7 +18665,7 @@ public class Shutter {
 			lblYears.setLocation(frame.getWidth()  - lblYears.getWidth() - 8, lblBy.getY());
 		    lblYears.setVisible(true);
 		}
-		else if (bigger == false && frame.getSize().width > 332)
+		else if (bigger == false && frame.getSize().width > 332 && caseAddWatermark.isSelected() == false)
 		{			
 			noSettings = true;
 			

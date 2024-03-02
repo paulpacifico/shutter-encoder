@@ -1338,10 +1338,7 @@ public class VideoPlayer {
 									Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
 								}
 								
-								loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));	
-								
-								Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
-								Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
+								resizeAll();
 							}
 						}	
 						
@@ -4637,7 +4634,10 @@ public class VideoPlayer {
 				Shutter.logo.setLocation(Shutter.logo.getLocation().x + newPosX, Shutter.logo.getLocation().y + newPosY);
 
 			Shutter.logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);        
-            
+            			
+			Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
+			Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
+			
             //Saving location
 			Shutter.logoLocX = Shutter.logo.getLocation().x;
 			Shutter.logoLocY = Shutter.logo.getLocation().y;	
@@ -5495,7 +5495,7 @@ public class VideoPlayer {
 				int p = 220 - (Shutter.frame.getHeight() - player.getHeight());				
 				player.setSize((int) (player.getWidth() - (float) p * ratio), player.getHeight() - p);
 			}
-									
+				
 			int y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2 - 58;
 			
 			if (FFPROBE.totalLength <= 40 && Shutter.caseEnableSequence.isSelected() == false || isPiping) //Image
@@ -5598,7 +5598,7 @@ public class VideoPlayer {
 			}
 			
 			//grpWatermark
-			if (Shutter.caseAddWatermark.isSelected() && Shutter.windowDrag
+			if (Shutter.caseAddWatermark.isSelected()
 			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
 			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
 			{
