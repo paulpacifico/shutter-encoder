@@ -575,19 +575,17 @@ public class Overlay extends Shutter {
 				if (FFPROBE.previousImageWidth > 0)	
 				{
 					scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
-
-					Shutter.playerRatio = (float) FFPROBE.imageWidth / VideoPlayer.player.getWidth();
-					
-					if (scale != 0.0f)
-					{			
-						Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
-					}
-					
-					VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));	
-					
-					Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
-					Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
 				}
+				
+				if (scale != 0.0f)
+				{			
+					Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
+				}
+
+				VideoPlayer.resizeAll();
+				
+				VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
+				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
 			}
 			
 			float imageRatio = 1.0f;
