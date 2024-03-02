@@ -88,7 +88,6 @@ import javax.swing.event.ChangeListener;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.DCRAW;
-import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
@@ -327,10 +326,7 @@ public class VideoPlayer {
 							Shutter.logoLocX = Shutter.logo.getLocation().x;
 							Shutter.logoLocY = Shutter.logo.getLocation().y;
 							
-							if (Shutter.caseWatermarkPositions.isSelected())
-							{
-								Shutter.caseWatermarkPositions.doClick();
-							}
+							Shutter.watermarkPreset = null;
 						}
 	        		}
 	        	}
@@ -1170,89 +1166,34 @@ public class VideoPlayer {
 							}
 													
 							String extension = videoPath.substring(videoPath.lastIndexOf("."));	
-							
-							try {
 								
-								if (extension.toLowerCase().equals(".pdf"))
-								{	
-									PDF.info(videoPath);	
-									do
-									{
-										Thread.sleep(100);						 
-									}
-									while (PDF.isRunning);								 
-								}				
-								else
-								{	
-									FFPROBE.FrameData(videoPath);	
-									do 
-									{								
-										Thread.sleep(100);								
-									} 
-									while (FFPROBE.isRunning);
-									
-									FFPROBE.Data(videoPath);
-									do 
-									{								
-										Thread.sleep(100);								
-									} 
-									while (FFPROBE.isRunning);		
-
-									FFMPEG.checkGPUCapabilities(videoPath, true);
-									
-									if (FFPROBE.interlaced == null)
-									{
-										MEDIAINFO.run(videoPath, false);
-										
-										do
-										{
-											Thread.sleep(100);
-										}
-										while (MEDIAINFO.isRunning);
-										
-										if (FFPROBE.interlaced == null)
-										{
-											FFPROBE.interlaced = "0";
-											FFPROBE.fieldOrder = "0";
-										}
-									}
-
-									boolean isRaw = false;
-						    		
-									//FFprobe with RAW files
-									switch (extension.toLowerCase()) { 
-										case ".3fr":
-										case ".arw":
-										case ".crw":
-										case ".cr2":
-										case ".cr3":
-										case ".dng":
-										case ".kdc":
-										case ".mrw":
-										case ".nef":
-										case ".nrw":
-										case ".orf":
-										case ".ptx":
-										case ".pef":
-										case ".raf":
-										case ".r3d":
-										case ".rw2":
-										case ".srw":
-										case ".x3f":
-											isRaw = true;
-									}
-													
-									if (isRaw || FFPROBE.totalLength <= 40)
-									{										
-										EXIFTOOL.run(videoPath);	
-										do
-										{
-											Thread.sleep(100);						 
-										}
-										while (EXIFTOOL.isRunning);
-									}
-								}
-														
+							boolean isRaw = false;
+				    		
+							//FFprobe with RAW files
+							switch (extension.toLowerCase()) { 
+								case ".3fr":
+								case ".arw":
+								case ".crw":
+								case ".cr2":
+								case ".cr3":
+								case ".dng":
+								case ".kdc":
+								case ".mrw":
+								case ".nef":
+								case ".nrw":
+								case ".orf":
+								case ".ptx":
+								case ".pef":
+								case ".raf":
+								case ".r3d":
+								case ".rw2":
+								case ".srw":
+								case ".x3f":
+									isRaw = true;
+							}
+				
+							try {
+								FunctionUtils.analyze(new File(videoPath), isRaw);														
 							} catch (InterruptedException e) {}
 							
 							setPlayerButtons(true);	
@@ -1385,7 +1326,7 @@ public class VideoPlayer {
 							
 							//Watermark
 							if (Shutter.caseAddWatermark.isSelected() && FFPROBE.previousImageWidth != Shutter.logoWidth)
-							{			
+							{		
 								float scale = 0.0f;
 								if (FFPROBE.previousImageWidth > 0)	
 								{
@@ -4646,14 +4587,7 @@ public class VideoPlayer {
 				Shutter.logoHeight = FFPROBE.imageHeight;
 				
 				//IMPORTANT keeps original source file data			
-				try {	
-					
-					FFPROBE.Data(videoPath);
-					do {								
-						Thread.sleep(10);								
-					} while (FFPROBE.isRunning);
-										
-				} catch (InterruptedException e) {}
+				FunctionUtils.analyze(new File(videoPath), false);
 			}
 									
 			int logoFinalSizeWidth = (int) Math.floor((float) Shutter.logoWidth / Shutter.playerRatio);		
@@ -4716,6 +4650,11 @@ public class VideoPlayer {
 		} 
 		finally {
 			
+			if (Shutter.watermarkPreset != null)
+			{
+				watermarkPositions(Shutter.watermarkPreset);
+			}
+			
 			Shutter.btnStart.setEnabled(true);
 			
         	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
@@ -4727,60 +4666,50 @@ public class VideoPlayer {
 		return true;
 	}
 	
-	public static void watermarkPositions() {
+	public static void watermarkPositions(String preset) {
 
+		Shutter.watermarkPreset = preset;
+		
 		int offsetX = (int) ((float) player.getWidth() * 0.036);
 		int offsetY = (int) ((float) player.getHeight() * 0.036);
 		
-		switch (Shutter.comboWatermarkPresets.getSelectedIndex())
+		if (preset.equals("watermarkTopLeft"))
 		{
-			case 0://TOP LEFT
-				
-				Shutter.logo.setLocation(offsetX, offsetY);	
-				break;
-				
-			case 1://LEFT
-				
-				Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));	
-				break;		
-				
-			case 2://BOTTOM LEFT
-				
-				Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);	
-				break;
-				
-			case 3://TOP
-				
-				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), offsetY);	
-				break;
-				
-			case 4://CENTER
-				
-				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));	 						
-				break;
-				
-			case 5://BOTTOM
-				
-				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
-				break;
-				
-			case 6://TOP RIGHT
-				
-				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, offsetY);
-				break;
-				
-			case 7://RIGHT
-				
-				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));
-				break;
-				
-			case 8://BOTTOM RIGHT
-				
-				Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
-				break;
-		
+			Shutter.logo.setLocation(offsetX, offsetY);	
 		}
-		
+		else if (preset.equals("watermarkLeft"))
+		{
+			Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));	
+		}
+		else if (preset.equals("watermarkBottomLeft"))
+		{
+			Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);	
+		}
+		else if (preset.equals("watermarkTop"))
+		{
+			Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), offsetY);	
+		}
+		else if (preset.equals("watermarkCenter"))
+		{
+			Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));
+		}
+		else if (preset.equals("watermarkBottom"))
+		{
+			Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
+		}
+		else if (preset.equals("watermarkTopRight"))
+		{
+			Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, offsetY);
+		}
+		else if (preset.equals("watermarkRight"))
+		{
+			Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayer.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));
+		}
+		else if (preset.equals("watermarkBottomRight"))
+		{
+			Shutter.logo.setLocation((int) Math.floor(VideoPlayer.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayer.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
+		}
+				
 		Shutter.logoLocX = Shutter.logo.getLocation().x;
 		Shutter.logoLocY = Shutter.logo.getLocation().y;
 		Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
@@ -5481,7 +5410,7 @@ public class VideoPlayer {
 	public static void resizeAll() {
 						
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
-		{					
+		{		
 			//Clear the buffer
 			if (bufferedFrames.size() > 0)
 			{			

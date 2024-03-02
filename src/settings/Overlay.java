@@ -563,10 +563,14 @@ public class Overlay extends Shutter {
 		
 		if (Shutter.caseAddWatermark.isSelected())
 	    {			
+			//IMPORTANT RESET SCALING
+			FFPROBE.analyzedMedia = null;
+			
 			if (VideoPlayer.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayer.videoPath).getName()) == false) //Do not process scaling if it's the first item
 			{		
-				VideoPlayer.videoPath = null; //IMPORTANT RESET SCALING
-				
+				//IMPORTANT RESET SCALING
+				VideoPlayer.videoPath = null;
+								
 				float scale = 0.0f;
 				if (FFPROBE.previousImageWidth > 0)	
 				{

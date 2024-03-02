@@ -140,8 +140,16 @@ public static boolean isRotated = false;
 			imageRatio = 1.777777f;
 						
 			//Watermark scaling
-			previousImageWidth = imageWidth;
+			String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 			
+			if (caseGenerateFromDate.isSelected() == false
+			&& comboFonctions.getSelectedItem().toString().equals("JPEG") == false
+			&& comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false
+			&& extension.toLowerCase().equals(".pdf") == false)
+			{
+				previousImageWidth = imageWidth;
+			}			
+						
 			timecode1 = "";
 			timecode2 = "";
 			timecode3 = "";

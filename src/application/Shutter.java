@@ -645,10 +645,9 @@ public class Shutter {
 	public static JTextField textWatermarkPosY;
     public static JTextField textWatermarkSize;
     public static JTextField textWatermarkOpacity;
+    public static String watermarkPreset = null;
     public static JCheckBox caseSafeArea;
-    public static JCheckBox caseWatermarkPositions;
-    public static JComboBox<String> comboWatermarkPresets;
-	public static String logoFile = new String();
+	public static String logoFile = null;
     public static int logoPosX = 0;
     public static int logoPosY = 0;
     public static int logoLocX = 0;
@@ -1439,7 +1438,7 @@ public class Shutter {
 					
 					Shutter.btnReset.doClick();
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					Utils.loadSettings(new File(Functions.functionsFolder + "/" + Settings.comboLoadPreset.getSelectedItem()));
+					Utils.loadSettings(new File(Functions.functionsFolder + "/" + Settings.comboLoadPreset.getSelectedItem()));					
 				}
 				
 			});
@@ -11528,13 +11527,9 @@ public class Shutter {
 		     	{
 					logoPosX = e.getLocationOnScreen().x;
 					logoPosY = e.getLocationOnScreen().y;
-		     	}
+		     	}	
 				
-				if (caseWatermarkPositions.isSelected())
-				{
-					caseWatermarkPositions.doClick();
-				}
-	
+				watermarkPreset = null;
 			}
 			
 			@Override
@@ -11556,10 +11551,7 @@ public class Shutter {
 				textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
 				textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
 				
-				if (caseWatermarkPositions.isSelected())
-				{
-					caseWatermarkPositions.doClick();
-				}
+				watermarkPreset = null;
 			}
 	
 			@Override
@@ -11631,8 +11623,6 @@ public class Shutter {
 							}						
 						}
 						
-						caseWatermarkPositions.setEnabled(true);
-						
 						VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
 			    		VideoPlayer.player.add(logo);
 			    		
@@ -11652,17 +11642,9 @@ public class Shutter {
 					}
 					else
 					{
-						FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseLogo"), FileDialog.LOAD);
-						dialog.setDirectory(new File(VideoPlayer.videoPath).getParent());
-						dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
-						dialog.setAlwaysOnTop(true);
-						dialog.setMultipleMode(false);
-						dialog.setVisible(true);
-	
-						if (dialog.getFile() != null)
+						//Preset loaded
+						if (logoFile != null)
 						{
-							logoFile = dialog.getDirectory() + dialog.getFile().toString();
-							
 							for (Component c : grpWatermark.getComponents())
 							{
 								if (c instanceof JComboBox == false)
@@ -11670,8 +11652,6 @@ public class Shutter {
 									c.setEnabled(true);							
 								}
 							}
-							
-							caseWatermarkPositions.setEnabled(true);
 							
 							VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
 				    		VideoPlayer.player.add(logo);
@@ -11689,11 +11669,48 @@ public class Shutter {
 							}
 						}
 						else
-						{
-							if (Shutter.overlayDeviceIsRunning)
-								Shutter.overlayDeviceIsRunning = false;
-							
-							caseAddWatermark.setSelected(false);
+						{						
+							FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseLogo"), FileDialog.LOAD);
+							dialog.setDirectory(new File(VideoPlayer.videoPath).getParent());
+							dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
+							dialog.setAlwaysOnTop(true);
+							dialog.setMultipleMode(false);
+							dialog.setVisible(true);
+		
+							if (dialog.getFile() != null)
+							{
+								logoFile = dialog.getDirectory() + dialog.getFile().toString();
+								
+								for (Component c : grpWatermark.getComponents())
+								{
+									if (c instanceof JComboBox == false)
+									{
+										c.setEnabled(true);							
+									}
+								}
+								
+								VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
+					    		VideoPlayer.player.add(logo);
+					    		
+					    		textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
+								textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio) ) ) );  
+					    		
+					    		//Overimage need to be the last component added
+								if (caseEnableCrop.isSelected())
+								{
+									VideoPlayer.player.remove(selection);
+									VideoPlayer.player.remove(overImage);
+									VideoPlayer.player.add(selection);
+									VideoPlayer.player.add(overImage);
+								}
+							}
+							else
+							{
+								if (Shutter.overlayDeviceIsRunning)
+									Shutter.overlayDeviceIsRunning = false;
+								
+								caseAddWatermark.setSelected(false);
+							}
 						}
 					}
 					
@@ -11708,11 +11725,8 @@ public class Shutter {
 						}
 					}
 					
-					caseWatermarkPositions.setSelected(false);
-					caseWatermarkPositions.setEnabled(false);
-					comboWatermarkPresets.setEnabled(false);
-					
 					VideoPlayer.player.remove(logo);
+					logoFile = null;
 					logoPNG = null;
 				}	
 
@@ -11766,62 +11780,140 @@ public class Shutter {
 			}
 			
 		});
-			
-		caseWatermarkPositions = new JCheckBox(Shutter.language.getProperty("lblPresets"));
-		caseWatermarkPositions.setName("caseWatermarkPositions");
-		caseWatermarkPositions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseWatermarkPositions.setBounds(caseAddWatermark.getX(), caseAddWatermark.getY() + caseAddWatermark.getHeight(), caseWatermarkPositions.getPreferredSize().width, 23);	
-		caseWatermarkPositions.setSelected(false);
-		caseWatermarkPositions.setEnabled(false);
-		grpWatermark.add(caseWatermarkPositions);
-		
-		caseWatermarkPositions.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if (caseWatermarkPositions.isSelected())
-				{
-					comboWatermarkPresets.setEnabled(true);
-					VideoPlayer.watermarkPositions();
-				}
-				else
-					comboWatermarkPresets.setEnabled(false);
 					
-			}
-			
-		});
+		JLabel watermarkTopLeft = new JLabel("\u2196");
+		watermarkTopLeft.setName("watermarkTopLeft");
+		watermarkTopLeft.setBackground(new Color(42,42,47));
+		watermarkTopLeft.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkTopLeft.setOpaque(true);
+		watermarkTopLeft.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkTopLeft.setSize(28, 16);
+		watermarkTopLeft.setLocation(grpWatermark.getWidth() / 2 - 270 / 2, caseAddWatermark.getY() + caseAddWatermark.getHeight() + 2);
+		grpWatermark.add(watermarkTopLeft);
 		
-		final String presetsList[] = { "\u2196", "\u2190", "\u2199", "\u2191", "\u2500", "\u2193", "\u2197", "\u2192", "\u2198"};
+		JLabel watermarkLeft = new JLabel("\u2190");
+		watermarkLeft.setName("watermarkLeft");
+		watermarkLeft.setBackground(new Color(42,42,47));
+		watermarkLeft.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkLeft.setOpaque(true);
+		watermarkLeft.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkLeft.setSize(watermarkTopLeft.getSize());
+		watermarkLeft.setLocation(watermarkTopLeft.getX() + watermarkTopLeft.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkLeft);
 		
-		comboWatermarkPresets = new JComboBox<String>();
-		comboWatermarkPresets.setName("comboWatermarkPresets");
-		comboWatermarkPresets.setModel(new DefaultComboBoxModel<String>(presetsList));
-		comboWatermarkPresets.setMaximumRowCount(10);
-		comboWatermarkPresets.setEnabled(false);
-		comboWatermarkPresets.setEditable(false);
-		comboWatermarkPresets.setSelectedIndex(4);
-		comboWatermarkPresets.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
-		comboWatermarkPresets.setBounds(caseWatermarkPositions.getX() + caseWatermarkPositions.getWidth() + 4, caseWatermarkPositions.getY() + 2, 40, 18);		
-		grpWatermark.add(comboWatermarkPresets);
+		JLabel watermarkBottomLeft = new JLabel("\u2199");
+		watermarkBottomLeft.setName("watermarkBottomLeft");
+		watermarkBottomLeft.setBackground(new Color(42,42,47));
+		watermarkBottomLeft.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkBottomLeft.setOpaque(true);
+		watermarkBottomLeft.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkBottomLeft.setSize(watermarkTopLeft.getSize());
+		watermarkBottomLeft.setLocation(watermarkLeft.getX() + watermarkLeft.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkBottomLeft);
 		
-		comboWatermarkPresets.addActionListener(new ActionListener() {
+		JLabel watermarkTop = new JLabel("\u2191");
+		watermarkTop.setName("watermarkTop");
+		watermarkTop.setBackground(new Color(42,42,47));
+		watermarkTop.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkTop.setOpaque(true);
+		watermarkTop.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkTop.setSize(watermarkTopLeft.getSize());
+		watermarkTop.setLocation(watermarkBottomLeft.getX() + watermarkBottomLeft.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkTop);
+		
+		JLabel watermarkCenter = new JLabel("\u2500");
+		watermarkCenter.setName("watermarkCenter");
+		watermarkCenter.setBackground(new Color(42,42,47));
+		watermarkCenter.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkCenter.setOpaque(true);
+		watermarkCenter.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkCenter.setSize(watermarkTopLeft.getSize());
+		watermarkCenter.setLocation(watermarkTop.getX() + watermarkTop.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkCenter);
+		
+		JLabel watermarkBottom = new JLabel("\u2193");
+		watermarkBottom.setName("watermarkBottom");
+		watermarkBottom.setBackground(new Color(42,42,47));
+		watermarkBottom.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkBottom.setOpaque(true);
+		watermarkBottom.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkBottom.setSize(watermarkTopLeft.getSize());
+		watermarkBottom.setLocation(watermarkCenter.getX() + watermarkCenter.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkBottom);
+		
+		JLabel watermarkTopRight = new JLabel("\u2197");
+		watermarkTopRight.setName("watermarkTopRight");
+		watermarkTopRight.setBackground(new Color(42,42,47));
+		watermarkTopRight.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkTopRight.setOpaque(true);
+		watermarkTopRight.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkTopRight.setSize(watermarkTopLeft.getSize());
+		watermarkTopRight.setLocation(watermarkBottom.getX() + watermarkBottom.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkTopRight);
+		
+		JLabel watermarkRight = new JLabel("\u2192");
+		watermarkRight.setName("watermarkRight");
+		watermarkRight.setBackground(new Color(42,42,47));
+		watermarkRight.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkRight.setOpaque(true);
+		watermarkRight.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkRight.setSize(watermarkTopLeft.getSize());
+		watermarkRight.setLocation(watermarkTopRight.getX() + watermarkTopRight.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkRight);
+		
+		JLabel watermarkBottomRight = new JLabel("\u2198");
+		watermarkBottomRight.setName("watermarkBottomRight");
+		watermarkBottomRight.setBackground(new Color(42,42,47));
+		watermarkBottomRight.setHorizontalAlignment(SwingConstants.CENTER);
+		watermarkBottomRight.setOpaque(true);
+		watermarkBottomRight.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		watermarkBottomRight.setSize(watermarkTopLeft.getSize());
+		watermarkBottomRight.setLocation(watermarkRight.getX() + watermarkRight.getWidth() + 2, watermarkTopLeft.getY());
+		grpWatermark.add(watermarkBottomRight);
+		
+		MouseListener watermarkPositions = new MouseListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				VideoPlayer.watermarkPositions();
+			public void mouseClicked(MouseEvent arg0) {
 			}
 
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));	
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				VideoPlayer.watermarkPositions(e.getComponent().getName());
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {				
+			}
 			
-		});
+		};
+		
+		watermarkTopLeft.addMouseListener(watermarkPositions);
+		watermarkLeft.addMouseListener(watermarkPositions);
+		watermarkBottomLeft.addMouseListener(watermarkPositions);
+		watermarkTop.addMouseListener(watermarkPositions);
+		watermarkCenter.addMouseListener(watermarkPositions);
+		watermarkBottom.addMouseListener(watermarkPositions);
+		watermarkTopRight.addMouseListener(watermarkPositions);
+		watermarkRight.addMouseListener(watermarkPositions);
+		watermarkBottomRight.addMouseListener(watermarkPositions);		
 		
 		JLabel watermarkPosX = new JLabel(Shutter.language.getProperty("posX"));
 		watermarkPosX.setHorizontalAlignment(SwingConstants.RIGHT);
 		watermarkPosX.setEnabled(false);
 		watermarkPosX.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		watermarkPosX.setForeground(Utils.themeColor);
-		watermarkPosX.setBounds(24, caseWatermarkPositions.getY() + caseWatermarkPositions.getHeight() + 4, watermarkPosX.getPreferredSize().width, 16);
+		watermarkPosX.setBounds(24, watermarkBottomRight.getY() + watermarkBottomRight.getHeight() + 6, watermarkPosX.getPreferredSize().width, 16);
 	
 		textWatermarkPosX = new JTextField(String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio) ) ) );
 		textWatermarkPosX.setName("textWatermarkPosX");
@@ -11851,10 +11943,7 @@ public class Shutter {
 					logoLocX = logo.getLocation().x;
 					logoLocY = logo.getLocation().y;
 					
-					if (caseWatermarkPositions.isSelected())
-					{
-						caseWatermarkPositions.doClick();
-					}
+					watermarkPreset = null;
 				}
 			}
 	
@@ -11888,11 +11977,8 @@ public class Shutter {
 	
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				if (caseWatermarkPositions.isSelected())
-				{
-					caseWatermarkPositions.doClick();
-				}
+								
+				watermarkPreset = null;
 				
 				MouseLogoPosition.mouseX = e.getX();
 				MouseLogoPosition.offsetX = Integer.parseInt(textWatermarkPosX.getText());
@@ -11951,10 +12037,7 @@ public class Shutter {
 					logoLocX = logo.getLocation().x;
 					logoLocY = logo.getLocation().y;
 					
-					if (caseWatermarkPositions.isSelected())
-					{
-						caseWatermarkPositions.doClick();
-					}
+					watermarkPreset = null;
 				}
 			}
 	
@@ -11989,11 +12072,8 @@ public class Shutter {
 	
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				if (caseWatermarkPositions.isSelected())
-				{
-					caseWatermarkPositions.doClick();
-				}
+								
+				watermarkPreset = null;
 				
 				MouseLogoPosition.mouseY = e.getY();
 				MouseLogoPosition.offsetY = Integer.parseInt(textWatermarkPosY.getText());
@@ -12028,18 +12108,11 @@ public class Shutter {
 		px2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		px2.setForeground(Utils.themeColor);
 		px2.setBounds(textWatermarkPosY.getLocation().x + textWatermarkPosY.getWidth() + 2, watermarkPosX.getY(), watermarkPosX.getPreferredSize().width, 16);
-		
-		JLabel watermarkSize = new JLabel(Shutter.language.getProperty("lblSize"));
-		watermarkSize.setEnabled(false);
-		watermarkSize.setHorizontalAlignment(SwingConstants.RIGHT);
-		watermarkSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		watermarkSize.setForeground(Utils.themeColor);
-		watermarkSize.setBounds(watermarkPosX.getX(), watermarkPosX.getY() + watermarkPosX.getHeight() + 4, watermarkSize.getPreferredSize().width, 16);
-		
+			
 		textWatermarkSize = new JTextField("100");
 		textWatermarkSize.setName("textWatermarkSize");
 		textWatermarkSize.setEnabled(false);
-		textWatermarkSize.setBounds(textWatermarkPosX.getLocation().x, watermarkSize.getY(), 34, 16);
+		textWatermarkSize.setBounds(textWatermarkPosX.getLocation().x, watermarkPosX.getY() + watermarkPosX.getHeight() + 4, 34, 16);
 		textWatermarkSize.setHorizontalAlignment(SwingConstants.RIGHT);
 		textWatermarkSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		
@@ -12062,11 +12135,8 @@ public class Shutter {
 	
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				if (caseWatermarkPositions.isSelected())
-				{
-					caseWatermarkPositions.doClick();
-				}
+
+				watermarkPreset = null;
 				
 				MouseLogoPosition.mouseX = e.getX();
 				MouseLogoPosition.offsetX = Integer.parseInt(textWatermarkSize.getText());
@@ -12142,7 +12212,14 @@ public class Shutter {
 			public void mouseMoved(MouseEvent e) {		
 			}
 		});	
-		
+	
+		JLabel watermarkSize = new JLabel(Shutter.language.getProperty("lblSize"));
+		watermarkSize.setEnabled(false);
+		watermarkSize.setHorizontalAlignment(SwingConstants.RIGHT);
+		watermarkSize.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		watermarkSize.setForeground(Utils.themeColor);
+		watermarkSize.setBounds(textWatermarkSize.getX() - watermarkSize.getPreferredSize().width - 2, watermarkPosX.getY() + watermarkPosX.getHeight() + 4, watermarkSize.getPreferredSize().width, 16);
+			
 		JLabel percent1 = new JLabel("%");
 		percent1.setEnabled(false);
 		percent1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -22920,24 +22997,7 @@ public class Shutter {
 			else
 				components[i].setEnabled(true);
 		}
-		
-		if (caseAddWatermark.isSelected())
-		{
-			caseWatermarkPositions.setEnabled(true);
-			
-			if (caseWatermarkPositions.isSelected())
-			{
-				comboWatermarkPresets.setEnabled(true);
-			}			
-			else
-				comboWatermarkPresets.setEnabled(false);
-		}
-		else
-		{
-			caseWatermarkPositions.setEnabled(false);
-			comboWatermarkPresets.setEnabled(false);
-		}
-				
+						
 		if (inputDeviceIsRunning == false)
 		{
 			components = grpImageAdjustement.getComponents();

@@ -83,6 +83,9 @@ public static int pagesCount = 1;
 		FFPROBE.hasAudio = false;
 		FFPROBE.totalLength = 0;
 		
+		//Watermark scaling
+		FFPROBE.previousImageWidth = FFPROBE.imageWidth;
+		
 		runProcess = new Thread(new Runnable()  {
 			
 			@Override

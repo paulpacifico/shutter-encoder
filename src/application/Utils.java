@@ -702,6 +702,58 @@ public class Utils extends Shutter {
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
+				
+				//Saving grpWatermak preset
+				Element watermark = document.createElement("Watermark");
+				
+				if (caseAddWatermark.isSelected())
+				{	
+					if (logoFile != null)
+					{
+						Element componentWatermarkFile = document.createElement("Component");
+						
+						//Type
+						Element cTypeWatermarkFile = document.createElement("Type");
+						cTypeWatermarkFile.appendChild(document.createTextNode("String"));
+						componentWatermarkFile.appendChild(cTypeWatermarkFile);
+		
+						//Name
+						Element cNameWatermarkFile = document.createElement("Name");
+						cNameWatermarkFile.appendChild(document.createTextNode("watermarkFile"));
+						componentWatermarkFile.appendChild(cNameWatermarkFile);
+						
+						//Value
+						Element cValueWatermarkFile = document.createElement("Value");
+						cValueWatermarkFile.appendChild(document.createTextNode(logoFile));
+						componentWatermarkFile.appendChild(cValueWatermarkFile);
+		
+						watermark.appendChild(componentWatermarkFile);	
+					}
+					
+					if (watermarkPreset != null)
+					{
+						Element componentWatermarkPreset = document.createElement("Component");
+						
+						//Type
+						Element cTypeWatermarkPreset = document.createElement("Type");
+						cTypeWatermarkPreset.appendChild(document.createTextNode("String"));
+						componentWatermarkPreset.appendChild(cTypeWatermarkPreset);
+		
+						//Name
+						Element cNameWatermarkPreset = document.createElement("Name");
+						cNameWatermarkPreset.appendChild(document.createTextNode("watermarkPreset"));
+						componentWatermarkPreset.appendChild(cNameWatermarkPreset);
+						
+						//Value
+						Element cValueWatermarkPreset = document.createElement("Value");
+						cValueWatermarkPreset.appendChild(document.createTextNode(watermarkPreset));
+						componentWatermarkPreset.appendChild(cValueWatermarkPreset);
+		
+						watermark.appendChild(componentWatermarkPreset);
+					}
+										
+					root.appendChild(watermark);
+				}
 								
 				for (Component c : frame.getContentPane().getComponents())
 				{
@@ -1304,7 +1356,7 @@ public class Utils extends Shutter {
 					
 					root.appendChild(color);
 				}	
-																														
+																									
 				// creation du fichier XML
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
@@ -1416,7 +1468,7 @@ public class Utils extends Shutter {
 													((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
 												}
 												else if (p instanceof JCheckBox)
-												{			
+												{																
 													//State
 													((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 													
@@ -1568,6 +1620,22 @@ public class Utils extends Shutter {
 											}
 										}
 									}
+								}
+								
+								//grpWatermak
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkFile"))
+								{
+									File logo = new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									
+									if (logo.exists())
+									{
+										logoFile = logo.toString();
+									}
+								}
+								
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkPreset"))
+								{
+									watermarkPreset = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
 								}
 								
 								//btnExtension

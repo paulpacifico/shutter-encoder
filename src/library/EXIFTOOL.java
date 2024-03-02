@@ -55,6 +55,9 @@ private static Boolean horizontal = true;
 		creationHours = "00:00:00";
 		exifWidth = "";
 		exifHeight = "";
+			
+		//Watermark scaling
+		FFPROBE.previousImageWidth = FFPROBE.imageWidth;
 		 
 		runProcess = new Thread(new Runnable()  {
 			@Override
