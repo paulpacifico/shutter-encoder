@@ -1324,22 +1324,39 @@ public class VideoPlayer {
 							getFileList(videoPath);
 							setFileList();		
 							
-							//Watermark
-							if (Shutter.caseAddWatermark.isSelected() && FFPROBE.previousImageWidth != Shutter.logoWidth)
-							{		
-								float scale = 0.0f;
-								if (FFPROBE.previousImageWidth > 0)	
-								{
-									scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
-								}
+							System.out.println(FFPROBE.previousImageWidth);
+							
+							//Scaling text & logo
+							float scale = 0.0f;
+							if (FFPROBE.previousImageWidth > 0)	
+							{
+								scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
 								
 								if (scale != 0.0f)
-								{			
-									Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
+								{
+									//Display timecode
+									if (Shutter.caseShowTimecode.isSelected() || Shutter.caseAddTimecode.isSelected())
+									{
+										Shutter.textTcSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textTcSize.getText()) * scale)));		
+										refreshTimecodeAndText();
+									}
+									
+									//Display text
+									if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected())
+									{
+										Shutter.textNameSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textNameSize.getText()) * scale)));
+										refreshTimecodeAndText();
+									}
+									
+									//Watermark
+									if (Shutter.caseAddWatermark.isSelected() && FFPROBE.previousImageWidth != Shutter.logoWidth)							
+									{												
+										Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));								
+										resizeAll();
+									}
 								}
-								
-								resizeAll();
 							}
+							
 						}	
 						
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1593,7 +1610,7 @@ public class VideoPlayer {
 			btnGoToIn.setVisible(false);
 			btnMarkIn.setVisible(false);
 
-			if (Shutter.liste.getSize() > 0 && videoPath != null && fullscreenPlayer == false)
+			if (Shutter.liste.getSize() > 0 && videoPath != null && fullscreenPlayer == false && isPiping == false)
 			{
 				showScale.setVisible(true);
 			}
@@ -2012,7 +2029,7 @@ public class VideoPlayer {
 		if (caseShowWaveform.isSelected() && FFPROBE.hasAudio && addWaveformIsRunning == false && Shutter.frame.getSize().width > 654)
 		{			
 			addWaveformIsRunning = true;
-
+			
 			if (newWaveform || waveform == null)
 			{
 				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -2085,7 +2102,7 @@ public class VideoPlayer {
 					
 					//add Waveform		
 					try {
-							
+						
 						if (Shutter.liste.getSize() > 0 && isPiping == false && waveform != null)
 						{
 							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) //Ne charge plus l'image si la fenêtre est fermée entre temps
@@ -2106,7 +2123,7 @@ public class VideoPlayer {
 								waveformIcon.setIcon(resizedWaveform);
 								waveformIcon.repaint();
 
-								if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && FFMPEG.isRunning)
+								if ((RenderQueue.frame != null && RenderQueue.frame.isVisible() && FFMPEG.isRunning) || isPiping)
 								{
 									waveformIcon.setVisible(false);
 								}
@@ -4870,8 +4887,7 @@ public class VideoPlayer {
 								do {									
 									Thread.sleep(10);
 								} while (NCNN.isRunning);
-								
-								Shutter.btnStart.setEnabled(true);								
+															
 								Shutter.progressBar1.setValue(0);
 								Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
 																
@@ -5423,9 +5439,10 @@ public class VideoPlayer {
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
 			{
-				isPiping = true;
+				isPiping = true;				
+				setPlayerButtons(false);
 			}
-
+			
 			//Players 		
 			float ratio = FFPROBE.imageRatio;
 			if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))

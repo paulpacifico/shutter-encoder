@@ -12841,7 +12841,7 @@ public class Shutter {
 		caseLUTs.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		caseLUTs.setBounds(7, caseColorspace.getLocation().y + caseColorspace.getHeight(), caseLUTs.getPreferredSize().width, 22);
 		grpColorimetry.add(caseLUTs);
-	
+			
 		ArrayList<Object> LUTs = new ArrayList<Object>();
 	
 		String PathToLUTs = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -12917,6 +12917,8 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
+				int index = comboLUTs.getSelectedIndex();
+								
 				File[] luts = lutsFolder.listFiles();
 				String[] data = new String[luts.length]; 
 	
@@ -12951,7 +12953,8 @@ public class Shutter {
 				    }
 					
 					comboLUTs.setModel(new DefaultComboBoxModel<Object>(LUTs.toArray()));
-					comboLUTs.setEnabled(true);
+					comboLUTs.setEnabled(true);					
+					comboLUTs.setSelectedIndex(index);
 				} 
 				else
 				{
