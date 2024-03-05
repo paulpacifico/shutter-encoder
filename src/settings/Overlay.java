@@ -37,9 +37,33 @@ import library.FFPROBE;
 public class Overlay extends Shutter {
 
 	public static String showTimecode(String filterComplex, String file, boolean videoPlayerCapture) {
-		
+				
 		if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected()))
-		{			
+		{	
+			//Scaling
+			float scale = 0.0f;
+			if (FFPROBE.previousImageWidth > 0)	
+			{
+				scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+				
+				if (scale != 0.0f)
+				{
+					//Display timecode
+					if (Shutter.caseShowTimecode.isSelected() || Shutter.caseAddTimecode.isSelected())
+					{
+						Shutter.textTcSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textTcSize.getText()) * scale)));							
+					}
+					
+					//Display text
+					if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected())
+					{
+						Shutter.textNameSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textNameSize.getText()) * scale)));
+					}
+					
+					VideoPlayer.refreshTimecodeAndText();
+				}
+			}
+			
 			String tc1 = FFPROBE.timecode1;
 			String tc2 = FFPROBE.timecode2;
 			String tc3 = FFPROBE.timecode3;
@@ -575,13 +599,13 @@ public class Overlay extends Shutter {
 				if (FFPROBE.previousImageWidth > 0)	
 				{
 					scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+					
+					if (scale != 0.0f)
+					{			
+						Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
+					}
 				}
 				
-				if (scale != 0.0f)
-				{			
-					Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));
-				}
-
 				VideoPlayer.resizeAll();
 				
 				VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));

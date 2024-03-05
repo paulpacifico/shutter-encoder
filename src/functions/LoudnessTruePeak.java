@@ -137,13 +137,14 @@ public class LoudnessTruePeak extends Shutter {
 		
 		if (FFMPEG.analyseLufs != null && Shutter.cancelled == false && FFMPEG.error == false)
 		{
-			 JOptionPane.showMessageDialog(frame, FFMPEG.analyseLufs, "Loudness & True Peak", JOptionPane.INFORMATION_MESSAGE);
+			 JOptionPane.showMessageDialog(frame, FFMPEG.analyseLufs, file, JOptionPane.INFORMATION_MESSAGE);
 			 int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("saveResult") , Shutter.language.getProperty("analyzeEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 			 
 			 if (q == JOptionPane.YES_OPTION)
 			 {
-				FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveResult"), FileDialog.SAVE);
+				FileDialog dialog = new FileDialog(frame, file, FileDialog.SAVE);
 				dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
+				dialog.setFile(file + ".txt");
 				dialog.setVisible(true);
 	
 				 if (dialog.getFile() != null)

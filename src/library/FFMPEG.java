@@ -213,8 +213,6 @@ public static StringBuilder errorLog = new StringBuilder();
 								{
 									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -an -c:v bmp -f image2pipe pipe:-";
 								}
-								else
-									btnStart.setEnabled(false);
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
 								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});

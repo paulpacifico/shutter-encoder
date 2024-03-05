@@ -129,10 +129,10 @@ public class AudioEncoders extends Shutter {
 								
 								if (System.getProperty("os.name").contains("Mac"))
 								{
-									audioCodec = "aac_at -b:a " + comboFilter.getSelectedItem().toString() + "k";	
+									audioCodec = "aac_at -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -vn -write_id3v2 1";	
 								}
 								else
-									audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k";
+									audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -vn -write_id3v2 1";
 								
 								container = ".m4a";	
 								stereoOutput = false;
@@ -140,7 +140,7 @@ public class AudioEncoders extends Shutter {
 							
 							case "AC3":
 								
-								audioCodec = "ac3 -b:a " + comboFilter.getSelectedItem().toString() + "k";		
+								audioCodec = "ac3 -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";		
 								container = ".ac3";	
 								stereoOutput = true;
 								break;
@@ -149,10 +149,10 @@ public class AudioEncoders extends Shutter {
 								
 								if (comboFilter.getSelectedItem().toString().contains("Float"))
 								{
-									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "be";
+									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "be" + " -write_id3v2 1";
 								}
 								else
-									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be";	
+									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be" + " -write_id3v2 1";	
 								
 								stereoOutput = true;
 								container = ".aif";								
@@ -160,28 +160,28 @@ public class AudioEncoders extends Shutter {
 								
 							case "FLAC":
 								
-								audioCodec = "flac -compression_level " + comboFilter.getSelectedItem().toString();									
+								audioCodec = "flac -compression_level " + comboFilter.getSelectedItem().toString() + " -write_id3v2 1";									
 								container = ".flac";
 								stereoOutput = true;
 								break;
 								
 							case "ALAC":
 								
-								audioCodec = "alac -sample_fmt s" + comboFilter.getSelectedItem().toString().replace(" Bits", "").replace("24", "32") + "p";	
+								audioCodec = "alac -sample_fmt s" + comboFilter.getSelectedItem().toString().replace(" Bits", "").replace("24", "32") + "p" + " -vn -write_id3v2 1";	
 								container = ".m4a";
 								stereoOutput = true;
 								break;
 								
 							case "Vorbis":	
 								
-								audioCodec = "libvorbis -b:a " + comboFilter.getSelectedItem().toString() + "k";									
+								audioCodec = "libvorbis -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";									
 								container = ".oga";
 								stereoOutput = true;
 								break;
 								
 							case "Dolby Digital Plus":
 								
-								audioCodec = "eac3 -b:a " + comboFilter.getSelectedItem().toString() + "k";									
+								audioCodec = "eac3 -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";									
 								container = ".eac3";
 								stereoOutput = true;
 								break;
@@ -195,7 +195,7 @@ public class AudioEncoders extends Shutter {
 								
 							case "Opus":
 								
-								audioCodec = "libopus -b:a " + comboFilter.getSelectedItem().toString() + "k";		
+								audioCodec = "libopus -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";		
 								
 								if (FFPROBE.surround && FFPROBE.channelLayout != "")
 								{
@@ -208,7 +208,7 @@ public class AudioEncoders extends Shutter {
 							
 							case "MP3":
 								
-								audioCodec = "libmp3lame -b:a " + comboFilter.getSelectedItem().toString() + "k";		
+								audioCodec = "libmp3lame -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";		
 								container = ".mp3";	
 								stereoOutput = true;
 								break;
@@ -217,10 +217,10 @@ public class AudioEncoders extends Shutter {
 								
 								if (comboFilter.getSelectedItem().toString().contains("Float"))
 								{
-									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "le" + " -write_bext 1";
+									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "le" + " -write_bext 1 -write_id3v2 1";
 								}
 								else
-									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "le" + " -write_bext 1";		
+									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "le" + " -write_bext 1 -write_id3v2 1";		
 								
 								container = ".wav";
 								stereoOutput = true;
@@ -275,7 +275,7 @@ public class AudioEncoders extends Shutter {
 							{
 								if (lblSplit.getText().equals(language.getProperty("mono")))
 								{								
-									String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -vn -y ";
+									String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -y ";
 									FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd
 									+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FL" + container) + '"'
 									+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FR" + container) + '"'
@@ -286,7 +286,7 @@ public class AudioEncoders extends Shutter {
 								}
 								else if (lblSplit.getText().equals(language.getProperty("stereo")))
 								{		
-									String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -vn -y ";
+									String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -y ";
 									FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
 								}
 							}
@@ -297,7 +297,7 @@ public class AudioEncoders extends Shutter {
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("2.1"))
 						{
-							String cmd = " " + audio + "-vn -y ";
+							String cmd = " " + audio + "-y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
 									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
 									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
@@ -306,7 +306,7 @@ public class AudioEncoders extends Shutter {
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 						{
-							String cmd = " " + audio + "-vn -y ";
+							String cmd = " " + audio + "-y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
 									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
 									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
@@ -318,7 +318,7 @@ public class AudioEncoders extends Shutter {
 						}
 						else
 						{
-							String cmd = " " + audio + "-vn -y ";
+							String cmd = " " + audio + "-y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
 						}								
 						
@@ -516,7 +516,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFilter + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + " -vn" + yesno;
+				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFilter + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
@@ -552,7 +552,7 @@ public class AudioEncoders extends Shutter {
 				if (audioFilter != "")     
 					audioFilter = audioFilter.replaceFirst(",", " -filter_complex ");
 				
-				String cmd = audioFilter + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + " -vn" + yesno;
+				String cmd = audioFilter + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
@@ -584,7 +584,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + " -vn" + yesno;
+				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
