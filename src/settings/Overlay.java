@@ -39,28 +39,36 @@ public class Overlay extends Shutter {
 	public static String showTimecode(String filterComplex, String file, boolean videoPlayerCapture) {
 				
 		if ((Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected()))
-		{	
-			//Scaling
-			float scale = 0.0f;
-			if (FFPROBE.previousImageWidth > 0)	
-			{
-				scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+		{			
+			//IMPORTANT RESET SCALING
+			FFPROBE.analyzedMedia = null;
+			
+			if (VideoPlayer.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayer.videoPath).getName()) == false) //Do not process scaling if it's the first item
+			{		
+				//IMPORTANT RESET SCALING
+				VideoPlayer.videoPath = null;
 				
-				if (scale != 0.0f)
+				float scale = 0.0f;
+				if (FFPROBE.previousImageWidth > 0)	
 				{
-					//Display timecode
-					if (Shutter.caseShowTimecode.isSelected() || Shutter.caseAddTimecode.isSelected())
+					scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+
+					if (scale != 0.0f)
 					{
-						Shutter.textTcSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textTcSize.getText()) * scale)));							
+						//Display timecode
+						if (Shutter.caseShowTimecode.isSelected() || Shutter.caseAddTimecode.isSelected())
+						{
+							Shutter.textTcSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textTcSize.getText()) * scale)));							
+						}
+						
+						//Display text
+						if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected())
+						{
+							Shutter.textNameSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textNameSize.getText()) * scale)));
+						}
+
+						VideoPlayer.resizeAll();
 					}
-					
-					//Display text
-					if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected())
-					{
-						Shutter.textNameSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textNameSize.getText()) * scale)));
-					}
-					
-					VideoPlayer.refreshTimecodeAndText();
 				}
 			}
 			
