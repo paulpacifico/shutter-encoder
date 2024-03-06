@@ -645,7 +645,7 @@ public class Shutter {
 	public static JTextField textWatermarkPosY;
     public static JTextField textWatermarkSize;
     public static JTextField textWatermarkOpacity;
-    public static String watermarkPreset = null;
+    public static String watermarkPreset = "watermarkCenter";
     public static JCheckBox caseSafeArea;
 	public static String logoFile = null;
     public static int logoPosX = 0;
@@ -8533,146 +8533,150 @@ public class Shutter {
 			
 			@Override
 		    protected void paintComponent(Graphics g)
-		    {				 
-		        super.paintComponent(g);
-		
-		        Graphics2D g2 = (Graphics2D) g;
-		
-		        //First initialisation
-		        boolean resetLocation = false;
-		        if (getWidth() == 1)
-		        {
-		        	resetLocation = true;
-		        }
-		        
-		        //Saving height for spinnerSize
-				int width = getWidth();
-				int height = getHeight();
-		        
-		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		        
-				Font font = new Font(comboOverlayFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(textTcSize.getText()) / playerRatio));
-		        font.deriveFont((float) Integer.parseInt(textTcSize.getText()) / playerRatio);
-		        g2.setFont(font);
-		        		        
-		        String dropFrame = ":";
-		        if (FFPROBE.dropFrameTC.equals(":") == false  && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
-	        	{
-		        	dropFrame = ";";
-	        	}
-		        
-		   		if (Shutter.caseConform.isSelected())
-		   		{
-		   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
-		   			{
-		   				dropFrame = ";";
-		   			}
-		   			else 
-		   				dropFrame = ":";
-		   		}
-		        
-		        String str = "00:00:00" + dropFrame + "00";
-		        
-				if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) 
-				{												
-					float tcH = 0;				
-					float tcM = 0;
-					float tcS = 0;
-					float tcF = 0;
-					
-					if (caseAddTimecode.isSelected() && TC1.getText().isEmpty() == false && TC2.getText().isEmpty() == false && TC3.getText().isEmpty() == false && TC4.getText().isEmpty() == false)
-					{
-						tcH = Integer.valueOf(TC1.getText());
-						tcM = Integer.valueOf(TC2.getText());
-						tcS = Integer.valueOf(TC3.getText());
-						tcF = Integer.valueOf(TC4.getText());
-					}
-					else if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "" == false)
-					{
-						tcH = Integer.valueOf(FFPROBE.timecode1);
-						tcM = Integer.valueOf(FFPROBE.timecode2);
-						tcS = Integer.valueOf(FFPROBE.timecode3);
-						tcF = Integer.valueOf(FFPROBE.timecode4);
-					}
-					
-					tcH = tcH * 3600 * FFPROBE.currentFPS;
-					tcM = tcM * 60 * FFPROBE.currentFPS;
-					tcS = tcS * FFPROBE.currentFPS;
-					
-					float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
-	
-					if (caseShowTimecode.isSelected())
-					{
-						timeIn = 0;
-					}
-					
-					float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
-					float offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
-					
-					if (offset < 0)
-						offset = 0;
-					
-			        String h = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
-					String m = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
-					String s = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
-					String f = formatter.format(Math.floor(offset % FFPROBE.currentFPS));
-			        
-			        if (caseAddTimecode.isSelected() && lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
-			        {
-			        	str = String.format("%.0f", offset);
-			        }
-			        else
-			        	str = h+":"+m+":"+s+ dropFrame +f;	
-				}
-									
-		        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
+		    {		
 				
-				if (lblTcBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
-					g2.setColor(new Color(backgroundColor.getRed(),backgroundColor.getGreen(),backgroundColor.getBlue(), (int) ( (float) (Integer.parseInt(textTcOpacity.getText()) * 255) /  100)));
-				else
-					g2.setColor(new Color(0,0,0,0));
-									
-				GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-		        AffineTransform transform = gfxConfig.getDefaultTransform();
-		        
-				if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = RetinaScreen
-			        g2.fillRect(0, 0, bounds.width, bounds.height / 2);
-				else
-					g2.fillRect(0, 0, bounds.width, bounds.height);
-				
-				if (lblTcBackground.getText().equals(language.getProperty("aucun")))
-					g2.setColor(new Color(foregroundColor.getRed(),foregroundColor.getGreen(),foregroundColor.getBlue(), (int) ( (float) (Integer.parseInt(textNameOpacity.getText()) * 255) /  100)));
-				else				
-					g2.setColor(foregroundColor);
-				
-				if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = RetinaScreen
-		        {
-		        	Integer offset = bounds.height + (int) bounds.getY();						
-					g2.drawString(str, -2, bounds.height / 2 - offset / 2);	
-		        }
-				else
-				{
-					Integer offset = bounds.height + (int) bounds.getY();						
-					g2.drawString(str, -2, bounds.height - offset);						
-				}
-				
-				setSize(bounds.width, bounds.height);
-
-				//Define center position after the size is correct
-				if (resetLocation)
-				{
-					timecode.setLocation(VideoPlayer.player.getWidth() / 2 - timecode.getWidth() / 2, timecode.getHeight());
-					tcLocX = timecode.getLocation().x;
-					tcLocY = timecode.getLocation().y;
-				}		
-				else if (textTcSize.hasFocus())
+				if ((caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) && liste.getSize() > 0 && VideoPlayer.videoPath != null)
 				{					
-					timecode.setLocation(timecode.getX() + (width - timecode.getWidth()) / 2, timecode.getY() + (height - timecode.getHeight()) / 2);	
-					tcLocX = timecode.getLocation().x;
-					tcLocY = timecode.getLocation().y;
+			        super.paintComponent(g);
+			
+			        Graphics2D g2 = (Graphics2D) g;
+			
+			        //First initialisation
+			        boolean resetLocation = false;
+			        if (getWidth() == 1)
+			        {
+			        	resetLocation = true;
+			        }
+			        
+			        //Saving height for spinnerSize
+					int width = getWidth();
+					int height = getHeight();
+			        
+			        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			        
+					Font font = new Font(comboOverlayFont.getSelectedItem().toString(), Font.PLAIN, (int) Math.round((float) Integer.parseInt(textTcSize.getText()) / playerRatio));
+			        font.deriveFont((float) Integer.parseInt(textTcSize.getText()) / playerRatio);
+			        g2.setFont(font);
+			        		        
+			        String dropFrame = ":";
+			        if (FFPROBE.dropFrameTC.equals(":") == false  && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		        	{
+			        	dropFrame = ";";
+		        	}
+			        
+			   		if (Shutter.caseConform.isSelected())
+			   		{
+			   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+			   			{
+			   				dropFrame = ";";
+			   			}
+			   			else 
+			   				dropFrame = ":";
+			   		}
+			        
+			        String str = "00:00:00" + dropFrame + "00";
+			        
+					if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) 
+					{												
+						float tcH = 0;				
+						float tcM = 0;
+						float tcS = 0;
+						float tcF = 0;
+						
+						if (caseAddTimecode.isSelected() && TC1.getText().isEmpty() == false && TC2.getText().isEmpty() == false && TC3.getText().isEmpty() == false && TC4.getText().isEmpty() == false)
+						{
+							tcH = Integer.valueOf(TC1.getText());
+							tcM = Integer.valueOf(TC2.getText());
+							tcS = Integer.valueOf(TC3.getText());
+							tcF = Integer.valueOf(TC4.getText());
+						}
+						else if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "" == false)
+						{
+							tcH = Integer.valueOf(FFPROBE.timecode1);
+							tcM = Integer.valueOf(FFPROBE.timecode2);
+							tcS = Integer.valueOf(FFPROBE.timecode3);
+							tcF = Integer.valueOf(FFPROBE.timecode4);
+						}
+						
+						tcH = tcH * 3600 * FFPROBE.currentFPS;
+						tcM = tcM * 60 * FFPROBE.currentFPS;
+						tcS = tcS * FFPROBE.currentFPS;
+						
+						float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
+		
+						if (caseShowTimecode.isSelected())
+						{
+							timeIn = 0;
+						}
+						
+						float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
+						float offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
+						
+						if (offset < 0)
+							offset = 0;
+						
+				        String h = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
+						String m = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
+						String s = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
+						String f = formatter.format(Math.floor(offset % FFPROBE.currentFPS));
+				        
+				        if (caseAddTimecode.isSelected() && lblTimecode.getText().equals(Shutter.language.getProperty("lblFrameNumber")))
+				        {
+				        	str = String.format("%.0f", offset);
+				        }
+				        else
+				        	str = h+":"+m+":"+s+ dropFrame +f;	
+					}
+										
+			        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
+					
+					if (lblTcBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+						g2.setColor(new Color(backgroundColor.getRed(),backgroundColor.getGreen(),backgroundColor.getBlue(), (int) ( (float) (Integer.parseInt(textTcOpacity.getText()) * 255) /  100)));
+					else
+						g2.setColor(new Color(0,0,0,0));
+										
+					GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+			        AffineTransform transform = gfxConfig.getDefaultTransform();
+			        
+					if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = RetinaScreen
+				        g2.fillRect(0, 0, bounds.width, bounds.height / 2);
+					else
+						g2.fillRect(0, 0, bounds.width, bounds.height);
+					
+					if (lblTcBackground.getText().equals(language.getProperty("aucun")))
+						g2.setColor(new Color(foregroundColor.getRed(),foregroundColor.getGreen(),foregroundColor.getBlue(), (int) ( (float) (Integer.parseInt(textNameOpacity.getText()) * 255) /  100)));
+					else				
+						g2.setColor(foregroundColor);
+					
+					if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = RetinaScreen
+			        {
+			        	Integer offset = bounds.height + (int) bounds.getY();						
+						g2.drawString(str, -2, bounds.height / 2 - offset / 2);	
+			        }
+					else
+					{
+						Integer offset = bounds.height + (int) bounds.getY();						
+						g2.drawString(str, -2, bounds.height - offset);						
+					}
+					
+					setSize(bounds.width, bounds.height);
+	
+					//Define center position after the size is correct
+					if (resetLocation)
+					{
+						timecode.setLocation(VideoPlayer.player.getWidth() / 2 - timecode.getWidth() / 2, timecode.getHeight());
+						tcLocX = timecode.getLocation().x;
+						tcLocY = timecode.getLocation().y;
+					}		
+					else if (textTcSize.hasFocus())
+					{					
+						timecode.setLocation(timecode.getX() + (width - timecode.getWidth()) / 2, timecode.getY() + (height - timecode.getHeight()) / 2);	
+						tcLocX = timecode.getLocation().x;
+						tcLocY = timecode.getLocation().y;
+					}
+					
+					VideoPlayer.refreshTimecodeAndText();
 				}
-				
-				VideoPlayer.refreshTimecodeAndText();
 		    }
 		 
 			private Rectangle getStringBounds(Graphics2D g2, String str, float x, float y)
@@ -18551,7 +18555,13 @@ public class Shutter {
 			
 		noSettings = false;
 
-		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false && caseAddWatermark.isSelected() == false)
+		boolean forceFullSize = false;
+		if (caseAddWatermark.isSelected() || caseAddTimecode.isSelected() || caseShowTimecode.isSelected() || caseAddText.isSelected() || caseShowFileName.isSelected())
+		{
+			forceFullSize = true;
+		}
+		
+		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false && forceFullSize == false)
 		{		
 			noSettings = true;
 			
@@ -18668,7 +18678,7 @@ public class Shutter {
 			lblYears.setLocation(frame.getWidth()  - lblYears.getWidth() - 8, lblBy.getY());
 		    lblYears.setVisible(true);
 		}
-		else if (bigger == false && frame.getSize().width > 332 && caseAddWatermark.isSelected() == false)
+		else if (bigger == false && frame.getSize().width > 332 && forceFullSize == false)
 		{			
 			noSettings = true;
 			
@@ -18974,7 +18984,16 @@ public class Shutter {
 		
 		settingsScrollBar.setBounds(frame.getWidth() - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11, frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
 
-		VideoPlayer.resizeAll();
+		//For grpOverlay resizing
+		if (windowDrag == false && (caseAddTimecode.isSelected() || caseShowTimecode.isSelected() || caseAddText.isSelected() || caseShowFileName.isSelected()))
+		{
+			windowDrag = true;
+			VideoPlayer.resizeAll();
+			windowDrag = false;
+		}
+		else
+			VideoPlayer.resizeAll();
+		
 	}
 		
 	private static void setGPUOptions() {

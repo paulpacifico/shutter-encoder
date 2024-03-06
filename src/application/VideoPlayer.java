@@ -1323,9 +1323,7 @@ public class VideoPlayer {
 							//Setup fileList
 							getFileList(videoPath);
 							setFileList();		
-							
-							System.out.println(FFPROBE.previousImageWidth);
-							
+
 							//Scaling text & logo
 							float scale = 0.0f;
 							if (FFPROBE.previousImageWidth > 0)	
@@ -1338,22 +1336,21 @@ public class VideoPlayer {
 									if (Shutter.caseShowTimecode.isSelected() || Shutter.caseAddTimecode.isSelected())
 									{
 										Shutter.textTcSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textTcSize.getText()) * scale)));		
-										refreshTimecodeAndText();
 									}
 									
 									//Display text
 									if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected())
 									{
 										Shutter.textNameSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textNameSize.getText()) * scale)));
-										refreshTimecodeAndText();
 									}
 									
 									//Watermark
 									if (Shutter.caseAddWatermark.isSelected() && FFPROBE.previousImageWidth != Shutter.logoWidth)							
 									{												
-										Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));								
-										resizeAll();
+										Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));	
 									}
+									
+									resizeAll();
 								}
 							}
 							
@@ -4418,7 +4415,7 @@ public class VideoPlayer {
 		}
 
 		if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected())
-		{	
+		{				
 			Shutter.textTcPosX.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().x * Shutter.playerRatio)));
 			Shutter.textTcPosY.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().y * Shutter.playerRatio)));  
 		}
@@ -5649,17 +5646,20 @@ public class VideoPlayer {
 			}
 			
 			//grpOverlay
-			if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected())
-			{
-				Shutter.timecode.setLocation((int) Math.round(Integer.valueOf(Shutter.textTcPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textTcPosY.getText()) / Shutter.playerRatio));
-				Shutter.tcLocX = Shutter.timecode.getLocation().x;
-				Shutter.tcLocY = Shutter.timecode.getLocation().y;			
-			}
-			if (Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
-			{
-				Shutter.fileName.setLocation((int) Math.round(Integer.valueOf(Shutter.textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textNamePosY.getText()) / Shutter.playerRatio));
-				Shutter.fileLocX = Shutter.fileName.getLocation().x;
-				Shutter.fileLocY = Shutter.fileName.getLocation().y;
+			if (Shutter.windowDrag)
+			{				
+				if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected())
+				{
+					Shutter.timecode.setLocation((int) Math.round(Integer.valueOf(Shutter.textTcPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textTcPosY.getText()) / Shutter.playerRatio));
+					Shutter.tcLocX = Shutter.timecode.getLocation().x;
+					Shutter.tcLocY = Shutter.timecode.getLocation().y;			
+				}
+				if (Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
+				{
+					Shutter.fileName.setLocation((int) Math.round(Integer.valueOf(Shutter.textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textNamePosY.getText()) / Shutter.playerRatio));
+					Shutter.fileLocX = Shutter.fileName.getLocation().x;
+					Shutter.fileLocY = Shutter.fileName.getLocation().y;
+				}
 			}
 						
 			btnPrevious.setBounds(player.getLocation().x + player.getSize().width / 2 - 21 - 4, slider.getY() + slider.getHeight() + 6, 22, 21);		
