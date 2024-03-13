@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2023 PACIFICO PAUL
+* Copyright (C) 2024 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -144,6 +144,7 @@ public static String format = "";
 		                        else
 		                            min = time[0].replace("TA", "") + "min ";
 		                        
+		                        lblBy.setVisible(false);
 		                        tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + min + time[1].replace(" ","") + "s");
 		                        tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
 		                        
@@ -151,8 +152,6 @@ public static String format = "";
 			       				{
 			       					lblArrows.setVisible(false);
 			       				}
-			       				else
-			       					lblArrows.setVisible(true);
 						    }
 					    }
 					    						          						        		

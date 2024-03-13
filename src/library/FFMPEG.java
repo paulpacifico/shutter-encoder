@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2023 PACIFICO PAUL
+* Copyright (C) 2024 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -1836,7 +1836,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					 else if (frames - frame0 < fps - 1 && fps > 1)
 						 fps --;				 
 				 }
-				 					 
+				 
 				 time = 0;
 				 int total;
 				 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
@@ -1880,9 +1880,9 @@ public static StringBuilder errorLog = new StringBuilder();
 							 	&& case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && BitratesAdjustement.DVD2Pass)
 					 {
 						 if (pass2 == false)
-							 pass = " - " + Shutter.language.getProperty("firstPass");
+							 pass = " - 1/2";
 						 else
-							 pass = " - " + Shutter.language.getProperty("secondPass");
+							 pass = " - 2/2";
 					 }
 					 		
 					timeH = (restant / 3600) % 60;
@@ -1901,20 +1901,26 @@ public static StringBuilder errorLog = new StringBuilder();
 						secondes = timeSec +"sec";
 					else
 						secondes = "";
+
+					lblBy.setVisible(false);
+					tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass + " - " + fps + " " + Shutter.language.getProperty("fps"));
+					tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
 					 
-					 tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass);
-					 tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
-					 
-					 if (heures != "" || minutes != "" || secondes != "")
-					 {
-						 tempsEcoule.setVisible(false);
-						 tempsRestant.setVisible(true);	
-						 lblArrows.setVisible(false);
-					 }
-					 else
-					 {
-						 tempsRestant.setVisible(false);	
-					 }
+					if (heures != "" || minutes != "" || secondes != "")
+					{
+						tempsEcoule.setVisible(false);
+						tempsRestant.setVisible(true);
+						
+						if (tempsRestant.getX() + tempsRestant.getSize().width > lblArrows.getX())
+	       				{
+	       					lblArrows.setVisible(false);
+	       				}
+					}
+					else
+					{
+						tempsRestant.setVisible(false);	
+						lblBy.setVisible(true);
+					}
 				 }
 			 }	
 			 		 

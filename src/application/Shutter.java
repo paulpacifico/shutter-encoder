@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2023 PACIFICO PAUL
+* Copyright (C) 2024 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -183,7 +183,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "17.9";
+	public static String actualVersion = "18.0";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -17743,7 +17743,22 @@ public class Shutter {
 			}
 
 		});
-				
+			
+		lblBy.addComponentListener (new ComponentAdapter ()
+	    {
+	        public void componentShown ( ComponentEvent e )
+	        {
+	        	tempsEcoule.setLocation(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY());
+	    		tempsRestant.setLocation(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY());
+	        }
+
+	        public void componentHidden ( ComponentEvent e )
+	        {
+	        	tempsEcoule.setLocation(lblBy.getLocation());
+	    		tempsRestant.setLocation(lblBy.getLocation());	        	
+	        }
+	    } );
+
 		lblGpuDecoding = new JLabel(Shutter.language.getProperty("lblGpuDecoding"));
 		lblGpuDecoding.setVisible(false);
 		lblGpuDecoding.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
@@ -18003,7 +18018,13 @@ public class Shutter {
 	        public void componentHidden ( ComponentEvent e )
 	        {
 	        	if (tempsEcoule != null && tempsEcoule.getText().equals(language.getProperty("tempsEcoule")) == false)
+	        	{
+	        		if (FFMPEG.isRunning == false && YOUTUBEDL.isRunning == false)
+	        		{
+	        			lblBy.setVisible(true);
+	        		}
 	        		tempsEcoule.setVisible(true);
+	        	}
 	        }
 	    } );
 		
@@ -18015,7 +18036,9 @@ public class Shutter {
 				tempsRestant.setVisible(false);
 				
 				if (tempsEcoule != null && tempsEcoule.getText().equals(language.getProperty("tempsEcoule")) == false)
+				{
 					tempsEcoule.setVisible(true);
+				}
 			}
 
 			@Override
@@ -22722,12 +22745,7 @@ public class Shutter {
 
 			caseDisplay.setEnabled(false);
 			btnStart.setEnabled(true);
-			
-			lblGpuDecoding.setVisible(false);
-			comboGPUDecoding.setVisible(false);			
-			lblGpuFiltering.setVisible(false);
-			comboGPUFilter.setVisible(false);	
-			
+						
 			if (inputDeviceIsRunning || caseStream.isSelected())
 			{
 				btnStart.setText(language.getProperty("btnStopRecording"));
