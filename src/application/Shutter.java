@@ -15906,10 +15906,14 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (caseForceLevel.isSelected()) {
+				
+				if (caseForceLevel.isSelected())
+				{
 					comboForceProfile.setEnabled(true);
 					comboForceLevel.setEnabled(true);
-				} else {
+				}
+				else
+				{
 					comboForceProfile.setEnabled(false);
 					comboForceLevel.setEnabled(false);
 				}
@@ -17885,7 +17889,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-									
+						
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if ("H.264".equals(comboFonctions.getSelectedItem().toString()))
@@ -17897,6 +17901,11 @@ public class Shutter {
 					{
 						comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] {"main"}));
 						comboForceProfile.setSelectedIndex(0);
+						
+						if (comboFonctions.getSelectedItem().equals("H.265") && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+						{
+							comboForceLevel.setVisible(false);
+						}
 					}
 
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Intel Quick Sync"))
@@ -17947,6 +17956,8 @@ public class Shutter {
 				} 
 				else
 				{
+					comboForceLevel.setVisible(true);
+					
 					if ("H.264".equals(comboFonctions.getSelectedItem().toString()))
 					{
 						comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "base", "main", "high", "high422", "high444"}));
@@ -18527,7 +18538,8 @@ public class Shutter {
 			caseForcerEntrelacement.setEnabled(true);
 		}
 
-		if (caseForceLevel.isSelected() && (comboFonctions.getSelectedItem().toString().contains("H.26") || comboFonctions.getSelectedItem().toString().equals("AV1"))) {
+		if (caseForceLevel.isSelected() && (comboFonctions.getSelectedItem().toString().contains("H.26") || comboFonctions.getSelectedItem().toString().equals("AV1")))
+		{
 			caseForceLevel.setEnabled(true);
 			comboForceProfile.setEnabled(true);
 			comboForceLevel.setEnabled(true);

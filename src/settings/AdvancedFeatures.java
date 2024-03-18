@@ -294,7 +294,12 @@ public class AdvancedFeatures extends Shutter {
 		    				profile = "main444-10";    
 		    		}
 		        	
-		            return " -profile:v " + profile + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
+		    		if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+		    		{
+		    			return " -profile:v " + profile;
+		    		}
+		    		else		    			
+		    			return " -profile:v " + profile + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
 		        }
 		        else
 		        {
@@ -367,11 +372,22 @@ public class AdvancedFeatures extends Shutter {
 		            	{
 		            		return " -profile:v " + profile + " -level 6.1";
 		            	}
+		            	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+			    		{
+		            		return " -profile:v " + profile;
+			    		}
 		            	else
 		            		return " -profile:v " + profile + " -level 5.2";
 		            }
 		            else
-		            	return " -profile:v " + profile + " -level 5.1";
+		            {
+		            	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+			    		{
+		            		return " -profile:v " + profile;
+			    		}
+		            	else
+		            		return " -profile:v " + profile + " -level 5.1";
+		            }
 		        }
 				
 		}
