@@ -213,13 +213,16 @@ public class Picture extends Shutter {
 						//Hardware decoding
 						String gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
 						
-						//InOut		
-						VideoPlayer.getFileList(file.toString());
-						InputAndOutput.getInputAndOutput();
-						
-						if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())
+						//InOut	
+						if (FFPROBE.totalLength > 40)
 						{
-							InputAndOutput.inPoint = " -ss " + (long) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS) + "ms";
+							VideoPlayer.getFileList(file.toString());
+							InputAndOutput.getInputAndOutput();
+							
+							if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())
+							{
+								InputAndOutput.inPoint = " -ss " + (long) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS) + "ms";
+							}
 						}
 						
 						//Flags
@@ -314,7 +317,7 @@ public class Picture extends Shutter {
 						{
 							btnStart.setEnabled(false);	
 							disableAll();
-							DCRAW.run(" -v -w -c -q 3 -o 1 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
+							DCRAW.run(" -v -w -c -q 3 -o 1 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');							
 						}
 						else if (inputDeviceIsRunning)
 						{	
