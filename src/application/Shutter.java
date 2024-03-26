@@ -7127,6 +7127,21 @@ public class Shutter {
 		caseSampleRate.setBounds(7, caseSplitAudio.getY() +caseSplitAudio.getHeight(), caseSampleRate.getPreferredSize().width, 23);
 		grpAudio.add(caseSampleRate);		
 		
+		caseSampleRate.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseSampleRate.isSelected())
+				{
+					lbl48k.setEnabled(true);
+				}
+				else
+					lbl48k.setEnabled(false);
+			}
+			
+		});
+		
 		caseConvertAudioFramerate = new JCheckBox(language.getProperty("caseConvertAudioFramerate"));
 		caseConvertAudioFramerate.setName("caseConvertAudioFramerate");
 		caseConvertAudioFramerate.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -19514,7 +19529,11 @@ public class Shutter {
 								caseNormalizeAudio.setEnabled(true);
 								grpAudio.add(comboNormalizeAudio);
 								grpAudio.add(lbl48k);
-								lbl48k.setLocation(caseSampleRate.getLocation().x + caseSampleRate.getWidth() + 3, caseSampleRate.getLocation().y + 3);			
+								lbl48k.setLocation(caseSampleRate.getLocation().x + caseSampleRate.getWidth() + 3, caseSampleRate.getLocation().y + 3);	
+								if (caseSampleRate.isSelected() == false)
+								{
+									lbl48k.setEnabled(false);
+								}
 								grpCrop.setVisible(false);
 								grpOverlay.setVisible(false);
 								grpSubtitles.setVisible(false);

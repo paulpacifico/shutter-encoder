@@ -1196,6 +1196,11 @@ public class VideoPlayer {
 								FunctionUtils.analyze(new File(videoPath), isRaw);														
 							} catch (InterruptedException e) {}
 							
+							if (isRaw)
+							{
+								Shutter.btnStart.setEnabled(true);
+							}
+							
 							setPlayerButtons(true);	
 							
 							seekOnKeyFrames = false;
@@ -4856,7 +4861,7 @@ public class VideoPlayer {
 								
 					            do {
 					            	Thread.sleep(10);  
-					            } while (DCRAW.isRunning && DCRAW.error == false);
+					            } while (DCRAW.isRunning && DCRAW.error == false);					            
 							}
 							else if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))							
 							{													
