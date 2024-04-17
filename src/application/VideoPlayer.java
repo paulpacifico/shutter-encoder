@@ -1193,7 +1193,15 @@ public class VideoPlayer {
 							}
 				
 							try {
-								FunctionUtils.analyze(new File(videoPath), isRaw);														
+								
+								if (Settings.btnWaitFileComplete.isSelected())
+						        {
+									FunctionUtils.waitFileCompleted(new File(videoPath));	
+									Shutter.enableAll();
+						        }
+								
+								FunctionUtils.analyze(new File(videoPath), isRaw);
+								
 							} catch (InterruptedException e) {}
 							
 							if (isRaw)
@@ -2703,7 +2711,7 @@ public class VideoPlayer {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				if (e.getClickCount() == 2)
+				if (e.getClickCount() == 2 && Shutter.noSettings == false)
 				{
 					if (fullscreenPlayer)
 					{
@@ -5577,6 +5585,7 @@ public class VideoPlayer {
 			if (isPiping == false)
 			{
 				try { //Might fail loading
+					
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
 					float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
 									
@@ -5586,6 +5595,7 @@ public class VideoPlayer {
 						playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
 					else
 						playerOutMark = waveformContainer.getWidth() - 2;	
+					
 				} catch (Exception e) {}
 				
 				waveformContainer.repaint();

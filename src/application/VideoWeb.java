@@ -172,7 +172,17 @@ public class VideoWeb {
 					{
 						if (YOUTUBEDL.runProcess.isAlive())
 						{
-							YOUTUBEDL.process.destroy();
+							if (System.getProperty("os.name").contains("Windows"))
+							{						
+								try {
+									@SuppressWarnings("unused")
+									Process processBuilder = new ProcessBuilder("taskkill", "/F", "/IM", "yt-dlp.exe").start();
+								} catch (Exception e1) {}
+							}
+							else
+							{
+								YOUTUBEDL.process.destroy();
+							}
 						}
 					}
 					
@@ -405,7 +415,17 @@ public class VideoWeb {
 					{
 						if (YOUTUBEDL.runProcess.isAlive())
 						{
-							YOUTUBEDL.process.destroy();
+							if (System.getProperty("os.name").contains("Windows"))
+							{						
+								try {
+									@SuppressWarnings("unused")
+									Process processBuilder = new ProcessBuilder("taskkill", "/F", "/IM", "yt-dlp.exe").start();
+								} catch (Exception e1) {}
+							}
+							else
+							{
+								YOUTUBEDL.process.destroy();
+							}
 						}
 						
 						Shutter.lblCurrentEncoding.setForeground(Color.RED);

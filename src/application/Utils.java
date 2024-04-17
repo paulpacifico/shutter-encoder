@@ -2092,7 +2092,19 @@ public class Utils extends Shutter {
 				TSMUXER.process.destroy();
 			
 			if (YOUTUBEDL.isRunning)
-				YOUTUBEDL.process.destroy();
+			{
+				if (System.getProperty("os.name").contains("Windows"))
+				{						
+					try {
+						@SuppressWarnings("unused")
+						Process processBuilder = new ProcessBuilder("taskkill", "/F", "/IM", "yt-dlp.exe").start();
+					} catch (Exception e1) {}
+				}
+				else
+				{
+					YOUTUBEDL.process.destroy();
+				}
+			}
 			
 		} catch (Exception er) {}
 

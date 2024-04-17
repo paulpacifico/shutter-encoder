@@ -3025,7 +3025,18 @@ public class Shutter {
 					if (YOUTUBEDL.runProcess.isAlive())
 					{
 						cancelled = true;
-						YOUTUBEDL.process.destroy();
+						
+						if (System.getProperty("os.name").contains("Windows"))
+						{						
+							try {
+								@SuppressWarnings("unused")
+								Process processBuilder = new ProcessBuilder("taskkill", "/F", "/IM", "yt-dlp.exe").start();
+							} catch (Exception e1) {}
+						}
+						else
+						{
+							YOUTUBEDL.process.destroy();
+						}
 					}
 				}
 				
@@ -7360,6 +7371,7 @@ public class Shutter {
 				if (VideoPlayer.frameVideo != null)
 				{
 					VideoPlayer.player.repaint();
+					FFPROBE.setFilesize();
 				}
 			}
 
@@ -7843,7 +7855,8 @@ public class Shutter {
                  
                 g2d.setColor(new Color(0,0,0,180));
                 g2d.fill(outter);
-				
+                
+                FFPROBE.setFilesize();				
 			}
 		};		
 		overImage.setSize(640,360);

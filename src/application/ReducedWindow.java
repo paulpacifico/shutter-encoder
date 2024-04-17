@@ -279,10 +279,16 @@ public class ReducedWindow extends JDialog {
 				{	
 					do {		
 						
-						try {								
+						try {			
+							
 							frame.setOpacity(frame.getOpacity() + 0.01f);
-							Thread.sleep(5);							
-						 } catch (InterruptedException e1) {}
+							
+							long startTime = System.nanoTime();
+							
+							//Animate size
+							Shutter.animateSections(startTime, true);	
+							
+						 } catch (Exception e1) {}
 							
 					} while (frame.getOpacity() < 1f);
 				}
@@ -295,10 +301,16 @@ public class ReducedWindow extends JDialog {
 				{
 					do {		
 						
-						try {								
+						try {		
+							
 							frame.setOpacity(frame.getOpacity() - 0.01f);
-							Thread.sleep(5);							
-						 } catch (InterruptedException e1) {}
+							
+							long startTime = System.nanoTime();
+							
+							//Animate size
+							Shutter.animateSections(startTime, true);	
+													
+						 } catch (Exception e1) {}
 							
 					} while (frame.getOpacity() > 0.5f);		
 				}
@@ -325,10 +337,16 @@ public class ReducedWindow extends JDialog {
 				
 				do {		
 					
-					try {								
+					try {		
+						
 						frame.setOpacity(frame.getOpacity() - 0.01f);
-						Thread.sleep(10);							
-					 } catch (InterruptedException e1) {}
+						
+						long startTime = System.nanoTime();
+						
+						//Animate size
+						Shutter.animateSections(startTime, true);
+						
+					 } catch (Exception e1) {}
 						
 				} while (frame.getOpacity() > 0.5f);
 				
