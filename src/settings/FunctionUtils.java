@@ -813,7 +813,14 @@ public class FunctionUtils extends Shutter {
 	        	int oh = Integer.parseInt(o[1]);	        	
 	        		        	
 				pixels = ow * oh;					
-			}		
+			}	
+			else if (Shutter.grpCrop.isVisible() && caseEnableCrop.isSelected())
+			{
+				int ow = Integer.parseInt(textCropWidth.getText());
+	        	int oh = Integer.parseInt(textCropHeight.getText());	        	
+	        		        	
+				pixels = ow * oh;	
+			}				
 			
 			float framerate = FFPROBE.currentFPS;
 			if (caseConform.isSelected())
@@ -1138,7 +1145,7 @@ public class FunctionUtils extends Shutter {
 			int channels = 0;
 			for (Component c : grpSetAudio.getComponents())
 			{
-				if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false)
+				if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false && c.getName().equals("comboNormalizeAudio") == false)
 				{
 					if (((JComboBox) c).getSelectedIndex() != 16)
 						channels ++;
@@ -1182,7 +1189,7 @@ public class FunctionUtils extends Shutter {
 						for (Component c : grpSetAudio.getComponents())
 						{
 							if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false && c.getName().equals("comboNormalizeAudio") == false)
-							{								
+							{
 								if (i == m)
 								{
 									map = (((JComboBox) c).getSelectedIndex() + 1);	

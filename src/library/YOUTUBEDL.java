@@ -338,6 +338,13 @@ public static String format = "";
 			        	
 			        Console.consoleYOUTUBEDL.append(System.lineSeparator());
 
+			        String lineOutput;
+					//Récupération de l'extension du fichier
+					do {
+						lineOutput = br.readLine();
+						formatsOutput.append(lineOutput + System.lineSeparator());															          						        		
+					} while(lineOutput != null && Shutter.cancelled == false);	
+			        
 					while ((line = input.readLine()) != null && Shutter.cancelled == false)
 					{							
 					    Console.consoleYOUTUBEDL.append(line  + System.lineSeparator());
@@ -348,13 +355,6 @@ public static String format = "";
 				             Shutter.cancelled = true;
 				        }
 					}	
-							
-					String lineOutput;
-					//Récupération de l'extension du fichier
-					do {
-						lineOutput = br.readLine();
-						formatsOutput.append(lineOutput + System.lineSeparator());															          						        		
-					} while(lineOutput != null && Shutter.cancelled == false);	
 
 					process.waitFor();
 					

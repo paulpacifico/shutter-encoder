@@ -74,7 +74,7 @@ public class ReplaceAudio extends Shutter {
 		{							
 			String audio = setAudio(extension, audioExt);
 			String shortest = " -t " + shortestLength + "ms";
-			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || liste.getSize() < 2)
+			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || liste.getSize() < 2 || videoStream == liste.getSize())
 				shortest = "";
 								
 			//Command				
@@ -138,11 +138,7 @@ public class ReplaceAudio extends Shutter {
 								
 								if (FFPROBE.FindStreams(liste.getElementAt(i)))
 								{
-									videoStream ++;									
-									if (videoStream > 1)
-									{
-										break;
-									}
+									videoStream ++;				
 								}
 							}
 							else
@@ -155,8 +151,13 @@ public class ReplaceAudio extends Shutter {
 						if (videoStream > 1)
 						{
 							for (int i = 0 ; i < liste.getSize() ; i++)
-							{
-								if (i % 2 == 0)
+							{								
+								if (videoStream == liste.getSize()) //only video files in the list
+								{
+									videoFile = new File(liste.getElementAt(i));
+									audioFiles = " -map 0:v? -map 0:a?";	
+								}								
+								else if (i % 2 == 0)
 								{
 									videoFile = new File(liste.getElementAt(i));
 								
