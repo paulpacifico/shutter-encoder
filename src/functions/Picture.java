@@ -140,6 +140,12 @@ public class Picture extends Shutter {
 						//No GPU acceleration when using this function
 						FFMPEG.isGPUCompatible = false;
 						
+						//Zoom
+						if (Shutter.sliderZoom.getValue() != 0)
+						{		
+							filterComplex = Colorimetry.setZoom(filterComplex, true);
+						}
+						
 						//Scaling									
 			        	if (VideoEncoders.setScalingFirst() && comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{

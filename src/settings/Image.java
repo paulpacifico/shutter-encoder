@@ -21,6 +21,7 @@ package settings;
 
 import java.io.File;
 
+import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
 import functions.VideoEncoders;
@@ -225,52 +226,64 @@ public class Image extends Shutter {
         	int oh = Integer.parseInt(o[1]);        	
         	float ir = (float) iw / ih;
         	float or = (float) ow / oh;
-			
-        	if (filterComplex != "") filterComplex += ",";
-			
-			if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible()
-			|| ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG")) && comboResolution.getSelectedItem().toString().contains(":") && comboResolution.getSelectedItem().toString().contains("auto") == false))
+        	
+        	boolean upscale = true;
+    		if (Settings.btnNoUpscale.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false && comboResolution.getSelectedItem().toString().contains("%") == false)
+    		{
+    			if (iw < ow || ih < oh)
+    			{
+    				upscale = false;
+    			}
+    		}
+    		
+			if (upscale)
 			{
-				if (comboResolution.getSelectedItem().toString().contains(":"))
-		        {
-		        	if (comboResolution.getSelectedItem().toString().contains("auto"))
-		        	{
-		        		o = comboResolution.getSelectedItem().toString().split(":");
-		        		if (o[0].toString().equals("auto"))
-		        			filterComplex += "scale=-1:" + o[1];
-		        		else
-		        			filterComplex += "scale="+o[0]+":-1";
-		        	}
-		        	else
-		        	{
-			            o = comboResolution.getSelectedItem().toString().split(":");
-			    		float number =  (float) 1 / Integer.parseInt(o[1]);
-			    		filterComplex += "scale=iw*" + number + ":ih*" + number;
-		        	}
-		        }
-				else
-				{					       	
-		        	//Original sup. à la sortie
-		        	if (iw > ow || ih > oh)
-		        	{
-		        		//Si la hauteur calculée est > à la hauteur de sortie
-		        		if ( (float) ow / ir >= oh)
-		        			filterComplex += "scale=" + ow + ":-1";
-		        		else
-		        			filterComplex += "scale=-1:" + oh;
-		        	}
-		        	else
-		        		filterComplex += "scale=" + ow + ":" + oh;
-				}
-			}
-			else
-			{
-				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
+	        	if (filterComplex != "") filterComplex += ",";
+				
+				if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible()
+				|| ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG")) && comboResolution.getSelectedItem().toString().contains(":") && comboResolution.getSelectedItem().toString().contains("auto") == false))
 				{
-					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
+					if (comboResolution.getSelectedItem().toString().contains(":"))
+			        {
+			        	if (comboResolution.getSelectedItem().toString().contains("auto"))
+			        	{
+			        		o = comboResolution.getSelectedItem().toString().split(":");
+			        		if (o[0].toString().equals("auto"))
+			        			filterComplex += "scale=-1:" + o[1];
+			        		else
+			        			filterComplex += "scale="+o[0]+":-1";
+			        	}
+			        	else
+			        	{
+				            o = comboResolution.getSelectedItem().toString().split(":");
+				    		float number =  (float) 1 / Integer.parseInt(o[1]);
+				    		filterComplex += "scale=iw*" + number + ":ih*" + number;
+			        	}
+			        }
+					else
+					{					       	
+			        	//Original sup. à la sortie
+			        	if (iw > ow || ih > oh)
+			        	{
+			        		//Si la hauteur calculée est > à la hauteur de sortie
+			        		if ( (float) ow / ir >= oh)
+			        			filterComplex += "scale=" + ow + ":-1";
+			        		else
+			        			filterComplex += "scale=-1:" + oh;
+			        	}
+			        	else
+			        		filterComplex += "scale=" + ow + ":" + oh;
+					}
 				}
 				else
-					filterComplex += "scale="+o[0]+":"+o[1];	
+				{
+					if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
+					{
+						filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
+					}
+					else
+						filterComplex += "scale="+o[0]+":"+o[1];	
+				}
 			}
 			
 		}
@@ -292,20 +305,32 @@ public class Image extends Shutter {
         	int oh = Integer.parseInt(o[1]);        	
         	float ir = (float) iw / ih;
         	float or = (float) ow / oh;
-			
-			if (ir != or)
+        	
+        	boolean upscale = true;
+    		if (Settings.btnNoUpscale.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false && comboResolution.getSelectedItem().toString().contains("%") == false)
+    		{
+    			if (iw < ow || ih < oh)
+    			{
+    				upscale = false;
+    			}
+    		}
+    		
+			if (upscale)
 			{
-				filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
+				if (ir != or)
+				{
+					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
+				}
+				else
+					filterComplex += "scale="+o[0]+":"+o[1];
 			}
-			else
-				filterComplex += "scale="+o[0]+":"+o[1];			
 			
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".ico"))
 		{
-			filterComplex += "scale=256x256";
+			filterComplex += "scale=256:256";
 		}
-		
+				
 		//GPU Scaling
 		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=")
 		&& comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false
@@ -362,7 +387,7 @@ public class Image extends Shutter {
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
 		}
-		
+				
 		return filterComplex;
 	}
 	
@@ -424,30 +449,41 @@ public class Image extends Shutter {
         	int oh = Integer.parseInt(o[1]);        	
         	float ir = (float) iw / ih;
         	float or = (float) ow / oh;
-			
-			if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible())
-			{
-				if (comboResolution.getSelectedItem().toString().contains(":") == false)		       
-				{					       	
-		        	//Original sup. à la sortie
-		        	if (iw > ow || ih > oh)
-		        	{
-		        		//Si la hauteur calculée est > à la hauteur de sortie
-		        		if ( (float) ow / ir >= oh)
-		        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
-		        		else
-		        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
-		        	}
-				}
-			}
-			else
-			{
-				if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
+        	
+        	boolean upscale = true;
+    		if (Settings.btnNoUpscale.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false && comboResolution.getSelectedItem().toString().contains("%") == false)
+    		{
+    			if (iw < ow || ih < oh)
+    			{
+    				upscale = false;
+    			}
+    		}
+    		
+    		if (upscale)
+    		{
+				if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible())
 				{
-					filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+					if (comboResolution.getSelectedItem().toString().contains(":") == false)		       
+					{					       	
+			        	//Original sup. à la sortie
+			        	if (iw > ow || ih > oh)
+			        	{
+			        		//Si la hauteur calculée est > à la hauteur de sortie
+			        		if ( (float) ow / ir >= oh)
+			        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
+			        		else
+			        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
+			        	}
+					}
 				}
-			}
-			
+				else
+				{
+					if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
+					{
+						filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+					}
+				}
+    		}
 		}
 		else if (limitToFHD)
 		{
@@ -466,10 +502,22 @@ public class Image extends Shutter {
         	float ir = (float) iw / ih;
         	float or = (float) ow / oh;
 			
-			if (ir != or)
-			{
-				filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
-			}		
+        	boolean upscale = true;
+    		if (Settings.btnNoUpscale.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false && comboResolution.getSelectedItem().toString().contains("%") == false)
+    		{
+    			if (iw < ow || ih < oh)
+    			{
+    				upscale = false;
+    			}
+    		}
+    		
+    		if (upscale)
+    		{
+				if (ir != or)
+				{
+					filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+				}	
+    		}
 			
 		}
 		

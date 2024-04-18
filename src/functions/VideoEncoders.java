@@ -468,7 +468,14 @@ public class VideoEncoders extends Shutter {
 									
 									break;
 							}
-						}												
+						}		
+						
+						//Zoom
+						if (Shutter.sliderZoom.getValue() != 0)
+						{		
+							filterComplex = Colorimetry.setZoom(filterComplex, true);
+						}	
+						
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{

@@ -110,6 +110,8 @@ public class Extract extends Shutter {
 						String container = extension;
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 						{
+							FFPROBE.audioCodec = FFPROBE.audioCodecs[audioStream];							
+							
 							if (FFPROBE.audioCodec.contains("pcm"))
 							{
 								container = ".wav";	

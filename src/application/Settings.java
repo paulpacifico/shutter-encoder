@@ -108,6 +108,7 @@ public class Settings {
 	public static JTextField txtImageDuration = new JTextField();
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});	
+	public static JCheckBox btnNoUpscale = new JCheckBox(Shutter.language.getProperty("btnNoUpscale"));
 	private JLabel lblSyncMode = new JLabel(Shutter.language.getProperty("lblSyncMode"));
 	public static JComboBox<String> comboSync = new JComboBox<String>(new String [] {"auto", "passthrough", "cfr", "vfr", "drop"});	
 	private JLabel lblLanguage = new JLabel(Shutter.language.getProperty("lblLanguage"));
@@ -150,6 +151,7 @@ public class Settings {
 		btnHidePath.setName("btnHidePath");
 		btnLoadPreset.setName("btnLoadPreset");
 		comboLoadPreset.setName("comboLoadPreset");
+		btnNoUpscale.setName("btnNoUpscale");
 		btnWaitFileComplete.setName("btnWaitFileComplete");
 		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
@@ -168,7 +170,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 670);
+		frame.setSize(370, 700);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
@@ -415,8 +417,23 @@ public class Settings {
 		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
 			
+		btnNoUpscale.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnNoUpscale.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, btnNoUpscale.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnNoUpscale);
+			
+		btnNoUpscale.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+				VideoPlayer.resizeAll();				
+			}
+			
+		});
+		
 		lblScaleMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblScaleMode.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
+		lblScaleMode.setBounds(12, btnNoUpscale.getLocation().y + btnNoUpscale.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblScaleMode);
 				
 		comboScale.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));

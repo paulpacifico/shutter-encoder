@@ -330,6 +330,7 @@ public class Shutter {
 	protected static JCheckBox caseNormalizeAudio;
 	protected static JCheckBox caseChangeAudioCodec;
 	protected static JCheckBox caseAudioOffset;
+	protected static JCheckBox caseKeepSourceTracks;
 	protected static JCheckBox caseSampleRate;
 	protected static JCheckBox caseMixAudio;
 	protected static JCheckBox caseSplitAudio;
@@ -537,6 +538,7 @@ public class Shutter {
 	public static JSlider sliderGrain;
 	public static JSlider sliderVignette;
 	public static JSlider sliderAngle;
+	public static JSlider sliderZoom;
 	
 	//grpCorrections
 	public static JPanel grpCorrections;
@@ -3248,6 +3250,8 @@ public class Shutter {
 				{					
 					grpDestination.setSelectedIndex(0);
 					FFMPEG.error = false;
+					FFMPEG.errorLog.setLength(0);
+					errorList.setLength(0);		
 					
 					//Temps écoulé
 					tempsEcoule.setVisible(false);
@@ -6293,7 +6297,6 @@ public class Shutter {
 
 		});
 		
-		
 		caseChangeAudioCodec = new JCheckBox(language.getProperty("caseAudioCodec"));
 		caseChangeAudioCodec.setName("caseChangeAudioCodec");
 		caseChangeAudioCodec.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -6669,7 +6672,13 @@ public class Shutter {
 		lblOffsetFPS.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblOffsetFPS.setBounds(txtAudioOffset.getLocation().x + txtAudioOffset.getWidth() + 3, caseAudioOffset.getLocation().y + 4, lblOffsetFPS.getPreferredSize().width, 16);
 		grpSetAudio.add(lblOffsetFPS);
-								
+				
+		caseKeepSourceTracks = new JCheckBox(language.getProperty("caseKeepSourceTracks"));
+		caseKeepSourceTracks.setName("caseKeepSourceTracks");
+		caseKeepSourceTracks.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseKeepSourceTracks.setBounds(7, caseAudioOffset.getY() + caseAudioOffset.getHeight(), caseKeepSourceTracks.getPreferredSize().width + 4, 23);
+		grpSetAudio.add(caseKeepSourceTracks);
+				
 		//Audio Mapping
 		lblAudio1 = new JLabel(language.getProperty("audio") + " 1" + language.getProperty("colon"));
 		lblAudio1.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -13016,7 +13025,7 @@ public class Shutter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				extendSections(grpImageAdjustement, 756);
+				extendSections(grpImageAdjustement, 792);
 			}
 
 			@Override
@@ -14121,9 +14130,56 @@ public class Shutter {
 			
 		});
 		
+		JLabel lblZoom = new JLabel(Shutter.language.getProperty("lblZoom"));
+		lblZoom.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblZoom.setBounds(lblExposure.getX(), sliderAngle.getY() + sliderAngle.getHeight(), lblExposure.getSize().width, 16);		
+		grpImageAdjustement.add(lblZoom);
+		
+		sliderZoom = new JSlider();
+		sliderZoom.setName("sliderZoom");
+		sliderZoom.setMaximum(100);
+		sliderZoom.setMinimum(0);
+		sliderZoom.setValue(0);		
+		sliderZoom.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		sliderZoom.setBounds(sliderExposure.getX(), lblZoom.getY() + lblZoom.getHeight() - 2, sliderExposure.getWidth(), 22);	
+		grpImageAdjustement.add(sliderZoom);	
+		
+		sliderZoom.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+				{
+					sliderZoom.setValue(0);	
+					lblZoom.setText(Shutter.language.getProperty("lblZoom"));
+				}
+			}
+
+		});
+		
+		sliderZoom.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				
+				if (sliderZoom.getValue() == 0)
+				{
+					lblZoom.setText(Shutter.language.getProperty("lblZoom"));
+				}
+				else
+				{
+					lblZoom.setText(Shutter.language.getProperty("lblZoom") + " " + sliderZoom.getValue());
+				}
+				
+				VideoPlayer.loadImage(false);
+			}
+			
+		});
+		
+		
 		btnResetColor = new JButton(Shutter.language.getProperty("btnReset"));
 		btnResetColor.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
-		btnResetColor.setBounds(lblExposure.getX(), sliderAngle.getY() + sliderAngle.getHeight() + 2, sliderAngle.getWidth(), 21);
+		btnResetColor.setBounds(lblExposure.getX(), sliderZoom.getY() + sliderZoom.getHeight() + 2, sliderZoom.getWidth(), 21);
 		grpImageAdjustement.add(btnResetColor);		
 		
 		btnResetColor.addActionListener(new ActionListener() {
@@ -14169,7 +14225,8 @@ public class Shutter {
 				sliderSaturation.setValue(0);
 				sliderGrain.setValue(0);
 				sliderVignette.setValue(0);
-				sliderAngle.setValue(0);			
+				sliderAngle.setValue(0);		
+				sliderZoom.setValue(0);
 					
 				//important
 				comboRGB.setSelectedIndex(0);
@@ -17079,6 +17136,7 @@ public class Shutter {
 					
 					caseAudioOffset.setSelected(false);
 					txtAudioOffset.setEnabled(false);
+					caseKeepSourceTracks.setSelected(false);
 					
 					comboAudio1.setSelectedIndex(0);
 					comboAudio2.setSelectedIndex(1);
@@ -19446,7 +19504,14 @@ public class Shutter {
 								grpSetAudio.add(caseNormalizeAudio);
 								grpSetAudio.add(comboNormalizeAudio);
 								grpSetAudio.setLocation(grpSetAudio.getX(), 30);
-								grpSetAudio.setSize(312, 70);
+								
+								if (language.getProperty("functionReplaceAudio").equals(function))
+								{
+									grpSetAudio.setSize(312, 93);
+								}
+								else
+									grpSetAudio.setSize(312, 70);								
+								
 								grpAudio.setVisible(false);
 								
 								//grpSetAudio
@@ -19475,6 +19540,10 @@ public class Shutter {
 								grpSetAudio.add(caseAudioOffset);
 								grpSetAudio.add(txtAudioOffset);
 								grpSetAudio.add(lblOffsetFPS);	
+								if (language.getProperty("functionReplaceAudio").equals(function))
+								{
+									grpSetAudio.add(caseKeepSourceTracks);
+								}
 								grpSetAudio.repaint();								
 								grpCrop.setVisible(false);
 								grpOverlay.setVisible(false);

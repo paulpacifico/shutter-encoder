@@ -218,6 +218,21 @@ public class Colorimetry extends Shutter {
 		return eq;
 	}
 	
+	public static String setZoom(String eq, boolean finalEQ) {
+
+		if (sliderZoom.getValue() != 0)
+		{			
+			if (eq != "" && finalEQ)
+				eq += ",";
+			
+			float zoomValue = (float) 1 - ((float) sliderZoom.getValue() / 2 / 100);
+			
+			return "crop=iw*" + zoomValue + ":ih*" + zoomValue; 
+		}
+		
+		return "";
+	}
+	
 	public static String setVignette(String eq) {
 		
 		if (Shutter.sliderVignette.getValue() != 0)
@@ -516,7 +531,7 @@ public class Colorimetry extends Shutter {
 				
 		//Grain
 		eq = setGrain(eq);
-		
+				
 		//Angle
 		eq = setAngle(eq);
 		

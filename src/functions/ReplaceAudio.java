@@ -73,10 +73,16 @@ public class ReplaceAudio extends Shutter {
 		if (fileOut != null)
 		{							
 			String audio = setAudio(extension, audioExt);
+			
+			if (caseKeepSourceTracks.isSelected() && audioFiles.contains("-map 0:a") == false)
+			{
+				audioFiles = audioFiles.replace("-map 0:v", "-map 0");
+			}
+			
 			String shortest = " -t " + shortestLength + "ms";
 			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || liste.getSize() < 2 || videoStream == liste.getSize())
 				shortest = "";
-								
+											
 			//Command				
 			String cmd = shortest + " -c:v copy -c:s copy" + audio + " -map s? -y ";
 			FFMPEG.run(InputAndOutput.outPoint + " -i " + '"' + videoFile.toString() + '"' + audioFiles + cmd + '"'  + fileOut + '"');		
@@ -175,7 +181,7 @@ public class ReplaceAudio extends Shutter {
 									
 									if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) && caseChangeAudioCodec.isSelected())
 									{
-										audioFiles = " -map v:0?";
+										audioFiles = " -map 0:v?";
 									}								
 									else if (caseChangeAudioCodec.isSelected())
 									{
@@ -217,10 +223,10 @@ public class ReplaceAudio extends Shutter {
 							videoFile = new File(liste.getElementAt(0));
 							if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) || (liste.getSize() == 1 && caseChangeAudioCodec.isSelected() == false))
 							{
-								audioFiles = " -map v:0?";
+								audioFiles = " -map 0:v?";
 							}
 							else
-								audioFiles = " -map v:0? -map a?";
+								audioFiles = " -map 0:v? -map a?";
 							
 							float offset = 0;
 							

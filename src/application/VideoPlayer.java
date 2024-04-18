@@ -1194,12 +1194,6 @@ public class VideoPlayer {
 				
 							try {
 								
-								if (Settings.btnWaitFileComplete.isSelected())
-						        {
-									FunctionUtils.waitFileCompleted(new File(videoPath));	
-									Shutter.enableAll();
-						        }
-								
 								FunctionUtils.analyze(new File(videoPath), isRaw);
 								
 							} catch (InterruptedException e) {}
@@ -1287,7 +1281,8 @@ public class VideoPlayer {
 							else					
 								inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);		
 														
-							totalFrames = (float) Math.round(FFPROBE.totalLength / inputFramerateMS);
+							totalFrames = (float) Math.floor(FFPROBE.totalLength / inputFramerateMS);
+								
 							playerCurrentFrame = 0;
 			
 							caseInternalTc.setEnabled(true);	
@@ -5088,6 +5083,12 @@ public class VideoPlayer {
 		{
 			filter += yadif + ",";
 		}	
+		
+		//Zoom
+		if (Shutter.sliderZoom.getValue() != 0)
+		{		
+			filter += Colorimetry.setZoom(filter, false) + ",";
+		}		
 
 		//Scaling
 		int width = player.getWidth();
@@ -5097,7 +5098,11 @@ public class VideoPlayer {
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
 		{			
 			filter += settings.Image.setScale("", false);
-			filter += settings.Image.setPad("", false) + ",";
+			
+			if (filter.contains("scale"))
+			{
+				filter += settings.Image.setPad("", false) + ",";
+			}
 		}
 		else			
 		{
@@ -5349,44 +5354,44 @@ public class VideoPlayer {
 						caseInH.setText(in[0]);
 						caseInM.setText(in[1]);
 						caseInS.setText(in[2]);
-							caseInF.setText(in[3]);
-							
-							caseOutH.setText(out[0]);
-							caseOutM.setText(out[1]);
-							caseOutS.setText(out[2]);
-							caseOutF.setText(out[3]);
+						caseInF.setText(in[3]);
+						
+						caseOutH.setText(out[0]);
+						caseOutM.setText(out[1]);
+						caseOutS.setText(out[2]);
+						caseOutF.setText(out[3]);
 
-							float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
-							float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
-							
-							//Used for encoding
-							if (Shutter.caseEnableSequence.isSelected())
-							{						
-								inputFramerateMS = Float.parseFloat(Shutter.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
-							}
-							else					
-								inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);	
-							
-							totalFrames = (float) Math.round(FFPROBE.totalLength / inputFramerateMS);
-							
-							playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
-							if ((int) Math.ceil(timeOut) < totalFrames)
-							{
-								playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
-							}
-							else
-								playerOutMark = waveformContainer.getWidth();
-							
-							slider.setMaximum((int) (totalFrames));							
-							waveformContainer.repaint();	
-							totalDuration();
-							
-							break;
+						float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseInF.getText());
+						float timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.currentFPS + Integer.parseInt(caseOutF.getText());
+						
+						//Used for encoding
+						if (Shutter.caseEnableSequence.isSelected())
+						{						
+							inputFramerateMS = Float.parseFloat(Shutter.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
 						}
+						else					
+							inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);	
+						
+						totalFrames = (float) Math.floor(FFPROBE.totalLength / inputFramerateMS);
+						
+						playerInMark = Math.round((float) (waveformContainer.getSize().width * timeIn) / totalFrames);
+						if ((int) Math.ceil(timeOut) < totalFrames)
+						{
+							playerOutMark = Math.round((float) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
+						}
+						else
+							playerOutMark = waveformContainer.getWidth();
+						
+						slider.setMaximum((int) (totalFrames));							
+						waveformContainer.repaint();	
+						totalDuration();
+						
+						break;
 					}
-				}		
-				
-			} catch (Exception e) {}		
+				}
+			}		
+			
+		} catch (Exception e) {}		
 		
 	}
 	
@@ -5472,7 +5477,7 @@ public class VideoPlayer {
 				else
 					ratio = Float.parseFloat(Shutter.comboDAR.getSelectedItem().toString());
 			}
-			else if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false
+			else if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Settings.btnNoUpscale.isSelected() == false
 			&& Shutter.comboResolution.getSelectedItem().toString().contains("x")
 			&& Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false)
 			{

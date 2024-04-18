@@ -83,6 +83,7 @@ public static int channels;
 public static int qantization;
 public static String videoCodec;
 public static String audioCodec;
+public static String[] audioCodecs;
 public static String audioBitrate;
 public static String timeBase = "";
 public static String creationTime = "";
@@ -132,6 +133,7 @@ public static boolean isRotated = false;
 			lumaLevel = "unavailable";
 			videoCodec = null;
 			audioCodec = null;
+			audioCodecs = new String[50];
 			audioBitrate = null;
 			FFMPEG.error = false;
 			hasAudio = false; 		
@@ -526,6 +528,8 @@ public static boolean isRotated = false;
 								 String[] splitAudio = line.substring(line.indexOf("Audio:")).split(" ");							
 								 audioCodec = splitAudio[1].replace(",", "");
 								 
+								 audioCodecs[channels - 1] = audioCodec;
+								 														 
 								 String[] splitBitrate = line.substring(line.indexOf("Audio:")).split(" kb/s");	
 								 String[] bitrate = splitBitrate[0].split(" ");
 								 audioBitrate =	bitrate[bitrate.length - 1];		
