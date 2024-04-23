@@ -127,6 +127,7 @@ public class Settings {
 	public static JCheckBox btnDisableAnimations = new JCheckBox(Shutter.language.getProperty("btnDisableAnimations"));
 	public static JCheckBox btnDisableSound = new JCheckBox(Shutter.language.getProperty("btnDisableSound"));
 	public static JCheckBox btnDisableUpdate = new JCheckBox(Shutter.language.getProperty("btnDisableUpdate"));
+	public static JCheckBox btnDisableVideoPlayer = new JCheckBox(Shutter.language.getProperty("btnDisableVideoPlayer"));	
 	public static JCheckBox btnDisableMinimizedWindow = new JCheckBox(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
 	public static JTextField txtExclude = new JTextField();
 	private JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1 " + Shutter.language.getProperty("toDefault"));
@@ -156,6 +157,7 @@ public class Settings {
 		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
 		btnDisableUpdate.setName("btnDisableUpdate");
+		btnDisableVideoPlayer.setName("btnDisableVideoPlayer");
 		btnDisableMinimizedWindow.setName("btnDisableMinimizedWindow");
 		btnEmptyListAtEnd.setName("btnEmptyListAtEnd");
 		lblDestination1.setName("lblDestination1");
@@ -170,7 +172,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 700);
+		frame.setSize(370, 720);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
@@ -378,8 +380,52 @@ public class Settings {
 		btnDisableUpdate.setBounds(12, btnDisableSound.getLocation().y + btnDisableSound.getHeight() + 10, btnDisableUpdate.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableUpdate);
 		
+		btnDisableVideoPlayer.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnDisableVideoPlayer.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnDisableVideoPlayer.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnDisableVideoPlayer);
+		
+		btnDisableVideoPlayer.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (btnDisableVideoPlayer.isSelected())
+				{
+					Shutter.caseDisplay.setVisible(false);
+					Shutter.caseDisplay.setSelected(false);
+					
+					if (Shutter.comboFonctions.getSelectedItem() != "")
+					{					
+						Shutter.changeFunction(true);
+					}
+				}
+				else
+				{
+					Shutter.caseDisplay.setVisible(true);
+					
+					if (Shutter.comboFonctions.getSelectedItem() != "")
+					{
+						Shutter.changeFunction(true);
+						
+						if (VideoPlayer.setTime != null && VideoPlayer.setTime.isAlive())
+						{
+							while (VideoPlayer.setTime.isAlive())
+							{
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e) {}
+							}
+						}
+						
+						VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
+					}
+				}
+			}
+			
+		});
+		
 		btnDisableMinimizedWindow.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnDisableMinimizedWindow.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnDisableMinimizedWindow.getPreferredSize().width, 16);
+		btnDisableMinimizedWindow.setBounds(12, btnDisableVideoPlayer.getLocation().y + btnDisableVideoPlayer.getHeight() + 10, btnDisableMinimizedWindow.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableMinimizedWindow);
 		
 		btnEmptyListAtEnd.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));

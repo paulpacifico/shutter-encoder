@@ -1033,7 +1033,7 @@ public class VideoPlayer {
 	}
 
 	public static void playerFreeze() {
-					
+							
 		if ((setTime == null || setTime.isAlive() == false) && (playerVideo == null || playerVideo.isAlive() == false))
 		{		
 			setTime = new Thread(new Runnable() {
@@ -1428,10 +1428,13 @@ public class VideoPlayer {
 					}
 					else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
 					{
-						caseInH.setVisible(true);
-						caseInM.setVisible(true);
-						caseInS.setVisible(true);
-						caseInF.setVisible(true);
+						if (Settings.btnDisableVideoPlayer.isSelected() == false)
+						{
+							caseInH.setVisible(true);
+							caseInM.setVisible(true);
+							caseInS.setVisible(true);
+							caseInF.setVisible(true);
+						}
 						caseOutH.setVisible(false);
 						caseOutM.setVisible(false);
 						caseOutS.setVisible(false);
@@ -1615,7 +1618,7 @@ public class VideoPlayer {
 			btnGoToIn.setVisible(false);
 			btnMarkIn.setVisible(false);
 
-			if (Shutter.liste.getSize() > 0 && videoPath != null && fullscreenPlayer == false && isPiping == false)
+			if (Shutter.liste.getSize() > 0 && videoPath != null && fullscreenPlayer == false && isPiping == false && Settings.btnDisableVideoPlayer.isSelected() == false)
 			{
 				showScale.setVisible(true);
 			}
@@ -1768,7 +1771,7 @@ public class VideoPlayer {
 				caseInternalTc.setBounds(caseInH.getX() - 2, btnPrevious.getY() + btnPrevious.getHeight() + 6, caseInternalTc.getPreferredSize().width, 23);	
 				casePlaySound.setBounds(caseInternalTc.getX() + caseInternalTc.getWidth() + 4, caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
 				
-				if (Shutter.liste.getSize() > 0)
+				if (Shutter.liste.getSize() > 0 && Settings.btnDisableVideoPlayer.isSelected() == false)
 				{
 					showScale.setVisible(true);
 				}
@@ -2031,7 +2034,7 @@ public class VideoPlayer {
 	        
 	public static void addWaveform(boolean newWaveform) {
 		
-		if (caseShowWaveform.isSelected() && FFPROBE.hasAudio && addWaveformIsRunning == false && Shutter.frame.getSize().width > 654)
+		if (caseShowWaveform.isSelected() && FFPROBE.hasAudio && addWaveformIsRunning == false && Shutter.frame.getSize().width > 654 && Settings.btnDisableVideoPlayer.isSelected() == false)
 		{			
 			addWaveformIsRunning = true;
 			
@@ -5550,7 +5553,7 @@ public class VideoPlayer {
 
 			//IMPORTANT video canvas must be a multiple of 4!
 			player.setSize(player.getWidth() - (player.getWidth() % 4), player.getHeight() - (player.getHeight() % 4));
-						
+								
 			//Define bufferSize
 			maxBufferedFrames = (int) ((float) (Shutter.availableMemory / 3) / (player.getWidth() * player.getHeight() * 3));
 			
@@ -5698,7 +5701,7 @@ public class VideoPlayer {
 			{
 				showScale.setVisible(false);
 			}
-			else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.liste.getSize() > 0 && isPiping == false)
+			else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.liste.getSize() > 0 && isPiping == false && Settings.btnDisableVideoPlayer.isSelected() == false)
 			{
 				showScale.setVisible(true);
 			}
@@ -5782,7 +5785,7 @@ public class VideoPlayer {
 				{			
 					if (btnPlay.isEnabled() && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 					{
-						playerFreeze();	
+						playerFreeze();
 					}
 				}
 			}	

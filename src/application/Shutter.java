@@ -1066,7 +1066,8 @@ public class Shutter {
 					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))
 					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionConform")))
 					{
-						JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
+						if (Settings.btnDisableVideoPlayer.isSelected() == false)
+							JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
 					}
 					
 					if (VideoPlayer.btnPlay.isVisible() && liste.getSize() > 0)
@@ -18673,8 +18674,12 @@ public class Shutter {
 	public static void changeWidth(final boolean bigger) {
 					
 		String function = comboFonctions.getSelectedItem().toString();
-			
+		
 		noSettings = false;
+		
+		boolean noVideoPlayer = false;
+		if (Settings.btnDisableVideoPlayer.isSelected() && function.isEmpty() == false && bigger)
+			noVideoPlayer = true;
 
 		boolean forceFullSize = false;
 		if (caseAddWatermark.isSelected() || caseAddTimecode.isSelected() || caseShowTimecode.isSelected() || caseAddText.isSelected() || caseShowFileName.isSelected())
@@ -18706,20 +18711,36 @@ public class Shutter {
 		|| "VMAF".equals(function))
 		{
 			noSettings = true;
-			
-			if (frame.getSize().width == 332)
-			{
-				frame.setBounds(frame.getX() - (1350 - 312 - 332) / 2, frame.getY(), 1350 - 312, frame.getHeight());
+											
+			if (Settings.btnDisableVideoPlayer.isSelected())
+			{			
+				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 708) / 2, 332, 708);	
+				lblArrows.setVisible(true);
+				lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
+				lblGpuDecoding.setVisible(false);
+				comboGPUDecoding.setVisible(false);
+				lblGpuFiltering.setVisible(false);
+				comboGPUFilter.setVisible(false);
+				
+			    lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
+			    lblYears.setVisible(false);
 			}
-			else if (frame.getSize().width == 654)
-			{
-				frame.setBounds(frame.getX() - (1350 - 312 - 654) / 2, frame.getY(), 1350 - 312, frame.getHeight());
+			else
+			{	
+				if (frame.getSize().width == 332)
+				{
+					frame.setBounds(frame.getX() - (1350 - 312 - 332) / 2, frame.getY(), 1350 - 312, frame.getHeight());
+				}
+				else if (frame.getSize().width == 654)
+				{
+					frame.setBounds(frame.getX() - (1350 - 312 - 654) / 2, frame.getY(), 1350 - 312, frame.getHeight());
+				}
+				else if (frame.getSize().width != (1350 - 312))
+				{
+					frame.setBounds(frame.getX() - (1350 - 312 - extendedWidth) / 2, frame.getY(), 1350 - 312, frame.getHeight());
+				}
 			}
-			else if (frame.getSize().width != (1350 - 312))
-			{
-				frame.setBounds(frame.getX() - (1350 - 312 - extendedWidth) / 2, frame.getY(), 1350 - 312, frame.getHeight());
-			}
-			
+				
 			VideoPlayer.setPlayerButtons(true);
 			VideoPlayer.player.setVisible(true);
 
@@ -18737,7 +18758,7 @@ public class Shutter {
 			lblYears.setLocation(frame.getWidth()  - lblYears.getWidth() - 8, lblBy.getY());
 		    lblYears.setVisible(false);
 		}
-		else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionNormalization").equals(function))
+		else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionNormalization").equals(function) || noVideoPlayer)
 		{						
 			noSettings = true;
 			
@@ -19112,8 +19133,10 @@ public class Shutter {
 			VideoPlayer.resizeAll();
 			windowDrag = false;
 		}
-		else
+		else if (frame.getWidth() > 332)
+		{
 			VideoPlayer.resizeAll();
+		}
 		
 	}
 		
