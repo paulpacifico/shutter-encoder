@@ -1187,8 +1187,8 @@ public class FunctionUtils extends Shutter {
 						int i = 1;
 						int map = m;
 						for (Component c : grpSetAudio.getComponents())
-						{
-							if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false && c.getName().equals("comboNormalizeAudio") == false)
+						{							
+							if (c.getName() != null && c.getName().contains("comboAudio") && c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false)
 							{
 								if (i == m)
 								{

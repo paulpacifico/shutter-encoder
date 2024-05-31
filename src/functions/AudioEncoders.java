@@ -122,6 +122,12 @@ public class AudioEncoders extends Shutter {
 						//Audio codec
 						String audioCodec = "";
 						String container = "";
+						String noVideo = " -vn";
+						if (FFPROBE.attachedPic)
+						{
+							noVideo = "";
+						}
+						
 						boolean stereoOutput = false;
 						switch (comboFonctions.getSelectedItem().toString())
 						{	
@@ -149,10 +155,10 @@ public class AudioEncoders extends Shutter {
 								
 								if (comboFilter.getSelectedItem().toString().contains("Float"))
 								{
-									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "be" + " -write_id3v2 1";
+									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "be" + noVideo + " -write_id3v2 1";
 								}
 								else
-									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be" + " -write_id3v2 1";	
+									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "be" + noVideo + " -write_id3v2 1";	
 								
 								stereoOutput = true;
 								container = ".aif";								
@@ -160,7 +166,7 @@ public class AudioEncoders extends Shutter {
 								
 							case "FLAC":
 								
-								audioCodec = "flac -compression_level " + comboFilter.getSelectedItem().toString() + " -write_id3v2 1";									
+								audioCodec = "flac -compression_level " + comboFilter.getSelectedItem().toString() + noVideo + " -write_id3v2 1";									
 								container = ".flac";
 								stereoOutput = true;
 								break;
@@ -174,14 +180,14 @@ public class AudioEncoders extends Shutter {
 								
 							case "Vorbis":	
 								
-								audioCodec = "libvorbis -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";									
+								audioCodec = "libvorbis -b:a " + comboFilter.getSelectedItem().toString() + "k" + noVideo + " -write_id3v2 1";									
 								container = ".oga";
 								stereoOutput = true;
 								break;
 								
 							case "Dolby Digital Plus":
 								
-								audioCodec = "eac3 -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";									
+								audioCodec = "eac3 -b:a " + comboFilter.getSelectedItem().toString() + "k" + noVideo + " -write_id3v2 1";									
 								container = ".eac3";
 								stereoOutput = true;
 								break;
@@ -195,7 +201,7 @@ public class AudioEncoders extends Shutter {
 								
 							case "Opus":
 								
-								audioCodec = "libopus -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";		
+								audioCodec = "libopus -b:a " + comboFilter.getSelectedItem().toString() + "k" + noVideo + " -write_id3v2 1";		
 								
 								if (FFPROBE.surround && FFPROBE.channelLayout != "")
 								{
@@ -208,7 +214,7 @@ public class AudioEncoders extends Shutter {
 							
 							case "MP3":
 								
-								audioCodec = "libmp3lame -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -write_id3v2 1";		
+								audioCodec = "libmp3lame -b:a " + comboFilter.getSelectedItem().toString() + "k" + noVideo + " -write_id3v2 1";		
 								container = ".mp3";	
 								stereoOutput = true;
 								break;
@@ -217,10 +223,10 @@ public class AudioEncoders extends Shutter {
 								
 								if (comboFilter.getSelectedItem().toString().contains("Float"))
 								{
-									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "le" + " -write_bext 1 -write_id3v2 1";
+									audioCodec = "pcm_f" + comboFilter.getSelectedItem().toString().replace(" Float", "") + "le" + noVideo + " -write_bext 1 -write_id3v2 1";
 								}
 								else
-									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "le" + " -write_bext 1 -write_id3v2 1";		
+									audioCodec = "pcm_s" + comboFilter.getSelectedItem().toString().replace(" Bits", "") + "le" + noVideo + " -write_bext 1 -write_id3v2 1";		
 								
 								container = ".wav";
 								stereoOutput = true;

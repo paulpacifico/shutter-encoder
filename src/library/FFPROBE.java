@@ -44,6 +44,7 @@ public static boolean isRunning = false;
 public static boolean calcul = false;
 public static boolean audioOnly = true;
 public static boolean hasAudio = false;
+public static boolean attachedPic = false;
 public static Thread processData;
 public static Thread processFrameData;
 public static Thread processVideoLevels;
@@ -137,6 +138,7 @@ public static boolean isRotated = false;
 			audioBitrate = null;
 			FFMPEG.error = false;
 			hasAudio = false; 		
+			attachedPic = false;
 			btnStart.setEnabled(false);
 			
 			imageRatio = 1.777777f;
@@ -472,6 +474,11 @@ public static boolean isRotated = false;
 				                }
 							 }
 							 
+							 if (line.contains("attached pic"))
+							 {
+								 attachedPic = true;
+							 }
+							
 				        	 if (line.contains("Audio:") && (line.contains("0 channels")) == false)
 				        	 {
 				        		 hasAudio = true;
@@ -959,7 +966,7 @@ public static boolean isRotated = false;
 					if (seekTime < 0)
 						seekTime = 0;
 				}
-				
+
 				try {		
 					
 					String PathToFFPROBE;
@@ -969,15 +976,15 @@ public static boolean isRotated = false;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -v quiet -read_intervals " + (long) seekTime + "ms -show_entries packet=pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0 -i " + '"' + file + '"');
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -hide_banner -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0 -i " + '"' + file + '"');
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries packet=pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
-					}	
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -hide_banner -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
+					}					
 				
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					isRunning = true;	
@@ -998,7 +1005,7 @@ public static boolean isRotated = false;
 						//Errors
 						FFMPEG.checkForErrors(line);
 
-						if (line.equals("") == false && line.contains("K"))
+						if (line.equals("") == false && line.contains("I"))
 						{						
 							String s[] =  line.split(",");
 							float keyPTS = Float.parseFloat(s[0]) * 1000;

@@ -295,7 +295,8 @@ public class Utils extends Shutter {
 			}
 			else if (getLanguage.contains(Locale.of("ja").getDisplayLanguage())
 			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
-			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())) //use system default font
+			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())
+			|| getLanguage.contains(Locale.of("ar").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
 				Shutter.montserratFont = "";
@@ -618,7 +619,7 @@ public class Utils extends Shutter {
 				document.appendChild(root);
 								
 				Element settings = document.createElement("Settings");				
-				
+								
 				//btnExtension
 				//Component
 				Element component = document.createElement("Component");
@@ -702,6 +703,78 @@ public class Utils extends Shutter {
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
+				
+				//Destination 1
+				if (Shutter.caseChangeFolder1.isSelected())
+				{
+					//Component
+					component = document.createElement("Component");
+					
+					//Type
+					cType = document.createElement("Type");
+					cType.appendChild(document.createTextNode("JLabel"));
+					component.appendChild(cType);
+					
+					//Name
+					cName = document.createElement("Name");
+					cName.appendChild(document.createTextNode(Shutter.lblDestination1.getName()));
+					component.appendChild(cName);
+					
+					//Value
+					cValue = document.createElement("Value");
+					cValue.appendChild(document.createTextNode(Shutter.lblDestination1.getText()));
+					component.appendChild(cValue);
+					
+					settings.appendChild(component);
+				}
+				
+				//Destination 2
+				if (Shutter.caseChangeFolder2.isSelected())
+				{
+					//Component
+					component = document.createElement("Component");
+					
+					//Type
+					cType = document.createElement("Type");
+					cType.appendChild(document.createTextNode("JLabel"));
+					component.appendChild(cType);
+					
+					//Name
+					cName = document.createElement("Name");
+					cName.appendChild(document.createTextNode(Shutter.lblDestination2.getName()));
+					component.appendChild(cName);
+					
+					//Value
+					cValue = document.createElement("Value");
+					cValue.appendChild(document.createTextNode(Shutter.lblDestination2.getText()));
+					component.appendChild(cValue);
+					
+					settings.appendChild(component);
+				}
+				
+				//Destination 3
+				if (Shutter.caseChangeFolder3.isSelected())
+				{
+					//Component
+					component = document.createElement("Component");
+					
+					//Type
+					cType = document.createElement("Type");
+					cType.appendChild(document.createTextNode("JLabel"));
+					component.appendChild(cType);
+					
+					//Name
+					cName = document.createElement("Name");
+					cName.appendChild(document.createTextNode(Shutter.lblDestination3.getName()));
+					component.appendChild(cName);
+					
+					//Value
+					cValue = document.createElement("Value");
+					cValue.appendChild(document.createTextNode(Shutter.lblDestination3.getText()));
+					component.appendChild(cValue);
+					
+					settings.appendChild(component);
+				}
 				
 				//Saving grpWatermak preset
 				Element watermark = document.createElement("Watermark");
@@ -1688,6 +1761,45 @@ public class Utils extends Shutter {
 									}
 									else
 										txtSubFolder.setText("");
+								}
+								
+								//Destination 1
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination1"))
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									{
+										if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
+										{	
+											caseChangeFolder1.setSelected(true);
+											lblDestination1.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										}
+									}
+								}
+								
+								//Destination 2
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination2"))
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									{
+										if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
+										{	
+											caseChangeFolder2.setSelected(true);
+											lblDestination2.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										}
+									}
+								}
+								
+								//Destination 3
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination3"))
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									{
+										if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
+										{	
+											caseChangeFolder3.setSelected(true);
+											lblDestination3.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										}
+									}
 								}
 							}
 						}

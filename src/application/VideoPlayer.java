@@ -1931,7 +1931,7 @@ public class VideoPlayer {
 
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 			
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + " -c:v bmp -an -f image2pipe pipe:-";
 			
 			if (Shutter.inputDeviceIsRunning)
 			{
@@ -2282,7 +2282,7 @@ public class VideoPlayer {
 								Thread.sleep(10);
 							} catch (InterruptedException er) {}
 						} while (FFPROBE.isRunning);
-						
+		
 						if (FFPROBE.keyFrame > 0)
 						{	
 							playerSetTime(FFPROBE.keyFrame);
@@ -5640,7 +5640,7 @@ public class VideoPlayer {
 			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
 			{
 				loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
+				Shutter.logo.setLocation((int) Math.round(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
 			}
 			
 			//grpCrop

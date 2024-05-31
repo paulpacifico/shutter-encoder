@@ -413,7 +413,7 @@ public static StringBuilder errorLog = new StringBuilder();
 
 			hstack += "hstack=" + n + "[out]";
 
-			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map " + '"' + "[out]" + '"' + " -an -f nut pipe:play");
+			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map " + '"' + "[out]" + '"' + " -an -f nut pipe:play");
 		}
 		else
 		{
@@ -559,7 +559,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			if (isVideoPlayer)
 			{
-				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + concat + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
+				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + concat + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
 			}
 			else if (inputDeviceIsRunning)
 			{
@@ -575,7 +575,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					FFMPEG.toFFPLAY(" -v quiet " + RecordInputDevice.setInputDevices() + cmd);
 			} 
 			else
-				FFMPEG.toFFPLAY(loop + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -v quiet -i " + '"' + inputFile + '"' + cmd);					
+				FFMPEG.toFFPLAY(loop + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -i " + '"' + inputFile + '"' + cmd);					
 						
 			progressBar1.setValue(0);
 		}
@@ -1120,7 +1120,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						}
 						else //Check the current selection
 						{
-							FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+							FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
 							
 							do {
 								Thread.sleep(100);

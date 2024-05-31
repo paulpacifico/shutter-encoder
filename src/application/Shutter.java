@@ -3243,6 +3243,17 @@ public class Shutter {
 					VideoPlayer.frameVideo = null;
 				}
 				
+				if (VideoPlayer.addWaveformIsRunning)
+				{
+					try {
+						FFMPEG.waveformWriter.write('q');
+						FFMPEG.waveformWriter.flush();
+						FFMPEG.waveformWriter.close();
+					} catch (IOException er) {}
+					
+					FFMPEG.waveformProcess.destroy();
+				}
+				
 				FunctionUtils.yesToAll = false;
 				FunctionUtils.noToAll = false;
 				
@@ -5658,7 +5669,7 @@ public class Shutter {
 					while (FFPROBE.isRunning);
 				
 					//FFMPEGTOFFPLAY
-					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString() + " -v quiet -i " + '"' + file + '"' + " -vf scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:play");
+					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -i " + '"' + file + '"' + " -vf scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:play");
 				}
 
 			}
@@ -10390,12 +10401,7 @@ public class Shutter {
 			public void actionPerformed(ActionEvent arg0) {			
 				
 				if (caseAddSubtitles.isSelected() && VideoPlayer.videoPath != null)
-				{	
-					if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")))
-					{
-						Shutter.casePreserveSubs.setSelected(false);
-					}					
-					
+				{											
 					if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionSubtitles")))
 					{
 						if (System.getProperty("os.name").contains("Windows"))
@@ -10761,6 +10767,13 @@ public class Shutter {
 						}					
 						else
 							caseAddSubtitles.setSelected(false);							
+					}
+					
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
+					|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
+					|| subtitlesBurn == false)
+					{
+						Shutter.casePreserveSubs.setSelected(false);
 					}
 				} 
 				else 
@@ -15522,7 +15535,10 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (casePreserveSubs.isSelected() && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) || Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")))
+				if (casePreserveSubs.isSelected()
+				&& (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
+				|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
+				|| subtitlesBurn == false))
 				{
 					caseAddSubtitles.setSelected(false);
 				}
