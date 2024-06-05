@@ -46,9 +46,9 @@ public class Corrections extends Shutter {
 			//Analyse du fichier
 			String cmd;
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab | PathToFFMPEG -i pipe:stab -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";					
+				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe - | PathToFFMPEG -i pipe:0 -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";					
 			else
-				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe pipe:stab | PathToFFMPEG -i pipe:stab -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -" + '"';	
+				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe - | PathToFFMPEG -i pipe:0 -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -" + '"';	
 			
 			FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
 			

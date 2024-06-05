@@ -728,7 +728,7 @@ import settings.FunctionUtils;
 								fileOut = new File(s[0]); 
 							}							
 							
-							if (cmd.contains("pipe:play"))
+							if (cmd.contains("pipe:1"))
 							{
 								Shutter.caseDisplay.setSelected(true);
 							}

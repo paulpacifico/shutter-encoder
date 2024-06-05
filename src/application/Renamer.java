@@ -23,6 +23,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import javax.swing.JFrame;
 
@@ -420,6 +421,19 @@ public class Renamer {
 			}
 			
 		});
+		
+		//Right_to_left
+		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		{
+			//Frame
+			for (Component c : frame.getContentPane().getComponents())
+			{				
+				if (c instanceof JCheckBox)
+				{
+					c.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+				}
+			}		
+		}
 		
 		frame.setVisible(true);
 		

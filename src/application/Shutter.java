@@ -24,6 +24,7 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -1422,6 +1423,53 @@ public class Shutter {
 		YOUTUBEDL.update();
 		EXIFTOOL.run(""); //Preload the binary
 		Splash.increment();
+				
+		//Right_to_left
+		if (getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		{
+			//Frame
+			for (Component c : frame.getContentPane().getComponents())
+			{
+				if (c instanceof JPanel)
+				{						
+					for (Component p : ((JPanel) c).getComponents())
+					{
+						if (p instanceof JCheckBox)
+						{
+							p.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+						}
+					}
+				}
+			}		
+			
+			//Settings
+			for (Component c : Settings.frame.getContentPane().getComponents())
+			{		
+				if (c instanceof JCheckBox)
+				{
+					c.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+				}
+			}	
+			
+			//Destinations
+			for (Component c : grpDestination.getComponents())
+			{		
+				if (c instanceof JPanel)
+				{						
+					for (Component p : ((JPanel) c).getComponents())
+					{
+						if (p instanceof JCheckBox)
+						{
+							p.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+						}
+					}
+				}
+				else if (c instanceof JCheckBox)
+				{
+					c.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+				}
+			}
+		}
 		
 		Utils.changeFrameVisibility(frame, false);
 		btnStart.requestFocus();
@@ -5669,7 +5717,7 @@ public class Shutter {
 					while (FFPROBE.isRunning);
 				
 					//FFMPEGTOFFPLAY
-					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -i " + '"' + file + '"' + " -vf scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:play");
+					FFMPEG.toFFPLAY(" -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", ".")) + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -v quiet -i " + '"' + file + '"' + " -vf scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:1");
 				}
 
 			}
@@ -14340,7 +14388,9 @@ public class Shutter {
 									stabilisation = "";
 								}
 								else
-								{				
+								{	
+									VideoPlayer.setPlayerButtons(true);
+									
 									VideoPlayer.resizeAll();
 									
 									float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
@@ -16716,22 +16766,29 @@ public class Shutter {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				
 				if (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false)
 				{
-				try {
-					if (e.getKeyCode() != KeyEvent.VK_DELETE) {
-						int h = Integer.parseInt(textH.getText());
-						int min = Integer.parseInt(textM.getText());
-						int sec = Integer.parseInt(textS.getText());
-						int frames = Integer.parseInt(textF.getText());
-						int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-						int tailleFinale = Integer.parseInt(bitrateSize.getText());
-						float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
-						float resultAudio = (float) audio / 8 / 1024;
-						float resultatdebit = (result - resultAudio) * 8 * 1024;
-						debitVideo.getModel().setSelectedItem((int) resultatdebit);
-					}
-				} catch (Exception e1) {}
+					if (liste.getSize() > 0 && fileList.getSelectedIndex() == -1)
+					{
+						fileList.setSelectedIndex(0);
+						VideoPlayer.setMedia();
+					}			
+
+					try {
+						if (e.getKeyCode() != KeyEvent.VK_DELETE) {
+							int h = Integer.parseInt(textH.getText());
+							int min = Integer.parseInt(textM.getText());
+							int sec = Integer.parseInt(textS.getText());
+							int frames = Integer.parseInt(textF.getText());
+							int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
+							int tailleFinale = Integer.parseInt(bitrateSize.getText());
+							float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
+							float resultAudio = (float) audio / 8 / 1024;
+							float resultatdebit = (result - resultAudio) * 8 * 1024;
+							debitVideo.getModel().setSelectedItem((int) resultatdebit);
+						}
+					} catch (Exception e1) {}
 				}
 			}
 		});
@@ -21925,6 +21982,28 @@ public class Shutter {
 								changeSections(false); // une fois l'action terminé on vérifie que les groupes correspondent
 							}
 	
+							//Right_to_left
+							if (getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+							{
+								//destinationStream
+								for (Component c : destinationStream.getComponents())
+								{		
+									if (c instanceof JCheckBox)
+									{
+										c.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+									}
+								}	
+								
+								//grpAdvanced
+								for (Component c : grpAdvanced.getComponents())
+								{		
+									if (c instanceof JCheckBox)
+									{
+										c.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+									}
+								}
+							}
+							
 							// Important
 							grpResolution.repaint();
 							topPanel.repaint();
@@ -23830,43 +23909,45 @@ class ListeFileTransferHandler extends TransferHandler {
 						}
 					}
 
-					switch (Shutter.comboFonctions.getSelectedItem().toString()) {
-					case "H.264":
-					case "H.265":
-					case "WMV":
-					case "MPEG-1":
-					case "MPEG-2":
-					case "VP8":
-					case "VP9":
-					case "AV1":
-					case "Theora":
-					case "MJPEG":
-					case "Xvid":
-					case "Blu-ray":											
-						FFPROBE.setLength();
-						break;
+					switch (Shutter.comboFonctions.getSelectedItem().toString())
+					{
+						case "H.264":
+						case "H.265":
+						case "WMV":
+						case "MPEG-1":
+						case "MPEG-2":
+						case "VP8":
+						case "VP9":
+						case "AV1":
+						case "Theora":
+						case "MJPEG":
+						case "Xvid":
+						case "Blu-ray":											
+							FFPROBE.setLength();
+							break;
 					}
 
 					// CaseOPATOM
-					switch (Shutter.comboFonctions.getSelectedItem().toString()) {
-					case "DNxHD":
-					case "DNxHR":
-					case "Apple ProRes":
-					case "GoPro CineForm":
-					case "QT Animation":
-					case "Uncompressed":
-						if (Shutter.caseOPATOM.isSelected()) {
-							for (int item = 0; item < Shutter.liste.getSize(); item++) {
-								int s = Shutter.liste.getElementAt(item).toString().lastIndexOf('.');
-								if (Shutter.liste.getElementAt(item).toString().substring(s).toLowerCase()
-										.equals(".mxf") == false) {
-									Shutter.liste.remove(item);
-									item = -1;
+					switch (Shutter.comboFonctions.getSelectedItem().toString())
+					{
+						case "DNxHD":
+						case "DNxHR":
+						case "Apple ProRes":
+						case "GoPro CineForm":
+						case "QT Animation":
+						case "Uncompressed":
+							if (Shutter.caseOPATOM.isSelected()) {
+								for (int item = 0; item < Shutter.liste.getSize(); item++) {
+									int s = Shutter.liste.getElementAt(item).toString().lastIndexOf('.');
+									if (Shutter.liste.getElementAt(item).toString().substring(s).toLowerCase()
+											.equals(".mxf") == false) {
+										Shutter.liste.remove(item);
+										item = -1;
+									}
 								}
+								Shutter.lblFiles.setText(Utils.filesNumber());
 							}
-							Shutter.lblFiles.setText(Utils.filesNumber());
-						}
-						break;
+							break;
 					}
 					
 					// VideoPlayer.player					

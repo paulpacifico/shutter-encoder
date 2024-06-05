@@ -1546,7 +1546,7 @@ public class VideoPlayer {
     }
     
     public static void setPlayerButtons(boolean enable) {
-    	    	
+    	    	   	
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 		{
 			waveformContainer.setVisible(true);
@@ -1887,7 +1887,7 @@ public class VideoPlayer {
 				}
 			}
 			
-			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v bmp -an -f image2pipe pipe:-";
+			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v bmp -an -f image2pipe -";
 		}
 		else
 		{
@@ -1931,11 +1931,11 @@ public class VideoPlayer {
 
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 			
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + " -c:v bmp -an -f image2pipe pipe:-";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + " -c:v bmp -an -f image2pipe -";
 			
 			if (Shutter.inputDeviceIsRunning)
 			{
-				cmd = " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe pipe:-";
+				cmd = " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe -";
 			}
 
 			Console.consoleFFMPEG.append(cmd + System.lineSeparator());
@@ -1986,7 +1986,7 @@ public class VideoPlayer {
 		
 		if (FFPROBE.hasAudio == false && (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false || Shutter.liste.getSize() == 1))
 		{
-			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade + duration +  " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav pipe:-";				
+			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + speed + audioFade + duration +  " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -";				
 		}
 		else
 		{
@@ -2012,7 +2012,7 @@ public class VideoPlayer {
 				}
 			}
 			
-			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1 " + channel + " -f wav pipe:-";
+			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1 " + channel + " -f wav -";
 		}		
 		
 	}
@@ -2091,13 +2091,13 @@ public class VideoPlayer {
 						{
 							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
 									+ " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
-									+ " -vn -frames:v 1 -c:v bmp -f image2pipe pipe:-"); 
+									+ " -vn -frames:v 1 -c:v bmp -f image2pipe -"); 
 						}
 						else
 						{
 							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
 							+ " -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
-							+ " -vn -frames:v 1 -c:v bmp -f image2pipe pipe:-");  																
+							+ " -vn -frames:v 1 -c:v bmp -f image2pipe -");  																
 						}
 
 						if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
@@ -4633,11 +4633,11 @@ public class VideoPlayer {
 			{
 				if (Shutter.overlayDeviceIsRunning)
 				{
-					FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
+					FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe -");
 				}
 				else if (Shutter.logoPNG == null)
 				{
-					FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe pipe:-");
+					FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe -");
 				}
 				
 				do {
@@ -4863,7 +4863,7 @@ public class VideoPlayer {
 							else if (isRaw)
 							{	
 								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								DCRAW.run(" -v -w -c -q 0 -o 1 -h -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v bmp -f image2pipe pipe:-");
+								DCRAW.run(" -v -w -c -q 0 -o 1 -h -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v bmp -f image2pipe -");
 								
 					            do {
 					            	Thread.sleep(10);  
@@ -4901,7 +4901,7 @@ public class VideoPlayer {
 																
 								if (preview.exists())
 								{									
-									generatePreview(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + " -c:v bmp -f image2pipe pipe:-"); 
+									generatePreview(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + " -c:v bmp -f image2pipe -"); 
 
 									if (mouseIsPressed == false)
 									{
@@ -4910,7 +4910,7 @@ public class VideoPlayer {
 								}
 								else
 								{
-									generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v bmp -f image2pipe pipe:-");
+									generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v bmp -f image2pipe -");
 								}
 								
 								do {
@@ -4919,7 +4919,7 @@ public class VideoPlayer {
 							}		
 							else									
 							{		
-								generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -frames:v 1 -c:v bmp -an -f image2pipe pipe:-");
+								generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -frames:v 1 -c:v bmp -an -f image2pipe -");
 							}		
 				            
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
@@ -4930,11 +4930,11 @@ public class VideoPlayer {
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
 							{				
-								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -frames:v 1 -c:v bmp -an -f image2pipe pipe:-"); 
+								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -frames:v 1 -c:v bmp -an -f image2pipe -"); 
 							}
 							else
 							{		
-								generatePreview(" -v quiet -hide_banner -i pipe:0" + setFilter("","", true) + " -frames:v 1 -c:v bmp -f image2pipe pipe:-");
+								generatePreview(" -v quiet -hide_banner -i pipe:0" + setFilter("","", true) + " -frames:v 1 -c:v bmp -f image2pipe -");
 							}
 						}
 			        }

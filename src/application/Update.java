@@ -230,6 +230,7 @@ public class Update {
 			    	if (System.getProperty("os.name").contains("Windows")) //PC
 	            	{
 	            		try {
+	            			
 		            		if (file.attr("href").contains("Shutter Encoder (PC Version"))
 			            	{
 		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
@@ -266,6 +267,7 @@ public class Update {
 		    						 break;
 		            			}
 			            	}
+		            		
 	            		} catch (Exception e) {}
 	            	}			    	
 			    	else if (System.getProperty("os.name").contains("Mac")) //MAC
@@ -391,11 +393,34 @@ public class Update {
 	        }
 	}
 	
-	private static void runProcess(final String newVersion) {
+	private static void runProcess(final String file) {
 		
 		Thread download = new Thread(new Runnable()  {
 			
 			public void run() {			
+				
+				String newVersion = file;
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					String mainFolder = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					mainFolder = mainFolder.substring(1,mainFolder.length()-1);
+					mainFolder = mainFolder.substring(0,(int) (mainFolder.lastIndexOf("/"))).replace("%20", " ") ;
+					
+					boolean portableVersion = true;
+					for (File f : new File(mainFolder).listFiles())
+					{
+						if (f.toString().contains("unins") && f.toString().contains(".exe"))
+						{
+							portableVersion = false;
+							break;
+						}
+					}
+					
+					if (portableVersion)
+					{
+						newVersion = newVersion.toString().replace(".exe", ".zip");
+					}
+				}
 				
 				String userFolder = System.getProperty("user.home");
 				if (System.getProperty("os.name").contains("Windows"))
@@ -408,7 +433,7 @@ public class Update {
 				{
 					appPath = new File(userFolder + "/Desktop/" + newVersion);
 				}
-				
+								
 				//Download
 				HTTPDownload("https://www.shutterencoder.com/" + newVersion, appPath.toString());
 	

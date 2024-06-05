@@ -21,6 +21,8 @@ package application;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -42,6 +44,7 @@ import java.awt.geom.Area;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -133,6 +136,25 @@ public class VideoWeb {
 		topPanel();
 		grpURL();
 					
+		//Right_to_left
+		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		{
+			//Frame
+			for (Component c : frame.getContentPane().getComponents())
+			{
+				if (c instanceof JPanel)
+				{						
+					for (Component p : ((JPanel) c).getComponents())
+					{
+						if (p instanceof JCheckBox)
+						{
+							p.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+						}
+					}
+				}
+			}		
+		}
+		
 		Utils.changeDialogVisibility(frame, false);	
 		
 	}

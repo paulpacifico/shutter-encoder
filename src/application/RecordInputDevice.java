@@ -219,7 +219,7 @@ public class RecordInputDevice {
 					//Permet d'injecter la resolution à FFPROBE
 					setInputDevices();
 	
-					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:play";	
+					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:1";	
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
@@ -311,7 +311,7 @@ public class RecordInputDevice {
 					//Permet d'injecter la resolution à FFPROBE
 					setOverlayDevice();
 																	
-					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:play";		
+					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:1";		
 								
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					

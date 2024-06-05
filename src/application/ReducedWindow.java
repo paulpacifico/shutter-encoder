@@ -21,6 +21,8 @@ package application;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.RenderingHints;
@@ -31,10 +33,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 
 import javax.swing.JPanel;
@@ -147,6 +151,25 @@ public class ReducedWindow extends JDialog {
 		lblTempsRestant.setBounds(100, 72, 178, 16);		
 		frame.getContentPane().add(lblTempsRestant);
 				
+		//Right_to_left
+		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		{
+			//Frame
+			for (Component c : frame.getContentPane().getComponents())
+			{
+				if (c instanceof JPanel)
+				{						
+					for (Component p : ((JPanel) c).getComponents())
+					{
+						if (p instanceof JCheckBox)
+						{
+							p.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+						}
+					}
+				}
+			}		
+		}
+		
 		frame.setVisible(true);
 				
 		//Mise à jour

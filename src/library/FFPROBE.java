@@ -1237,7 +1237,7 @@ public static boolean isRotated = false;
 			{
 				if (isLocked)
 				{
-					 //Set Bitrate
+					//Set Bitrate
 					int h = Integer.parseInt(textH.getText());
 					int min = Integer.parseInt(textM.getText());
 					int sec = Integer.parseInt(textS.getText());

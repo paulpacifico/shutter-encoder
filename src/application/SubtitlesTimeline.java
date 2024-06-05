@@ -22,6 +22,7 @@ package application;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
@@ -65,6 +66,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -1286,6 +1288,19 @@ public class SubtitlesTimeline {
 	             }
 	        }
 	    }, AWTEvent.KEY_EVENT_MASK);	
+		
+		//Right_to_left
+		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		{
+			//Frame
+			for (Component c : frame.getContentPane().getComponents())
+			{				
+				if (c instanceof JCheckBox)
+				{
+					c.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+				}
+			}		
+		}
 		
 		Utils.changeFrameVisibility(frame, false);
 		

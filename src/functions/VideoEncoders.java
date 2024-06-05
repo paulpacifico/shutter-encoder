@@ -766,7 +766,7 @@ public class VideoEncoders extends Shutter {
 							output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=flv]" + textStream.getText();
 									
 							if (caseDisplay.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
-								output += "|[f=matroska]pipe:play" + '"';
+								output += "|[f=matroska]pipe:1" + '"';
 							else
 								output += '"';
 						}
@@ -788,13 +788,13 @@ public class VideoEncoders extends Shutter {
 								case "Blu-ray":
 								case "DV PAL":
 									
-									output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
+									output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:1" + '"';
 									break;
 								
 								case "AVC-Intra 100":
 								case "XAVC":
 																	
-									output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:play" + '"';
+									output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=mxf]pipe:1" + '"';
 									break;
 									
 								case "DNxHD":
@@ -807,7 +807,7 @@ public class VideoEncoders extends Shutter {
 								case "HAP":
 								case "Uncompressed":
 									
-									output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:play" + '"';
+									output = "-f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:1" + '"';
 									break;
 							}	
 						}

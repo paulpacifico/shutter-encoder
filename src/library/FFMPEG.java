@@ -201,17 +201,17 @@ public static StringBuilder errorLog = new StringBuilder();
 							PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-
-							if (cmd.contains("image2pipe") || cmd.contains("pipe:play") || cmd.contains("pipe:stab") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
+						
+							if (cmd.contains("image2pipe") || cmd.contains("pipe:1") || cmd.contains("vidstabdetect") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 							|| caseEnableColorimetry.isSelected() && Colorimetry.setEQ(true) != ""
 							|| caseLUTs.isSelected() && grpColorimetry.isVisible()
 							|| caseForcerDAR.isSelected()
 							|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpColorimetry.isVisible())
 							{
 								String pipe = "";								
-								if (cmd.contains("pipe:play"))
+								if (cmd.contains("pipe:1"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play -an -c:v bmp -f image2pipe pipe:-";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -230,9 +230,9 @@ public static StringBuilder errorLog = new StringBuilder();
 							PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
 							
 							String pipe = "";								
-							if (cmd.contains("pipe:play"))
+							if (cmd.contains("pipe:1"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:play -an -c:v bmp -f image2pipe pipe:-";
+								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
@@ -256,7 +256,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						OutputStream stdin = process.getOutputStream();
 				        writer = new BufferedWriter(new OutputStreamWriter(stdin));				        
 		        
-				        if (cmd.contains("pipe:play"))
+				        if (cmd.contains("pipe:1"))
 						{				        	
 				        	VideoPlayer.playerStop();
 					     
@@ -413,7 +413,7 @@ public static StringBuilder errorLog = new StringBuilder();
 
 			hstack += "hstack=" + n + "[out]";
 
-			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map " + '"' + "[out]" + '"' + " -an -f nut pipe:play");
+			FFMPEG.toFFPLAY(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map " + '"' + "[out]" + '"' + " -an -f nut pipe:1");
 		}
 		else
 		{
@@ -550,7 +550,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				inputFile = new File(output.replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
 			}
 			
-			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -an -f nut pipe:play";
+			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -an -f nut pipe:1";
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			
@@ -611,7 +611,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 				
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");
+				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:0" + fps + " -c:v bmp -an -f image2pipe -");
 				process = pbv.start();
 								
 				//AUDIO STREAM
@@ -628,7 +628,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
 					}
 					
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + concat + " -v quiet "  + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav pipe:-");	
+					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + concat + " -v quiet "  + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -");	
 					processAudio = pba.start();
 				}
 			}
@@ -638,7 +638,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
 				PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";
 				
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-");	
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -an -f image2pipe -");	
 				process = processFFMPEG.start();
 			
 				//AUDIO STREAM
@@ -655,12 +655,12 @@ public static StringBuilder errorLog = new StringBuilder();
 						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
 					}
 					
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + concat + " -v quiet " + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav pipe:-");	
+					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + concat + " -v quiet " + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -");	
 					processAudio = pba.start();
 				}
 			}	
 			
-			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:play" + fps + " -c:v bmp -an -f image2pipe pipe:-" + System.lineSeparator());
+			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -an -f image2pipe -" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
 			player.getContentPane().setBackground(new Color(42,42,47));
@@ -921,7 +921,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			displayThread.setPriority(Thread.MAX_PRIORITY);
 			displayThread.start();
 		   					     																		
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			error = true;
 		}
 								
@@ -1434,7 +1434,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + cmd);									
 				waveformProcess = processFFMPEG.start();
 			}	
-
+		
 			//Allows to write into the stream
 			OutputStream stdin = waveformProcess.getOutputStream();
 			waveformWriter = new BufferedWriter(new OutputStreamWriter(stdin));
