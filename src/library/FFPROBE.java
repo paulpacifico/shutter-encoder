@@ -611,7 +611,7 @@ public static boolean isRotated = false;
 			                {
 			                	//Example   : 2021-05-20T09:55:22.000000Z
 			                	String s[] =  line.substring(line.indexOf(":") + 1).replace(" ", "").replace("T", " ").split("\\.");
-	
+			                	
 			                	creationTime = s[0];
 			                }
 				            

@@ -47,6 +47,7 @@ public class Timecode extends Shutter {
 		if (caseGenerateFromDate.isSelected())
 		{
 			String s[] = EXIFTOOL.creationHours.split(":");
+			
 			return " -timecode " + '"' + s[0] + ":" + s[1] + ":" + s[2] + dropFrame + "00" + '"';
 		}		
 		else if (caseSetTimecode.isSelected())

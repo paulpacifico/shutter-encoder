@@ -225,8 +225,9 @@ public class Update {
 	        	catch (Exception er){}
 	        	
 			    Document doc = Jsoup.connect("https://www.shutterencoder.com").get();
-			      for (Element file : doc.select("a"))
-			      {			    	  			    	
+			    			    
+			    for (Element file : doc.select("a"))
+			    {				    	
 			    	if (System.getProperty("os.name").contains("Windows")) //PC
 	            	{
 	            		try {

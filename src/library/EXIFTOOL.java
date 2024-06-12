@@ -21,11 +21,6 @@ package library;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 
 import application.Console;
 import application.Shutter;
@@ -110,21 +105,14 @@ private static Boolean horizontal = true;
 							  exifHours = f[1]; //12:30:00
 						  }
 						  
-						  if (line.contains("Create Date"))
-						  {								  
-							  String l = line.substring(line.indexOf(":") + 2);
+						  if (line.contains("Create Date") && line.contains("+") == false)
+						  {								  							 
+							  String l = line.substring(line.indexOf(":") + 2);							 
 							  String f[] = l.split(" ");								  
-							  creationDate = f[0]; //2018:04:06
+							  creationDate = f[0].toString(); //2018:04:06
 							  
-							  ZoneOffset zoneOffSet = ZoneId.systemDefault().getRules().getOffset(LocalDateTime.now());									
-							  String o[] = zoneOffSet.toString().split(":");
-							  Integer offsetTime = Integer.parseInt(o[0]);
-							  
-							  NumberFormat formatter = new DecimalFormat("00");
-							  String time[]	= f[1].split(":"); //12:30:00								  
-							  Integer hours = (Integer.parseInt(time[0]) + offsetTime) % 24;
-							 								  								  
-							  creationHours = formatter.format(hours) + ":" + time[1] + ":" + time[2];
+							  String time[]	= f[1].split(":"); //12:30:00
+							  creationHours = time[0] + ":" + time[1] + ":" + time[2];
 						  }	
 						  
 						  if (line.contains("Image Width"))

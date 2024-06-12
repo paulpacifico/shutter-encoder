@@ -184,7 +184,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "18.1";
+	public static String actualVersion = "18.2";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -1725,7 +1725,7 @@ public class Shutter {
 				if (accept) {
 					
 					try {
-						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation.html"));
+						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation/"));
 					} catch (IOException | URISyntaxException er) {}
 				}
 			}
