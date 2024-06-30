@@ -1029,7 +1029,7 @@ public class VideoPlayer {
 				
 			});
 			setTime.start();			
-		}	
+		}			
 	}
 
 	public static void playerFreeze() {
@@ -1738,11 +1738,12 @@ public class VideoPlayer {
 				//Add Audio tracks
 				comboAudioTrack.removeAllItems();
 				if (FFPROBE.channels > 1 && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
-				{							
+				{	
 					for (int i = 0 ; i < FFPROBE.channels ; i++)
 					{
 						comboAudioTrack.addItem(Shutter.language.getProperty("audio").toUpperCase().substring(0, 1) + "" + (i + 1));
 					}
+					comboAudioTrack.addItem("Mix");
 					comboAudioTrack.setVisible(true);
 				}
 				else
@@ -1931,11 +1932,11 @@ public class VideoPlayer {
 
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 			
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + " -c:v bmp -an -f image2pipe -";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + " -c:v bmp -an -f image2pipe -";
 			
 			if (Shutter.inputDeviceIsRunning)
 			{
-				cmd = " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe -";
+				cmd = " -strict -2 -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe -";
 			}
 
 			Console.consoleFFMPEG.append(cmd + System.lineSeparator());
@@ -2008,11 +2009,16 @@ public class VideoPlayer {
 			{	
 				if (FFPROBE.channels > 0 && comboAudioTrack.isVisible())
 				{
-					channel = " -map a:" + comboAudioTrack.getSelectedIndex();
+					if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
+					{
+						channel = " -filter_complex amerge=inputs=" + FFPROBE.channels;
+					}
+					else
+						channel = " -map a:" + comboAudioTrack.getSelectedIndex();
 				}
 			}
 			
-			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1 " + channel + " -f wav -";
+			return " -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + input + speed + audioFade + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1" + channel + " -f wav -";
 		}		
 		
 	}
@@ -2086,12 +2092,21 @@ public class VideoPlayer {
 						//IMPORTANT
 						if (size > 549944)
 							size = 549944;
-
-						if (FFPROBE.channels > 0 && comboAudioTrack.isVisible())
-						{
-							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
-									+ " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
-									+ " -vn -frames:v 1 -c:v bmp -f image2pipe -"); 
+						
+						if (FFPROBE.channels > 1 && comboAudioTrack.isVisible())
+						{		
+							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
+							{
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
+										+ " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
+										+ " -vn -frames:v 1 -c:v bmp -f image2pipe -"); 
+							}
+							else
+							{
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
+										+ " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
+										+ " -vn -frames:v 1 -c:v bmp -f image2pipe -"); 
+							}
 						}
 						else
 						{
@@ -2337,7 +2352,7 @@ public class VideoPlayer {
 					
 				}
 				else if (btnPlay.getName().equals("play"))
-				{									
+				{								
 					if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected() || previousFrame)
 					{				
 						if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected())
@@ -2351,8 +2366,16 @@ public class VideoPlayer {
 							//IMPORTANT enable GPU decoding after using btnPrevious
 							previousFrame = false;
 						}
-						
+												
 						playerSetTime(playerCurrentFrame);
+					}
+					
+					
+					//Loop the player
+					if (playerCurrentFrame >= totalFrames  - 2)
+					{
+						playerSetTime(0);
+						btnPlay.doClick();
 					}
 					
 					frameControl = false;
@@ -2511,7 +2534,7 @@ public class VideoPlayer {
 		showScale.setHorizontalAlignment(SwingConstants.LEFT);
 		Shutter.frame.getContentPane().add(showScale);
 		
-		comboAudioTrack = new JComboBox<String>(new String[] { Shutter.language.getProperty("audio").toUpperCase().substring(0, 1) + "1" });
+		comboAudioTrack = new JComboBox<String>(new String[] { (Shutter.language.getProperty("audio").toUpperCase().substring(0, 1) + "1") });
 		comboAudioTrack.setName("comboAudioTrack");
 		comboAudioTrack.setOpaque(false);
 		comboAudioTrack.setVisible(false);

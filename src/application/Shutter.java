@@ -131,6 +131,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 import javax.swing.TransferHandler;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.ChangeEvent;
@@ -2027,7 +2028,10 @@ public class Shutter {
 					textM.setText("00");
 					textS.setText("00");
 					textF.setText("00");
-					bitrateSize.setText("-");
+					if (isLocked == false)
+					{
+						bitrateSize.setText("-");
+					}
 					
 					// Lecteur
 					if (VideoPlayer.waveform != null)
@@ -4020,7 +4024,22 @@ public class Shutter {
 							hwaccel.start();
 						}
 						
-						if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
+						if (comboFilter.getSelectedItem().toString().equals(".png"))
+						{							
+							if (comboImageOption.getItemAt(0).equals("0%") == false)
+							{
+								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "0%","5%","10%","15%","20%","25%","30%","35%","40%","45%","50%","55%","60%","65","70%","75%","80%","85%","90%","95%","100%" }));	
+							}
+							comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
+							comboImageOption.setSize(50, 16);
+							comboImageOption.setEditable(false);
+							lblImageQuality.setText("Comp.:");
+							grpResolution.add(lblImageQuality);											
+							grpResolution.add(comboImageOption);
+							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+							comboImageOption.repaint();
+						}
+						else if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
 						{							
 							if (comboImageOption.getItemAt(0).equals("100%") == false)
 							{
@@ -4029,6 +4048,7 @@ public class Shutter {
 							comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
 							comboImageOption.setSize(50, 16);
 							comboImageOption.setEditable(false);
+							lblImageQuality.setText(language.getProperty("lblQualit"));
 							grpResolution.add(lblImageQuality);											
 							grpResolution.add(comboImageOption);
 							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
@@ -4043,6 +4063,7 @@ public class Shutter {
 							comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
 							comboImageOption.setSize(90, 16);
 							comboImageOption.setEditable(false);
+							lblImageQuality.setText(language.getProperty("lblQualit"));
 							grpResolution.remove(lblImageQuality);
 							grpResolution.add(comboImageOption);
 							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
@@ -4973,8 +4994,9 @@ public class Shutter {
 		txtExtension.setEnabled(false);
 		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y + 1, grpDestination.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 18, 21);
+		txtExtension.setToolTipText("<html>{codec/function}<br>{preset}<br>{resolution/scale}<br>{width}<br>{height}<br>{ratio/aspect}<br>{framerate/fps}<br>{bitrate}<br>{duration/time}<br>{date}</html>");
 		destination1.add(txtExtension);	
-		
+				
 		btnExtension.addActionListener(new ActionListener() {
 
 			@Override
@@ -4982,8 +5004,12 @@ public class Shutter {
 				
 				if (btnExtension.isSelected())
 				{
-					txtExtension.setEnabled(true);
+					txtExtension.setEnabled(true);		
 					
+					ToolTipManager.sharedInstance().setInitialDelay(0);
+		            ToolTipManager.sharedInstance().mouseMoved(new MouseEvent(txtExtension, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 10, 10, 0, false));
+		            ToolTipManager.sharedInstance().setInitialDelay(750); // Reset to default delay
+		            
 					if (txtExtension.getText().isEmpty())
 					{
 						String extensionName = "_" + comboFonctions.getSelectedItem().toString().replace(" ","_");	
@@ -5005,7 +5031,7 @@ public class Shutter {
 				}
 				else
 				{
-					txtExtension.setEnabled(false);
+					txtExtension.setEnabled(false);					
 					
 					if (txtExtension.getText().contains(comboFonctions.getSelectedItem().toString().replace(" ","_")))
 					{
@@ -5015,7 +5041,7 @@ public class Shutter {
 			}
 			
 		});
-										
+				
 		caseSubFolder = new JCheckBox(Shutter.language.getProperty("caseSubFolder"));
 		caseSubFolder.setName("caseSubFolder");
 		caseSubFolder.setFont(new Font(freeSansFont, Font.PLAIN, 12));
@@ -19460,8 +19486,10 @@ public class Shutter {
 									grpAdvanced.setVisible(true);
 									grpAdvanced.setLocation(grpAdvanced.getX(), grpSubtitles.getSize().height + grpSubtitles.getLocation().y + 6);
 									casePreserveSubs.setLocation(7, 14);
-									grpAdvanced.add(casePreserveSubs);				
-									casePreserveMetadata.setLocation(7, casePreserveSubs.getLocation().y + 17);
+									grpAdvanced.add(casePreserveSubs);	
+									caseCreateTree.setLocation(7, casePreserveSubs.getLocation().y + 17);
+									grpAdvanced.add(caseCreateTree);
+									casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);	
 									
 									if (language.getProperty("functionRewrap").equals(function))	
@@ -19667,6 +19695,8 @@ public class Shutter {
 									comboLRA.setLocation(caseLRA.getLocation().x + caseLRA.getWidth() + 4, caseLRA.getLocation().y + 4);
 									grpAdvanced.add(comboLRA);	
 									grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
+									caseCreateTree.setLocation(7, caseLRA.getLocation().y + 17);
+									grpAdvanced.add(caseCreateTree);
 									btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 								}
 								else
@@ -21771,8 +21801,22 @@ public class Shutter {
 											"854x480", "720x576", "640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
 								}
 								
-								// Ajout de la quality pour l'extension .webp & .avif & .tif
-								if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif"))
+								if (comboFilter.getSelectedItem().toString().equals(".png"))
+								{
+									if (comboImageOption.getItemAt(0).equals("0%") == false)
+									{
+										comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "0%","5%","10%","15%","20%","25%","30%","35%","40%","45%","50%","55%","60%","65","70%","75%","80%","85%","90%","95%","100%" }));	
+									}
+									comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
+									comboImageOption.setSize(50, 16);
+									comboImageOption.setEditable(false);
+									lblImageQuality.setText("Comp.:");
+									grpResolution.add(lblImageQuality);											
+									grpResolution.add(comboImageOption);
+									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+									comboImageOption.repaint();
+								}
+								else if (comboFilter.getSelectedItem().toString().equals(".webp") || comboFilter.getSelectedItem().toString().equals(".avif")) // Ajout de la quality pour l'extension .webp & .avif & .tif
 								{							
 									if (comboImageOption.getItemAt(0).equals("100%") == false)
 									{

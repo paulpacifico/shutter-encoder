@@ -146,13 +146,6 @@ public class Picture extends Shutter {
 							filterComplex = Colorimetry.setZoom(filterComplex, true);
 						}
 						
-						//Scaling									
-			        	if (VideoEncoders.setScalingFirst() && comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode			
-			        	{
-			        		filterComplex = Image.setScale(filterComplex, false);	
-			        		filterComplex = Image.setPad(filterComplex, false);		
-			        	}
-						
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
 						
@@ -199,7 +192,7 @@ public class Picture extends Shutter {
 				        filterComplex = Image.setCrop(filterComplex, file);
 				        
 				        //Scaling
-				        if (VideoEncoders.setScalingFirst() == false && comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode		
+				        if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode		
 			        	{
 				        	filterComplex = Image.setScale(filterComplex, false);
 				        	filterComplex = Image.setPad(filterComplex, false);		
@@ -215,10 +208,7 @@ public class Picture extends Shutter {
 						
 						//filterComplex
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "", true);		
-						
-						//Hardware decoding
-						String gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
-						
+
 						//InOut	
 						if (FFPROBE.totalLength > 40)
 						{
@@ -250,7 +240,7 @@ public class Picture extends Shutter {
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = txtExtension.getText();
+							extensionName = FunctionUtils.setSuffix(txtExtension.getText());
 						}
 						
 						//Container
@@ -353,7 +343,7 @@ public class Picture extends Shutter {
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
 
-							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
+							FFMPEG.run(InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
 							
 							do {
 								Thread.sleep(10);
@@ -376,7 +366,7 @@ public class Picture extends Shutter {
 						}
 						else
 						{				
-							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
+							FFMPEG.run(InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
 						}
 	
 						if (isRaw)
@@ -450,6 +440,10 @@ public class Picture extends Shutter {
 		{
 			int q = Math.round((float) 31 - (float) ((float) ((float) Integer.valueOf(comboFilter.getSelectedItem().toString().replace("%", "")) * 31) / 100));
 			return " -q:v " + q;
+		}
+		else if (comboFilter.getSelectedItem().toString().equals(".png"))
+		{
+			return " -compression_level " + comboImageOption.getSelectedItem().toString().replace("%", "");
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".webp"))
 		{

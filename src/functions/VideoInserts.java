@@ -124,7 +124,7 @@ public class VideoInserts extends Shutter {
 					String extensionName = "";	
 					if (btnExtension.isSelected())
 					{
-						extensionName = txtExtension.getText();
+						extensionName = FunctionUtils.setSuffix(txtExtension.getText());
 					}
 					
 					//Output folder		

@@ -170,7 +170,7 @@ public class VideoEncoders extends Shutter {
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = txtExtension.getText();
+							extensionName = FunctionUtils.setSuffix(txtExtension.getText());
 						}												
 						
 						//Container

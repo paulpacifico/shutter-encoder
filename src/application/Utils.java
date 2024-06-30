@@ -92,6 +92,7 @@ public class Utils extends Shutter {
 	public final static String password = "";
 	
 	public static Thread loadEncFile;
+	public static String currentPreset = "";
 	public static String hwaccel = "";
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
@@ -1470,6 +1471,8 @@ public class Utils extends Shutter {
 	@SuppressWarnings("rawtypes")
 	public static void loadSettings(File encFile) {
 	
+		currentPreset = encFile.getName();
+		
 		if (liste.getSize() == 0)
 		{
 			JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),	language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);

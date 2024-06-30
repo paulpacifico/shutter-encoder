@@ -32,6 +32,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Random;
@@ -687,7 +688,192 @@ public class FunctionUtils extends Shutter {
 		
 		return output;
 	}
+
+	public static String setSuffix(String suffix) {
+
+		suffix = suffix.replace("[", "{").replace("]", "}");
 		
+		if (suffix.contains("{"))
+		{			
+			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+			{
+				if (suffix.contains("{resolution}"))
+				{
+					suffix = suffix.replace("{resolution}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
+				}
+				else if (suffix.contains("{scale}"))
+				{
+					suffix = suffix.replace("{scale}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
+				}
+				
+				if (suffix.contains("{width}"))
+				{
+					suffix = suffix.replace("{width}", String.valueOf(FFPROBE.imageWidth));
+				}
+				
+				if (suffix.contains("{height}"))
+				{
+					suffix = suffix.replace("{height}", String.valueOf(FFPROBE.imageHeight));
+				}
+				
+				float or = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
+				
+				if (suffix.contains("{ratio}"))
+				{
+					suffix = suffix.replace("{ratio}", String.valueOf(or));
+				}
+				else if (suffix.contains("{aspect}"))
+				{
+					suffix = suffix.replace("{aspect}", String.valueOf(or));
+				}
+			}
+			else
+			{
+				String i[] = FFPROBE.imageResolution.split("x");        
+				String o[] = FFPROBE.imageResolution.split("x");
+							
+				if (comboResolution.getSelectedItem().toString().contains("%"))
+				{
+					double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
+					
+					o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+					o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
+				}					
+				else if (comboResolution.getSelectedItem().toString().contains("x"))
+				{
+					if (comboResolution.getSelectedItem().toString().contains("AI"))
+					{
+						if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+						{
+							o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
+							o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
+						}
+						else
+						{
+							o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 4));
+							o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 4));
+						}
+					}
+					else
+						o = comboResolution.getSelectedItem().toString().split("x");
+				}
+				else if (comboResolution.getSelectedItem().toString().contains(":"))
+				{
+					o = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
+					
+					int iw = Integer.parseInt(i[0]);
+		        	int ih = Integer.parseInt(i[1]);          	
+		        	int ow = Integer.parseInt(o[0]);
+		        	int oh = Integer.parseInt(o[1]);        	
+		        	float ir = (float) iw / ih;
+							        	
+					if (o[0].toString().equals("1")) // = auto
+					{
+						o[0] = String.valueOf((int) Math.round((float) oh * ir));
+					}
+	        		else
+	        		{
+	        			o[1] = String.valueOf((int) Math.round((float) ow / ir));
+	        		}
+				}
+				        	
+	        	int ow = Integer.parseInt(o[0]);
+	        	int oh = Integer.parseInt(o[1]);        	
+	        	float or = (float) ow / oh;
+
+				if (suffix.contains("{resolution}"))
+				{
+					suffix = suffix.replace("{resolution}", comboResolution.getSelectedItem().toString());
+				}
+				else if (suffix.contains("{scale}"))
+				{
+					suffix = suffix.replace("{scale}", comboResolution.getSelectedItem().toString());
+				}
+				
+				if (suffix.contains("{width}"))
+				{
+					suffix = suffix.replace("{width}", String.valueOf(ow));
+				}
+				
+				if (suffix.contains("{height}"))
+				{
+					suffix = suffix.replace("{height}", String.valueOf(oh));
+				}
+				
+				if (suffix.contains("{ratio}"))
+				{
+					suffix = suffix.replace("{ratio}", String.valueOf(or));
+				}
+				else if (suffix.contains("{aspect}"))
+				{
+					suffix = suffix.replace("{aspect}", String.valueOf(or));
+				}
+			}
+			
+			if (suffix.contains("{codec}"))
+			{
+				suffix = suffix.replace("{codec}", comboFonctions.getSelectedItem().toString());
+			}
+			else if (suffix.contains("{function}"))
+			{
+				suffix = suffix.replace("{function}", comboFonctions.getSelectedItem().toString());
+			}
+			
+			if (suffix.contains("{date}"))
+			{
+				LocalDate currentDate = LocalDate.now();
+				
+				suffix = suffix.replace("{date}", currentDate.toString());
+			}
+			
+			if (suffix.contains("{duration}"))
+			{				
+				suffix = suffix.replace("{duration}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
+			}	
+			else if (suffix.contains("{time}"))
+			{				
+				suffix = suffix.replace("{time}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
+			}
+			
+			if (suffix.contains("{framerate}"))
+			{				
+				if (caseConform.isSelected())
+				{
+					suffix = suffix.replace("{framerate}", comboFPS.getSelectedItem().toString());
+				}
+				else
+					suffix = suffix.replace("{framerate}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
+			}
+			else if (suffix.contains("{fps}"))
+			{				
+				if (caseConform.isSelected())
+				{
+					suffix = suffix.replace("{fps}", comboFPS.getSelectedItem().toString());
+				}
+				else
+					suffix = suffix.replace("{fps}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
+			}
+			
+			if (suffix.contains("{preset}"))
+			{				
+				suffix = suffix.replace("{preset}", Utils.currentPreset.replace(".enc", ""));
+			}
+			
+			if (suffix.contains("{bitrate}"))
+			{				
+				if (Shutter.grpBitrate.isVisible())
+				{
+					suffix = suffix.replace("{bitrate}", FunctionUtils.setVideoBitrate() + "kbps");
+				}
+				else
+					suffix = suffix.replace("{bitrate}", "");
+			}
+			
+		}
+		
+		return suffix;
+	}
+	
 	public static String getRandomHexString() {
 		
         Random r = new Random();
