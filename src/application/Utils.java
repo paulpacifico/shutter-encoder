@@ -1872,19 +1872,9 @@ public class Utils extends Shutter {
 							}			
 						}
 						
-						//grpWatermark
-						if (caseAddWatermark.isSelected())
-						{
-							VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
-							logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / Shutter.playerRatio));
-							//Saving location
-							logoLocX = logo.getLocation().x;
-							logoLocY = logo.getLocation().y;
-						}
-						
-						VideoPlayer.btnStop.doClick();
-						VideoPlayer.resizeAll();
-						
+						String watermarkPosX = textWatermarkPosX.getText();
+						String watermarkPosY = textWatermarkPosY.getText();
+												
 						if (lblVBR.getText().equals("CQ"))
 						{
 							String index = debitVideo.getSelectedItem().toString();
@@ -1923,7 +1913,28 @@ public class Utils extends Shutter {
 						
 						//IMPORTANT
 						Shutter.resizeAll(Shutter.frame.getWidth(), 0); 
-						Shutter.frame.repaint();						
+						Shutter.frame.repaint();		
+						
+						//grpWatermark
+						if (caseAddWatermark.isSelected())
+						{
+							if (watermarkPreset != null)
+							{
+								VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
+							}
+							else
+							{
+								textWatermarkPosX.setText(watermarkPosX);
+								textWatermarkPosY.setText(watermarkPosY);
+								
+								logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / Shutter.playerRatio));
+							}							
+							
+							//Saving location
+							logoLocX = logo.getLocation().x;
+							logoLocY = logo.getLocation().y;
+						}
+						
 					}
 									
 				}

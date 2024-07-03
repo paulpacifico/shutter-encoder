@@ -227,10 +227,10 @@ public class Colorimetry extends Shutter {
 			
 			float zoomValue = (float) 1 - ((float) sliderZoom.getValue() / 2 / 100);
 			
-			return "crop=iw*" + zoomValue + ":ih*" + zoomValue; 
+			eq += "crop=iw*" + zoomValue + ":ih*" + zoomValue; 
 		}
 		
-		return "";
+		return eq;
 	}
 	
 	public static String setVignette(String eq) {

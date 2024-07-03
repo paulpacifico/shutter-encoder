@@ -62,6 +62,7 @@ import settings.Transitions;
  * AV1
  * H.264
  * H.265
+ * H.266
  * MPEG-1
  * MPEG-2
  * MJPEG
@@ -391,6 +392,7 @@ public class VideoEncoders extends Shutter {
 								case "AV1":
 								case "H.264":
 								case "H.265":
+								case "H.266":
 								case "MJPEG":
 								case "VP8":
 								case "VP9":
@@ -468,12 +470,6 @@ public class VideoEncoders extends Shutter {
 									
 									break;
 							}
-						}		
-						
-						//Zoom
-						if (Shutter.sliderZoom.getValue() != 0)
-						{		
-							filterComplex = Colorimetry.setZoom(filterComplex, true);
 						}	
 						
 						//Scaling									
@@ -514,7 +510,7 @@ public class VideoEncoders extends Shutter {
 										break;
 								}	
 			        		}
-			        	}
+			        	}			        
 											
 						//Blend
 						filterComplex = ImageSequence.setBlend(filterComplex);
@@ -585,6 +581,12 @@ public class VideoEncoders extends Shutter {
 							filterComplex = Image.setCrop(filterComplex, file);
 				        }
 						
+						//Zoom
+						if (Shutter.sliderZoom.getValue() != 0)
+						{		
+							filterComplex = Colorimetry.setZoom(filterComplex, true);
+						}
+												
 				        //Scaling									
 			        	if (setScalingFirst() == false) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
@@ -623,7 +625,7 @@ public class VideoEncoders extends Shutter {
 										break;
 								}	
 			        		}
-			        	}
+			        	}			    
 				        
 						//DAR
 						filterComplex = Image.setDAR(filterComplex);
@@ -777,6 +779,7 @@ public class VideoEncoders extends Shutter {
 								case "AV1":
 								case "H.264":
 								case "H.265":
+								case "H.266":
 								case "MPEG-1":
 								case "MPEG-2":
 								case "MJPEG":
@@ -1314,6 +1317,10 @@ public class VideoEncoders extends Shutter {
 					return " -c:v libx265";
 				
 				break;
+				
+			case "H.266":
+				
+				return " -c:v libvvenc";
 			
 			case "MPEG-1":
 				
@@ -1495,6 +1502,7 @@ public class VideoEncoders extends Shutter {
 			case "AV1":
 			case "H.264":
 			case "H.265":
+			case "H.266":
 			case "VP9":
 				
 				String yuv = "yuv";
@@ -1544,7 +1552,11 @@ public class VideoEncoders extends Shutter {
 						else
 							return "";				
 					}
-					else		        
+					else if ("H.266".equals(comboFonctions.getSelectedItem().toString()))
+			        {
+						return " -pix_fmt yuv420p10le";
+			        }
+					else						
 						return " -pix_fmt " + yuv;
 				}
 				
@@ -1660,6 +1672,7 @@ public class VideoEncoders extends Shutter {
 				
 			case "H.264":
 			case "H.265":
+			case "H.266":
 							
 				String limitedBitrate = "";
 				
@@ -1681,7 +1694,7 @@ public class VideoEncoders extends Shutter {
 				if (lblVBR.getText().equals("CQ"))
 		        {
 		    		String gpu = "";
-					if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					if ("H.266".equals(comboFonctions.getSelectedItem().toString()) || (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC")))
 					{
 						gpu = " -qp " + FunctionUtils.setVideoBitrate();
 					}

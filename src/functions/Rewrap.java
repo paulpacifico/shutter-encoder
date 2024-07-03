@@ -303,7 +303,16 @@ public class Rewrap extends Shutter {
 		
 		if (caseRotate.isSelected())
 		{
-			return " -display_rotation " + comboRotate.getSelectedItem().toString();
+			if (comboRotate.getSelectedItem().toString().equals("-90"))
+			{
+				return " -display_rotation 90";
+			}
+			else if (comboRotate.getSelectedItem().toString().equals("90"))
+			{
+				return " -display_rotation -90";
+			}
+			else
+				return " -display_rotation " + comboRotate.getSelectedItem().toString();
 		}
 		
 		return "";

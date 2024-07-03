@@ -5113,7 +5113,7 @@ public class VideoPlayer {
 		//Zoom
 		if (Shutter.sliderZoom.getValue() != 0)
 		{		
-			filter += Colorimetry.setZoom(filter, false) + ",";
+			filter = Colorimetry.setZoom(filter, false) + ",";
 		}		
 
 		//Scaling
@@ -5663,7 +5663,10 @@ public class VideoPlayer {
 			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
 			{
 				loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-				Shutter.logo.setLocation((int) Math.round(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
+				if (Shutter.watermarkPreset != null)
+				{
+					Shutter.logo.setLocation((int) Math.round(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
+				}
 			}
 			
 			//grpCrop
@@ -5877,6 +5880,7 @@ public class VideoPlayer {
 	    		{
 					case "H.264":
 					case "H.265":
+					case "H.266":
 					case "WMV":
 					case "MPEG-1":
 					case "MPEG-2":

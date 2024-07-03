@@ -196,7 +196,7 @@ public class SubtitlesTimeline {
 				Utils.changeFrameVisibility(Shutter.frame, false);						
 				Utils.changeFrameVisibility(frame, true);
 				
-	    		if (Shutter.comboFonctions.getSelectedItem().equals("H.264") || Shutter.comboFonctions.getSelectedItem().equals("H.264"))
+	    		if (Shutter.comboFonctions.getSelectedItem().equals("H.264") || Shutter.comboFonctions.getSelectedItem().equals("H.265"))
 	    			FFPROBE.setLength();
 	    		
 	    		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))

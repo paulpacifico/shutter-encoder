@@ -940,7 +940,7 @@ public class FunctionUtils extends Shutter {
 			{
 				compValue = 331776; //2500kbps
 			}
-			else if ("AV1".equals(function))
+			else if ("AV1".equals(function) || "H.266".equals(function))
 			{
 				compValue = 414720; //2000kbps
 			}		
@@ -1055,7 +1055,6 @@ public class FunctionUtils extends Shutter {
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "H.264":
-			case "H.265":
 				
 				if (caseStream.isSelected())
 				{
@@ -1154,6 +1153,7 @@ public class FunctionUtils extends Shutter {
 		{
 			case "H.264":
 			case "H.265":
+			case "H.266":
 			case "VP9":
 				
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("VAAPI"))			

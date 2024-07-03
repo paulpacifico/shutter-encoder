@@ -211,7 +211,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								String pipe = "";								
 								if (cmd.contains("pipe:1"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -232,7 +232,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:1"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
+								pipe =  " | " + PathToFFMPEG + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
@@ -1712,6 +1712,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 			|| comboFonctions.getSelectedItem().toString().equals("H.265")
+			|| comboFonctions.getSelectedItem().toString().equals("H.266")
 			|| comboFonctions.getSelectedItem().toString().equals("WMV")
 			|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
 			|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
@@ -1841,6 +1842,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				 int total;
 				 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 							|| comboFonctions.getSelectedItem().toString().equals("H.265")
+							|| comboFonctions.getSelectedItem().toString().equals("H.266")
 							|| comboFonctions.getSelectedItem().toString().equals("WMV")
 							|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
 							|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")
@@ -1868,6 +1870,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					 String pass = "";
 					 if ((comboFonctions.getSelectedItem().toString().equals("H.264")
 								|| comboFonctions.getSelectedItem().toString().equals("H.265")
+								|| comboFonctions.getSelectedItem().toString().equals("H.266")
 								|| comboFonctions.getSelectedItem().toString().equals("WMV")
 								|| comboFonctions.getSelectedItem().toString().equals("MPEG-1")
 								|| comboFonctions.getSelectedItem().toString().equals("MPEG-2")

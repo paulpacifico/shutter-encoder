@@ -104,6 +104,21 @@ public class AdvancedFeatures extends Shutter {
 		        
 		        break;
 		        
+			case "H.266":
+				
+				if (caseQMax.isSelected())
+				{
+			       return " -preset slower";
+				}
+				else if (caseForcePreset.isSelected())
+				{
+					return " -preset " + Shutter.comboForcePreset.getSelectedItem().toString();
+				}
+				else
+				{
+					 return " -preset faster";
+				}
+		        
 			case "Blu-ray":
 				
 				if (caseQMax.isSelected())
@@ -512,6 +527,7 @@ public class AdvancedFeatures extends Shutter {
 			case "AV1":
 			case "H.264":
 			case "H.265":
+			case "H.266":
 			case "VP8":
 			case "VP9":
 			case "MPEG-1":
@@ -545,6 +561,7 @@ public class AdvancedFeatures extends Shutter {
 			case "AV1":
 			case "H.264":
 			case "H.265":
+			case "H.266":
 			case "VP8":
 			case "VP9":						
 			case "MPEG-1":
@@ -731,6 +748,7 @@ public class AdvancedFeatures extends Shutter {
 			case "Blu-ray":
 			case "H.264":
 			case "H.265":
+			case "H.266":
 				
 				if (caseForcerEntrelacement.isSelected())
 				{			
