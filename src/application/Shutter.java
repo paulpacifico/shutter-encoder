@@ -168,7 +168,6 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
-import library.PDF;
 import library.SEVENZIP;
 import library.TSMUXER;
 import library.NCNN;
@@ -793,7 +792,20 @@ public class Shutter {
 	}
 
 	public Shutter() {
-				
+			
+		Desktop desktop = Desktop.getDesktop();
+		if( desktop.isSupported( Desktop.Action.APP_ABOUT ) ) {
+		    desktop.setAboutHandler( e -> {
+		    	
+		    	Image logo = new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage();
+		    	Image newimg = logo.getScaledInstance(64, 64,  java.awt.Image.SCALE_SMOOTH);
+		    	ImageIcon icon = new ImageIcon(newimg);
+		    	
+		    	JOptionPane.showMessageDialog(null, "Shutter Encoder v" + actualVersion + System.lineSeparator()
+		    	+ language.getProperty("lblCrParPaul"), "About", JOptionPane.PLAIN_MESSAGE, icon);
+		    } );
+		}
+		
 		frame.getContentPane().setBackground(new Color(30,30,35));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
@@ -2130,6 +2142,7 @@ public class Shutter {
 		final JMenuItem rename = new JMenuItem(language.getProperty("menuItemRename"));
 		inputDevice = new JMenuItem(Shutter.language.getProperty("menuItemInputDevice"));
 		final JMenuItem arborescence = new JMenuItem(language.getProperty("menuItemArborescence"));
+		final JMenuItem hash = new JMenuItem(Shutter.language.getProperty("menuItemHash"));
 		final JMenuItem tempsTotal = new JMenuItem(language.getProperty("menuItemTempsTotal"));
 		final JMenuItem poids = new JMenuItem(language.getProperty("menuItemPoids"));
 		final JMenuItem gop = new JMenuItem(language.getProperty("menuItemGop"));
@@ -2655,6 +2668,19 @@ public class Shutter {
 			}
 		});
 
+		hash.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+					
+				try {
+					frame.setOpacity(0.5f);
+				} catch (Exception er) {}
+				new HashGenerator();
+			}
+			
+		});
+		
 		gop.addActionListener(new ActionListener() {
 
 			@Override
@@ -2815,6 +2841,7 @@ public class Shutter {
 							popupList.add(rename);
 							popupList.add(inputDevice);
 							popupList.add(arborescence);
+							popupList.add(hash);
 							popupList.add(gop);
 							popupList.add(ftp);
 							popupList.add(zip);
@@ -2860,6 +2887,7 @@ public class Shutter {
 							popupList.add(informations);
 							popupList.add(inputDevice);
 							popupList.add(arborescence);
+							popupList.add(hash);
 							popupList.add(gop);
 							popupList.show(fileList, e.getX() - 30, e.getY());
 						}
@@ -2869,6 +2897,7 @@ public class Shutter {
 						scanListe.add(scan);
 						scanListe.add(inputDevice);
 						scanListe.add(arborescence);
+						scanListe.add(hash);
 						scanListe.show(fileList, e.getX() - 30, e.getY());
 					}
 				}
@@ -3036,9 +3065,10 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+				cancelled = true;
+				
 				if (FFMPEG.runProcess != null && FFMPEG.runProcess.isAlive()) 
 				{
-					cancelled = true;
 					FFMPEG.isRunning = false;
 
 					if (btnStart.getText().equals(language.getProperty("resume")))
@@ -3063,16 +3093,7 @@ public class Shutter {
 				{
 					if (DCRAW.runProcess.isAlive())
 					{
-						cancelled = true;
 						DCRAW.process.destroy();
-					}
-				}
-				
-				if (PDF.runProcess != null)
-				{
-					if (PDF.runProcess.isAlive())
-					{
-						cancelled = true;
 					}
 				}
 				
@@ -3080,8 +3101,6 @@ public class Shutter {
 				{
 					if (YOUTUBEDL.runProcess.isAlive())
 					{
-						cancelled = true;
-						
 						if (System.getProperty("os.name").contains("Windows"))
 						{						
 							try {
@@ -3100,7 +3119,6 @@ public class Shutter {
 				{
 					if (BMXTRANSWRAP.runProcess.isAlive())
 					{
-						cancelled = true;
 						BMXTRANSWRAP.process.destroy();
 					}
 				}
@@ -3109,18 +3127,12 @@ public class Shutter {
 				{
 					if (NCNN.runProcess.isAlive())
 					{
-						cancelled = true;
 						NCNN.process.destroy();
 					}
 				}
-
-				if (copyFileIsRunning)
-				{
-					cancelled = true;
-				}
 				
-				if (scanIsRunning) {
-					cancelled = true;
+				if (scanIsRunning)
+				{
 					enableAll();
 					scan.setText(language.getProperty("menuItemStartScan"));
 					btnEmptyList.doClick();
@@ -3129,17 +3141,13 @@ public class Shutter {
 					FunctionUtils.watchFolder.setLength(0);			
 				}
 				
-				if (Ftp.isRunning) {
-					cancelled = true;
+				if (Ftp.isRunning)
+				{					
 					try {
 						Ftp.ftp.abort();
-					} catch (IOException e1) {
-						System.out.println(e1);
-					}
+					} catch (Exception e1) {}
 				}
 
-				if (Settings.btnWaitFileComplete.isSelected())
-					cancelled = true;
 
 				progressBar1.setValue(0);
 			}
