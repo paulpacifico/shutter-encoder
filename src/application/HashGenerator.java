@@ -152,12 +152,19 @@ public class HashGenerator {
         JTextField txtFile = new JTextField();
         if (Shutter.fileList.getSelectedIndices().length > 0)
         {
+        	txtFile.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        	txtFile.setForeground(new Color(235,235,240));
         	txtFile.setText(Shutter.fileList.getSelectedValue());        
         }
-        txtFile.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        else
+        {
+        	txtFile.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        	txtFile.setForeground(Color.LIGHT_GRAY);
+        	txtFile.setText(Shutter.language.getProperty("dropFilesHere"));
+        }        
         txtFile.setLocation(btnBrowse.getX() + btnBrowse.getWidth() + 7, btnBrowse.getY());
         txtFile.setSize(frame.getWidth() -  txtFile.getX() - 9, 21);
-        txtFile.setForeground(new Color(235,235,240));
+       
         frame.getContentPane().add(txtFile);
         
         // Drag & Drop
@@ -630,6 +637,9 @@ public class HashGenerator {
     				{
     					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
     					Iterator<?> iter = l.iterator();
+    					
+    					((JTextField) comp).setFont(new Font("SansSerif", Font.PLAIN, 12));
+    					((JTextField) comp).setForeground(new Color(235,235,240));
     					
     					while (iter.hasNext())
     					{						

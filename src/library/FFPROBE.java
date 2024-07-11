@@ -158,7 +158,7 @@ public static boolean isRotated = false;
 			timecode2 = "";
 			timecode3 = "";
 			timecode4 = "";
-			
+
 			processData = new Thread(new Runnable() {
 	
 				@Override
@@ -567,7 +567,7 @@ public static boolean isRotated = false;
 			                	timecode3 = str[2].replace(" ", "");
 			                	timecode4 = str[3].replace(" ", "");
 				        	}
-
+				        	
 			        	 	//Timecode
 				            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
 				            {		
@@ -579,31 +579,15 @@ public static boolean isRotated = false;
 				            	else
 				            		dropFrameTC = ":";
 
-				            	if (Shutter.caseShowTimecode.isSelected()
-				            	|| comboFonctions.getSelectedItem().equals("") //IMPORTANT allow first scan without selecting a function
-			            		|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
-			            		|| comboFonctions.getSelectedItem().equals("XAVC")
-			            		|| comboFonctions.getSelectedItem().equals("AVC-Intra 100")			            		
-			            		|| comboFonctions.getSelectedItem().equals("DNxHD")
-			            		|| comboFonctions.getSelectedItem().equals("DNxHR")
-			            		|| comboFonctions.getSelectedItem().equals("Apple ProRes")
-			            		|| comboFonctions.getSelectedItem().equals("QT Animation")
-								|| comboFonctions.getSelectedItem().equals("GoPro CineForm")
-			            		|| comboFonctions.getSelectedItem().equals("Uncompressed")
-			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection"))
-			            		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert"))			            			
-		            			|| (VideoPlayer.caseInternalTc != null && VideoPlayer.caseInternalTc.isSelected()))
-					            {			
-				            		if (FFPROBE.timecode1 == "")
-					                {			            					            			
-				            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
-				            			
-					                	timecode1 = str[1];
-					                	timecode2 = str[2];
-					                	timecode3 = str[3];
-					                	timecode4 = str[4];
-					                }
-					            }
+				            	if (FFPROBE.timecode1 == "")
+				                {			            					            			
+			            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
+			            			
+				                	timecode1 = str[1];
+				                	timecode2 = str[2];
+				                	timecode3 = str[3];
+				                	timecode4 = str[4];					                	
+				                }
 				            }
 				            
 			                // Creation time

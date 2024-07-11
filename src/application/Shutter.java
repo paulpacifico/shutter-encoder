@@ -184,7 +184,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "18.2";
+	public static String actualVersion = "18.3";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -3659,7 +3659,7 @@ public class Shutter {
 				
 				language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation", "GoPro CineForm" ,"Uncompressed",
 				
-				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "H.266", "VP8", "VP9", "AV1",		
+				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "VP8", "VP9", "AV1",		
 				
 				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC", "HAP",
 				
@@ -3694,11 +3694,12 @@ public class Shutter {
 		comboFonctions.getModel().setSelectedItem("");
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
-
+		
+		/*
 		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64")) //MAC
 		{
 			comboFonctions.removeItem("H.266");
-		}
+		}*/
 		
 		comboFonctions.addActionListener(new ActionListener() {
 			
@@ -3752,11 +3753,12 @@ public class Shutter {
 					newList.clear();
 					
 					newList.add("H.264");
-					newList.add("H.265");					
+					newList.add("H.265");	
+					/*
 					if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac") && arch.equals("x86_64") == false) //MAC
 					{
 						newList.add("H.266");
-					}					
+					}*/					
 					newList.add("VP8");
 					newList.add("VP9");
 					newList.add("AV1");
