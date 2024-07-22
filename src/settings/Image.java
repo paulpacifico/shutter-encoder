@@ -214,7 +214,8 @@ public class Image extends Shutter {
 				{
 					o[0] = String.valueOf((int) Math.round((float) oh * ir));
 				}
-        		else if (o[1].toString().equals("1")) // Don't overwrite or negative scales won't work right for "Stretch"
+				// Don't overwrite when negative scale or they won't work right for "Stretch"
+        		else if (!(o[0].toString().contains("-") || o[1].toString().contains("-")))
         		{
         			o[1] = String.valueOf((int) Math.round((float) ow / ir));
         		}
