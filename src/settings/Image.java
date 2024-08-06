@@ -214,7 +214,7 @@ public class Image extends Shutter {
 				{
 					o[0] = String.valueOf((int) Math.round((float) oh * ir));
 				}
-        		else
+				else if (!(o[0].toString().contains("-") || o[1].toString().contains("-")))
         		{
         			o[1] = String.valueOf((int) Math.round((float) ow / ir));
         		}
@@ -253,6 +253,12 @@ public class Image extends Shutter {
 			        		else
 			        			filterComplex += "scale="+o[0]+":-1";
 			        	}
+			        	// Negative scale makes sure that the auto set dimension is divisible, fixes "Crop"
+						// ex: -2:480 means 480h with the closes width matching the aspect
+						else if (comboResolution.getSelectedItem().toString().contains("-")) {
+							o = comboResolution.getSelectedItem().toString().split(":");
+							filterComplex += "scale=" + o[0] + ":" + o[1];
+						}
 			        	else
 			        	{
 				            o = comboResolution.getSelectedItem().toString().split(":");

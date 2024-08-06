@@ -122,7 +122,9 @@ public class AudioSettings extends Shutter {
 			
 			return " -c:a copy" + mapping;
 		}
-		else if ((debitAudio.getSelectedItem().toString().equals("0") && audioCodec != "FLAC" && isEditingCodec == false && isBroadcastCodec == false) || comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
+		else if ((debitAudio.getSelectedItem().toString().equals("0") && audioCodec != "FLAC" && isEditingCodec == false && isBroadcastCodec == false)
+		|| comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio"))
+		|| (grpImageSequence.isVisible() && caseEnableSequence.isSelected()))
 		{
 			return " -an";
 		}

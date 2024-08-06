@@ -120,21 +120,21 @@ public class HashGenerator {
 		MD5.setSelected(true);
 		MD5.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		MD5.setForeground(new Color(235,235,240));
-		MD5.setBounds(0, 0, MD5.getPreferredSize().width, 21);
+		MD5.setBounds(0, 0, MD5.getPreferredSize().width + 4, 21);
 		panelHash.add(MD5);
 		
 		SHA1 = new JRadioButton("SHA-1");
 		SHA1.setSelected(false);
 		SHA1.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		SHA1.setForeground(new Color(235,235,240));
-		SHA1.setBounds(MD5.getX() + MD5.getWidth() + 7, 0, SHA1.getPreferredSize().width, 21);
+		SHA1.setBounds(MD5.getX() + MD5.getWidth() + 7, 0, SHA1.getPreferredSize().width + 4, 21);
 		panelHash.add(SHA1);
 		
 		SHA256 = new JRadioButton("SHA-256");
 		SHA256.setSelected(false);
 		SHA256.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		SHA256.setForeground(new Color(235,235,240));
-		SHA256.setBounds(SHA1.getX() + SHA1.getWidth() + 7, 0, SHA256.getPreferredSize().width, 21);
+		SHA256.setBounds(SHA1.getX() + SHA1.getWidth() + 7, 0, SHA256.getPreferredSize().width + 4, 21);
 		panelHash.add(SHA256);	
 				
 		panelHash.setLayout(null);

@@ -25,9 +25,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 
 import javax.imageio.ImageIO;
@@ -894,38 +896,70 @@ public class VideoEncoders extends Shutter {
 								upscaleFolder.mkdir();					
 							
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
-							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, "%06d.png"));								
+							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, "%06d.png"));	
 							
-							String filter = "";
-							
-							filter = AdvancedFeatures.setDeinterlace(true);
-							filter = Image.setCrop(filter, file);
-							
-							if (filter != "")
-							{
-								filter = " -vf " + '"' + filter + '"';
+							if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
+							{			
+								Shutter.btnStart.setText(Shutter.language.getProperty("btnPauseFunction"));
+								VideoPlayer.resizeAll();
+								
+								upscale(new File(liste.getElementAt(0)), fileOut);
 							}
-							
-							FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + filter + " -an " + '"' + fileOut + '"');
-							
-							int current = 0;
-							do {
-
-								if (upscaleFolder.listFiles().length > 0 && current != upscaleFolder.listFiles().length && caseDisplay.isSelected())
+							else
+							{
+								String filter = "";
+								
+								filter = AdvancedFeatures.setDeinterlace(true);
+								filter = Image.setCrop(filter, file);
+								
+								if (filter != "")
 								{
-									current = upscaleFolder.listFiles().length;
-									
-									VideoPlayer.frameVideo = ImageIO.read(new File(fileOut.toString().replace("%06d", String.format("%06d", upscaleFolder.listFiles().length))));
-									VideoPlayer.player.repaint();
-								}
-								else
-								{
-									Thread.sleep(10);
+									filter = " -vf " + '"' + filter + '"';
 								}
 								
-							} while (FFMPEG.runProcess.isAlive());
+								FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + filter + " -an -y " + '"' + fileOut + '"');
+								
+								int current = 0;
+								do {
+	
+									if (upscaleFolder.listFiles().length > 0 && current != upscaleFolder.listFiles().length && caseDisplay.isSelected())
+									{
+										current = upscaleFolder.listFiles().length;
+										
+										VideoPlayer.frameVideo = ImageIO.read(new File(fileOut.toString().replace("%06d", String.format("%06d", upscaleFolder.listFiles().length))));
+										VideoPlayer.player.repaint();
+									}
+									else
+									{
+										Thread.sleep(10);
+									}
+									
+								} while (FFMPEG.runProcess.isAlive());
+								
+								upscale(null, fileOut);
+							}
 							
-							upscale(fileOut);
+							if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
+							{
+								PrintWriter writer = new PrintWriter(file, "UTF-8");     
+								
+								String[] array = new String[upscaleFolder.listFiles().length];
+								
+								int a = 0;
+								for (File f : upscaleFolder.listFiles())
+								{
+									array[a] = f.toString();
+									a++;
+								}	
+								
+								Arrays.sort(array);
+								
+								for (String s : array)
+								{
+									writer.println("file '" + s + "'");
+								}				
+								writer.close();
+							}
 
 							cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex.replace("0:a", "1:a").replace("-map a", "-map 1:a") + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 							
@@ -946,7 +980,12 @@ public class VideoEncoders extends Shutter {
 									inputFramerate = " -r 24000/1001";
 								}
 								
-								FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);		
+								if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
+								{
+									FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd + output);
+								}
+								else
+									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);
 								
 								do {
 									Thread.sleep(10);
@@ -954,7 +993,12 @@ public class VideoEncoders extends Shutter {
 								
 								if (grpBitrate.isVisible() && case2pass.isSelected())
 								{
-									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
+									if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
+									{
+										FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
+									}
+									else
+										FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									do {
 										Thread.sleep(10);
@@ -1301,6 +1345,8 @@ public class VideoEncoders extends Shutter {
 						return " -c:v hevc_qsv";	
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 						return " -c:v hevc_amf";
+					else if (comboAccel.getSelectedItem().equals("D3D12VA"))
+						return " -c:v hevc_d3d12va";
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 					{
 						if (caseAlpha.isSelected())
@@ -1861,7 +1907,7 @@ public class VideoEncoders extends Shutter {
             } while (TSMUXER.isRunning);
 }
 	
-	private static void upscale(File fileOut) throws InterruptedException {
+	private static void upscale(File inputFile, File fileOut) throws InterruptedException {
 				
 		progressBar1.setValue(0);
 		progressBar1.setMaximum(fileOut.getParentFile().listFiles().length);
@@ -1872,7 +1918,12 @@ public class VideoEncoders extends Shutter {
 			model = "realesrgan-x4plus-anime";
 		}	
 		
-		NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
+		if (inputFile != null) //Image sequence
+		{
+			NCNN.run(" -v -i " + '"' + inputFile.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
+		}
+		else
+			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
 		
 		do {
 			Thread.sleep(100);

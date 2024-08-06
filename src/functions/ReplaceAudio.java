@@ -123,7 +123,7 @@ public class ReplaceAudio extends Shutter {
 					if (liste.getSize() >= 2)
 					{								
 						for (int i = 0 ; i < liste.getSize() ; i++)
-						{			
+						{
 							//Ignore mute tracks
 							if (liste.getElementAt(i).contains("lavfi") == false)
 							{
@@ -150,14 +150,14 @@ public class ReplaceAudio extends Shutter {
 							else
 							{
 								shortestLength = FFPROBE.totalLength;
-							}
+							}							
 						}
 						
 						//Start batch replace
 						if (videoStream > 1)
 						{
 							for (int i = 0 ; i < liste.getSize() ; i++)
-							{								
+							{		
 								if (videoStream == liste.getSize()) //only video files in the list
 								{
 									videoFile = new File(liste.getElementAt(i));
@@ -204,7 +204,7 @@ public class ReplaceAudio extends Shutter {
 										continue;
 									}
 								}
-								
+																
 								//Start replacement
 								main(audioFiles, audioExt, videoFile);
 								
@@ -304,7 +304,7 @@ public class ReplaceAudio extends Shutter {
 						main(audioFiles, audioExt, videoFile);
 					}
 					
-				} catch (InterruptedException e1) {
+				} catch (InterruptedException e1) {					
 					FFMPEG.error  = true;
 				}
 			}

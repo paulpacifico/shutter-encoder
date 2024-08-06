@@ -86,7 +86,7 @@ public static String modelsPath;
 						}
 
 						process = processNCNN.start();
-				         				        
+									         				        
 				        String line;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 						
@@ -103,7 +103,7 @@ public static String modelsPath;
 						
 						if (isVideoPlayer == false)
 							btnStart.setText(language.getProperty("btnPauseFunction"));
-						
+												
 						while ((line = input.readLine()) != null)
 						{		
 							if (line.contains("%") == false)
@@ -124,7 +124,7 @@ public static String modelsPath;
 								progressBar1.setValue(Integer.parseInt(s[0]));
 						    }
 						    else if (line.contains("done"))
-						    {
+						    {						    	
 						    	progressValue ++;
 								progressBar1.setValue(progressValue);
 								
@@ -133,9 +133,9 @@ public static String modelsPath;
 								&& caseDisplay.isSelected())
 								{
 									try {
-										String s[] = line.split(" ->");
-										VideoPlayer.frameVideo = ImageIO.read(new File(s[0].toString()));
-										VideoPlayer.player.repaint();
+										String s[] = line.split(" ");
+										VideoPlayer.frameVideo = ImageIO.read(new File(s[2].toString()));
+										VideoPlayer.player.repaint();																													
 									} catch (Exception e) {}
 								}
 						    }

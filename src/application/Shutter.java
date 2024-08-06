@@ -1301,6 +1301,14 @@ public class Shutter {
 							}
 						}
 						
+						//btnStart
+						if ((ke.getKeyCode() == KeyEvent.VK_ENTER) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
+						|| (ke.getKeyCode() == KeyEvent.VK_ENTER)
+						&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) 
+						{
+							btnStart.doClick();
+						}
+						
 						//Informations
 						if ((ke.getKeyCode() == KeyEvent.VK_I) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
 						|| (ke.getKeyCode() == KeyEvent.VK_I)
@@ -1930,11 +1938,13 @@ public class Shutter {
 		            {		            	
 		            	screenIndex = newScreenIndex; 
 
+		            	/*
 				        if (comboFonctions.getSelectedItem().toString().isEmpty() == false)
 				        {
 				        	changeFunction(false);
 				        }
-
+				        */
+				        
 		            	Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 		                Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 		                shape1.add(shape2);
@@ -3659,7 +3669,7 @@ public class Shutter {
 				
 				language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation", "GoPro CineForm" ,"Uncompressed",
 				
-				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "VP8", "VP9", "AV1",		
+				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "H.266", "VP8", "VP9", "AV1",		
 				
 				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC", "HAP",
 				
@@ -3694,12 +3704,6 @@ public class Shutter {
 		comboFonctions.getModel().setSelectedItem("");
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
-		
-		/*
-		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64")) //MAC
-		{
-			comboFonctions.removeItem("H.266");
-		}*/
 		
 		comboFonctions.addActionListener(new ActionListener() {
 			
@@ -3753,12 +3757,13 @@ public class Shutter {
 					newList.clear();
 					
 					newList.add("H.264");
-					newList.add("H.265");	
-					/*
-					if (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac") && arch.equals("x86_64") == false) //MAC
+					newList.add("H.265");
+					
+					if (System.getProperty("os.name").contains("Mac") == false || (System.getProperty("os.name").contains("Mac") && arch.equals("arm64")))
 					{
-						newList.add("H.266");
-					}*/					
+						newList.add("H.266");				
+					}
+					
 					newList.add("VP8");
 					newList.add("VP9");
 					newList.add("AV1");
@@ -7406,7 +7411,7 @@ public class Shutter {
 	
 		caseEnableCrop = new JCheckBox(Shutter.language.getProperty("enable"));
 		caseEnableCrop.setName("caseEnableCrop");
-		caseEnableCrop.setBounds(8, 16, caseEnableCrop.getPreferredSize().width, 23);	
+		caseEnableCrop.setBounds(8, 16, caseEnableCrop.getPreferredSize().width + 4, 23);	
 		caseEnableCrop.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseEnableCrop.setSelected(false);
 		grpCrop.add(caseEnableCrop);
@@ -8782,13 +8787,43 @@ public class Shutter {
 					GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
 			        AffineTransform transform = gfxConfig.getDefaultTransform();
 			        
+			        //Checking screen DPI
+					GraphicsConfiguration config = frame.getGraphicsConfiguration();
+					GraphicsDevice myScreen = config.getDevice();
+					GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					GraphicsDevice[] allScreens = env.getScreenDevices();
+					int screenIndex = -1;
+					for (int i = 0; i < allScreens.length; i++) {
+					    if (allScreens[i].equals(myScreen))
+					    {
+					    	screenIndex = i;
+					        break;
+					    }
+					}
+					
+					float dpiScaleFactor = 1.0f;
+			        if (System.getProperty("os.name").contains("Windows"))
+			        {
+			        	double trueHorizontalLines = allScreens[screenIndex].getDefaultConfiguration().getBounds().getHeight();
+			            double scaledHorizontalLines = allScreens[screenIndex].getDisplayMode().getHeight();
+			        	dpiScaleFactor = (float) (trueHorizontalLines / scaledHorizontalLines);
+			        }
+			        
 					if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = RetinaScreen
-				        g2.fillRect(0, 0, bounds.width, bounds.height / 2);
+					{
+						g2.fillRect(0, 0, bounds.width, bounds.height / 2);
+					}
+					else if (System.getProperty("os.name").contains("Windows"))
+					{
+						g2.fillRect(0, 0, (int) Math.round(bounds.width * dpiScaleFactor), (int) Math.round(bounds.height * dpiScaleFactor));
+					}
 					else
 						g2.fillRect(0, 0, bounds.width, bounds.height);
 					
 					if (lblTcBackground.getText().equals(language.getProperty("aucun")))
+					{
 						g2.setColor(new Color(foregroundColor.getRed(),foregroundColor.getGreen(),foregroundColor.getBlue(), (int) ( (float) (Integer.parseInt(textNameOpacity.getText()) * 255) /  100)));
+					}
 					else				
 						g2.setColor(foregroundColor);
 					
@@ -8797,6 +8832,11 @@ public class Shutter {
 			        	Integer offset = bounds.height + (int) bounds.getY();						
 						g2.drawString(str, -2, bounds.height / 2 - offset / 2);	
 			        }
+					else if (System.getProperty("os.name").contains("Windows"))
+					{
+						Integer offset = bounds.height + (int) bounds.getY();						
+						g2.drawString(str, -2 * dpiScaleFactor, (bounds.height - offset) * dpiScaleFactor);		
+					}					
 					else
 					{
 						Integer offset = bounds.height + (int) bounds.getY();						
@@ -9624,8 +9664,36 @@ public class Shutter {
 					GraphicsConfiguration gfxConfig = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
 			        AffineTransform transform = gfxConfig.getDefaultTransform();
 					
+			        //Checking screen DPI
+					GraphicsConfiguration config = frame.getGraphicsConfiguration();
+					GraphicsDevice myScreen = config.getDevice();
+					GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					GraphicsDevice[] allScreens = env.getScreenDevices();
+					int screenIndex = -1;
+					for (int i = 0; i < allScreens.length; i++) {
+					    if (allScreens[i].equals(myScreen))
+					    {
+					    	screenIndex = i;
+					        break;
+					    }
+					}
+					
+					float dpiScaleFactor = 1.0f;
+			        if (System.getProperty("os.name").contains("Windows"))
+			        {
+			        	double trueHorizontalLines = allScreens[screenIndex].getDefaultConfiguration().getBounds().getHeight();
+			            double scaledHorizontalLines = allScreens[screenIndex].getDisplayMode().getHeight();
+			        	dpiScaleFactor = (float) (trueHorizontalLines / scaledHorizontalLines);
+			        }
+			        
 					if (System.getProperty("os.name").contains("Mac") && transform.isIdentity() == false) // false = RetinaScreen
-				        g2.fillRect(0, 0, bounds.width, bounds.height / 2);
+					{
+						g2.fillRect(0, 0, bounds.width, bounds.height / 2);
+					}
+					else if (System.getProperty("os.name").contains("Windows"))
+					{
+						g2.fillRect(0, 0, (int) Math.round(bounds.width * dpiScaleFactor), (int) Math.round(bounds.height * dpiScaleFactor));
+					}
 					else
 						g2.fillRect(0, 0, bounds.width, bounds.height);
 					
@@ -9639,6 +9707,11 @@ public class Shutter {
 			        	Integer offset = bounds.height + (int) bounds.getY();						
 						g2.drawString(str, -2, bounds.height / 2 - offset / 2);	
 			        }
+					else if (System.getProperty("os.name").contains("Windows"))
+					{
+						Integer offset = bounds.height + (int) bounds.getY();						
+						g2.drawString(str, -2 * dpiScaleFactor, (bounds.height - offset) * dpiScaleFactor);
+					}
 					else
 					{
 						Integer offset = bounds.height + (int) bounds.getY();						
@@ -18799,7 +18872,7 @@ public class Shutter {
 	}
 
 	public static void changeWidth(final boolean bigger) {
-					
+							
 		String function = comboFonctions.getSelectedItem().toString();
 		
 		noSettings = false;
@@ -19089,7 +19162,7 @@ public class Shutter {
 	}
 	
 	public static void resizeAll(int width, int height) {
-				
+					
 		if (frame.getWidth() >= 1130 && width >= 1130)
 		{
 			frame.setSize(width, frame.getHeight() + height);					
@@ -19244,7 +19317,7 @@ public class Shutter {
 			frame.setShape(null);
 		}
 		else
-		{			
+		{
 			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
             Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
             shape1.add(shape2);
@@ -19263,6 +19336,10 @@ public class Shutter {
 		else if (frame.getWidth() > 332)
 		{
 			VideoPlayer.resizeAll();
+		}
+		else if (frame.getWidth() == 332)
+		{
+			statusBar.setBounds(0, frame.getHeight() - 23, frame.getWidth(), 22);
 		}
 		
 	}
@@ -20505,6 +20582,18 @@ public class Shutter {
 							
 													if (FFMPEG.error == false)
 														graphicsAccel.add("AMD AMF Encoder");
+													
+													/*
+													if (codec == "hevc")
+													{
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_d3d12va -s 640x360 -f null -" + '"');
+														do {
+															Thread.sleep(10);
+														} while (FFMPEG.runProcess.isAlive());
+								
+														if (FFMPEG.error == false)
+															graphicsAccel.add("D3D12VA");
+													}*/
 												}	
 												else if (System.getProperty("os.name").contains("Linux"))
 												{

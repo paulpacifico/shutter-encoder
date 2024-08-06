@@ -4513,6 +4513,7 @@ public class VideoPlayer {
 				BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(Shutter.subtitlesFilePath.toString()),  StandardCharsets.UTF_8);
 	            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(Shutter.subtitlesFile.toString()),  StandardCharsets.UTF_8);
 	
+    			Integer subsOffset = 0;	            
 	            String line;
 	            int subNumber = 0;
 	            while ((line = bufferedReader.readLine()) != null)
@@ -4528,12 +4529,19 @@ public class VideoPlayer {
 	             	}
 	            	
 	        		if (line.contains("-->") )
-	        		{ 
+	        		{ 	     
+	        			//Offset
+	        			if (subNumber == 1)
+	        			{
+	        				String s[] = line.split(":");
+	        				subsOffset = Integer.parseInt(s[0]);
+	        			}
+	        			
 	            		String split[] = line.split("-->");				
 	            		String inTimecode[] = split[0].replace(",", ":").replace(" ","").split(":");
 	            		String outTimecode[] = split[1].replace(",", ":").replace(" ","").split(":");
 		            		
-	    				int inH = Integer.parseInt(inTimecode[0]) * 3600;
+	    				int inH = (Integer.parseInt(inTimecode[0]) - subsOffset) * 3600;
 	    				int inM = Integer.parseInt(inTimecode[1]) * 60;
 	    				int inS = Integer.parseInt(inTimecode[2]);
 	    				int inF = Integer.parseInt(inTimecode[3]);
@@ -4547,7 +4555,7 @@ public class VideoPlayer {
 	    					waveformContainer.repaint();
 	            		}
 	    				
-	    				int outH = Integer.parseInt(outTimecode[0]) * 3600;
+	    				int outH = (Integer.parseInt(outTimecode[0]) - subsOffset) * 3600;
 	    				int outM = Integer.parseInt(outTimecode[1]) * 60;
 	    				int outS = Integer.parseInt(outTimecode[2]);
 	    				int outF = Integer.parseInt(outTimecode[3]);
@@ -5465,7 +5473,7 @@ public class VideoPlayer {
 	}
 	
 	public static void resizeAll() {
-						
+								
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
 		{		
 			//Clear the buffer
@@ -5827,7 +5835,7 @@ public class VideoPlayer {
 		{
 			refreshTimecodeAndText();
 		}
-		
+				
 		Shutter.statusBar.setBounds(0, Shutter.frame.getHeight() - 23, Shutter.frame.getWidth(), 22);
 		
 		if (Shutter.frame.getWidth() >= 1130)

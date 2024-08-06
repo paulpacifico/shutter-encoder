@@ -499,13 +499,13 @@ public class FunctionUtils extends Shutter {
 			
 			return " -safe 0 -f concat";
 		}
-		else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) //Image sequence
+		else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false) //Image sequence
 		{
 			setMerge(file.getName(), extension, output);	
 
 			return " -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".");			
 		}
-		else if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected())) //Concat mode
+		else if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false)) //Concat mode
 		{
 			setMerge(file.getName(), extension, output);	
 

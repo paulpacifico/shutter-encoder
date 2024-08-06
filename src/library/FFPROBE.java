@@ -1064,16 +1064,15 @@ public static boolean isRotated = false;
 			//Analyse
 	        while ((line = br.readLine()) != null) 
 			{	        	
-	        	if (line.contains("codec_type=video"))
-	        	{
+	        	if (line.contains("codec_type=video") || line.contains("media_type=video"))
+	        	{	        		
 	        		return true;					        		 
 	        	}
-	        	else if (line.contains("codec_type=audio"))
-		        {
-	        		return false;
-		        }
 			}									
 			process.waitFor();
+			
+			//Stream input is audio if it's not video
+			return false;
 			
 			} catch (Exception e) {}
 			finally {
