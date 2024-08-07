@@ -179,7 +179,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
 			
-			 Console.consoleFFMPEG.append(System.lineSeparator());
+			Console.consoleFFMPEG.append(System.lineSeparator());
 		}
 		else
 		{

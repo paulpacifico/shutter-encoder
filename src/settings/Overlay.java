@@ -617,7 +617,10 @@ public class Overlay extends Shutter {
 				VideoPlayer.resizeAll();
 				
 				VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
+				if (Shutter.watermarkPreset != null)
+				{
+					Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
+				}
 			}
 			
 			float imageRatio = 1.0f;

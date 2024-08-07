@@ -66,6 +66,7 @@ public static String pixelformat = "";
 public static int imageDepth = 8;
 public static String imageResolution;
 public static int previousImageWidth;
+public static int previousImageHeight;
 public static int imageWidth;
 public static int imageHeight;
 public static float imageRatio = 1.777777f;
@@ -152,6 +153,7 @@ public static boolean isRotated = false;
 			&& extension.toLowerCase().equals(".pdf") == false)
 			{
 				previousImageWidth = imageWidth;
+				previousImageHeight = imageHeight;
 			}			
 						
 			timecode1 = "";

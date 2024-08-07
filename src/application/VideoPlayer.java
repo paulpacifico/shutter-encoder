@@ -1353,8 +1353,8 @@ public class VideoPlayer {
 									}
 									
 									//Watermark
-									if (Shutter.caseAddWatermark.isSelected() && FFPROBE.previousImageWidth != Shutter.logoWidth)							
-									{												
+									if (Shutter.caseAddWatermark.isSelected() && (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight))				
+									{	
 										Shutter.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textWatermarkSize.getText()) * scale)));	
 									}
 									
@@ -2146,7 +2146,7 @@ public class VideoPlayer {
 								waveformIcon.setIcon(resizedWaveform);
 								waveformIcon.repaint();
 
-								if ((RenderQueue.frame != null && RenderQueue.frame.isVisible() && FFMPEG.isRunning) || isPiping)
+								if ((RenderQueue.frame != null && RenderQueue.frame.isVisible() && FFMPEG.isRunning) || isPiping || videoPath == null)
 								{
 									waveformIcon.setVisible(false);
 								}
@@ -4601,124 +4601,126 @@ public class VideoPlayer {
 	}
 	
 	public static boolean loadWatermark(int size) {
-				
-		try {
-
-			if (Shutter.logoPNG == null)
-			{				
-				int previousImageWidth = FFPROBE.previousImageWidth;
-				
-				//IMPORTANT
-				if (FFPROBE.isRunning)
-				{
-					do {								
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {}								
-					} 
-					while (FFPROBE.isRunning);
-				}
-				
-				//Keep media size
-				FFPROBE.previousImageWidth = previousImageWidth;
-				
-				if (Shutter.overlayDeviceIsRunning)
-				{
-					RecordInputDevice.setOverlayDevice();
-				}
-				else 
-				{
-					FFPROBE.Data(Shutter.logoFile);					
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (FFPROBE.isRunning);
-				}
-				
-				Shutter.logoWidth = FFPROBE.imageWidth;
-				Shutter.logoHeight = FFPROBE.imageHeight;
-				
-				//IMPORTANT keeps original source file data			
-				FunctionUtils.analyze(new File(videoPath), false);
-			}
-									
-			int logoFinalSizeWidth = (int) Math.floor((float) Shutter.logoWidth / Shutter.playerRatio);		
-			int logoFinalSizeHeight = (int) Math.floor((float) Shutter.logoHeight / Shutter.playerRatio);
-					
-			//Adapt to size
-			logoFinalSizeWidth = (int) Math.floor((float) logoFinalSizeWidth * ((double) size / 100));
-			logoFinalSizeHeight = (int) Math.floor((float) logoFinalSizeHeight * ((double) size / 100));
-			
-			if (logoFinalSizeWidth < 1)
-				logoFinalSizeWidth = 1;
-			
-			if (logoFinalSizeHeight < 1)
-				logoFinalSizeHeight = 1;
-
-			//Preserve location
-			int newPosX = (int) Math.floor((Shutter.logo.getWidth() - logoFinalSizeWidth) / 2);
-			int newPosY = (int) Math.floor((Shutter.logo.getHeight() - logoFinalSizeHeight) / 2);
-			
-			if (Shutter.logoPNG == null)
-			{
-				if (Shutter.overlayDeviceIsRunning)
-				{
-					FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe -");
-				}
-				else if (Shutter.logoPNG == null)
-				{
-					FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe -");
-				}
-				
-				do {
-					Thread.sleep(10);
-				} while (FFMPEG.process.isAlive() == false);
-				
-				InputStream videoInput = FFMPEG.process.getInputStream(); 
-				InputStream is = new BufferedInputStream(videoInput);		
-				fullSizeWatermark = ImageIO.read(is);
-			}
-			
-			Shutter.logoPNG = new ImageIcon(fullSizeWatermark).getImage().getScaledInstance(logoFinalSizeWidth, logoFinalSizeHeight, Image.SCALE_AREA_AVERAGING);
-						
-			if (Shutter.logo.getWidth() == 0)
-			{
-				Shutter.logo.setLocation((int) Math.floor(player.getWidth() / 2 - logoFinalSizeWidth / 2), (int) Math.floor(player.getHeight() / 2 - logoFinalSizeHeight / 2));	
-			}
-			else
-				Shutter.logo.setLocation(Shutter.logo.getLocation().x + newPosX, Shutter.logo.getLocation().y + newPosY);
-
-			Shutter.logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);        
-            			
-			Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
-			Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
-			
-            //Saving location
-			Shutter.logoLocX = Shutter.logo.getLocation().x;
-			Shutter.logoLocY = Shutter.logo.getLocation().y;	
-            Shutter.logo.repaint();        
-		}
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
-		} 
-		finally {
-			
-			if (Shutter.watermarkPreset != null)
-			{
-				watermarkPositions(Shutter.watermarkPreset);
-			}
-			
-			Shutter.btnStart.setEnabled(true);
-			
-        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
-				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
-			else
-				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
-        }
 		
+		if (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight)	
+		{			
+			try {
+			
+				if (Shutter.logoPNG == null)
+				{				
+					int previousImageWidth = FFPROBE.previousImageWidth;
+					
+					//IMPORTANT
+					if (FFPROBE.isRunning)
+					{
+						do {								
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {}								
+						} 
+						while (FFPROBE.isRunning);
+					}
+					
+					//Keep media size
+					FFPROBE.previousImageWidth = previousImageWidth;
+					
+					if (Shutter.overlayDeviceIsRunning)
+					{
+						RecordInputDevice.setOverlayDevice();
+					}
+					else 
+					{
+						FFPROBE.Data(Shutter.logoFile);					
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {}
+						} while (FFPROBE.isRunning);
+					}
+					
+					Shutter.logoWidth = FFPROBE.imageWidth;
+					Shutter.logoHeight = FFPROBE.imageHeight;
+					
+					//IMPORTANT keeps original source file data			
+					FunctionUtils.analyze(new File(videoPath), false);
+				}
+										
+				int logoFinalSizeWidth = (int) Math.floor((float) Shutter.logoWidth / Shutter.playerRatio);		
+				int logoFinalSizeHeight = (int) Math.floor((float) Shutter.logoHeight / Shutter.playerRatio);
+						
+				//Adapt to size
+				logoFinalSizeWidth = (int) Math.floor((float) logoFinalSizeWidth * ((double) size / 100));
+				logoFinalSizeHeight = (int) Math.floor((float) logoFinalSizeHeight * ((double) size / 100));
+				
+				if (logoFinalSizeWidth < 1)
+					logoFinalSizeWidth = 1;
+				
+				if (logoFinalSizeHeight < 1)
+					logoFinalSizeHeight = 1;
+					
+				//Preserve location
+				int newPosX = (int) Math.floor((Shutter.logo.getWidth() - logoFinalSizeWidth) / 2);
+				int newPosY = (int) Math.floor((Shutter.logo.getHeight() - logoFinalSizeHeight) / 2);
+				
+				if (Shutter.logoPNG == null)
+				{
+					if (Shutter.overlayDeviceIsRunning)
+					{
+						FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe -");
+					}
+					else if (Shutter.logoPNG == null)
+					{
+						FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -c:v png -pix_fmt bgra -sws_flags fast_bilinear -f image2pipe -");
+					}
+					
+					do {
+						Thread.sleep(10);
+					} while (FFMPEG.process.isAlive() == false);
+					
+					InputStream videoInput = FFMPEG.process.getInputStream(); 
+					InputStream is = new BufferedInputStream(videoInput);		
+					fullSizeWatermark = ImageIO.read(is);
+				}
+				
+				Shutter.logoPNG = new ImageIcon(fullSizeWatermark).getImage().getScaledInstance(logoFinalSizeWidth, logoFinalSizeHeight, Image.SCALE_AREA_AVERAGING);
+							
+				if (Shutter.logo.getWidth() == 0)
+				{
+					Shutter.logo.setLocation((int) Math.floor(player.getWidth() / 2 - logoFinalSizeWidth / 2), (int) Math.floor(player.getHeight() / 2 - logoFinalSizeHeight / 2));	
+				}
+				else
+					Shutter.logo.setLocation(Shutter.logo.getLocation().x + newPosX, Shutter.logo.getLocation().y + newPosY);
+	
+				Shutter.logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);        
+	            			
+				Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
+				Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
+				
+	            //Saving location
+				Shutter.logoLocX = Shutter.logo.getLocation().x;
+				Shutter.logoLocY = Shutter.logo.getLocation().y;	
+	            Shutter.logo.repaint();        
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+			} 
+			finally {
+				
+				if (Shutter.watermarkPreset != null)
+				{
+					watermarkPositions(Shutter.watermarkPreset);
+				}
+				
+				Shutter.btnStart.setEnabled(true);
+				
+	        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+					Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+				else
+					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+	        }
+		}
 		return true;
 	}
 	
@@ -5475,7 +5477,7 @@ public class VideoPlayer {
 	public static void resizeAll() {
 								
 		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
-		{		
+		{			
 			//Clear the buffer
 			if (bufferedFrames.size() > 0)
 			{			
@@ -5669,7 +5671,7 @@ public class VideoPlayer {
 			if (Shutter.caseAddWatermark.isSelected()
 			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
 			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
-			{
+			{				
 				loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
 				if (Shutter.watermarkPreset != null)
 				{
