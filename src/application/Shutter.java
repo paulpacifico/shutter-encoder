@@ -1858,7 +1858,7 @@ public class Shutter {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
-					Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/changelog.html"));
+					Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/changelog/"));
 				} catch (IOException | URISyntaxException e) {
 				}
 			}
@@ -3692,7 +3692,7 @@ public class Shutter {
 				language.getProperty("functionWeb")
 				
 		};
-	
+			
 		comboFonctions = new JComboBox<String[]>();
 		comboFonctions.setName("comboFonctions");
 		comboFonctions.setModel(new DefaultComboBoxModel(functionsList));	
@@ -3704,6 +3704,11 @@ public class Shutter {
 		comboFonctions.getModel().setSelectedItem("");
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
+		
+		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
+		{
+			comboFonctions.removeItem("H.266");				
+		}
 		
 		comboFonctions.addActionListener(new ActionListener() {
 			
@@ -5493,6 +5498,11 @@ public class Shutter {
 						FFPROBE.setFilesize();	
 					}
 				}		
+				
+				if (VideoPlayer.videoPath != null)
+				{
+					FFMPEG.checkGPUCapabilities(VideoPlayer.videoPath);
+				}
 
 				if (NCNN.isRunning && NCNN.process != null)
 				{
@@ -18104,8 +18114,13 @@ public class Shutter {
 						comboGPUFilter.setSelectedIndex(0);
 						comboGPUFilter.setEnabled(false);
 					}
-				}
+				}				
 				
+				if (VideoPlayer.videoPath != null)
+				{					
+					//FFMPEG.checkGPUCapabilities(VideoPlayer.videoPath);			
+				}
+								
 				VideoPlayer.frameIsComplete = false;
 				
 				VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());	

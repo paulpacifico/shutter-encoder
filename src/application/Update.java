@@ -504,8 +504,8 @@ public class Update {
 					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadFailed"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);	 
 					
 					try {
-					File toDelete = new File(destination);
-					toDelete.delete();
+						File toDelete = new File(destination);
+						toDelete.delete();
 					} catch (Exception e) {}					
 	                         
 	            } 

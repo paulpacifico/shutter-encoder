@@ -132,6 +132,34 @@ public class VideoWeb {
 			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
 			
 		}
+				
+		if (System.getProperty("os.name").contains("Mac"))
+		{
+			Thread download = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					
+					String PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
+					PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp_macos";
+					
+					if (new File(PathToYOUTUBEDL).exists() == false)
+					{							
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));						
+						YOUTUBEDL.HTTPDownload("https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos", PathToYOUTUBEDL);
+						
+						if (new File(PathToYOUTUBEDL).exists() == false)
+						{
+							Utils.changeDialogVisibility(frame, true);
+						}
+						
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					}					
+				}  
+			});
+			download.start();
+		}
 						
 		topPanel();
 		grpURL();

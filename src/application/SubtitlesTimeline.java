@@ -1396,18 +1396,21 @@ public class SubtitlesTimeline {
 				{				
 					cursor.setLocation(e.getX(), cursor.getLocation().y);		
 					VideoPlayer.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayer.inputFramerateMS));
-					VideoPlayer.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayer.waveformContainer.getSize().width * VideoPlayer.slider.getValue()) / VideoPlayer.slider.getMaximum()), VideoPlayer.cursorWaveform.getLocation().y);			
+					VideoPlayer.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayer.waveformContainer.getSize().width * VideoPlayer.slider.getValue()) / VideoPlayer.slider.getMaximum()), VideoPlayer.cursorWaveform.getLocation().y);		
+					VideoPlayer.cursorHead.setLocation(VideoPlayer.cursorWaveform.getX() - 5, VideoPlayer.cursorWaveform.getY());	
 				}
 				else if (e.getX() < 0)
 				{				
 					cursor.setLocation(0, cursor.getLocation().y);
 					VideoPlayer.cursorWaveform.setLocation(0, VideoPlayer.cursorWaveform.getLocation().y);		
+					VideoPlayer.cursorHead.setLocation(VideoPlayer.cursorWaveform.getX() - 5, VideoPlayer.cursorWaveform.getY());
 					VideoPlayer.slider.setValue(0);
 				}
 				else if (e.getX() > timeline.getWidth() - 12)
 				{				
 					cursor.setLocation(timeline.getWidth() - 12, cursor.getLocation().y);
 					VideoPlayer.cursorWaveform.setLocation(timeline.getWidth() - 2, VideoPlayer.cursorWaveform.getLocation().y);	
+					VideoPlayer.cursorHead.setLocation(VideoPlayer.cursorWaveform.getX() - 5, VideoPlayer.cursorWaveform.getY());
 				}
 
 			}

@@ -297,12 +297,22 @@ public static boolean isRotated = false;
 						            setFilesize();
 								}
 				            }
-	 			            
+				            
 				            // Détection YUVJ
-							if (line.contains("Video:") && line.contains("attached pic") == false)
-							{						
+							if ((line.contains("Video:") || line.contains("Stream group")) && line.contains("attached pic") == false)
+							{			
 								//Codec vidéo
-								String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");							
+								String[] splitVideo = null;
+								
+								if (line.contains("Video:") && extension.equals(".heic") == false)
+								{
+									splitVideo = line.substring(line.indexOf("Video:")).split(" ");
+								}	
+								else if (line.contains("Stream group")) //HEIC format
+								{
+									splitVideo = line.substring(line.indexOf("Grid:")).split(" ");
+								}
+																
 								videoCodec = splitVideo[1].replace(",", "");
 							
 								if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
@@ -325,8 +335,16 @@ public static boolean isRotated = false;
 				                   lumaLevel = "0-255";
 				                			                
 				                // Lecture
-							 	String data = line;
-				                data = line.substring(data.indexOf("Video:"));
+							 	String data = line;				               
+				                
+				                if (line.contains("Video:") && extension.equals(".heic") == false)
+								{
+				                	 data = line.substring(data.indexOf("Video:"));
+								}	
+								else if (line.contains("Stream group")) //HEIC format
+								{
+									 data = line.substring(data.indexOf("Grid:"));
+								}
 	
 				                // Timecode Size
 				                String split[] = data.split(",");
@@ -357,14 +375,14 @@ public static boolean isRotated = false;
 						            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
 						            imageHeight = Integer.parseInt(splitr[0]);
 					                imageResolution = imageWidth + "x" + getHeight[0];
-		              			               
+					                					                
 					                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
 					                {
 					                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
 					                	imageWidth = RecordInputDevice.screenWidth;
 					                	imageHeight = RecordInputDevice.screenHeigth;
 					                }
-					                			               			                
+					              					                			               			                
 					                //Ratio du lecteur
 					                if (line.contains("DAR"))
 					                {

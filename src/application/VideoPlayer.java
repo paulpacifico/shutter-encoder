@@ -20,6 +20,7 @@
 package application;
 
 import java.awt.AWTEvent;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -27,7 +28,6 @@ import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -206,7 +206,9 @@ public class VideoPlayer {
 	public static BufferedImage waveform = null;
 	public static JLabel waveformIcon;
 	public static JLabel waveformContainer;
+	public static JPanel cursorHead;
 	public static JPanel cursorWaveform;
+	public static JPanel cursorCurrentFrame;
 	public static boolean mouseIsPressed = false;
 	
 	//Preview
@@ -457,6 +459,60 @@ public class VideoPlayer {
 				{
 					e.consume();
 					btnPlay.doClick();
+				}
+
+				if (Shutter.shift)
+				{				
+					if (e.getKeyCode() == KeyEvent.VK_NUMPAD0)
+					{
+						e.consume();
+						playerSetTime(0);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD1)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 1);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD2)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 2);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD3)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 3);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD4)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 4);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD5)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 5);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD6)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 6);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD7)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 7);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD8)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 8);
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD9)
+					{
+						e.consume();
+						playerSetTime((float) (totalFrames / 10) * 9);
+					}
 				}
 				
 				if (e.getKeyCode() == KeyEvent.VK_J)
@@ -1203,6 +1259,7 @@ public class VideoPlayer {
 								Shutter.btnStart.setEnabled(true);
 							}
 							
+							cursorCurrentFrame.setBounds(0, 0, 1, waveformContainer.getHeight());
 							setPlayerButtons(true);	
 							
 							seekOnKeyFrames = false;
@@ -1551,6 +1608,7 @@ public class VideoPlayer {
 		{
 			waveformContainer.setVisible(true);
 			waveformIcon.setVisible(true);
+			cursorHead.setVisible(true);
 			caseInH.setVisible(false);
 			caseInM.setVisible(false);
 			caseInS.setVisible(false);
@@ -1596,6 +1654,7 @@ public class VideoPlayer {
 		{			
 			waveformContainer.setVisible(false);
 			waveformIcon.setVisible(false);
+			cursorHead.setVisible(false);
 			caseInH.setVisible(false);
 			caseInM.setVisible(false);
 			caseInS.setVisible(false);
@@ -1725,6 +1784,7 @@ public class VideoPlayer {
 			btnGoToOut.setVisible(true);
 			
 			waveformContainer.setVisible(true);
+			cursorHead.setVisible(true);
 			
 			if (FFPROBE.hasAudio)
 			{
@@ -2586,6 +2646,8 @@ public class VideoPlayer {
                 	{
                 		g2.drawImage(frameVideo, 0, 0, this); 
                 	}
+                	
+                	cursorCurrentFrame.setBounds((int) ((float) playerCurrentFrame * waveformContainer.getWidth() / totalFrames), 0, 1, waveformContainer.getHeight());
                 }
                 
                 //Get the current fps
@@ -2599,7 +2661,7 @@ public class VideoPlayer {
 					}	              
 	                	                
 	                //Display current fps
-		            if (displayCurrentFPS > 0 && playerLoop && sliderSpeed.getValue() == 2 && fullscreenPlayer == false)
+		            if (displayCurrentFPS > 0 && playerLoop && sliderSpeed.getValue() == 2 && fullscreenPlayer == false && mouseIsPressed == false)
 		            {
 		            	showFPS.setVisible(true);		            	
 		            	if ((float) displayCurrentFPS >= FFPROBE.currentFPS)
@@ -2918,6 +2980,7 @@ public class VideoPlayer {
 					int value = (int) ((long) slider.getMaximum() * e.getX() / player.getSize().width);
 					sliderChange = true;					
 					cursorWaveform.setLocation(e.getX(), cursorWaveform.getLocation().y);
+					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 					
 					//Make sure the value is not more than file length less one frame
 					if (value < (totalFrames))
@@ -2965,7 +3028,7 @@ public class VideoPlayer {
 			}
 			
 		});
-				
+			
 		waveformContainer = new JLabel() {
 			
 			@Override
@@ -3084,17 +3147,20 @@ public class VideoPlayer {
 					
 					if (e.getX() >= 0 && e.getX() <= waveformContainer.getWidth() - 2)
 					{				
-						cursorWaveform.setLocation(e.getX(), cursorWaveform.getLocation().y);	
+						cursorWaveform.setLocation(e.getX(), cursorWaveform.getLocation().y);
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						slider.setValue((int) ((long) slider.getMaximum() * cursorWaveform.getLocation().x / waveformContainer.getSize().width));
 					}
 					else if (e.getX() < 0)
 					{				
 						cursorWaveform.setLocation(0, cursorWaveform.getLocation().y);	
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						slider.setValue((int) ((long) slider.getMaximum() * cursorWaveform.getLocation().x / waveformContainer.getSize().width));
 					}
 					else if (e.getX() > waveformContainer.getWidth() - 2)
 					{				
 						cursorWaveform.setLocation(waveformContainer.getWidth() - 2, cursorWaveform.getLocation().y);	
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						slider.setValue((int) ((long) slider.getMaximum() * cursorWaveform.getLocation().x / waveformContainer.getSize().width));
 					}
                 }
@@ -3129,11 +3195,13 @@ public class VideoPlayer {
 					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerOutMark && mouseIsPressed)
 					{							
 						cursorWaveform.setLocation(playerInMark, 0);
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						updateGrpIn(playerCurrentFrame);
 					}
 					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerInMark && mouseIsPressed)
 					{			
 						cursorWaveform.setLocation(playerOutMark, 0);
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						updateGrpOut(playerCurrentFrame);
 					}		
 					
@@ -3176,6 +3244,7 @@ public class VideoPlayer {
 						int value = (int) ((long) slider.getMaximum() * cursorWaveform.getLocation().x / waveformContainer.getSize().width);
 						sliderChange = true;					
 						cursorWaveform.setLocation(e.getX(), cursorWaveform.getLocation().y);
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						
 						//Make sure the value is not more than file length less one frame
 						if (value < (totalFrames))
@@ -3185,13 +3254,17 @@ public class VideoPlayer {
 					{					
 						sliderChange = true;					
 						cursorWaveform.setLocation(0, cursorWaveform.getLocation().y);	
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+						
 						slider.setValue(0);
 						playerSetTime(0);
 					}
 					else if (e.getX() > waveformContainer.getWidth() - 2)
 					{
 						sliderChange = true;					
-						cursorWaveform.setLocation(waveformContainer.getWidth() - 2, cursorWaveform.getLocation().y);	
+						cursorWaveform.setLocation(waveformContainer.getWidth() - 2, cursorWaveform.getLocation().y);
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+						
 						slider.setValue((int) (totalFrames - 2));
 						playerSetTime(totalFrames - 2);
 					}
@@ -3205,7 +3278,9 @@ public class VideoPlayer {
 					{
 						playerOutMark = cursorWaveform.getX();
 						waveformContainer.repaint();
-					}					
+					}		
+					
+					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
                 }
 			}
 
@@ -3226,23 +3301,56 @@ public class VideoPlayer {
 		
 		});
 			
+		cursorHead = new JPanel()
+		{
+	        @Override
+	        protected void paintComponent(Graphics grphcs) {
+	            super.paintComponent(grphcs);
+	            Graphics2D g2d = (Graphics2D) grphcs;
+	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	            
+	            g2d.setColor(Color.RED);
+	            
+	            g2d.fillPolygon(new int[] {0, 5, 10}, new int[] {0, 8, 0}, 3);
+	        }
+		};
+
+		cursorHead.setOpaque(false);
+		cursorHead.setSize(10, 10);
+		waveformContainer.add(cursorHead);
+		
 		cursorWaveform = new JPanel() {
 	        @Override
 	        protected void paintComponent(Graphics grphcs) {
 	            super.paintComponent(grphcs);
 	            Graphics2D g2d = (Graphics2D) grphcs;
-	            GradientPaint gp = new GradientPaint(0, 0, new Color(140,0,0), 0, getHeight() / 2, Color.RED);
-	            GradientPaint gp2 = new GradientPaint(0, getHeight() / 2, Color.RED, 0, getHeight(), new Color(140,0,0));
-	            g2d.setPaint(gp);
-	            g2d.fillRect(0, 0, getWidth(), getHeight() / 2);
-	            g2d.setPaint(gp2);
-	            g2d.fillRect(0, getHeight() / 2, getWidth(), getHeight());
+	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	            
+	            g2d.setColor(Color.RED);
+	            g2d.drawLine(0, 1, 0, waveformContainer.getHeight());	
 	        }
 		};
-		cursorWaveform.setBackground(Color.RED);
-		cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);
-		waveformContainer.add(cursorWaveform);		
-				
+	
+		cursorWaveform.setBounds(0, 0, 1, waveformContainer.getSize().height);		
+		waveformContainer.add(cursorWaveform);	
+		
+		cursorCurrentFrame = new JPanel() {
+	        @Override
+	        protected void paintComponent(Graphics grphcs) {
+	            super.paintComponent(grphcs);
+	            Graphics2D g2d = (Graphics2D) grphcs;
+	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));	            
+	            
+	            g2d.setColor(Color.WHITE);
+	            g2d.drawLine(0, 1, 0, waveformContainer.getHeight());
+	        }
+		};
+		waveformContainer.add(cursorCurrentFrame);
+		
 		sliderVolume.setName("sliderVolume");		
 		sliderVolume.setValue(50);			
 		Shutter.frame.getContentPane().add(sliderVolume);
@@ -5611,16 +5719,21 @@ public class VideoPlayer {
 			
 			if (playerCurrentFrame <= 1)
 			{
-				cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);
+				cursorWaveform.setBounds(0, 0, 1, waveformContainer.getSize().height);
+				cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 			}
 			else
 			{
 				if (cursorWaveform.getX() > waveformContainer.getWidth() - 2)
 				{
 					cursorWaveform.setLocation(waveformContainer.getWidth() - 2, 0);
+					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 				}
 				else
-					cursorWaveform.setBounds(Math.round((float) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 2, waveformContainer.getSize().height);
+				{
+					cursorWaveform.setBounds(Math.round((float) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
+					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+				}
 			}
 
 			if (isPiping == false)
@@ -5967,16 +6080,19 @@ public class VideoPlayer {
     				if (playerCurrentFrame <= 1)
 					{
 						cursorWaveform.setLocation(0, 0);
+						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 					}
     				else
     				{
     					if (cursorWaveform.getX() > waveformContainer.getWidth() - 2)
 						{
 							cursorWaveform.setLocation(waveformContainer.getWidth() - 2, 0);
+							cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						}
 						else if (newValue != cursorWaveform.getX()) //Only refresh when the value is different
 						{					
 							cursorWaveform.setLocation(newValue, 0);
+							cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						}
     				}
     			}

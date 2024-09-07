@@ -1009,7 +1009,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		runProcess.start();
 	}
 
-	public static void checkGPUCapabilities(String file, boolean force) {
+	public static void checkGPUCapabilities(String file) {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
@@ -1022,7 +1022,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-		|| (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) && force)
+		|| (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")))
 		{
 			String vcodec = "";
 			if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
@@ -1040,7 +1040,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						vcodec = vcodec.toUpperCase();
 				}
 			}
-			
+
 			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || vcodec.equals("VP8") || vcodec.equals("VP9") || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2"))
 			{
 				isGPUCompatible = true;
@@ -1050,7 +1050,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				isGPUCompatible = false;
 			}
-			
+						
 			if (isGPUCompatible)
 			{
 				try {	
@@ -1062,10 +1062,10 @@ public static StringBuilder errorLog = new StringBuilder();
 						bitDepth = "p010";
 					}	
 					
-					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false || force)
-					{						
+					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+					{								
 						//Check for Nvidia or Intel GPU
-						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") || force)
+						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto"))
 						{
 							if (System.getProperty("os.name").contains("Windows"))
 							{
@@ -1075,7 +1075,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								do {
 									Thread.sleep(100);
 								} while(FFMPEG.runProcess.isAlive());
-								
+																
 								if (FFMPEG.error == false)
 									cudaAvailable = true;
 								
@@ -1119,7 +1119,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								isGPUCompatible = false;
 						}
 						else //Check the current selection
-						{
+						{							
 							FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + " -i " + '"' + file + '"' + " -vf scale_" + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
 							
 							do {
@@ -1127,7 +1127,37 @@ public static StringBuilder errorLog = new StringBuilder();
 							} while(FFMPEG.runProcess.isAlive());
 														
 							if (FFMPEG.error)
+							{								
 								isGPUCompatible = false;
+								
+								if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
+								{
+									cudaAvailable = false;
+								}
+								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+								{
+									qsvAvailable = false;
+								}
+								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+								{
+									videotoolboxAvailable = false;
+								}
+							}
+							else
+							{
+								if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
+								{
+									cudaAvailable = true;
+								}
+								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+								{
+									qsvAvailable = true;
+								}
+								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+								{
+									videotoolboxAvailable = true;
+								}
+							}
 						}
 					}						
 					

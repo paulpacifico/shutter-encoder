@@ -1594,7 +1594,7 @@ public class Utils extends Shutter {
 													{
 														//Value
 														((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																
+																													
 														if (p.getName().equals("comboAccel") == false && p.getName().equals("comboGPUDecoding") == false && p.getName().equals("comboGPUFilter") == false)
 														{
 															//State
@@ -1816,7 +1816,7 @@ public class Utils extends Shutter {
 					finally {
 						
 						doNotLoadImage = false;
-						
+												
 						//grpCrop
 						if (caseEnableCrop.isSelected())
 						{
@@ -1836,8 +1836,7 @@ public class Utils extends Shutter {
 							frameCropY = VideoPlayer.player.getLocation().y;
 							
 							anchorRight = selection.getLocation().x + selection.getWidth();
-							anchorBottom = selection.getLocation().y + selection.getHeight();					
-							VideoPlayer.checkSelection();
+							anchorBottom = selection.getLocation().y + selection.getHeight();
 						}
 						
 						//grpOverlay

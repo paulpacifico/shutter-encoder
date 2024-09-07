@@ -94,6 +94,11 @@ public class FunctionUtils extends Shutter {
 			}						 
 			while (EXIFTOOL.isRunning);
 		}
+		
+		if (inputDeviceIsRunning)
+		{
+			btnStart.setEnabled(true);
+		}
 				
 		//inputDeviceIsRunning is already analyzed
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
@@ -104,10 +109,7 @@ public class FunctionUtils extends Shutter {
 			 	Thread.sleep(100);
 			 }
 			 while (FFPROBE.isRunning);
-			 
-			//Check GPU
-			FFMPEG.checkGPUCapabilities(file.toString(), false);
-			 						
+			 			 					
 			if (analyzeError(file.toString()))
 				return false;
 			 
@@ -137,6 +139,9 @@ public class FunctionUtils extends Shutter {
 			 						
 			if (analyzeError(file.toString()))
 				return false;
+			
+			//Check GPU
+			FFMPEG.checkGPUCapabilities(file.toString());
 					
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
 			{
