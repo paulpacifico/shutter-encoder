@@ -595,13 +595,26 @@ public class FunctionUtils extends Shutter {
 			if (caseCreateTree.isSelected())
 			{ 	
 				File pathToFile = null;
+				String folderLevel = "";
+				
 				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 				{
-					String s[] = file.getParent().toString().split("/");
-					pathToFile = new File(lblDestination1.getText() + file.getParent().toString().replace("/Volumes", "").replace(s[2], ""));	
+					String s[] = file.getParent().toString().replace("/Volumes", "").split("/");	
+					for (int i = comboCreateTree.getSelectedIndex() + 1 ; i < s.length ; i++)
+					{
+						folderLevel += ("/" + s[i]);
+					}
 				}
 				else
-					pathToFile = new File (lblDestination1.getText() + file.getParent().toString().substring(2));
+				{
+					String s[] = file.getParent().toString().substring(2).split("\\\\");	
+					for (int i = comboCreateTree.getSelectedIndex() + 1 ; i < s.length ; i++)
+					{
+						folderLevel += ("\\" + s[i]);
+					}
+				}
+				
+				pathToFile = new File(lblDestination1.getText() + folderLevel);
 				
 				if (pathToFile.exists() == false)
 					pathToFile.mkdirs();
@@ -862,6 +875,11 @@ public class FunctionUtils extends Shutter {
 			if (suffix.contains("{preset}"))
 			{				
 				suffix = suffix.replace("{preset}", Utils.currentPreset.replace(".enc", ""));
+			}
+			
+			if (suffix.contains("{timecode}"))
+			{				
+				suffix = suffix.replace("{timecode}", FFPROBE.timecode1 + FFPROBE.timecode2 + FFPROBE.timecode3 + FFPROBE.timecode4);
 			}
 			
 			if (suffix.contains("{bitrate}"))

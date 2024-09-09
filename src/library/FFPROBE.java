@@ -299,20 +299,11 @@ public static boolean isRotated = false;
 				            }
 				            
 				            // Détection YUVJ
-							if ((line.contains("Video:") || line.contains("Stream group")) && line.contains("attached pic") == false)
+							if (line.contains("Video:") && line.contains("attached pic") == false)
 							{			
 								//Codec vidéo
-								String[] splitVideo = null;
-								
-								if (line.contains("Video:") && extension.equals(".heic") == false)
-								{
-									splitVideo = line.substring(line.indexOf("Video:")).split(" ");
-								}	
-								else if (line.contains("Stream group")) //HEIC format
-								{
-									splitVideo = line.substring(line.indexOf("Grid:")).split(" ");
-								}
-																
+								String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");
+																		
 								videoCodec = splitVideo[1].replace(",", "");
 							
 								if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
@@ -335,16 +326,8 @@ public static boolean isRotated = false;
 				                   lumaLevel = "0-255";
 				                			                
 				                // Lecture
-							 	String data = line;				               
-				                
-				                if (line.contains("Video:") && extension.equals(".heic") == false)
-								{
-				                	 data = line.substring(data.indexOf("Video:"));
-								}	
-								else if (line.contains("Stream group")) //HEIC format
-								{
-									 data = line.substring(data.indexOf("Grid:"));
-								}
+							 	String data = line;
+				                data = line.substring(data.indexOf("Video:"));
 	
 				                // Timecode Size
 				                String split[] = data.split(",");
@@ -573,8 +556,10 @@ public static boolean isRotated = false;
 				        		 subtitleStreams ++;
 				        		 
 				        		 String s[] = line.substring(line.lastIndexOf(":") + 1).split(" ");	
-				        		 subtitlesCodec = s[1].replace(",", "");			        	 }
+				        		 subtitlesCodec = s[1].replace(",", "");			        	
+				        	 }
 				        	 
+				        	 /*
 				        	//Timecode from XML
 				        	if (line.contains("StartTimecode"))
 				        	{
@@ -586,7 +571,7 @@ public static boolean isRotated = false;
 			                	timecode2 = str[1].replace(" ", "");
 			                	timecode3 = str[2].replace(" ", "");
 			                	timecode4 = str[3].replace(" ", "");
-				        	}
+				        	}*/
 				        	
 			        	 	//Timecode
 				            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
