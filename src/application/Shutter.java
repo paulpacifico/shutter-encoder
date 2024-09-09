@@ -374,6 +374,7 @@ public class Shutter {
 	protected static JCheckBox caseDecimate;
 	protected static JCheckBox caseConform;
 	protected static JCheckBox caseCreateTree;
+	protected static JComboBox<String> comboCreateTree;
 	protected static JCheckBox casePreserveMetadata;
 	protected static JCheckBox casePreserveSubs;
 	protected static JCheckBox caseCreateOPATOM;
@@ -5025,7 +5026,7 @@ public class Shutter {
 		txtExtension.setEnabled(false);
 		txtExtension.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		txtExtension.setBounds(btnExtension.getLocation().x + btnExtension.getWidth() + 6, btnExtension.getLocation().y + 1, grpDestination.getWidth() - (btnExtension.getLocation().x + btnExtension.getWidth()) - 18, 21);
-		txtExtension.setToolTipText("<html>{codec/function}<br>{preset}<br>{resolution/scale}<br>{width}<br>{height}<br>{ratio/aspect}<br>{framerate/fps}<br>{bitrate}<br>{duration/time}<br>{date}</html>");
+		txtExtension.setToolTipText("<html>{codec/function}<br>{preset}<br>{resolution/scale}<br>{width}<br>{height}<br>{ratio/aspect}<br>{framerate/fps}<br>{bitrate}<br>{timecode}<br>{duration/time}<br>{date}</html>");
 		destination1.add(txtExtension);	
 				
 		btnExtension.addActionListener(new ActionListener() {
@@ -15680,7 +15681,8 @@ public class Shutter {
 				
 				if (caseCreateTree.isSelected())
 				{
-					setDestinationTabs(2);					
+					setDestinationTabs(2);	
+					comboCreateTree.setEnabled(true);
 				}
 				else
 				{
@@ -15696,9 +15698,28 @@ public class Shutter {
 						else
 							setDestinationTabs(5);	
 					}
+					
+					comboCreateTree.setEnabled(false);
 				}	
 			}	
 		});
+		
+		comboCreateTree = new JComboBox<String>();
+		comboCreateTree.setName("comboCreateTree");
+		comboCreateTree.setEnabled(false);
+		comboCreateTree.setMaximumRowCount(15);
+		
+		String[] levels	= new String[11];
+		for (int i = 0 ; i < 11 ; i++)
+		{
+			levels[i] = String.valueOf(i);
+		}
+		
+		comboCreateTree.setModel(new DefaultComboBoxModel<String>(levels));
+		comboCreateTree.setSelectedIndex(0);
+		comboCreateTree.setFont(new Font(freeSansFont, Font.PLAIN, 10));
+		comboCreateTree.setEditable(false);
+		comboCreateTree.setSize(35, 16);
 		
 		casePreserveMetadata = new JCheckBox(language.getProperty("casePreserveMetadata"));
 		casePreserveMetadata.setName("casePreserveMetadata");
@@ -19609,6 +19630,8 @@ public class Shutter {
 									grpAdvanced.add(casePreserveSubs);	
 									caseCreateTree.setLocation(7, casePreserveSubs.getLocation().y + 17);
 									grpAdvanced.add(caseCreateTree);
+									comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+									grpAdvanced.add(comboCreateTree);
 									casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);	
 									
@@ -19817,6 +19840,8 @@ public class Shutter {
 									grpAdvanced.setLocation(grpAdvanced.getX(), grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 									caseCreateTree.setLocation(7, caseLRA.getLocation().y + 17);
 									grpAdvanced.add(caseCreateTree);
+									comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+									grpAdvanced.add(comboCreateTree);
 									btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 								}
 								else
@@ -19878,6 +19903,8 @@ public class Shutter {
 								grpAdvanced.setVisible(true);
 								caseCreateTree.setLocation(7, 14);
 								grpAdvanced.add(caseCreateTree);
+								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+								grpAdvanced.add(comboCreateTree);
 								caseDRC.setLocation(7, caseCreateTree.getLocation().y + 17);								
 								grpAdvanced.add(caseDRC);						
 								grpAdvanced.setLocation(grpAdvanced.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
@@ -20533,6 +20560,8 @@ public class Shutter {
 										caseCreateTree.setLocation(7, caseForcerInversion.getLocation().y + 17);
 								}							
 								grpAdvanced.add(caseCreateTree);
+								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+								grpAdvanced.add(comboCreateTree);
 								
 								casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 								grpAdvanced.add(casePreserveMetadata);							
@@ -21115,6 +21144,8 @@ public class Shutter {
 								grpAdvanced.add(lblIsConform);
 								caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 								grpAdvanced.add(caseCreateTree);
+								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+								grpAdvanced.add(comboCreateTree);
 								casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 								grpAdvanced.add(casePreserveMetadata);
 								casePreserveSubs.setLocation(7, casePreserveMetadata.getLocation().y + 17);
@@ -21670,6 +21701,8 @@ public class Shutter {
 								grpAdvanced.add(lblIsConform);
 								caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 								grpAdvanced.add(caseCreateTree);
+								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+								grpAdvanced.add(comboCreateTree);
 								casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 								grpAdvanced.add(casePreserveMetadata);
 								casePreserveSubs.setLocation(7, casePreserveMetadata.getLocation().y + 17);
@@ -22107,7 +22140,9 @@ public class Shutter {
 								grpAdvanced.removeAll();
 								grpAdvanced.setVisible(true);
 								caseCreateTree.setLocation(7, 14);
-								grpAdvanced.add(caseCreateTree);					
+								grpAdvanced.add(caseCreateTree);			
+								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+								grpAdvanced.add(comboCreateTree);
 								grpAdvanced.setLocation(grpAdvanced.getX(), grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
 								
 								btnReset.setLocation(btnReset.getX(), grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
@@ -23383,6 +23418,11 @@ public class Shutter {
 		components = grpAdvanced.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(true);
+		}
+		
+		if (caseCreateTree.isSelected() == false)
+		{
+			comboCreateTree.setEnabled(false);
 		}
 		
 		components = grpBitrate.getComponents();

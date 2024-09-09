@@ -713,7 +713,7 @@ public class VideoPlayer {
 					    		//Read 1 video frame	
 								if (playerCurrentFrame >= offsetVideo)
 								{																																											            
-									frameVideo = ImageIO.read(videoInputStream);
+									frameVideo = ImageIO.read(videoInputStream);																		
 									playerRepaint();
 							    	fps ++;	
 								}
@@ -733,7 +733,7 @@ public class VideoPlayer {
 					            	long delay = startTime - System.nanoTime();
 					                			
 					            	if (delay > 0)
-					            	{						            		
+					            	{		
 					            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
 						            	try {
 						            		Thread.sleep((int) (delay / 1500000));
@@ -750,8 +750,7 @@ public class VideoPlayer {
 							}
 						}   
 						else
-						{
-							
+						{							
 							if (line!= null && closeAudioStream && sliderChange == false && frameControl == false)		       
 							{
 								line.flush();	
@@ -765,7 +764,7 @@ public class VideoPlayer {
 							} while (playerLoop == false && playerVideo.isAlive());
 						}
 					} while (playerVideo.isAlive());
-							
+												
 					try {
 						video.close();
 					} catch (IOException e) {}		
@@ -888,7 +887,7 @@ public class VideoPlayer {
 		    	player.repaint();
 		    	getTimePoint(playerCurrentFrame); 
 		    }			
-		}				
+		}			
 	}
 	
 	public static boolean playerIsPlaying() {
@@ -903,7 +902,7 @@ public class VideoPlayer {
 	
 	public static void playerSetTime(float time) {
 			
-		if ((setTime == null || setTime.isAlive() == false && frameVideo != null) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
+		if ((setTime == null || setTime.isAlive() == false) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
 		{				
 			setTime = new Thread(new Runnable() {
 
@@ -1034,46 +1033,43 @@ public class VideoPlayer {
 							playback = true;
 						}
 						else
-							playback = false;					
-											
-						if (frameVideo != null)
-						{
-							playerStop();
-							do {
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e) {}
-							} while (playerThread.isAlive());				
+							playback = false;
+						
+						playerStop();
+						do {
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {}
+						} while (playerThread.isAlive());				
+						
+						frameControl = true; //IMPORTANT to stop the player loop
+						frameIsComplete = false;		
+						playerLoop = true;
+						playerProcess(t);							
+						
+						long time = System.currentTimeMillis();
+													
+						do {
+
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {}
 							
-							frameControl = true; //IMPORTANT to stop the player loop
-							frameIsComplete = false;		
+							if (frameVideo == null || System.currentTimeMillis() - time > 5000)
+								frameIsComplete = true;
+														
+						} while (frameIsComplete == false);
+							
+						if (playback && mouseIsPressed == false)
+						{						
 							playerLoop = true;
-							playerProcess(t);							
-										
-							long time = System.currentTimeMillis();
-							
-							do {
-	
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e) {}
-								
-								if (System.currentTimeMillis() - time > 5000)
-									frameIsComplete = true;
-															
-							} while (frameIsComplete == false);
-	
-							if (playback && mouseIsPressed == false)
-							{						
-								playerLoop = true;
-							}
-							else
-								playerLoop = false;
-																					
-							playerCurrentFrame = t;
-							getTimePoint(playerCurrentFrame); 
-							Shutter.timecode.repaint();
 						}
+						else
+							playerLoop = false;
+																				
+						playerCurrentFrame = t;
+						getTimePoint(playerCurrentFrame); 
+						Shutter.timecode.repaint();						
 						
 						frameControl = false;
 						playerPlayVideo = true;	
