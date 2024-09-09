@@ -902,7 +902,7 @@ public class VideoPlayer {
 	
 	public static void playerSetTime(float time) {
 			
-		if ((setTime == null || setTime.isAlive() == false) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
+		if ((setTime == null || setTime.isAlive() == false) && (frameVideo != null || playerCurrentFrame > 0) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
 		{				
 			setTime = new Thread(new Runnable() {
 
@@ -1048,7 +1048,7 @@ public class VideoPlayer {
 						playerProcess(t);							
 						
 						long time = System.currentTimeMillis();
-													
+												
 						do {
 
 							try {
@@ -1056,7 +1056,9 @@ public class VideoPlayer {
 							} catch (InterruptedException e) {}
 							
 							if (frameVideo == null || System.currentTimeMillis() - time > 5000)
+							{
 								frameIsComplete = true;
+							}
 														
 						} while (frameIsComplete == false);
 							
