@@ -3093,11 +3093,23 @@ public class Shutter {
 						FFMPEG.writer.close();
 					} catch (IOException er) {}
 					
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-					} while (FFMPEG.runProcess.isAlive());
+					Thread wait = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							
+							do {
+								try {
+									frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+									btnStart.setEnabled(false);
+									Thread.sleep(10);									
+								} catch (InterruptedException e1) {}
+							} while (FFMPEG.runProcess.isAlive());
+							
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						}	
+					});
+					wait.start();
 				}
 				
 				if (DCRAW.runProcess != null)
@@ -16840,6 +16852,20 @@ public class Shutter {
 		debitVideo.setBounds(92, textH.getY() + textH.getHeight() + 5, 93, 22);
 		grpBitrate.add(debitVideo);
 		
+		debitVideo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent ac) {
+				
+				if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != "")
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+					VideoPlayer.resizeAll();		
+				}
+			}
+			
+		});
+		
 		lblKbsH264 = new JLabel("kb/s");
 		lblKbsH264.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		lblKbsH264.setBounds(188, debitVideo.getY() + 3, 33, 16);
@@ -17108,6 +17134,12 @@ public class Shutter {
 					{
 						caseForcePreset.setEnabled(true);
 					}
+				}
+
+				if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != "")
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+					VideoPlayer.resizeAll();		
 				}
 			}
 			

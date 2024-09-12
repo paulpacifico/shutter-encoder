@@ -87,6 +87,7 @@ import javax.swing.event.ChangeListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
+import functions.VideoEncoders;
 import library.DCRAW;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -153,6 +154,7 @@ public class VideoPlayer {
     private static boolean previewUpscale = false;    
 	public static boolean fullscreenPlayer = false;
 	private static Thread mouseClickThread;
+	private static String freezeFrame = "";
 	
 	//Buttons & Checkboxes
 	public static JLabel btnPreview;
@@ -891,8 +893,8 @@ public class VideoPlayer {
 	}
 	
 	public static boolean playerIsPlaying() {
-		
-		if (playerVideo != null && playerVideo.isAlive() && btnPlay.getName().equals("pause"))
+
+		if (btnPlay.getName().equals("pause"))
 		{
 			return true;
 		}
@@ -901,7 +903,7 @@ public class VideoPlayer {
 	}
 	
 	public static void playerSetTime(float time) {
-			
+					
 		if ((setTime == null || setTime.isAlive() == false) && (frameVideo != null || playerCurrentFrame > 0) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
 		{				
 			setTime = new Thread(new Runnable() {
@@ -922,7 +924,7 @@ public class VideoPlayer {
 					{
 						preview = null;
 					}					
-					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != time && (Timecode.isNonDropFrame() == false || mouseIsPressed))
+					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != time && (Timecode.isNonDropFrame() == false || mouseIsPressed) && freezeFrame == "")
 					{
 						useBuffer = true;
 					}
@@ -1061,7 +1063,7 @@ public class VideoPlayer {
 							}
 														
 						} while (frameIsComplete == false);
-							
+													
 						if (playback && mouseIsPressed == false)
 						{						
 							playerLoop = true;
@@ -1892,6 +1894,10 @@ public class VideoPlayer {
 
 		//Deinterlacer		
 		String yadif = AdvancedFeatures.setDeinterlace(true);		
+		if (mouseIsPressed)
+		{
+			yadif = "";
+		}
 				
 		//Speed slider
 		String speed = "";
@@ -1989,9 +1995,36 @@ public class VideoPlayer {
 			}
 
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
+					
+			int framesToSkip = (int) ((float) slider.getValue() - playerCurrentFrame);
 			
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + " -c:v bmp -an -f image2pipe -";
+			if (mouseIsPressed && (framesToSkip > 60 || framesToSkip < 0))
+			{	
+				freezeFrame = " -frames:v 1";	
+			}
+			else
+				freezeFrame = "";
 			
+			String codec = "";
+			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
+			&& Shutter.comboFonctions.getSelectedItem().toString().equals("DNxHD") == false
+			&& Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false
+			&& Shutter.comboFonctions.getSelectedItem().toString().equals("QT Animation") == false
+			&& Shutter.comboFonctions.getSelectedItem().toString().equals("GoPro CineForm") == false
+			&& Shutter.comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100") == false)
+			{
+				String format = "matroska";
+				
+				if (Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC"))
+				{
+					format = "mxf";
+				}	
+				
+				codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + freezeFrame + " -an -f " + format + " pipe:1 | " + PathToFFMPEG + " -v quiet -hide_banner -i pipe:0";			
+			}
+			
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v bmp -an -f image2pipe -";
+						
 			if (Shutter.inputDeviceIsRunning)
 			{
 				cmd = " -strict -2 -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v bmp -an -f image2pipe -";

@@ -1244,7 +1244,7 @@ public class VideoEncoders extends Shutter {
 	
 	}
 	
-	private static String setCodec() {
+	public static String setCodec() {
 		
 		switch (comboFonctions.getSelectedItem().toString())
 		{
@@ -1655,7 +1655,7 @@ public class VideoEncoders extends Shutter {
 		return "";
 	}
 	
-	private static String setBitrate() {
+	public static String setBitrate() {
 		
 		FunctionUtils.setVideoBitrate();
 				
