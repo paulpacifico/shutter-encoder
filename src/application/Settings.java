@@ -174,7 +174,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 740);
+		frame.setSize(370, 750);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
@@ -679,7 +679,7 @@ public class Settings {
 		//Set comboItem
 		comboLanguage.setSelectedItem(Shutter.getLanguage);
 		comboLanguage.setBounds(btnEndingAction.getX() + lblLanguage.getWidth() + 6, lblLanguage.getLocation().y - 4, comboLanguage.getPreferredSize().width, 22);
-		comboLanguage.setMaximumRowCount(20);
+		comboLanguage.setMaximumRowCount(30);
 		frame.getContentPane().add(comboLanguage);
 		
 		comboLanguage.addActionListener(new ActionListener() {

@@ -2005,6 +2005,8 @@ public class VideoPlayer {
 			else
 				freezeFrame = "";
 			
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v bmp -an -f image2pipe -";
+						
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
 			&& Shutter.comboFonctions.getSelectedItem().toString().equals("DNxHD") == false
@@ -2020,10 +2022,21 @@ public class VideoPlayer {
 					format = "mxf";
 				}	
 				
-				codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + freezeFrame + " -an -f " + format + " pipe:1 | " + PathToFFMPEG + " -v quiet -hide_banner -i pipe:0";			
+				//Deinterlacer
+				if (yadif != "")
+				{
+					yadif = " -vf " + yadif;
+				}
+				
+				if (System.getProperty("os.name").contains("Windows"))
+				{	
+					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + '"' + PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);
+				}
+				else
+					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);	
+				
+				cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v bmp -an -f image2pipe -";
 			}
-			
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v bmp -an -f image2pipe -";
 						
 			if (Shutter.inputDeviceIsRunning)
 			{
