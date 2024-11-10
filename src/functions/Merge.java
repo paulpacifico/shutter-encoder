@@ -33,6 +33,7 @@ import application.Utils;
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
+import settings.Timecode;
 
 public class Merge extends Shutter {
 
@@ -66,7 +67,9 @@ public class Merge extends Shutter {
 						
 						int totalLength = 0;
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
-						PrintWriter writer = new PrintWriter(listeBAB, "UTF-8");    
+						PrintWriter writer = new PrintWriter(listeBAB, "UTF-8");   
+						//Timecode
+						String timecode = "";
 							
 						for (int i = 0 ; i < liste.getSize() ; i++)
 						{
@@ -91,8 +94,12 @@ public class Merge extends Shutter {
 								try {
 									Thread.sleep(1);
 								} catch (InterruptedException e1) {}
-							} while (FFPROBE.isRunning);
-							
+							} while (FFPROBE.isRunning);							
+
+							if (i == 0)
+							{
+								timecode = Timecode.setTimecode();	
+							}
 							totalLength += FFPROBE.totalLength;
 							FFPROBE.totalLength = 0;
 							
@@ -123,7 +130,7 @@ public class Merge extends Shutter {
 							openGOP = " -copyinkf";
 						
 						//Command
-						String cmd = " -timecode 00:00:00:00" + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + metadatas + " -map s? -y ";
+						String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + metadatas + " -map s? -y ";
 						FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
 				
 						do

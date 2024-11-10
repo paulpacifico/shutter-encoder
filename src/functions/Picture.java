@@ -240,7 +240,7 @@ public class Picture extends Shutter {
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText());
+							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
 						}
 						
 						//Container
@@ -466,6 +466,10 @@ public class Picture extends Shutter {
 				else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 				{
 					encoder = " -c:v av1_amf";
+				}
+				else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+				{
+					encoder = " -c:v av1_videotoolbox";
 				}
 			}
 			

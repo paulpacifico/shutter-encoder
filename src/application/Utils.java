@@ -25,6 +25,9 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Insets;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Robot;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -88,6 +93,7 @@ public class Utils extends Shutter {
 	public static Color highlightColor = new Color(129, 198, 253);
 	public static boolean yesToAll = false;
 	public static boolean noToAll = false;
+	public static boolean disableSleepMode = true;
 	public final static String username = "info@shutterencoder.com";
 	public final static String password = "";
 	
@@ -2193,6 +2199,31 @@ public class Utils extends Shutter {
 		
 	}
 
+	 public static void disableSleepMode() {
+	 
+	        Timer timer = new Timer();
+	        
+	        timer.scheduleAtFixedRate(new TimerTask() {
+	        	
+	            @Override
+	            public void run() {
+	                try {
+	                    // Simulate moving the mouse slightly (1 pixel)
+	                    Robot robot = new Robot();
+	                    Point currentMousePosition = MouseInfo.getPointerInfo().getLocation();
+	                    robot.mouseMove(currentMousePosition.x + 1, currentMousePosition.y + 1);
+	                    robot.mouseMove(currentMousePosition.x, currentMousePosition.y);
+
+	                    if (disableSleepMode)
+	                    {
+	                    	timer.cancel();
+	                    }
+	                    
+	                } catch (Exception e) {}
+	            }
+	        }, 0, 60000);
+	    }
+	
 	public static void killProcesses() {
 		
 		try {

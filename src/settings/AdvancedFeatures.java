@@ -89,6 +89,10 @@ public class AdvancedFeatures extends Shutter {
 		        	{
 		        		return " -quality quality";
 		        	}
+		        	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Vulkan Video"))
+		        	{
+		        		return " -tune hq";
+		        	}
 			        else
 			        	return " -preset veryslow";
 		        }

@@ -75,9 +75,16 @@ public class Command extends Shutter {
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 
-						//Output name
-						String fileOutputName =  labelOutput + "/" + fileName.replace(extension, comboFilter.getEditor().getItem().toString()) ; 		
+						//File output name
+						String extensionName = "";	
+						if (btnExtension.isSelected())
+						{
+							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+						}	
 						
+						//Output name
+						String fileOutputName =  labelOutput + "/" + fileName.replace(extension, extensionName + comboFilter.getEditor().getItem().toString()) ; 		
+
 						//File output
 						File fileOut = new File(fileOutputName);					
 						if(fileOut.exists())

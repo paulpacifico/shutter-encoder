@@ -85,7 +85,7 @@ public class Extract extends Shutter {
 							
 							if (btnExtension.isSelected())
 							{
-								extensionName = FunctionUtils.setSuffix(txtExtension.getText());
+								extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
 							}
 						}
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
@@ -94,7 +94,7 @@ public class Extract extends Shutter {
 							
 							if (btnExtension.isSelected())
 							{
-								extensionName = FunctionUtils.setSuffix(txtExtension.getText()) + "_" + (audioStream + 1);
+								extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false) + "_" + (audioStream + 1);
 							}
 						}
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
@@ -103,7 +103,7 @@ public class Extract extends Shutter {
 							
 							if (btnExtension.isSelected())
 							{
-								extensionName = FunctionUtils.setSuffix(txtExtension.getText()) + "_" + (subStream + 1);
+								extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false) + "_" + (subStream + 1);
 							}
 						}
 							

@@ -5344,8 +5344,9 @@ public class VideoPlayer {
 			{
 				filter += "scale_qsv=" + width + ":" + height + ":mode=low_power,hwdownload,format=" + bitDepth;
 			}	
-			else if (FFMPEG.videotoolboxAvailable && yadif == "")
+			else if (FFMPEG.videotoolboxAvailable)
 			{
+				filter = filter.replace("yadif", "yadif_videotoolbox");	
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
 			else

@@ -173,7 +173,7 @@ public class VideoEncoders extends Shutter {
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText());
+							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
 						}												
 						
 						//Container
@@ -1264,6 +1264,10 @@ public class VideoEncoders extends Shutter {
 					{
 						return " -c:v av1_amf";
 					}
+					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					{
+						return " -c:v av1_videotoolbox";
+					}
 				}
 		    	else
 		        	return " -c:v libsvtav1";
@@ -1321,6 +1325,8 @@ public class VideoEncoders extends Shutter {
 						return " -c:v h264_qsv";	
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 						return " -c:v h264_amf";
+					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
+						return " -c:v h264_vulkan";
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 						return " -c:v h264_videotoolbox";
 					else if (comboAccel.getSelectedItem().equals("VAAPI"))
@@ -1345,6 +1351,8 @@ public class VideoEncoders extends Shutter {
 						return " -c:v hevc_qsv";	
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 						return " -c:v hevc_amf";
+					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
+						return " -c:v hevc_vulkan";
 					else if (comboAccel.getSelectedItem().equals("D3D12VA"))
 						return " -c:v hevc_d3d12va";
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))

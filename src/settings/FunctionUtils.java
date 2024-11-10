@@ -707,7 +707,7 @@ public class FunctionUtils extends Shutter {
 		return output;
 	}
 
-	public static String setSuffix(String suffix) {
+	public static String setSuffix(String suffix, boolean isOverlay) {
 
 		suffix = suffix.replace("[", "{").replace("]", "}");
 		
@@ -843,7 +843,7 @@ public class FunctionUtils extends Shutter {
 				
 				suffix = suffix.replace("{date}", currentDate.toString());
 			}
-			
+						
 			if (suffix.contains("{duration}"))
 			{				
 				suffix = suffix.replace("{duration}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));

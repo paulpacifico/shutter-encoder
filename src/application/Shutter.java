@@ -222,6 +222,9 @@ public class Shutter {
 	protected static boolean subtitlesBurn = true;
     public static boolean autoBurn = false;
     public static boolean autoEmbed = false;
+    private static boolean cutKeyframesIsDisplayed = false;
+    private static boolean rewrapKeyframesIsDisplayed = false;
+    private static boolean conformKeyframesIsDisplayed = false;
 	public static StringBuilder errorList = new StringBuilder();
 	public static NumberFormat formatter = new DecimalFormat("00");
 	public static NumberFormat formatterToMs = new DecimalFormat("000");
@@ -1077,12 +1080,23 @@ public class Shutter {
 					changeFunction(true);
 					changeFilters();
 					
-					if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut"))
-					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))
-					|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionConform")))
-					{
-						if (Settings.btnDisableVideoPlayer.isSelected() == false)
+					if (Settings.btnDisableVideoPlayer.isSelected() == false)
+					{					
+						if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) && cutKeyframesIsDisplayed == false)
+						{							
 							JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
+							cutKeyframesIsDisplayed = true;
+						}
+						else if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) && rewrapKeyframesIsDisplayed == false)
+						{
+							JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
+							rewrapKeyframesIsDisplayed = true;
+						}
+						else if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionConform")) && conformKeyframesIsDisplayed == false)
+						{
+							JOptionPane.showMessageDialog(frame, language.getProperty("cutOnKeyframesOnly"), comboFonctions.getSelectedItem().toString(), JOptionPane.INFORMATION_MESSAGE);
+							conformKeyframesIsDisplayed = true;
+						}
 					}
 					
 					if (VideoPlayer.btnPlay.isVisible() && liste.getSize() > 0)
@@ -4046,6 +4060,18 @@ public class Shutter {
 											if (FFMPEG.error == false)
 												graphicsAccel.add("AMD AMF Encoder");
 										}
+										else if (System.getProperty("os.name").contains("Mac"))
+										{
+											FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_videotoolbox -s 640x360 -f null -");
+											do {
+												try {
+													Thread.sleep(10);
+												} catch (InterruptedException e) {}
+											} while (FFMPEG.runProcess.isAlive());
+					
+											if (FFMPEG.error == false)
+												graphicsAccel.add("OSX VideoToolbox");	
+										}
 										
 										if (comboAccel.getModel().getSize() != graphicsAccel.size())
 										{	
@@ -6684,12 +6710,7 @@ public class Shutter {
 				
 				if (comboFonctions.getSelectedItem().toString().contains("H.26"))
 				{
-					if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
-					{
-						comboFilter.setSelectedIndex(1);
-						lblAudioKbs.setVisible(true);
-					}
-					else if (comboAudioCodec.getSelectedItem().toString().contains("FLAC"))
+					if (comboAudioCodec.getSelectedItem().toString().contains("FLAC"))
 					{
 						comboFilter.setSelectedIndex(2);
 						lblAudioKbs.setVisible(false);
@@ -9564,6 +9585,7 @@ public class Shutter {
 		text.setSize(grpOverlay.getWidth() - text.getX() - 10, 21);
 		text.setHorizontalAlignment(SwingConstants.LEFT);
 		text.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		text.setToolTipText("<html>{codec/function}<br>{preset}<br>{resolution/scale}<br>{width}<br>{height}<br>{ratio/aspect}<br>{framerate/fps}<br>{bitrate}<br>{timecode}<br>{duration/time}<br>{date}</html>");
 		grpOverlay.add(text);
 	
 		text.addKeyListener(new KeyListener(){
@@ -9675,7 +9697,9 @@ public class Shutter {
 			        String str = new File(file).getName().replace(ext, "");
 			        
 					if (caseAddText.isSelected())
-						str = text.getText();
+					{
+						str = FunctionUtils.setSuffix(text.getText(), true);						
+					}
 					
 			        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
 			        		        								
@@ -18266,7 +18290,7 @@ public class Shutter {
 							comboForcePreset.setSelectedIndex(3);
 						}
 					}
-	    			else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+	    			else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals("Vulkan Video"))
 	    			{
     					caseForcePreset.setSelected(false);
     					caseForcePreset.setEnabled(false);
@@ -20659,6 +20683,14 @@ public class Shutter {
 													if (FFMPEG.error == false)
 														graphicsAccel.add("AMD AMF Encoder");
 													
+													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_vulkan -s 640x360 -f null -" + '"');
+													do {
+														Thread.sleep(10);
+													} while (FFMPEG.runProcess.isAlive());
+							
+													if (FFMPEG.error == false)
+														graphicsAccel.add("Vulkan Video");
+													
 													/*
 													if (codec == "hevc")
 													{
@@ -20830,7 +20862,7 @@ public class Shutter {
 											comboForcePreset.setSelectedIndex(3);
 										}
 									}
-					    			else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					    			else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals("Vulkan Video"))
 					    			{
 					    				caseForcePreset.setSelected(false);
 				    					caseForcePreset.setEnabled(false);
@@ -21250,6 +21282,18 @@ public class Shutter {
 								
 														if (FFMPEG.error == false)
 															graphicsAccel.add("AMD AMF Encoder");
+													}
+													else if (System.getProperty("os.name").contains("Mac"))
+													{
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_videotoolbox -s 640x360 -f null -");
+														do {
+															try {
+																Thread.sleep(10);
+															} catch (InterruptedException e) {}
+														} while (FFMPEG.runProcess.isAlive());
+								
+														if (FFMPEG.error == false)
+															graphicsAccel.add("OSX VideoToolbox");	
 													}
 												}
 												
@@ -23099,7 +23143,10 @@ public class Shutter {
 	}
 	
 	public static void disableAll() {
-
+		
+		Utils.disableSleepMode = false;
+		Utils.disableSleepMode();
+		
 		Component[] components = frame.getContentPane().getComponents();
 
 		if (scanIsRunning) {
@@ -23265,6 +23312,8 @@ public class Shutter {
 	}
 
 	public static void enableAll() {
+		
+		Utils.disableSleepMode = true;
 		
 		Component[] components = frame.getContentPane().getComponents();
 
@@ -23643,7 +23692,7 @@ public class Shutter {
 			case2pass.setEnabled(false);
 		}
 		
-		if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("OSX VideoToolbox")))
+		if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals("Vulkan Video")))
 		{
 			caseForcePreset.setSelected(false);
 			caseForcePreset.setEnabled(false);

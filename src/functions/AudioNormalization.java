@@ -81,7 +81,7 @@ public class AudioNormalization extends Shutter {
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText());
+							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
 						}
 						
 						//Output name
