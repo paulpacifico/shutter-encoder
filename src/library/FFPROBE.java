@@ -1203,7 +1203,7 @@ public static boolean isRotated = false;
 		if (grpBitrate.isVisible())
         {
 			int multi = 0;
-			if (lblAudioMapping.getText().equals("Multi"))
+			if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
 			{
 				if (comboAudio1.getSelectedIndex() != 16)
 					multi += 1;

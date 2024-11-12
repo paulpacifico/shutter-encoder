@@ -268,20 +268,20 @@ public class AudioSettings extends Shutter {
 			
 		    if (FFPROBE.stereo)
 		    {
-		    	if (FFPROBE.surround && lblAudioMapping.getText().equals("Multi") == false)
+		    	if (FFPROBE.surround && lblAudioMapping.getSelectedItem().toString().equals("Multi") == false)
 		    	{			    			    		
 		    		if (audioFiltering != "")
 			    		audioFiltering = audioFiltering + ",";
 			    	
 		    		String mono = "";
-		    		if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+		    		if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("mono")))
 		    		{
 		    			mono = " -ac 1";
 		    		}
 		    		
 			    	audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + " -filter:a " + '"' + audioFiltering + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " -map a?";
 			    }
-		    	else if (lblAudioMapping.getText().equals("Multi"))
+		    	else if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
 		    	{					    		
 				    String mapping = "";
 				    				
@@ -340,7 +340,7 @@ public class AudioSettings extends Shutter {
 
 		    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + audioFiltering + mapping;
 		    	}
-		    	else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+		    	else if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("mono")))
 		    	{
 		    		if (audioFiltering != "") 
 			    		audioFiltering = "," + audioFiltering;
@@ -362,6 +362,18 @@ public class AudioSettings extends Shutter {
 							audio += "[0:a]channelsplit=channel_layout=stereo:channels=FR" + audioFiltering + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;    	
 					}
 		    	}
+		    	else if (lblAudioMapping.getSelectedItem().toString().equals("Mix"))
+		    	{
+		    		if (audioFiltering != "") 
+			    		audioFiltering = "," + audioFiltering;
+			    	
+				    if (filterComplex != "")
+				    	audio += ";";
+				    else
+				    	audio += " -filter_complex " + '"';
+				    
+		    		audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
+		    	}
 		    	else //Stereo
 		    	{		    		
 		    		if (audioFiltering != "")
@@ -382,18 +394,18 @@ public class AudioSettings extends Shutter {
 				    else
 				    	audio += " -filter_complex " + '"';	
 				    
-				    if (lblAudioMapping.getText().equals(language.getProperty("stereo")))
+				    if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("stereo")))
 				    {
 				    	audio += "[0:a][2:a]amix=inputs=2" + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;   
 				    }
-				    else if (lblAudioMapping.getText().equals("Multi"))
+				    else if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
 			    	{
 				    	if (audioFiltering != "")
 				    		audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
 			    		
 				    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + audioFiltering + " -map 0:a? -map 2:a?";
 			    	}
-				    else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+				    else if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("mono")))
 				    {
 				    	if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown all tracks to mono
 			    		{
@@ -402,8 +414,12 @@ public class AudioSettings extends Shutter {
 			    		else
 			    			audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a]anull" + audioFiltering + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 				    }
+				    else if (lblAudioMapping.getSelectedItem().toString().equals("Mix"))
+			    	{
+			    		audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
+			    	}
 		         }
-		    	 else if (lblAudioMapping.getText().equals(language.getProperty("stereo")))
+		    	 else if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("stereo")))
     			 {
 			    	if (audioFiltering != "")
 			    		audioFiltering = "," + audioFiltering;
@@ -415,7 +431,7 @@ public class AudioSettings extends Shutter {
 				    
 			    	audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;    		 
     			 }
-		    	 else if (lblAudioMapping.getText().equals(language.getProperty("mono")))
+		    	 else if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("mono")))
 		    	 {
 		    		 if (audioFiltering != "")
 				    	audioFiltering = "," + audioFiltering;
@@ -431,6 +447,18 @@ public class AudioSettings extends Shutter {
 		    		 }
 		    		 else
 		    			 audio += "[0:a:" + comboAudio1.getSelectedIndex() + "]anull" + audioFiltering + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate; 
+		    	 }
+		    	 else if (lblAudioMapping.getSelectedItem().toString().equals("Mix"))
+		    	 {
+		    		 if (audioFiltering != "") 
+		    			 audioFiltering = "," + audioFiltering;
+			    	
+		    		 if (filterComplex != "")
+		    			 audio += ";";
+		    		 else
+		    			 audio += " -filter_complex " + '"';
+				    
+		    		 audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 		    	 }
 		    	 else
 		    	 {

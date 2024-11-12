@@ -1202,48 +1202,17 @@ public class FunctionUtils extends Shutter {
         		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
         	else
         		filterComplex = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]";
-        	
-			float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
-        	float value = (float) (newFPS/ FFPROBE.currentFPS);
-        	
-			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))) && (value < 0.5f || value > 2.0f))    
-			{
-				filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
-			}
-			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
-			{
-				filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
-			}
-        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.stereo == false)
-        	{
-        		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
-        	}
-        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.surround == false)
+
+        	if (audio.contains("[a]"))
         	{
         		filterComplex += audio + " -map " + '"' + "[out]" + '"' + " -map " + '"' +  "[a]" + '"';
         	}
         	else
         		filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
-        
         }
         else
         {        
-			float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));
-        	float value = (float) (newFPS/ FFPROBE.currentFPS);
-        	
-			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse"))) && (value < 0.5f || value > 2.0f))    
-			{
-				filterComplex = " -map v:0" + audio;
-			}
-			else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
-			{
-				filterComplex = " -map v:0" + audio;
-			}
-        	else if (FFPROBE.channels > 1 && (lblAudioMapping.getText().equals(language.getProperty("stereo")) || lblAudioMapping.getText().equals(language.getProperty("mono"))) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.stereo == false)
-        	{
-        		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
-        	}
-        	else if (FFPROBE.stereo && lblAudioMapping.getText().equals(language.getProperty("mono")) && (debitAudio.getSelectedItem().toString().equals("0") == false || comboAudioCodec.getSelectedItem().equals("FLAC")) && FFPROBE.surround == false)
+        	if (audio.contains("[a]"))
         	{
         		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
         	}
