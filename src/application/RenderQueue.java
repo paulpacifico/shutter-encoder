@@ -642,6 +642,7 @@ import settings.FunctionUtils;
             }                   
         };
         table.setForeground(new Color(235,235,240));
+        table.setBackground(new Color(42,42,47));
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

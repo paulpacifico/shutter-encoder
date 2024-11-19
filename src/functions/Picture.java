@@ -407,7 +407,14 @@ public class Picture extends Shutter {
 	private static String setFramerate() {
 		
 		if (caseCreateSequence.isSelected())	            		
-	    	return " -r " + (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));          
+		{
+			Float f = (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));          
+		
+			if (f != 1.0f)
+			{
+				return " -r " + f;
+			}
+		}
 
 		return "";
 	}
@@ -506,7 +513,7 @@ public class Picture extends Shutter {
 	
 		if (caseCreateSequence.isSelected())
 		{
-			return " -r 1";
+			return "";
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".gif"))
 		{

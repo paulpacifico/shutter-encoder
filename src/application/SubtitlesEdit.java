@@ -24,6 +24,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import java.awt.event.AdjustmentEvent;
@@ -54,6 +55,8 @@ import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+
+import com.formdev.flatlaf.ui.FlatLineBorder;
 
 public class SubtitlesEdit {
 
@@ -409,7 +412,7 @@ public class SubtitlesEdit {
 		
 		JTextField in = new JTextField();
 		in.setText(subIn);
-		in.setBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true));
+		in.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5));
 		in.setForeground(Utils.themeColor);
 		in.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		in.setBounds(77, textPosition - 2, 94, 25);	
@@ -475,7 +478,7 @@ public class SubtitlesEdit {
 		
 		JTextField out = new JTextField();
 		out.setText(subOut);
-		out.setBorder(new RoundedLineBorder(new Color(55,55,55), 1, 5, true));
+		out.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5));
 		out.setForeground(Utils.themeColor);
 		out.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		out.setBounds(77, textPosition + 24, 94, 25);	

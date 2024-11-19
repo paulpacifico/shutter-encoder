@@ -86,7 +86,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-
 import functions.VideoEncoders;
 import library.DCRAW;
 import library.FFMPEG;
@@ -169,6 +168,7 @@ public class VideoPlayer {
 	public static JButton btnMarkOut;
 	public static JButton btnGoToIn;
 	public static JButton btnGoToOut;
+	private static JPanel panelForButtons;
 	public static JSlider slider;
 	public static JCheckBox caseShowWaveform = new JCheckBox(Shutter.language.getProperty("caseShowWaveform"));
 	public static JCheckBox caseVuMeter = new JCheckBox(Shutter.language.getProperty("caseVuMeter"));;
@@ -1643,6 +1643,7 @@ public class VideoPlayer {
 			btnStop.setVisible(true);
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
+			panelForButtons.setVisible(true);
 			caseInternalTc.setVisible(false);
 			caseShowWaveform.setVisible(false);
 			caseVuMeter.setVisible(true);
@@ -1701,6 +1702,7 @@ public class VideoPlayer {
 			
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
+			panelForButtons.setVisible(false);
 			caseInternalTc.setVisible(false);
 			caseShowWaveform.setVisible(false);
 			caseVuMeter.setVisible(false);
@@ -1782,6 +1784,7 @@ public class VideoPlayer {
 			btnStop.setVisible(true);
 			btnMarkOut.setVisible(true);
 			btnGoToOut.setVisible(true);
+			panelForButtons.setVisible(true);
 			
 			waveformContainer.setVisible(true);
 			cursorHead.setVisible(true);
@@ -2271,10 +2274,13 @@ public class VideoPlayer {
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
 		btnPrevious.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));
+		btnPrevious.setBackground(new Color(30,30,35, 0));
+		btnPrevious.setBorder(null);
 		Shutter.frame.getContentPane().add(btnPrevious);
 				
 		btnPrevious.addActionListener(new ActionListener(){
@@ -2360,7 +2366,9 @@ public class VideoPlayer {
 		});
 		
 		btnNext = new JButton(">");
-		btnNext.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));		
+		btnNext.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));	
+		btnNext.setBackground(new Color(30,30,35, 0));
+		btnNext.setBorder(null);
 		Shutter.frame.getContentPane().add(btnNext);
 		
 		btnNext.addActionListener(new ActionListener(){
@@ -2417,8 +2425,10 @@ public class VideoPlayer {
 			
 		});
 		
-		btnPlay = new JButton(new FlatSVGIcon("contents/play.svg", 15, 15));		
-		btnPlay.setMargin(new Insets(0,0,0,0));			
+		btnPlay = new JButton(new FlatSVGIcon("contents/play.svg", 15, 15));
+		btnPlay.setMargin(new Insets(0,0,0,0));		
+		btnPlay.setBackground(new Color(30,30,35, 0));
+		btnPlay.setBorder(null);
 		Shutter.frame.getContentPane().add(btnPlay);
 			
 		btnPlay.addActionListener(new ActionListener() {
@@ -2496,6 +2506,8 @@ public class VideoPlayer {
 		
 		btnStop = new JButton(new FlatSVGIcon("contents/stop.svg", 15, 15));		
 		btnStop.setMargin(new Insets(0,0,0,0));	
+		btnStop.setBackground(new Color(30,30,35, 0));
+		btnStop.setBorder(null);
 		Shutter.frame.getContentPane().add(btnStop);		
 		
 		btnStop.addActionListener(new ActionListener(){
@@ -2545,7 +2557,9 @@ public class VideoPlayer {
 		});
 
 		btnMarkIn = new JButton("[");
-		btnMarkIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));			
+		btnMarkIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));	
+		btnMarkIn.setBackground(new Color(30,30,35, 0));
+		btnMarkIn.setBorder(null);
 		Shutter.frame.getContentPane().add(btnMarkIn);
 		
 		btnMarkIn.addActionListener(new ActionListener() {
@@ -2566,7 +2580,9 @@ public class VideoPlayer {
 		
 		btnGoToIn = new JButton("[<");
 		btnGoToIn.setMargin(new Insets(0,0,0,0));
-		btnGoToIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));			
+		btnGoToIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));	
+		btnGoToIn.setBackground(new Color(30,30,35, 0));
+		btnGoToIn.setBorder(null);
 		Shutter.frame.getContentPane().add(btnGoToIn);
 		
 		btnGoToIn.addActionListener(new ActionListener() {
@@ -2588,6 +2604,8 @@ public class VideoPlayer {
 		
 		btnMarkOut = new JButton("]");
 		btnMarkOut.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));		
+		btnMarkOut.setBackground(new Color(30,30,35, 0));
+		btnMarkOut.setBorder(null);
 		Shutter.frame.getContentPane().add(btnMarkOut);
 		
 		btnMarkOut.addActionListener(new ActionListener() {
@@ -2607,7 +2625,9 @@ public class VideoPlayer {
 				
 		btnGoToOut = new JButton(">]");
 		btnGoToOut.setMargin(new Insets(0,0,0,0));
-		btnGoToOut.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));				
+		btnGoToOut.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));			
+		btnGoToOut.setBackground(new Color(30,30,35, 0));
+		btnGoToOut.setBorder(null);
 		Shutter.frame.getContentPane().add(btnGoToOut);
 		
 		btnGoToOut.addActionListener(new ActionListener() {
@@ -2625,6 +2645,25 @@ public class VideoPlayer {
 			
 		});
    
+		panelForButtons = new JPanel() {
+		
+				@Override
+				public void paintComponent(Graphics g) {
+					
+					Graphics2D g2d = (Graphics2D) g;
+												
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			        
+					g2d.setColor(new Color(42,42,47));
+					g2d.fillRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21, 15, 15);
+									
+					g2d.setColor(new Color(25,25,25));
+					g2d.drawLine(this.getWidth() / 2, 5, this.getWidth() / 2, this.getHeight() - 6);
+				}
+				
+		};
+		Shutter.frame.getContentPane().add(panelForButtons);
+		
 		showFPS = new JLabel("25 fps");
 		showFPS.setVisible(false);
 		showFPS.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));
@@ -5334,7 +5373,7 @@ public class VideoPlayer {
 				bitDepth = "p010";
 			}			
 			
-			//Auto GPU Shutter.selection	
+			//Auto GPU
 			if (FFMPEG.cudaAvailable)
 			{
 				filter = filter.replace("yadif", "yadif_cuda");			
@@ -5344,9 +5383,8 @@ public class VideoPlayer {
 			{
 				filter += "scale_qsv=" + width + ":" + height + ":mode=low_power,hwdownload,format=" + bitDepth;
 			}	
-			else if (FFMPEG.videotoolboxAvailable)
+			else if (FFMPEG.videotoolboxAvailable && yadif == "")
 			{
-				filter = filter.replace("yadif", "yadif_videotoolbox");	
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
 			else
@@ -5666,7 +5704,7 @@ public class VideoPlayer {
 				else
 					ratio = Float.parseFloat(Shutter.comboDAR.getSelectedItem().toString());
 			}
-			else if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Settings.btnNoUpscale.isSelected() == false
+			else if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.btnNoUpscale.isSelected() == false
 			&& Shutter.comboResolution.getSelectedItem().toString().contains("x")
 			&& Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false)
 			{
@@ -5887,6 +5925,14 @@ public class VideoPlayer {
 			btnGoToIn.setBounds(btnMarkIn.getLocation().x - 40 - 4, btnMarkIn.getLocation().y, 40, 21);				
 			btnMarkOut.setBounds(btnStop.getLocation().x + btnStop.getSize().width + 4, btnStop.getLocation().y, 22, 21);				
 			btnGoToOut.setBounds(btnMarkOut.getLocation().x + btnMarkOut.getSize().width + 4, btnMarkOut.getLocation().y, 40, 21);		
+			
+			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+			{
+				panelForButtons.setBounds(btnPlay.getX() + 2, btnPlay.getY(), (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21);
+			}
+			else
+				panelForButtons.setBounds(btnGoToIn.getX() + 2, btnPlay.getY(), (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21);
+			
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			showScale.setBounds(player.getX(), showFPS.getY(), player.getWidth() / 2, showScale.getPreferredSize().height);
 			comboAudioTrack.setBounds(waveformContainer.getX() + 7, waveformContainer.getY() + (waveformContainer.getHeight() / 2) - 8, 40, 16);

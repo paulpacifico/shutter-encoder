@@ -2002,7 +2002,8 @@ public class Utils extends Shutter {
 		UIManager.put("TextComponent.arc", 10);
 		UIManager.put("Component.arc", 10);
 		UIManager.put("PopupMenu.arc", 15);	
-		
+		UIManager.put("ScrollPane.arc", 5);
+				
 		UIManager.put("Component.borderColor", new Color(30,30,35));
 		UIManager.put("Component.disabledBorderColor", new Color(30,30,35));
 		
@@ -2028,10 +2029,12 @@ public class Utils extends Shutter {
 		UIManager.put("ComboBox.popupBackground", new Color(42,42,47));
 		UIManager.put("ComboBox.buttonSeparatorColor", new Color(30,30,35));	
 		UIManager.put("ComboBox.buttonDisabledSeparatorColor", new Color(30,30,35));	
-		UIManager.put("ComboBox.buttonArrowColor", themeColor);
+		UIManager.put("ComboBox.buttonArrowColor", themeColor);		
+		UIManager.put("ComboBox.selectionArc", 15);
 		
 		UIManager.put("MenuItem.background", new Color(42,42,47));		
 		UIManager.put("MenuItem.foreground", new Color(235,235,240));
+		UIManager.put("MenuItem.selectionArc", 15);
 		UIManager.put("MenuItem.selectionBackground", themeColor);
 		
 		UIManager.put("CheckBoxMenuItem.background", new Color(42,42,47));		
@@ -2199,7 +2202,7 @@ public class Utils extends Shutter {
 		
 	}
 
-	 public static void disableSleepMode() {
+	public static void disableSleepMode() {
 	 
 	        Timer timer = new Timer();
 	        

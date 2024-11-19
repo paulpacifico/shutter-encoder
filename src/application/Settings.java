@@ -108,7 +108,6 @@ public class Settings {
 	public static JTextField txtImageDuration = new JTextField();
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});	
-	public static JCheckBox btnNoUpscale = new JCheckBox(Shutter.language.getProperty("btnNoUpscale"));
 	public static JCheckBox btnPreviewOutput = new JCheckBox(Shutter.language.getProperty("btnPreviewOutput"));
 	private JLabel lblSyncMode = new JLabel(Shutter.language.getProperty("lblSyncMode"));
 	public static JComboBox<String> comboSync = new JComboBox<String>(new String [] {"auto", "passthrough", "cfr", "vfr", "drop"});	
@@ -153,7 +152,6 @@ public class Settings {
 		btnHidePath.setName("btnHidePath");
 		btnLoadPreset.setName("btnLoadPreset");
 		comboLoadPreset.setName("comboLoadPreset");
-		btnNoUpscale.setName("btnNoUpscale");
 		btnPreviewOutput.setName("btnPreviewOutput");
 		btnWaitFileComplete.setName("btnWaitFileComplete");
 		btnDisableAnimations.setName("btnDisableAnimations");
@@ -174,7 +172,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 750);
+		frame.setSize(370, 722);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 30, frame.getHeight());
@@ -465,23 +463,8 @@ public class Settings {
 		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
 			
-		btnNoUpscale.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnNoUpscale.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, btnNoUpscale.getPreferredSize().width, 16);
-		frame.getContentPane().add(btnNoUpscale);
-			
-		btnNoUpscale.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
-				VideoPlayer.resizeAll();				
-			}
-			
-		});
-		
 		btnPreviewOutput.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnPreviewOutput.setBounds(12, btnNoUpscale.getLocation().y + btnNoUpscale.getHeight() + 10, btnPreviewOutput.getPreferredSize().width, 16);
+		btnPreviewOutput.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, btnPreviewOutput.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnPreviewOutput);
 			
 		btnPreviewOutput.addActionListener(new ActionListener() {

@@ -523,7 +523,7 @@ public class FunctionUtils extends Shutter {
 	public static void setMerge(String fileName, String extension, String output) {
 					
 		File concatFile = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 
-				
+					
 		try {			
 			mergeDuration = 0;
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
@@ -1696,7 +1696,7 @@ public class FunctionUtils extends Shutter {
 		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 		{
 			File concatList = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 			
-			
+					
 			if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 				concatList.delete();
 		}

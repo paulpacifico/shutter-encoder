@@ -432,7 +432,12 @@ public class Update {
 				File appPath = new File(userFolder + "/Downloads/" + newVersion);
 				if (new File(userFolder + "/Downloads").exists() == false)
 				{
-					appPath = new File(userFolder + "/Desktop/" + newVersion);
+					if (new File(userFolder + "/Desktop").exists() == false)
+					{
+						appPath = new File(Shutter.dirTemp + newVersion);
+					}
+					else
+						appPath = new File(userFolder + "/Desktop/" + newVersion);						
 				}
 								
 				//Download
