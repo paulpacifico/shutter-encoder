@@ -39,6 +39,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -130,6 +131,8 @@ public class Settings {
 	public static JCheckBox btnDisableVideoPlayer = new JCheckBox(Shutter.language.getProperty("btnDisableVideoPlayer"));	
 	public static JCheckBox btnDisableMinimizedWindow = new JCheckBox(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
 	public static JTextField txtExclude = new JTextField();
+	public static JCheckBox btnCustomFFmpegPath = new JCheckBox(Shutter.language.getProperty("btnCustomFFmpegPath"));
+	public static JTextField txtCustomFFmpegPath = new JTextField();
 	private JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1 " + Shutter.language.getProperty("toDefault"));
 	private JLabel defaultOutput2 = new JLabel(Shutter.language.getProperty("output") + "2 " + Shutter.language.getProperty("toDefault"));
 	private JLabel defaultOutput3 = new JLabel(Shutter.language.getProperty("output") + "3 " + Shutter.language.getProperty("toDefault"));
@@ -160,6 +163,8 @@ public class Settings {
 		btnDisableVideoPlayer.setName("btnDisableVideoPlayer");
 		btnDisableMinimizedWindow.setName("btnDisableMinimizedWindow");
 		btnEmptyListAtEnd.setName("btnEmptyListAtEnd");
+		btnCustomFFmpegPath.setName("btnCustomFFmpegPath");
+		txtCustomFFmpegPath.setName("txtCustomFFmpegPath");
 		lblDestination1.setName("lblDestination1");
 		lblDestination2.setName("lblDestination2");
 		lblDestination3.setName("lblDestination3");
@@ -172,10 +177,10 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 722);
+		frame.setSize(370, 742);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
-			frame.setSize(frame.getWidth() + 30, frame.getHeight());
+			frame.setSize(frame.getWidth() + 50, frame.getHeight());
 		}
 		
 		frame.getContentPane().setBackground(new Color(30,30,35));
@@ -340,6 +345,7 @@ public class Settings {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (btnExclude.isSelected())
 				{
 					txtExclude.setEnabled(true);
@@ -463,8 +469,116 @@ public class Settings {
 		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
 			
+		btnCustomFFmpegPath.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		btnCustomFFmpegPath.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, btnCustomFFmpegPath.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnCustomFFmpegPath);
+		
+		btnCustomFFmpegPath.addActionListener(new ActionListener(){
+		
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (btnCustomFFmpegPath.isSelected())
+				{
+					txtCustomFFmpegPath.setEnabled(true);
+					
+					if (Settings.txtCustomFFmpegPath.getText().equals("") == false)
+					{
+						VideoPlayer.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
+					}
+				}
+				else
+				{
+					txtCustomFFmpegPath.setEnabled(false);
+					
+					VideoPlayer.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					
+					if (System.getProperty("os.name").contains("Windows"))
+					{							
+						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(1,VideoPlayer.PathToFFMPEG.length()-1);
+						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+					}	
+					else
+					{
+						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,VideoPlayer.PathToFFMPEG.length()-1);
+						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
+					}
+				}	
+				
+				if (VideoPlayer.videoPath != null)
+				{
+					VideoPlayer.btnStop.doClick();					
+				}
+			}
+		});
+
+		txtCustomFFmpegPath.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		
+		if (btnCustomFFmpegPath.isSelected())
+		{
+			txtCustomFFmpegPath.setEnabled(true);
+		}
+		else
+			txtCustomFFmpegPath.setEnabled(false);
+				
+		txtCustomFFmpegPath.setText("/usr/bin/ffmpeg");			
+		txtCustomFFmpegPath.setBounds(btnCustomFFmpegPath.getX() + btnCustomFFmpegPath.getWidth() + 6, btnCustomFFmpegPath.getLocation().y - 4,  frame.getWidth() - (btnCustomFFmpegPath.getLocation().x + btnCustomFFmpegPath.getWidth()) - 32, 21);
+		frame.getContentPane().add(txtCustomFFmpegPath);
+				
+		txtCustomFFmpegPath.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+				if (txtCustomFFmpegPath.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					if (btnCustomFFmpegPath.isSelected())
+					{
+						txtCustomFFmpegPath.setEnabled(true);
+						
+						if (Settings.txtCustomFFmpegPath.getText().equals("") == false)
+						{
+							VideoPlayer.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
+						}
+					}
+					else
+					{
+						txtCustomFFmpegPath.setEnabled(false);
+						
+						VideoPlayer.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						
+						if (System.getProperty("os.name").contains("Windows"))
+						{							
+							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(1,VideoPlayer.PathToFFMPEG.length()-1);
+							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+						}	
+						else
+						{
+							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,VideoPlayer.PathToFFMPEG.length()-1);
+							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
+						}
+					}	
+					
+					if (VideoPlayer.videoPath != null)
+					{
+						VideoPlayer.btnStop.doClick();					
+					}
+				}
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+			
+		});
+		
 		btnPreviewOutput.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnPreviewOutput.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, btnPreviewOutput.getPreferredSize().width, 16);
+		btnPreviewOutput.setBounds(12, btnCustomFFmpegPath.getLocation().y + btnCustomFFmpegPath.getHeight() + 10, btnPreviewOutput.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnPreviewOutput);
 			
 		btnPreviewOutput.addActionListener(new ActionListener() {
@@ -1655,6 +1769,12 @@ public class Settings {
 					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseMetadata"))
 					{
 						videoWebCaseMetadata = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}
+					
+					//customFFmpeg
+					if (btnCustomFFmpegPath.isSelected() && txtCustomFFmpegPath.getText().equals("") == false)
+					{
+						VideoPlayer.PathToFFMPEG = txtCustomFFmpegPath.getText();
 					}
 				}
 			}		

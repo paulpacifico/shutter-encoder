@@ -1997,10 +1997,10 @@ public class Utils extends Shutter {
 		UIManager.put("ScrollBar.thumbArc", 999);
 		UIManager.put("Button.arc", 15);
 		UIManager.put("CheckBox.arc", 15);
-		UIManager.put("TextField.arc", 10);			
-		UIManager.put("ProgressBar.arc", 10);
-		UIManager.put("TextComponent.arc", 10);
-		UIManager.put("Component.arc", 10);
+		UIManager.put("TextField.arc", 15);			
+		UIManager.put("ProgressBar.arc", 15);
+		UIManager.put("TextComponent.arc", 15);
+		UIManager.put("Component.arc", 15);
 		UIManager.put("PopupMenu.arc", 15);	
 		UIManager.put("ScrollPane.arc", 5);
 				
@@ -2082,7 +2082,9 @@ public class Utils extends Shutter {
 		UIManager.put("MenuBar.foreground", new Color(235,235,240));
 
 		UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(30,30,35)));	
+		UIManager.put("PopupMenu.borderColor", new Color(30,30,35));
 		UIManager.put("PopupMenu.background", new Color(42,42,47));
+		UIManager.put("PopupMenu.borderCornerRadius", 15);
 		
 		UIManager.put("Panel.selectionForeground", Color.WHITE);
 		UIManager.put("TextPane.selectionForeground", Color.WHITE);

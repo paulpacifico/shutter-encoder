@@ -237,6 +237,11 @@ public class VideoPlayer {
 			PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
 			PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
 		}
+		
+		if (Settings.btnCustomFFmpegPath.isSelected() && Settings.txtCustomFFmpegPath.getText().equals("") == false)
+		{
+			PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
+		}
 
 		GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
 		GraphicsDevice myScreen = config.getDevice();
@@ -638,6 +643,7 @@ public class VideoPlayer {
 				//Avoid a crashing issue
 				try {
 					audio = playerAudio.getInputStream();	
+					audioInputStream = null;
 					audioInputStream = AudioSystem.getAudioInputStream(audio);		    
 				    AudioFormat audioFormat = audioInputStream.getFormat();
 			        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
@@ -646,9 +652,7 @@ public class VideoPlayer {
 		            line.open(audioFormat);
 		            gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
 		            line.start();	
-				} catch (Exception e) {
-					btnStop.doClick();
-				}
+				} catch (Exception e) {}
 			}
 						
 			playerThread = new Thread(new Runnable() {
@@ -675,11 +679,11 @@ public class VideoPlayer {
 						long startTime = System.nanoTime() + (int) ((float) inputFramerateMS * 1000000);
 						
 						if (playerLoop)
-						{							
+						{			
 							try {	
 								
 								//Audio volume	
-								if ((casePlaySound.isSelected() && inputTime > 0) || (sliderChange == false && frameControl == false))					       
+								if (audioInputStream != null && ((casePlaySound.isSelected() && inputTime > 0) || (sliderChange == false && frameControl == false)))					       
 								{								
 									closeAudioStream = true;
 									double gain = (double) sliderVolume.getValue() / 100;   
@@ -752,7 +756,7 @@ public class VideoPlayer {
 							}
 						}   
 						else
-						{							
+						{									
 							if (line!= null && closeAudioStream && sliderChange == false && frameControl == false)		       
 							{
 								line.flush();	
@@ -774,7 +778,7 @@ public class VideoPlayer {
 						videoInputStream.close();
 					} catch (IOException e) {}
 					
-					if (audio != null && closeAudioStream)	       
+					if (audio != null && audioInputStream != null && closeAudioStream)	       
 					{						
 						try {
 							audio.close();
@@ -2466,7 +2470,7 @@ public class VideoPlayer {
 					
 				}
 				else if (btnPlay.getName().equals("play"))
-				{								
+				{		
 					if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected() || previousFrame)
 					{				
 						if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected())

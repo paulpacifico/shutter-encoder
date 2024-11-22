@@ -1471,7 +1471,13 @@ public class VideoEncoders extends Shutter {
 				
 			case "FFV1":
 				
-				return " -c:v ffv1 -level 3";
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
+				{
+					if (comboAccel.getSelectedItem().equals("Vulkan Video"))
+						return " -c:v ffv1_vulkan";
+				}
+				else
+					return " -c:v ffv1 -level 3";
 				
 			case "GoPro CineForm":
 				

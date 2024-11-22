@@ -12140,9 +12140,8 @@ public class Shutter {
 					
 		JLabel watermarkTopLeft = new JLabel("\u2196");
 		watermarkTopLeft.setName("watermarkTopLeft");
-		watermarkTopLeft.setBackground(new Color(42,42,47));
+		watermarkTopLeft.setBackground(new Color(42,42,47,0));
 		watermarkTopLeft.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkTopLeft.setOpaque(true);
 		watermarkTopLeft.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkTopLeft.setSize(28, 16);
 		watermarkTopLeft.setLocation(grpWatermark.getWidth() / 2 - 270 / 2, caseAddWatermark.getY() + caseAddWatermark.getHeight() + 2);
@@ -12150,19 +12149,17 @@ public class Shutter {
 		
 		JLabel watermarkLeft = new JLabel("\u2190");
 		watermarkLeft.setName("watermarkLeft");
-		watermarkLeft.setBackground(new Color(42,42,47));
+		watermarkLeft.setBackground(new Color(42,42,47,0));
 		watermarkLeft.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkLeft.setOpaque(true);
 		watermarkLeft.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkLeft.setSize(watermarkTopLeft.getSize());
-		watermarkLeft.setLocation(watermarkTopLeft.getX() + watermarkTopLeft.getWidth() + 2, watermarkTopLeft.getY());
+		watermarkLeft.setLocation(watermarkTopLeft.getX() + watermarkTopLeft.getWidth() + 2, watermarkTopLeft.getY() - 2);
 		grpWatermark.add(watermarkLeft);
 		
 		JLabel watermarkBottomLeft = new JLabel("\u2199");
 		watermarkBottomLeft.setName("watermarkBottomLeft");
-		watermarkBottomLeft.setBackground(new Color(42,42,47));
+		watermarkBottomLeft.setBackground(new Color(42,42,47,0));
 		watermarkBottomLeft.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkBottomLeft.setOpaque(true);
 		watermarkBottomLeft.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkBottomLeft.setSize(watermarkTopLeft.getSize());
 		watermarkBottomLeft.setLocation(watermarkLeft.getX() + watermarkLeft.getWidth() + 2, watermarkTopLeft.getY());
@@ -12170,9 +12167,8 @@ public class Shutter {
 		
 		JLabel watermarkTop = new JLabel("\u2191");
 		watermarkTop.setName("watermarkTop");
-		watermarkTop.setBackground(new Color(42,42,47));
+		watermarkTop.setBackground(new Color(42,42,47,0));
 		watermarkTop.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkTop.setOpaque(true);
 		watermarkTop.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkTop.setSize(watermarkTopLeft.getSize());
 		watermarkTop.setLocation(watermarkBottomLeft.getX() + watermarkBottomLeft.getWidth() + 2, watermarkTopLeft.getY());
@@ -12180,19 +12176,17 @@ public class Shutter {
 		
 		JLabel watermarkCenter = new JLabel("\u2500");
 		watermarkCenter.setName("watermarkCenter");
-		watermarkCenter.setBackground(new Color(42,42,47));
+		watermarkCenter.setBackground(new Color(42,42,47,0));
 		watermarkCenter.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkCenter.setOpaque(true);
 		watermarkCenter.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkCenter.setSize(watermarkTopLeft.getSize());
-		watermarkCenter.setLocation(watermarkTop.getX() + watermarkTop.getWidth() + 2, watermarkTopLeft.getY());
+		watermarkCenter.setLocation(watermarkTop.getX() + watermarkTop.getWidth() + 2, watermarkTopLeft.getY() - 1);
 		grpWatermark.add(watermarkCenter);
 		
 		JLabel watermarkBottom = new JLabel("\u2193");
 		watermarkBottom.setName("watermarkBottom");
-		watermarkBottom.setBackground(new Color(42,42,47));
+		watermarkBottom.setBackground(new Color(42,42,47,0));
 		watermarkBottom.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkBottom.setOpaque(true);
 		watermarkBottom.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkBottom.setSize(watermarkTopLeft.getSize());
 		watermarkBottom.setLocation(watermarkCenter.getX() + watermarkCenter.getWidth() + 2, watermarkTopLeft.getY());
@@ -12200,9 +12194,8 @@ public class Shutter {
 		
 		JLabel watermarkTopRight = new JLabel("\u2197");
 		watermarkTopRight.setName("watermarkTopRight");
-		watermarkTopRight.setBackground(new Color(42,42,47));
+		watermarkTopRight.setBackground(new Color(42,42,47,0));
 		watermarkTopRight.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkTopRight.setOpaque(true);
 		watermarkTopRight.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkTopRight.setSize(watermarkTopLeft.getSize());
 		watermarkTopRight.setLocation(watermarkBottom.getX() + watermarkBottom.getWidth() + 2, watermarkTopLeft.getY());
@@ -12210,19 +12203,17 @@ public class Shutter {
 		
 		JLabel watermarkRight = new JLabel("\u2192");
 		watermarkRight.setName("watermarkRight");
-		watermarkRight.setBackground(new Color(42,42,47));
+		watermarkRight.setBackground(new Color(42,42,47,0));
 		watermarkRight.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkRight.setOpaque(true);
 		watermarkRight.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkRight.setSize(watermarkTopLeft.getSize());
-		watermarkRight.setLocation(watermarkTopRight.getX() + watermarkTopRight.getWidth() + 2, watermarkTopLeft.getY());
+		watermarkRight.setLocation(watermarkTopRight.getX() + watermarkTopRight.getWidth() + 2, watermarkTopLeft.getY() - 2);
 		grpWatermark.add(watermarkRight);
 		
 		JLabel watermarkBottomRight = new JLabel("\u2198");
 		watermarkBottomRight.setName("watermarkBottomRight");
-		watermarkBottomRight.setBackground(new Color(42,42,47));
+		watermarkBottomRight.setBackground(new Color(42,42,47,0));
 		watermarkBottomRight.setHorizontalAlignment(SwingConstants.CENTER);
-		watermarkBottomRight.setOpaque(true);
 		watermarkBottomRight.setFont(new Font(freeSansFont, Font.PLAIN, 12));
 		watermarkBottomRight.setSize(watermarkTopLeft.getSize());
 		watermarkBottomRight.setLocation(watermarkRight.getX() + watermarkRight.getWidth() + 2, watermarkTopLeft.getY());
@@ -12264,6 +12255,23 @@ public class Shutter {
 		watermarkTopRight.addMouseListener(watermarkPositions);
 		watermarkRight.addMouseListener(watermarkPositions);
 		watermarkBottomRight.addMouseListener(watermarkPositions);		
+		
+		JPanel panelForButtons = new JPanel() {
+			
+			@Override
+			public void paintComponent(Graphics g) {
+				
+				Graphics2D g2d = (Graphics2D) g;
+											
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		        
+				g2d.setColor(new Color(42,42,47));
+				g2d.fillRoundRect(0, 0, (watermarkBottomRight.getX() + watermarkBottomRight.getWidth()) - watermarkTopLeft.getX() + 4, 18, 15, 15);
+			}
+			
+		};
+		panelForButtons.setBounds(watermarkTopLeft.getX() - 2, watermarkTopLeft.getY() - 2, (watermarkBottomRight.getX() + watermarkBottomRight.getWidth()) - watermarkTopLeft.getX() + 4, 18);
+		grpWatermark.add(panelForButtons);
 		
 		JLabel watermarkPosX = new JLabel(Shutter.language.getProperty("posX"));
 		watermarkPosX.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -19504,6 +19512,7 @@ public class Shutter {
 		if ("Apple ProRes".equals(function) && System.getProperty("os.name").contains("Mac") && arch.equals("arm64")
 		|| "H.264".equals(function) || "H.265".equals(function) || "H.266".equals(function) || "AV1".equals(function)
 		|| System.getProperty("os.name").contains("Windows") && "VP9".equals(function)
+		|| System.getProperty("os.name").contains("Windows") && "FFV1".equals(function)
 		|| System.getProperty("os.name").contains("Windows") && language.getProperty("functionPicture").equals(function) && comboFilter.getSelectedItem().toString().equals(".avif"))
 		{
 			lblHWaccel.setVisible(true);
@@ -20110,6 +20119,48 @@ public class Shutter {
 								{
 									final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(new String[] {".mxf"});						
 									comboFilter.setModel(model);
+								}
+								
+								//HWaccel		
+								if (action && System.getProperty("os.name").contains("Windows") && "FFV1".equals(function))
+								{
+									Thread hwaccel = new Thread(new Runnable() {
+
+										@Override
+										public void run() {
+											
+											comboAccel.setEnabled(false);
+											
+											try {												
+												
+												FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v ffv1_vulkan -s 640x360 -f null -" + '"');
+												do {
+													Thread.sleep(10);
+												} while (FFMPEG.runProcess.isAlive());
+						
+												if (FFMPEG.error == false)
+													graphicsAccel.add("Vulkan Video");
+												
+												if (comboAccel.getModel().getSize() != graphicsAccel.size())
+												{	
+													comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
+												}
+												
+												//load hwaccel value after checking gpu capabilities
+												if (Utils.loadEncFile != null && Utils.hwaccel != "")
+												{
+													comboAccel.setSelectedItem(Utils.hwaccel); 
+												}
+												
+											} catch (Exception e) {}
+											
+											if (comboAccel.getItemCount() > 1)
+												comboAccel.setEnabled(true);
+										}
+										
+									});
+									hwaccel.start();
+																		
 								}
 								
 								//grpSetAudio
