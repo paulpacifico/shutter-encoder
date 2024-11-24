@@ -177,7 +177,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 742);
+		frame.setSize(370, 750);
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 50, frame.getHeight());
@@ -484,24 +484,24 @@ public class Settings {
 					
 					if (Settings.txtCustomFFmpegPath.getText().equals("") == false)
 					{
-						VideoPlayer.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
+						FFMPEG.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
 					}
 				}
 				else
 				{
 					txtCustomFFmpegPath.setEnabled(false);
 					
-					VideoPlayer.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					FFMPEG.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 					
 					if (System.getProperty("os.name").contains("Windows"))
 					{							
-						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(1,VideoPlayer.PathToFFMPEG.length()-1);
-						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(1,FFMPEG.PathToFFMPEG.length()-1);
+						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 					}	
 					else
 					{
-						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,VideoPlayer.PathToFFMPEG.length()-1);
-						VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
+						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,FFMPEG.PathToFFMPEG.length()-1);
+						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
 					}
 				}	
 				
@@ -542,24 +542,24 @@ public class Settings {
 						
 						if (Settings.txtCustomFFmpegPath.getText().equals("") == false)
 						{
-							VideoPlayer.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
+							FFMPEG.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
 						}
 					}
 					else
 					{
 						txtCustomFFmpegPath.setEnabled(false);
 						
-						VideoPlayer.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+						FFMPEG.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						
 						if (System.getProperty("os.name").contains("Windows"))
 						{							
-							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(1,VideoPlayer.PathToFFMPEG.length()-1);
-							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(1,FFMPEG.PathToFFMPEG.length()-1);
+							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
 						}	
 						else
 						{
-							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,VideoPlayer.PathToFFMPEG.length()-1);
-							VideoPlayer.PathToFFMPEG = VideoPlayer.PathToFFMPEG.substring(0,(int) (VideoPlayer.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
+							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,FFMPEG.PathToFFMPEG.length()-1);
+							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
 						}
 					}	
 					
@@ -1774,7 +1774,7 @@ public class Settings {
 					//customFFmpeg
 					if (btnCustomFFmpegPath.isSelected() && txtCustomFFmpegPath.getText().equals("") == false)
 					{
-						VideoPlayer.PathToFFMPEG = txtCustomFFmpegPath.getText();
+						FFMPEG.PathToFFMPEG = txtCustomFFmpegPath.getText();
 					}
 				}
 			}		

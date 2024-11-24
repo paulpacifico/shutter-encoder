@@ -104,7 +104,6 @@ import settings.Transitions;
 public class VideoPlayer {
 	
     //Player
-	public static String PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 	public static JPanel player; 
     public static Process playerVideo;
     public static Process bufferVideo;
@@ -227,22 +226,6 @@ public class VideoPlayer {
 		
 		showInfoMessage = true;
 		
-		if (System.getProperty("os.name").contains("Windows"))
-		{							
-			PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
-			PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-		}	
-		else
-		{
-			PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
-			PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
-		}
-		
-		if (Settings.btnCustomFFmpegPath.isSelected() && Settings.txtCustomFFmpegPath.getText().equals("") == false)
-		{
-			PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
-		}
-
 		GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
 		GraphicsDevice myScreen = config.getDevice();
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -611,26 +594,26 @@ public class VideoPlayer {
 			if (System.getProperty("os.name").contains("Windows"))
 			{							
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo));
+				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo));
 				playerVideo = pbv.start();	
 					
 				//AUDIO STREAM
 				if ((casePlaySound.isSelected() && inputTime > 0 && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)					       
 				{		
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + setAudioCommand(inputTime, false));	
+					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + setAudioCommand(inputTime, false));	
 					playerAudio = pba.start();
 				}
 			}	
 			else
 			{
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo));
+				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo));
 				playerVideo = pbv.start();	
 								
 				//AUDIO STREAM
 				if ((casePlaySound.isSelected() && inputTime > 0 && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)			       
 				{
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setAudioCommand(inputTime, false));	
+					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setAudioCommand(inputTime, false));	
 					playerAudio = pba.start();
 				}
 			}			
@@ -811,13 +794,13 @@ public class VideoPlayer {
 				if (System.getProperty("os.name").contains("Windows"))
 				{							
 					//AUDIO STREAM
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + setAudioCommand(inputTime, true));	
+					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + setAudioCommand(inputTime, true));	
 					playerAudio = pba.start();
 				}	
 				else
 				{		
 					//AUDIO STREAM
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + setAudioCommand(inputTime, true));	
+					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setAudioCommand(inputTime, true));	
 					playerAudio = pba.start();
 				}			
 					
@@ -1154,7 +1137,7 @@ public class VideoPlayer {
 		{
     		@Override
     		public void run()
-    		{
+    		{    			
     			if (FFMPEG.isRunning == false
 		    	|| (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
 		    	&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume")) == false
@@ -1189,7 +1172,7 @@ public class VideoPlayer {
 						}
 						
 						//Reset when changing file													
-						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false)
+						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false && (new File(Shutter.fileList.getSelectedValue()).isFile() || Shutter.scanIsRunning))
 						{							
 							//IMPORTANT
 							if (FFPROBE.isRunning)
@@ -2037,10 +2020,10 @@ public class VideoPlayer {
 				
 				if (System.getProperty("os.name").contains("Windows"))
 				{	
-					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + '"' + PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);
+					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + '"' + FFMPEG.PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);
 				}
 				else
-					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);	
+					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + FFMPEG.PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);	
 				
 				cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v bmp -an -f image2pipe -";
 			}
@@ -5195,12 +5178,12 @@ public class VideoPlayer {
 			
 			if (System.getProperty("os.name").contains("Windows"))
 			{							
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + cmd);
+				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + cmd);
 				process = pbv.start();	
 			}	
 			else
 			{
-				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + cmd);
+				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + cmd);
 				process = pbv.start();	
 			}	
 						

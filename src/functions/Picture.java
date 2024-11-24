@@ -291,12 +291,12 @@ public class Picture extends Shutter {
 								Process process;
 								if (System.getProperty("os.name").contains("Windows"))
 								{							
-									ProcessBuilder pbv = new ProcessBuilder('"' + VideoPlayer.PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
+									ProcessBuilder pbv = new ProcessBuilder('"' + FFMPEG.PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
 									process = pbv.start();	
 								}	
 								else
 								{
-									ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", VideoPlayer.PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
+									ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
 									process = pbv.start();	
 								}	
 																			

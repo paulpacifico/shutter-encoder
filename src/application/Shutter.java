@@ -885,6 +885,9 @@ public class Shutter {
 		Settings.txtThreads.setText("0");
 		Settings.txtImageDuration.setText("10");
 				
+		//Initialize FFmpeg path
+		FFMPEG.getFFmpegPath();
+		
 		Splash.increment();
 		topPanel();
 		Splash.increment();
@@ -23986,23 +23989,26 @@ public class Shutter {
 			scrollPane.getViewport().setOpaque(false); 
 			scrollPane.setPreferredSize( new Dimension( 500, 400 ) );
 
-			Object[] moreInfo = {"OK", language.getProperty("menuItemConsole")};
-	        
-			int result =  JOptionPane.showOptionDialog(Shutter.frame, scrollPane, Shutter.language.getProperty("notProcessedFiles"), JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, moreInfo, null);
-			
-			if (result == JOptionPane.NO_OPTION)
+			if (scanIsRunning == false)
 			{
-				if (Console.frmConsole != null)
+				Object[] moreInfo = {"OK", language.getProperty("menuItemConsole")};
+		        
+				int result =  JOptionPane.showOptionDialog(Shutter.frame, scrollPane, Shutter.language.getProperty("notProcessedFiles"), JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE, null, moreInfo, null);
+				
+				if (result == JOptionPane.NO_OPTION)
 				{
-					if (Console.frmConsole.isVisible())
+					if (Console.frmConsole != null)
 					{
-						Console.frmConsole.toFront();
-					}
+						if (Console.frmConsole.isVisible())
+						{
+							Console.frmConsole.toFront();
+						}
+						else
+							new Console();
+					} 
 					else
 						new Console();
-				} 
-				else
-					new Console();
+				}
 			}
 			
 			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
