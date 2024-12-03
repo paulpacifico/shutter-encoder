@@ -1171,22 +1171,27 @@ public class FunctionUtils extends Shutter {
 	        return filterComplex;
 		}
 		
-		//VAAPI Hardware encoding
+		//Hardware encoding
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "H.264":
 			case "H.265":
 			case "H.266":
 			case "VP9":
+			case "FFV1":
 				
-				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("VAAPI"))			
-				{						
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false
+				&& comboAccel.getSelectedItem().equals("VAAPI") || comboAccel.getSelectedItem().equals("Vulkan Video"))			
+				{		
+					if (filterComplex != "")
+						filterComplex += ",";
+					
 					if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
 					{
-						filterComplex += ",format=p010,hwupload";
+						filterComplex += "format=p010,hwupload";
 					}
 					else
-						filterComplex += ",format=nv12,hwupload";
+						filterComplex += "format=nv12,hwupload";
 				}
 				
 				break;

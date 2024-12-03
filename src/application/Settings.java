@@ -1776,6 +1776,20 @@ public class Settings {
 					{
 						FFMPEG.PathToFFMPEG = txtCustomFFmpegPath.getText();
 					}
+					
+					//warning values						
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cutKeyframesIsDisplayed"))
+					{											
+						Shutter.cutKeyframesIsDisplayed = true;
+					}
+					else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("rewrapKeyframesIsDisplayed"))
+					{											
+						Shutter.rewrapKeyframesIsDisplayed = true;
+					}
+					else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("conformKeyframesIsDisplayed"))
+					{											
+						Shutter.conformKeyframesIsDisplayed = true;
+					}
 				}
 			}		
 		}							
@@ -2361,8 +2375,82 @@ public class Settings {
 				cValue.appendChild(document.createTextNode(String.valueOf(videoWebCaseMetadata)));
 			component.appendChild(cValue);
 			
-			root.appendChild(component);		
+			root.appendChild(component);	
+			
+			//Saving warning values	
+			Element warning = document.createElement("Warning");
 						
+			if (Shutter.cutKeyframesIsDisplayed)
+			{											
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("String"));
+				component.appendChild(cType);
+
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("cutKeyframesIsDisplayed"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.cutKeyframesIsDisplayed)));
+				component.appendChild(cValue);
+
+				warning.appendChild(component);
+			}
+			
+			if (Shutter.rewrapKeyframesIsDisplayed)
+			{											
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("String"));
+				component.appendChild(cType);
+
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("rewrapKeyframesIsDisplayed"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.rewrapKeyframesIsDisplayed)));
+				component.appendChild(cValue);
+
+				warning.appendChild(component);
+			}
+			
+			if (Shutter.conformKeyframesIsDisplayed)
+			{											
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("String"));
+				component.appendChild(cType);
+
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("conformKeyframesIsDisplayed"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.conformKeyframesIsDisplayed)));
+				component.appendChild(cValue);
+
+				warning.appendChild(component);				
+			}
+					
+			if (Shutter.cutKeyframesIsDisplayed || Shutter.rewrapKeyframesIsDisplayed || Shutter.conformKeyframesIsDisplayed)
+			{
+				root.appendChild(warning);				
+			}
+			
 			// creation du fichier XML
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
 			Transformer transformer = transformerFactory.newTransformer();

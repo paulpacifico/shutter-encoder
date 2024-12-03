@@ -1436,7 +1436,7 @@ public class Utils extends Shutter {
 					
 					root.appendChild(color);
 				}	
-																									
+																													
 				// creation du fichier XML
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();

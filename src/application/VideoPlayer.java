@@ -1975,6 +1975,10 @@ public class VideoPlayer {
 					{
 						gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
 					}
+					else if (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_vulkan"))
+					{
+						gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan";
+					}
 					else
 						gpuDecoding = " -hwaccel auto";
 				}
@@ -1996,7 +2000,7 @@ public class VideoPlayer {
 				freezeFrame = "";
 			
 			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) (inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v bmp -an -f image2pipe -";
-						
+									
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
 			&& Shutter.comboFonctions.getSelectedItem().toString().equals("DNxHD") == false
@@ -4779,8 +4783,8 @@ public class VideoPlayer {
 	}
 	
 	public static boolean loadWatermark(int size) {
-		
-		if (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight)	
+				
+		if (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight || Shutter.logoPNG == null)	
 		{			
 			try {
 			
@@ -5052,14 +5056,21 @@ public class VideoPlayer {
 						String inputPoint = " -ss " + (float) (playerCurrentFrame) * inputFramerateMS + "ms";
 						if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 							inputPoint = "";
-												
+									
+						//Alpha channel
+						String alpha = "";
+						if (FFPROBE.hasAlpha && deinterlace == "")
+						{
+							alpha = " -vf " + '"'  + "split=2[bg][fg];[bg]drawbox=c=0x202025:replace=1:t=fill[bg];[bg][fg]overlay=0:0,format=rgb24" + '"';		
+						}
+						
 						//Creating preview file																
-						String cmd = deinterlace + " -frames:v 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
+						String cmd = deinterlace + alpha + " -frames:v 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
 						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
 						{
-							cmd = deinterlace + " -frames:v 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
+							cmd = deinterlace + alpha + " -frames:v 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
 						}
-												
+																		
 						if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 						{
 							if (extension.toLowerCase().equals(".pdf"))
@@ -5129,7 +5140,7 @@ public class VideoPlayer {
 								} while (preview.exists());
 							}		
 							else									
-							{		
+							{	
 								generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -frames:v 1 -c:v bmp -an -f image2pipe -");
 							}		
 				            
@@ -5374,6 +5385,10 @@ public class VideoPlayer {
 			{
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
+			else if (FFMPEG.vulkanAvailable && yadif == "")
+			{
+				filter += "scale_vulkan=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
+			}
 			else
 			{
 				filter += "scale=" + width + ":" + height + ":sws_flags=" + algorithm + ":sws_dither=none";
@@ -5383,7 +5398,7 @@ public class VideoPlayer {
 		{
 			filter += "scale=" + width + ":" + height + ":sws_flags=" + algorithm + ":sws_dither=none";		
 		}
-				
+					
 		//Alpha channel
 		if (FFPROBE.hasAlpha)
 		{

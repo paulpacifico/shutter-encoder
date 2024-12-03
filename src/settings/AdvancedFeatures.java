@@ -313,12 +313,7 @@ public class AdvancedFeatures extends Shutter {
 		    				profile = "main444-10";    
 		    		}
 		        	
-		    		if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
-		    		{
-		    			return " -profile:v " + profile;
-		    		}
-		    		else		    			
-		    			return " -profile:v " + profile + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
+		    		return " -profile:v " + profile;
 		        }
 		        else
 		        {
@@ -332,81 +327,7 @@ public class AdvancedFeatures extends Shutter {
 		        		profile = "main12";
 		        	}
 		        	
-		        	String s[] = FFPROBE.imageResolution.split("x");
-		        	if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
-		        	{
-		        		if (comboResolution.getSelectedItem().toString().contains("%"))
-						{
-							double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
-							
-							s[0] = String.valueOf((int) (Integer.parseInt(s[0]) * value));
-							s[1] = String.valueOf((int) (Integer.parseInt(s[1]) * value));
-						}
-		        		else if (comboResolution.getSelectedItem().toString().contains("x"))
-		    			{
-		    				if (comboResolution.getSelectedItem().toString().contains("AI"))
-		    				{
-		    					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
-		    					{
-		    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 2));
-		    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 2));
-		    					}
-		    					else
-		    					{
-		    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 4));
-		    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 4));
-		    					}
-		    				}
-		    				else
-		    					s = comboResolution.getSelectedItem().toString().split("x");
-		    			}
-		        		else if (comboResolution.getSelectedItem().toString().contains(":"))
-						{
-		        			String i[] = FFPROBE.imageResolution.split("x");
-							s = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
-							
-							int iw = Integer.parseInt(i[0]);
-				        	int ih = Integer.parseInt(i[1]);          	
-				        	int ow = Integer.parseInt(s[0]);
-				        	int oh = Integer.parseInt(s[1]);        	
-				        	float ir = (float) iw / ih;
-									        	
-							if (s[0].toString().equals("1")) // = auto
-							{
-								s[0] = String.valueOf((int) Math.round((float) oh * ir));
-							}
-			        		else
-			        		{
-			        			s[1] = String.valueOf((int) Math.round((float) ow / ir));
-			        		}
-						}
-		        	}
-		        			
-		            int width = Integer.parseInt(s[0]);
-		            int height = Integer.parseInt(s[1]); 
-
-		            if (width > 1920 || height > 1080 || FFPROBE.currentFPS >= 59.94f)
-		            {
-		            	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-		            	{
-		            		return " -profile:v " + profile + " -level 6.1";
-		            	}
-		            	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
-			    		{
-		            		return " -profile:v " + profile;
-			    		}
-		            	else
-		            		return " -profile:v " + profile + " -level 5.2";
-		            }
-		            else
-		            {
-		            	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
-			    		{
-		            		return " -profile:v " + profile;
-			    		}
-		            	else
-		            		return " -profile:v " + profile + " -level 5.1";
-		            }
+		        	return " -profile:v " + profile;
 		        }
 				
 		}
@@ -1029,6 +950,14 @@ public class AdvancedFeatures extends Shutter {
 					
 					options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFPROBE.HDRmax * 10000 + "," + FFPROBE.HDRmin * 10000 + "):max-cll=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL;
 				}
+				
+				//Levels
+				if (caseForceLevel.isSelected())
+		        {
+					if (options != "") options += ":";
+					
+					options += "level=" + Shutter.comboForceLevel.getSelectedItem().toString();
+		        }
 				
 				if (options != "")
 				{

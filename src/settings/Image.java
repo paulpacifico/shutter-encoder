@@ -353,6 +353,7 @@ public class Image extends Shutter {
 			boolean autoQSV = false;
 			boolean autoCUDA = false;
 			boolean autoVIDEOTOOLBOX = false;
+			boolean autoVULKAN = false;			
 			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 			{
 				if (FFMPEG.cudaAvailable)
@@ -366,6 +367,10 @@ public class Image extends Shutter {
 				else if (FFMPEG.videotoolboxAvailable)
 				{
 					autoVIDEOTOOLBOX = true;
+				}
+				else if (FFMPEG.vulkanAvailable)
+				{
+					autoVULKAN = true;
 				}
 			}
 			
@@ -388,6 +393,12 @@ public class Image extends Shutter {
 			else if ((autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_vt=");
+				
+				filterComplex += ",hwdownload,format=" + bitDepth;
+			}
+			else if ((autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			{
+				filterComplex = filterComplex.replace("scale=", "scale_vulkan=");
 				
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
