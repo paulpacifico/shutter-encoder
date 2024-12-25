@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -2195,20 +2195,20 @@ public class VideoPlayer {
 						{		
 							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 							{
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202024"
 										+ " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
 										+ " -vn -frames:v 1 -c:v bmp -f image2pipe -"); 
 							}
 							else
 							{
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202024"
 										+ " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
 										+ " -vn -frames:v 1 -c:v bmp -f image2pipe -"); 
 							}
 						}
 						else
 						{
-							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202025"
+							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -f lavfi -i color=s=" + size + "x360:c=0x202024"
 							+ " -filter_complex " + '"' + "[0:a]" + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green[fg];[1:v][fg]overlay=format=rgb" + '"' 
 							+ " -vn -frames:v 1 -c:v bmp -f image2pipe -");  																
 						}
@@ -4567,15 +4567,6 @@ public class VideoPlayer {
 		{
 			Shutter.textCropWidth.setText(String.valueOf(outW));
 			Shutter.textCropHeight.setText(String.valueOf(outH));
-		}	
-		
-		if (Shutter.caseEnableCrop.isSelected())
-		{
-			Shutter.comboPreset.getEditor().setItem((double) Math.round((double) ((double) outW / outH) * 100.0) / 100.0);		
-		}
-		else
-		{
-			Shutter.comboPreset.getEditor().setItem(Shutter.language.getProperty("aucun"));
 		}
 	}
 	
@@ -5061,7 +5052,7 @@ public class VideoPlayer {
 						String alpha = "";
 						if (FFPROBE.hasAlpha && deinterlace == "")
 						{
-							alpha = " -vf " + '"'  + "split=2[bg][fg];[bg]drawbox=c=0x202025:replace=1:t=fill[bg];[bg][fg]overlay=0:0,format=rgb24" + '"';		
+							alpha = " -vf " + '"'  + "split=2[bg][fg];[bg]drawbox=c=0x202024:replace=1:t=fill[bg];[bg][fg]overlay=0:0,format=rgb24" + '"';		
 						}
 						
 						//Creating preview file																
@@ -5402,7 +5393,7 @@ public class VideoPlayer {
 		//Alpha channel
 		if (FFPROBE.hasAlpha)
 		{
-			filter += ",split=2[bg][fg];[bg]drawbox=c=0x202025:replace=1:t=fill[bg];[bg][fg]overlay=0:0,format=rgb24";		
+			filter += ",split=2[bg][fg];[bg]drawbox=c=0x202024:replace=1:t=fill[bg];[bg][fg]overlay=0:0,format=rgb24";		
 		}
 		
 		//Speed

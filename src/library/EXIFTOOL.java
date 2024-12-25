@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ public static String exifHeight;
 private static boolean scanOrientation = true;
 private static Boolean horizontal = true;
 
-	public static void run(final String file) {
+	public static void run(final String cmd) {
 				
 		error = false;
 		scanOrientation = true;
@@ -50,6 +50,12 @@ private static Boolean horizontal = true;
 		creationHours = "00:00:00";
 		exifWidth = "";
 		exifHeight = "";
+		
+		if (cmd != '"' + "" + '"')
+		{
+			Console.consoleEXIFTOOL.append(System.lineSeparator());
+			Console.consoleEXIFTOOL.append(Shutter.language.getProperty("command") + " " + cmd);
+		}
 			
 		//Watermark scaling
 		FFPROBE.previousImageWidth = FFPROBE.imageWidth;
@@ -67,14 +73,14 @@ private static Boolean horizontal = true;
 						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToEXIFTOOL = PathToEXIFTOOL.substring(1,PathToEXIFTOOL.length()-1);
 						PathToEXIFTOOL = '"' + PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/exiftool.exe" + '"';
-						processEXIFTOOL = new ProcessBuilder(PathToEXIFTOOL + " " + '"' + file + '"');
+						processEXIFTOOL = new ProcessBuilder(PathToEXIFTOOL + " " + cmd);
 					}
 					else
 					{
 						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,PathToEXIFTOOL.length()-1);
 						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/exiftool";
-						processEXIFTOOL = new ProcessBuilder("/bin/bash", "-c" , PathToEXIFTOOL + " " + '"' + file + '"');
+						processEXIFTOOL = new ProcessBuilder("/bin/bash", "-c" , PathToEXIFTOOL + " " + cmd);
 					}
 											
 					isRunning = true;	
@@ -85,7 +91,10 @@ private static Boolean horizontal = true;
 			        
 					String line;
 					
-					Console.consoleEXIFTOOL.append(System.lineSeparator());
+					if (cmd != '"' + "" + '"')
+					{
+						Console.consoleEXIFTOOL.append(System.lineSeparator());
+					}
 					
 					//Analyse des données	
 					while ((line = br.readLine()) != null) {	
@@ -134,8 +143,6 @@ private static Boolean horizontal = true;
 					}				
 					process.waitFor();
 					
-					Console.consoleEXIFTOOL.append(System.lineSeparator());
-
 					//Si il n'y a pas d'exif on lit la date de création système
 					if (exifDate == "" && exifHours == "")
 					{

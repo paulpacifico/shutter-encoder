@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -260,8 +260,14 @@ public class ReplaceAudio extends Shutter {
 							}
 							else
 							{
-								videoFile = new File(liste.getElementAt(0));		
-								audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
+								videoFile = new File(liste.getElementAt(0));	
+								
+								if (liste.getElementAt(1).contains("lavfi")) //Mute track
+								{
+									audioFiles = liste.getElementAt(1);
+								}
+								else
+									audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
 								
 								//Ignore mute tracks
 								if (liste.getElementAt(1).contains("lavfi") == false)
@@ -269,7 +275,7 @@ public class ReplaceAudio extends Shutter {
 									audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));								
 								}
 							}	
-																					
+							
 							float offset = 0;
 							
 							if (caseAudioOffset.isSelected())

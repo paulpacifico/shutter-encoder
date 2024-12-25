@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -130,12 +130,12 @@ public class Picture extends Shutter {
 						//Date filter
 						if (Filter.dateFilter(file) == false)
 							continue;
-												
-				        //Framerate
-						String frameRate = setFramerate();
-						
+																		
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
+						
+				        //Framerate
+						filterComplex = setFramerate(filterComplex);
 
 						//No GPU acceleration when using this function
 						FFMPEG.isGPUCompatible = false;
@@ -343,7 +343,7 @@ public class Picture extends Shutter {
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
 
-							FFMPEG.run(InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
+							FFMPEG.run(InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
 							
 							do {
 								Thread.sleep(10);
@@ -366,7 +366,7 @@ public class Picture extends Shutter {
 						}
 						else
 						{				
-							FFMPEG.run(InputAndOutput.inPoint + frameRate + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
+							FFMPEG.run(InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
 						}
 	
 						if (isRaw)
@@ -404,19 +404,16 @@ public class Picture extends Shutter {
 		
     }
 
-	private static String setFramerate() {
+	private static String setFramerate(String filterComplex) {
 		
 		if (caseCreateSequence.isSelected())	            		
-		{
-			Float f = (float) FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));          
-		
-			if (f != 1.0f)
-			{
-				return " -r " + f;
-			}
+		{					
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "fps=" + Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));	
 		}
-
-		return "";
+		
+		return filterComplex;
 	}
 		
 	private static String setDeinterlace(String extension, boolean isRaw) {	
@@ -512,7 +509,7 @@ public class Picture extends Shutter {
 	private static String setFrame() {
 	
 		if (caseCreateSequence.isSelected())
-		{
+		{			
 			return "";
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".gif"))

@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ public static boolean isRotated = false;
 			}
 			
 			interlaced = null;
-			if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+			if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 			{
 				fieldOrder = null;
 			}
@@ -254,13 +254,13 @@ public static boolean isRotated = false;
 							if (line.contains("top first") || line.contains("top coded first"))
 							{								
 								interlaced = "1";
-								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 									fieldOrder = "0";
 							}
 							else if (line.contains("bottom first") || line.contains("bottom coded first"))
 							{								
 								interlaced = "1";
-								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 									fieldOrder = "1";
 							}
 							
@@ -718,7 +718,7 @@ public static boolean isRotated = false;
 						  {
 							  String field = line.substring(line.indexOf("top_field_first") + 16);
 							  
-							  if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().equals("x2"))
+							  if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 							  {
 								  if (field.equals("1"))
 									  fieldOrder = "0";
@@ -1234,7 +1234,7 @@ public static boolean isRotated = false;
 					int min = Integer.parseInt(textM.getText());
 					int sec = Integer.parseInt(textS.getText());
 					int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-					int tailleFinale = Integer.parseInt(bitrateSize.getText());
+					float tailleFinale = Float.parseFloat(bitrateSize.getText().replace(",", "."));
 					float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec);
 					float resultAudio = (float) (audio*multi) / 8 / 1024;
 					float resultatdebit = (result - resultAudio) * 8 * 1024;
@@ -1256,7 +1256,13 @@ public static boolean isRotated = false;
 					float resultVideo = (float) videoBitrate / 8 / 1024;
 					float resultAudio =  (float) (audio*multi) / 8 / 1024;
 					float resultatdebit = (resultVideo  + resultAudio) * ( (h * 3600)+(min * 60)+sec);
-					bitrateSize.setText(String.valueOf((int)resultatdebit));	
+					
+					if (resultatdebit < 10)
+					{
+						bitrateSize.setText(String.valueOf((double) Math.round(resultatdebit * 100.0) / 100.0));	
+					}
+					else					
+						bitrateSize.setText(String.valueOf((int) resultatdebit));	
 				}
 			}
 			else

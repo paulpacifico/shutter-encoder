@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import java.io.File;
 
 import application.Ftp;
 import application.Shutter;
+import library.EXIFTOOL;
 import library.FFMPEG;
 import settings.FunctionUtils;
 
@@ -106,26 +107,42 @@ public class Command extends Shutter {
 							cmd =  " " + comboFonctions.getEditor().getItem().toString().replace("ffmpeg", "").replace("-passlogfile " + '"' + passlogfile[1] + '"', "-passlogfile " + '"' + fileOut + '"') + " -y " ;
 						}
 						else
-							cmd =  " " + comboFonctions.getEditor().getItem().toString().replace("ffmpeg", "") + " -y " ;
+							cmd =  " " + comboFonctions.getEditor().getItem().toString().replace("exiftool", "").replace("ffmpeg", "");
 						
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
-						
-						do
+						if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg"))
 						{
-							Thread.sleep(100);
+							cmd += " -y ";
+							
+							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
+							
+							do
+							{
+								Thread.sleep(100);
+							} while(FFMPEG.runProcess.isAlive());
+							
+					        if (cmd.contains("-pass"))
+		         			{
+					        	FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + '"'  + fileOut + '"');		
+		         			}
+		
+					        do
+							{
+								Thread.sleep(100);
+							} while(FFMPEG.runProcess.isAlive());
 						}
-						while(FFMPEG.runProcess.isAlive());
-						
-				        if (cmd.contains("-pass"))
-	         			{
-				        	FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + '"'  + fileOut + '"');		
-	         			}
-	
-				        do
+						else if (comboFonctions.getEditor().getItem().toString().contains("exiftool"))
 						{
-							Thread.sleep(100);
+							btnStart.setEnabled(false);
+							
+							EXIFTOOL.run(" -tagsfromfile " + '"'  + file.toString() + '"' + cmd  + " " + '"'  + file.toString() + '"');		
+							
+							do
+							{
+								Thread.sleep(100);
+							} while (EXIFTOOL.isRunning);
+							
+							btnStart.setEnabled(true);
 						}
-						while(FFMPEG.runProcess.isAlive());
 												
 				        //Removing temporary files
 						final File folder = new File(fileOut.getParent());

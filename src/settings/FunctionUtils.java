@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ public class FunctionUtils extends Shutter {
 		|| comboFonctions.getSelectedItem().toString().equals("JPEG")
 		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 		{
-			EXIFTOOL.run(file.toString());	
+			EXIFTOOL.run('"' + file.toString() + '"');	
 			do
 			{
 				Thread.sleep(100);
@@ -1101,14 +1101,19 @@ public class FunctionUtils extends Shutter {
 		{		
 			if (FFPROBE.audioOnly == false)
 			{
-				metadata = " -map_metadata 0 -map_metadata:s:v 0:s:v";
+				metadata = " -map_metadata 0";
 				
-				if (FFPROBE.hasAudio)
+				if (casePreserveSubs.isSelected() == false)
+				{
+					metadata += " -map_metadata:s:v 0:s:v";
+				}
+				
+				if (FFPROBE.hasAudio && casePreserveSubs.isSelected() == false)
 				{
 					metadata += " -map_metadata:s:a 0:s:a";
 				}
 			}
-			else			
+			else if (casePreserveSubs.isSelected() == false)
 			{
 				metadata = " -map_metadata:s:a 0:s:a";
 			}

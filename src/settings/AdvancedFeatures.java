@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,22 @@ public class AdvancedFeatures extends Shutter {
 		|| caseForcerDesentrelacement.isSelected())
 		{
 			int doubler = 0;
-			if (lblTFF.getText().equals("x2") && caseForcerDesentrelacement.isSelected())
+			String field = FFPROBE.fieldOrder;
+			if (lblTFF.getText().contains("x2") && caseForcerDesentrelacement.isSelected())
+			{
 				doubler = 1;
+				
+				if (lblTFF.getText().equals("x2 T"))
+				{
+					field = "0";
+				}
+				else if (lblTFF.getText().equals("x2 B"))
+				{
+					field = "1";
+				}
+			}
 			
-			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + FFPROBE.fieldOrder + ":0";
+			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
 		}							
 		
 		return "";
@@ -275,7 +287,7 @@ public class AdvancedFeatures extends Shutter {
 		            int width = Integer.parseInt(s[0]);
 		            int height = Integer.parseInt(s[1]); 
 		
-		            if (width > 1920 || height > 1080)
+		            if (width > 1920 || height > 1080 || FFPROBE.currentFPS >= 120.0f)
 		            	return " -profile:v " + profile; //level is auto selected by ffmpeg
 		            else
 		            	return " -profile:v " + profile + " -level 5.1";
@@ -621,7 +633,7 @@ public class AdvancedFeatures extends Shutter {
 			return " -vsync vfr";
 		}
 		
-		if (caseForcerDesentrelacement.isSelected() && (lblTFF.getText().equals("x2") || comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine")))
+		if (caseForcerDesentrelacement.isSelected() && (lblTFF.getText().contains("x2") || comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine")))
 		{
 			//Null	
 		}
@@ -646,10 +658,11 @@ public class AdvancedFeatures extends Shutter {
 
 	public static String setForceTFF(String filterComplex) {
 		
-		if (comboFonctions.getSelectedItem().toString().contains("XDCAM") && caseForcerEntrelacement.isSelected())
+		if (caseForcerEntrelacement.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
-				filterComplex += "setfield=tff";
+			
+			filterComplex += "setfield=tff";
 		}
 		
 		return filterComplex;		

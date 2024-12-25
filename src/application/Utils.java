@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2024 PACIFICO PAUL
+* Copyright (C) 2025 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -1650,7 +1650,7 @@ public class Utils extends Shutter {
 														timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
 													
 													if (p.getName().equals("textTcPosX"))
-														timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);
+														timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);												
 												}
 												else if (p instanceof JSlider)
 												{
@@ -1859,6 +1859,19 @@ public class Utils extends Shutter {
 							fileLocX = fileName.getLocation().x;
 							fileLocY = fileName.getLocation().y;
 							fileName.setSize(10,10); //Workaround to not reset the location
+							
+							VideoPlayer.player.add(fileName);
+							
+							//Overimage need to be the last component added
+							if (caseEnableCrop.isSelected())
+							{
+								VideoPlayer.player.remove(selection);
+								VideoPlayer.player.remove(overImage);
+								VideoPlayer.player.add(selection);
+								VideoPlayer.player.add(overImage);
+							}		
+							
+							fileName.repaint();
 						}
 						
 						//grpSubtitles
