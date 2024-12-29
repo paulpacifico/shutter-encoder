@@ -40,6 +40,7 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -177,7 +178,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, 750);
+		frame.setSize(370,750);		
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 50, frame.getHeight());
@@ -676,10 +677,11 @@ public class Settings {
 		accentColor.setBounds(lblTheme.getLocation().x + lblTheme.getWidth() + 6, lblTheme.getLocation().y - 4, 41, 22);
 		frame.getContentPane().add(accentColor);
 		
-		accentColor.addMouseListener(new MouseListener(){
+		accentColor.addMouseListener(new MouseAdapter(){
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseClicked(MouseEvent e)
+			{
 				Utils.themeColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), new Color(71, 163, 236));
 								
 				if (Utils.themeColor != null)
@@ -702,22 +704,6 @@ public class Settings {
 					}
 				}
 				
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {		
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {				
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {				
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
 			}
     		
     	});

@@ -170,9 +170,9 @@ import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
+import library.NCNN;
 import library.SEVENZIP;
 import library.TSMUXER;
-import library.NCNN;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
 import settings.Corrections;
@@ -186,7 +186,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "18.6";
+	public static String actualVersion = "18.7";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -721,7 +721,7 @@ public class Shutter {
 	}
   	  
 	public static void main(String[] args) {
-				
+						
 		//Splashscreen
 		new Splash();
 				
@@ -772,8 +772,10 @@ public class Shutter {
 		} catch (Exception e) {}     
 		
 		//Drop files
-		if (args.length != 0) {
-			for (int i = 0; i < args.length; i++) {
+		if (args.length != 0) 
+		{
+			for (int i = 0; i < args.length; i++)
+			{
 				droppedFiles.add(i, args[i]);
 			}
 		}
@@ -13046,7 +13048,7 @@ public class Shutter {
 					comboColorspace.setEnabled(false);	
 					
 					if (comboFonctions.getSelectedItem().toString().equals("VP9")
-					|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 					{
 						caseAlpha.setEnabled(true);			
 					}
@@ -13196,7 +13198,7 @@ public class Shutter {
 					caseAlpha.setEnabled(false);	
 				}				
 				else if (comboFonctions.getSelectedItem().toString().equals("VP9")
-				|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+				|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 				{
 					caseAlpha.setEnabled(true);					
 				}
@@ -20875,34 +20877,45 @@ public class Shutter {
 												//Accélération graphique Windows
 												if (System.getProperty("os.name").contains("Windows"))
 												{
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -b_ref_mode 0 -s 640x360 -f null -" + '"');
-							
-													if (FFMPEG.error == false)
-														graphicsAccel.add("Nvidia NVENC");
-							
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_qsv -s 640x360 -f null -" + '"');
 													
-													if (FFMPEG.error == false)
-														graphicsAccel.add("Intel Quick Sync");
-													
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_amf -s 640x360 -f null -" + '"');
-							
-													if (FFMPEG.error == false)
-														graphicsAccel.add("AMD AMF Encoder");
-													
-													FFMPEG.hwaccel("-init_hw_device vulkan -f lavfi -i nullsrc -t 1 -c:v " + codec + "_vulkan -vf format=nv12,hwupload -f null -" + '"');
-							
-													if (FFMPEG.error == false)
-														graphicsAccel.add("Vulkan Video");
-													
-													/*
-													if (codec == "hevc")
+													if (arch.equals("arm64"))
 													{
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_d3d12va -s 640x360 -f null -" + '"');
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_mf -s 640x360 -f null -" + '"');
+														
+														if (FFMPEG.error == false)
+															graphicsAccel.add("Media Foundation");
+													}
+													else
+													{													
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_nvenc -b_ref_mode 0 -s 640x360 -f null -" + '"');
 								
 														if (FFMPEG.error == false)
-															graphicsAccel.add("D3D12VA");
-													}*/
+															graphicsAccel.add("Nvidia NVENC");
+								
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_qsv -s 640x360 -f null -" + '"');
+														
+														if (FFMPEG.error == false)
+															graphicsAccel.add("Intel Quick Sync");
+														
+														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_amf -s 640x360 -f null -" + '"');
+								
+														if (FFMPEG.error == false)
+															graphicsAccel.add("AMD AMF Encoder");
+														
+														FFMPEG.hwaccel("-init_hw_device vulkan -f lavfi -i nullsrc -t 1 -c:v " + codec + "_vulkan -vf format=nv12,hwupload -f null -" + '"');
+								
+														if (FFMPEG.error == false)
+															graphicsAccel.add("Vulkan Video");
+														
+														/*
+														if (codec == "hevc")
+														{
+															FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec + "_d3d12va -s 640x360 -f null -" + '"');
+									
+															if (FFMPEG.error == false)
+																graphicsAccel.add("D3D12VA");
+														}*/
+													}
 												}	
 												else if (System.getProperty("os.name").contains("Linux"))
 												{
@@ -21364,7 +21377,7 @@ public class Shutter {
 										caseAlpha.setLocation(7, caseForceTune.getY() + 17);
 										grpAdvanced.add(caseAlpha);	
 										
-										if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+										if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 										{
 											caseAlpha.setEnabled(true);
 										}
@@ -21457,20 +21470,30 @@ public class Shutter {
 												{
 													if (System.getProperty("os.name").contains("Windows"))
 													{
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -s 640x360 -f null -" + '"');
-								
-														if (FFMPEG.error == false)
-															graphicsAccel.add("Nvidia NVENC");
-								
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_qsv -s 640x360 -f null -" + '"');
-								
-														if (FFMPEG.error == false)
-															graphicsAccel.add("Intel Quick Sync");
-				
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_amf -s 640x360 -f null -" + '"');
-								
-														if (FFMPEG.error == false)
-															graphicsAccel.add("AMD AMF Encoder");
+														if (arch.equals("arm64"))
+														{
+															FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_mf -s 640x360 -f null -" + '"');
+															
+															if (FFMPEG.error == false)
+																graphicsAccel.add("Media Foundation");
+														}
+														else
+														{	
+															FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -s 640x360 -f null -" + '"');
+									
+															if (FFMPEG.error == false)
+																graphicsAccel.add("Nvidia NVENC");
+									
+															FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_qsv -s 640x360 -f null -" + '"');
+									
+															if (FFMPEG.error == false)
+																graphicsAccel.add("Intel Quick Sync");
+					
+															FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v av1_amf -s 640x360 -f null -" + '"');
+									
+															if (FFMPEG.error == false)
+																graphicsAccel.add("AMD AMF Encoder");
+														}
 													}
 													else if (System.getProperty("os.name").contains("Mac"))
 													{
@@ -23930,7 +23953,7 @@ public class Shutter {
 			caseAlpha.setEnabled(false);			
 		}
 		else if (comboFonctions.getSelectedItem().toString().equals("VP9")
-		|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+		|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 		{
 			caseAlpha.setEnabled(true);			
 		}

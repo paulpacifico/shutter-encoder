@@ -315,7 +315,7 @@ public class AdvancedFeatures extends Shutter {
 		    			else
 		    				profile = "main422-10";    
 		    		}
-		    		else if ( profile.equals("main444"))
+		    		else if (profile.equals("main444"))
 		    		{
 		    			if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("12bits"))
 		    			{
@@ -913,7 +913,15 @@ public class AdvancedFeatures extends Shutter {
 		        	options += "interlace=1";
 		            
 		        }
-		        
+				
+				/*Alpha
+				if (caseAlpha.isSelected())
+				{
+					if (options != "") options += ":";
+					
+					options += "alpha=1";
+				}*/
+				
 				//GOP
 				if (caseGOP.isSelected())
 		        {

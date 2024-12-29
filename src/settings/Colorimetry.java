@@ -120,6 +120,29 @@ public class Colorimetry extends Shutter {
 		
 		return "";
 	}
+	
+	public static String setMetadata(String filterComplex) {
+		
+		if (grpColorimetry.isVisible() && caseColorspace.isSelected())
+		{
+			if (filterComplex != "") filterComplex += ",";
+						
+			if (comboColorspace.getSelectedItem().toString().contains("Rec. 709"))
+			{
+				filterComplex += "setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709";
+			}
+			else if (comboColorspace.getSelectedItem().toString().contains("Rec. 2020 PQ"))
+			{
+				filterComplex += "setparams=color_primaries=bt2020:color_trc=smpte2084:colorspace=bt2020nc";
+			}
+			else if (comboColorspace.getSelectedItem().toString().contains("Rec. 2020 HLG"))
+			{
+				filterComplex += "setparams=color_primaries=bt2020:color_trc=arib-std-b67:colorspace=bt2020nc";
+			}
+		}
+		
+		return filterComplex;
+	}
 
 	public static String setInputCodec(String extension) {
 		

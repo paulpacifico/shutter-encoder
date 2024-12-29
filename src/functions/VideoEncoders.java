@@ -473,7 +473,7 @@ public class VideoEncoders extends Shutter {
 									break;
 							}
 						}	
-						
+												
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
@@ -531,6 +531,9 @@ public class VideoEncoders extends Shutter {
 										
 						//Colormatrix
 						filterComplex = Colorimetry.setColormatrix(filterComplex);	
+						
+						//Colorspace metadata
+						filterComplex = Colorimetry.setMetadata(filterComplex);
 
 						//Rotate
 						filterComplex = Image.setRotate(filterComplex);
@@ -731,7 +734,7 @@ public class VideoEncoders extends Shutter {
 			    		String flags = AdvancedFeatures.setFlags(fileName);
 			    		
 						//Metadatas
-			    		String metadatas = FunctionUtils.setMetadatas();
+			    		String metadatas = FunctionUtils.setMetadata();
 			    		
 			    		//OPATOM
 			    		String opatom = AdvancedFeatures.setOPATOM(audio);
@@ -1273,6 +1276,10 @@ public class VideoEncoders extends Shutter {
 					{
 						return " -c:v av1_amf";
 					}
+					else if (comboAccel.getSelectedItem().equals("Media Foundation"))
+					{
+						return " -c:v av1_mf";
+					}
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 					{
 						return " -c:v av1_videotoolbox";
@@ -1336,6 +1343,8 @@ public class VideoEncoders extends Shutter {
 						return " -c:v h264_amf";
 					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
 						return " -c:v h264_vulkan";
+					else if (comboAccel.getSelectedItem().equals("Media Foundation"))
+						return " -c:v h264_mf";
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 						return " -c:v h264_videotoolbox";
 					else if (comboAccel.getSelectedItem().equals("VAAPI"))
@@ -1362,6 +1371,8 @@ public class VideoEncoders extends Shutter {
 						return " -c:v hevc_amf";
 					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
 						return " -c:v hevc_vulkan";
+					else if (comboAccel.getSelectedItem().equals("Media Foundation"))
+						return " -c:v hevc_mf";
 					else if (comboAccel.getSelectedItem().equals("D3D12VA"))
 						return " -c:v hevc_d3d12va";
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))

@@ -374,9 +374,16 @@ public static StringBuilder errorLog = new StringBuilder();
 		|| line.contains("Could not find tag for codec")
 		|| line.contains("Input/output error")
 		|| line.contains("Operation not permitted")
-		|| line.contains("Permission denied"))
-		{			
-			errorLog.append(line + System.lineSeparator());
+		|| line.contains("Permission denied")
+		|| line.contains("width not divisible by 2")
+		|| line.contains("integer multiple of the specified")
+		|| line.contains("is not multiple of 4")
+		|| line.contains("cannot be smaller than input dimensions"))
+		{		
+			if (line.contains("error code") == false && line.contains("return code") == false)
+			{
+				errorLog.append(line + System.lineSeparator());
+			}
 			error = true;
 		} 				
 	}

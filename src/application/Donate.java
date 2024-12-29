@@ -91,8 +91,7 @@ public class Donate {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
-				
+				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));				
 				accept = true;
 			}
 		 	
@@ -185,6 +184,8 @@ public class Donate {
 				try {
 					Desktop.getDesktop().browse(new URI("https://donate.stripe.com/28o29m0QwfRZ4U0cMM"));
 				} catch (IOException | URISyntaxException e) {}
+				
+				System.exit(0);
 			}
 
 			@Override
@@ -196,7 +197,6 @@ public class Donate {
 			public void mouseExited(MouseEvent arg0) {
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
-
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {

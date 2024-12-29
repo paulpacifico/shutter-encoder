@@ -116,7 +116,7 @@ public class Merge extends Shutter {
 						lblCurrentEncoding.setText(Shutter.language.getProperty("babEncoding"));
 				
 						//Metadatas
-			    		String metadatas = FunctionUtils.setMetadatas();
+			    		String metadatas = FunctionUtils.setMetadata();
 						
 						//Output Name
 						File fileOut = new File(fileOutputName);							

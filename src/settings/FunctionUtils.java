@@ -1093,7 +1093,7 @@ public class FunctionUtils extends Shutter {
 		return "";
 	}
 	
-	public static String setMetadatas() { 
+	public static String setMetadata() { 
 		
 		String metadata = " -metadata creation_time=" + '"' + java.time.Clock.systemUTC().instant() + '"';
 				

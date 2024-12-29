@@ -91,7 +91,7 @@ public class Rewrap extends Shutter {
 						String rotate = setRotate();
 						
 						//Metadatas
-			    		String metadatas = FunctionUtils.setMetadatas();
+			    		String metadatas = FunctionUtils.setMetadata();
 			    		
 			    		String flags = "";
 			    		if (FFPROBE.videoCodec != null)
