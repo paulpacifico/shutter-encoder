@@ -141,7 +141,7 @@ public class VideoInserts extends Shutter {
 					{
 						fileOut = FunctionUtils.fileReplacement(labelOutput, masterName, extension, extensionName + "_", extension);
 						
-						if (fileOut == null)
+						if (fileOut == null || fileOut.toString().equals("skip"))
 						{
 							cancelled = true;
 						}

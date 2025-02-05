@@ -205,6 +205,7 @@ public class Shutter {
 	public static JFrame frame = new JFrame();
 	public static int extendedWidth = 1350;
 	public static boolean noSettings = true;
+	public static boolean showDonateWindow = false;
 	public static int taskBarHeight;
 	public static boolean cancelled = false;
 	public static float ratioFinal = 0; // CropVideo
@@ -796,12 +797,12 @@ public class Shutter {
 		}
 		
 		new Shutter();
-		
+
 		ImageIO.setUseCache(false); //IMPORTANT use RAM instead of HDD cache
 	}
 
 	public Shutter() {
-					
+				
 		Desktop desktop = Desktop.getDesktop();
 		if( desktop.isSupported( Desktop.Action.APP_ABOUT ) ) {
 		    desktop.setAboutHandler( e -> {
@@ -1127,8 +1128,9 @@ public class Shutter {
 			public void mouseClicked(MouseEvent e) {
 			}
 
+
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {				
 			}
 
 			@Override
@@ -1635,8 +1637,13 @@ public class Shutter {
 					{
 						VideoPlayer.waveform = null;
 					}				
-										
-					new Donate();
+						
+					if (showDonateWindow)
+					{
+						new Donate();
+					}
+					else						
+						System.exit(0);
 				}
 			}
 
@@ -2006,7 +2013,7 @@ public class Shutter {
 		grpChooseFiles.setLayout(null);
 		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 377);
 		grpChooseFiles.setBackground(new Color(30,30,35));
-		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		frame.getContentPane().add(grpChooseFiles);
 
@@ -3083,7 +3090,7 @@ public class Shutter {
 		grpChooseFunction.setLayout(null);
 		grpChooseFunction.setBounds(10, grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4, 312, 76);
 		grpChooseFunction.setBackground(new Color(30,30,35));
-		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		
 		frame.getContentPane().add(grpChooseFunction);
@@ -3364,6 +3371,7 @@ public class Shutter {
 				
 				FunctionUtils.yesToAll = false;
 				FunctionUtils.noToAll = false;
+				FunctionUtils.skipToAll = false;
 				
 				if ((btnStart.getText().equals(language.getProperty("btnStartFunction"))
 				|| btnStart.getText().equals(language.getProperty("btnAddToRender"))) && liste.getSize() > 0)
@@ -3615,7 +3623,7 @@ public class Shutter {
 									JOptionPane.showMessageDialog(frame, language.getProperty("incompatibleInputDevice"), language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
 								else 
 									VideoEncoders.main();
-							} else if (language.getProperty("functionPicture").equals(function) || "JPEG".equals(function)) {
+							} else if (language.getProperty("functionPicture").equals(function) || "JPEG".equals(function) || "JPEG XL".equals(function)) {
 									Picture.main(true, false);
 							}
 							else if (language.getProperty("functionRewrap").equals(function))
@@ -3727,7 +3735,7 @@ public class Shutter {
 				
 				language.getProperty("itemArchiveCodecs"), "FFV1",		
 				
-				language.getProperty("itemImage"),"JPEG",language.getProperty("functionPicture"), 
+				language.getProperty("itemImage"),"JPEG","JPEG XL",language.getProperty("functionPicture"), 
 				
 				language.getProperty("itemBurnRip"), "DVD", "Blu-ray", "DVD Rip",
 				
@@ -3859,6 +3867,7 @@ public class Shutter {
 					newList.clear();
 					
 					newList.add("JPEG");
+					newList.add("JPEG XL");
 					newList.add(language.getProperty("functionPicture")); 
 				}
 				else if (comboFonctions.getSelectedItem().equals(language.getProperty("itemBurnRip")))
@@ -4256,7 +4265,7 @@ public class Shutter {
 		
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);	
 		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 122);
-		grpDestination.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(1,1,1,1), new Color(55,55,55), 1, 5)));		
+		grpDestination.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(1,1,1,1), new Color(45,45,45), 1, 5)));		
 		grpDestination.setFont(new Font(montserratFont, Font.PLAIN, 11));	
 		frame.getContentPane().add(grpDestination);		
 
@@ -5357,7 +5366,7 @@ public class Shutter {
 		grpProgression.setBounds(10, grpDestination.getY() + grpDestination.getHeight() + 6, 312, 94);
 		grpProgression.setBackground(new Color(30,30,35));
 		grpProgression.setToolTipText(language.getProperty("rightClick"));
-		grpProgression.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpProgression.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpProgression") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		frame.getContentPane().add(grpProgression);
 
@@ -5502,7 +5511,7 @@ public class Shutter {
 		grpResolution = new JPanel();
 		grpResolution.setLayout(null);
 		grpResolution.setVisible(false);
-		grpResolution.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpResolution.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpResolution") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpResolution.setBackground(new Color(30,30,35));
 		grpResolution.setBounds(frame.getWidth(), 30, 312, 121);
@@ -5527,11 +5536,11 @@ public class Shutter {
 			{     	
 				if (comboResolution.getItemCount() > 0) //Contourne un bug lors de l'action sur le btnReset
 				{
-					if (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+					if (comboFonctions.getSelectedItem().toString().contains("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 					{
 						changeFilters();
 						
-						if (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFilter.getSelectedItem().toString().equals(".png"))
+						if (comboFonctions.getSelectedItem().toString().contains("JPEG") || comboFilter.getSelectedItem().toString().equals(".png"))
 						{
 							grpResolution.remove(lblImageQuality);
 							grpResolution.remove(comboImageOption);
@@ -5645,7 +5654,7 @@ public class Shutter {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				
-				if (comboFonctions.getSelectedItem().toString().equals("JPEG") == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false)
+				if (comboFonctions.getSelectedItem().toString().contains("JPEG") == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false)
 				{
 					lblPad.setVisible(true);
 				}
@@ -5999,7 +6008,7 @@ public class Shutter {
 		grpImageFilter = new JPanel();
 		grpImageFilter.setLayout(null);
 		grpImageFilter.setVisible(false);
-		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpImageFilter.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpImageFilter.setBackground(new Color(30,30,35));
 		grpImageFilter.setBounds(frame.getWidth(), 199, 312, 17);
@@ -6249,7 +6258,7 @@ public class Shutter {
 		grpSetTimecode = new JPanel();
 		grpSetTimecode.setLayout(null);
 		grpSetTimecode.setVisible(false);
-		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), language.getProperty("grpTimecode") + " ",
+		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), language.getProperty("grpTimecode") + " ",
 				0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpSetTimecode.setBackground(new Color(30,30,35));
 		grpSetTimecode.setBounds(frame.getWidth(), 258, 312, 17);
@@ -6482,7 +6491,7 @@ public class Shutter {
 		grpSetAudio = new JPanel();
 		grpSetAudio.setLayout(null);
 		grpSetAudio.setVisible(false);
-		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpSetAudio.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpSetAudio.setBackground(new Color(30,30,35));
 		grpSetAudio.setBounds(frame.getWidth(), 343, 312, 47);
@@ -7230,7 +7239,7 @@ public class Shutter {
 		grpAudio = new JPanel();
 		grpAudio.setLayout(null);
 		grpAudio.setVisible(false);
-		grpAudio.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpAudio.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpAudio") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpAudio.setBackground(new Color(30,30,35));
 		grpAudio.setBounds(frame.getWidth(), 343, 312, 139);
@@ -7509,7 +7518,7 @@ public class Shutter {
 		grpCrop = new JPanel();
 		grpCrop.setLayout(null);
 		grpCrop.setVisible(false);
-		grpCrop.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("frameCropImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpCrop.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("frameCropImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpCrop.setBackground(new Color(30,30,35));
 		grpCrop.setSize(312, 17);
 		grpCrop.setLocation(frame.getWidth(), grpImageAdjustement.getY());
@@ -8542,7 +8551,7 @@ public class Shutter {
 	
 		grpOverlay = new JPanel();
 		grpOverlay.setLayout(null);
-		grpOverlay.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpOverlay.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpOverlay.setBackground(new Color(30,30,35));
 		grpOverlay.setSize(312, 17);
 		grpOverlay.setLocation(frame.getWidth(), grpCrop.getY() + grpCrop.getHeight() + 6);
@@ -10660,7 +10669,7 @@ public class Shutter {
 	
 		grpSubtitles = new JPanel();
 		grpSubtitles.setLayout(null);
-		grpSubtitles.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("caseSubtitles") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpSubtitles.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("caseSubtitles") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpSubtitles.setBackground(new Color(30,30,35));
 		grpSubtitles.setSize(312, 17);
 		grpSubtitles.setLocation(frame.getWidth(), grpOverlay.getY() + grpOverlay.getHeight() + 6);
@@ -11820,7 +11829,7 @@ public class Shutter {
 			
 		grpWatermark = new JPanel();
 		grpWatermark.setLayout(null);
-		grpWatermark.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpWatermark.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpWatermark.setBackground(new Color(30,30,35));
 		grpWatermark.setSize(312, 17);
 		grpWatermark.setLocation(frame.getWidth(), grpSubtitles.getY() + grpSubtitles.getHeight() + 6);
@@ -12750,7 +12759,7 @@ public class Shutter {
 		grpColorimetry = new JPanel();
 		grpColorimetry.setLayout(null);
 		grpColorimetry.setVisible(false);
-		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpColorimetry.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpColorimetry.setBackground(new Color(30,30,35));
 		grpColorimetry.setBounds(frame.getWidth(), 199, 312, 17);
@@ -13048,7 +13057,7 @@ public class Shutter {
 					comboColorspace.setEnabled(false);	
 					
 					if (comboFonctions.getSelectedItem().toString().equals("VP9")
-					|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					|| comboFonctions.getSelectedItem().toString().equals("H.265") && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 					{
 						caseAlpha.setEnabled(true);			
 					}
@@ -13198,7 +13207,7 @@ public class Shutter {
 					caseAlpha.setEnabled(false);	
 				}				
 				else if (comboFonctions.getSelectedItem().toString().equals("VP9")
-				|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+				|| comboFonctions.getSelectedItem().toString().equals("H.265") && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 				{
 					caseAlpha.setEnabled(true);					
 				}
@@ -13355,7 +13364,7 @@ public class Shutter {
 		grpImageAdjustement = new JPanel();
 		grpImageAdjustement.setName("grpImageAdjustement");
 		grpImageAdjustement.setLayout(null);
-		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("frameColorImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("frameColorImage") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpImageAdjustement.setBackground(new Color(30,30,35));
 		grpImageAdjustement.setBounds(frame.getWidth(), 258, 312, 17);
 		grpImageAdjustement.setVisible(false);
@@ -14584,7 +14593,7 @@ public class Shutter {
 		grpCorrections = new JPanel();
 		grpCorrections.setLayout(null);
 		grpCorrections.setVisible(false);
-		grpCorrections.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("grpCorrections") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpCorrections.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("grpCorrections") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpCorrections.setBackground(new Color(30,30,35));
 		grpCorrections.setBounds(frame.getWidth(), grpImageAdjustement.getY() + grpImageAdjustement.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpCorrections);
@@ -14952,7 +14961,7 @@ public class Shutter {
 		grpTransitions = new JPanel();
 		grpTransitions.setLayout(null);
 		grpTransitions.setVisible(false);
-		grpTransitions.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("grpTransitions") + " ", 0,
+		grpTransitions.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("grpTransitions") + " ", 0,
 				0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpTransitions.setBackground(new Color(30,30,35));
 		grpTransitions.setBounds(frame.getWidth(), grpCorrections.getY() + grpCorrections.getHeight() + 6, 312, 17);
@@ -15435,7 +15444,7 @@ public class Shutter {
 		grpImageSequence = new JPanel();
 		grpImageSequence.setLayout(null);
 		grpImageSequence.setVisible(false);
-		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpImageSequence.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpImageSequence.setBackground(new Color(30,30,35));
 		grpImageSequence.setBounds(frame.getWidth(), 199, 312, 17);
@@ -15607,7 +15616,7 @@ public class Shutter {
 		grpAdvanced = new JPanel();
 		grpAdvanced.setLayout(null);
 		grpAdvanced.setVisible(false);
-		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpAdvanced.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), language.getProperty("grpAdvanced") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpAdvanced.setBackground(new Color(30,30,35));
 		grpAdvanced.setBounds(frame.getWidth(), 396, 312, 17);
 		frame.getContentPane().add(grpAdvanced);
@@ -16684,7 +16693,7 @@ public class Shutter {
 		grpBitrate = new JPanel();
 		grpBitrate.setLayout(null);
 		grpBitrate.setVisible(false);
-		grpBitrate.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5),
+		grpBitrate.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpBitrate") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		grpBitrate.setBackground(new Color(30,30,35));
 		grpBitrate.setBounds(658, 30, 312, 208);
@@ -18732,7 +18741,7 @@ public class Shutter {
 				|| "MJPEG".equals(function) || "Xvid".equals(function) || "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)
 				|| "DVD".equals(function) || "Blu-ray".equals(function) || "QT JPEG".equals(function)
 				|| language.getProperty("functionPicture").equals(function)
-				|| "JPEG".equals(function)
+				|| "JPEG".equals(function) || "JPEG XL".equals(function)
 				|| language.getProperty("functionNormalization").equals(function))
 		{
 			changeWidth(true);
@@ -21372,12 +21381,12 @@ public class Shutter {
 									comboForceTune.setLocation(caseForceTune.getLocation().x + caseForceTune.getWidth() + 4, caseForceTune.getLocation().y + 4);
 									grpAdvanced.add(comboForceTune);				
 		
-									if (comboFonctions.getSelectedItem().equals("H.265") && System.getProperty("os.name").contains("Mac"))
+									if (comboFonctions.getSelectedItem().equals("H.265"))
 									{									
 										caseAlpha.setLocation(7, caseForceTune.getY() + 17);
 										grpAdvanced.add(caseAlpha);	
 										
-										if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+										if (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 										{
 											caseAlpha.setEnabled(true);
 										}
@@ -22281,7 +22290,7 @@ public class Shutter {
 									grpAdvanced.add(caseForcerEntrelacement);
 								}
 								
-							} else if (language.getProperty("functionPicture").equals(function) || "JPEG".equals(function)) {
+							} else if (language.getProperty("functionPicture").equals(function) || "JPEG".equals(function) || "JPEG XL".equals(function)) {
 								
 								addToList.setText(language.getProperty("filesVideoOrPicture"));
 								caseDisplay.setEnabled(false);
@@ -23268,7 +23277,7 @@ public class Shutter {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
 				}
-			} else if (comboFonctions.getSelectedItem().toString().equals("JPEG")) {
+			} else if (comboFonctions.getSelectedItem().toString().contains("JPEG")) {
 				
 				lblFilter.setText(" ");	
 				lblFilter.setVisible(true);
@@ -23280,7 +23289,7 @@ public class Shutter {
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
-					comboFilter.setSelectedIndex(0);
+					comboFilter.setSelectedIndex(2);
 				}	
 			}
 			else
@@ -23527,7 +23536,7 @@ public class Shutter {
 
 		if (FFMPEG.isRunning)
 		{		
-			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) == false && comboFonctions.getSelectedItem().toString().equals("JPEG") == false)
+			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) == false && comboFonctions.getSelectedItem().toString().contains("JPEG") == false)
 				progressBar1.setValue(0);
 			
 			if (caseDisplay.isSelected() == false)
@@ -23953,7 +23962,7 @@ public class Shutter {
 			caseAlpha.setEnabled(false);			
 		}
 		else if (comboFonctions.getSelectedItem().toString().equals("VP9")
-		|| System.getProperty("os.name").contains("Mac") && comboFonctions.getSelectedItem().toString().equals("H.265") && comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+		|| comboFonctions.getSelectedItem().toString().equals("H.265") && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 		{
 			caseAlpha.setEnabled(true);			
 		}
@@ -24154,8 +24163,6 @@ public class Shutter {
 		{
 			enableAll();
 		}
-		Utils.yesToAll = false;
-		Utils.noToAll = false;
 
 		if (cancelled == true)
 		{

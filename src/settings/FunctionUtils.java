@@ -45,7 +45,6 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import application.Console;
@@ -56,6 +55,7 @@ import application.Shutter;
 import application.SubtitlesEmbed;
 import application.Utils;
 import application.VideoPlayer;
+import application.fileOverwriteWindow;
 import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -69,6 +69,7 @@ public class FunctionUtils extends Shutter {
 	public static boolean allowsInvalidCharacters = false;
 	public static boolean yesToAll = false;
 	public static boolean noToAll = false;
+	public static boolean skipToAll = false;
 	public static File OPAtomFolder;
 	public static String silentTrack = "";
 	public static int mergeDuration = 0;
@@ -84,7 +85,7 @@ public class FunctionUtils extends Shutter {
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 						
 		if (caseGenerateFromDate.isSelected()
-		|| comboFonctions.getSelectedItem().toString().equals("JPEG")
+		|| comboFonctions.getSelectedItem().toString().contains("JPEG")
 		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 		{
 			EXIFTOOL.run('"' + file.toString() + '"');	
@@ -1239,16 +1240,24 @@ public class FunctionUtils extends Shutter {
         		filterComplex += " -c:s mov_text" + setMapSubtitles();    	
         }
         else if (casePreserveSubs.isSelected())
-        {
-        	if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
-        	{
+        {       	        	
+        	if (FFPROBE.subtitlesCodec != "" && (FFPROBE.subtitlesCodec.equals("dvb_subtitle") || FFPROBE.subtitlesCodec.equals("dvd_subtitle")))
+        	{        		
     			switch (comboFilter.getSelectedItem().toString())
     			{
     				case ".mp4":
     				case ".mkv":
     				case ".ts":
     					
-    					filterComplex += " -c:s dvbsub -map s?";
+    					if (FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
+    					{
+    						filterComplex += " -c:s dvbsub -map s?";
+    					}
+    					else if (FFPROBE.subtitlesCodec.equals("dvd_subtitle"))
+    					{
+    						filterComplex += " -c:s dvdsub -map s?";
+    					}
+    					
     					break;
     					
     				default:
@@ -1333,13 +1342,13 @@ public class FunctionUtils extends Shutter {
 			int channels = 0;
 			for (Component c : grpSetAudio.getComponents())
 			{
-				if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false && c.getName().equals("comboNormalizeAudio") == false)
+				if (c instanceof JComboBox && c.getName().equals("comboAudioCodec") == false && c.getName().equals("lblAudioMapping") == false && c.getName().equals("comboNormalizeAudio") == false)
 				{
 					if (((JComboBox) c).getSelectedIndex() != 16)
 						channels ++;
 				}
 			}
-
+			
 			for (int m = 1 ; m < channels; m++) 
 			{	
 				//On map les pistes existantes
@@ -1453,35 +1462,38 @@ public class FunctionUtils extends Shutter {
 		}
 		else
 		{
-			
-			int q = 0;
-			if (yesToAll == false && noToAll == false)
-			{				
-				Object[] options = { language.getProperty("yes"), language.getProperty("yesToAll"), language.getProperty("no"), language.getProperty("noToAll"), language.getProperty("btnCancel") };
-				
-				q = JOptionPane.showOptionDialog(frame, language.getProperty("eraseFile"),
-						Shutter.language.getProperty("File") + " " + fileOut.getName() + " " + Shutter.language.getProperty("alreadyExist"), JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.PLAIN_MESSAGE, null, options, options[2]);
+			if (yesToAll == false && noToAll == false && skipToAll == false)
+			{			
+				new fileOverwriteWindow(fileOut.getName());
 			}
 
-			if (q == 3) //No to all
+			if (fileOverwriteWindow.value.equals("skip") && fileOverwriteWindow.caseApplyToAll.isSelected()) //Skip to all
+			{
+				skipToAll = true;
+			}
+			
+			if (fileOverwriteWindow.value.equals("keep") && fileOverwriteWindow.caseApplyToAll.isSelected()) //No to all
 			{
 				noToAll = true;
-			}
+			}			
 			
-			if (q == 1) //Yes to all
+			if (fileOverwriteWindow.value.equals("overwrite") && fileOverwriteWindow.caseApplyToAll.isSelected()) //Yes to all
 			{
 				yesToAll = true;
-			}
-			
-			if (q == 2 || noToAll) //No
+			}		
+									
+			if (fileOverwriteWindow.value.equals("keep") || noToAll) //No
 			{
 				do {
 					fileOut = new File(path + "/" + file.replace(oldExt, surname + n + newExt));
 					n++;
 				} while (fileOut.exists());
 			}
-			else if (q == 4) //Cancel
+			else if (fileOverwriteWindow.value.equals("skip") || skipToAll) //Skip
+			{
+				fileOut = new File("skip");
+			}
+			else if (fileOverwriteWindow.value.equals("cancel")) //Cancel
 			{
 				if (caseChangeFolder1.isSelected() == false)
 				{

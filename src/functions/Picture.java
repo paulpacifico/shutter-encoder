@@ -229,9 +229,9 @@ public class Picture extends Shutter {
 			            
 						//EXR gamma
 						String inputCodec = Colorimetry.setInputCodec(extension);
-						
+												
 						//Compression
-						String compression = setCompression();
+						String compression = setCompression();		
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);	
@@ -262,6 +262,10 @@ public class Picture extends Shutter {
 							{
 								cancelled = true;
 								break;
+							}
+							else if (fileOut.toString().equals("skip"))
+							{
+								continue;
 							}
 						}
 						
@@ -439,11 +443,15 @@ public class Picture extends Shutter {
 	}
 
 	private static String setCompression() {
-		
-		if (comboFonctions.getSelectedItem().equals("JPEG"))
+
+		if (comboFonctions.getSelectedItem().toString().equals("JPEG"))
 		{
-			int q = Math.round((float) 31 - (float) ((float) ((float) Integer.valueOf(comboFilter.getSelectedItem().toString().replace("%", "")) * 31) / 100));
+			int q = Math.round((float) 31 - (float) ((float) ((float) Integer.valueOf(comboFilter.getSelectedItem().toString().replace("%", "")) * 31) / 100));			
 			return " -q:v " + q;
+		}
+		else if (comboFonctions.getSelectedItem().toString().equals("JPEG XL"))
+		{			
+			return " -c:v libjxl -q:v " + Integer.valueOf(comboFilter.getSelectedItem().toString().replace("%", ""));
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".png"))
 		{
@@ -498,7 +506,7 @@ public class Picture extends Shutter {
 			else
 				return comboFilter.getSelectedItem().toString();
 		}
-		else if (comboFonctions.getSelectedItem().equals("JPEG") && caseCreateSequence.isSelected())
+		else if (comboFonctions.getSelectedItem().toString().contains("JPEG") && caseCreateSequence.isSelected())
 		{
 			return "_%06d.jpg";
 		}
@@ -559,7 +567,7 @@ public class Picture extends Shutter {
 
 		for (File file : upscaleFolder.listFiles()) 
 		{			
-			if (comboFonctions.getSelectedItem().equals("JPEG") || (comboFonctions.getSelectedItem().equals("JPEG") == false && comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) == false)) //Video codec
+			if (comboFonctions.getSelectedItem().toString().contains("JPEG") || (comboFonctions.getSelectedItem().toString().contains("JPEG") == false && comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) == false)) //Video codec
 			{
 				fileOut = new File(lblDestination1.getText() + "/" + file.getName().replace(".png", ".jpg"));
 			}

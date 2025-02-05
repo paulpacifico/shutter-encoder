@@ -208,7 +208,11 @@ public class Rewrap extends Shutter {
 							{
 								cancelled = true;
 								break;
-							}					
+							}		
+							else if (fileOut.toString().equals("skip"))
+							{
+								continue;
+							}
 						}
 						
 						//OPATOM creation

@@ -148,7 +148,7 @@ public static boolean isRotated = false;
 			String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 			
 			if (caseGenerateFromDate.isSelected() == false
-			&& comboFonctions.getSelectedItem().toString().equals("JPEG") == false
+			&& comboFonctions.getSelectedItem().toString().contains("JPEG") == false
 			&& comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false
 			&& extension.toLowerCase().equals(".pdf") == false)
 			{

@@ -167,7 +167,11 @@ public class Extract extends Shutter {
 							{
 								cancelled = true;
 								break;
-							}				
+							}		
+							else if (fileOut.toString().equals("skip"))
+							{
+								continue;
+							}
 						}		
 									
 						//Command

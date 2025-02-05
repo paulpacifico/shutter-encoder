@@ -46,7 +46,7 @@ public class InputAndOutput extends Shutter {
         {
 			String frames[] = VideoPlayer.lblDuration.getText().split(" ");
 									
-        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG")) && caseCreateSequence.isSelected())
+        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
         	{		        	
 	    		float outputFPS = FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 	    		

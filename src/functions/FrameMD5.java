@@ -91,7 +91,11 @@ public class FrameMD5 extends Shutter {
 							{
 								cancelled = true;
 								break;
-							}				
+							}		
+							else if (fileOut.toString().equals("skip"))
+							{
+								continue;
+							}
 						}
 						
 						//Concat mode or Image sequence

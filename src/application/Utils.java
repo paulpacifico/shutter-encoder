@@ -91,8 +91,6 @@ public class Utils extends Shutter {
 	static String pathToLanguages;
 	public static Color themeColor = new Color(71, 163, 236);
 	public static Color highlightColor = new Color(129, 198, 253);
-	public static boolean yesToAll = false;
-	public static boolean noToAll = false;
 	public static boolean disableSleepMode = true;
 	public final static String username = "info@shutterencoder.com";
 	public final static String password = "";

@@ -70,7 +70,7 @@ public class ReplaceAudio extends Shutter {
 			fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", extension);
 		}
 				
-		if (fileOut != null)
+		if (fileOut != null && fileOut.toString().equals("skip") == false)
 		{							
 			String audio = setAudio(extension, audioExt);
 			
@@ -96,6 +96,10 @@ public class ReplaceAudio extends Shutter {
 				lastActions(fileName, fileOut, labelOutput);
 			}
 					
+		}
+		else if (fileOut == null)
+		{
+			cancelled = true;
 		}
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)

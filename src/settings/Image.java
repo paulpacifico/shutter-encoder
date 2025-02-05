@@ -240,7 +240,7 @@ public class Image extends Shutter {
 	        	if (filterComplex != "") filterComplex += ",";
 				
 				if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible()
-				|| ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().equals("JPEG")) && comboResolution.getSelectedItem().toString().contains(":") && comboResolution.getSelectedItem().toString().contains("auto") == false))
+				|| ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && comboResolution.getSelectedItem().toString().contains(":") && comboResolution.getSelectedItem().toString().contains("auto") == false))
 				{
 					if (comboResolution.getSelectedItem().toString().contains(":"))
 			        {

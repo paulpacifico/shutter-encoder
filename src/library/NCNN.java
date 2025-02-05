@@ -91,7 +91,7 @@ public static String modelsPath;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 						
 						if (caseCreateSequence.isSelected() == false
-						&& (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
+						&& (comboFonctions.getSelectedItem().toString().contains("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
 						{
 							progressBar1.setValue(0);
 							progressBar1.setMaximum(100);
@@ -112,7 +112,7 @@ public static String modelsPath;
 							}
 
 						    if ((line.contains("%") && caseCreateSequence.isSelected() == false
-				    		&& (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
+				    		&& (comboFonctions.getSelectedItem().toString().contains("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
 				    		|| line.contains("%") && isVideoPlayer)
 						    {
 						    	String s[] = line.split("\\.");
@@ -128,7 +128,7 @@ public static String modelsPath;
 						    	progressValue ++;
 								progressBar1.setValue(progressValue);
 								
-								if (comboFonctions.getSelectedItem().toString().equals("JPEG") == false
+								if (comboFonctions.getSelectedItem().toString().contains("JPEG") == false
 								&& comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) == false
 								&& caseDisplay.isSelected())
 								{
@@ -151,7 +151,7 @@ public static String modelsPath;
 							isRunning = false;
 							
 							if (caseCreateSequence.isSelected() == false
-							&& (comboFonctions.getSelectedItem().toString().equals("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
+							&& (comboFonctions.getSelectedItem().toString().contains("JPEG") || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))))
 							{
 								if (cancelled == false)
 								{

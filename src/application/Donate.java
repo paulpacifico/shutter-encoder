@@ -47,7 +47,7 @@ public class Donate {
 
 	private static int MousePositionX;
 	private static int MousePositionY;
-	
+		
 	public Donate()  {
 		
 		JFrame frame = new JFrame();
@@ -57,7 +57,8 @@ public class Donate {
 		frame.setBackground(new Color(30,30,35));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(280, 305);
+		frame.setSize(280, 335);
+		
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100, 100, 100)));
@@ -99,7 +100,7 @@ public class Donate {
 			public void mouseReleased(MouseEvent e) {
 				
 				if (accept)
-				{					
+				{							
 					System.exit(0);
 				}
 			}
@@ -207,6 +208,20 @@ public class Donate {
 			}
 			
 		});
+				
+		JLabel line1 = new JLabel("Hope you enjoyed the software!");
+		line1.setHorizontalAlignment(SwingConstants.CENTER);
+		line1.setSize(frame.getWidth(), 16);
+		line1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		line1.setLocation((frame.getWidth() - line1.getWidth()) / 2, qrcode.getY() + qrcode.getHeight() + 7);
+		frame.getContentPane().add(line1);
+		
+		JLabel line2 = new JLabel("Support me to make it even better!");
+		line2.setHorizontalAlignment(SwingConstants.CENTER);
+		line2.setSize(frame.getWidth(), 16);
+		line2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		line2.setLocation((frame.getWidth() - line2.getWidth()) / 2, line1.getY() + line1.getHeight());
+		frame.getContentPane().add(line2);
 		
 		frame.setVisible(true);
 	}

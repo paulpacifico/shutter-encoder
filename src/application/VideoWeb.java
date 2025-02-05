@@ -100,6 +100,8 @@ public class VideoWeb {
 	private JCheckBox caseWAV;
 	private JCheckBox caseAuto;
 	public static JCheckBox caseMetadata;
+	public static JCheckBox caseCookies;
+	private JComboBox<String> comboCookies;
 	private JCheckBox caseUser;
 	private JCheckBox casePass;
 	private JCheckBox caseVideoPass;
@@ -116,7 +118,7 @@ public class VideoWeb {
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(420, 316);
+		frame.setSize(420, 338);
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setAlwaysOnTop(true);
@@ -367,7 +369,7 @@ public class VideoWeb {
 		grpURL.setLocation(6, 28);
 		grpURL.setSize(408, frame.getHeight() - 34);
 		grpURL.setBackground(new Color(30,30,35));
-		grpURL.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpURL.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
 		
 		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -553,7 +555,7 @@ public class VideoWeb {
 			
 		});
 			
-		caseMetadata  = new JCheckBox(Shutter.language.getProperty("casePreserveMetadata"));
+		caseMetadata = new JCheckBox(Shutter.language.getProperty("casePreserveMetadata"));
 		caseMetadata.setName("caseMetadata");
 		if (Settings.videoWebCaseMetadata)
 		{
@@ -567,6 +569,45 @@ public class VideoWeb {
 		caseMetadata.setBounds(66, caseAuto.getY() + 22, caseMetadata.getPreferredSize().width, 16);	
 		grpURL.add(caseMetadata);
 		
+		caseCookies = new JCheckBox(Shutter.language.getProperty("caseCookies"));
+		caseCookies.setName("caseCookies");
+		caseCookies.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseCookies.setBounds(66, caseMetadata.getY() + 22, caseCookies.getPreferredSize().width, 16);	
+		grpURL.add(caseCookies);
+		
+		caseCookies.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseCookies.isSelected())
+				{
+					comboCookies.setEnabled(true);
+				}
+				else
+				{
+					comboCookies.setEnabled(false);
+				}
+			}
+			
+		});
+		
+		comboCookies = new JComboBox<String>();
+		comboCookies.setEnabled(false);
+		comboCookies.addItem("chrome");	
+		comboCookies.addItem("firefox");
+		comboCookies.addItem("safari");
+		comboCookies.addItem("brave");						
+		comboCookies.addItem("chromium");
+		comboCookies.addItem("edge");		
+		comboCookies.addItem("opera");		
+		comboCookies.addItem("vivaldi");
+		comboCookies.addItem("whale");
+		comboCookies.setLocation(caseCookies.getX() + caseCookies.getWidth() + 4, caseCookies.getY() - 4);	
+		comboCookies.setSize(grpURL.getWidth() - comboCookies.getX() - 14, 22);
+		comboCookies.setMaximumRowCount(10);
+		grpURL.add(comboCookies);
+		
 		comboFormats = new JComboBox<String>();
 		comboFormats.addItem("default");
 		comboFormats.addItem("bestvideo+bestaudio");					
@@ -579,7 +620,7 @@ public class VideoWeb {
 		comboFormats.addItem("up to 240p");
 		comboFormats.addItem("bestvideo");
 		comboFormats.addItem("bestaudio");
-		comboFormats.setLocation(16, 224);	
+		comboFormats.setLocation(16, 246);	
 		comboFormats.setSize(380, 22);
 		comboFormats.setMaximumRowCount(10);
 		grpURL.add(comboFormats);
@@ -684,7 +725,7 @@ public class VideoWeb {
 		caseVideoPass = new JCheckBox(Shutter.language.getProperty("caseVideoPass"));
 		caseVideoPass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
 		caseVideoPass.setSize(caseVideoPass.getPreferredSize().width, 16);	
-		caseVideoPass.setLocation(66, 199);
+		caseVideoPass.setLocation(66, 221);
 		grpURL.add(caseVideoPass);
 			
 		caseVideoPass.addActionListener(new ActionListener() {
@@ -711,7 +752,7 @@ public class VideoWeb {
 				
 		caseUser = new JCheckBox(Shutter.language.getProperty("caseUser"));
 		caseUser.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		caseUser.setBounds(caseVideoPass.getX(), caseMetadata.getY() + 22, caseUser.getPreferredSize().width, 16);
+		caseUser.setBounds(caseVideoPass.getX(), caseCookies.getY() + 22, caseUser.getPreferredSize().width, 16);
 		grpURL.add(caseUser);
 		
 		caseUser.addActionListener(new ActionListener() {
@@ -775,6 +816,11 @@ public class VideoWeb {
 		if (caseMetadata.isSelected())
 		{
 			options += " --embed-thumbnail --embed-metadata";
+		}
+		
+		if (caseCookies.isSelected())
+		{
+			options += " --cookies-from-browser " + comboCookies.getSelectedItem().toString();
 		}
 		
 		if (caseUser.isSelected())

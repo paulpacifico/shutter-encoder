@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -144,6 +145,7 @@ public class Settings {
 	public static JLabel lblDestination2 = new JLabel(); 
 	public static JLabel lblDestination3 = new JLabel(); 
 	public static boolean videoWebCaseMetadata = false;
+	public static Integer savedDayOfYear = 0;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
@@ -1776,6 +1778,12 @@ public class Settings {
 					{											
 						Shutter.conformKeyframesIsDisplayed = true;
 					}
+					
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("dayOfYear"))
+					{
+						savedDayOfYear = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+					}
+					
 				}
 			}		
 		}							
@@ -2431,7 +2439,43 @@ public class Settings {
 
 				warning.appendChild(component);				
 			}
+		
+			Calendar calendar = Calendar.getInstance();
+			int currentDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);  
+			
+			//Launch count
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("String"));
+			component.appendChild(cType);
 					
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode("dayOfYear"));
+			component.appendChild(cName);
+			
+			if (savedDayOfYear == 0 || currentDayOfYear - savedDayOfYear < 0 || currentDayOfYear - savedDayOfYear >= 7)
+			{
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(currentDayOfYear)));
+				component.appendChild(cValue);
+				
+				Shutter.showDonateWindow = true;
+			}
+			else
+			{
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(savedDayOfYear)));
+				component.appendChild(cValue);
+			}
+			
+			warning.appendChild(component);
+			
 			if (Shutter.cutKeyframesIsDisplayed || Shutter.rewrapKeyframesIsDisplayed || Shutter.conformKeyframesIsDisplayed)
 			{
 				root.appendChild(warning);				

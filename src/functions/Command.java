@@ -96,7 +96,11 @@ public class Command extends Shutter {
 							{
 								cancelled = true;
 								break;
-							}					
+							}	
+							else if (fileOut.toString().equals("skip"))
+							{
+								continue;
+							}
 						}
 						
 						//Command

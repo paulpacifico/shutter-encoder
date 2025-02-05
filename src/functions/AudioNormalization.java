@@ -100,7 +100,11 @@ public class AudioNormalization extends Shutter {
 							{
 								cancelled = true;
 								break;
-							}				
+							}	
+							else if (fileOut.toString().equals("skip"))
+							{
+								continue;
+							}
 						}
 								
 						//Loudness analysis

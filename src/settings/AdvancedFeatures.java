@@ -71,7 +71,7 @@ public class AdvancedFeatures extends Shutter {
 				 {
 					 if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        	 {
-			        	return " -preset p7";
+			        	return " -preset p7 -tune uhq";
 	        		 }
 					 else
 						return " -preset 0";
@@ -287,7 +287,7 @@ public class AdvancedFeatures extends Shutter {
 		            int width = Integer.parseInt(s[0]);
 		            int height = Integer.parseInt(s[1]); 
 		
-		            if (width > 1920 || height > 1080 || FFPROBE.currentFPS >= 120.0f)
+		            if (width > 1920 || height > 1080 || FFPROBE.currentFPS >= 120.0f || FunctionUtils.setVideoBitrate() >= 100000)
 		            	return " -profile:v " + profile; //level is auto selected by ffmpeg
 		            else
 		            	return " -profile:v " + profile + " -level 5.1";
@@ -325,7 +325,7 @@ public class AdvancedFeatures extends Shutter {
 		    				profile = "main444-10";    
 		    		}
 		        	
-		    		return " -profile:v " + profile;
+		    		return " -profile:v " + profile + " -level:v " + Shutter.comboForceLevel.getSelectedItem().toString();
 		        }
 		        else
 		        {
@@ -882,110 +882,113 @@ public class AdvancedFeatures extends Shutter {
 		
 		String options = "";
 		
-		int maxrate = FunctionUtils.setVideoBitrate();		
-		if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+		if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 		{
-			maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
-		}
-		
-		switch (comboFonctions.getSelectedItem().toString())
-		{
-			case "H.264":
-		
-		        if (caseForcerEntrelacement.isSelected())
-		        {
-		        	options = " -x264opts tff=1";
-		            if (lblVBR.getText().equals("CBR"))
-		            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
-		        }
-		        else if (lblVBR.getText().equals("CBR"))
-		        {
-		        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
-		        }
+			int maxrate = FunctionUtils.setVideoBitrate();		
+			if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
+			{
+				maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
+			}
+			
+			switch (comboFonctions.getSelectedItem().toString())
+			{
+				case "H.264":
+			
+			        if (caseForcerEntrelacement.isSelected())
+			        {
+			        	options = " -x264opts tff=1";
+			            if (lblVBR.getText().equals("CBR"))
+			            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+			        }
+			        else if (lblVBR.getText().equals("CBR"))
+			        {
+			        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+			        }
+			        
+		        	break;
 		        
-	        	break;
-	        
-			case "H.265":
+				case "H.265":
+							
+					//Interlacing
+					if (caseForcerEntrelacement.isSelected())
+			        {
+			        	options += "interlace=1";
+			            
+			        }
+					
+					/*Alpha
+					if (caseAlpha.isSelected())
+					{
+						if (options != "") options += ":";
 						
-				//Interlacing
-				if (caseForcerEntrelacement.isSelected())
-		        {
-		        	options += "interlace=1";
-		            
-		        }
-				
-				/*Alpha
-				if (caseAlpha.isSelected())
-				{
-					if (options != "") options += ":";
+						options += "alpha=1";
+					}*/
 					
-					options += "alpha=1";
-				}*/
-				
-				//GOP
-				if (caseGOP.isSelected())
-		        {
-		        	if (options != "") options += ":";
-		        	
-		    		options += "keyint=" + Shutter.gopSize.getText();
-		    		
-		        }
-		        
-				//Bitrate mode
-				if (lblVBR.getText().equals("CBR"))
-		        {
-					if (options != "") options += ":";
+					//GOP
+					if (caseGOP.isSelected())
+			        {
+			        	if (options != "") options += ":";
+			        	
+			    		options += "keyint=" + Shutter.gopSize.getText();
+			    		
+			        }
+			        
+					//Bitrate mode
+					if (lblVBR.getText().equals("CBR"))
+			        {
+						if (options != "") options += ":";
+						
+			        	options += "strict-cbr=1";
+			        }		        
+			        else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
+			        {
+			        	if (options != "") options += ":";
+			        	
+			        	options += "lossless=1";
+			        }
 					
-		        	options += "strict-cbr=1";
-		        }		        
-		        else if (lblVBR.getText().equals("CQ") && debitVideo.getSelectedItem().toString().equals("0"))
-		        {
-		        	if (options != "") options += ":";
-		        	
-		        	options += "lossless=1";
-		        }
-				
-				//HDR
-				if (grpColorimetry.isVisible() && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
-				{
-					if (options != "") options += ":";
-					
-					String PQorHLG = "smpte2084";
-					if (comboColorspace.getSelectedItem().toString().contains("HLG"))
-						PQorHLG = "arib-std-b67";
-					
-					if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
+					//HDR
+					if (grpColorimetry.isVisible() && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
 					{
-						FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+						if (options != "") options += ":";
+						
+						String PQorHLG = "smpte2084";
+						if (comboColorspace.getSelectedItem().toString().contains("HLG"))
+							PQorHLG = "arib-std-b67";
+						
+						if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
+						{
+							FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+						}
+						
+						if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
+						{
+							FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
+						}
+						
+						if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
+						{
+							FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
+						}
+						
+						options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFPROBE.HDRmax * 10000 + "," + FFPROBE.HDRmin * 10000 + "):max-cll=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL;
 					}
 					
-					if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
+					//Levels
+					if (caseForceLevel.isSelected())
+			        {
+						if (options != "") options += ":";
+						
+						options += "level=" + Shutter.comboForceLevel.getSelectedItem().toString();
+			        }
+					
+					if (options != "")
 					{
-						FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
+						options = " -x265-params " + '"' + options + '"';
 					}
-					
-					if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
-					{
-						FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
-					}
-					
-					options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFPROBE.HDRmax * 10000 + "," + FFPROBE.HDRmin * 10000 + "):max-cll=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL;
-				}
-				
-				//Levels
-				if (caseForceLevel.isSelected())
-		        {
-					if (options != "") options += ":";
-					
-					options += "level=" + Shutter.comboForceLevel.getSelectedItem().toString();
-		        }
-				
-				if (options != "")
-				{
-					options = " -x265-params " + '"' + options + '"';
-				}
-								
-				break;
+									
+					break;
+			}
 		}
 		
 		return options;

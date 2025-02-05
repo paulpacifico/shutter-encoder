@@ -412,7 +412,7 @@ public class SubtitlesEdit {
 		
 		JTextField in = new JTextField();
 		in.setText(subIn);
-		in.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5));
+		in.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5));
 		in.setForeground(Utils.themeColor);
 		in.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		in.setBounds(77, textPosition - 2, 94, 25);	
@@ -478,7 +478,7 @@ public class SubtitlesEdit {
 		
 		JTextField out = new JTextField();
 		out.setText(subOut);
-		out.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(55,55,55), 1, 5));
+		out.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5));
 		out.setForeground(Utils.themeColor);
 		out.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		out.setBounds(77, textPosition + 24, 94, 25);	
