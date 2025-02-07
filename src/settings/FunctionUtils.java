@@ -1685,7 +1685,7 @@ public class FunctionUtils extends Shutter {
 		}
 	}
 
-	public static boolean cleanFunction(String fileName, File fileOut, String output) {
+	public static boolean cleanFunction(File file, String fileName, File fileOut, String output) {
 		
 		String extension = "";
 
@@ -1768,6 +1768,12 @@ public class FunctionUtils extends Shutter {
 				e.printStackTrace();
 			}
 		}		
+		
+		//Delete file
+		if (caseDeleteSourceFile.isSelected() && file != null && cancelled == false && FFMPEG.error == false)
+		{
+			file.delete();
+		}
 				
 		return false;
 		

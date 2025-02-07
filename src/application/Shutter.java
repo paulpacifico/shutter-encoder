@@ -294,6 +294,7 @@ public class Shutter {
 	protected static JTextField txtExtension;
 	protected static JCheckBox caseSubFolder;
 	protected static JTextField txtSubFolder;
+	protected static JCheckBox caseDeleteSourceFile;
 	protected static JCheckBox caseRunInBackground;
 	protected static JCheckBox caseDisplay;
 	protected static JLabel iconTVInterpret;
@@ -2011,7 +2012,7 @@ public class Shutter {
 							
 		grpChooseFiles = new JPanel();
 		grpChooseFiles.setLayout(null);
-		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 377);
+		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 400);
 		grpChooseFiles.setBackground(new Color(30,30,35));
 		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
@@ -2021,7 +2022,7 @@ public class Shutter {
 		fileList.setBackground(new Color(42,42,47));
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
-		fileList.setBounds(10, 50, 292, frame.getHeight() - 437);
+		fileList.setBounds(10, 50, 292, frame.getHeight() - 460);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 	
 		addToList.setIcon(new FlatSVGIcon("contents/drop.svg", 40, 40));
@@ -4264,7 +4265,7 @@ public class Shutter {
 	private void grpDestination() {
 		
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);	
-		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 122);
+		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 145);
 		grpDestination.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(1,1,1,1), new Color(45,45,45), 1, 5)));		
 		grpDestination.setFont(new Font(montserratFont, Font.PLAIN, 11));	
 		frame.getContentPane().add(grpDestination);		
@@ -5168,6 +5169,37 @@ public class Shutter {
 			
 		});	
 		
+		caseDeleteSourceFile = new JCheckBox(Shutter.language.getProperty("caseDeleteSourceFile"));
+		caseDeleteSourceFile.setFont(new Font(freeSansFont, Font.PLAIN, 12));
+		caseDeleteSourceFile.setBounds(6, caseSubFolder.getY() + caseSubFolder.getHeight(), caseDeleteSourceFile.getPreferredSize().width, 23);
+		destination1.add(caseDeleteSourceFile);
+		
+		caseDeleteSourceFile.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseDeleteSourceFile.isSelected())
+				{
+					int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("areYouSure"), Shutter.language.getProperty("caseDeleteSourceFile"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+					
+					if (reply == JOptionPane.NO_OPTION)
+					{
+						caseDeleteSourceFile.setSelected(false);
+						caseDeleteSourceFile.setForeground(caseSubFolder.getForeground());
+					}
+					else
+						caseDeleteSourceFile.setForeground(Color.RED);
+				}
+				else
+				{
+					caseDeleteSourceFile.setForeground(caseSubFolder.getForeground());
+				}
+				
+			}
+			
+		});
+		
 		grpDestination.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -5181,6 +5213,7 @@ public class Shutter {
 						destination1.add(txtExtension);	
 						destination1.add(caseSubFolder);
 						destination1.add(txtSubFolder);
+						destination1.add(caseDeleteSourceFile);
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "1"))
 					{
@@ -5188,6 +5221,7 @@ public class Shutter {
 						destination1.add(txtExtension);	
 						destination1.add(caseSubFolder);
 						destination1.add(txtSubFolder);
+						destination1.add(caseDeleteSourceFile);
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "2"))
 					{
@@ -5195,6 +5229,7 @@ public class Shutter {
 						destination2.add(txtExtension);	
 						destination2.add(caseSubFolder);
 						destination2.add(txtSubFolder);
+						destination2.add(caseDeleteSourceFile);
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "3"))
 					{
@@ -5202,6 +5237,7 @@ public class Shutter {
 						destination3.add(txtExtension);	
 						destination3.add(caseSubFolder);
 						destination3.add(txtSubFolder);
+						destination3.add(caseDeleteSourceFile);
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("FTP"))
 					{
@@ -5216,6 +5252,7 @@ public class Shutter {
 						destinationMail.add(txtExtension);	
 						destinationMail.add(caseSubFolder);
 						destinationMail.add(txtSubFolder);
+						destinationMail.add(caseDeleteSourceFile);
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("Mail"))
 					{
@@ -5223,6 +5260,7 @@ public class Shutter {
 						destinationMail.add(txtExtension);
 						destinationMail.add(caseSubFolder);	
 						destinationMail.add(txtSubFolder);
+						destinationMail.add(caseDeleteSourceFile);
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("Stream"))
 					{
@@ -5230,6 +5268,7 @@ public class Shutter {
 						destinationStream.add(txtExtension);
 						destinationStream.add(caseSubFolder);
 						destinationStream.add(txtSubFolder);
+						destinationStream.add(caseDeleteSourceFile);
 					}
 
 				} catch (Exception e) {}				
@@ -18414,6 +18453,11 @@ public class Shutter {
 						caseQMax.setEnabled(false);
 						caseQMax.setSelected(false);
 					}
+					else
+					{
+						caseAlpha.setEnabled(false);
+						caseAlpha.setSelected(false);
+					}
 						
 					if (lblVBR.getText().equals("CBR") || lblVBR.getText().equals("CQ") && comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.arch").equals("amd64"))
 					{								
@@ -18480,9 +18524,7 @@ public class Shutter {
 					if (lblVBR.getText().equals("CQ") == false)
 						case2pass.setEnabled(true);
 									
-					caseForceOutput.setEnabled(true);					
-					caseAlpha.setEnabled(false);
-					caseAlpha.setSelected(false);					
+					caseForceOutput.setEnabled(true);									
 					caseForcerEntrelacement.setEnabled(true);
 					
 					lblVBR.setVisible(true);
@@ -18907,6 +18949,9 @@ public class Shutter {
 			txtExtension.setEnabled(false);
 			caseSubFolder.setEnabled(false);
 			txtSubFolder.setEnabled(false);
+			caseDeleteSourceFile.setEnabled(false);
+			caseDeleteSourceFile.setSelected(false);
+			caseDeleteSourceFile.setForeground(caseSubFolder.getForeground());
 			
 			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")))
 			{
@@ -18960,6 +19005,9 @@ public class Shutter {
 				txtExtension.setEnabled(false);
 				caseSubFolder.setEnabled(false);
 				txtSubFolder.setEnabled(false);
+				caseDeleteSourceFile.setEnabled(false);
+				caseDeleteSourceFile.setSelected(false);
+				caseDeleteSourceFile.setForeground(caseSubFolder.getForeground());
 			}
 			else
 			{
@@ -18967,6 +19015,7 @@ public class Shutter {
 				txtExtension.setEnabled(true);
 				caseSubFolder.setEnabled(true);
 				txtSubFolder.setEnabled(true);
+				caseDeleteSourceFile.setEnabled(true);
 			}
 		}
 		
@@ -19451,8 +19500,8 @@ public class Shutter {
 		help.setLocation(reduce.getLocation().x - 20, 4);
 		newInstance.setLocation(help.getLocation().x - 20, 4);
   		
-		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 377);
-		fileList.setSize(292, frame.getHeight() - 437);
+		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 400);
+		fileList.setSize(292, frame.getHeight() - 460);
 		addToList.setSize(fileList.getSize());					
 		scrollBar.setSize(292, fileList.getHeight());
 		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);

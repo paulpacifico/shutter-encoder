@@ -235,7 +235,7 @@ public class DVDRIP extends Shutter {
 	
 	private static void lastActions(String fileName, File fileOut, String output) {
 	
-		FunctionUtils.cleanFunction(fileName, fileOut, output);
+		FunctionUtils.cleanFunction(null, fileName, fileOut, output);
 		
 		//Sending processes
 		FunctionUtils.addFileForMail(fileName);

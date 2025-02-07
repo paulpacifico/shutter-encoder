@@ -93,7 +93,7 @@ public class ReplaceAudio extends Shutter {
 		
 			if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 			{
-				lastActions(fileName, fileOut, labelOutput);
+				lastActions(videoFile, fileName, fileOut, labelOutput);
 			}
 					
 		}
@@ -453,9 +453,9 @@ public class ReplaceAudio extends Shutter {
 		return  " -c:a copy";
 	}
 	
-	private static void lastActions(String fileName, File fileOut, String output) {
+	private static void lastActions(File videoFile, String fileName, File fileOut, String output) {
 		
-		FunctionUtils.cleanFunction(fileName, fileOut, output);
+		FunctionUtils.cleanFunction(videoFile, fileName, fileOut, output);
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileName);

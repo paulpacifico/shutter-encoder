@@ -101,7 +101,13 @@ public class fileOverwriteWindow  {
 		caseApplyToAll.setBounds((btnCancel.getX() + btnCancel.getWidth() + 7 - caseApplyToAll.getPreferredSize().width) / 2, btnCancel.getY() + btnCancel.getHeight() + 4, caseApplyToAll.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseApplyToAll);
 		
-		frame.setSize(btnCancel.getX() + btnCancel.getWidth() + 7, 90);
+		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+		{
+			frame.setSize(btnCancel.getX() + btnCancel.getWidth() + 7, 90);
+		}
+		else
+			frame.setSize(btnCancel.getX() + btnCancel.getWidth() + 17, 100);
+			
 		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight()- frame.getHeight()) / 2);
 		frame.setVisible(true);
 	}

@@ -84,7 +84,7 @@ public class VideoInserts extends Shutter {
 					}
 																								
 					int temps = 0;	
-					String fichierMaster = listeFichiers[0];
+					String masterFile = listeFichiers[0];
 					//On cherche le fichier Master s'il y a insert au tout début
 					for (int i = 0 ; i < liste.getSize() ; i++)
 					{
@@ -97,7 +97,7 @@ public class VideoInserts extends Shutter {
 						
 						if (FFPROBE.totalLength > temps)
 						{
-							fichierMaster = listeFichiers[i];		
+							masterFile = listeFichiers[i];		
 							temps = FFPROBE.totalLength;
 						}
 					}
@@ -111,7 +111,7 @@ public class VideoInserts extends Shutter {
 					}
 					
 					//Fichier Master
-					String[] master = fichierMaster.split("=");
+					String[] master = masterFile.split("=");
 					String masterName = new File(master[1].replace("\"", "")).getName();
 					
 					//On analyse le fichier Master pour obtenir le timescale
@@ -154,14 +154,14 @@ public class VideoInserts extends Shutter {
 					
 					//On tri notre liste de fichier principale grâce à la liste ci-dessus
 					String[] listeFichiersSorted = new String[liste.getSize()];
-					listeFichiersSorted[0] = fichierMaster;
+					listeFichiersSorted[0] = masterFile;
 					int f = 1;
 					for (int i = 0 ; i < array.length; i++)
 					{
 						for (int i2 = 0 ; i2 < listeFichiers.length; i2++)
 						{
 							String timeIn[] = listeFichiers[i2].split("=");
-							if (timeIn[0].equals(array[i].toString()) && listeFichiers[i2].equals(fichierMaster) == false && f < liste.getSize())
+							if (timeIn[0].equals(array[i].toString()) && listeFichiers[i2].equals(masterFile) == false && f < liste.getSize())
 							{
 								String s[] = listeFichiers[i2].split("=");
 								String withTempFolder = '"' + temp.toString() + "/" + new File(s[1].replace("\"", "")).getName() + '"';
@@ -301,7 +301,7 @@ public class VideoInserts extends Shutter {
 					}
 			
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
-						lastActions(fileOut, concatList, labelOutput, temp);
+						lastActions(new File(masterFile), fileOut, concatList, labelOutput, temp);
 			
 				} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {					
 					FFMPEG.error  = true;
@@ -386,12 +386,12 @@ public class VideoInserts extends Shutter {
         	InputAndOutput.outPoint = "";
 	}
 	
-	private static void lastActions(File fileOut, File listeBAB, String output, File temp) {
+	private static void lastActions(File file, File fileOut, File listeBAB, String output, File temp) {
 	
 		//Suppression du dossier temporaire
 		deleteDirectory(temp);		
 		
-		FunctionUtils.cleanFunction(fileOut.toString(), fileOut, output);
+		FunctionUtils.cleanFunction(file, fileOut.toString(), fileOut, output);
 		
 		listeBAB.delete();
 		

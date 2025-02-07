@@ -169,7 +169,7 @@ public class Conform extends Shutter {
 	
 	private static boolean lastActions(File file, String fileName, File fileOut, String output) {
 				
-		if (FunctionUtils.cleanFunction(fileName, fileOut, output))
+		if (FunctionUtils.cleanFunction(file, fileName, fileOut, output))
 			return true;
 		
 		//Sending processes

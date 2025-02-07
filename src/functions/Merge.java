@@ -258,7 +258,7 @@ public class Merge extends Shutter {
 	
 	private static void lastActions(File fileOut) {
 		
-		FunctionUtils.cleanFunction(fileOut.toString(), fileOut, "");
+		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, "");
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileOut.toString());

@@ -2476,10 +2476,7 @@ public class Settings {
 			
 			warning.appendChild(component);
 			
-			if (Shutter.cutKeyframesIsDisplayed || Shutter.rewrapKeyframesIsDisplayed || Shutter.conformKeyframesIsDisplayed)
-			{
-				root.appendChild(warning);				
-			}
+			root.appendChild(warning);
 			
 			// creation du fichier XML
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
