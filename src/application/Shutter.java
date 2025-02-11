@@ -186,7 +186,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "18.7";
+	public static String actualVersion = "18.8";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -3357,8 +3357,8 @@ public class Shutter {
 				if (caseDisplay.isSelected() && caseDisplay.isEnabled())
 				{
 					VideoPlayer.frameVideo = null;
-				}
-				
+				}			
+								
 				if (VideoPlayer.addWaveformIsRunning)
 				{
 					try {
@@ -3368,6 +3368,12 @@ public class Shutter {
 					} catch (IOException er) {}
 					
 					FFMPEG.waveformProcess.destroy();
+					
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {}
+					} while (VideoPlayer.addWaveformIsRunning);
 				}
 				
 				FunctionUtils.yesToAll = false;
