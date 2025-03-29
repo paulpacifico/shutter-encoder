@@ -119,10 +119,16 @@ public class Rewrap extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 						
 						//File output name
+						String prefix = "";	
+						if (casePrefix.isSelected())
+						{
+							prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+						}
+						
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}
 												
 						//Function cut without re-encoding
@@ -179,7 +185,7 @@ public class Rewrap extends Shutter {
 						}
 						
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + newExtension); 	
+						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + newExtension); 	
 														
 						//Audio
 						String audio = setAudio();
@@ -202,7 +208,7 @@ public class Rewrap extends Shutter {
 						File fileOut = new File(fileOutputName);				
 						if (fileOut.exists())		
 						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", newExtension);
+							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, extensionName + "_", newExtension);
 							
 							if (fileOut == null)
 							{
@@ -225,7 +231,7 @@ public class Rewrap extends Shutter {
 
 							lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																									
-							BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName + '"' + " " + '"' + file + '"');
+							BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName + '"' + " " + '"' + file + '"');
 						
 							do
 							{

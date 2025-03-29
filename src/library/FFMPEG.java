@@ -196,6 +196,13 @@ public static StringBuilder errorLog = new StringBuilder();
 			else
 				RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "ffmpeg" + checkList(cmd), lblDestination1.getText()});
 	        
+			if (caseDisplay.isSelected())
+			{
+				RenderQueue.caseRunParallel.setSelected(false);
+				RenderQueue.caseRunParallel.setEnabled(false);
+		        RenderQueue.parallelValue.setEnabled(false);
+			}
+			
 			RenderQueue.frame.toFront();
 			
 			lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
@@ -320,22 +327,34 @@ public static StringBuilder errorLog = new StringBuilder();
 							Console.consoleFFMPEG.append(line + System.lineSeparator());		
 							
 							//Errors
-							checkForErrors(line);		
+							checkForErrors(line);	
 																								
 							if (cancelled == false)
-							{
-								if (cmd.contains("-pass 2"))	
-									setProgress(line, true, cmd);
+							{																						
+								if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && RenderQueue.caseRunParallel.isSelected())
+								{													
+									if (line.contains("All streams finished"))
+									{
+										RenderQueue.filesCompleted++;	
+									}
+								}
 								else
-									setProgress(line, false, cmd);	
+								{
+									if (cmd.contains("-pass 2"))	
+										setProgress(line, true, cmd);
+									else
+										setProgress(line, false, cmd);	
+								}
 							}
 							else
 								break;																			
 						}					
-						process.waitFor();	
-												
+						process.waitFor();
+						
 						if (cancelled == false)
-							postAnalyse();						
+						{							
+							postAnalyse();	
+						}
 					   					     																		
 					} catch (IOException io) {//Bug Linux							
 					} catch (InterruptedException e) {
@@ -361,8 +380,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		|| line.contains("Invalid argument")
 		|| line.contains("Error opening filters!")
 		|| line.contains("Error reinitializing filters!")
-		|| line.contains("matches no streams")
 		|| line.contains("Error while opening encoder")
+		|| line.contains("unexpected EOF")
 		|| line.contains("Decoder (codec none) not found")
 		|| line.contains("hwaccel initialisation returned error")
 		|| line.contains("Device setup failed for decoder")
@@ -379,11 +398,12 @@ public static StringBuilder errorLog = new StringBuilder();
 		|| line.contains("integer multiple of the specified")
 		|| line.contains("is not multiple of 4")
 		|| line.contains("cannot be smaller than input dimensions"))
-		{		
+		{					
 			if (line.contains("error code") == false && line.contains("return code") == false)
 			{
 				errorLog.append(line + System.lineSeparator());
 			}
+			
 			error = true;
 		} 				
 	}

@@ -121,15 +121,21 @@ public class VideoInserts extends Shutter {
 					} while (FFPROBE.isRunning);	
 					
 					//File output name
+					String prefix = "";	
+					if (casePrefix.isSelected())
+					{
+						prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+					}
+					
 					String extensionName = "";	
 					if (btnExtension.isSelected())
 					{
-						extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+						extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 					}
 					
 					//Output folder		
 					String labelOutput = FunctionUtils.setOutputDestination("", new File(master[1].replace("\"", "")));							
-					String fileOutputName = labelOutput + "/" + masterName.replace(extension, extensionName + extension);
+					String fileOutputName = labelOutput + "/" + prefix + masterName.replace(extension, extensionName + extension);
 					
 					//Temp. folder
 					File temp = new File(labelOutput + "/inserts");	
@@ -139,7 +145,7 @@ public class VideoInserts extends Shutter {
 					File fileOut = new File(fileOutputName);
 					if(fileOut.exists())
 					{
-						fileOut = FunctionUtils.fileReplacement(labelOutput, masterName, extension, extensionName + "_", extension);
+						fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + masterName, extension, extensionName + "_", extension);
 						
 						if (fileOut == null || fileOut.toString().equals("skip"))
 						{

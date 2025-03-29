@@ -249,6 +249,7 @@ public class FunctionUtils extends Shutter {
 		disableAll();
 
 		File actualScanningFile = null;
+		
 		do {
 
 			if (actualScanningFile == null)
@@ -708,42 +709,42 @@ public class FunctionUtils extends Shutter {
 		return output;
 	}
 
-	public static String setSuffix(String suffix, boolean isOverlay) {
+	public static String setPrefixSuffix(String text, boolean isOverlay) {
 
-		suffix = suffix.replace("[", "{").replace("]", "}");
+		text = text.replace("[", "{").replace("]", "}");
 		
-		if (suffix.contains("{"))
+		if (text.contains("{"))
 		{			
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
 			{
-				if (suffix.contains("{resolution}"))
+				if (text.contains("{resolution}"))
 				{
-					suffix = suffix.replace("{resolution}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
+					text = text.replace("{resolution}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
 				}
-				else if (suffix.contains("{scale}"))
+				else if (text.contains("{scale}"))
 				{
-					suffix = suffix.replace("{scale}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
-				}
-				
-				if (suffix.contains("{width}"))
-				{
-					suffix = suffix.replace("{width}", String.valueOf(FFPROBE.imageWidth));
+					text = text.replace("{scale}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
 				}
 				
-				if (suffix.contains("{height}"))
+				if (text.contains("{width}"))
 				{
-					suffix = suffix.replace("{height}", String.valueOf(FFPROBE.imageHeight));
+					text = text.replace("{width}", String.valueOf(FFPROBE.imageWidth));
+				}
+				
+				if (text.contains("{height}"))
+				{
+					text = text.replace("{height}", String.valueOf(FFPROBE.imageHeight));
 				}
 				
 				float or = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
 				
-				if (suffix.contains("{ratio}"))
+				if (text.contains("{ratio}"))
 				{
-					suffix = suffix.replace("{ratio}", String.valueOf(or));
+					text = text.replace("{ratio}", String.valueOf(or));
 				}
-				else if (suffix.contains("{aspect}"))
+				else if (text.contains("{aspect}"))
 				{
-					suffix = suffix.replace("{aspect}", String.valueOf(or));
+					text = text.replace("{aspect}", String.valueOf(or));
 				}
 			}
 			else
@@ -800,102 +801,102 @@ public class FunctionUtils extends Shutter {
 	        	int oh = Integer.parseInt(o[1]);        	
 	        	float or = (float) ow / oh;
 
-				if (suffix.contains("{resolution}"))
+				if (text.contains("{resolution}"))
 				{
-					suffix = suffix.replace("{resolution}", comboResolution.getSelectedItem().toString());
+					text = text.replace("{resolution}", comboResolution.getSelectedItem().toString());
 				}
-				else if (suffix.contains("{scale}"))
+				else if (text.contains("{scale}"))
 				{
-					suffix = suffix.replace("{scale}", comboResolution.getSelectedItem().toString());
-				}
-				
-				if (suffix.contains("{width}"))
-				{
-					suffix = suffix.replace("{width}", String.valueOf(ow));
+					text = text.replace("{scale}", comboResolution.getSelectedItem().toString());
 				}
 				
-				if (suffix.contains("{height}"))
+				if (text.contains("{width}"))
 				{
-					suffix = suffix.replace("{height}", String.valueOf(oh));
+					text = text.replace("{width}", String.valueOf(ow));
 				}
 				
-				if (suffix.contains("{ratio}"))
+				if (text.contains("{height}"))
 				{
-					suffix = suffix.replace("{ratio}", String.valueOf(or));
+					text = text.replace("{height}", String.valueOf(oh));
 				}
-				else if (suffix.contains("{aspect}"))
+				
+				if (text.contains("{ratio}"))
 				{
-					suffix = suffix.replace("{aspect}", String.valueOf(or));
+					text = text.replace("{ratio}", String.valueOf(or));
+				}
+				else if (text.contains("{aspect}"))
+				{
+					text = text.replace("{aspect}", String.valueOf(or));
 				}
 			}
 			
-			if (suffix.contains("{codec}"))
+			if (text.contains("{codec}"))
 			{
-				suffix = suffix.replace("{codec}", comboFonctions.getSelectedItem().toString());
+				text = text.replace("{codec}", comboFonctions.getSelectedItem().toString());
 			}
-			else if (suffix.contains("{function}"))
+			else if (text.contains("{function}"))
 			{
-				suffix = suffix.replace("{function}", comboFonctions.getSelectedItem().toString());
+				text = text.replace("{function}", comboFonctions.getSelectedItem().toString());
 			}
 			
-			if (suffix.contains("{date}"))
+			if (text.contains("{date}"))
 			{
 				LocalDate currentDate = LocalDate.now();
 				
-				suffix = suffix.replace("{date}", currentDate.toString());
+				text = text.replace("{date}", currentDate.toString());
 			}
 						
-			if (suffix.contains("{duration}"))
+			if (text.contains("{duration}"))
 			{				
-				suffix = suffix.replace("{duration}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
+				text = text.replace("{duration}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
 			}	
-			else if (suffix.contains("{time}"))
+			else if (text.contains("{time}"))
 			{				
-				suffix = suffix.replace("{time}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
+				text = text.replace("{time}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
 			}
 			
-			if (suffix.contains("{framerate}"))
+			if (text.contains("{framerate}"))
 			{				
 				if (caseConform.isSelected())
 				{
-					suffix = suffix.replace("{framerate}", comboFPS.getSelectedItem().toString());
+					text = text.replace("{framerate}", comboFPS.getSelectedItem().toString());
 				}
 				else
-					suffix = suffix.replace("{framerate}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
+					text = text.replace("{framerate}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
 			}
-			else if (suffix.contains("{fps}"))
+			else if (text.contains("{fps}"))
 			{				
 				if (caseConform.isSelected())
 				{
-					suffix = suffix.replace("{fps}", comboFPS.getSelectedItem().toString());
+					text = text.replace("{fps}", comboFPS.getSelectedItem().toString());
 				}
 				else
-					suffix = suffix.replace("{fps}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
+					text = text.replace("{fps}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
 			}
 			
-			if (suffix.contains("{preset}"))
+			if (text.contains("{preset}"))
 			{				
-				suffix = suffix.replace("{preset}", Utils.currentPreset.replace(".enc", ""));
+				text = text.replace("{preset}", Utils.currentPreset.replace(".enc", ""));
 			}
 			
-			if (suffix.contains("{timecode}"))
+			if (text.contains("{timecode}"))
 			{				
-				suffix = suffix.replace("{timecode}", FFPROBE.timecode1 + FFPROBE.timecode2 + FFPROBE.timecode3 + FFPROBE.timecode4);
+				text = text.replace("{timecode}", FFPROBE.timecode1 + FFPROBE.timecode2 + FFPROBE.timecode3 + FFPROBE.timecode4);
 			}
 			
-			if (suffix.contains("{bitrate}"))
+			if (text.contains("{bitrate}"))
 			{				
 				if (Shutter.grpBitrate.isVisible())
 				{
-					suffix = suffix.replace("{bitrate}", FunctionUtils.setVideoBitrate() + "kbps");
+					text = text.replace("{bitrate}", FunctionUtils.setVideoBitrate() + "kbps");
 				}
 				else
-					suffix = suffix.replace("{bitrate}", "");
+					text = text.replace("{bitrate}", "");
 			}
 			
 		}
 		
-		return suffix;
+		return text;
 	}
 	
 	public static String getRandomHexString() {

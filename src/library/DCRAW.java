@@ -89,6 +89,10 @@ public static Process process;
 			}
 			
 	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dcraw" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
+	        RenderQueue.caseRunParallel.setSelected(false);
+	        RenderQueue.caseRunParallel.setEnabled(false);
+	        RenderQueue.parallelValue.setEnabled(false);
+	        
 	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)

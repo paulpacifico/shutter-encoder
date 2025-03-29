@@ -130,6 +130,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.TransferHandler;
@@ -290,6 +291,8 @@ public class Shutter {
 	protected static JCheckBox caseChangeFolder1;
 	protected static JCheckBox caseChangeFolder2;
 	protected static JCheckBox caseChangeFolder3;
+	protected static JCheckBox casePrefix;
+	protected static JTextField txtPrefix;
 	protected static JCheckBox btnExtension;
 	protected static JTextField txtExtension;
 	protected static JCheckBox caseSubFolder;
@@ -823,11 +826,11 @@ public class Shutter {
 		frame.setBackground(new Color(30,30,35));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(332, 708);
-		frame.setMinimumSize(new Dimension(332, 708));
+		frame.setSize(332, 731);
+		frame.setMinimumSize(new Dimension(332, 731));
 		frame.setResizable(false);
 		frame.setUndecorated(true);
-		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100, 100, 100)));
+		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 		Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
@@ -1920,7 +1923,7 @@ public class Shutter {
 		topImage = new JLabel();
 		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
-		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 		
 		topPanel.add(topImage);
@@ -2012,7 +2015,7 @@ public class Shutter {
 							
 		grpChooseFiles = new JPanel();
 		grpChooseFiles.setLayout(null);
-		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 400);
+		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 423);
 		grpChooseFiles.setBackground(new Color(30,30,35));
 		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5),
 				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
@@ -2022,7 +2025,7 @@ public class Shutter {
 		fileList.setBackground(new Color(42,42,47));
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
-		fileList.setBounds(10, 50, 292, frame.getHeight() - 460);
+		fileList.setBounds(10, 50, 292, frame.getHeight() - 483);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 	
 		addToList.setIcon(new FlatSVGIcon("contents/drop.svg", 40, 40));
@@ -4271,7 +4274,7 @@ public class Shutter {
 	private void grpDestination() {
 		
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);	
-		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 145);
+		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 168);
 		grpDestination.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(1,1,1,1), new Color(45,45,45), 1, 5)));		
 		grpDestination.setFont(new Font(montserratFont, Font.PLAIN, 11));	
 		frame.getContentPane().add(grpDestination);		
@@ -5083,11 +5086,47 @@ public class Shutter {
 		
 		//Ajout des tabs	
 		setDestinationTabs(5);
+		
+		casePrefix = new JCheckBox(Shutter.language.getProperty("casePrefix"));
+		casePrefix.setName("casePrefix");
+		casePrefix.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		casePrefix.setBounds(6, caseOpenFolderAtEnd1.getLocation().y + caseOpenFolderAtEnd1.getHeight(), casePrefix.getPreferredSize().width, 23);
+		destination1.add(casePrefix);
+		
+		txtPrefix = new JTextField();
+		txtPrefix.setName("txtPrefix");
+		txtPrefix.setColumns(10);
+		txtPrefix.setEnabled(false);
+		txtPrefix.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		txtPrefix.setBounds(casePrefix.getLocation().x + casePrefix.getWidth() + 6, casePrefix.getLocation().y + 1, grpDestination.getWidth() - (casePrefix.getLocation().x + casePrefix.getWidth()) - 18, 21);
+		txtPrefix.setToolTipText("<html>{codec/function}<br>{preset}<br>{resolution/scale}<br>{width}<br>{height}<br>{ratio/aspect}<br>{framerate/fps}<br>{bitrate}<br>{timecode}<br>{duration/time}<br>{date}</html>");
+		destination1.add(txtPrefix);	
+				
+		casePrefix.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (casePrefix.isSelected())
+				{
+					txtPrefix.setEnabled(true);		
+					
+					ToolTipManager.sharedInstance().setInitialDelay(0);
+		            ToolTipManager.sharedInstance().mouseMoved(new MouseEvent(txtPrefix, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 10, 10, 0, false));
+		            ToolTipManager.sharedInstance().setInitialDelay(750); // Reset to default delay
+				}
+				else
+				{
+					txtPrefix.setEnabled(false);					
+				}
+			}
 			
+		});
+					
 		btnExtension = new JCheckBox(Shutter.language.getProperty("btnExtension"));
 		btnExtension.setName("btnExtension");
 		btnExtension.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		btnExtension.setBounds(6, caseOpenFolderAtEnd1.getLocation().y + caseOpenFolderAtEnd1.getHeight(), btnExtension.getPreferredSize().width, 23);
+		btnExtension.setBounds(6, casePrefix.getLocation().y + casePrefix.getHeight(), btnExtension.getPreferredSize().width, 23);
 		destination1.add(btnExtension);
 		
 		txtExtension = new JTextField();
@@ -5215,6 +5254,8 @@ public class Shutter {
 					
 					if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output")))
 					{
+						destination1.add(casePrefix);
+						destination1.add(txtPrefix);	
 						destination1.add(btnExtension);
 						destination1.add(txtExtension);	
 						destination1.add(caseSubFolder);
@@ -5223,6 +5264,8 @@ public class Shutter {
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "1"))
 					{
+						destination1.add(casePrefix);
+						destination1.add(txtPrefix);	
 						destination1.add(btnExtension);
 						destination1.add(txtExtension);	
 						destination1.add(caseSubFolder);
@@ -5231,6 +5274,8 @@ public class Shutter {
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "2"))
 					{
+						destination2.add(casePrefix);
+						destination2.add(txtPrefix);	
 						destination2.add(btnExtension);
 						destination2.add(txtExtension);	
 						destination2.add(caseSubFolder);
@@ -5239,6 +5284,8 @@ public class Shutter {
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals(language.getProperty("output") + "3"))
 					{
+						destination3.add(casePrefix);
+						destination3.add(txtPrefix);	
 						destination3.add(btnExtension);
 						destination3.add(txtExtension);	
 						destination3.add(caseSubFolder);
@@ -5254,6 +5301,8 @@ public class Shutter {
 						new Ftp();
 						frame.setOpacity(1.0f);
 						
+						destinationMail.add(casePrefix);
+						destinationMail.add(txtPrefix);	
 						destinationMail.add(btnExtension);
 						destinationMail.add(txtExtension);	
 						destinationMail.add(caseSubFolder);
@@ -5262,6 +5311,8 @@ public class Shutter {
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("Mail"))
 					{
+						destinationMail.add(casePrefix);
+						destinationMail.add(txtPrefix);	
 						destinationMail.add(btnExtension);
 						destinationMail.add(txtExtension);
 						destinationMail.add(caseSubFolder);	
@@ -5270,6 +5321,8 @@ public class Shutter {
 					}
 					else if (grpDestination.getTitleAt(grpDestination.getSelectedIndex()).toString().equals("Stream"))
 					{
+						destinationStream.add(casePrefix);
+						destinationStream.add(txtPrefix);	
 						destinationStream.add(btnExtension);
 						destinationStream.add(txtExtension);
 						destinationStream.add(caseSubFolder);
@@ -9845,7 +9898,7 @@ public class Shutter {
 			        
 					if (caseAddText.isSelected())
 					{
-						str = FunctionUtils.setSuffix(overlayText.getText(), true);						
+						str = FunctionUtils.setPrefixSuffix(overlayText.getText(), true);						
 					}
 					
 			        Rectangle bounds = getStringBounds(g2, str, 0 ,0);
@@ -18102,7 +18155,7 @@ public class Shutter {
 		statusBar.setBackground(new Color(35,35,40));
 		statusBar.setOpaque(true);
 		statusBar.setLayout(null);
-		statusBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(65, 65, 65)));
+		statusBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(45,45,45)));
 		statusBar.setBounds(0, frame.getHeight() - 23, extendedWidth, 22);
 		
 		statusBar.addMouseListener(new MouseListener() {
@@ -18160,7 +18213,7 @@ public class Shutter {
 				
 				int i = e.getY() - 10;
 				
-				if (frame.getSize().getHeight() + i < 708)
+				if (frame.getSize().getHeight() + i < 731)
 					i = 0;
 				
 				int width = e.getX() + 10;
@@ -18951,6 +19004,8 @@ public class Shutter {
 			caseChangeFolder1.setEnabled(false);
 			lblDestination1.setVisible(false);
 			
+			casePrefix.setEnabled(false);
+			txtPrefix.setEnabled(false);
 			btnExtension.setEnabled(false);
 			txtExtension.setEnabled(false);
 			caseSubFolder.setEnabled(false);
@@ -18976,6 +19031,8 @@ public class Shutter {
 					caseChangeFolder1.setEnabled(true);
 					lblDestination1.setVisible(true);
 					
+					casePrefix.setEnabled(true);
+					txtPrefix.setEnabled(true);
 					btnExtension.setEnabled(true);
 					txtExtension.setEnabled(true);
 					caseSubFolder.setEnabled(true);
@@ -19007,6 +19064,8 @@ public class Shutter {
 
 			if (comboFonctions.getSelectedItem().toString().equals("DVD") || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 			{
+				casePrefix.setEnabled(false);
+				txtPrefix.setEnabled(false);
 				btnExtension.setEnabled(false);
 				txtExtension.setEnabled(false);
 				caseSubFolder.setEnabled(false);
@@ -19017,6 +19076,8 @@ public class Shutter {
 			}
 			else
 			{
+				casePrefix.setEnabled(true);
+				txtPrefix.setEnabled(true);
 				btnExtension.setEnabled(true);
 				txtExtension.setEnabled(true);
 				caseSubFolder.setEnabled(true);
@@ -19024,6 +19085,9 @@ public class Shutter {
 				caseDeleteSourceFile.setEnabled(true);
 			}
 		}
+		
+		if (casePrefix.isSelected() == false)
+			txtPrefix.setEnabled(false);
 		
 		if (btnExtension.isSelected() == false)
 			txtExtension.setEnabled(false);
@@ -19153,7 +19217,7 @@ public class Shutter {
 		{		
 			noSettings = true;
 			
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 708) / 2, 332, 708);	
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 731) / 2, 332, 731);	
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -19176,7 +19240,7 @@ public class Shutter {
 											
 			if (Settings.btnDisableVideoPlayer.isSelected())
 			{			
-				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 708) / 2, 332, 708);	
+				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 731) / 2, 332, 731);	
 				lblArrows.setVisible(true);
 				lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 				lblGpuDecoding.setVisible(false);
@@ -19286,7 +19350,7 @@ public class Shutter {
 		{			
 			noSettings = true;
 			
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 708) / 2, 332, 708);	
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 731) / 2, 332, 731);	
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -19385,13 +19449,13 @@ public class Shutter {
 		}
 		else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth))
 		{		
-			height = 708 - frame.getHeight();
+			height = 731 - frame.getHeight();
 			resizeAll(extendedWidth, height);
 			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2 + screenOffset);
 		}
 		else if (frame.getHeight() >= screenHeight - taskBarHeight)
 		{
-			height = 708 - frame.getHeight();
+			height = 731 - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), dim.height/2-frame.getSize().height/2 + screenOffset);	
 		}
@@ -19506,8 +19570,8 @@ public class Shutter {
 		help.setLocation(reduce.getLocation().x - 20, 4);
 		newInstance.setLocation(help.getLocation().x - 20, 4);
   		
-		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 400);
-		fileList.setSize(292, frame.getHeight() - 460);
+		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 423);
+		fileList.setSize(292, frame.getHeight() - 483);
 		addToList.setSize(fileList.getSize());					
 		scrollBar.setSize(292, fileList.getHeight());
 		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);
@@ -24059,8 +24123,16 @@ public class Shutter {
 		topImage.repaint();
 		frame.repaint();
 				
-		if (inputDeviceIsRunning)
-			progressBar1.setIndeterminate(false);
+		if (inputDeviceIsRunning || RenderQueue.frame != null && RenderQueue.frame.isVisible() && RenderQueue.caseRunParallel.isSelected())
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+	           @Override
+	           public void run() {
+	        	   progressBar1.setIndeterminate(false);
+	           }
+			});
+		}
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
@@ -24160,7 +24232,7 @@ public class Shutter {
 			errorList.setLength(0);
 		}
 		else if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && Shutter.cancelled == false)
-		{
+		{			
 			RenderQueue.tableRow.setRowCount(0);
 		}
 		
@@ -24218,7 +24290,7 @@ public class Shutter {
 		{
 			enableAll();
 		}
-
+		
 		if (cancelled == true)
 		{
 			lblCurrentEncoding.setForeground(Color.RED);

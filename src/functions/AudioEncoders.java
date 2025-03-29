@@ -106,10 +106,16 @@ public class AudioEncoders extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 													
 						//File output name
+						String prefix = "";	
+						if (casePrefix.isSelected())
+						{
+							prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+						}
+						
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}	
 						
 						//DRC
@@ -240,13 +246,13 @@ public class AudioEncoders extends Shutter {
 						}
 						
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
+						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + container); 
 						
 						//File output
 						File fileOut = new File(fileOutputName);				
 						if (fileOut.exists())		
 						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", container);
+							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, extensionName + "_", container);
 							
 							if (fileOut == null)
 							{
@@ -302,7 +308,7 @@ public class AudioEncoders extends Shutter {
 							}
 							else 
 							{
-								splitAudio(audioCodec, fileName, extension, file, labelOutput, container, DRC);		
+								splitAudio(audioCodec, prefix, fileName, extension, file, labelOutput, container, DRC);		
 							}
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("2.1"))
@@ -488,7 +494,7 @@ public class AudioEncoders extends Shutter {
 		return audio;
 	}
 	
-	private static void splitAudio(String codec, String fileName, String extension, File file, String output, String container, String DRC) throws InterruptedException {
+	private static void splitAudio(String codec, String prefix, String fileName, String extension, File file, String output, String container, String DRC) throws InterruptedException {
 		
 		String audioFilter = "";	
 		
@@ -518,10 +524,10 @@ public class AudioEncoders extends Shutter {
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(output + "/" + fileName.replace(extension, "_Audio_" + i + container));
+				File fileOut = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + i + container));
 				if(fileOut.exists())
 				{										
-					fileOut = FunctionUtils.fileReplacement(output, fileName, extension, "_Audio_" + i + "_", container);
+					fileOut = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + i + "_", container);
 					if (fileOut == null)
 						yesno = " -n ";	
 				}
@@ -551,10 +557,10 @@ public class AudioEncoders extends Shutter {
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(output + "/" + fileName.replace(extension, "_Audio_" + i + container));
+				File fileOut = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + i + container));
 				if(fileOut.exists())
 				{										
-					fileOut = FunctionUtils.fileReplacement(output, fileName, extension, "_Audio_" + i + "_", container);
+					fileOut = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + i + "_", container);
 					if (fileOut == null)
 						yesno = " -n ";	
 				}
@@ -586,10 +592,10 @@ public class AudioEncoders extends Shutter {
 				
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(output + "/" + fileName.replace(extension, "_Audio_" + number + container));
+				File fileOut = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + number + container));
 				if(fileOut.exists())
 				{										
-					fileOut = FunctionUtils.fileReplacement(output, fileName, extension, "_Audio_" + number + "_", container);
+					fileOut = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + number + "_", container);
 					if (fileOut == null)
 						yesno = " -n ";	
 				}

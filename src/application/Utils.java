@@ -584,7 +584,7 @@ public class Utils extends Shutter {
 			}
 		}	
 		
-		lblFiles.setText(filesNumber());;
+		lblFiles.setText(filesNumber());
 	}
 	
 	@SuppressWarnings({"rawtypes"})
@@ -624,8 +624,8 @@ public class Utils extends Shutter {
 				document.appendChild(root);
 								
 				Element settings = document.createElement("Settings");				
-								
-				//btnExtension
+						
+				//casePrefix
 				//Component
 				Element component = document.createElement("Component");
 				
@@ -636,11 +636,53 @@ public class Utils extends Shutter {
 				
 				//Name
 				Element cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode(Shutter.btnExtension.getName()));
+				cName.appendChild(document.createTextNode(Shutter.casePrefix.getName()));
 				component.appendChild(cName);
 				
 				//Value
 				Element cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.casePrefix.isSelected())));
+				component.appendChild(cValue);
+				
+				settings.appendChild(component);
+				
+				//Prefix
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("txtPrefix"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");				
+				cValue.appendChild(document.createTextNode(Shutter.txtPrefix.getText().toString()));
+				component.appendChild(cValue);
+				
+				settings.appendChild(component);
+				
+				//btnExtension
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JCheckBox"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode(Shutter.btnExtension.getName()));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
 				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.btnExtension.isSelected())));
 				component.appendChild(cValue);
 				
@@ -1628,28 +1670,32 @@ public class Utils extends Shutter {
 												}
 												else if (p instanceof JTextField)
 												{
-													//Value
-													((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																						
-													//State
-													((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 													
-													//Visible
-													((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-												
-													//Elements position
-													if (p.getName().equals("textNamePosX"))
-														fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), fileName.getLocation().y);	
+													if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+													{
+														//Value
+														((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+																							
+														//State
+														((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+														
+														//Visible
+														((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 													
-													if (p.getName().equals("textNamePosY"))
-														fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
-																						
-													if (p.getName().equals("textTcPosY"))
-														timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
-													
-													if (p.getName().equals("textTcPosX"))
-														timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);												
-												}
+														//Elements position
+														if (p.getName().equals("textNamePosX"))
+															fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), fileName.getLocation().y);	
+														
+														if (p.getName().equals("textNamePosY"))
+															fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
+																							
+														if (p.getName().equals("textTcPosY"))
+															timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
+														
+														if (p.getName().equals("textTcPosX"))
+															timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);												
+														}
+													}
 												else if (p instanceof JSlider)
 												{
 													//Value
@@ -1701,7 +1747,7 @@ public class Utils extends Shutter {
 										}
 									}
 								}
-								
+																
 								//grpWatermak
 								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkFile"))
 								{
@@ -1735,7 +1781,7 @@ public class Utils extends Shutter {
 									
 								//Suffix
 								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
-								{
+								{									
 									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
 									{
 										txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
@@ -1814,7 +1860,7 @@ public class Utils extends Shutter {
 						changeFunction(false);	
 										
 					} catch (Exception e) {
-						
+											
 						System.out.println(e);
 					}
 					finally {

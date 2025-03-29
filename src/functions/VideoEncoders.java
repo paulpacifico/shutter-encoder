@@ -170,10 +170,16 @@ public class VideoEncoders extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 															
 						//File output name
+						String prefix = "";	
+						if (casePrefix.isSelected())
+						{
+							prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+						}
+						
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}												
 						
 						//Container
@@ -248,7 +254,7 @@ public class VideoEncoders extends Shutter {
 						}
 						
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
+						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + container); 
 														
 						//Authoring folder
 						File authoringFolder = null;
@@ -268,7 +274,7 @@ public class VideoEncoders extends Shutter {
 						File fileOut = new File(fileOutputName);				
 						if (fileOut.exists())		
 						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", container);
+							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, extensionName + "_", container);
 							
 							if (fileOut == null)
 							{
@@ -866,7 +872,7 @@ public class VideoEncoders extends Shutter {
 						}						
 												
 						//GPU filtering
-			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
+			        	if (filterComplex.contains("hwdownload") && comboAccel.getSelectedItem().equals("AMD AMF Encoder") == false) //When GPU scaling is used
 			    		{
 			    			//Input bitDepth
 			    			String bitDepth = "nv12";
@@ -1089,7 +1095,7 @@ public class VideoEncoders extends Shutter {
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																												
-										BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName + '"' + " " + '"' + fileOut.toString() + '"');
+										BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName + '"' + " " + '"' + fileOut.toString() + '"');
 									
 										do
 										{
@@ -1102,7 +1108,7 @@ public class VideoEncoders extends Shutter {
 										
 									case "DNxHR":
 																		
-										fileOut.renameTo(new File(labelOutput + "/" + fileName.replace(extension, key + "_v1.mxf")));			
+										fileOut.renameTo(new File(labelOutput + "/" + prefix + fileName.replace(extension, key + "_v1.mxf")));			
 										break;
 								}							
 							}
@@ -1115,7 +1121,7 @@ public class VideoEncoders extends Shutter {
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createAS10Format"));
 										
-										BMXTRANSWRAP.run("-t as10 -p -o " + '"' + labelOutput + "/" + fileName.replace(extension, "_AS10" + comboFilter.getSelectedItem().toString()) + '"' + " --shim-name " + '"' + comboAS10.getSelectedItem().toString() + '"' + " " + '"' + fileOut.toString() + '"');
+										BMXTRANSWRAP.run("-t as10 -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS10" + comboFilter.getSelectedItem().toString()) + '"' + " --shim-name " + '"' + comboAS10.getSelectedItem().toString() + '"' + " " + '"' + fileOut.toString() + '"');
 								
 										do
 										{
@@ -1130,7 +1136,7 @@ public class VideoEncoders extends Shutter {
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createAS10Format").replace("10", "11"));
 																				
-										BMXTRANSWRAP.run("-t as11op1a -p -o " + '"' + labelOutput + "/" + fileName.replace(extension, "_AS11" + comboFilter.getSelectedItem().toString()) + '"' + " " + '"' + fileOut.toString() + '"');
+										BMXTRANSWRAP.run("-t as11op1a -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS11" + comboFilter.getSelectedItem().toString()) + '"' + " " + '"' + fileOut.toString() + '"');
 									
 										do
 										{
@@ -1159,7 +1165,7 @@ public class VideoEncoders extends Shutter {
 							if (FFMPEG.saveCode || cancelled || FFMPEG.error)
 								FileUtils.deleteDirectory(authoringFolder);	
 						}
-		
+								
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
 						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()

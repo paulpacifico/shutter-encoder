@@ -198,7 +198,7 @@ public class Settings {
         Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
         shape1.add(shape2);
 		frame.setShape(shape1);
-		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
+		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -1459,14 +1459,14 @@ public class Settings {
 		
 		JLabel title = new JLabel(Shutter.language.getProperty("frameSettings"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 1, frame.getWidth(), 24);
+		title.setBounds(0, 0, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
 		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
-		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));
 		topImage.setBounds(title.getBounds());
 		
 		topPanel.add(topImage);
@@ -1608,14 +1608,17 @@ public class Settings {
 							}
 							else if (p instanceof JTextField)
 							{
-								//Value
-								((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																	
-								//State
-								((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-								
-								//Visible
-								((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+								if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+								{
+									//Value
+									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+																		
+									//State
+									((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									
+									//Visible
+									((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+								}
 							}
 						}
 					}
@@ -1654,6 +1657,29 @@ public class Settings {
 						{
 							Shutter.caseChangeFolder1.doClick();
 						}
+					}
+					
+					//casePrefix
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePrefix"))
+					{
+						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+						{
+							Shutter.casePrefix.setSelected(true);
+							Shutter.txtPrefix.setEnabled(true);
+						}
+						else
+							Shutter.casePrefix.setSelected(false);
+					}
+					
+					//Prefix
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtPrefix"))
+					{
+						if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+						{
+							Shutter.txtPrefix.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						else
+							Shutter.txtPrefix.setText("");
 					}
 					
 					//btnExtension
@@ -2046,6 +2072,48 @@ public class Settings {
 			//Value
 			cValue = document.createElement("Value");
 			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseChangeFolder1.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//casePrefix
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode(Shutter.casePrefix.getName()));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.casePrefix.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//Prefix
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JTextField"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode("txtPrefix"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");				
+			cValue.appendChild(document.createTextNode(Shutter.txtPrefix.getText().toString()));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);

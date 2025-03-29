@@ -77,6 +77,12 @@ public class Extract extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 
 						//File output name
+						String prefix = "";	
+						if (casePrefix.isSelected())
+						{
+							prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+						}
+						
 						String extensionName = "";
 						
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
@@ -85,7 +91,7 @@ public class Extract extends Shutter {
 							
 							if (btnExtension.isSelected())
 							{
-								extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+								extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 							}
 						}
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
@@ -94,7 +100,7 @@ public class Extract extends Shutter {
 							
 							if (btnExtension.isSelected())
 							{
-								extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false) + "_" + (audioStream + 1);
+								extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false) + "_" + (audioStream + 1);
 							}
 						}
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
@@ -103,7 +109,7 @@ public class Extract extends Shutter {
 							
 							if (btnExtension.isSelected())
 							{
-								extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false) + "_" + (subStream + 1);
+								extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false) + "_" + (subStream + 1);
 							}
 						}
 							
@@ -155,13 +161,13 @@ public class Extract extends Shutter {
 						}
 
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
+						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + container); 
 												
 						//File output
 						File fileOut = new File(fileOutputName);				
 						if (fileOut.exists())		
 						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", container);
+							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, extensionName + "_", container);
 							
 							if (fileOut == null)
 							{

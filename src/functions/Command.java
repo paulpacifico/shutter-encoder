@@ -77,20 +77,26 @@ public class Command extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 
 						//File output name
+						String prefix = "";	
+						if (casePrefix.isSelected())
+						{
+							prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+						}
+						
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}	
 						
 						//Output name
-						String fileOutputName =  labelOutput + "/" + fileName.replace(extension, extensionName + comboFilter.getEditor().getItem().toString()) ; 		
+						String fileOutputName =  labelOutput + "/" + prefix + fileName.replace(extension, extensionName + comboFilter.getEditor().getItem().toString()) ; 		
 
 						//File output
 						File fileOut = new File(fileOutputName);					
 						if(fileOut.exists())
 						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, "_", comboFilter.getEditor().getItem().toString());
+							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, "_", comboFilter.getEditor().getItem().toString());
 							
 							if (fileOut == null)
 							{

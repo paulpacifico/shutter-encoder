@@ -46,8 +46,11 @@ import java.awt.geom.Area;
 import java.io.File;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -85,11 +88,14 @@ import settings.FunctionUtils;
 	private JLabel reduce;
 	private JLabel topImage;
 	public static JButton btnStartRender;
+	public static JCheckBox caseRunParallel;
+	public static JComboBox<String> parallelValue;
 	public static JTable table;
 	public static DefaultTableModel tableRow;
 	public static JScrollPane scrollPane;		
 	private static int complete;
 	private boolean drag = false;
+	public static int filesCompleted = 0;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
@@ -112,7 +118,7 @@ import settings.FunctionUtils;
 	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	        shape1.add(shape2);
 			frame.setShape(shape1);
-			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
+			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			
 			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -383,7 +389,7 @@ import settings.FunctionUtils;
 		topImage = new JLabel();
 		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
-		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
@@ -618,7 +624,7 @@ import settings.FunctionUtils;
 		
 	}
 
-	@SuppressWarnings("serial")
+	@SuppressWarnings({ "rawtypes", "serial", "unchecked" })
 	private void table() {
 		
 		JLabel columnFile = new JLabel(Shutter.language.getProperty("columnFile"));
@@ -630,7 +636,6 @@ import settings.FunctionUtils;
 		dtcr.setHorizontalAlignment(SwingConstants.CENTER);
         table = new JTable(tableRow)
         {
-           @SuppressWarnings({ "unchecked", "rawtypes" })
 			public Class getColumnClass(int column)
             {
                 return getValueAt(0, column).getClass();
@@ -662,7 +667,11 @@ import settings.FunctionUtils;
 				}
 				
 				if (table.getRowCount() == 0)
-					RenderQueue.btnStartRender.setEnabled(false);
+				{
+					btnStartRender.setEnabled(false);
+					caseRunParallel.setEnabled(true);
+					parallelValue.setEnabled(true);					
+				}
 				
 			}
 
@@ -679,6 +688,7 @@ import settings.FunctionUtils;
 		table.getModel().addTableModelListener(new TableModelListener() {
 
 		      public void tableChanged(TableModelEvent e) {
+		    	  
 					Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));					
 					if (Shutter.caseChangeFolder1.isSelected() == false)
 						Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
@@ -694,11 +704,42 @@ import settings.FunctionUtils;
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
 		frame.getContentPane().add(scrollPane);
 		
+		caseRunParallel = new JCheckBox(Shutter.language.getProperty("caseRunParallel"));
+		caseRunParallel.setName("caseRunParallel");
+		caseRunParallel.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseRunParallel.setSize(caseRunParallel.getPreferredSize().width, 23);
+		frame.getContentPane().add(caseRunParallel);
+		
+		caseRunParallel.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseRunParallel.isSelected())
+				{
+					parallelValue.setEnabled(true);
+				}
+				else
+					parallelValue.setEnabled(false);
+			}
+			
+		});
+		
+		parallelValue = new JComboBox<String>();
+		parallelValue.setName("parallelValue");
+		parallelValue.setModel(new DefaultComboBoxModel<String>(new String[] { "2","3","4","5","6","7","8","9","10" }));
+		parallelValue.setSelectedIndex(0);
+		parallelValue.setMaximumRowCount(10);
+		parallelValue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		parallelValue.setEditable(false);	
+		parallelValue.setEnabled(false);
+		frame.getContentPane().add(parallelValue);
+		
 		btnStartRender = new JButton(Shutter.language.getProperty("btnStartRender"));
 		btnStartRender.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
 		btnStartRender.setEnabled(false);
 		frame.getContentPane().add(btnStartRender);
-		
+				
 		btnStartRender.addActionListener(new ActionListener(){
 
 			@Override
@@ -710,24 +751,31 @@ import settings.FunctionUtils;
 				FFMPEG.previousElapsedTime = 0;
 				
 				btnStartRender.setEnabled(false);
+				caseRunParallel.setEnabled(false);
+				parallelValue.setEnabled(false);
 				complete = 0;
 				
 				Thread render = new Thread(new Runnable() {
 					
 				public void run() {
 					
+						int currentProcessedFiles = 0;
+						int sendCommands = 0;
+						filesCompleted = 0;
+						
 						for (int i = 0 ; i < tableRow.getRowCount() ; i++)
 						{
 							String cli[] = tableRow.getValueAt(i, 1).toString().split(" ");
 							String cmd = tableRow.getValueAt(i, 1).toString();
-							String fichier = tableRow.getValueAt(i, 0).toString();		
+							String fileName = tableRow.getValueAt(i, 0).toString();		
 							String c = cmd.substring(0, cmd.length() - 1);
+							File fileInput = new File(c.substring(c.indexOf("\"") + 1).split("\"")[0]);	
 							File fileOut = new File(c.substring(c.lastIndexOf("\"") + 1));	
 							if (fileOut.toString().contains("pipe"))
 							{
 								String s[] = fileOut.toString().split("\\|");
 								fileOut = new File(s[0]); 
-							}							
+							}					
 							
 							if (cmd.contains("pipe:1"))
 							{
@@ -739,7 +787,18 @@ import settings.FunctionUtils;
 							switch (cli[0].toString())
 							{
 								case "ffmpeg" :
-									FFMPEG.run(cmd.toString().replace("ffmpeg",""));
+									if (caseRunParallel.isSelected())
+									{
+										FFMPEG.run(cmd.toString().replace("ffmpeg"," -v verbose"));
+										
+										//IMPORTANT avoid a bug
+										try {
+											Thread.sleep(100);
+										} catch (InterruptedException e) {}
+									}
+									else											
+										FFMPEG.run(cmd.toString().replace("ffmpeg",""));
+									
 									break;
 								case "bmxtranswrap" :
 									BMXTRANSWRAP.run(cmd.toString().replace("bmxtranswrap",""));
@@ -753,48 +812,142 @@ import settings.FunctionUtils;
 								case "dcraw" :
 									DCRAW.run(cmd.toString().replace("dcraw",""));
 									break;
-							}				
+							}	
 							
-							table.setRowSelectionInterval(i, i);
+							currentProcessedFiles += 1;
+							sendCommands += 1;
 							Shutter.disableAll();
 							
-							Shutter.lblCurrentEncoding.setText(fichier);
-							
-							try {
-								
-								do {
-									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
-																
-								//Permet d'attendre si un autre processus se lance
-								Thread.sleep(1000);
-								
-								do {
-									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
-								
-							} catch (InterruptedException e) {}
-
-							lastActions(i, fichier, fileOut);
-							
-							if (Shutter.cancelled)
+							if (caseRunParallel.isSelected())
 							{
-								btnStartRender.setEnabled(true);
-								break;
+								Shutter.btnStart.setEnabled(false);
+								table.setRowSelectionInterval(0, i);
+								Shutter.lblCurrentEncoding.setText(filesCompleted + "/" + tableRow.getRowCount() + " " + Shutter.language.getProperty("filesEnded")); 
+								Shutter.progressBar1.setMaximum(tableRow.getRowCount());
+								Shutter.progressBar1.setIndeterminate(true);
+							}
+							else
+							{
+								table.setRowSelectionInterval(i, i);
+								Shutter.lblCurrentEncoding.setText(fileName); 	
 							}
 							
-						}
+							try {	
+							
+								if (caseRunParallel.isSelected() == false)
+								{									
+									do {										
+										Thread.sleep(100);											
+									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+																	
+									//Permet d'attendre si un autre processus se lance
+									Thread.sleep(1000);
+									
+									do {
+										Thread.sleep(100);										
+									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);	
+								}
+								else
+								{									
+									int maxProcesses = Integer.parseInt(parallelValue.getSelectedItem().toString());
+									
+									if (i == tableRow.getRowCount() - 1 && filesCompleted < tableRow.getRowCount()) //Waiting all files to complete
+									{		
+										do {
+											
+											Thread.sleep(100);		
+											Shutter.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Shutter.language.getProperty("filesEnded"));	
+											Shutter.progressBar1.setValue(RenderQueue.filesCompleted);
+											
+											if (FFMPEG.error || FFMPEG.cancelled)
+											{															
+												filesCompleted++;
+												FFMPEG.error = false; //IMPORTANT
 												
-						btnStartRender.setEnabled(true);
+												if (i != tableRow.getRowCount() - 1) //Do not break if it's the last file
+												{
+													break;
+												}
+											}
+											
+										} while (filesCompleted != tableRow.getRowCount());											
+									}
+									else if (currentProcessedFiles == maxProcesses || cmd.contains("-pass 1") || FFMPEG.error)
+									{
+										do {	
+											
+											Thread.sleep(100);	
+											Shutter.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Shutter.language.getProperty("filesEnded"));	
+											Shutter.progressBar1.setValue(RenderQueue.filesCompleted);
+											
+											if (FFMPEG.error || FFMPEG.cancelled)
+											{
+												filesCompleted++;		
+												break;
+											}
+											
+										} while (filesCompleted < sendCommands && FFMPEG.runProcess.isAlive());
+										
+										if (currentProcessedFiles == maxProcesses)
+											currentProcessedFiles = 0;
+									}
+								}
+								
+							} catch (InterruptedException e) {}								
+
+							if (caseRunParallel.isSelected() == false) //At then end of the loop
+							{
+								lastActions(i, fileName, fileInput, fileOut);
+							}
+							
+							if (Shutter.cancelled)
+								break;							
+						}
+								
+						if (caseRunParallel.isSelected())
+						{
+							for (int i = 0 ; i < tableRow.getRowCount() ; i++)
+							{
+								String cmd = tableRow.getValueAt(i, 1).toString();
+								String fileName = tableRow.getValueAt(i, 0).toString();		
+								String c = cmd.substring(0, cmd.length() - 1);	
+								File fileInput = new File(c.substring(c.indexOf("\"") + 1).split("\"")[0]);	
+								File fileOut = new File(c.substring(c.lastIndexOf("\"") + 1));	
+	
+								lastActions(i, fileName, fileInput, fileOut);
+							}
+						}
+													
+						boolean enableParallel = true;
+						for (int i = 0 ; i < tableRow.getRowCount() ; i++)
+						{
+							String cli[] = tableRow.getValueAt(i, 1).toString().split(" ");
+							if (cli[0].toString().equals("ffmpeg") == false)
+							{
+								enableParallel = false;
+							}
+						}
+						
+						if (enableParallel)
+						{
+							caseRunParallel.setEnabled(true);
+							if (caseRunParallel.isSelected())
+							{
+								parallelValue.setEnabled(true);
+							}
+						}
 						Shutter.enfOfFunction();
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+						
+						if (tableRow.getRowCount() > 0)
+							btnStartRender.setEnabled(true);
 						
 					}//End Run
 				});
 				render.start();
 			}			
 		});      		
-
+		
 		resizeAll();
 	}	
 
@@ -802,7 +955,9 @@ import settings.FunctionUtils;
 		
 		title.setBounds(0, 0, frame.getWidth(), 24);
 		
-		btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23, 21);
+		btnStartRender.setBounds(11, frame.getHeight() - 29, frame.getWidth() - 23 - caseRunParallel.getWidth() - 7 - 40 - 5, 21);
+		caseRunParallel.setLocation(frame.getWidth() - caseRunParallel.getWidth() - 14 - 40 - 5, btnStartRender.getY() - 1);
+		parallelValue.setBounds(caseRunParallel.getX() + caseRunParallel.getWidth() + 7, caseRunParallel.getY() + 1, 40, 20);
 		
 		scrollPane.setBounds(10, 38, frame.getWidth() - 20, frame.getHeight() - 74);
 
@@ -813,26 +968,32 @@ import settings.FunctionUtils;
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 	}
 	
-	private static void lastActions(int item, String file, File fileOut) {
+	public static void lastActions(int item, String fileName, File fileInput, File fileOut) {
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
 				
 		//Erreurs
 		if (FFMPEG.error || fileOut.length() == 0 && Shutter.caseCreateSequence.isSelected() == false)
 		{
-			FFMPEG.errorList.append(Shutter.language.getProperty("file") + " N°" + (item + 1) + " - " + file);
+			FFMPEG.errorList.append(Shutter.language.getProperty("file") + " N°" + (item + 1) + " - " + fileName);
 		    FFMPEG.errorList.append(System.lineSeparator());
 			try {
 				fileOut.delete();
-			} catch (Exception e) {}
-		}
+			} catch (Exception e) {}		
+		}		
 		
+		//Delete file
+		if (Shutter.caseDeleteSourceFile.isSelected() && fileInput != null && Shutter.cancelled == false && FFMPEG.error == false)
+		{
+			fileInput.delete();
+		}
+				
 		//Concat mode or Image sequence
 		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
 		{
-			String extension = file.substring(file.lastIndexOf("."));
+			String extension = fileName.substring(fileName.lastIndexOf("."));
 			
-			File concatList = new File(fileOut.getParent().replace("\\", "/") + "/" + file.replace(extension, ".txt"));
+			File concatList = new File(fileOut.getParent().replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 			
 			concatList.delete();
 		}
@@ -873,10 +1034,10 @@ import settings.FunctionUtils;
 		{
 			if (cli[0].toString().equals("ffmpeg"))
 			{
-				final String extension =  file.substring(file.lastIndexOf("."));
+				final String extension =  fileName.substring(fileName.lastIndexOf("."));
 			    for (final File fileEntry : folder.listFiles()) {
 			        if (fileEntry.isFile()) {
-			        	if (fileEntry.getName().contains(file.replace(extension, "")) && fileEntry.getName().contains("log"))
+			        	if (fileEntry.getName().contains(fileName.replace(extension, "")) && fileEntry.getName().contains("log"))
 			        	{
 			        		File fileToDelete = new File(fileEntry.getAbsolutePath());
 			        		fileToDelete.delete();
@@ -926,7 +1087,7 @@ import settings.FunctionUtils;
 		}
 		
 		//Envoi par e-mail et FTP
-		FunctionUtils.addFileForMail(file);
+		FunctionUtils.addFileForMail(fileName);
 		Ftp.sendToFtp(fileOut);
 		
 		if (tableRow.getValueAt(item, 2).toString().contains("|"))

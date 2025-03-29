@@ -54,20 +54,26 @@ public class ReplaceAudio extends Shutter {
 		String labelOutput = FunctionUtils.setOutputDestination("", videoFile);
 		
 		//File output name
+		String prefix = "";	
+		if (casePrefix.isSelected())
+		{
+			prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+		}
+		 
 		String extensionName = "";	
 		if (btnExtension.isSelected())
 		{
-			extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+			extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 		}
 			
 		//Output name
-		String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + extension); 
+		String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + extension); 
 
 		//File output
 		File fileOut = new File(fileOutputName);
 		if(fileOut.exists())
 		{
-			fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, extensionName + "_", extension);
+			fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, extensionName + "_", extension);
 		}
 				
 		if (fileOut != null && fileOut.toString().equals("skip") == false)

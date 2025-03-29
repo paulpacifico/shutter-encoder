@@ -237,10 +237,16 @@ public class Picture extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);	
 						
 						//File output name
+						String prefix = "";	
+						if (casePrefix.isSelected())
+						{
+							prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+						}
+						
 						String extensionName = "";	
 						if (btnExtension.isSelected())
 						{
-							extensionName = FunctionUtils.setSuffix(txtExtension.getText(), false);
+							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}
 						
 						//Container
@@ -250,13 +256,13 @@ public class Picture extends Shutter {
 						String singleFrame = setFrame();	
 						
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, extensionName + container); 
+						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + container); 
 									
 						//File output
 						File fileOut = new File(fileOutputName);						
 						if(fileOut.exists())
 						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, fileName, extension, "_", container);
+							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, "_", container);
 							
 							if (fileOut == null)
 							{
@@ -288,7 +294,7 @@ public class Picture extends Shutter {
 								
 								int n = 1;
 								do {
-									fileOut = new File(labelOutput + "/" + fileName.replace(extension, "_" + n + container));
+									fileOut = new File(labelOutput + "/" + prefix + fileName.replace(extension, "_" + n + container));
 									n++;
 								} while (fileOut.exists());
 

@@ -61,7 +61,7 @@ public class Donate {
 		
 		frame.setResizable(false);
 		frame.setUndecorated(true);
-		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100, 100, 100)));
+		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 		Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
 	    Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	    shape1.add(shape2);
@@ -127,7 +127,7 @@ public class Donate {
 		JLabel topImage = new JLabel();
 		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
-		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);		
 		topPanel.add(topImage);
 		

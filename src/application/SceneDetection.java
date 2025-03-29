@@ -116,7 +116,7 @@ import javax.swing.JScrollPane;
 	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
 	        shape1.add(shape2);
 			frame.setShape(shape1);
-			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(100,100,100)));
+			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
 		}
@@ -240,14 +240,14 @@ import javax.swing.JScrollPane;
 
 		JLabel title = new JLabel(Shutter.language.getProperty("frameDetectionCoupe"));
 		title.setHorizontalAlignment(JLabel.CENTER);
-		title.setBounds(0, 1, frame.getWidth(), 24);
+		title.setBounds(0, 0, frame.getWidth(), 24);
 		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
 		topImage.setBackground(new Color(35,35,40));
 		topImage.setOpaque(true);
-		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));	
+		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));	
 		topImage.setBounds(title.getBounds());
 		
 		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));

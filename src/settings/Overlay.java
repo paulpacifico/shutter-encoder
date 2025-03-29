@@ -368,7 +368,7 @@ public class Overlay extends Shutter {
 	      	
 	      	if (Shutter.caseAddText.isSelected())
 	      	{
-	      		String text = FunctionUtils.setSuffix(Shutter.overlayText.getText(), true);						
+	      		String text = FunctionUtils.setPrefixSuffix(Shutter.overlayText.getText(), true);						
 					      		
 	      		if (filterComplex != "") filterComplex += ",";
 	      			filterComplex += "drawtext=" + overlayFont + ":text='" + text + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(Shutter.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Shutter.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + Shutter.foregroundHex + Shutter.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(Shutter.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Shutter.backgroundHex + Shutter.backgroundNameAlpha;

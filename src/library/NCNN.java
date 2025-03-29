@@ -51,6 +51,10 @@ public static String modelsPath;
 		if (btnStart.getText().equals(language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false  && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{
 	        RenderQueue.tableRow.addRow(new Object[] { lblCurrentEncoding.getText(), "ncnn" + cmd, lblDestination1.getText()});
+	        RenderQueue.caseRunParallel.setSelected(false);
+	        RenderQueue.caseRunParallel.setEnabled(false);
+	        RenderQueue.parallelValue.setEnabled(false);
+	        
 	        lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
