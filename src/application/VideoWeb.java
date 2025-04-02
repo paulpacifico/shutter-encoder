@@ -59,6 +59,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -864,7 +865,13 @@ public class VideoWeb {
 	        				Thread.sleep(100);
 	        			} while(YOUTUBEDL.isRunning);
 	        			
-	        			Shutter.progressBar1.setIndeterminate(false);
+	        			SwingUtilities.invokeLater(new Runnable()
+	        			{
+	        	           @Override
+	        	           public void run() {
+	        	        	   Shutter.progressBar1.setIndeterminate(false);
+	        	           }
+	        			});
 	        			FFMPEG.enableAll();	 
 	        			FFMPEG.enfOfFunction();	     
 	        		}

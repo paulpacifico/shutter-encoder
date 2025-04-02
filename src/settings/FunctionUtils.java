@@ -46,6 +46,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import application.Console;
 import application.RecordInputDevice;
@@ -204,7 +205,13 @@ public class FunctionUtils extends Shutter {
 
 		} while ((fileSize != file.length() || FFMPEG.isReadable(file) == false) && cancelled == false && file.exists());
 				
-		progressBar1.setIndeterminate(false);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+           @Override
+           public void run() {
+        	   progressBar1.setIndeterminate(false);
+           }
+		});
 		btnCancel.setEnabled(false);
 		
 		if (cancelled)
@@ -229,7 +236,13 @@ public class FunctionUtils extends Shutter {
         	else
         		return null;
         	
-        	Shutter.progressBar1.setIndeterminate(false);		
+        	SwingUtilities.invokeLater(new Runnable()
+			{
+	           @Override
+	           public void run() {
+	        	   progressBar1.setIndeterminate(false);
+	           }
+			});		
         }
         else if (Settings.btnWaitFileComplete.isSelected())
         {
@@ -291,6 +304,21 @@ public class FunctionUtils extends Shutter {
 						}
 						else
 						{
+							if (file.isDirectory() && file.isHidden() == false && file.getName().equals("completed") == false && file.getName().equals("error") == false)
+							{
+								boolean addFolder = true;
+								for (int f = 0 ; f < liste.getSize() ; f++)
+								{
+									if (liste.getElementAt(f).equals(file.toString()))
+									{
+										addFolder = false;
+									}									
+								}
+								
+								if (addFolder)
+									liste.addElement(file.toString());
+							}
+							
 							continue;
 						}
 
@@ -311,7 +339,13 @@ public class FunctionUtils extends Shutter {
 									
 		} while (scanIsRunning);
 						
-		progressBar1.setIndeterminate(false);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+           @Override
+           public void run() {
+        	   progressBar1.setIndeterminate(false);
+           }
+		});
 		enableAll();
 		btnEmptyList.doClick();
 

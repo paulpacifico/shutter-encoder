@@ -2870,6 +2870,8 @@ public class VideoPlayer {
 				
 				if (e.getClickCount() == 2 && Shutter.noSettings == false)
 				{
+					Shutter.windowDrag = true;
+					
 					if (fullscreenPlayer)
 					{
 						fullscreenPlayer = false;						
@@ -2975,6 +2977,8 @@ public class VideoPlayer {
 						Shutter.grpAdvanced.setVisible(false);
 						Shutter.btnReset.setVisible(false);
 					}
+					
+					Shutter.windowDrag = false;
 				}
 			}
 
@@ -4571,7 +4575,7 @@ public class VideoPlayer {
 	}
 	
 	public static void refreshTimecodeAndText() {
-				
+						
 		//Colors	
 		if (Shutter.foregroundColor != null)
 		{
@@ -5557,7 +5561,7 @@ public class VideoPlayer {
 		return filter;
 	}
 
-	public static void getFileList(String file) {
+	public static boolean getFileList(String file) {
 		
 		try {
 			
@@ -5606,13 +5610,14 @@ public class VideoPlayer {
 						waveformContainer.repaint();	
 						totalDuration();
 						
-						break;
+						return true;
 					}
 				}
 			}		
 			
 		} catch (Exception e) {}		
 		
+		return false;
 	}
 	
 	private static void setFileList() {

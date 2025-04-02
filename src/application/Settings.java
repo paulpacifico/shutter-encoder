@@ -1528,8 +1528,8 @@ public class Settings {
 		
 			NodeList nList = doc.getElementsByTagName("Component");
 			
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-								
+			for (int temp = 0; temp < nList.getLength(); temp++)
+			{								
 				Node nNode = nList.item(temp);
 				
 				if (nNode.getNodeType() == Node.ELEMENT_NODE)
@@ -1810,6 +1810,16 @@ public class Settings {
 						savedDayOfYear = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 					}
 					
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("frameLocation"))
+					{
+						String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
+						int x = Integer.parseInt(s[0]);
+						int y = Integer.parseInt(s[1]);
+						int width = Integer.parseInt(s[2]);
+						int height = Integer.parseInt(s[3]);
+						
+						Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
+					}
 				}
 			}		
 		}							
@@ -1827,6 +1837,26 @@ public class Settings {
 			Element root = document.createElement("Settings");
 			document.appendChild(root);
 
+			//Component
+			Element component = document.createElement("Component");
+			
+			//Type
+			Element cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JFrame"));
+			component.appendChild(cType);
+			
+			//Name
+			Element cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode("frameLocation"));
+			component.appendChild(cName);
+			
+			//Value
+			Element cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf((int) Shutter.frame.getLocation().getX() + "," + (int) Shutter.frame.getLocation().getY() + "," + (int) Shutter.frame.getWidth() + "," + (int) Shutter.frame.getHeight())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
 			for (Component p : frame.getContentPane().getComponents())
 			{
 				if (p.getName() != "" && p.getName() != null)
@@ -1834,20 +1864,20 @@ public class Settings {
 					if (p instanceof JCheckBox)
 					{
 						//Component
-						Element component = document.createElement("Component");
+						component = document.createElement("Component");
 						
 						//Type
-						Element cType = document.createElement("Type");
+						cType = document.createElement("Type");
 						cType.appendChild(document.createTextNode("JCheckBox"));
 						component.appendChild(cType);
 						
 						//Name
-						Element cName = document.createElement("Name");
+						cName = document.createElement("Name");
 						cName.appendChild(document.createTextNode(p.getName()));
 						component.appendChild(cName);
 						
 						//Value
-						Element cValue = document.createElement("Value");
+						cValue = document.createElement("Value");
 						cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
 						component.appendChild(cValue);
 						
@@ -1866,20 +1896,20 @@ public class Settings {
 					else if (p instanceof JLabel)
 					{
 						//Component
-						Element component = document.createElement("Component");
+						component = document.createElement("Component");
 						
 						//Type
-						Element cType = document.createElement("Type");
+						cType = document.createElement("Type");
 						cType.appendChild(document.createTextNode("JLabel"));
 						component.appendChild(cType);
 						
 						//Name
-						Element cName = document.createElement("Name");
+						cName = document.createElement("Name");
 						cName.appendChild(document.createTextNode(p.getName()));
 						component.appendChild(cName);
 						
 						//Value						
-						Element cValue = document.createElement("Value");
+						cValue = document.createElement("Value");
 						cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
 						component.appendChild(cValue);
 						
@@ -1904,20 +1934,20 @@ public class Settings {
 						}
 						
 						//Component
-						Element component = document.createElement("Component");
+						component = document.createElement("Component");
 						
 						//Type
-						Element cType = document.createElement("Type");
+						cType = document.createElement("Type");
 						cType.appendChild(document.createTextNode("JComboBox"));
 						component.appendChild(cType);
 															
 						//Name
-						Element cName = document.createElement("Name");
+						cName = document.createElement("Name");
 						cName.appendChild(document.createTextNode(p.getName()));
 						component.appendChild(cName);
 						
 						//Value
-						Element cValue = document.createElement("Value");						
+						cValue = document.createElement("Value");						
 						cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));						
 						component.appendChild(cValue);
 						
@@ -1936,20 +1966,20 @@ public class Settings {
 					else if (p instanceof JTextField && ((JTextField) p).getText().length() > 0)
 					{
 						//Component
-						Element component = document.createElement("Component");
+						component = document.createElement("Component");
 						
 						//Type
-						Element cType = document.createElement("Type");
+						cType = document.createElement("Type");
 						cType.appendChild(document.createTextNode("JTextField"));
 						component.appendChild(cType);
 						
 						//Name
-						Element cName = document.createElement("Name");
+						cName = document.createElement("Name");
 						cName.appendChild(document.createTextNode(p.getName()));
 						component.appendChild(cName);
 						
 						//Value
-						Element cValue = document.createElement("Value");
+						cValue = document.createElement("Value");
 						cValue.appendChild(document.createTextNode(((JTextField) p).getText().toString()));
 						component.appendChild(cValue);
 						
@@ -1968,20 +1998,20 @@ public class Settings {
 					else if (p instanceof JPanel)
 					{
 						//Component
-						Element component = document.createElement("Component");
+						component = document.createElement("Component");
 						
 						//Type
-						Element cType = document.createElement("Type");
+						cType = document.createElement("Type");
 						cType.appendChild(document.createTextNode("JPanel"));
 						component.appendChild(cType);
 
 						//Name
-						Element cName = document.createElement("Name");
+						cName = document.createElement("Name");
 						cName.appendChild(document.createTextNode(p.getName()));
 						component.appendChild(cName);
 						
 						//Value
-						Element cValue = document.createElement("Value");
+						cValue = document.createElement("Value");
 						cValue.appendChild(document.createTextNode(String.valueOf(((JPanel) p).getBackground())));
 						component.appendChild(cValue);
 						
@@ -2007,20 +2037,20 @@ public class Settings {
 					if (p instanceof JComboBox)
 					{						
 						//Component
-						Element component = document.createElement("Component");
+						component = document.createElement("Component");
 						
 						//Type
-						Element cType = document.createElement("Type");
+						cType = document.createElement("Type");
 						cType.appendChild(document.createTextNode("JComboBox"));
 						component.appendChild(cType);
 															
 						//Name
-						Element cName = document.createElement("Name");
+						cName = document.createElement("Name");
 						cName.appendChild(document.createTextNode(p.getName()));
 						component.appendChild(cName);
 												
 						//Value
-						Element cValue = document.createElement("Value");						
+						cValue = document.createElement("Value");						
 						cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));						
 						component.appendChild(cValue);
 						
@@ -2036,20 +2066,20 @@ public class Settings {
 						
 			//Open folder at end
 			//Component
-			Element component = document.createElement("Component");
+			component = document.createElement("Component");
 			
 			//Type
-			Element cType = document.createElement("Type");
+			cType = document.createElement("Type");
 			cType.appendChild(document.createTextNode("JCheckBox"));
 			component.appendChild(cType);
 			
 			//Name
-			Element cName = document.createElement("Name");
+			cName = document.createElement("Name");
 			cName.appendChild(document.createTextNode(Shutter.caseOpenFolderAtEnd1.getName()));
 			component.appendChild(cName);
 			
 			//Value
-			Element cValue = document.createElement("Value");
+			cValue = document.createElement("Value");
 			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseOpenFolderAtEnd1.isSelected())));
 			component.appendChild(cValue);
 			
@@ -2524,7 +2554,7 @@ public class Settings {
 			cName.appendChild(document.createTextNode("dayOfYear"));
 			component.appendChild(cName);
 			
-			if (savedDayOfYear == 0 || currentDayOfYear - savedDayOfYear < 0 || currentDayOfYear - savedDayOfYear >= 7)
+			if (savedDayOfYear == 0 || currentDayOfYear - savedDayOfYear < 0 || currentDayOfYear - savedDayOfYear >= 4)
 			{
 				//Value
 				cValue = document.createElement("Value");

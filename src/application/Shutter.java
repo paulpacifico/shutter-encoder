@@ -187,7 +187,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "18.8";
+	public static String actualVersion = "18.9";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -9096,7 +9096,7 @@ public class Shutter {
 						tcLocY = timecode.getLocation().y;
 					}		
 					else if (textTcSize.hasFocus())
-					{					
+					{			
 						timecode.setLocation(timecode.getX() + (width - timecode.getWidth()) / 2, timecode.getY() + (height - timecode.getHeight()) / 2);	
 						tcLocX = timecode.getLocation().x;
 						tcLocY = timecode.getLocation().y;
@@ -14760,7 +14760,7 @@ public class Shutter {
 							try {
 								
 								//InOut	
-								InputAndOutput.getInputAndOutput();	
+								InputAndOutput.getInputAndOutput(true);
 								
 								stabilisation = Corrections.setStabilisation("", file, file.getName(), "");
 
@@ -17564,7 +17564,7 @@ public class Shutter {
 					comboResolution.setEnabled(true);
 					debitVideo.setEnabled(true);
 					debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000", "25000", "20000", "15000", "10000", "8000", "5000", "3000", "2500", "2000", "1500", "1000", "500", language.getProperty("lblBest").toLowerCase(), language.getProperty("lblGood").toLowerCase(), "auto" }));
-					debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);				
+					debitVideo.setSelectedIndex(debitVideo.getModel().getSize() - 1);						
 					maximumBitrate.setEnabled(true);
 					maximumBitrate.setSelectedIndex(maximumBitrate.getModel().getSize() - 1);
 					bitrateSize.setEnabled(true);
@@ -20627,6 +20627,16 @@ public class Shutter {
 									casePreserveMetadata.setLocation(7, caseChunks.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);		
 								}
+								else if (comboFonctions.getSelectedItem().toString().equals("XAVC"))
+								{
+									caseGOP.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
+									grpAdvanced.add(caseGOP);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									grpAdvanced.add(gopSize);
+									
+									casePreserveMetadata.setLocation(7, caseGOP.getLocation().y + 17);
+									grpAdvanced.add(casePreserveMetadata);
+								}
 								else
 								{
 									casePreserveMetadata.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
@@ -21473,6 +21483,8 @@ public class Shutter {
 									
 									caseGOP.setLocation(7, caseForcePreset.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									grpAdvanced.add(gopSize);
 								}
 								else
 								{
@@ -21521,6 +21533,8 @@ public class Shutter {
 									
 									caseGOP.setLocation(7, caseFastStart.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									grpAdvanced.add(gopSize);
 								}								
 								
 								gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
@@ -22407,6 +22421,10 @@ public class Shutter {
 								{
 									caseForcerEntrelacement.setLocation(caseForcerProgressif.getX(), caseForcerProgressif.getY() + 17);
 									grpAdvanced.add(caseForcerEntrelacement);
+									caseGOP.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
+									grpAdvanced.add(caseGOP);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									grpAdvanced.add(gopSize);	
 								}
 								
 							} else if (language.getProperty("functionPicture").equals(function) || "JPEG".equals(function) || "JPEG XL".equals(function)) {
@@ -23335,11 +23353,11 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 				
-				String types[] = { "300", "480", "960"};
+				String types[] = { "25", "35", "50", "100", "150", "240", "300", "480", "960"};
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
-					comboFilter.setSelectedIndex(1);
+					comboFilter.setSelectedIndex(7);
 				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("MPEG-2")) {

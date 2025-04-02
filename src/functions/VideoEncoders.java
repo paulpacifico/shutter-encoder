@@ -163,8 +163,7 @@ public class VideoEncoders extends Shutter {
 							continue;	
 												
 						//InOut	
-						VideoPlayer.getFileList(file.toString());
-						InputAndOutput.getInputAndOutput();	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -1300,6 +1299,12 @@ public class VideoEncoders extends Shutter {
 				
 			case "Blu-ray":
 				
+				String gop = "60";
+				if (caseGOP.isSelected())				
+				{
+					gop = gopSize.getText();
+				}
+					
 				if (comboFilter.getSelectedIndex() == 0)
 				{
 					String interlace = "";
@@ -1313,7 +1318,7 @@ public class VideoEncoders extends Shutter {
 						maxrate = maximumBitrate.getSelectedItem().toString();
 					}
 					
-					return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=" + maxrate + ":vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=60:b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";		
+					return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=" + maxrate + ":vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=" + gop + ":b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";		
 				}
 				else //H.265
 				{
@@ -1324,7 +1329,7 @@ public class VideoEncoders extends Shutter {
 						maxrate = maximumBitrate.getSelectedItem().toString();
 					}
 					
-					return " -c:v libx265 -pix_fmt yuv420p10le -profile:v main10 -tune grain -level 5.1 -x265-params keyint=60:bframes=3:vbv-maxrate=" + maxrate + ":vbv-bufsize=75000:bitrate=" + FunctionUtils.setVideoBitrate() + ":colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc";		
+					return " -c:v libx265 -pix_fmt yuv420p10le -profile:v main10 -tune grain -level 5.1 -x265-params keyint=" + gop + ":bframes=3:vbv-maxrate=" + maxrate + ":vbv-bufsize=75000:bitrate=" + FunctionUtils.setVideoBitrate() + ":colorprim=bt2020:transfer=smpte2084:colormatrix=bt2020nc";		
 				
 				}
 
@@ -1579,7 +1584,13 @@ public class VideoEncoders extends Shutter {
 								
 			case "XAVC":
 				
-				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g 0 -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
+				gop = "0";
+				if (caseGOP.isSelected())				
+				{
+					gop = gopSize.getText();
+				}
+				
+				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g " + gop + " -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
 		}
 		
 		return "";		

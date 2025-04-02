@@ -48,7 +48,7 @@ public class ReplaceAudio extends Shutter {
 		lblCurrentEncoding.setText(fileName);			
 		
 		//InOut	
-		InputAndOutput.getInputAndOutput();		
+		InputAndOutput.getInputAndOutput(true);		
 		
 		//Output folder
 		String labelOutput = FunctionUtils.setOutputDestination("", videoFile);

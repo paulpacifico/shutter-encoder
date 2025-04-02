@@ -55,17 +55,15 @@ public class OfflineDetection extends Shutter {
 
 					try {
 						
-						String fileName = file.getName();
-						
+						String fileName = file.getName();						
 						lblCurrentEncoding.setText(fileName);	
 						
 						//Data analyze
 						if (FunctionUtils.analyze(file, false) == false)
 							continue;		         
 						
-						//InOut		
-						VideoPlayer.getFileList(file.toString());
-						InputAndOutput.getInputAndOutput();
+						//InOut	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 						//Stats_file
 						String stats_file;

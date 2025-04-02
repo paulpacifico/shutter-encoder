@@ -63,9 +63,8 @@ public class LoudnessTruePeak extends Shutter {
 						if (FunctionUtils.analyze(file, false) == false)
 							continue;
 						
-						//InOut		
-						VideoPlayer.getFileList(file.toString());
-						InputAndOutput.getInputAndOutput();	
+						//InOut	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 		            	//Audio
 						String audio = setAudio();	

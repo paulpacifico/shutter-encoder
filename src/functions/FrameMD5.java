@@ -65,8 +65,7 @@ public class FrameMD5 extends Shutter {
 							continue;
 
 						//InOut	
-						VideoPlayer.getFileList(file.toString());
-						InputAndOutput.getInputAndOutput();	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);	

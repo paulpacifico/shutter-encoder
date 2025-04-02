@@ -51,7 +51,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
 import javax.swing.SwingConstants;
-
+import javax.swing.SwingUtilities;
 import javax.swing.JProgressBar;
 import javax.swing.JDialog;
 
@@ -206,7 +206,15 @@ public class ReducedWindow extends JDialog {
 				if (Shutter.progressBar1.isIndeterminate())
 					progressBar.setIndeterminate(true);
 				else
-					progressBar.setIndeterminate(false);
+				{
+					SwingUtilities.invokeLater(new Runnable()
+					{
+			           @Override
+			           public void run() {
+			        	   Shutter.progressBar1.setIndeterminate(false);
+			           }
+					});
+				}
 				
 				progressBar.setMaximum(Shutter.progressBar1.getMaximum());
 				progressBar.setValue(Shutter.progressBar1.getValue());

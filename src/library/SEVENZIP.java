@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import javax.swing.SwingUtilities;
+
 import application.Console;
 import application.Shutter;
 
@@ -102,7 +104,13 @@ public class SEVENZIP extends Shutter {
 					 else
 						 FFMPEG.cancelled = true;
 				        	
-					progressBar1.setIndeterminate(false);		
+					SwingUtilities.invokeLater(new Runnable()
+					{
+			           @Override
+			           public void run() {
+			        	   progressBar1.setIndeterminate(false);
+			           }
+					});	
 									
 					FFMPEG.enfOfFunction();
 					FFMPEG.enableAll();
