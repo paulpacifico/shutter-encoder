@@ -227,7 +227,7 @@ public class Update {
 			    Document doc = Jsoup.connect("https://www.shutterencoder.com").get();
 			    			    
 			    for (Element file : doc.select("a"))
-			    {				    
+			    {		
 			    	if (System.getProperty("os.name").contains("Windows")) //PC
 	            	{
 	            		try {
@@ -484,7 +484,7 @@ public class Update {
         URLConnection conn = null;
         InputStream in = null;
 		 try {
-	        	URL url = new URL(adresse);
+	        	URL url = new URL(adresse.replace(" ", "%20"));
 	            out = new BufferedOutputStream(new FileOutputStream(destination));
 	            conn = url.openConnection();
 	            in = conn.getInputStream();
