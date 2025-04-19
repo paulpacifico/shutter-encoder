@@ -75,6 +75,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatInspector;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.ui.FlatLineBorder;
 
 import library.BMXTRANSWRAP;
 import library.DCRAW;
@@ -89,8 +90,17 @@ import settings.FunctionUtils;
 public class Utils extends Shutter {
 	
 	static String pathToLanguages;
-	public static Color themeColor = new Color(71, 163, 236);
+	public static Color themeColor = new Color(102, 158, 204);
 	public static Color highlightColor = new Color(129, 198, 253);
+	public static Color c15 = new Color(15,17,20);
+	public static Color c20 = new Color(c15.getRed() + 5,c15.getGreen() + 5,c15.getBlue() + 5);
+	public static Color c25 = new Color(c20.getRed() + 5,c20.getGreen() + 5,c20.getBlue() + 5);
+	public static Color c30 = new Color(c25.getRed() + 5,c25.getGreen() + 5,c25.getBlue() + 5);
+	public static Color c35 = new Color(c30.getRed() + 5,c30.getGreen() + 5,c30.getBlue() + 5);
+	public static Color c42 = new Color(c35.getRed() + 7,c35.getGreen() + 7,c35.getBlue() + 7);
+	public static Color c120 = new Color(120,120,120);
+	public static Color c225 = new Color(225,225,225);
+	public static Color bg32 = new Color(c15.getRed() + 17,c15.getGreen() + 16,c15.getBlue() + 17);
 	public static boolean disableSleepMode = true;
 	public final static String username = "info@shutterencoder.com";
 	public final static String password = "";
@@ -295,27 +305,27 @@ public class Utils extends Shutter {
 			if (getLanguage.contains(Locale.of("zh").getDisplayLanguage()))
 			{				
 				Shutter.magnetoFont = "Noto Sans SC Medium";
-				Shutter.montserratFont = "Noto Sans SC Medium";
-				Shutter.freeSansFont = "Noto Sans SC Medium";
+				Shutter.boldFont = "Noto Sans SC Medium";
+				Shutter.mainFont = "Noto Sans SC Medium";
 			}
 			else if (getLanguage.contains(Locale.of("ja").getDisplayLanguage())
-			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
-			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("ar").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
-				Shutter.montserratFont = "";
-				Shutter.freeSansFont = "";
+				Shutter.boldFont = "";
+				Shutter.mainFont = "";
 			}
 			else if (getLanguage.contains(Locale.of("vi").getDisplayLanguage())
-			|| getLanguage.contains(Locale.of("pl").getDisplayLanguage())) //use system default font
+			|| getLanguage.contains(Locale.of("pl").getDisplayLanguage())
+			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
+			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
-				Shutter.montserratFont = "FreeSans";
+				Shutter.boldFont = "Inter";
 			}
 			else if (getLanguage.equals(Locale.of("sl").getDisplayLanguage()) || getLanguage.equals(Locale.of("cs").getDisplayLanguage()))
 			{
-				Shutter.montserratFont = "FreeSans";
+				Shutter.boldFont = "Inter";
 			}
 						
 			language.load(input);	
@@ -2046,8 +2056,8 @@ public class Utils extends Shutter {
 		int G = Math.max(0, Math.min(255, themeColor.getGreen() + 25));
 		int B = Math.max(0, Math.min(255, themeColor.getBlue() + 25));
 
-		highlightColor = new Color(R, G, B);
-		
+		highlightColor = new Color(R, G, B);	
+			
 		UIManager.put("Component.focusWidth", 0);
 		UIManager.put("Component.innerFocusWidth", 0);
 		UIManager.put("Button.innerFocusWidth", 0);
@@ -2055,92 +2065,95 @@ public class Utils extends Shutter {
 		UIManager.put("Button.arc", 15);
 		UIManager.put("CheckBox.arc", 15);
 		UIManager.put("TextField.arc", 15);			
-		UIManager.put("ProgressBar.arc", 15);
+		UIManager.put("ProgressBar.arc", 10);
 		UIManager.put("TextComponent.arc", 15);
 		UIManager.put("Component.arc", 15);
 		UIManager.put("PopupMenu.arc", 15);	
 		UIManager.put("ScrollPane.arc", 5);
+		UIManager.put("TabbedPane.tabArc", 10);
+		UIManager.put("TabbedPane.cardTabArc", 10);
+		UIManager.put("TabbedPane.tabSelectionArc", 10);
 				
-		UIManager.put("Component.borderColor", new Color(30,30,35));
-		UIManager.put("Component.disabledBorderColor", new Color(30,30,35));
+		UIManager.put("Component.borderColor", c25);
+		UIManager.put("Component.disabledBorderColor", c25);
 		
-		UIManager.put("Button.startBorderColor", new Color(30,30,35));
-		UIManager.put("Button.endBorderColor", new Color(30,30,35));
-		UIManager.put("Button.startBackground", new Color(42,42,47));
-		UIManager.put("Button.endBackground", new Color(42,42,47));
-		UIManager.put("Button.disabledBorderColor", new Color(30,30,35));
-		UIManager.put("Button.disabledBackground", new Color(42,42,47));
-		UIManager.put("Button.foreground", new Color(235,235,240));
-		UIManager.put("Button.default.foreground", new Color(235,235,240));
-		UIManager.put("Button.default.startBackground", new Color(42,42,47));
-		UIManager.put("Button.default.endBackground", new Color(42,42,47));
-		UIManager.put("Button.default.borderColor", new Color(30,30,35));
+		UIManager.put("Button.startBorderColor", c25);
+		UIManager.put("Button.endBorderColor", c25);
+		UIManager.put("Button.startBackground", c42);
+		UIManager.put("Button.endBackground", c42);
+		UIManager.put("Button.disabledBorderColor", c25);
+		UIManager.put("Button.disabledBackground", c42);
+		UIManager.put("Button.foreground", c225);
+		UIManager.put("Button.default.foreground", c225);
+		UIManager.put("Button.default.startBackground", c42);
+		UIManager.put("Button.default.endBackground", c42);
+		UIManager.put("Button.default.borderColor", c25);
 						
-		UIManager.put("ComboBox.background", new Color(42,42,47));		
-		UIManager.put("ComboBox.foreground", new Color(235,235,240));
-		UIManager.put("ComboBox.disabledBackground", new Color(42,42,47));
-		UIManager.put("ComboBox.disabledForeground", new Color(120,120,120));
+		UIManager.put("ComboBox.background", c42);		
+		UIManager.put("ComboBox.foreground", c225);
+		UIManager.put("ComboBox.disabledBackground", c42);
+		UIManager.put("ComboBox.disabledForeground", c120);
 		UIManager.put("ComboBox.buttonBackground", new Color(42,42,47,0));	
-		UIManager.put("ComboBox.buttonEditableBackground", new Color(42,42,47));	
+		UIManager.put("ComboBox.buttonEditableBackground", c42);	
 		UIManager.put("ComboBox.selectionBackground", themeColor);
-		UIManager.put("ComboBox.popupBackground", new Color(42,42,47));
-		UIManager.put("ComboBox.buttonSeparatorColor", new Color(30,30,35));	
-		UIManager.put("ComboBox.buttonDisabledSeparatorColor", new Color(30,30,35));	
+		UIManager.put("ComboBox.popupBackground", c42);
+		UIManager.put("ComboBox.buttonSeparatorColor", c30);	
+		UIManager.put("ComboBox.buttonDisabledSeparatorColor", c30);	
 		UIManager.put("ComboBox.buttonArrowColor", themeColor);		
 		UIManager.put("ComboBox.selectionArc", 15);
 		
-		UIManager.put("MenuItem.background", new Color(42,42,47));		
-		UIManager.put("MenuItem.foreground", new Color(235,235,240));
+		UIManager.put("MenuItem.background", c42);		
+		UIManager.put("MenuItem.foreground", c225);
 		UIManager.put("MenuItem.selectionArc", 15);
 		UIManager.put("MenuItem.selectionBackground", themeColor);
 		
-		UIManager.put("CheckBoxMenuItem.background", new Color(42,42,47));		
-		UIManager.put("CheckBoxMenuItem.foreground", new Color(235,235,240));
+		UIManager.put("CheckBoxMenuItem.background", c42);		
+		UIManager.put("CheckBoxMenuItem.foreground", c225);
 		UIManager.put("CheckBoxMenuItem.selectionBackground", themeColor);
 		
-		UIManager.put("CheckBox.icon.borderColor", new Color(30,30,35));		
-		UIManager.put("CheckBox.icon.background", new Color(42,42,47));
-		UIManager.put("CheckBox.icon.disabledBorderColor", new Color(42,42,47));	
-		UIManager.put("CheckBox.icon.disabledBackground", new Color(42,42,47));	
-		UIManager.put("CheckBox.icon.focusedBorderColor", new Color(30,30,35));
-		UIManager.put("CheckBox.icon.focusedBackground", new Color(42,42,47));
-		UIManager.put("CheckBox.icon.selectedBorderColor", new Color(30,30,35));
+		UIManager.put("CheckBox.icon.borderColor", c25);		
+		UIManager.put("CheckBox.icon.background", c42);
+		UIManager.put("CheckBox.icon.disabledBorderColor", c42);	
+		UIManager.put("CheckBox.icon.disabledBackground", c42);	
+		UIManager.put("CheckBox.icon.focusedBorderColor", c25);
+		UIManager.put("CheckBox.icon.focusedBackground", c42);
+		UIManager.put("CheckBox.icon.selectedBorderColor", c25);
 		
-		UIManager.put("TableHeader.foreground", new Color(235,235,240));
-		UIManager.put("Table.foreground", new Color(235,235,240));
+		UIManager.put("TableHeader.foreground", c225);
+		UIManager.put("Table.foreground", c225);
 		UIManager.put("Table.selectionBackground", themeColor);
 		
-		UIManager.put("TableHeader.background", new Color(42,42,47));
+		UIManager.put("TableHeader.background", c42);
 					
-		UIManager.put("TextField.foreground",new Color(235,235,240));
-		UIManager.put("TextField.background", new Color(42,42,47));
+		UIManager.put("TextField.foreground",c225);
+		UIManager.put("TextField.background", c42);
 		UIManager.put("TextField.selectionBackground", themeColor);
-		UIManager.put("TextField.inactiveForeground", new Color(120,120,120));
+		UIManager.put("TextField.inactiveForeground", c120);
 		
-		UIManager.put("TextArea.foreground",new Color(235,235,240));
-		UIManager.put("TextArea.background", new Color(42,42,47));
+		UIManager.put("TextArea.foreground",c225);
+		UIManager.put("TextArea.background", c42);
 		UIManager.put("TextArea.selectionBackground", themeColor);
-		UIManager.put("TextArea.inactiveForeground", new Color(120,120,120));
+		UIManager.put("TextArea.inactiveForeground", c120);
 		
-		UIManager.put("PasswordField.foreground", new Color(235,235,240));
-		UIManager.put("PasswordField.background", new Color(42,42,47));	
+		UIManager.put("PasswordField.foreground", c225);
+		UIManager.put("PasswordField.background", c42);	
 		UIManager.put("PasswordField.selectionBackground", themeColor);			
-		UIManager.put("PasswordField.inactiveForeground", new Color(120,120,120));
+		UIManager.put("PasswordField.inactiveForeground", c120);
 		
-		UIManager.put("Spinner.foreground", new Color(235,235,240));
-		UIManager.put("Spinner.disabledBackground", new Color(42,42,47));
-		UIManager.put("Spinner.background", new Color(42,42,47));
+		UIManager.put("Spinner.foreground", c225);
+		UIManager.put("Spinner.disabledBackground", c42);
+		UIManager.put("Spinner.background", c42);
 		UIManager.put("FormattedTextField.selectionBackground", themeColor);
-		UIManager.put("Spinner.buttonBackground", new Color(42,42,47));
+		UIManager.put("Spinner.buttonBackground", c42);
 					
-		UIManager.put("ScrollBar.background", new Color(30,30,35));
-		UIManager.put("ScrollBar.thumb", new Color(42,42,47));
+		UIManager.put("ScrollBar.background", c30);
+		UIManager.put("ScrollBar.thumb", c42);
 					
-		UIManager.put("MenuBar.foreground", new Color(235,235,240));
+		UIManager.put("MenuBar.foreground", c225);
 
-		UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(new Color(30,30,35)));	
-		UIManager.put("PopupMenu.borderColor", new Color(30,30,35));
-		UIManager.put("PopupMenu.background", new Color(42,42,47));
+		UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(c25));	
+		UIManager.put("PopupMenu.borderColor", c25);
+		UIManager.put("PopupMenu.background", c42);
 		UIManager.put("PopupMenu.borderCornerRadius", 15);
 		
 		UIManager.put("Panel.selectionForeground", Color.WHITE);
@@ -2154,18 +2167,19 @@ public class Utils extends Shutter {
 		UIManager.put("ComboBox.selectionForeground", Color.WHITE);
 		UIManager.put("Menu.selectionForeground", Color.WHITE);
 										
-		UIManager.put("TabbedPane.focusColor", new Color(30,30,35));
+		UIManager.put("TabbedPane.focusColor", c25);
 		UIManager.put("TabbedPane.tabHeight", 22);
 		UIManager.put("TabbedPane.tabInsets", new Insets(0,5,0,5));
-		UIManager.put("TabbedPane.background", new Color(35,35,40));
-		UIManager.put("TabbedPane.selectedBackground", new Color(30,30,35));
-		UIManager.put("TabbedPane.hoverColor", new Color(30,30,35));
-		UIManager.put("TabbedPane.highlight", new Color(30,30,35));
-		UIManager.put("TabbedPane.underlineColor", new Color(30,30,35));
-		UIManager.put("TabbedPane.inactiveUnderlineColor", new Color(30,30,35));
-		UIManager.put("TabbedPane.disabledUnderlineColor", new Color(30,30,35));
-		UIManager.put("TabbedPane.contentAreaColor", new Color(30,30,35));
-		UIManager.put("TabbedPane.foreground", new Color(235,235,240));	
+		UIManager.put("TabbedPane.background", c30);
+		UIManager.put("TabbedPane.selectedBackground", c25);
+		UIManager.put("TabbedPane.hoverColor", c25);
+		UIManager.put("TabbedPane.highlight", c25);
+		UIManager.put("TabbedPane.underlineColor", c25);
+		UIManager.put("TabbedPane.inactiveUnderlineColor", c25);
+		UIManager.put("TabbedPane.disabledUnderlineColor", c25);
+		UIManager.put("TabbedPane.contentAreaColor", c25);
+		UIManager.put("TabbedPane.contentSeparatorHeight", 0);
+		UIManager.put("TabbedPane.foreground", c225);	
 		
 		
 		UIManager.put("CheckBox.icon.focusWidth", 0);
@@ -2173,33 +2187,34 @@ public class Utils extends Shutter {
 		UIManager.put("CheckBox.icon.hoverBorderColor", highlightColor);
 		UIManager.put("CheckBox.icon.selectedFocusedBorderColor", highlightColor);
 		UIManager.put("CheckBox.icon.disabledCheckmarkColor", new Color(100, 100, 100));	
-		UIManager.put("CheckBox.foreground" , new Color(235,235,240));
+		UIManager.put("CheckBox.foreground" , c225);
 		UIManager.put("CheckBox.background" , new Color(42,42,47,0));
 		UIManager.put("CheckBox.icon.focusedBackground", "null");
 		UIManager.put("RadioButton.icon.centerDiameter", 9);
 		
-		UIManager.put("ProgressBar.background" , new Color(35,35,40));
+		UIManager.put("ProgressBar.background" , c30);
 		UIManager.put("ProgressBar.foreground" , themeColor);	
-		UIManager.put("ProgressBar.selectionBackground", new Color(235,235,240));
-        UIManager.put("ProgressBar.selectionForeground", new Color(235,235,240));
-		
+		UIManager.put("ProgressBar.selectionBackground", c225);
+        UIManager.put("ProgressBar.selectionForeground", c225);
+        UIManager.put("ProgressBar.border", new FlatLineBorder(new Insets(0,0,0,0), c20, 1, 10));
+		 
 		UIManager.put("Slider.thumbColor", themeColor);		
 		UIManager.put("Slider.hoverColor", highlightColor);
 		UIManager.put("Slider.trackValueColor", themeColor);
-		UIManager.put("Slider.trackColor", new Color(25,25,25));
+		UIManager.put("Slider.trackColor", new Color(15,15,15));
 		UIManager.put("Slider.thumbSize", new Dimension(10,10));
 		UIManager.put("Slider.trackWidth", 4);
 		UIManager.put("Slider.focusWidth", 0);	
 		
-		UIManager.put("ColorChooser.background", new Color(30,30,35));
-		UIManager.put("ColorChooser.foreground", new Color(235,235,240));
+		UIManager.put("ColorChooser.background", c30);
+		UIManager.put("ColorChooser.foreground", c225);
 		        
 		UIManager.put("TextPane.foreground", Color.BLACK);
 		UIManager.put("TextPane.background", Color.WHITE);
 		UIManager.put("TextPane.selectionBackground", themeColor);		
 		
 		UIManager.put("Component.arrowType", "triangle");
-		UIManager.put("Component.focusColor", new Color(120,120,120));
+		UIManager.put("Component.focusColor", c120);
 		UIManager.put("Component.focusedBorderColor", highlightColor);
 		
 		UIManager.put("Button.hoverBorderColor", highlightColor);		
@@ -2212,17 +2227,17 @@ public class Utils extends Shutter {
 				
 		UIManager.put("Spinner.padding", new Insets(2,2,2,0));
 		
-		UIManager.put("Panel.background", new Color(30,30,35));
+		UIManager.put("Panel.background", c30);
 		
 		UIManager.put("TextField.margin", new Insets(0,0,0,0));
 				
 		UIManager.put("ScrollBar.thumbInsets", new Insets( 2, 2, 2, 2 ));
 		
-		UIManager.put("Label.foreground", new Color(235,235,240));		
+		UIManager.put("Label.foreground", c225);		
 		
-		UIManager.put("OptionPane.background", new Color(30,30,35));
+		UIManager.put("OptionPane.background", c30);
 		
-		UIManager.put("TitledBorder.titleColor", new Color(235,235,240));
+		UIManager.put("TitledBorder.titleColor", c225);
 		
 		UIManager.put("ScrollBar.minimumThumbSize", new Dimension(11, 100));
 		

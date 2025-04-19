@@ -97,7 +97,7 @@ public class Functions {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setSize(333,317);
-		frame.setBackground(new Color(30,30,35));
+		frame.setBackground(Utils.bg32);
 		frame.setTitle(Shutter.language.getProperty("frameFonctions"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
@@ -113,7 +113,7 @@ public class Functions {
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
-		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);	
+		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 		
 		frame.addWindowListener(new WindowListener(){
 			
@@ -168,23 +168,23 @@ public class Functions {
 			lblSave = new JLabel(Shutter.language.getProperty("lblSavePC"));
 				
 		lblSave.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSave.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 16));
+		lblSave.setFont(new Font(Shutter.mainFont, Font.PLAIN, 16));
 		lblSave.setBounds(10, 112, 313, 45);
 		lblSave.setVisible(false);
 		frame.getContentPane().add(lblSave);
 		
 		lblDrop = new JLabel(Shutter.language.getProperty("lblDrop"));
 		lblDrop.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDrop.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 16));
+		lblDrop.setFont(new Font(Shutter.mainFont, Font.PLAIN, 16));
 		lblDrop.setBounds(10, 136, 313, 45);
 		lblDrop.setVisible(false);
 		frame.getContentPane().add(lblDrop);
 		
 		listeDeFonctions = new JList<String>(liste);
-		listeDeFonctions.setBackground(new Color(42,42,47));
+		listeDeFonctions.setBackground(Utils.c35);
 		listeDeFonctions.setForeground(Color.LIGHT_GRAY);
 		listeDeFonctions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listeDeFonctions.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		listeDeFonctions.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		listeDeFonctions.setCellRenderer(new FonctionsRenderer());
 		listeDeFonctions.setFixedCellHeight(17);
 		listeDeFonctions.setBounds(0, 28, 333, 269);
@@ -329,7 +329,7 @@ public class Functions {
 
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		
@@ -439,7 +439,7 @@ public class Functions {
 				
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setBounds(0, 0, 333, 28);
 	
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -714,9 +714,9 @@ class FonctionsRenderer extends DefaultListCellRenderer {
 		else
 		{			
 			if (index % 2 == 1)
-				setBackground(new Color(42,42,47));
+				setBackground(Utils.c35);
 			else
-				setBackground(new Color(51,51,56));
+				setBackground(new Color(Utils.c35.getRed() + 9, Utils.c35.getGreen() + 9, Utils.c35.getBlue() + 9));
 		}
 		
       return this;

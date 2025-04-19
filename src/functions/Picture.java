@@ -508,13 +508,29 @@ public class Picture extends Shutter {
 		if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")))
 		{
 			if (caseCreateSequence.isSelected())
+			{
 				return "_%06d" + comboFilter.getSelectedItem().toString();
+			}
 			else
 				return comboFilter.getSelectedItem().toString();
 		}
-		else if (comboFonctions.getSelectedItem().toString().contains("JPEG") && caseCreateSequence.isSelected())
+		else if (comboFonctions.getSelectedItem().toString().equals("JPEG"))
 		{
-			return "_%06d.jpg";
+			if (caseCreateSequence.isSelected())
+			{
+				return "_%06d.jpg";
+			}
+			else
+				return ".jpg";
+		}
+		else if (comboFonctions.getSelectedItem().toString().equals("JPEG XL"))
+		{
+			if (caseCreateSequence.isSelected())
+			{
+				return "_%06d.jxl";
+			}
+			else
+				return ".jxl";
 		}
 		
 		return ".jpg";		

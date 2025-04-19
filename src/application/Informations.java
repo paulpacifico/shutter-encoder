@@ -23,10 +23,8 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -37,13 +35,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import javax.swing.JFrame;
-
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
@@ -75,7 +72,7 @@ import library.MEDIAINFO;
 	public Informations() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
@@ -89,14 +86,10 @@ import library.MEDIAINFO;
 		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
-		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);		
+		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);;		
 				
 		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
-		lblWait.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
+		lblWait.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
 		lblWait.setForeground(Color.WHITE);
 		lblWait.setSize(lblWait.getPreferredSize().width, 40);
 		lblWait.setLocation(frame.getSize().width / 2 - lblWait.getSize().width / 2, frame.getSize().height / 2);
@@ -105,7 +98,7 @@ import library.MEDIAINFO;
 		
 		lblArrows = new JLabel("▲▼");
 		lblArrows.setHorizontalAlignment(SwingConstants.CENTER);
-		lblArrows.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
+		lblArrows.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
 		lblArrows.setSize(new Dimension(frame.getSize().width, 20));
 		lblArrows.setLocation(0, frame.getSize().height - lblArrows.getSize().height);
 		lblArrows.setVisible(false);
@@ -263,7 +256,7 @@ import library.MEDIAINFO;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));

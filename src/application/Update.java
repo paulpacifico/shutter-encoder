@@ -70,13 +70,13 @@ public class Update {
 	private Update() {
 		
 		frame = new JDialog();
-		frame.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		frame.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		frame.setResizable(false);
 		frame.setModal(false);
 		frame.setAlwaysOnTop(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setSize(346, 59);
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setTitle(Shutter.language.getProperty("frameUpdate"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
@@ -116,7 +116,7 @@ public class Update {
 	private void content() {
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);
@@ -164,7 +164,7 @@ public class Update {
 		progressBar.setBounds(6, 29, 334, 23);		
 		topPanel.add(progressBar);
 		
-		lblNewVersion.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		lblNewVersion.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		lblNewVersion.setBounds(6, 11, 295, 16);		
 		topPanel.add(lblNewVersion);
 		

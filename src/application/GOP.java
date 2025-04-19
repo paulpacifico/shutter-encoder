@@ -49,14 +49,14 @@ public class GOP {
 		frame.setModal(false);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());			
 				
 		scrollBar = new JScrollBar();
 		scrollBar.setOrientation(JScrollBar.HORIZONTAL);
 		scrollBar.setVisible(true);
-		scrollBar.setBackground(new Color(30,30,35));
+		scrollBar.setBackground(Utils.c30);
 		frame.getContentPane().add(scrollBar);
 		
 		scrollBar.addAdjustmentListener(new AdjustmentListener(){
@@ -79,7 +79,7 @@ public class GOP {
 		});
 		
 		JLabel image1 = new JLabel("I");
-		image1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 40));
+		image1.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
 		image1.setHorizontalAlignment(SwingConstants.CENTER);
 		image1.setBackground(new Color(232,67,67));
 		image1.setOpaque(true);
@@ -174,7 +174,7 @@ public class GOP {
 		if (type == 'I')
 		{
 			image = new JLabel("I");
-			image.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 40));
+			image.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(232,67,67));
@@ -183,7 +183,7 @@ public class GOP {
 		else if (type == 'P')
 		{
 			image = new JLabel("P");
-			image.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 40));
+			image.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(68,139,233));
@@ -192,7 +192,7 @@ public class GOP {
 		else
 		{
 			image = new JLabel("B");
-			image.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 40));
+			image.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(100,232,67));

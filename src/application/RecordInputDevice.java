@@ -82,12 +82,11 @@ public class RecordInputDevice {
 		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
 		
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
-		frame.setLocation((Shutter.frame.getLocation().x + Shutter.frame.getWidth() / 2) - frame.getWidth() / 2,
-				(Shutter.frame.getLocation().y + Shutter.frame.getHeight() / 3) - frame.getHeight() / 2);
+		frame.setLocation((Shutter.frame.getLocation().x + Shutter.frame.getWidth() / 2) - frame.getWidth() / 2, (Shutter.frame.getLocation().y + Shutter.frame.getHeight() / 3) - frame.getHeight() / 2);
 		
 		devices();
 						
@@ -97,7 +96,7 @@ public class RecordInputDevice {
 	private static void devices()
 	{
 		JLabel screenVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
-		screenVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		screenVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		screenVideo.setBounds(12, 12, 40, 14);
 		frame.getContentPane().add(screenVideo);		
 						
@@ -110,7 +109,7 @@ public class RecordInputDevice {
 		}
 			
 		comboScreenVideo = new JComboBox<String>(firstInput);	
-		comboScreenVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboScreenVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboScreenVideo.setEditable(false);
 		comboScreenVideo.setMaximumRowCount(20);
 		comboScreenVideo.setLocation(screenVideo.getX() + screenVideo.getWidth() + 4, screenVideo.getLocation().y - 3);
@@ -143,12 +142,12 @@ public class RecordInputDevice {
 		});
 		
 		JLabel screenAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
-		screenAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		screenAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		screenAudio.setBounds(12, screenVideo.getY() + screenVideo.getHeight() + 14, 40, 14);
 		frame.getContentPane().add(screenAudio);
 		
 		comboScreenAudio = new JComboBox<String>(FFMPEG.audioDevices.toString().split(":"));
-		comboScreenAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboScreenAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboScreenAudio.setEditable(false);
 		comboScreenAudio.setMaximumRowCount(20);
 		comboScreenAudio.setBounds(comboScreenVideo.getX(), screenAudio.getLocation().y - 3, comboScreenVideo.getWidth(), 22);
@@ -254,13 +253,13 @@ public class RecordInputDevice {
 		});
 		
 		JLabel inputVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
-		inputVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		inputVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		inputVideo.setBounds(12, screenAudio.getY() + screenAudio.getHeight() + 25, 40, 14);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(inputVideo);
 		
 		comboInputVideo = new JComboBox<String>(FFMPEG.videoDevices.toString().split(":"));
-		comboInputVideo.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboInputVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboInputVideo.setEditable(false);
 		comboInputVideo.setEnabled(true);
 		comboInputVideo.setMaximumRowCount(20);
@@ -269,13 +268,13 @@ public class RecordInputDevice {
 			frame.getContentPane().add(comboInputVideo);
 		
 		JLabel inputAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
-		inputAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		inputAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		inputAudio.setBounds(12, inputVideo.getY() + inputVideo.getHeight() + 14, 40, 14);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(inputAudio);
 		
 		comboInputAudio = new JComboBox<String>(FFMPEG.audioDevices.toString().split(":"));
-		comboInputAudio.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+		comboInputAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboInputAudio.setEditable(false);
 		comboInputAudio.setEnabled(false);
 		comboInputAudio.setMaximumRowCount(20);
@@ -349,7 +348,7 @@ public class RecordInputDevice {
 			
 		});
 		
-		lblScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblScreenRecord.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		lblScreenRecord.setSize(lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
 		if (System.getProperty("os.name").contains("Windows"))
 		{
@@ -361,7 +360,7 @@ public class RecordInputDevice {
 		
 		txtScreenRecord.setName("txtScreenRecord");
 		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
-		txtScreenRecord.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		txtScreenRecord.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		txtScreenRecord.setText("25");
 		txtScreenRecord.setColumns(10);
 		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
@@ -380,14 +379,14 @@ public class RecordInputDevice {
 			
 		});
 		
-		lblInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblInputDevice.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
 		if (System.getProperty("os.name").contains("Windows"))
 			frame.getContentPane().add(lblInputDevice);
 		
 		txtInputDevice.setName("txtInputDevice");
 		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
-		txtInputDevice.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		txtInputDevice.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		txtInputDevice.setText("25");
 		txtInputDevice.setColumns(10);
 		txtInputDevice.setBounds(lblInputDevice.getLocation().x + lblInputDevice.getWidth() + 6, lblInputDevice.getLocation().y - 4, 40, 21);
@@ -408,7 +407,7 @@ public class RecordInputDevice {
 		});				
 		
 		JButton btnOK = new JButton("OK");
-		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 24, 21);	
 		if (System.getProperty("os.name").contains("Windows"))
 			btnOK.setLocation(12, lblInputDevice.getY() + lblInputDevice.getHeight() + 6);	

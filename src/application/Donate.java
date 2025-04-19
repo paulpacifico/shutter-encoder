@@ -51,10 +51,10 @@ public class Donate {
 	public Donate()  {
 		
 		JFrame frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 		frame.setTitle("Thanks!");		
-		frame.setBackground(new Color(30,30,35));
+		frame.setBackground(Utils.bg32);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(280, 335);
@@ -69,11 +69,11 @@ public class Donate {
 		frame.setAlwaysOnTop(true);
 		
 		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, frame.getHeight() + (Shutter.frame.getHeight() / 2 - frame.getHeight()));
+		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() / 2 - frame.getHeight()));
 				
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setBounds(0, 0, frame.getWidth(), 28);
 		
 		JLabel quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -121,7 +121,7 @@ public class Donate {
 		JLabel title = new JLabel(frame.getTitle());
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 1, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 17));
+		title.setFont(new Font(Shutter.mainFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		JLabel topImage = new JLabel();
@@ -212,14 +212,14 @@ public class Donate {
 		JLabel line1 = new JLabel("Hope you enjoyed the software!");
 		line1.setHorizontalAlignment(SwingConstants.CENTER);
 		line1.setSize(frame.getWidth(), 16);
-		line1.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		line1.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		line1.setLocation((frame.getWidth() - line1.getWidth()) / 2, qrcode.getY() + qrcode.getHeight() + 7);
 		frame.getContentPane().add(line1);
 		
 		JLabel line2 = new JLabel("Support me to make it even better!");
 		line2.setHorizontalAlignment(SwingConstants.CENTER);
 		line2.setSize(frame.getWidth(), 16);
-		line2.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		line2.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		line2.setLocation((frame.getWidth() - line2.getWidth()) / 2, line1.getY() + line1.getHeight());
 		frame.getContentPane().add(line2);
 		

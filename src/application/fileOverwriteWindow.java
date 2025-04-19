@@ -29,7 +29,7 @@ public class fileOverwriteWindow  {
 		System.setProperty("apple.laf.useScreenMenuBar", "false");
 
 		JButton btnKeep = new JButton(Shutter.language.getProperty("btnKeep"));
-		btnKeep.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnKeep.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnKeep.setBounds(7, 7, btnKeep.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnKeep);
 		
@@ -46,7 +46,7 @@ public class fileOverwriteWindow  {
 		});
 		
 		JButton btnOverwrite = new JButton(Shutter.language.getProperty("btnOverwrite"));
-		btnOverwrite.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnOverwrite.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnOverwrite.setBounds(btnKeep.getX() + btnKeep.getWidth() + 4, 7, btnOverwrite.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnOverwrite);
 		
@@ -63,7 +63,7 @@ public class fileOverwriteWindow  {
 		});
 		
 		JButton btnSkip = new JButton(Shutter.language.getProperty("btnSkip"));
-		btnSkip.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnSkip.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnSkip.setBounds(btnOverwrite.getX() + btnOverwrite.getWidth() + 4, 7, btnSkip.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnSkip);
 		
@@ -80,7 +80,7 @@ public class fileOverwriteWindow  {
 		});
 		
 		JButton btnCancel = new JButton(Shutter.language.getProperty("btnCancel"));
-		btnCancel.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnCancel.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnCancel.setBounds(btnSkip.getX() + btnSkip.getWidth() + 4, 7, btnCancel.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnCancel);
 
@@ -97,7 +97,7 @@ public class fileOverwriteWindow  {
 		
 		caseApplyToAll.setSelected(false);
 		caseApplyToAll.setEnabled(true);
-		caseApplyToAll.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseApplyToAll.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseApplyToAll.setBounds((btnCancel.getX() + btnCancel.getWidth() + 7 - caseApplyToAll.getPreferredSize().width) / 2, btnCancel.getY() + btnCancel.getHeight() + 4, caseApplyToAll.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseApplyToAll);
 		

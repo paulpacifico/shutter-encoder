@@ -22,14 +22,12 @@ package application;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -71,8 +69,8 @@ import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
-import library.TSMUXER;
 import library.PDF;
+import library.TSMUXER;
 import settings.FunctionUtils;
 
 	public class RenderQueue {
@@ -103,7 +101,7 @@ import settings.FunctionUtils;
 	public RenderQueue() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFileDeRendus"));
 		frame.setForeground(Color.WHITE);
@@ -120,11 +118,7 @@ import settings.FunctionUtils;
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-			Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
-			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 		}
 				
 		topPanel();
@@ -288,7 +282,7 @@ import settings.FunctionUtils;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -359,8 +353,7 @@ import settings.FunctionUtils;
 					else if (accept)
 					{
 						frame.setSize(600, 332);
-						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);		
+						frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 					}
 					
 					resizeAll();
@@ -579,8 +572,7 @@ import settings.FunctionUtils;
 					else
 					{
 						frame.setSize(600, 332);
-						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-						frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);					
+						frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);			
 					}
 					
 					resizeAll();
@@ -647,7 +639,7 @@ import settings.FunctionUtils;
             }                   
         };
         table.setForeground(new Color(235,235,240));
-        table.setBackground(new Color(42,42,47));
+        table.setBackground(Utils.c35);
         table.setDefaultRenderer(String.class, new BoardTableCellRenderer());
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -698,7 +690,7 @@ import settings.FunctionUtils;
 		
 		scrollPane = new JScrollPane();
 		scrollPane.getViewport().add(table);
-		scrollPane.setBackground(new Color(42,42,47));
+		scrollPane.setBackground(Utils.c42);
 		scrollPane.setOpaque(true);
 		scrollPane.getViewport().setOpaque(false);
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
@@ -706,7 +698,7 @@ import settings.FunctionUtils;
 		
 		caseRunParallel = new JCheckBox(Shutter.language.getProperty("caseRunParallel"));
 		caseRunParallel.setName("caseRunParallel");
-		caseRunParallel.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseRunParallel.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseRunParallel.setSize(caseRunParallel.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseRunParallel);
 		
@@ -730,13 +722,13 @@ import settings.FunctionUtils;
 		parallelValue.setModel(new DefaultComboBoxModel<String>(new String[] { "2","3","4","5","6","7","8","9","10" }));
 		parallelValue.setSelectedIndex(0);
 		parallelValue.setMaximumRowCount(10);
-		parallelValue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		parallelValue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		parallelValue.setEditable(false);	
 		parallelValue.setEnabled(false);
 		frame.getContentPane().add(parallelValue);
 		
 		btnStartRender = new JButton(Shutter.language.getProperty("btnStartRender"));
-		btnStartRender.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnStartRender.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnStartRender.setEnabled(false);
 		frame.getContentPane().add(btnStartRender);
 				
@@ -1167,9 +1159,9 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
 		else
 		{			
 			if (index % 2 == 1)
-				setBackground(new Color(42,42,47));
+				setBackground(Utils.c35);
 			else
-				setBackground(new Color(51,51,56));
+				setBackground(new Color(Utils.c35.getRed() + 9, Utils.c35.getGreen() + 9, Utils.c35.getBlue() + 9));
 		}
 		
 	    setBorder(new LineBorder(new Color(0,0,0,0)));	    

@@ -79,6 +79,7 @@ import application.RenderQueue;
 import application.SceneDetection;
 import application.Settings;
 import application.Shutter;
+import application.Utils;
 import application.VideoPlayer;
 import settings.BitratesAdjustement;
 import settings.Colorimetry;
@@ -709,9 +710,9 @@ public static StringBuilder errorLog = new StringBuilder();
 			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -an -f image2pipe -" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
-			player.getContentPane().setBackground(new Color(42,42,47));
+			player.getContentPane().setBackground(Utils.c42);
 			player.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	
-			player.setBackground(new Color(42,42,47));
+			player.setBackground(Utils.c42);
 			player.getContentPane().setLayout(null);
 			player.setIconImage(frame.getIconImage());
 						

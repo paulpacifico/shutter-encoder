@@ -22,11 +22,9 @@ package application;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.MouseInfo;
-import java.awt.Toolkit;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
@@ -82,15 +80,13 @@ public class SubtitlesEdit {
 		frame.setSize(620, 640);
 		frame.setAlwaysOnTop(true);
 		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));
-
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);	
+		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 		
 		scrollBar = new JScrollBar();
-		scrollBar.setBackground(new Color(30,30,35));
+		scrollBar.setBackground(Utils.c30);
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 						
 		frame.addMouseWheelListener(new MouseWheelListener(){
@@ -414,9 +410,9 @@ public class SubtitlesEdit {
 		in.setText(subIn);
 		in.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5));
 		in.setForeground(Utils.themeColor);
-		in.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		in.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		in.setBounds(77, textPosition - 2, 94, 25);	
-		in.setBackground(new Color(30,30,35));
+		in.setBackground(Utils.c30);
 		in.setHorizontalAlignment(SwingConstants.CENTER);
 			   	
 		in.addKeyListener(new KeyAdapter()
@@ -478,11 +474,11 @@ public class SubtitlesEdit {
 		
 		JTextField out = new JTextField();
 		out.setText(subOut);
-		out.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5));
+		out.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 10));
 		out.setForeground(Utils.themeColor);
-		out.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		out.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		out.setBounds(77, textPosition + 24, 94, 25);	
-		out.setBackground(new Color(30,30,35));
+		out.setBackground(Utils.c30);
 		out.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		out.addKeyListener(new KeyAdapter()
@@ -543,7 +539,7 @@ public class SubtitlesEdit {
 	private static JLabel addNumber(int number) {
 		
 		JLabel nb = new JLabel(String.valueOf(number));
-		nb.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		nb.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		nb.setHorizontalAlignment(SwingConstants.CENTER);
 		nb.setBounds(9, textPosition + 16, 61, 16);
 		

@@ -112,14 +112,14 @@ public class ReducedWindow extends JDialog {
 		panel = new JPanel();	
 		panel.setLayout(null);
 		panel.setBounds(6, 3, 88, 88);
-		panel.setBackground(new Color(30,30,35));
+		panel.setBackground(Utils.c30);
 		frame.getContentPane().add(panel);
 		
 		pourcentage = new JLabel("0%");
 		pourcentage.setHorizontalAlignment(SwingConstants.RIGHT);
 		pourcentage.setBounds(29, 36, 33, 16);
 		pourcentage.setVisible(false);
-		pourcentage.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
+		pourcentage.setFont(new Font(Shutter.boldFont, Font.PLAIN, 13));
 		pourcentage.setBackground(new Color(0,0,0));
 		panel.add(pourcentage);
 		
@@ -147,7 +147,7 @@ public class ReducedWindow extends JDialog {
 		lblTempsRestant.setVisible(false);
 		lblTempsRestant.setHorizontalAlignment(SwingConstants.LEFT);
 		lblTempsRestant.setForeground(Utils.themeColor);
-		lblTempsRestant.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		lblTempsRestant.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		lblTempsRestant.setBounds(100, 72, 178, 16);		
 		frame.getContentPane().add(lblTempsRestant);
 				
@@ -420,7 +420,7 @@ class MiniWindowBackground extends JPanel {
   	  
  		  Graphics2D g2 = (Graphics2D)g.create();
  		  g2.setRenderingHints(qualityHints);
- 		  g2.setColor(new Color(30,30,35));
+ 		  g2.setColor(Utils.c30);
  		  g2.fillRoundRect(0, 0,320, 94,30,30);
      }
 }

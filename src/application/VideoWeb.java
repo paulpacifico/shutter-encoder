@@ -25,11 +25,13 @@ import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Desktop;
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -114,7 +116,7 @@ public class VideoWeb {
 	public VideoWeb() {	
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
@@ -133,9 +135,7 @@ public class VideoWeb {
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			
+			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 		}
 				
 		if (System.getProperty("os.name").contains("Mac"))
@@ -196,7 +196,7 @@ public class VideoWeb {
 		
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setBounds(0, 0, 420, 28);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -363,18 +363,30 @@ public class VideoWeb {
 		
 	}
 
+	@SuppressWarnings("serial")
 	private void grpURL() {
 		
-		grpURL = new JPanel();
+		grpURL = new JPanel() {
+		    @Override
+		    protected void paintComponent(Graphics g) {
+		        Graphics2D g2 = (Graphics2D) g.create();
+		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		        g2.setColor(Utils.c25);
+		        g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);      
+		        g2.dispose();
+		        super.paintComponent(g);
+		    }
+		};
 		grpURL.setLayout(null);
 		grpURL.setLocation(6, 28);
 		grpURL.setSize(408, frame.getHeight() - 34);
-		grpURL.setBackground(new Color(30,30,35));
-		grpURL.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.montserratFont, Font.PLAIN, 12), new Color(235,235,240)));
+		grpURL.setBackground(Utils.c30);
+		grpURL.setOpaque(false);
+		grpURL.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), Utils.c42, 1, 10), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235,235,240)));
 		
 		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblURL.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblURL.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		lblURL.setBounds(26, 25, 35, 16);			
 		grpURL.add(lblURL);
 		
@@ -452,7 +464,7 @@ public class VideoWeb {
 								
 		caseAuto = new JCheckBox("Auto");
 		caseAuto.setSelected(true);
-		caseAuto.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseAuto.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseAuto.setBounds(66, 111, caseAuto.getPreferredSize().width, 16);	
 		caseAuto.setEnabled(false);
 		grpURL.add(caseAuto);
@@ -566,13 +578,13 @@ public class VideoWeb {
 		{
 			caseMetadata.setSelected(false);
 		}
-		caseMetadata.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseMetadata.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseMetadata.setBounds(66, caseAuto.getY() + 22, caseMetadata.getPreferredSize().width, 16);	
 		grpURL.add(caseMetadata);
 		
 		caseCookies = new JCheckBox(Shutter.language.getProperty("caseCookies"));
 		caseCookies.setName("caseCookies");
-		caseCookies.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseCookies.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseCookies.setBounds(66, caseMetadata.getY() + 22, caseCookies.getPreferredSize().width, 16);	
 		grpURL.add(caseCookies);
 		
@@ -650,13 +662,13 @@ public class VideoWeb {
 		
 		lblQualit = new JLabel(Shutter.language.getProperty("lblQualit"));
 		lblQualit.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblQualit.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblQualit.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		lblQualit.setSize(lblQualit.getPreferredSize().width, 16);
 		lblQualit.setLocation(textURL.getX() - lblQualit.getWidth() - 5, 110);		
 		grpURL.add(lblQualit);
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnStartFunction"));
-		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnOK.setBounds(comboFormats.getX(), comboFormats.getY() + comboFormats.getHeight() + 4, comboFormats.getWidth(), 21);		
 		btnOK.setEnabled(false);
 		grpURL.add(btnOK);
@@ -671,7 +683,7 @@ public class VideoWeb {
 		});
 		
 		caseMP3 = new JCheckBox(Shutter.language.getProperty("caseMP3"));
-		caseMP3.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseMP3.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseMP3.setBounds(121, caseAuto.getY(), caseMP3.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseMP3);
 		
@@ -697,7 +709,7 @@ public class VideoWeb {
 		});
 		
 		caseWAV = new JCheckBox(Shutter.language.getProperty("caseWAV"));
-		caseWAV.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseWAV.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseWAV.setBounds(caseMP3.getX() + caseMP3.getWidth(), caseAuto.getY(), caseWAV.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseWAV);
 		
@@ -724,7 +736,7 @@ public class VideoWeb {
 		frame.getContentPane().add(grpURL);			
 		
 		caseVideoPass = new JCheckBox(Shutter.language.getProperty("caseVideoPass"));
-		caseVideoPass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseVideoPass.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseVideoPass.setSize(caseVideoPass.getPreferredSize().width, 16);	
 		caseVideoPass.setLocation(66, 221);
 		grpURL.add(caseVideoPass);
@@ -752,7 +764,7 @@ public class VideoWeb {
 		grpURL.add(textVideoPass);
 				
 		caseUser = new JCheckBox(Shutter.language.getProperty("caseUser"));
-		caseUser.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseUser.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseUser.setBounds(caseVideoPass.getX(), caseCookies.getY() + 22, caseUser.getPreferredSize().width, 16);
 		grpURL.add(caseUser);
 		
@@ -780,7 +792,7 @@ public class VideoWeb {
 		grpURL.add(textUser);
 				
 		casePass = new JCheckBox(Shutter.language.getProperty("casePass"));
-		casePass.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		casePass.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		casePass.setBounds(caseVideoPass.getX(), caseUser.getY() + 22, casePass.getPreferredSize().width, 16);
 		grpURL.add(casePass);
 		

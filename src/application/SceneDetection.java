@@ -99,7 +99,7 @@ import javax.swing.JScrollPane;
 	public SceneDetection(boolean runAnalyse) {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameDetectionCoupe"));
 		frame.setForeground(Color.WHITE);
@@ -232,7 +232,7 @@ import javax.swing.JScrollPane;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -390,12 +390,12 @@ import javax.swing.JScrollPane;
 	private void content() {
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBackground(new Color(30,30,35));
+		scrollPane.setBackground(Utils.bg32);
 		scrollPane.setBounds(9, 65, 380, frame.getSize().height - 136);
 		frame.getContentPane().add(scrollPane);
 			
 		JLabel lblSensibility = new JLabel(Shutter.language.getProperty("lblSensibility"));
-		lblSensibility.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblSensibility.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		lblSensibility.setBounds(10, 38, lblSensibility.getPreferredSize().width, 15);
 		frame.getContentPane().add(lblSensibility);
 		
@@ -404,12 +404,12 @@ import javax.swing.JScrollPane;
 		frame.getContentPane().add(tolerance);	
 		
 		JLabel lblPourcentage = new JLabel("%");
-		lblPourcentage.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
-		lblPourcentage.setBounds(tolerance.getX() + tolerance.getWidth() + 4, lblSensibility.getY(), 11, 15);
+		lblPourcentage.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblPourcentage.setBounds(tolerance.getX() + tolerance.getWidth() + 4, lblSensibility.getY(), 15, 15);
 		frame.getContentPane().add(lblPourcentage);
 		
 		btnAnalyze = new JButton(Shutter.language.getProperty("btnAnalyse"));
-		btnAnalyze.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnAnalyze.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnAnalyze.setLocation(lblPourcentage.getX() + lblPourcentage.getWidth() + 7, lblSensibility.getY() - 3);
 		btnAnalyze.setSize(frame.getWidth() - (tolerance.getX() + tolerance.getWidth()) - 34, 21);
 		frame.getContentPane().add(btnAnalyze);
@@ -436,14 +436,14 @@ import javax.swing.JScrollPane;
 				
 		lblBottomArrow = new JLabel("▲▼");
 		lblBottomArrow.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBottomArrow.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 20));
+		lblBottomArrow.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
 		lblBottomArrow.setSize(new Dimension(frame.getSize().width, 20));
 		lblBottomArrow.setLocation(0, frame.getSize().height - lblBottomArrow.getSize().height);
 		lblBottomArrow.setVisible(true);		
 		frame.getContentPane().add(lblBottomArrow);
 		
 		btnEDL = new JButton(Shutter.language.getProperty("btnEDL"));
-		btnEDL.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnEDL.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnEDL.setEnabled(false);
 		btnEDL.setBounds(9, 65 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
 		frame.getContentPane().add(btnEDL);
@@ -591,7 +591,7 @@ import javax.swing.JScrollPane;
 		lblEdit = new JLabel(Shutter.language.getProperty("lblEdit"));
 		lblEdit.setForeground(Utils.themeColor);
 		lblEdit.setHorizontalAlignment(SwingConstants.CENTER);
-		lblEdit.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
+		lblEdit.setFont(new Font(Shutter.boldFont, Font.PLAIN, 13));
 		lblEdit.setSize(lblEdit.getPreferredSize().width, 15);
 		lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 65 + scrollPane.getHeight() + 31);
 		lblEdit.setVisible(false);
@@ -629,7 +629,7 @@ import javax.swing.JScrollPane;
 		table.setShowVerticalLines(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setRowHeight(80);
-		table.setBackground(new Color(42,42,47));
+		table.setBackground(Utils.c42);
 		table.getColumnModel().getColumn(0).setPreferredWidth(18);
 		table.getColumnModel().getColumn(1).setPreferredWidth(table.getColumnModel().getColumn(1).getPreferredWidth());
 		table.setBounds(9, 65, 380, frame.getHeight() - 134);

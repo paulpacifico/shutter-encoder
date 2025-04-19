@@ -22,11 +22,9 @@ package application;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -92,7 +90,7 @@ public class Ftp {
 	public Ftp() {
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFtp"));
 		frame.setForeground(Color.WHITE);
@@ -111,9 +109,7 @@ public class Ftp {
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			
+			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 		}
 						
 		topPanel();
@@ -127,7 +123,7 @@ public class Ftp {
 	private void topPanel() {
 		
 		topPanel = new JPanel();
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setLayout(null);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -175,7 +171,7 @@ public class Ftp {
 		JLabel title = new JLabel(Shutter.language.getProperty("frameFtp"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, -1, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 16));
+		title.setFont(new Font(Shutter.boldFont, Font.PLAIN, 16));
 		topPanel.add(title);
 		
 		topImage = new JLabel();	
@@ -234,7 +230,7 @@ public class Ftp {
 		lblFtp = new JLabel(Shutter.language.getProperty("lblFtp"));
 		lblFtp.setBounds(10, 36, 90, 16);
 		lblFtp.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblFtp.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		lblFtp.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblFtp);		
 
 		textFtp.setBounds(101, lblFtp.getY() - 1, 154, 21);
@@ -246,7 +242,7 @@ public class Ftp {
 		lblUtilisateur = new JLabel(Shutter.language.getProperty("lblUser"));
 		lblUtilisateur.setBounds(10, 69, 90, 16);
 		lblUtilisateur.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblUtilisateur.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		lblUtilisateur.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblUtilisateur);		
 			
 		textUser.setBounds(101, lblUtilisateur.getY() - 1, 154, 21);
@@ -260,7 +256,7 @@ public class Ftp {
 		lblMotDePasse.setBounds(8, 103, 92, 16);
 		frame.getContentPane().add(lblMotDePasse);
 		
-		lblMotDePasse.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		lblMotDePasse.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		
 		textPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPassword.setColumns(10);
@@ -269,7 +265,7 @@ public class Ftp {
 		frame.getContentPane().add(textPassword);
 				
 		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnReset.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnReset.setBounds(12, textPassword.getY() + textPassword.getHeight() + 12, frame.getWidth() / 2 - 12, 21);		
 		frame.getContentPane().add(btnReset);	
 		
@@ -289,7 +285,7 @@ public class Ftp {
 		});
 		
 		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
-		btnOK.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnOK.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnOK.setBounds(btnReset.getX() + btnReset.getWidth() + 4, btnReset.getY(), frame.getWidth() / 2 - 12 - 4, 21);		
 		frame.getContentPane().add(btnOK);
 		

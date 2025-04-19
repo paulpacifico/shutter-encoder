@@ -21,12 +21,9 @@ package application;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -84,7 +81,7 @@ public class HashGenerator {
     public HashGenerator() {
     	
     	frame = new JDialog();	
-      	frame.getContentPane().setBackground(new Color(30,30,35));
+      	frame.getContentPane().setBackground(Utils.bg32);
 		frame.setTitle(Shutter.language.getProperty("menuItemHash"));
 		frame.setModal(true);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -101,16 +98,10 @@ public class HashGenerator {
 	        shape1.add(shape2);
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
-			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-			
+			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());	
 		}
 				
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
-		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2 - frame.getHeight());			
+		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() / 2 - frame.getHeight()));		
 	        	
 		topPanel();
 		
@@ -118,21 +109,21 @@ public class HashGenerator {
 		
 		MD5 = new JRadioButton("MD5");
 		MD5.setSelected(true);
-		MD5.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		MD5.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		MD5.setForeground(new Color(235,235,240));
 		MD5.setBounds(0, 0, MD5.getPreferredSize().width + 4, 21);
 		panelHash.add(MD5);
 		
 		SHA1 = new JRadioButton("SHA-1");
 		SHA1.setSelected(false);
-		SHA1.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		SHA1.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		SHA1.setForeground(new Color(235,235,240));
 		SHA1.setBounds(MD5.getX() + MD5.getWidth() + 7, 0, SHA1.getPreferredSize().width + 4, 21);
 		panelHash.add(SHA1);
 		
 		SHA256 = new JRadioButton("SHA-256");
 		SHA256.setSelected(false);
-		SHA256.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		SHA256.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		SHA256.setForeground(new Color(235,235,240));
 		SHA256.setBounds(SHA1.getX() + SHA1.getWidth() + 7, 0, SHA256.getPreferredSize().width + 4, 21);
 		panelHash.add(SHA256);	
@@ -144,7 +135,7 @@ public class HashGenerator {
 		
         JLabel btnBrowse = new JLabel();
         btnBrowse.setIcon(new FlatSVGIcon("contents/drop.svg", 21, 21));
-        btnBrowse.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+        btnBrowse.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
         btnBrowse.setLocation(7, panelHash.getY() + panelHash.getHeight() + 5);
         btnBrowse.setSize(btnBrowse.getPreferredSize().width, 21);
         frame.getContentPane().add(btnBrowse);
@@ -172,7 +163,7 @@ public class HashGenerator {
         
         JLabel btnGenerate = new JLabel();
         btnGenerate.setIcon(new FlatSVGIcon("contents/generate.svg", 18, 18));
-        btnGenerate.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+        btnGenerate.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
         btnGenerate.setSize(80, btnBrowse.getPreferredSize().height);
         btnGenerate.setBounds(9, btnBrowse.getY() + btnBrowse.getHeight() + 7, btnBrowse.getWidth(), btnBrowse.getHeight());
         frame.getContentPane().add(btnGenerate);
@@ -187,7 +178,7 @@ public class HashGenerator {
                 
         JLabel btnCheck = new JLabel();
         btnCheck.setIcon(new FlatSVGIcon("contents/check.svg", 21, 21));
-        btnCheck.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+        btnCheck.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
         btnCheck.setBounds(7, btnGenerate.getY() + btnGenerate.getHeight() + 7, btnBrowse.getWidth(), btnBrowse.getHeight());
         frame.getContentPane().add(btnCheck);        
  
@@ -428,7 +419,7 @@ public class HashGenerator {
 		
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(new Color(30,30,35));
+		topPanel.setBackground(Utils.bg32);
 		topPanel.setBounds(0, 0, frame.getWidth(), 28);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));

@@ -260,14 +260,14 @@ public class VideoPlayer {
 						
 		lblPosition = new JLabel();
 		lblPosition.setHorizontalAlignment(SwingConstants.LEFT);
-		lblPosition.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
-		lblPosition.setForeground(Utils.themeColor);   		
+		lblPosition.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));	
+		lblPosition.setForeground(Utils.themeColor);
 		Shutter.frame.getContentPane().add(lblPosition);
 				
 		lblDuration = new JLabel();
 		lblDuration.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblDuration.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 13));
-		lblDuration.setForeground(Utils.themeColor);   		
+		lblDuration.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
+		lblDuration.setForeground(Utils.themeColor);
 		Shutter.frame.getContentPane().add(lblDuration);
 		        		 
 		setMedia();	
@@ -2269,7 +2269,7 @@ public class VideoPlayer {
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
-		btnPrevious.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));
+		btnPrevious.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));
 		btnPrevious.setBackground(new Color(30,30,35, 0));
 		btnPrevious.setBorder(null);
 		Shutter.frame.getContentPane().add(btnPrevious);
@@ -2357,7 +2357,7 @@ public class VideoPlayer {
 		});
 		
 		btnNext = new JButton(">");
-		btnNext.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));	
+		btnNext.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));	
 		btnNext.setBackground(new Color(30,30,35, 0));
 		btnNext.setBorder(null);
 		Shutter.frame.getContentPane().add(btnNext);
@@ -2548,7 +2548,7 @@ public class VideoPlayer {
 		});
 
 		btnMarkIn = new JButton("[");
-		btnMarkIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));	
+		btnMarkIn.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));	
 		btnMarkIn.setBackground(new Color(30,30,35, 0));
 		btnMarkIn.setBorder(null);
 		Shutter.frame.getContentPane().add(btnMarkIn);
@@ -2571,7 +2571,7 @@ public class VideoPlayer {
 		
 		btnGoToIn = new JButton("[<");
 		btnGoToIn.setMargin(new Insets(0,0,0,0));
-		btnGoToIn.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));	
+		btnGoToIn.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));	
 		btnGoToIn.setBackground(new Color(30,30,35, 0));
 		btnGoToIn.setBorder(null);
 		Shutter.frame.getContentPane().add(btnGoToIn);
@@ -2594,7 +2594,7 @@ public class VideoPlayer {
 		});
 		
 		btnMarkOut = new JButton("]");
-		btnMarkOut.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));		
+		btnMarkOut.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));		
 		btnMarkOut.setBackground(new Color(30,30,35, 0));
 		btnMarkOut.setBorder(null);
 		Shutter.frame.getContentPane().add(btnMarkOut);
@@ -2616,7 +2616,7 @@ public class VideoPlayer {
 				
 		btnGoToOut = new JButton(">]");
 		btnGoToOut.setMargin(new Insets(0,0,0,0));
-		btnGoToOut.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));			
+		btnGoToOut.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));			
 		btnGoToOut.setBackground(new Color(30,30,35, 0));
 		btnGoToOut.setBorder(null);
 		Shutter.frame.getContentPane().add(btnGoToOut);
@@ -2645,7 +2645,7 @@ public class VideoPlayer {
 												
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			        
-					g2d.setColor(new Color(42,42,47));
+					g2d.setColor(Utils.c42);
 					g2d.fillRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21, 15, 15);
 									
 					g2d.setColor(new Color(25,25,25));
@@ -2654,17 +2654,17 @@ public class VideoPlayer {
 				
 		};
 		Shutter.frame.getContentPane().add(panelForButtons);
-		
+
 		showFPS = new JLabel("25 fps");
 		showFPS.setVisible(false);
-		showFPS.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));
+		showFPS.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));
 		showFPS.setHorizontalAlignment(SwingConstants.RIGHT);
 		Shutter.frame.getContentPane().add(showFPS);
 		
 		showScale = new JLabel("1920x1080");
 		showScale.setVisible(false);
 		showScale.setEnabled(false);
-		showScale.setFont(new Font(Shutter.freeSansFont, Font.BOLD, 12));
+		showScale.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));
 		showScale.setHorizontalAlignment(SwingConstants.LEFT);
 		Shutter.frame.getContentPane().add(showScale);
 		
@@ -2675,7 +2675,7 @@ public class VideoPlayer {
 		comboAudioTrack.setEditable(false);
 		comboAudioTrack.setBorder(null);
 		comboAudioTrack.setBackground(new Color(comboAudioTrack.getBackground().getRed(),comboAudioTrack.getBackground().getGreen(),comboAudioTrack.getBackground().getBlue(), 0));	
-		comboAudioTrack.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		comboAudioTrack.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		comboAudioTrack.setMaximumRowCount(16);		
 		Shutter.frame.getContentPane().add(comboAudioTrack);
 
@@ -2883,7 +2883,7 @@ public class VideoPlayer {
 						Shutter.grpProgression.setVisible(true);
 						Shutter.statusBar.setVisible(true);
 						
-						Shutter.frame.getContentPane().setBackground(new Color(30,30,35));
+						Shutter.frame.getContentPane().setBackground(Utils.bg32);
 												
 						Shutter.changeSections(false);
 						
@@ -3388,7 +3388,7 @@ public class VideoPlayer {
 	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	            
-	            g2d.setColor(Color.RED);
+	            g2d.setColor(new Color(230,75,60));
 	            
 	            g2d.fillPolygon(new int[] {0, 5, 10}, new int[] {0, 8, 0}, 3);
 	        }
@@ -3406,7 +3406,7 @@ public class VideoPlayer {
 	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	            
-	            g2d.setColor(Color.RED);
+	            g2d.setColor(new Color(230,75,60));
 	            g2d.drawLine(0, 1, 0, waveformContainer.getHeight());	
 	        }
 		};
@@ -3463,7 +3463,7 @@ public class VideoPlayer {
 		caseInH.setName("caseInH");
 		caseInH.setText("00");
 		caseInH.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseInH.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseInH.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseInH.setColumns(10);
 		Shutter.frame.getContentPane().add(caseInH);
 		
@@ -3471,7 +3471,7 @@ public class VideoPlayer {
 		caseInM.setName("caseInM");
 		caseInM.setText("00");
 		caseInM.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseInM.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseInM.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseInM.setColumns(10);
 		Shutter.frame.getContentPane().add(caseInM);
 		
@@ -3479,7 +3479,7 @@ public class VideoPlayer {
 		caseInS.setName("caseInS");
 		caseInS.setText("00");
 		caseInS.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseInS.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseInS.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseInS.setColumns(10);
 		caseInS.setBounds(caseInM.getX() + caseInM.getWidth() + 2, 17, 21, 21);
 		Shutter.frame.getContentPane().add(caseInS);
@@ -3488,7 +3488,7 @@ public class VideoPlayer {
 		caseInF.setName("caseInF");
 		caseInF.setText("00");
 		caseInF.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseInF.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseInF.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseInF.setColumns(10);
 		Shutter.frame.getContentPane().add(caseInF);
 				
@@ -3616,7 +3616,7 @@ public class VideoPlayer {
 				
 		lblSpeed = new JLabel("x1"); //0.25 allow to get max preferred size width
 		lblSpeed.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblSpeed.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblSpeed.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			Shutter.frame.getContentPane().add(lblSpeed);
 		
@@ -3937,7 +3937,7 @@ public class VideoPlayer {
 		caseOutH.setName("caseOutH");
 		caseOutH.setText("00");
 		caseOutH.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseOutH.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseOutH.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseOutH.setColumns(10);
 		Shutter.frame.getContentPane().add(caseOutH);
 				
@@ -3945,7 +3945,7 @@ public class VideoPlayer {
 		caseOutM.setName("caseOutM");
 		caseOutM.setText("00");
 		caseOutM.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseOutM.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseOutM.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseOutM.setColumns(10);
 		Shutter.frame.getContentPane().add(caseOutM);
 		
@@ -3953,7 +3953,7 @@ public class VideoPlayer {
 		caseOutS.setName("caseOutS");
 		caseOutS.setText("00");
 		caseOutS.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseOutS.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseOutS.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseOutS.setColumns(10);
 		Shutter.frame.getContentPane().add(caseOutS);
 		
@@ -3961,7 +3961,7 @@ public class VideoPlayer {
 		caseOutF.setName("caseOutF");
 		caseOutF.setText("00");
 		caseOutF.setHorizontalAlignment(SwingConstants.RIGHT);
-		caseOutF.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 14));
+		caseOutF.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		caseOutF.setColumns(10);
 		Shutter.frame.getContentPane().add(caseOutF);
 				
@@ -4271,7 +4271,7 @@ public class VideoPlayer {
 	private void playerOptions() {
 		
 		caseShowWaveform.setName("caseShowWaveform");	
-		caseShowWaveform.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
+		caseShowWaveform.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
 		caseShowWaveform.setSelected(true);
 		Shutter.frame.getContentPane().add(caseShowWaveform);
 		
@@ -4308,7 +4308,7 @@ public class VideoPlayer {
 		});
 				
 		caseVuMeter.setName("caseVuMeter");	
-		caseVuMeter.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));	
+		caseVuMeter.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
 		caseVuMeter.setSelected(true);
 		Shutter.frame.getContentPane().add(caseVuMeter);
 		
@@ -4331,12 +4331,12 @@ public class VideoPlayer {
 		});
 					
 		casePlaySound.setName("casePlaySound");	
-		casePlaySound.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		casePlaySound.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		casePlaySound.setSelected(true);
 		Shutter.frame.getContentPane().add(casePlaySound);
 					
 		caseInternalTc = new JCheckBox(Shutter.language.getProperty("caseTcInterne"));
-		caseInternalTc.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		caseInternalTc.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		Shutter.frame.getContentPane().add(caseInternalTc);	
 		
 
@@ -4380,7 +4380,7 @@ public class VideoPlayer {
 		splitValue.setText("10");
 		splitValue.setVisible(false);
 		splitValue.setHorizontalAlignment(SwingConstants.RIGHT);
-		splitValue.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		splitValue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		splitValue.setColumns(10);
 		Shutter.frame.getContentPane().add(splitValue);
 		
@@ -4412,13 +4412,13 @@ public class VideoPlayer {
 		
 		lblSplitSec = new JLabel(Shutter.language.getProperty("lblSec"));
 		lblSplitSec.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblSplitSec.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+		lblSplitSec.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		lblSplitSec.setVisible(false);
 		lblSplitSec.setBounds(splitValue.getX() + splitValue.getWidth() + 2, splitValue.getY(), lblSplitSec.getPreferredSize().width, 16);
 		Shutter.frame.getContentPane().add(lblSplitSec);
 		
 		comboMode.setName("comboMode");
-		comboMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 11));
+		comboMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		comboMode.setMaximumRowCount(3);
 		comboMode.setSize(76, 22);
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
@@ -4470,7 +4470,7 @@ public class VideoPlayer {
 		
 		lblMode = new JLabel(Shutter.language.getProperty("mode"));
 		lblMode.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblMode.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 13));
+		lblMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			Shutter.frame.getContentPane().add(lblMode);
 		
@@ -6077,7 +6077,7 @@ public class VideoPlayer {
 			durationS = (int) Math.floor((total / FFPROBE.currentFPS) % 60);
 			durationF = (int) Math.round(total % FFPROBE.currentFPS);
 						
-			lblDuration.setText(Shutter.language.getProperty("lblDuree") + " " + durationH + "h " + durationM +"min " + durationS + "sec " + durationF + "i" + " | " + Shutter.language.getProperty("lblTotalFrames") + " " + (int) Math.ceil(total));
+			lblDuration.setText(durationH + "h " + durationM +"min " + durationS + "sec " + durationF + "i" + " | " + Shutter.language.getProperty("lblTotalFrames") + " " + (int) Math.ceil(total));
 			
 			if (total <= 0)
 			{
@@ -6146,7 +6146,7 @@ public class VideoPlayer {
 	        	dropFrame = ";";
         	}
 	        
-			lblPosition.setText(Shutter.language.getProperty("grpTimecode") + Shutter.language.getProperty("colon") + " " + h + ":" + m + ":" + s + dropFrame + f);	    
+			lblPosition.setText(h + ":" + m + ":" + s + dropFrame + f);	    
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 			{

@@ -22,12 +22,10 @@ package application;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -115,7 +113,7 @@ public class SubtitlesEmbed {
 	public SubtitlesEmbed() {	
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(new Color(30,30,35));
+		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameAddSubtitles"));
 		frame.setForeground(Color.WHITE);
@@ -138,16 +136,14 @@ public class SubtitlesEmbed {
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);				
-			
+			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 		}		
 		
 		topPanel();
 		addSubtitles();
 				
 		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnReset.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnReset.setBounds(7, frame.getHeight() - 21 - 7, frame.getWidth() / 2 - 7, 21);		
 		frame.getContentPane().add(btnReset);	
 		
@@ -169,7 +165,7 @@ public class SubtitlesEmbed {
 		});
 		
 		btnApply = new JButton(Shutter.language.getProperty("btnApply"));
-		btnApply.setFont(new Font(Shutter.montserratFont, Font.PLAIN, 12));
+		btnApply.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnApply.setBounds(btnReset.getX() + btnReset.getWidth() + 4, btnReset.getY(), frame.getWidth() / 2 - 7 - 4, 21);
 		frame.getContentPane().add(btnApply);
 		
@@ -369,7 +365,7 @@ public class SubtitlesEmbed {
 				i++;
 				
 				((JLabel) c).setText(Shutter.language.getProperty("lblsubtitleNumber") + i + Shutter.language.getProperty("colon"));
-				c.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 12));
+				c.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 				((JLabel) c).setHorizontalAlignment(SwingConstants.LEFT);
 				c.setBounds(7, labelY, 100, 16);
 				frame.getContentPane().add(c);	
@@ -380,7 +376,7 @@ public class SubtitlesEmbed {
 				c.setForeground(Utils.themeColor);
 				((JTextField) c).setBorder(BorderFactory.createLineBorder(new Color(75,75,75)));
 				c.setFont(new Font("SansSerif", Font.BOLD, 13));
-				c.setBackground(new Color(30,30,35));
+				c.setBackground(Utils.c30);
 				if (((JTextField) c).getText() == null || ((JTextField) c).getText() == "" || ((JTextField) c).getText().isEmpty())
 				{
 					((JTextField) c).setText(Shutter.language.getProperty("aucun"));
@@ -422,7 +418,7 @@ public class SubtitlesEmbed {
 			{
 				((JComboBox) c).setModel(new DefaultComboBoxModel<String>(allLanguages));				
 				((JComboBox) c).setSelectedItem(language);
-				c.setFont(new Font(Shutter.freeSansFont, Font.PLAIN, 10));
+				c.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 				((JComboBox) c).setEditable(false);
 				c.setBounds(7 + 100 + 7 + frame.getWidth() - 7 - 100 - 100 - 21 + 7, labelY - 1, 100, 18);
 				frame.getContentPane().add(c);
