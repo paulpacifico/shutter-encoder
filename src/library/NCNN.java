@@ -48,7 +48,7 @@ public static String modelsPath;
 	    				    
 	    Console.consoleNCNN.append(language.getProperty("command") + " " + cmd);
 		
-		if (btnStart.getText().equals(language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false  && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
+		if (btnStart.getText().equals(language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("-f rawvideo") == false && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{
 	        RenderQueue.tableRow.addRow(new Object[] { lblCurrentEncoding.getText(), "ncnn" + cmd, lblDestination1.getText()});
 	        RenderQueue.caseRunParallel.setSelected(false);

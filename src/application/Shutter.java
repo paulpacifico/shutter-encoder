@@ -466,10 +466,6 @@ public class Shutter {
 	public static JComboBox<String> comboGPUFilter;
 	protected static JLabel tempsRestant;
 	protected static JLabel tempsEcoule;
-	protected static JTextField textH;
-	protected static JTextField textM;
-	protected static JTextField textS;
-	protected static JTextField textF;
 	protected static JComboBox<String> debitVideo;
 	protected static JComboBox<String> maximumBitrate;
 	protected static JComboBox<String> debitAudio;
@@ -480,8 +476,6 @@ public class Shutter {
 	protected static JTextField bitrateSize;
 	protected static JLabel lock;
 	public static boolean isLocked = false;
-	protected static JLabel lblBitrateTimecode;
-	protected static JLabel lblH264;
 	protected static JLabel lblKbsH264;
 	protected static JLabel lblMaximumKbs;
 	protected static JLabel lblSize;
@@ -2039,11 +2033,6 @@ public class Shutter {
 					lblFilesEnded.setVisible(false);
 
 					// H264 Settings
-					lblH264.setVisible(false);
-					textH.setText("00");
-					textM.setText("00");
-					textS.setText("00");
-					textF.setText("00");
 					if (isLocked == false) {
 						bitrateSize.setText("-");
 					}
@@ -2166,8 +2155,7 @@ public class Shutter {
 					do {
 						try {
 							Thread.sleep(10);
-						} catch (InterruptedException e1) {
-						}
+						} catch (InterruptedException e1) {}
 					} while (FFPROBE.isRunning);
 				}
 
@@ -7452,7 +7440,7 @@ public class Shutter {
 
 		lblMix = new JLabel(language.getProperty("stereo"));
 		lblMix.setName("lblMix");
-		lblMix.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblMix.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblMix.setBackground(Utils.c42);
 		lblMix.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMix.setOpaque(true);
@@ -7526,7 +7514,7 @@ public class Shutter {
 
 		lblSplit = new JLabel(language.getProperty("mono"));
 		lblSplit.setName("lblSplit");
-		lblSplit.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblSplit.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblSplit.setBackground(Utils.c42);
 		lblSplit.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSplit.setOpaque(true);
@@ -8836,7 +8824,7 @@ public class Shutter {
 
 		lblTcBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOn"));
 		lblTcBackground.setName("lblTcBackground");
-		lblTcBackground.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblTcBackground.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblTcBackground.setBackground(Utils.c42);
 		lblTcBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTcBackground.setOpaque(true);
@@ -9188,7 +9176,7 @@ public class Shutter {
 
 		lblTimecode = new JLabel(Shutter.language.getProperty("lblTimecode"));
 		lblTimecode.setName("lblTimecode");
-		lblTimecode.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblTimecode.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblTimecode.setBackground(Utils.c42);
 		lblTimecode.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTimecode.setOpaque(true);
@@ -11717,7 +11705,7 @@ public class Shutter {
 
 		lblSubsBackground = new JLabel(Shutter.language.getProperty("lblBackgroundOff"));
 		lblSubsBackground.setName("lblSubsBackground");
-		lblSubsBackground.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblSubsBackground.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblSubsBackground.setBackground(Utils.c42);
 		lblSubsBackground.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubsBackground.setOpaque(true);
@@ -15191,7 +15179,7 @@ public class Shutter {
 
 		lblFadeInColor = new JLabel(Shutter.language.getProperty("black"));
 		lblFadeInColor.setName("lblFadeInColor");
-		lblFadeInColor.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblFadeInColor.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblFadeInColor.setBackground(Utils.c42);
 		lblFadeInColor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFadeInColor.setOpaque(true);
@@ -15406,7 +15394,7 @@ public class Shutter {
 
 		lblFadeOutColor = new JLabel(Shutter.language.getProperty("black"));
 		lblFadeOutColor.setName("lblFadeOutColor");
-		lblFadeOutColor.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblFadeOutColor.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblFadeOutColor.setBackground(Utils.c42);
 		lblFadeOutColor.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFadeOutColor.setOpaque(true);
@@ -15903,7 +15891,7 @@ public class Shutter {
 
 		lblTFF = new JLabel("TFF");
 		lblTFF.setName("lblTFF");
-		lblTFF.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblTFF.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblTFF.setBackground(Utils.c42);
 		lblTFF.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTFF.setOpaque(true);
@@ -16080,7 +16068,7 @@ public class Shutter {
 
 		lblOPATOM = new JLabel("OP-Atom");
 		lblOPATOM.setName("lblOPATOM");
-		lblOPATOM.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblOPATOM.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblOPATOM.setBackground(Utils.c42);
 		lblOPATOM.setHorizontalAlignment(SwingConstants.CENTER);
 		lblOPATOM.setOpaque(true);
@@ -16298,7 +16286,7 @@ public class Shutter {
 
 		lblNiveaux = new JLabel("0-255");
 		lblNiveaux.setName("lblNiveaux");
-		lblNiveaux.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblNiveaux.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblNiveaux.setBackground(Utils.c42);
 		lblNiveaux.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNiveaux.setOpaque(true);
@@ -16837,168 +16825,9 @@ public class Shutter {
 				language.getProperty("grpBitrate") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
 				new Color(235, 235, 240)));
 		grpBitrate.setBackground(Utils.c30);
-		grpBitrate.setBounds(658, 30, 312, 208);
+		grpBitrate.setBounds(658, 30, 312, 156);
 		grpBitrate.setOpaque(false);
 		frame.getContentPane().add(grpBitrate);
-
-		JLabel lblFile = new JLabel(language.getProperty("file") + language.getProperty("colon"));
-		lblFile.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblFile.setBounds(12, 20, lblFile.getPreferredSize().width + 4, 16);
-		grpBitrate.add(lblFile);
-
-		lblH264 = new JLabel("");
-		lblH264.setVisible(false);
-		lblH264.setHorizontalAlignment(SwingConstants.LEFT);
-		lblH264.setForeground(Utils.themeColor);
-		lblH264.setFont(new Font("SansSerif", Font.BOLD, 13));
-		lblH264.setBounds(lblFile.getX() + lblFile.getWidth() + 2, lblFile.getY() - 1,
-				302 - (lblFile.getX() + lblFile.getWidth()), 16);
-		grpBitrate.add(lblH264);
-
-		lblBitrateTimecode = new JLabel(language.getProperty("lblBitrateTimecode"));
-		lblBitrateTimecode.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblBitrateTimecode.setBounds(lblFile.getX(), lblFile.getY() + lblFile.getHeight() + 9,
-				lblBitrateTimecode.getPreferredSize().width, 16);
-		grpBitrate.add(lblBitrateTimecode);
-
-		textH = new JTextField();
-		textH.setName("textH");
-		textH.setText("00");
-		textH.setHorizontalAlignment(SwingConstants.CENTER);
-		textH.setFont(new Font(mainFont, Font.PLAIN, 13));
-		textH.setColumns(10);
-		textH.setBounds(58, 43, 32, 21);
-		grpBitrate.add(textH);
-
-		textM = new JTextField();
-		textM.setName("textM");
-		textM.setText("00");
-		textM.setHorizontalAlignment(SwingConstants.CENTER);
-		textM.setFont(new Font(mainFont, Font.PLAIN, 13));
-		textM.setColumns(10);
-		textM.setBounds(textH.getX() + textH.getWidth(), 43, 32, 21);
-		grpBitrate.add(textM);
-
-		textS = new JTextField();
-		textS.setName("textS");
-		textS.setText("00");
-		textS.setHorizontalAlignment(SwingConstants.CENTER);
-		textS.setFont(new Font(mainFont, Font.PLAIN, 13));
-		textS.setColumns(10);
-		textS.setBounds(textM.getX() + textM.getWidth(), 43, 32, 21);
-		grpBitrate.add(textS);
-
-		textF = new JTextField();
-		textF.setName("textF");
-		textF.setText("00");
-		textF.setHorizontalAlignment(SwingConstants.CENTER);
-		textF.setFont(new Font(mainFont, Font.PLAIN, 13));
-		textF.setColumns(10);
-		textF.setBounds(textS.getX() + textS.getWidth(), 43, 32, 21);
-		grpBitrate.add(textF);
-
-		textH.addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent e) {
-				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿'
-						|| textH.getText().length() >= 2 || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume();
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				{
-					try {
-						FFPROBE.setFilesize();
-					} catch (Exception e1) {
-					}
-
-				}
-			}
-		});
-
-		textM.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿'
-						|| textM.getText().length() >= 2 || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume();
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				{
-					try {
-						FFPROBE.setFilesize();
-					} catch (Exception e1) {
-					}
-
-				}
-			}
-		});
-
-		textS.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿'
-						|| textS.getText().length() >= 2 || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume();
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				{
-					try {
-						FFPROBE.setFilesize();
-					} catch (Exception e1) {
-					}
-
-				}
-			}
-		});
-
-		textF.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿'
-						|| textF.getText().length() >= 2 || String.valueOf(caracter).matches("[éèçàù]"))
-					e.consume();
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-				{
-					try {
-						FFPROBE.setFilesize();
-					} catch (Exception e1) {
-					}
-
-				}
-			}
-		});
 
 		lblPad = new JLabel() {
 			@Override
@@ -17010,7 +16839,7 @@ public class Shutter {
 					if (lblPad.getText().equals(Shutter.language.getProperty("lblPad")))
 						g.setColor(Color.BLACK);
 					else
-						g.setColor(Utils.c30);
+						g.setColor(Utils.c25);
 
 					g.fillRect(0, 0, 8, 16);
 					g.fillRect((70 - 8), 0, (70 - 8), 16);
@@ -17088,8 +16917,7 @@ public class Shutter {
 
 		lblVideoBitrate = new JLabel(language.getProperty("lblVideoBitrate"));
 		lblVideoBitrate.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblVideoBitrate.setBounds(lblBitrateTimecode.getX(),
-				lblBitrateTimecode.getY() + lblBitrateTimecode.getHeight() + 11, 80, 16);
+		lblVideoBitrate.setBounds(12, 20, 80, 16);
 		grpBitrate.add(lblVideoBitrate);
 
 		debitVideo = new JComboBox<String>();
@@ -17102,7 +16930,7 @@ public class Shutter {
 		debitVideo.setMaximumRowCount(20);
 		debitVideo.setFont(new Font(mainFont, Font.PLAIN, 11));
 		debitVideo.setEditable(true);
-		debitVideo.setBounds(92, textH.getY() + textH.getHeight() + 5, 93, 22);
+		debitVideo.setBounds(92, lblVideoBitrate.getY() - 2, 93, 22);
 		grpBitrate.add(debitVideo);
 
 		debitVideo.addActionListener(new ActionListener() {
@@ -17126,7 +16954,7 @@ public class Shutter {
 
 		lblMaximumBitrate = new JLabel(language.getProperty("lblMaximumBitrate"));
 		lblMaximumBitrate.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblMaximumBitrate.setBounds(lblBitrateTimecode.getX(),
+		lblMaximumBitrate.setBounds(lblVideoBitrate.getX(),
 				lblVideoBitrate.getY() + lblVideoBitrate.getHeight() + 11, 80, 16);
 		grpBitrate.add(lblMaximumBitrate);
 
@@ -17149,7 +16977,7 @@ public class Shutter {
 
 		lblAudioBitrate = new JLabel(language.getProperty("lblAudioBitrate"));
 		lblAudioBitrate.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblAudioBitrate.setBounds(lblBitrateTimecode.getX(),
+		lblAudioBitrate.setBounds(lblVideoBitrate.getX(),
 				lblMaximumBitrate.getY() + lblMaximumBitrate.getHeight() + 11, 80, 16);
 		grpBitrate.add(lblAudioBitrate);
 
@@ -17171,7 +16999,7 @@ public class Shutter {
 
 		lblSize = new JLabel(language.getProperty("size"));
 		lblSize.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblSize.setBounds(lblBitrateTimecode.getX(), lblAudioBitrate.getY() + lblAudioBitrate.getHeight() + 11,
+		lblSize.setBounds(lblVideoBitrate.getX(), lblAudioBitrate.getY() + lblAudioBitrate.getHeight() + 11,
 				lblSize.getPreferredSize().width, 16);
 		grpBitrate.add(lblSize);
 
@@ -17212,10 +17040,11 @@ public class Shutter {
 
 					try {
 						if (e.getKeyCode() != KeyEvent.VK_DELETE) {
-							int h = Integer.parseInt(textH.getText());
-							int min = Integer.parseInt(textM.getText());
-							int sec = Integer.parseInt(textS.getText());
-							int frames = Integer.parseInt(textF.getText());
+							int h = VideoPlayer.durationH;
+							int min = VideoPlayer.durationM;
+							int sec = VideoPlayer.durationS;
+							int frames = VideoPlayer.durationF;
+							
 							int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
 							float tailleFinale = Float.parseFloat(bitrateSize.getText().replace(",", "."));
 							float result = (float) tailleFinale
@@ -17345,14 +17174,11 @@ public class Shutter {
 					case2pass.setSelected(false);
 				}
 
-				if (case2pass.isSelected()) {
+				if (case2pass.isSelected())
+				{
 					comboResolution.setEnabled(true);
 					debitVideo.setEnabled(true);
 					bitrateSize.setEnabled(true);
-					textH.setEnabled(true);
-					textM.setEnabled(true);
-					textS.setEnabled(true);
-					textF.setEnabled(true);
 				}
 			}
 		});
@@ -17444,7 +17270,7 @@ public class Shutter {
 
 		lblVBR = new JLabel("VBR");
 		lblVBR.setName("lblVBR");
-		lblVBR.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c30, 1, 10));
+		lblVBR.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10));
 		lblVBR.setBackground(Utils.c42);
 		lblVBR.setHorizontalAlignment(SwingConstants.CENTER);
 		lblVBR.setFont(new Font(boldFont, Font.PLAIN, 11));
@@ -17602,10 +17428,6 @@ public class Shutter {
 					// grpH264
 					lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
 					isLocked = false;
-					textH.setEnabled(true);
-					textM.setEnabled(true);
-					textS.setEnabled(true);
-					textF.setEnabled(true);
 					comboResolution.setEnabled(true);
 					debitVideo.setEnabled(true);
 					debitVideo.setModel(new DefaultComboBoxModel<String>(new String[] { "50000", "40000", "30000",
@@ -18846,30 +18668,34 @@ public class Shutter {
 	public static void changeFunction(final boolean anim) {
 
 		String function = comboFonctions.getSelectedItem().toString();
-		if (language.getProperty("functionConform").equals(function)
-				|| language.getProperty("functionSubtitles").equals(function)
-				|| language.getProperty("functionCut").equals(function)
-				|| language.getProperty("functionRewrap").equals(function)
-				|| language.getProperty("functionMerge").equals(function)
-				|| language.getProperty("functionReplaceAudio").equals(function) || "WAV".equals(function)
-				|| "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function)
-				|| "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "Opus".equals(function)
-				|| "Vorbis".equals(function) || "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)
-				|| "Loudness & True Peak".equals(function)
-				|| language.getProperty("functionBlackDetection").equals(function)
-				|| language.getProperty("functionOfflineDetection").equals(function) || "VMAF".equals(function)
-				|| "FrameMD5".equals(function) || "DNxHD".equals(function) || "DNxHR".equals(function)
-				|| "Apple ProRes".equals(function) || "QT Animation".equals(function)
-				|| ("GoPro CineForm").equals(function) || "Uncompressed".equals(function) || "H.264".equals(function)
-				|| "H.265".equals(function) || "H.266".equals(function) || "DV PAL".equals(function)
-				|| "WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function)
-				|| "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function)
-				|| "Theora".equals(function) || "MJPEG".equals(function) || "Xvid".equals(function)
-				|| "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function)
-				|| ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)
-				|| "DVD".equals(function) || "Blu-ray".equals(function) || "QT JPEG".equals(function)
-				|| language.getProperty("functionPicture").equals(function) || "JPEG".equals(function)
-				|| "JPEG XL".equals(function) || language.getProperty("functionNormalization").equals(function)) {
+		
+		if (language.getProperty("functionSubtitles").equals(function)) //Width need to be loaded after
+		{
+			changeSections(anim);
+		}
+		else if (language.getProperty("functionConform").equals(function)				
+			|| language.getProperty("functionCut").equals(function)
+			|| language.getProperty("functionRewrap").equals(function)
+			|| language.getProperty("functionMerge").equals(function)
+			|| language.getProperty("functionReplaceAudio").equals(function) || "WAV".equals(function)
+			|| "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function)
+			|| "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "Opus".equals(function)
+			|| "Vorbis".equals(function) || "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)
+			|| "Loudness & True Peak".equals(function)
+			|| language.getProperty("functionBlackDetection").equals(function)
+			|| language.getProperty("functionOfflineDetection").equals(function) || "VMAF".equals(function)
+			|| "FrameMD5".equals(function) || "DNxHD".equals(function) || "DNxHR".equals(function)
+			|| "Apple ProRes".equals(function) || "QT Animation".equals(function)
+			|| ("GoPro CineForm").equals(function) || "Uncompressed".equals(function) || "H.264".equals(function)
+			|| "H.265".equals(function) || "H.266".equals(function) || "DV PAL".equals(function)
+			|| "WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function)
+			|| "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function)
+			|| "Theora".equals(function) || "MJPEG".equals(function) || "Xvid".equals(function)
+			|| "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function)
+			|| ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)
+			|| "DVD".equals(function) || "Blu-ray".equals(function) || "QT JPEG".equals(function)
+			|| language.getProperty("functionPicture").equals(function) || "JPEG".equals(function)
+			|| "JPEG XL".equals(function) || language.getProperty("functionNormalization").equals(function)) {
 			changeWidth(true);
 			changeSections(anim);
 
@@ -19441,20 +19267,24 @@ public class Shutter {
 			extendedWidth = frame.getWidth();
 		}
 
-		if (frame.getWidth() < 1320 && noSettings == false) {
+		if (frame.getWidth() < 1320 && noSettings == false)
+		{
 			VideoPlayer.lblSpeed.setVisible(false);
 			VideoPlayer.lblVolume.setVisible(false);
 
-			if (frame.getWidth() < 1300) {
+			if (frame.getWidth() < 1300)
+			{
 				VideoPlayer.sliderSpeed.setVisible(false);
 				VideoPlayer.sliderVolume.setVisible(false);
-			} else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40
-					&& Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false) {
+			}
+			else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false && inputDeviceIsRunning == false)
+			{
 				VideoPlayer.sliderSpeed.setVisible(true);
 				VideoPlayer.sliderVolume.setVisible(true);
 			}
-		} else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40
-				&& Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false) {
+		}
+		else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false && inputDeviceIsRunning == false)
+		{
 			VideoPlayer.lblSpeed.setVisible(true);
 			VideoPlayer.lblVolume.setVisible(true);
 			VideoPlayer.sliderSpeed.setVisible(true);
@@ -19648,7 +19478,8 @@ public class Shutter {
 
 	public static void changeSections(final boolean action) {
 
-		if (frame.getWidth() > 332) {
+		if (frame.getWidth() > 332 || comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+		{			
 			Thread changeSize = new Thread(new Runnable() {
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -19709,7 +19540,8 @@ public class Shutter {
 							} else
 								settingsScrollBar.setVisible(false);
 
-							if (action) {
+							if (action)
+							{
 								grpSetTimecode.setSize(grpSetTimecode.getSize().width, 17);
 								grpSetAudio.setSize(grpSetAudio.getSize().width, 17);
 								grpCrop.setSize(grpCrop.getSize().width, 17);
@@ -19737,8 +19569,8 @@ public class Shutter {
 							btnStart.setEnabled(true);
 							btnReset.setVisible(true);
 
-							if (language.getProperty("functionConform").equals(function)
-									|| language.getProperty("functionSubtitles").equals(function)) {
+							if (language.getProperty("functionConform").equals(function) || language.getProperty("functionSubtitles").equals(function))
+							{
 								addToList.setText(language.getProperty("filesVideo"));
 
 								grpResolution.setVisible(false);
@@ -19758,11 +19590,13 @@ public class Shutter {
 								grpImageFilter.setVisible(false);
 								grpAdvanced.setVisible(false);
 								btnReset.setVisible(false);
-
-								if (language.getProperty("functionSubtitles").equals(function)) {
+								
+								if (language.getProperty("functionSubtitles").equals(function))
+								{
 									btnStart.setEnabled(false);
 
-									if (inputDeviceIsRunning) {
+									if (inputDeviceIsRunning)
+									{
 										JOptionPane.showMessageDialog(frame,
 												language.getProperty("incompatibleInputDevice"),
 												language.getProperty("menuItemScreenRecord"),
@@ -19771,6 +19605,13 @@ public class Shutter {
 										JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 												language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 									}
+									else if (action) 
+									{
+										changeWidth(true);
+										VideoPlayer.videoPath = null;
+										VideoPlayer.setMedia();
+									}
+									
 								} else
 									VideoPlayer.seekOnKeyFrames = true;
 
@@ -21281,16 +21122,16 @@ public class Shutter {
 
 								grpBitrate.setVisible(true);
 								grpBitrate.setBounds(grpBitrate.getX(),
-										grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312, 208);
+										grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312, 156);
 								lblMaximumBitrate.setVisible(true);
 								maximumBitrate.setVisible(true);
 								lblMaximumKbs.setVisible(true);
-								lblAudioBitrate.setLocation(lblBitrateTimecode.getX(),
+								lblAudioBitrate.setLocation(lblVideoBitrate.getX(),
 										lblMaximumBitrate.getY() + lblMaximumBitrate.getHeight() + 11);
 								debitAudio.setLocation(debitVideo.getX(),
 										maximumBitrate.getY() + maximumBitrate.getHeight() + 5);
 								lblAudioKbs.setLocation(lblKbsH264.getX(), debitAudio.getY() + 3);
-								lblSize.setLocation(lblBitrateTimecode.getX(),
+								lblSize.setLocation(lblVideoBitrate.getX(),
 										lblAudioBitrate.getY() + lblAudioBitrate.getHeight() + 11);
 								bitrateSize.setLocation(debitVideo.getX(),
 										debitAudio.getY() + debitAudio.getHeight() + 5);
@@ -21792,28 +21633,28 @@ public class Shutter {
 								if ("AV1".equals(function) && lblVBR.getText().equals("CQ")) {
 									grpBitrate.setBounds(grpBitrate.getX(),
 											grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312,
-											208);
+											156);
 									lblMaximumBitrate.setVisible(true);
 									maximumBitrate.setVisible(true);
 									lblMaximumKbs.setVisible(true);
-									lblAudioBitrate.setLocation(lblBitrateTimecode.getX(),
+									lblAudioBitrate.setLocation(lblVideoBitrate.getX(),
 											lblMaximumBitrate.getY() + lblMaximumBitrate.getHeight() + 11);
 									debitAudio.setLocation(debitVideo.getX(),
 											maximumBitrate.getY() + maximumBitrate.getHeight() + 5);
 								} else {
 									grpBitrate.setBounds(grpBitrate.getX(),
 											grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312,
-											182);
+											130);
 									lblMaximumBitrate.setVisible(false);
 									maximumBitrate.setVisible(false);
 									lblMaximumKbs.setVisible(false);
-									lblAudioBitrate.setLocation(lblBitrateTimecode.getX(),
+									lblAudioBitrate.setLocation(lblVideoBitrate.getX(),
 											lblVideoBitrate.getY() + lblVideoBitrate.getHeight() + 11);
 									debitAudio.setLocation(debitVideo.getX(),
 											debitVideo.getY() + debitVideo.getHeight() + 5);
 								}
 								lblAudioKbs.setLocation(lblKbsH264.getX(), debitAudio.getY() + 3);
-								lblSize.setLocation(lblBitrateTimecode.getX(),
+								lblSize.setLocation(lblVideoBitrate.getX(),
 										lblAudioBitrate.getY() + lblAudioBitrate.getHeight() + 11);
 								bitrateSize.setLocation(debitVideo.getX(),
 										debitAudio.getY() + debitAudio.getHeight() + 5);
@@ -22362,16 +22203,16 @@ public class Shutter {
 									grpBitrate.setVisible(true);
 									grpBitrate.setBounds(grpBitrate.getX(),
 											grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312,
-											208);
+											156);
 									lblMaximumBitrate.setVisible(true);
 									maximumBitrate.setVisible(true);
 									lblMaximumKbs.setVisible(true);
-									lblAudioBitrate.setLocation(lblBitrateTimecode.getX(),
+									lblAudioBitrate.setLocation(lblVideoBitrate.getX(),
 											lblMaximumBitrate.getY() + lblMaximumBitrate.getHeight() + 11);
 									debitAudio.setLocation(debitVideo.getX(),
 											maximumBitrate.getY() + maximumBitrate.getHeight() + 5);
 									lblAudioKbs.setLocation(lblKbsH264.getX(), debitAudio.getY() + 3);
-									lblSize.setLocation(lblBitrateTimecode.getX(),
+									lblSize.setLocation(lblVideoBitrate.getX(),
 											lblAudioBitrate.getY() + lblAudioBitrate.getHeight() + 11);
 									bitrateSize.setLocation(debitVideo.getX(),
 											debitAudio.getY() + debitAudio.getHeight() + 5);
@@ -22879,12 +22720,6 @@ public class Shutter {
 							grpResolution.repaint();
 							topPanel.repaint();
 							statusBar.repaint();
-
-							if (comboFonctions.getSelectedItem()
-									.equals(Shutter.language.getProperty("functionSubtitles")) && action) {
-								VideoPlayer.videoPath = null;
-								VideoPlayer.setMedia();
-							}
 
 						} catch (Exception e1) {
 						}
@@ -24693,24 +24528,6 @@ class ListeFileTransferHandler extends TransferHandler {
 						}
 					}
 
-					switch (Shutter.comboFonctions.getSelectedItem().toString()) {
-					case "H.264":
-					case "H.265":
-					case "H.266":
-					case "WMV":
-					case "MPEG-1":
-					case "MPEG-2":
-					case "VP8":
-					case "VP9":
-					case "AV1":
-					case "Theora":
-					case "MJPEG":
-					case "Xvid":
-					case "Blu-ray":
-						FFPROBE.setLength();
-						break;
-					}
-
 					// CaseOPATOM
 					switch (Shutter.comboFonctions.getSelectedItem().toString()) {
 					case "DNxHD":
@@ -24737,7 +24554,7 @@ class ListeFileTransferHandler extends TransferHandler {
 					Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);
 
 					VideoPlayer.setMedia();
-
+					
 					// Filter
 					Shutter.changeFilters();
 

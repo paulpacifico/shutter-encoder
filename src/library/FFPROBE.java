@@ -24,8 +24,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import javax.swing.JOptionPane;
 
@@ -237,7 +235,7 @@ public static boolean isRotated = false;
 						
 						isRunning = true;
 						process = processFFPROBE.start();
-											
+						
 						String line;
 						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
 	
@@ -246,7 +244,7 @@ public static boolean isRotated = false;
 						while ((line = input.readLine()) != null)
 						{						
 							Console.consoleFFPROBE.append(line + System.lineSeparator());		
-										
+									
 							//Errors
 							FFMPEG.checkForErrors(line);
 													
@@ -277,20 +275,6 @@ public static boolean isRotated = false;
 					    		    		
 					         	if (grpBitrate.isVisible() && totalLength != 0)
 								{     				
-					         		lblH264.setText(new File(file).getName());
-						            lblH264.setVisible(true);
-					         		
-						        	NumberFormat formatter = new DecimalFormat("00");
-						        	int hours = ((totalLength) / 3600000);
-						        	int min =  ((totalLength) / 60000) % 60;
-						            int sec = ((totalLength) / 1000) % 60;
-						            int frames = (int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
-						            
-						            textH.setText(formatter.format(hours));
-						            textM.setText(formatter.format(min));
-						            textS.setText(formatter.format(sec));
-						            textF.setText(formatter.format(frames));
-						             
 						      		if (VideoPlayer.playerVideo != null)	
 						     			VideoPlayer.totalDuration();
 	
@@ -1114,7 +1098,6 @@ public static boolean isRotated = false;
 								{
 									//Sending to Data()
 									FFPROBE.Data(f.toString());
-									lblH264.setText(new File(f.toString()).getName());
 									
 							        do {
 										Thread.sleep(100);
@@ -1125,10 +1108,7 @@ public static boolean isRotated = false;
 							}
 						} 
 						else if (Shutter.fileList.getSelectedIndices().length != 0)
-						{
-							lblH264.setText(new File(Shutter.fileList.getSelectedValue()).getName());
-				            lblH264.setVisible(true);
-							
+						{							
 							//Sending to Data()
 							if (inputDeviceIsRunning == false)					
 								FFPROBE.Data(Shutter.fileList.getSelectedValue());
@@ -1158,14 +1138,7 @@ public static boolean isRotated = false;
 					    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
 									}
 			    		    	}	
-				         		
-					        	NumberFormat formatter = new DecimalFormat("00");
-				
-					            textH.setText(formatter.format((totalLength) / 3600000));
-					            textM.setText(formatter.format(((totalLength) / 60000) % 60) );
-					            textS.setText(formatter.format((totalLength / 1000) % 60));				        
-					            textF.setText(formatter.format(((int) Math.floor((float) totalLength / ((float) 1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS))));
-					             			             
+		             
 					            if (VideoPlayer.playerVideo != null)	
 						     		VideoPlayer.totalDuration();
 					             
@@ -1174,12 +1147,6 @@ public static boolean isRotated = false;
 						}
 						else
 						{
-							lblH264.setVisible(false);
-							textH.setText("00");
-							textM.setText("00");
-							textS.setText("00");
-							textF.setText("00");
-							
 							if (isLocked == false)
 							{
 								bitrateSize.setText("-");
@@ -1227,27 +1194,22 @@ public static boolean isRotated = false;
 
 			if (Shutter.liste.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
 			{
+				int h = VideoPlayer.durationH;
+				int min = VideoPlayer.durationM;
+				int sec = VideoPlayer.durationS;				
+				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
+				
+				//Set Bitrate
 				if (isLocked)
 				{
-					//Set Bitrate
-					int h = Integer.parseInt(textH.getText());
-					int min = Integer.parseInt(textM.getText());
-					int sec = Integer.parseInt(textS.getText());
-					int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-					float tailleFinale = Float.parseFloat(bitrateSize.getText().replace(",", "."));
-					float result = (float) tailleFinale / ((h * 3600) + (min * 60) + sec);
+					float finalSize = Float.parseFloat(bitrateSize.getText().replace(",", "."));
+					float result = (float) finalSize / ((h * 3600) + (min * 60) + sec);
 					float resultAudio = (float) (audio*multi) / 8 / 1024;
-					float resultatdebit = (result - resultAudio) * 8 * 1024;
-					debitVideo.getModel().setSelectedItem((int) resultatdebit);
+					float resultatBitrate = (result - resultAudio) * 8 * 1024;
+					debitVideo.getModel().setSelectedItem((int) resultatBitrate);
 				}
-				else
-				{
-			        //Set Filesize
-					int h = Integer.parseInt(textH.getText());
-					int min = Integer.parseInt(textM.getText());
-					int sec = Integer.parseInt(textS.getText());
-					int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-					
+				else //Set Filesize
+				{			        
 					if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
 						audio = 1536;
 					
@@ -1255,14 +1217,14 @@ public static boolean isRotated = false;
 												
 					float resultVideo = (float) videoBitrate / 8 / 1024;
 					float resultAudio =  (float) (audio*multi) / 8 / 1024;
-					float resultatdebit = (resultVideo  + resultAudio) * ( (h * 3600)+(min * 60)+sec);
+					float resultatBitrate = (resultVideo + resultAudio) * ( (h * 3600)+(min * 60)+sec);
 					
-					if (resultatdebit < 10)
+					if (resultatBitrate < 10)
 					{
-						bitrateSize.setText(String.valueOf((double) Math.round(resultatdebit * 100.0) / 100.0));	
+						bitrateSize.setText(String.valueOf((double) Math.round(resultatBitrate * 100.0) / 100.0));	
 					}
 					else					
-						bitrateSize.setText(String.valueOf((int) resultatdebit));	
+						bitrateSize.setText(String.valueOf((int) resultatBitrate));	
 				}
 			}
 			else

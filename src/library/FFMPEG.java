@@ -124,6 +124,8 @@ public static boolean qsvAvailable = false;
 public static boolean videotoolboxAvailable = false;
 public static boolean vulkanAvailable = false;
 public static int differenceMax;
+public static int pipeWidth = 0;
+public static int pipeHeight = 0;
 
 //Moyenne de fps		
 private static int frame0 = 0;
@@ -158,6 +160,8 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 		time = 0;
 		fps = 0;
+		pipeWidth = 0;
+		pipeHeight = 0;
 
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
@@ -173,7 +177,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (cmd.contains("-pass 2") == false)
 				saveToXML(cmd);
 		}
-		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
+		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("-f rawvideo") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
 		{			
 			//On récupère le nom précédent
 			if (lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")))
@@ -213,7 +217,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		else
 		{
 			isRunning = true;
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && cmd.contains("image2pipe") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false  && cmd.contains("preview.png") == false && screenshotIsRunning == false)
+			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && cmd.contains("-f rawvideo") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false  && cmd.contains("preview.png") == false && screenshotIsRunning == false)
 				disableAll();
 			
 			runProcess = new Thread(new Runnable()  {
@@ -228,7 +232,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						
 						if (System.getProperty("os.name").contains("Windows"))
 						{														
-							if (cmd.contains("image2pipe") || cmd.contains("pipe:1") || cmd.contains("vidstabdetect") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
+							if (cmd.contains("-f rawvideo") || cmd.contains("pipe:1") || cmd.contains("vidstabdetect") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 							|| caseEnableColorimetry.isSelected() && Colorimetry.setEQ(true) != ""
 							|| caseLUTs.isSelected() && grpColorimetry.isVisible()
 							|| caseForcerDAR.isSelected()
@@ -237,7 +241,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								String pipe = "";								
 								if (cmd.contains("pipe:1"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict -2 -v quiet -i pipe:0 -an -c:v rawvideo -pix_fmt rgb24 -f rawvideo -";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -266,7 +270,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:1"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -f image2pipe -";
+								pipe =  " | " + PathToFFMPEG + " -strict -2 -v quiet -i pipe:0 -an -c:v rawvideo -pix_fmt rgb24 -f rawvideo -";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
@@ -301,13 +305,21 @@ public static StringBuilder errorLog = new StringBuilder();
 
 						            try {
 						            	
+						            	do {
+						            		Thread.sleep(100);
+						            		
+						            		if (cancelled)
+						            			break;
+						            		
+						            	} while (pipeWidth == 0 || pipeHeight == 0);
+						            	
 										do {
 											
 											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
-											{												
-												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);
+											{			
+										        VideoPlayer.frameVideo = VideoPlayer.readFrame(videoInputStream, pipeWidth, pipeHeight);	
 												VideoPlayer.player.repaint();
-											}	
+											}
 											
 										} while (VideoPlayer.frameVideo != null);
 										
@@ -331,7 +343,10 @@ public static StringBuilder errorLog = new StringBuilder();
 							checkForErrors(line);	
 																								
 							if (cancelled == false)
-							{																						
+							{																	
+								//Pipe scaling
+								getOutputScale(line);
+																								
 								if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && RenderQueue.caseRunParallel.isSelected())
 								{													
 									if (line.contains("All streams finished"))
@@ -661,7 +676,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (System.getProperty("os.name").contains("Windows"))
 			{
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:0" + fps + " -c:v bmp -an -f image2pipe -");
+				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -");
 				process = pbv.start();
 								
 				//AUDIO STREAM
@@ -685,7 +700,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			else
 			{
 				//VIDEO STREAM									
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -an -f image2pipe -");	
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -");	
 				process = processFFMPEG.start();
 			
 				//AUDIO STREAM
@@ -707,7 +722,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			}	
 			
-			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -an -f image2pipe -" + System.lineSeparator());
+			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
 			player.getContentPane().setBackground(Utils.c42);
@@ -1708,7 +1723,35 @@ public static StringBuilder errorLog = new StringBuilder();
 		} catch (SecurityException | IllegalArgumentException | IOException e1) {	}
 	}
 
-	private static void setProgress(String line, final boolean pass2, String cmd) {				
+	public static void getOutputScale(String line)
+	{
+		if (line.contains("Video:") && line.contains("attached pic") == false)
+		{			
+			String split[] = line.split(",");
+            int i = 0;
+            do {
+                i ++;
+            } while ((split[i].contains("x") == false || split[i].contains("xyz")) && i < split.length - 1);
+            
+            if (split[i].contains("["))
+            {
+            	String s[] = split[i].split("\\[");
+            	split[i] = s[0].replace(" ","");
+            }
+            
+            if (split[i].contains("unspecified size") == false && split[i].contains("x"))
+            {		
+                String resolution = split[i].substring(split[i].indexOf("x") + 1);
+              	String splitr[] = resolution.split(" ");
+                String height = split[i];						                
+                String splitx[]= height.split("x");			
+	            pipeWidth = Integer.parseInt(splitx[0].replace(" ", ""));
+	            pipeHeight = Integer.parseInt(splitr[0]);
+            }
+		}
+	}
+	
+ 	private static void setProgress(String line, final boolean pass2, String cmd) {				
 									
 		if (line.contains("Input #1"))
 			firstInput = false;

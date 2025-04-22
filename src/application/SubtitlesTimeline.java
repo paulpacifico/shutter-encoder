@@ -1364,7 +1364,7 @@ public class SubtitlesTimeline {
 				VideoPlayer.sliderChange = false;	
 				
 				//Reload the frame to apply bicubic filter					
-				do {
+				do {					
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e1) {}

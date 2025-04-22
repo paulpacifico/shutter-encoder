@@ -217,8 +217,8 @@ public class RecordInputDevice {
 										
 					//Permet d'injecter la resolution à FFPROBE
 					setInputDevices();
-	
-					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:1";	
+					
+					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -pix_fmt rgb24 -an -f nut pipe:1";	
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
@@ -310,7 +310,7 @@ public class RecordInputDevice {
 					//Permet d'injecter la resolution à FFPROBE
 					setOverlayDevice();
 																	
-					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -an -f nut pipe:1";		
+					String cmd = " -filter_complex " + '"' + "scale=1080:-1" + '"' + " -c:v rawvideo -pix_fmt rgb24 -an -f nut pipe:1";		
 								
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
@@ -570,6 +570,8 @@ public class RecordInputDevice {
 			FFPROBE.imageResolution = screenWidth + "x" + screenHeigth;
 			FFPROBE.interlaced = "0";
 		}
+		
+		FFPROBE.currentFPS = Float.parseFloat(txtScreenRecord.getText());
 			
 		FFPROBE.audioOnly = false;
 		

@@ -157,6 +157,7 @@ public class Settings {
 		comboLoadPreset.setName("comboLoadPreset");
 		btnPreviewOutput.setName("btnPreviewOutput");
 		btnWaitFileComplete.setName("btnWaitFileComplete");
+		btnSetBab.setName("btnSetBab");
 		btnDisableAnimations.setName("btnDisableAnimations");
 		btnDisableSound.setName("btnDisableSound");	
 		btnDisableUpdate.setName("btnDisableUpdate");

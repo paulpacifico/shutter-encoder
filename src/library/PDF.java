@@ -61,6 +61,11 @@ public static int pagesCount = 1;
 					VideoPlayer.preview = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.RGB);				
 															
 					document.close();
+					
+					FFPROBE.interlaced = null;						
+					FFPROBE.analyzedMedia = VideoPlayer.videoPath;	
+					
+					VideoPlayer.setInfo();
 				
 				} catch (Exception e) {
 					error = true;					

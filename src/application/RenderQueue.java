@@ -977,7 +977,12 @@ import settings.FunctionUtils;
 		//Delete file
 		if (Shutter.caseDeleteSourceFile.isSelected() && fileInput != null && Shutter.cancelled == false && FFMPEG.error == false)
 		{
-			fileInput.delete();
+			if (item + 1 < tableRow.getRowCount() && fileName.equals(tableRow.getValueAt(item + 1, 0)))
+			{
+				//do not delete
+			}
+			else
+				fileInput.delete();
 		}
 				
 		//Concat mode or Image sequence

@@ -443,7 +443,7 @@ public class Update {
 				//Download
 				HTTPDownload("https://www.shutterencoder.com/" + newVersion, appPath.toString());
 	
-				if (cancelled == false)
+				if (cancelled == false && new File(appPath.toString()).exists())
 				{
 					int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("installNewVersion"), Shutter.language.getProperty("downloadEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			 
@@ -464,10 +464,13 @@ public class Update {
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadStopped"), Shutter.language.getProperty("downloadCancelled"), JOptionPane.ERROR_MESSAGE);
-					
-					if (appPath.exists())
-						appPath.delete();
+					if (new File(appPath.toString()).exists())
+					{
+						JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadStopped"), Shutter.language.getProperty("downloadCancelled"), JOptionPane.ERROR_MESSAGE);
+						
+						if (appPath.exists())
+							appPath.delete();
+					}
 					
 					frame.dispose();
 				}
