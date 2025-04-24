@@ -241,7 +241,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								String pipe = "";								
 								if (cmd.contains("pipe:1"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict -2 -v quiet -i pipe:0 -an -c:v rawvideo -pix_fmt rgb24 -f rawvideo -";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
@@ -270,7 +270,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:1"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -strict -2 -v quiet -i pipe:0 -an -c:v rawvideo -pix_fmt rgb24 -f rawvideo -";
+								pipe =  " | " + PathToFFMPEG + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
 							}
 							
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
@@ -305,19 +305,11 @@ public static StringBuilder errorLog = new StringBuilder();
 
 						            try {
 						            	
-						            	do {
-						            		Thread.sleep(100);
-						            		
-						            		if (cancelled)
-						            			break;
-						            		
-						            	} while (pipeWidth == 0 || pipeHeight == 0);
-						            	
 										do {
 											
 											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
 											{			
-										        VideoPlayer.frameVideo = VideoPlayer.readFrame(videoInputStream, pipeWidth, pipeHeight);	
+										        VideoPlayer.frameVideo = ImageIO.read(videoInputStream);	
 												VideoPlayer.player.repaint();
 											}
 											
@@ -343,10 +335,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							checkForErrors(line);	
 																								
 							if (cancelled == false)
-							{																	
-								//Pipe scaling
-								getOutputScale(line);
-																								
+							{																														
 								if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && RenderQueue.caseRunParallel.isSelected())
 								{													
 									if (line.contains("All streams finished"))
@@ -1722,34 +1711,6 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 		} catch (SecurityException | IllegalArgumentException | IOException e1) {	}
 	}
-
-	public static void getOutputScale(String line)
-	{
-		if (line.contains("Video:") && line.contains("attached pic") == false)
-		{			
-			String split[] = line.split(",");
-            int i = 0;
-            do {
-                i ++;
-            } while ((split[i].contains("x") == false || split[i].contains("xyz")) && i < split.length - 1);
-            
-            if (split[i].contains("["))
-            {
-            	String s[] = split[i].split("\\[");
-            	split[i] = s[0].replace(" ","");
-            }
-            
-            if (split[i].contains("unspecified size") == false && split[i].contains("x"))
-            {		
-                String resolution = split[i].substring(split[i].indexOf("x") + 1);
-              	String splitr[] = resolution.split(" ");
-                String height = split[i];						                
-                String splitx[]= height.split("x");			
-	            pipeWidth = Integer.parseInt(splitx[0].replace(" ", ""));
-	            pipeHeight = Integer.parseInt(splitr[0]);
-            }
-		}
-	}
 	
  	private static void setProgress(String line, final boolean pass2, String cmd) {				
 									
@@ -1828,7 +1789,8 @@ public static StringBuilder errorLog = new StringBuilder();
 			{ 
 				progressBar1.setMaximum(fileLength);	
 			}	
-		}  	    
+			
+		}  	
 	    	    
 		  //Progression
 		  if (line.contains("time=") && line.contains("time=N/A") == false

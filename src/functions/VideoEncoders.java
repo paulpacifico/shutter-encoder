@@ -161,6 +161,13 @@ public class VideoEncoders extends Shutter {
 						//Data analyze
 						if (FunctionUtils.analyze(file, false) == false)
 							continue;	
+						
+						if (FFPROBE.audioOnly)
+						{
+							FFPROBE.imageWidth = 1920;
+							FFPROBE.imageHeight = 1080;
+							FFPROBE.imageResolution = "1920x1080";
+						}
 												
 						//InOut	
 						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
@@ -1036,6 +1043,11 @@ public class VideoEncoders extends Shutter {
 							
 							//IMPORTANT
 							fileOut = new File(lblDestination1.getText() + "/" + fileOut.getName().replace("%06d.png", ext));
+						}
+						else if (FFPROBE.audioOnly)
+						{
+							progressBar1.setMaximum(FFPROBE.totalLength / 1000);
+							FFMPEG.run(loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
 						}
 						else
 						{

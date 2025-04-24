@@ -214,7 +214,7 @@ public class VideoPlayer {
 	
 	//Preview
 	public static BufferedImage preview = null;
-	private static Thread runProcess = new Thread();
+	public static Thread runProcess = new Thread();
 	
 	//FileList
 	public static StringBuilder fileList = new StringBuilder();
@@ -2747,7 +2747,7 @@ public class VideoPlayer {
                 else
                 {               	
                 	if (Shutter.windowDrag || isPiping || Shutter.inputDeviceIsRunning)
-                	{                	
+                	{           
                 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                 		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
                 	}

@@ -309,6 +309,8 @@ public class Utils extends Shutter {
 				Shutter.mainFont = "Noto Sans SC Medium";
 			}
 			else if (getLanguage.contains(Locale.of("ja").getDisplayLanguage())
+			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
+			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("ar").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
@@ -316,16 +318,14 @@ public class Utils extends Shutter {
 				Shutter.mainFont = "";
 			}
 			else if (getLanguage.contains(Locale.of("vi").getDisplayLanguage())
-			|| getLanguage.contains(Locale.of("pl").getDisplayLanguage())
-			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
-			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())) //use system default font
+			|| getLanguage.contains(Locale.of("pl").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
-				Shutter.boldFont = "Inter";
+				Shutter.boldFont = "FreeSans";
 			}
 			else if (getLanguage.equals(Locale.of("sl").getDisplayLanguage()) || getLanguage.equals(Locale.of("cs").getDisplayLanguage()))
 			{
-				Shutter.boldFont = "Inter";
+				Shutter.boldFont = "FreeSans";
 			}
 						
 			language.load(input);	

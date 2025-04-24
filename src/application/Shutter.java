@@ -193,7 +193,7 @@ public class Shutter {
 	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String magnetoFont = "Magneto";
 	public static String boldFont = "Montserrat";
-	public static String mainFont = "Inter";
+	public static String mainFont = "FreeSans";
 	public static File documents = new File(System.getProperty("user.home") + "/Shutter Encoder");
 	public static File settingsXML = new File(Shutter.documents + "/settings.xml");
 	public static String dirTemp = System.getProperty("java.io.tmpdir");
@@ -1506,8 +1506,7 @@ public class Shutter {
 		if (Settings.btnDisableUpdate.isSelected() == false)
 			Update.newVersion();
 
-		availableMemory = Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory()
-				+ Runtime.getRuntime().freeMemory();
+		availableMemory = Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
 	}
 
 	private void topPanel() {
@@ -16954,8 +16953,7 @@ public class Shutter {
 
 		lblMaximumBitrate = new JLabel(language.getProperty("lblMaximumBitrate"));
 		lblMaximumBitrate.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblMaximumBitrate.setBounds(lblVideoBitrate.getX(),
-				lblVideoBitrate.getY() + lblVideoBitrate.getHeight() + 11, 80, 16);
+		lblMaximumBitrate.setBounds(lblVideoBitrate.getX(), lblVideoBitrate.getY() + lblVideoBitrate.getHeight() + 11, 80, 16);
 		grpBitrate.add(lblMaximumBitrate);
 
 		maximumBitrate = new JComboBox<String>();
@@ -16966,8 +16964,7 @@ public class Shutter {
 		maximumBitrate.setMaximumRowCount(20);
 		maximumBitrate.setFont(new Font(mainFont, Font.PLAIN, 11));
 		maximumBitrate.setEditable(true);
-		maximumBitrate.setBounds(debitVideo.getX(), debitVideo.getY() + debitVideo.getHeight() + 5,
-				debitVideo.getWidth(), 22);
+		maximumBitrate.setBounds(debitVideo.getX(), lblMaximumBitrate.getY() - 2, debitVideo.getWidth(), 22);
 		grpBitrate.add(maximumBitrate);
 
 		lblMaximumKbs = new JLabel("kb/s");
@@ -16977,8 +16974,7 @@ public class Shutter {
 
 		lblAudioBitrate = new JLabel(language.getProperty("lblAudioBitrate"));
 		lblAudioBitrate.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblAudioBitrate.setBounds(lblVideoBitrate.getX(),
-				lblMaximumBitrate.getY() + lblMaximumBitrate.getHeight() + 11, 80, 16);
+		lblAudioBitrate.setBounds(lblVideoBitrate.getX(), lblMaximumBitrate.getY() + lblMaximumBitrate.getHeight() + 11, 80, 16);
 		grpBitrate.add(lblAudioBitrate);
 
 		debitAudio = new JComboBox<String>();
@@ -16988,8 +16984,7 @@ public class Shutter {
 		debitAudio.setMaximumRowCount(20);
 		debitAudio.setFont(new Font(mainFont, Font.PLAIN, 11));
 		debitAudio.setEditable(true);
-		debitAudio.setBounds(debitVideo.getX(), maximumBitrate.getY() + maximumBitrate.getHeight() + 5,
-				debitVideo.getWidth(), 22);
+		debitAudio.setBounds(debitVideo.getX(), lblAudioBitrate.getY() - 2, debitVideo.getWidth(), 22);
 		grpBitrate.add(debitAudio);
 
 		lblAudioKbs = new JLabel("kb/s");
@@ -17009,7 +17004,7 @@ public class Shutter {
 		bitrateSize.setText("2000");
 		bitrateSize.setFont(new Font(mainFont, Font.PLAIN, 11));
 		bitrateSize.setColumns(10);
-		bitrateSize.setBounds(debitVideo.getX(), debitAudio.getY() + debitAudio.getHeight() + 5, debitVideo.getWidth(),
+		bitrateSize.setBounds(debitVideo.getX(), lblSize.getY() - 2, debitVideo.getWidth(),
 				21);
 		grpBitrate.add(bitrateSize);
 
@@ -18042,15 +18037,14 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
-				if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false) {
+				if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
+				{
 					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload
 																				// the frame
-
 					do {
 						try {
 							Thread.sleep(10);
-						} catch (InterruptedException e1) {
-						}
+						} catch (InterruptedException e1) {}
 					} while (VideoPlayer.setTime.isAlive());
 				}
 
@@ -18058,7 +18052,10 @@ public class Shutter {
 
 				// IMPORTANT
 				if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
+				{
 					VideoPlayer.preview = null;
+					VideoPlayer.frameVideo = null;
+				}
 
 				resizeAll(frame.getWidth(), 0);
 			}
@@ -19184,7 +19181,10 @@ public class Shutter {
 
 		// IMPORTANT
 		if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
+		{
 			VideoPlayer.preview = null;
+			VideoPlayer.frameVideo = null;
+		}
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -19234,15 +19234,11 @@ public class Shutter {
 			frame.setLocation(frame.getX(), screenOffset);
 		}
 
-		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false) {
+		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
+		{
 			VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
-
-			do {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-				}
-			} while (VideoPlayer.setTime.isAlive());
+			
+			VideoPlayer.frameVideo = null;
 
 			// grpWatermark
 			if (caseAddWatermark.isSelected()
