@@ -639,6 +639,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
  	
+	@SuppressWarnings("resource")
 	public static void toFFPLAY(final String cmd) {
 		
 		error = false;		
@@ -646,7 +647,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		isRunning = true;
-						
+		
 		try {
 			
 			ProcessBuilder processFFMPEG;
@@ -840,6 +841,10 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			InputStream video = process.getInputStream();				
 			BufferedInputStream videoInputStream = new BufferedInputStream(video);
+			
+			//Allows to write into the stream
+			OutputStream stdin = process.getOutputStream();
+	        writer = new BufferedWriter(new OutputStreamWriter(stdin));
 											
 			if (FFPROBE.hasAudio)						       
 			{
@@ -962,7 +967,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
 							File listeBAB = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));			
 							listeBAB.delete();
-						}
+						}		
 						
 						isRunning = false;
 					}
@@ -974,8 +979,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		   					     																		
 		} catch (Exception e) {			
 			error = true;
-		}
-								
+		}								
 	}
 	
 	public static void hwaccel(final String cmd) {

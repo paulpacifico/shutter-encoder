@@ -707,7 +707,14 @@ public class VideoPlayer {
 										frameVideo = readFrame(videoInputStream, FFPROBE.imageWidth, FFPROBE.imageHeight);	
 									}
 									else
-										frameVideo = readFrame(videoInputStream, player.getWidth(), player.getHeight());															
+									{
+										if (Shutter.windowDrag && fullscreenPlayer == false)
+										{
+											frameVideo = readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight());
+										}
+										else
+											frameVideo = readFrame(videoInputStream, player.getWidth(), player.getHeight());															
+									}
 									
 									playerRepaint();
 							    	fps ++;	
@@ -1091,6 +1098,7 @@ public class VideoPlayer {
 					}
 					
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					Shutter.windowDrag = false;
 				}
 				
 			});
@@ -2745,7 +2753,7 @@ public class VideoPlayer {
                 	g2.fillRect(0, 0, player.getWidth(), player.getHeight()); 
                 }
                 else
-                {               	
+                {           /*    	
                 	if (Shutter.windowDrag || isPiping || Shutter.inputDeviceIsRunning)
                 	{           
                 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -2754,7 +2762,9 @@ public class VideoPlayer {
                 	else
                 	{
                 		g2.drawImage(frameVideo, 0, 0, this); 
-                	}
+                	}*/
+                	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
                 	
                 	cursorCurrentFrame.setBounds((int) ((float) playerCurrentFrame * waveformContainer.getWidth() / totalFrames), 0, 1, waveformContainer.getHeight());
                 }
@@ -5022,7 +5032,7 @@ public class VideoPlayer {
 
 			@Override
 			public void run() {
-								
+												
 					//Clear the buffer
 					if (bufferedFrames.size() > 0)
 					{				
@@ -5129,7 +5139,7 @@ public class VideoPlayer {
 								DCRAW.run(" -v -w -c -q 0 -o 1 -h -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt rgb24 -f rawvideo -");
 								
 					            do {
-					            	Thread.sleep(10);  
+					            	Thread.sleep(10);  					            	
 					            } while (DCRAW.isRunning && DCRAW.error == false);	
 							}
 							else if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))							
@@ -5207,7 +5217,7 @@ public class VideoPlayer {
 			 	       	//JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 				    }
 			        finally 
-			        {			        				        	
+			        {	
 	          			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 	        				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 	        			else

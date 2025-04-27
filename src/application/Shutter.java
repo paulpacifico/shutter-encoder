@@ -2798,12 +2798,17 @@ public class Shutter {
 					menuDisplay.doClick();
 				}
 
-				if (e.getButton() == MouseEvent.BUTTON3
-						|| (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1) {
-					if (inputDeviceIsRunning) {
+				if (e.getButton() == MouseEvent.BUTTON3 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1)
+				{
+					if (inputDeviceIsRunning)
+					{						
 						popupList.removeAll();
-						popupList.add(menuDisplay);
-						popupList.show(fileList, e.getX() - 30, e.getY());
+								
+						if (FFMPEG.process.isAlive() == false && comboFonctions.getSelectedItem().toString().equals(""))
+						{
+							popupList.add(menuDisplay);
+							popupList.show(fileList, e.getX() - 30, e.getY());
+						}
 					} else if (fileList.getSelectedIndices().length > 0
 							&& scan.getText().equals(language.getProperty("menuItemStartScan"))) {
 						if (FFMPEG.isRunning == false && BMXTRANSWRAP.isRunning == false && DVDAUTHOR.isRunning == false
@@ -3085,8 +3090,7 @@ public class Shutter {
 						FFMPEG.writer.write('q');
 						FFMPEG.writer.flush();
 						FFMPEG.writer.close();
-					} catch (IOException er) {
-					}
+					} catch (IOException er) {}
 
 					Thread wait = new Thread(new Runnable() {
 
@@ -6348,7 +6352,7 @@ public class Shutter {
 		grpSetTimecode.setOpaque(false);
 		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(
 				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpTimecode") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 12),
+				language.getProperty("grpTimecode") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
 				new Color(235, 235, 240)));
 		grpSetTimecode.setBackground(Utils.c30);
 		grpSetTimecode.setBounds(frame.getWidth(), 258, 312, 17);
@@ -10759,7 +10763,7 @@ public class Shutter {
 		grpSubtitles.setLayout(null);
 		grpSubtitles.setBorder(BorderFactory.createTitledBorder(
 				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("caseSubtitles") + " ", 0, 0,
+				Shutter.language.getProperty("subtitles") + " ", 0, 0,
 				new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235, 235, 240)));
 		grpSubtitles.setBackground(Utils.c30);
 		grpSubtitles.setSize(312, 17);
@@ -18040,12 +18044,6 @@ public class Shutter {
 				if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
 				{
 					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload
-																				// the frame
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}
-					} while (VideoPlayer.setTime.isAlive());
 				}
 
 				windowDrag = false;
@@ -18054,7 +18052,6 @@ public class Shutter {
 				if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
 				{
 					VideoPlayer.preview = null;
-					VideoPlayer.frameVideo = null;
 				}
 
 				resizeAll(frame.getWidth(), 0);
@@ -19183,7 +19180,6 @@ public class Shutter {
 		if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
 		{
 			VideoPlayer.preview = null;
-			VideoPlayer.frameVideo = null;
 		}
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -19237,8 +19233,6 @@ public class Shutter {
 		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
 		{
 			VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
-			
-			VideoPlayer.frameVideo = null;
 
 			// grpWatermark
 			if (caseAddWatermark.isSelected()
