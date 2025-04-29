@@ -2753,16 +2753,7 @@ public class VideoPlayer {
                 	g2.fillRect(0, 0, player.getWidth(), player.getHeight()); 
                 }
                 else
-                {           /*    	
-                	if (Shutter.windowDrag || isPiping || Shutter.inputDeviceIsRunning)
-                	{           
-                		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
-                	}
-                	else
-                	{
-                		g2.drawImage(frameVideo, 0, 0, this); 
-                	}*/
+                {
                 	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
                 	
@@ -2803,7 +2794,7 @@ public class VideoPlayer {
 		            	showFPS.setVisible(false);
                 }
                                          
-                if (Shutter.stabilisation != "" || (previewUpscale && preview != null && FFPROBE.totalLength > 40))
+                if (previewUpscale && preview != null && FFPROBE.totalLength > 40)
                 {
                 	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);

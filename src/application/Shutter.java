@@ -175,9 +175,7 @@ import library.SEVENZIP;
 import library.TSMUXER;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
-import settings.Corrections;
 import settings.FunctionUtils;
-import settings.InputAndOutput;
 import settings.Timecode;
 
 @SuppressWarnings("serial")
@@ -186,7 +184,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "18.9";
+	public static String actualVersion = "19.0";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -14744,85 +14742,6 @@ public class Shutter {
 		caseStabilisation.setName("caseStabilisation");
 		caseStabilisation.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseStabilisation.setSize(caseStabilisation.getPreferredSize().width, 23);
-
-		caseStabilisation.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-
-				// Avoid undesired selection
-				if (grpCorrections.getHeight() <= 17) {
-					caseStabilisation.setSelected(false);
-				}
-
-				if (caseStabilisation.isSelected() && Shutter.inputDeviceIsRunning == false && FFPROBE.totalLength > 40
-						&& VideoPlayer.videoPath != null) {
-					Thread t = new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-
-							frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-							File file = new File(VideoPlayer.videoPath);
-							try {
-
-								// InOut
-								InputAndOutput.getInputAndOutput(true);
-
-								stabilisation = Corrections.setStabilisation("", file, file.getName(), "");
-
-								Shutter.enableAll();
-								Shutter.progressBar1.setValue(0);
-								Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
-
-								frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-								if (FFMPEG.cancelled) {
-									stabilisation = "";
-								} else {
-									VideoPlayer.setPlayerButtons(true);
-
-									VideoPlayer.resizeAll();
-
-									float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600
-											+ Integer.parseInt(VideoPlayer.caseInM.getText()) * 60
-											+ Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS
-											+ Integer.parseInt(VideoPlayer.caseInF.getText());
-
-									// NTSC framerate
-									timeIn = Timecode.getNonDropFrameTC(timeIn);
-
-									VideoPlayer.playerSetTime(timeIn);
-
-									VideoPlayer.btnPlay.doClick();
-
-									do {
-										Thread.sleep(100);
-									} while (VideoPlayer.playerIsPlaying() == false);
-
-									do {
-										Thread.sleep(100);
-									} while (VideoPlayer.playerIsPlaying());
-
-									stabilisation = "";
-								}
-
-							} catch (InterruptedException e) {
-							}
-
-						}
-
-					});
-					t.start();
-				} else {
-					stabilisation = "";
-					VideoPlayer.loadImage(false);
-				}
-
-			}
-
-		});
 
 		caseDeflicker = new JCheckBox(Shutter.language.getProperty("caseDeflicker"));
 		caseDeflicker.setName("caseDeflicker");

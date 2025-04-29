@@ -1209,7 +1209,7 @@ public class VideoEncoders extends Shutter {
 		try {
 			
 			//Crop need to be before scaling
-			if (Shutter.caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI"))
+			if (Shutter.caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || Shutter.caseStabilisation.isSelected())
 			{
 				FFMPEG.isGPUCompatible = false;
 				return false;

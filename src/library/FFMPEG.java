@@ -124,8 +124,6 @@ public static boolean qsvAvailable = false;
 public static boolean videotoolboxAvailable = false;
 public static boolean vulkanAvailable = false;
 public static int differenceMax;
-public static int pipeWidth = 0;
-public static int pipeHeight = 0;
 
 //Moyenne de fps		
 private static int frame0 = 0;
@@ -160,8 +158,6 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 		time = 0;
 		fps = 0;
-		pipeWidth = 0;
-		pipeHeight = 0;
 
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
 		error = false;	
@@ -308,8 +304,8 @@ public static StringBuilder errorLog = new StringBuilder();
 										do {
 											
 											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
-											{			
-										        VideoPlayer.frameVideo = ImageIO.read(videoInputStream);	
+											{	
+												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);	
 												VideoPlayer.player.repaint();
 											}
 											
@@ -1795,26 +1791,34 @@ public static StringBuilder errorLog = new StringBuilder();
 			}	
 			
 		}  	
-	    	    
-		  //Progression
-		  if (line.contains("time=") && line.contains("time=N/A") == false
-		  && lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
-		  && lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
-		  && lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
-		  {		  
-			  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
-			  	error = false;
+	    	    	    
+    	//Progression
+    	if (line.contains("time=") && line.contains("time=N/A") == false
+	  	&& lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
+	  	&& lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
+	  	&& lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
+    	{		  
+		  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
+		  	error = false;
 
-		  		String str = line.substring(line.indexOf(":") - 2);
-	    		String[] split = str.split("b");	 
-	    	    
-	    		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	    	
-	
-	    		if (progressBar1.getString().equals("NaN") || inputDeviceIsRunning)
-	    			progressBar1.setStringPainted(false);
-	    		else
-	    			progressBar1.setStringPainted(true);
-	    		    		    		
+	  		String str = line.substring(line.indexOf(":") - 2);
+    		String[] split = str.split("b");	 
+    	    
+    		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	    	
+
+    		if (progressBar1.getString().equals("NaN") || inputDeviceIsRunning)
+    			progressBar1.setStringPainted(false);
+    		else
+    			progressBar1.setStringPainted(true);
+    		    	
+    		
+    	    if (cmd.contains("vidstabdetect"))
+    	    {
+    	    	if (line.contains("size=N/A") == false)
+    	    		progressBar1.setValue(getTimeToSeconds(ffmpegTime));
+    	    }
+    	    else
+    	    {
 				if (pass2)
 				{
 					progressBar1.setValue((fileLength / 2) + getTimeToSeconds(ffmpegTime));
@@ -1823,35 +1827,35 @@ public static StringBuilder errorLog = new StringBuilder();
 				{
 					progressBar1.setValue(getTimeToSeconds(ffmpegTime));
 				}
-				
-		  }
+    	    }	
+    	}
 		  
-			//Elapsed time
-			previousElapsedTime = (int) (System.currentTimeMillis() - elapsedTime);
-	
-			int timeH = (previousElapsedTime / 3600000) % 60;
-			int timeMin =  (previousElapsedTime / 60000) % 60;
-			int timeSec = (previousElapsedTime / 1000) % 60;
-			
-			String heures = "";
-			String minutes= "";
-			String secondes = "";
-			
-			if (timeH >= 1)
-				heures = timeH + "h ";
-			else
-				heures = "";
-			if (timeMin >= 1)
-				minutes = timeMin + "min ";
-			else
-				minutes = "";
-			if (timeSec > 0)
-				secondes = timeSec +"sec";
-			else
-				secondes = "0sec";
-			
-			tempsEcoule.setText(Shutter.language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
-			tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
+		//Elapsed time
+		previousElapsedTime = (int) (System.currentTimeMillis() - elapsedTime);
+
+		int timeH = (previousElapsedTime / 3600000) % 60;
+		int timeMin =  (previousElapsedTime / 60000) % 60;
+		int timeSec = (previousElapsedTime / 1000) % 60;
+		
+		String heures = "";
+		String minutes= "";
+		String secondes = "";
+		
+		if (timeH >= 1)
+			heures = timeH + "h ";
+		else
+			heures = "";
+		if (timeMin >= 1)
+			minutes = timeMin + "min ";
+		else
+			minutes = "";
+		if (timeSec > 0)
+			secondes = timeSec +"sec";
+		else
+			secondes = "0sec";
+		
+		tempsEcoule.setText(Shutter.language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
+		tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
 		         
 		  //Remaining time
 		  if ((line.contains("frame=") || line.contains("time=")) && line.contains("time=N/A") == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")) == false)
