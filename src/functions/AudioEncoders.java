@@ -417,30 +417,38 @@ public class AudioEncoders extends Shutter {
 			}
 			
 			if (FFPROBE.stereo)
+			{
 				audio += "-filter_complex amerge=inputs=" + liste.size() + audioFiltering + " -ac 2 ";
+			}
 			else
 			{
 				audio += "-filter_complex " + '"';
-				String left = "";
-				int cl = 0;
-				String right = "";
-				int cr = 0;
-				for (int n = 0 ; n < liste.size() ; n++)
+				
+				if (liste.size() > 2)
 				{
-					if (n % 2 == 0) //les chiffres paires à gauche
+					String left = "";
+					int cl = 0;
+					String right = "";
+					int cr = 0;
+					for (int n = 0 ; n < liste.size() ; n++)
 					{
-						left += "[" + n + ":0]";
-						cl++;
+						if (n % 2 == 0) //les chiffres paires à gauche
+						{
+							left += "[" + n + ":0]";
+							cl++;
+						}
+						else			//les chiffres impaires à droite
+						{
+							right += "[" + n + ":0]";
+							cr++;
+						}
 					}
-					else			//les chiffres impaires à droite
-					{
-						right += "[" + n + ":0]";
-						cr++;
-					}
+					audio += left + "amix=inputs=" + cl + "[left];" + right + "amix=inputs=" + cr + "[right];";
+							
+					audio += "[left][right]amerge=inputs=2" + audioFiltering + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + " -ac 2 ";
 				}
-				audio += left + "amerge=inputs=" + cl + ",channelmap=map=FL[left];" + right + "amerge=inputs=" + cr + ",channelmap=map=FR[right];";
-						
-				audio += "[left][right]amerge=inputs=2" + audioFiltering + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + " -ac 2 ";
+				else
+					audio += "[0:a][1:a]amerge=inputs=2" + audioFiltering + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + " -ac 2 ";
 			}							
 		}
 		else if (caseMixAudio.isSelected() && lblMix.getText().equals("2.1"))

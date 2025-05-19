@@ -428,7 +428,7 @@ public class Console extends JFrame {
 		tabbedPane.add("DVDAUTHOR", scrollDVDAUTHOR);
 		tabbedPane.add("TSMUXER", scrollTSMUXER);
 		tabbedPane.add("MEDIAINFO", scrollMEDIAINFO);
-		tabbedPane.add("YOUTUBEDL", scrollYOUTUBEDL);
+		tabbedPane.add("YT-DLP", scrollYOUTUBEDL);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
 		tabbedPane.add("NCNN", scrollNCNN);
 		frmConsole.getContentPane().add(tabbedPane);		

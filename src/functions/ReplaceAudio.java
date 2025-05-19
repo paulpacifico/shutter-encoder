@@ -260,30 +260,19 @@ public class ReplaceAudio extends Shutter {
 						}	
 						else
 						{
-							//Stream analyze		
-							if (FFPROBE.FindStreams(liste.getElementAt(1)))
+							videoFile = new File(liste.getElementAt(0));
+							
+							if (liste.getElementAt(1).contains("lavfi")) //Mute track
 							{
-								videoFile = new File(liste.getElementAt(1));
-								audioFiles = " -i " + '"' + liste.getElementAt(0)  + '"';
-								audioExt = liste.getElementAt(0).substring(liste.getElementAt(0).lastIndexOf("."));
-								FFPROBE.FindStreams(liste.getElementAt(0));
+								audioFiles = liste.getElementAt(1);
 							}
 							else
+								audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
+							
+							//Ignore mute tracks
+							if (liste.getElementAt(1).contains("lavfi") == false)
 							{
-								videoFile = new File(liste.getElementAt(0));	
-								
-								if (liste.getElementAt(1).contains("lavfi")) //Mute track
-								{
-									audioFiles = liste.getElementAt(1);
-								}
-								else
-									audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
-								
-								//Ignore mute tracks
-								if (liste.getElementAt(1).contains("lavfi") == false)
-								{
-									audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));								
-								}
+								audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));								
 							}	
 							
 							float offset = 0;

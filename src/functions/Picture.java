@@ -183,7 +183,7 @@ public class Picture extends Shutter {
 						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), videoPlayerCapture);			         
 	
 						//Crop
-				        filterComplex = Image.setCrop(filterComplex, file);
+						filterComplex = Image.setCrop(filterComplex, file);
 				        
 				        //Zoom
 						if (Shutter.sliderZoom.getValue() != 0)
@@ -206,6 +206,9 @@ public class Picture extends Shutter {
 							filterComplex += "split[a][b];[a]palettegen[p];[b][p]paletteuse";
 						}
 						
+						//Color format
+						filterComplex = setColorFormat(filterComplex);
+						
 						//filterComplex
 						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "", true);		
 
@@ -226,7 +229,7 @@ public class Picture extends Shutter {
 						
 			    		//Colorspace
 			            String colorspace = Colorimetry.setColorspace();
-			            
+			            			            
 						//EXR gamma
 						String inputCodec = Colorimetry.setInputCodec(extension);
 												
@@ -425,7 +428,36 @@ public class Picture extends Shutter {
 		
 		return filterComplex;
 	}
+	
+	private static String setColorFormat(String filterComplex) {
+				
+		if (comboFilter.getSelectedItem().toString().equals(".tif"))           		
+		{					
+			if (filterComplex != "") filterComplex += ",";	
+			
+			if (FFPROBE.hasAlpha)
+			{
+				filterComplex += "format=rgba";
+				
+				if (FFPROBE.imageDepth > 8)
+					filterComplex += "64le";
+			}
+			else
+			{
+				filterComplex += "format=rgb";
+				
+				if (FFPROBE.imageDepth > 8)
+				{
+					filterComplex += "48le";
+				}
+				else
+					filterComplex += "24";
+			}
+		}
 		
+		return filterComplex;
+	}
+	
 	private static String setDeinterlace(String extension, boolean isRaw) {	
 	
 		if (isRaw || extension.toLowerCase().equals(".pdf"))

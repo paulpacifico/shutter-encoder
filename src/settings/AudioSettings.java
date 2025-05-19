@@ -279,7 +279,21 @@ public class AudioSettings extends Shutter {
 		    			mono = " -ac 1";
 		    		}
 		    		
-			    	audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + " -filter:a " + '"' + audioFiltering + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " -map a?";
+		    		String channelMix = "";
+		    		if (FFPROBE.channelLayout.equals("7.1"))
+		    		{
+		    			channelMix = "pan=stereo|FL=0.6*FL+0.5*FC+0.3*BL+0.3*SL+0.2*LFE|FR=0.6*FR+0.5*FC+0.3*BR+0.3*SR+0.2*LFE";
+		    		}
+		    		else if (FFPROBE.channelLayout.equals("6.1"))
+		    		{
+		    			channelMix = "pan=stereo|FL=0.6*FL+0.5*FC+0.3*BC+0.3*SL+0.2*LFE|FR=0.6*FR+0.5*FC+0.3*BC+0.3*SR+0.2*LFE";
+		    		}
+		    		else //5.1
+		    		{
+		    			channelMix = "pan=stereo|FL=0.707*FL+0.707*FC+0.5*BL+0.5*SL|FR=0.707*FR+0.707*FC+0.5*BR+0.5*SR";
+		    		}
+		    			
+	    			audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + " -filter:a " + '"' + audioFiltering + channelMix + '"' + " -map a?";
 			    }
 		    	else if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
 		    	{					    		

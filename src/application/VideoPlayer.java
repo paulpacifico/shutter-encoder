@@ -261,7 +261,6 @@ public class VideoPlayer {
 		lblPosition = new JLabel();
 		lblPosition.setHorizontalAlignment(SwingConstants.LEFT);
 		lblPosition.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));	
-		lblPosition.setForeground(Utils.themeColor);
 		Shutter.frame.getContentPane().add(lblPosition);
 				
 		lblDuration = new JLabel();
@@ -1612,7 +1611,7 @@ public class VideoPlayer {
 					vcodec = vcodec.toUpperCase();
 			}
 
-			showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff);
+			showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff + " " + FFPROBE.imageDepth + "-bit");
 		}
 		else
 			showScale.setText(FFPROBE.imageResolution + tff);
@@ -4829,9 +4828,8 @@ public class VideoPlayer {
 						do {								
 							try {
 								Thread.sleep(100);
-							} catch (InterruptedException e) {}								
-						} 
-						while (FFPROBE.isRunning);
+							} catch (InterruptedException e) {}	
+						} while (FFPROBE.isRunning);
 					}
 					
 					//Keep media size
@@ -6121,7 +6119,7 @@ public class VideoPlayer {
 			durationS = (int) Math.floor((total / FFPROBE.currentFPS) % 60);
 			durationF = (int) Math.round(total % FFPROBE.currentFPS);
 						
-			lblDuration.setText(durationH + "h " + durationM +"min " + durationS + "sec " + durationF + "i" + " | " + Shutter.language.getProperty("lblTotalFrames") + " " + (int) Math.ceil(total));
+			lblDuration.setText(Shutter.language.getProperty("lblBitrateTimecode") + " " + Shutter.formatter.format(durationH) + ":" + Shutter.formatter.format(durationM) + ":" + Shutter.formatter.format(durationS) + ":" + Shutter.formatter.format(durationF) + " | " + (int) Math.ceil(total) + " " + Shutter.language.getProperty("lblTotalFrames"));
 			
 			if (total <= 0)
 			{
@@ -6185,7 +6183,7 @@ public class VideoPlayer {
 	        	dropFrame = ";";
         	}
 	        
-			lblPosition.setText(h + ":" + m + ":" + s + dropFrame + f);	    
+			lblPosition.setText(h + ":" + m + ":" + s + dropFrame + f + " | " + Math.round(playerCurrentFrame));	    
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 			{

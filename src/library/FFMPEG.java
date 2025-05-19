@@ -1233,6 +1233,10 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 		
 	}
+
+	public static void checkGPUEncoding() {
+		
+	}
 	
 	public static void setCropDetect(File file) {
 	

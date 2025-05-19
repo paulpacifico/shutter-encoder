@@ -414,8 +414,8 @@ public static boolean isRotated = false;
 							                	str = line.split("tbr");
 								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
 							                }
-							               
-							                currentFPS = Float.parseFloat(str[1]);
+							               							                
+							                currentFPS = Float.parseFloat(str[1].replace("k", "000"));
 							                
 							                //Used for VFR						      
 							                str = String.valueOf(currentFPS).split("\\.");	
@@ -721,17 +721,24 @@ public static boolean isRotated = false;
 			            	  }			            	  
 			              }
 			              
-						  if (line.contains("codec_type=video"))
-							  videoStream = true;
-	
+			              //Detect video stream
+						  if (line.contains("codec_type="))
+						  {
+							  if (line.contains("codec_type=video"))
+							  {
+								  videoStream = true;
+							  }
+							  else
+								  videoStream = false;
+						  }
+						  	
 						  if (line.contains("bits_per_raw_sample") && videoStream)
 						  {
 							  String depth = line.substring(line.indexOf("bits_per_raw_sample") + 20);
 							  
 							  if (depth.equals("N/A") == false)
 							  {
-								  imageDepth = Integer.parseInt(depth);						  
-								  videoStream = false;
+								  imageDepth = Integer.parseInt(depth);
 							  }
 						  }
 						  
@@ -747,8 +754,6 @@ public static boolean isRotated = false;
 									  imageDepth = 10;	
 								  else if (depth.contains("p16"))
 									 imageDepth = 16;
-								  
-								  videoStream = false;
 							  }						  
 						  }	
 	

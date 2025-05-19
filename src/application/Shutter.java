@@ -3951,7 +3951,8 @@ public class Shutter {
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))) {
 						setGPUOptions();
 
-						if (comboFilter.getSelectedItem().toString().equals(".avif")) {
+						if (comboFilter.getSelectedItem().toString().equals(".avif"))
+						{
 							List<String> graphicsAccel = new ArrayList<String>();
 							graphicsAccel.add(language.getProperty("aucune").toLowerCase());
 
@@ -4156,8 +4157,7 @@ public class Shutter {
 
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 168);
-		grpDestination.setBorder(BorderFactory
-				.createTitledBorder(new FlatLineBorder(new Insets(1, 1, 1, 1), Utils.c42, 1, 10) ));
+		grpDestination.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(1, 1, 1, 1), Utils.c42, 1, 10) ));
 		grpDestination.setFont(new Font(boldFont, Font.PLAIN, 11));
 		frame.getContentPane().add(grpDestination);
 
@@ -11090,11 +11090,15 @@ public class Shutter {
 											}
 										}
 
-										if (autoEmbed == false) {
-											JOptionPane.showMessageDialog(frame,
-													Shutter.language.getProperty("previewNotAvailable"),
-													Shutter.language.getProperty("caseSubtitles"),
-													JOptionPane.INFORMATION_MESSAGE);
+										if (autoEmbed == false)
+										{
+											if (caseAddSubtitles.isSelected())
+											{
+												JOptionPane.showMessageDialog(frame,
+														Shutter.language.getProperty("previewNotAvailable"),
+														Shutter.language.getProperty("caseSubtitles"),
+														JOptionPane.INFORMATION_MESSAGE);
+											}
 										}
 									}
 
@@ -11158,11 +11162,15 @@ public class Shutter {
 										}
 									}
 
-									if (autoEmbed == false) {
-										JOptionPane.showMessageDialog(frame,
-												Shutter.language.getProperty("previewNotAvailable"),
-												Shutter.language.getProperty("caseSubtitles"),
-												JOptionPane.INFORMATION_MESSAGE);
+									if (autoEmbed == false)
+									{
+										if (caseAddSubtitles.isSelected())
+										{
+											JOptionPane.showMessageDialog(frame,
+													Shutter.language.getProperty("previewNotAvailable"),
+													Shutter.language.getProperty("caseSubtitles"),
+													JOptionPane.INFORMATION_MESSAGE);
+										}
 									}
 								}
 
@@ -12059,155 +12067,6 @@ public class Shutter {
 		caseAddWatermark.setSelected(false);
 		grpWatermark.add(caseAddWatermark);
 
-		caseAddWatermark.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-
-				if (caseAddWatermark.isSelected()) {
-					// Initiate location
-					if (logo.getWidth() == 0) {
-						logo.setSize(VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight());
-					}
-
-					boolean addDevice = false;
-					if (RecordInputDevice.comboInputVideo != null
-							&& RecordInputDevice.comboInputVideo.getSelectedIndex() > 0)
-						addDevice = true;
-
-					if (Shutter.inputDeviceIsRunning && Shutter.liste.getElementAt(0).equals("Capture.current.screen")
-							&& System.getProperty("os.name").contains("Windows") && addDevice == false) {
-						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("addInputDevice"),
-								Shutter.language.getProperty("menuItemInputDevice"), JOptionPane.YES_NO_OPTION,
-								JOptionPane.PLAIN_MESSAGE);
-
-						if (reply == JOptionPane.YES_OPTION) {
-							addDevice = true;
-							caseAddWatermark.doClick();
-							inputDevice.doClick();
-							inputDeviceIsRunning = false;
-							grpImageAdjustement.setEnabled(true);
-							Component[] components = Shutter.grpImageAdjustement.getComponents();
-							for (int i = 0; i < components.length; i++) {
-								components[i].setEnabled(true);
-							}
-						} else {
-							Shutter.overlayDeviceIsRunning = false;
-						}
-					}
-
-					if (Shutter.liste.getSize() == 0) {
-						JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("addFileToList"),
-								Shutter.language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
-						caseAddWatermark.setSelected(false);
-					} else if (addDevice) {
-						for (Component c : grpWatermark.getComponents()) {
-							if (c instanceof JComboBox == false) {
-								c.setEnabled(true);
-							}
-						}
-
-						VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
-						VideoPlayer.player.add(logo);
-
-						textWatermarkPosX.setText(
-								String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio))));
-						textWatermarkPosY.setText(
-								String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio))));
-
-						// Overimage need to be the last component added
-						if (caseEnableCrop.isSelected()) {
-							VideoPlayer.player.remove(selection);
-							VideoPlayer.player.remove(overImage);
-							VideoPlayer.player.add(selection);
-							VideoPlayer.player.add(overImage);
-						}
-
-						VideoPlayer.resizeAll();
-					} else {
-						// Preset loaded
-						if (logoFile != null) {
-							for (Component c : grpWatermark.getComponents()) {
-								if (c instanceof JComboBox == false) {
-									c.setEnabled(true);
-								}
-							}
-
-							VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
-							VideoPlayer.player.add(logo);
-
-							textWatermarkPosX.setText(String
-									.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio))));
-							textWatermarkPosY.setText(String
-									.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio))));
-
-							// Overimage need to be the last component added
-							if (caseEnableCrop.isSelected()) {
-								VideoPlayer.player.remove(selection);
-								VideoPlayer.player.remove(overImage);
-								VideoPlayer.player.add(selection);
-								VideoPlayer.player.add(overImage);
-							}
-						} else {
-							FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseLogo"),
-									FileDialog.LOAD);
-							dialog.setDirectory(new File(VideoPlayer.videoPath).getParent());
-							dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
-							dialog.setAlwaysOnTop(true);
-							dialog.setMultipleMode(false);
-							dialog.setVisible(true);
-
-							if (dialog.getFile() != null) {
-								logoFile = dialog.getDirectory() + dialog.getFile().toString();
-
-								for (Component c : grpWatermark.getComponents()) {
-									if (c instanceof JComboBox == false) {
-										c.setEnabled(true);
-									}
-								}
-
-								VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
-								VideoPlayer.player.add(logo);
-
-								textWatermarkPosX.setText(String.valueOf(
-										Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio))));
-								textWatermarkPosY.setText(String.valueOf(
-										Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio))));
-
-								// Overimage need to be the last component added
-								if (caseEnableCrop.isSelected()) {
-									VideoPlayer.player.remove(selection);
-									VideoPlayer.player.remove(overImage);
-									VideoPlayer.player.add(selection);
-									VideoPlayer.player.add(overImage);
-								}
-							} else {
-								if (Shutter.overlayDeviceIsRunning)
-									Shutter.overlayDeviceIsRunning = false;
-
-								caseAddWatermark.setSelected(false);
-							}
-						}
-					}
-
-				} else {
-					for (Component c : grpWatermark.getComponents()) {
-						if (c instanceof JCheckBox == false) {
-							c.setEnabled(false);
-						}
-					}
-
-					VideoPlayer.player.remove(logo);
-					logoFile = null;
-					logoPNG = null;
-				}
-
-				VideoPlayer.player.repaint();
-
-			}
-
-		});
-
 		caseSafeArea = new JCheckBox(Shutter.language.getProperty("caseSafeArea"));
 		caseSafeArea.setName("caseSafeArea");
 		caseSafeArea.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
@@ -12380,38 +12239,175 @@ public class Shutter {
 		watermarkTopRight.addMouseListener(watermarkPositions);
 		watermarkRight.addMouseListener(watermarkPositions);
 		watermarkBottomRight.addMouseListener(watermarkPositions);
-
-		JPanel panelForButtons = new JPanel() {
+		
+		JPanel panelForButtons = new JPanel();
+		panelForButtons.setBorder(new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 15));
+		panelForButtons.setBackground(Utils.c42);
+		panelForButtons.setOpaque(false);
+		panelForButtons.setBounds(watermarkTopLeft.getX() - 2, watermarkTopLeft.getY() - 2, (watermarkBottomRight.getX() + watermarkBottomRight.getWidth()) - watermarkTopLeft.getX() + 4, 18);
+		grpWatermark.add(panelForButtons);
+				
+		caseAddWatermark.addActionListener(new ActionListener() {
 
 			@Override
-			public void paintComponent(Graphics g) {
+			public void actionPerformed(ActionEvent arg0) {
 
-				Graphics2D g2d = (Graphics2D) g;
+				if (caseAddWatermark.isSelected()) {
+					// Initiate location
+					if (logo.getWidth() == 0) {
+						logo.setSize(VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight());
+					}
 
-				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					boolean addDevice = false;
+					if (RecordInputDevice.comboInputVideo != null
+							&& RecordInputDevice.comboInputVideo.getSelectedIndex() > 0)
+						addDevice = true;
 
-				g2d.setColor(Utils.c42);
-				g2d.fillRoundRect(0, 0,
-						(watermarkBottomRight.getX() + watermarkBottomRight.getWidth()) - watermarkTopLeft.getX() + 4,
-						18, 15, 15);
+					if (Shutter.inputDeviceIsRunning && Shutter.liste.getElementAt(0).equals("Capture.current.screen")
+							&& System.getProperty("os.name").contains("Windows") && addDevice == false) {
+						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("addInputDevice"),
+								Shutter.language.getProperty("menuItemInputDevice"), JOptionPane.YES_NO_OPTION,
+								JOptionPane.PLAIN_MESSAGE);
 
-				watermarkTopLeft.repaint();
-				watermarkLeft.repaint();
-				watermarkBottomLeft.repaint();
-				watermarkTop.repaint();
-				watermarkCenter.repaint();
-				watermarkBottom.repaint();
-				watermarkTopRight.repaint();
-				watermarkRight.repaint();
+						if (reply == JOptionPane.YES_OPTION) {
+							addDevice = true;
+							caseAddWatermark.doClick();
+							inputDevice.doClick();
+							inputDeviceIsRunning = false;
+							grpImageAdjustement.setEnabled(true);
+							Component[] components = Shutter.grpImageAdjustement.getComponents();
+							for (int i = 0; i < components.length; i++) {
+								components[i].setEnabled(true);
+							}
+						} else {
+							Shutter.overlayDeviceIsRunning = false;
+						}
+					}
+
+					if (Shutter.liste.getSize() == 0) {
+						JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("addFileToList"),
+								Shutter.language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
+						caseAddWatermark.setSelected(false);
+					} else if (addDevice) {
+						for (Component c : grpWatermark.getComponents()) {
+							if (c instanceof JComboBox == false) {
+								c.setEnabled(true);
+							}
+						}
+
+						VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
+						VideoPlayer.player.add(logo);
+
+						textWatermarkPosX.setText(
+								String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio))));
+						textWatermarkPosY.setText(
+								String.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio))));
+
+						// Overimage need to be the last component added
+						if (caseEnableCrop.isSelected()) {
+							VideoPlayer.player.remove(selection);
+							VideoPlayer.player.remove(overImage);
+							VideoPlayer.player.add(selection);
+							VideoPlayer.player.add(overImage);
+						}
+
+						VideoPlayer.resizeAll();
+					} else {
+						// Preset loaded
+						if (logoFile != null) {
+							for (Component c : grpWatermark.getComponents()) {
+								if (c instanceof JComboBox == false) {
+									c.setEnabled(true);
+								}
+							}
+
+							VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
+							VideoPlayer.player.add(logo);
+
+							textWatermarkPosX.setText(String
+									.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio))));
+							textWatermarkPosY.setText(String
+									.valueOf(Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio))));
+
+							// Overimage need to be the last component added
+							if (caseEnableCrop.isSelected()) {
+								VideoPlayer.player.remove(selection);
+								VideoPlayer.player.remove(overImage);
+								VideoPlayer.player.add(selection);
+								VideoPlayer.player.add(overImage);
+							}
+						} else {
+							FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseLogo"),
+									FileDialog.LOAD);
+							dialog.setDirectory(new File(VideoPlayer.videoPath).getParent());
+							dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
+							dialog.setAlwaysOnTop(true);
+							dialog.setMultipleMode(false);
+							dialog.setVisible(true);
+
+							if (dialog.getFile() != null) {
+								logoFile = dialog.getDirectory() + dialog.getFile().toString();
+
+								for (Component c : grpWatermark.getComponents()) {
+									if (c instanceof JComboBox == false) {
+										c.setEnabled(true);
+									}
+								}
+
+								VideoPlayer.loadWatermark(Integer.parseInt(textWatermarkSize.getText()));
+								VideoPlayer.player.add(logo);
+
+								textWatermarkPosX.setText(String.valueOf(
+										Integer.valueOf((int) Math.floor(logo.getLocation().x * playerRatio))));
+								textWatermarkPosY.setText(String.valueOf(
+										Integer.valueOf((int) Math.floor(logo.getLocation().y * playerRatio))));
+
+								// Overimage need to be the last component added
+								if (caseEnableCrop.isSelected()) {
+									VideoPlayer.player.remove(selection);
+									VideoPlayer.player.remove(overImage);
+									VideoPlayer.player.add(selection);
+									VideoPlayer.player.add(overImage);
+								}
+							} else {
+								if (Shutter.overlayDeviceIsRunning)
+									Shutter.overlayDeviceIsRunning = false;
+
+								caseAddWatermark.setSelected(false);
+							}
+						}
+					}
+
+				} else {
+					for (Component c : grpWatermark.getComponents()) {
+						if (c instanceof JCheckBox == false) {
+							c.setEnabled(false);
+						}
+					}
+
+					VideoPlayer.player.remove(logo);
+					logoFile = null;
+					logoPNG = null;
+				}
+				
+				panelForButtons.repaint();
+				
+				watermarkTopLeft.repaint();	
+				watermarkLeft.repaint();	
+				watermarkBottomLeft.repaint();	
+				watermarkTop.repaint();	
+				watermarkCenter.repaint();	
+				watermarkBottom.repaint();	
+				watermarkTopRight.repaint();	
+				watermarkRight.repaint();	
 				watermarkBottomRight.repaint();
-				;
+
+				VideoPlayer.player.repaint();
+
 			}
 
-		};
-		panelForButtons.setBounds(watermarkTopLeft.getX() - 2, watermarkTopLeft.getY() - 2,
-				(watermarkBottomRight.getX() + watermarkBottomRight.getWidth()) - watermarkTopLeft.getX() + 4, 18);
-		grpWatermark.add(panelForButtons);
-
+		});
+		
 		JLabel watermarkPosX = new JLabel(Shutter.language.getProperty("posX"));
 		watermarkPosX.setHorizontalAlignment(SwingConstants.RIGHT);
 		watermarkPosX.setEnabled(false);
@@ -22737,7 +22733,7 @@ public class Shutter {
 
 								// Animate size
 								animateSections(startTime, false);
-
+								
 							} while (i < maxSize);
 						} else {
 							int minSize = 17;
