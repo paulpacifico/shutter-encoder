@@ -7226,40 +7226,43 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (comboAudioCodec1.getSelectedItem().toString().equals("FLAC"))
-				{
-					comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate1.setSelectedIndex(5);
+				if (comboAudioCodec1.getSelectedItem() != null)
+				{				
+					if (comboAudioCodec1.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate1.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec1.getSelectedItem().toString().contains("PCM") || comboAudioCodec1.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate1.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec1.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec1.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate1.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec1.getSelectedItem().toString().equals("AC3") || comboAudioCodec1.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate1.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec1.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate1.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate1.setSelectedIndex(10);
+					}		
 				}
-				else if (comboAudioCodec1.getSelectedItem().toString().contains("PCM") || comboAudioCodec1.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate1.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec1.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec1.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate1.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec1.getSelectedItem().toString().equals("AC3") || comboAudioCodec1.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate1.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec1.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate1.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate1.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate1.setSelectedIndex(10);
-				}				
 			}
 		
 		});
-		
+ 		
 		comboAudioCodec2 = new JComboBox<String>();
 		comboAudioCodec2.setName("comboAudioCodec2");
 		comboAudioCodec2.setMaximumRowCount(20);
@@ -7272,36 +7275,39 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (comboAudioCodec2.getSelectedItem().toString().equals("FLAC"))
+				if (comboAudioCodec2.getSelectedItem() != null)
 				{
-					comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate2.setSelectedIndex(5);
+					if (comboAudioCodec2.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate2.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec2.getSelectedItem().toString().contains("PCM") || comboAudioCodec2.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate2.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec2.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec2.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate2.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec2.getSelectedItem().toString().equals("AC3") || comboAudioCodec2.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate2.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec2.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate2.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate2.setSelectedIndex(10);
+					}	
 				}
-				else if (comboAudioCodec2.getSelectedItem().toString().contains("PCM") || comboAudioCodec2.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate2.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec2.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec2.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate2.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec2.getSelectedItem().toString().equals("AC3") || comboAudioCodec2.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate2.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec2.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate2.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate2.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate2.setSelectedIndex(10);
-				}				
 			}
 		
 		});
@@ -7318,36 +7324,39 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (comboAudioCodec3.getSelectedItem().toString().equals("FLAC"))
+				if (comboAudioCodec3.getSelectedItem() != null)
 				{
-					comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate3.setSelectedIndex(5);
+					if (comboAudioCodec3.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate3.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec3.getSelectedItem().toString().contains("PCM") || comboAudioCodec3.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate3.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec3.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec3.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate3.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec3.getSelectedItem().toString().equals("AC3") || comboAudioCodec3.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate3.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec3.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate3.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate3.setSelectedIndex(10);
+					}	
 				}
-				else if (comboAudioCodec3.getSelectedItem().toString().contains("PCM") || comboAudioCodec3.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate3.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec3.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec3.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate3.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec3.getSelectedItem().toString().equals("AC3") || comboAudioCodec3.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate3.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec3.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate3.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate3.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate3.setSelectedIndex(10);
-				}				
 			}
 		
 		});
@@ -7364,36 +7373,39 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (comboAudioCodec4.getSelectedItem().toString().equals("FLAC"))
+				if (comboAudioCodec4.getSelectedItem() != null)
 				{
-					comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate4.setSelectedIndex(5);
+					if (comboAudioCodec4.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate4.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec4.getSelectedItem().toString().contains("PCM") || comboAudioCodec4.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate4.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec4.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec4.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate4.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec4.getSelectedItem().toString().equals("AC3") || comboAudioCodec4.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate4.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec4.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate4.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate4.setSelectedIndex(10);
+					}		
 				}
-				else if (comboAudioCodec4.getSelectedItem().toString().contains("PCM") || comboAudioCodec4.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate4.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec4.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec4.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate4.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec4.getSelectedItem().toString().equals("AC3") || comboAudioCodec4.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate4.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec4.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate4.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate4.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate4.setSelectedIndex(10);
-				}				
 			}
 		
 		});
@@ -7410,36 +7422,39 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (comboAudioCodec5.getSelectedItem().toString().equals("FLAC"))
+				if (comboAudioCodec5.getSelectedItem() != null)
 				{
-					comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate5.setSelectedIndex(5);
+					if (comboAudioCodec5.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate5.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec5.getSelectedItem().toString().contains("PCM") || comboAudioCodec5.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate5.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec5.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec5.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate5.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec5.getSelectedItem().toString().equals("AC3") || comboAudioCodec5.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate5.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec5.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate5.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate5.setSelectedIndex(10);
+					}		
 				}
-				else if (comboAudioCodec5.getSelectedItem().toString().contains("PCM") || comboAudioCodec5.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate5.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec5.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec5.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate5.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec5.getSelectedItem().toString().equals("AC3") || comboAudioCodec5.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate5.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec5.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate5.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate5.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate5.setSelectedIndex(10);
-				}				
 			}
 		
 		});
@@ -7455,37 +7470,40 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				if (comboAudioCodec6.getSelectedItem().toString().equals("FLAC"))
+
+				if (comboAudioCodec6.getSelectedItem() != null)
 				{
-					comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate6.setSelectedIndex(5);
+					if (comboAudioCodec6.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate6.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec6.getSelectedItem().toString().contains("PCM") || comboAudioCodec6.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate6.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec6.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec6.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate6.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec6.getSelectedItem().toString().equals("AC3") || comboAudioCodec6.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate6.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec6.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate6.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate6.setSelectedIndex(10);
+					}	
 				}
-				else if (comboAudioCodec6.getSelectedItem().toString().contains("PCM") || comboAudioCodec6.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate6.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec6.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec6.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate6.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec6.getSelectedItem().toString().equals("AC3") || comboAudioCodec6.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate6.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec6.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate6.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate6.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate6.setSelectedIndex(10);
-				}				
 			}
 		
 		});
@@ -7502,36 +7520,39 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (comboAudioCodec7.getSelectedItem().toString().equals("FLAC"))
+				if (comboAudioCodec7.getSelectedItem() != null)
 				{
-					comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate7.setSelectedIndex(5);
+					if (comboAudioCodec7.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate7.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec7.getSelectedItem().toString().contains("PCM") || comboAudioCodec7.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate7.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec7.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec7.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate7.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec7.getSelectedItem().toString().equals("AC3") || comboAudioCodec7.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate7.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec7.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate7.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate7.setSelectedIndex(10);
+					}	
 				}
-				else if (comboAudioCodec7.getSelectedItem().toString().contains("PCM") || comboAudioCodec7.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate7.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec7.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec7.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate7.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec7.getSelectedItem().toString().equals("AC3") || comboAudioCodec7.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate7.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec7.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate7.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate7.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate7.setSelectedIndex(10);
-				}				
 			}
 		
 		});
@@ -7548,36 +7569,39 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (comboAudioCodec8.getSelectedItem().toString().equals("FLAC"))
+				if (comboAudioCodec8.getSelectedItem() != null)
 				{
-					comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
-					comboAudioBitrate8.setSelectedIndex(5);
+					if (comboAudioCodec8.getSelectedItem().toString().equals("FLAC"))
+					{
+						comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" }));
+						comboAudioBitrate8.setSelectedIndex(5);
+					}
+					else if (comboAudioCodec8.getSelectedItem().toString().contains("PCM") || comboAudioCodec8.getSelectedItem().toString().contains("ALAC"))
+					{
+						comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
+						comboAudioBitrate8.setSelectedIndex(0);
+					}
+					else if (comboAudioCodec8.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec8.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
+					{
+						comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
+						comboAudioBitrate8.setSelectedIndex(0);
+					}				
+					else if (comboAudioCodec8.getSelectedItem().toString().equals("AC3") || comboAudioCodec8.getSelectedItem().toString().equals("Dolby Digital Plus"))
+					{
+						comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate8.setSelectedIndex(8);
+					}
+					else if (comboAudioCodec8.getSelectedItem().toString().equals("Opus"))
+					{
+						comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate8.setSelectedIndex(11);
+					}
+					else
+					{
+						comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(audioValues));
+						comboAudioBitrate8.setSelectedIndex(10);
+					}	
 				}
-				else if (comboAudioCodec8.getSelectedItem().toString().contains("PCM") || comboAudioCodec8.getSelectedItem().toString().contains("ALAC"))
-				{
-					comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(new String[] { "1536" }));
-					comboAudioBitrate8.setSelectedIndex(0);
-				}
-				else if (comboAudioCodec8.getSelectedItem().toString().equals(language.getProperty("noAudio")) || comboAudioCodec8.getSelectedItem().toString().equals(language.getProperty("codecCopy")))
-				{
-					comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(new String[] { "0" }));	
-					comboAudioBitrate8.setSelectedIndex(0);
-				}				
-				else if (comboAudioCodec8.getSelectedItem().toString().equals("AC3") || comboAudioCodec8.getSelectedItem().toString().equals("Dolby Digital Plus"))
-				{
-					comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate8.setSelectedIndex(8);
-				}
-				else if (comboAudioCodec8.getSelectedItem().toString().equals("Opus"))
-				{
-					comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate8.setSelectedIndex(11);
-				}
-				else
-				{
-					comboAudioBitrate8.setModel(new DefaultComboBoxModel<String>(audioValues));
-					comboAudioBitrate8.setSelectedIndex(10);
-				}				
 			}
 		
 		});
@@ -7643,7 +7667,9 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				FFPROBE.setFilesize();			
+				try {
+					FFPROBE.setFilesize();		
+				} catch (Exception er) {}
 			}			
 		};
 		
@@ -8319,10 +8345,10 @@ public class Shutter {
 					comboAudioCodec8.addItem(comboAudioCodec.getModel().getElementAt(i));
 				}			
 			}
-			
+						
 			//comboAudioBitrate Model
-			if (comboAudioBitrate1.getModel().getSize() != comboAudioBitrate.getModel().getSize() || grpBitrate.isVisible() == false)
-			{
+			if (comboAudioBitrate1.getModel().getSize() != comboAudioBitrate.getModel().getSize() && comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()) == false || grpBitrate.isVisible() == false)
+			{				
 				comboAudioBitrate1.removeAllItems();
 				comboAudioBitrate2.removeAllItems();
 				comboAudioBitrate3.removeAllItems();
@@ -8331,7 +8357,7 @@ public class Shutter {
 				comboAudioBitrate6.removeAllItems();
 				comboAudioBitrate7.removeAllItems();
 				comboAudioBitrate8.removeAllItems();
-				
+								
 				if (grpBitrate.isVisible())
 				{
 					for (int i = 0 ; i < comboAudioBitrate.getModel().getSize(); i++)
@@ -8345,7 +8371,7 @@ public class Shutter {
 						comboAudioBitrate7.addItem(comboAudioBitrate.getModel().getElementAt(i));
 						comboAudioBitrate8.addItem(comboAudioBitrate.getModel().getElementAt(i));
 					}	
-					
+
 					comboAudioBitrate1.setSelectedIndex(comboAudioBitrate.getSelectedIndex());
 					comboAudioBitrate2.setSelectedIndex(comboAudioBitrate.getSelectedIndex());
 					comboAudioBitrate3.setSelectedIndex(comboAudioBitrate.getSelectedIndex());
@@ -8366,11 +8392,16 @@ public class Shutter {
 					comboAudioBitrate7.addItem("1536");
 					comboAudioBitrate8.addItem("1536");
 				}	
+				
 			}
 			
 			if (grpBitrate.isVisible())
 			{
-				comboAudioBitrate.addItem(language.getProperty("custom").toLowerCase());
+				if (comboAudioBitrate.getItemAt(comboAudioBitrate.getItemCount() - 1).equals(language.getProperty("custom").toLowerCase()) == false)
+				{
+					comboAudioBitrate.addItem(language.getProperty("custom").toLowerCase());
+				}
+				
 				comboAudioBitrate.setSelectedIndex(comboAudioBitrate.getItemCount() - 1);
 			}
 			
@@ -23782,6 +23813,7 @@ public class Shutter {
 							statusBar.repaint();
 
 						} catch (Exception e1) {
+							e1.printStackTrace();
 						}
 					}
 				}
