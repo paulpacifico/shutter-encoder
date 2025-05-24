@@ -19,10 +19,14 @@
 
 package settings;
 
+import java.awt.Component;
 import java.io.File;
+
+import javax.swing.JComboBox;
 
 import application.RecordInputDevice;
 import application.Shutter;
+import application.Utils;
 import functions.AudioNormalization;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -120,7 +124,7 @@ public class AudioSettings extends Shutter {
 					mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			}
 			
-			return " -c:a copy" + mapping;
+			return " -c:a copy" + mapping + setAudioLanguage();
 		}
 		else if ((debitAudio.getSelectedItem().toString().equals("0") && audioCodec != "FLAC" && isEditingCodec == false && isBroadcastCodec == false)
 		|| comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio"))
@@ -263,7 +267,7 @@ public class AudioSettings extends Shutter {
 			
 			if (caseOPATOM.isSelected())
 	        {
-	        	return audioFiles + audio + " -ar " + lbl48k.getSelectedItem().toString();
+	        	return audioFiles + audio + " -ar " + lbl48k.getSelectedItem().toString() + setAudioLanguage();
 	        }
 			
 		    if (FFPROBE.stereo)
@@ -544,8 +548,32 @@ public class AudioSettings extends Shutter {
 		    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + audioFiltering + " -map a?";
 		    }
 		    
-		    return audio;		   				    
+		    return audio + setAudioLanguage();		   				    
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static String setAudioLanguage() {
+		
+		if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
+		{
+			String languageMapping = "";
+			int i = 0;
+			for (Component c : grpSetAudio.getComponents())
+			{
+				if (c instanceof JComboBox && ((JComboBox) c).getName().contains("comboLanguage"))
+				{
+					if (((JComboBox) c).getSelectedItem().toString().equals("default") == false)
+					{
+						languageMapping += " -metadata:s:a:" + i + " language=" + Utils.ISO_639_2_LANGUAGES[((JComboBox) c).getSelectedIndex() - 1][1];
+					}					
+					i++;
+				}
+			}
+			
+			return languageMapping;
+		}
+		
+		return "";
+	}
 }

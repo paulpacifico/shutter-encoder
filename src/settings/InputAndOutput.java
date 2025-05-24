@@ -47,12 +47,12 @@ public class InputAndOutput extends Shutter {
 			if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
 	        {
 				String frames[] = VideoPlayer.lblDuration.getText().split(" ");
-										
+				
 	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
 	        	{		        	
 		    		float outputFPS = FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 		    		
-		    		outPoint = " -frames:v " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 1]) / outputFPS);
+		    		outPoint = " -frames:v " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 2]) / outputFPS);
 	        	}
 	        	else if (FFPROBE.audioOnly || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false) 
 				|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
@@ -63,11 +63,11 @@ public class InputAndOutput extends Shutter {
 				|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
 				|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Issue for audio, libvpx & added mute track
 	        	{
-	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 1]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
+	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 2]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
 	        	}
 	        	else
 	        	{
-		        	outPoint = " -frames:v " + Integer.parseInt(frames[frames.length - 1]);
+		        	outPoint = " -frames:v " + Integer.parseInt(frames[frames.length - 2]);
 	        	}
 	        }
 	        else

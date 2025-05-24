@@ -19,12 +19,14 @@
 
 package library;
 
+import java.awt.Component;
 import java.awt.Cursor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 import application.Console;
@@ -1170,6 +1172,7 @@ public static boolean isRotated = false;
 	
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public static void setFilesize() {
 		
 		if (grpBitrate.isVisible())
@@ -1202,7 +1205,31 @@ public static boolean isRotated = false;
 				int h = VideoPlayer.durationH;
 				int min = VideoPlayer.durationM;
 				int sec = VideoPlayer.durationS;				
-				int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
+				int audio = 0;
+				if (comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()))
+				{
+					for (Component c : grpSetAudio.getComponents())
+					{				
+						if (c instanceof JComboBox && ((JComboBox) c).getName().matches("comboAudio[0-9]+"))
+						{
+							if (((JComboBox) c).getSelectedIndex() != 16) // != noaudio
+							{
+								for (Component c2 : grpSetAudio.getComponents())
+								{
+									if (c2 instanceof JComboBox && ((JComboBox) c2).getName().contains("comboAudioBitrate"))
+									{
+										if (((JComboBox) c2).getName().equals(((JComboBox) c).getName().replace("comboAudio", "comboAudioBitrate")))
+										{
+											audio += Integer.parseInt(((JComboBox) c2).getSelectedItem().toString());
+										}
+									}
+								}								
+							}
+						}					
+					}
+				}
+				else
+					audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
 				
 				//Set Bitrate
 				if (isLocked)

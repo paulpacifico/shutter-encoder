@@ -260,7 +260,8 @@ public class VideoPlayer {
 						
 		lblPosition = new JLabel();
 		lblPosition.setHorizontalAlignment(SwingConstants.LEFT);
-		lblPosition.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));	
+		lblPosition.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
+		lblPosition.setForeground(new Color(230,75,60));
 		Shutter.frame.getContentPane().add(lblPosition);
 				
 		lblDuration = new JLabel();
@@ -3425,7 +3426,7 @@ public class VideoPlayer {
 	            
 	            g2d.setColor(new Color(230,75,60));
 	            
-	            g2d.fillPolygon(new int[] {0, 5, 10}, new int[] {0, 8, 0}, 3);
+	            g2d.fillPolygon(new int[] {0, 5, 10}, new int[] {0, 8, 0}, 3);	            
 	        }
 		};
 

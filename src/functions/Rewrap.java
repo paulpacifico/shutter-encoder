@@ -33,6 +33,7 @@ import application.VideoPlayer;
 import library.BMXTRANSWRAP;
 import library.FFMPEG;
 import library.FFPROBE;
+import settings.AudioSettings;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 import settings.Timecode;
@@ -400,7 +401,7 @@ public class Rewrap extends Shutter {
 			&& comboAudio7.getSelectedIndex() == 6
 			&& comboAudio8.getSelectedIndex() == 7)
 		{
-			return " -map a?";	
+			return " -map a?" + AudioSettings.setAudioLanguage();	
 		}
 		else
 		{
@@ -422,7 +423,7 @@ public class Rewrap extends Shutter {
 				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 		}
 		
-		return mapping;
+		return mapping + AudioSettings.setAudioLanguage();
 	}
 	
 	private static String setSubtitles(String file) {

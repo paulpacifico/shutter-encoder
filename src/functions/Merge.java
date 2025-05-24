@@ -32,6 +32,7 @@ import application.Shutter;
 import application.Utils;
 import library.FFMPEG;
 import library.FFPROBE;
+import settings.AudioSettings;
 import settings.FunctionUtils;
 import settings.Timecode;
 
@@ -231,7 +232,7 @@ public class Merge extends Shutter {
 			&& comboAudio7.getSelectedIndex() == 6
 			&& comboAudio8.getSelectedIndex() == 7)
 		{
-			return " -map a?";	
+			return " -map a?" + AudioSettings.setAudioLanguage();	
 		}
 		else
 		{
@@ -253,7 +254,7 @@ public class Merge extends Shutter {
 				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 		}
 		
-		return mapping;
+		return mapping + AudioSettings.setAudioLanguage();
 	}
 	
 	private static void lastActions(File fileOut) {

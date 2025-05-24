@@ -105,6 +105,84 @@ public class Utils extends Shutter {
 	public final static String username = "info@shutterencoder.com";
 	public final static String password = "";
 	
+	// ISO 639-2 languages
+    public static final String[][] ISO_639_2_LANGUAGES = {
+        {"ab", "abk", "Abkhazian"},
+        {"aa", "aar", "Afar"},
+        {"af", "afr", "Afrikaans"},
+        {"sq", "sqi", "Albanian"},
+        {"am", "amh", "Amharic"},
+        {"ar", "ara", "Arabic"},
+        {"hy", "hye", "Armenian"},
+        {"az", "aze", "Azerbaijani"},
+        {"eu", "eus", "Basque"},
+        {"be", "bel", "Belarusian"},
+        {"bn", "ben", "Bengali"},
+        {"bs", "bos", "Bosnian"},
+        {"bg", "bul", "Bulgarian"},
+        {"my", "mya", "Burmese"},
+        {"ca", "cat", "Catalan"},
+        {"zh", "zho", "Chinese"},
+        {"hr", "hrv", "Croatian"},
+        {"cs", "ces", "Czech"},
+        {"da", "dan", "Danish"},
+        {"nl", "nld", "Dutch"},
+        {"en", "eng", "English"},
+        {"et", "est", "Estonian"},
+        {"fi", "fin", "Finnish"},
+        {"fr", "fra", "French"},
+        {"ka", "kat", "Georgian"},
+        {"de", "deu", "German"},
+        {"el", "ell", "Greek"},
+        {"gu", "guj", "Gujarati"},
+        {"he", "heb", "Hebrew"},
+        {"hi", "hin", "Hindi"},
+        {"hu", "hun", "Hungarian"},
+        {"is", "isl", "Icelandic"},
+        {"id", "ind", "Indonesian"},
+        {"it", "ita", "Italian"},
+        {"ja", "jpn", "Japanese"},
+        {"jv", "jav", "Javanese"},
+        {"kn", "kan", "Kannada"},
+        {"kk", "kaz", "Kazakh"},
+        {"ko", "kor", "Korean"},
+        {"ku", "kur", "Kurdish"},
+        {"ky", "kir", "Kyrgyz"},
+        {"lo", "lao", "Lao"},
+        {"lv", "lav", "Latvian"},
+        {"lt", "lit", "Lithuanian"},
+        {"mk", "mkd", "Macedonian"},
+        {"ms", "msa", "Malay"},
+        {"ml", "mal", "Malayalam"},
+        {"mr", "mar", "Marathi"},
+        {"mn", "mon", "Mongolian"},
+        {"ne", "nep", "Nepali"},
+        {"no", "nor", "Norwegian"},
+        {"pa", "pan", "Punjabi"},
+        {"fa", "fas", "Persian"},
+        {"pl", "pol", "Polish"},
+        {"pt", "por", "Portuguese"},
+        {"ro", "ron", "Romanian"},
+        {"ru", "rus", "Russian"},
+        {"sr", "srp", "Serbian"},
+        {"sk", "slk", "Slovak"},
+        {"sl", "slv", "Slovenian"},
+        {"es", "spa", "Spanish"},
+        {"sw", "swa", "Swahili"},
+        {"sv", "swe", "Swedish"},
+        {"ta", "tam", "Tamil"},
+        {"te", "tel", "Telugu"},
+        {"th", "tha", "Thai"},
+        {"tr", "tur", "Turkish"},
+        {"uk", "ukr", "Ukrainian"},
+        {"ur", "urd", "Urdu"},
+        {"uz", "uzb", "Uzbek"},
+        {"vi", "vie", "Vietnamese"},
+        {"cy", "cym", "Welsh"},
+        {"xh", "xho", "Xhosa"},
+        {"zu", "zul", "Zulu"}
+    };
+	
 	public static Thread loadEncFile;
 	public static String currentPreset = "";
 	public static String hwaccel = "";
@@ -1659,6 +1737,69 @@ public class Utils extends Shutter {
 														
 														//Visible
 														((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+													
+														if (p.getName().equals("lblAudioMapping"))
+														{
+															if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
+															{
+																grpSetAudio.add(lblAudio1);
+																grpSetAudio.add(comboAudio1);
+																grpSetAudio.add(lblAudio2);
+																grpSetAudio.add(comboAudio2);
+																grpSetAudio.add(lblAudio3);
+																grpSetAudio.add(comboAudio3);
+																grpSetAudio.add(lblAudio4);
+																grpSetAudio.add(comboAudio4);
+																grpSetAudio.add(lblAudio5);
+																grpSetAudio.add(comboAudio5);
+																grpSetAudio.add(lblAudio6);
+																grpSetAudio.add(comboAudio6);
+																grpSetAudio.add(lblAudio7);
+																grpSetAudio.add(comboAudio7);
+																grpSetAudio.add(lblAudio8);
+																grpSetAudio.add(comboAudio8);
+															}
+															else if (lblAudioMapping.getSelectedItem().toString().equals("Mix"))
+															{
+																grpSetAudio.remove(lblAudio1);
+																grpSetAudio.remove(comboAudio1);
+																grpSetAudio.remove(lblAudio2);
+																grpSetAudio.remove(comboAudio2);
+																grpSetAudio.remove(lblAudio3);
+																grpSetAudio.remove(comboAudio3);
+																grpSetAudio.remove(lblAudio4);
+																grpSetAudio.remove(comboAudio4);
+																grpSetAudio.remove(lblAudio5);
+																grpSetAudio.remove(comboAudio5);
+																grpSetAudio.remove(lblAudio6);
+																grpSetAudio.remove(comboAudio6);
+																grpSetAudio.remove(lblAudio7);
+																grpSetAudio.remove(comboAudio7);
+																grpSetAudio.remove(lblAudio8);
+																grpSetAudio.remove(comboAudio8);
+															}
+															else
+															{
+																grpSetAudio.add(lblAudio1);
+																grpSetAudio.add(comboAudio1);
+																grpSetAudio.add(lblAudio2);
+																grpSetAudio.add(comboAudio2);
+																grpSetAudio.remove(lblAudio3);
+																grpSetAudio.remove(comboAudio3);
+																grpSetAudio.remove(lblAudio4);
+																grpSetAudio.remove(comboAudio4);
+																grpSetAudio.remove(lblAudio5);
+																grpSetAudio.remove(comboAudio5);
+																grpSetAudio.remove(lblAudio6);
+																grpSetAudio.remove(comboAudio6);
+																grpSetAudio.remove(lblAudio7);
+																grpSetAudio.remove(comboAudio7);
+																grpSetAudio.remove(lblAudio8);
+																grpSetAudio.remove(comboAudio8);
+															}
+															
+															advancedAudioSettings();
+														}
 													}
 													
 													long time = System.currentTimeMillis();

@@ -1020,10 +1020,10 @@ public static StringBuilder errorLog = new StringBuilder();
 			else
 			{
 				BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
-
-				while ((line = input.readLine()) != null) {						
-					
-					Console.consoleFFMPEG.append(line + System.lineSeparator() );		
+				
+				while ((line = input.readLine()) != null)
+				{						
+					//Console.consoleFFMPEG.append(line + System.lineSeparator() );		
 															
 					//Errors
 					checkForErrors(line);																										
@@ -1234,10 +1234,6 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 	}
 
-	public static void checkGPUEncoding() {
-		
-	}
-	
 	public static void setCropDetect(File file) {
 	
 		cropdetect = "";

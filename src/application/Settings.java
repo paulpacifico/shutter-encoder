@@ -25,6 +25,8 @@ import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
@@ -1811,7 +1813,23 @@ public class Settings {
 						int width = Integer.parseInt(s[2]);
 						int height = Integer.parseInt(s[3]);
 						
-						Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
+						boolean canBeDisplayed = false;
+
+				        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				        GraphicsDevice[] screens = ge.getScreenDevices();
+
+				        for (GraphicsDevice screen : screens) {
+				            Rectangle bounds = screen.getDefaultConfiguration().getBounds();
+				            if (bounds.contains(x, y)) {
+				            	canBeDisplayed = true;
+				                break;
+				            }
+				        }
+				        
+						if (canBeDisplayed)
+						{
+							Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
+						}
 					}
 				}
 			}		
