@@ -1350,8 +1350,7 @@ public class FunctionUtils extends Shutter {
 			audioFiltering += "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
 		}
 		
-		//No audio
-		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio")))
+		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio"))) //No audio
 		{
 			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 			{

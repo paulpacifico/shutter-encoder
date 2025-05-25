@@ -1178,7 +1178,7 @@ public static boolean isRotated = false;
 		if (grpBitrate.isVisible())
         {
 			int multi = 0;
-			if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
+			if (lblAudioMapping.getSelectedItem().toString().equals("Multi") && comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()) == false)
 			{
 				if (comboAudio1.getSelectedIndex() != 16)
 					multi += 1;
@@ -1199,7 +1199,7 @@ public static boolean isRotated = false;
 			}
 			else
 				multi = 1;
-
+			
 			if (Shutter.liste.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
 			{
 				int h = VideoPlayer.durationH;

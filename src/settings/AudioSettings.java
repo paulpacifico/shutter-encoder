@@ -124,7 +124,7 @@ public class AudioSettings extends Shutter {
 					mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			}
 			
-			return " -c:a copy" + mapping + setAudioLanguage();
+			return " -c:a copy" + mapping;
 		}
 		else if ((debitAudio.getSelectedItem().toString().equals("0") && audioCodec != "FLAC" && isEditingCodec == false && isBroadcastCodec == false)
 		|| comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio"))
@@ -267,10 +267,14 @@ public class AudioSettings extends Shutter {
 			
 			if (caseOPATOM.isSelected())
 	        {
-	        	return audioFiles + audio + " -ar " + lbl48k.getSelectedItem().toString() + setAudioLanguage();
+	        	return audioFiles + audio + " -ar " + lbl48k.getSelectedItem().toString();
 	        }
 			
-		    if (FFPROBE.stereo)
+			if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")) && isBroadcastCodec == false)
+			{
+				return setCustomAudio();
+			}
+			else if (FFPROBE.stereo)
 		    {
 		    	if (FFPROBE.surround && lblAudioMapping.getSelectedItem().toString().equals("Multi") == false)
 		    	{			    			    		
@@ -478,7 +482,7 @@ public class AudioSettings extends Shutter {
 				    
 		    		 audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 		    	 }
-		    	 else
+		    	 else //Multi
 		    	 {
 		    		String mapping = "";
 		    		
@@ -548,32 +552,161 @@ public class AudioSettings extends Shutter {
 		    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + audioFiltering + " -map a?";
 		    }
 		    
-		    return audio + setAudioLanguage();		   				    
+		    return audio;		   				    
 		}
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static String setAudioLanguage() {
+	public static String setCustomAudio() {
 		
-		if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
+		//Mapping
+		String audioMapping = "";
+		String audioCodec = "";
+		String codecMapping = "";
+		String bitrateMapping = "";
+		String rateMapping = "";
+		String languageMapping = "";
+		
+		int i = 0;
+		for (Component c : grpSetAudio.getComponents())
 		{
-			String languageMapping = "";
-			int i = 0;
-			for (Component c : grpSetAudio.getComponents())
-			{
-				if (c instanceof JComboBox && ((JComboBox) c).getName().contains("comboLanguage"))
+			if (c instanceof JComboBox && ((JComboBox) c).getName().matches("comboAudio[0-9]+"))
+			{		
+				if (((JComboBox) c).getSelectedIndex() != 16)
 				{
-					if (((JComboBox) c).getSelectedItem().toString().equals("default") == false)
+					audioMapping += " -map a:" + (((JComboBox) c).getSelectedIndex()) + "?";
+					
+					//Codec					
+					for (Component a : grpSetAudio.getComponents())
 					{
-						languageMapping += " -metadata:s:a:" + i + " language=" + Utils.ISO_639_2_LANGUAGES[((JComboBox) c).getSelectedIndex() - 1][1];
-					}					
-					i++;
-				}
+						if (a instanceof JComboBox && ((JComboBox) a).getName().matches("comboAudioCodec[0-9]+") && ((JComboBox) a).getName().endsWith(String.valueOf(i+1)))
+						{				
+							audioCodec = ((JComboBox) a).getSelectedItem().toString();
+							String codec = "";
+							
+							if (audioCodec.equals("AC3"))
+								codec = "ac3";
+							else if (audioCodec.equals("Opus"))
+								codec = "libopus";	
+							else if (audioCodec.equals("Vorbis"))
+								codec = "libvorbis";	
+							else if (audioCodec.equals("Dolby Digital Plus"))
+								codec = "eac3";
+							else if (audioCodec.equals("WMA"))
+								codec = "wmav2";
+							else if (audioCodec.equals("MP3"))
+								codec = "libmp3lame";
+							else if (audioCodec.equals("MP2"))
+								codec = "mp2";
+							else if (audioCodec.equals("PCM 16Bits"))
+							{
+								if (comboFonctions.getSelectedItem().toString().equals("MJPEG"))
+								{
+									codec = "pcm_s16be";
+								}
+								else
+									codec = "pcm_s16le";
+							}
+							else if (audioCodec.equals("PCM 24Bits"))
+							{
+								if (comboFonctions.getSelectedItem().toString().equals("MJPEG"))
+								{
+									codec = "pcm_s24be";
+								}
+								else
+									codec = "pcm_s24le";
+							}
+							else if (audioCodec.equals("PCM 32Bits"))
+							{
+								if (comboFonctions.getSelectedItem().toString().equals("MJPEG"))
+								{
+									codec = "pcm_s32be";
+								}
+								else
+									codec = "pcm_s32le";
+							}
+							else if (audioCodec.equals("PCM 32Float"))
+								codec = "pcm_f32be";
+							else if (audioCodec.equals("FLAC"))
+								codec = "flac";	
+							else if (audioCodec.equals("ALAC 16Bits"))
+								codec = "alac";
+							else if (audioCodec.equals("ALAC 24Bits"))
+								codec = "alac";
+							else if (audioCodec.equals(language.getProperty("codecCopy")))
+							{
+								codec = "copy";
+							}
+							else
+							{
+								if (System.getProperty("os.name").contains("Mac"))
+								{
+									codec = "aac_at";
+								}
+								else
+									codec = "aac";
+							}
+							
+							codecMapping += " -c:a:" + i + " " + codec;				
+							
+							break;
+						}
+					}
+					
+					//Bitrate
+					for (Component a : grpSetAudio.getComponents())
+					{
+						if (a instanceof JComboBox && ((JComboBox) a).getName().matches("comboAudioBitrate[0-9]+") && ((JComboBox) a).getName().endsWith(String.valueOf(i+1)))
+						{
+							if (audioCodec.equals("FLAC"))
+							{					
+								bitrateMapping += " -compression_level:a:" + i + " " + ((JComboBox) a).getSelectedItem().toString();	
+							}
+							else if (audioCodec.equals("ALAC 16Bits"))
+							{
+								bitrateMapping += " -sample_fmt:a:" + i + " s16p";
+							}
+							else if (audioCodec.equals("ALAC 24Bits"))
+							{
+								bitrateMapping += " -sample_fmt:a:" + i + " s32p";
+							}
+							else if (audioCodec.contains("PCM") == false)
+							{
+								bitrateMapping += " -b:a:" + i + " " + ((JComboBox) a).getSelectedItem() + "k";				
+							}
+
+							break;
+						}
+					}
+					
+					//Rate
+					for (Component a : grpSetAudio.getComponents())
+					{
+						if (a instanceof JComboBox && ((JComboBox) a).getName().matches("comboAudioRate[0-9]+") && ((JComboBox) a).getName().endsWith(String.valueOf(i+1)))
+						{
+							rateMapping += " -ar:a:" + i + " " + ((JComboBox) a).getSelectedItem();				
+							break;
+						}
+					}
+					
+					//Language	
+					for (Component a : grpSetAudio.getComponents())
+					{
+						if (a instanceof JComboBox && ((JComboBox) a).getName().matches("comboLanguage[0-9]+") && ((JComboBox) a).getName().endsWith(String.valueOf(i+1)))
+						{
+							if (((JComboBox) a).getSelectedItem().toString().equals("default") == false)
+							{
+								languageMapping += " -metadata:s:a:" + i + " language=" + Utils.ISO_639_2_LANGUAGES[((JComboBox) a).getSelectedIndex() - 1][1];
+							}
+							break;
+						}
+					}
+				}	
+				
+			i++;
 			}
+		}		
 			
-			return languageMapping;
-		}
-		
-		return "";
+		return audioMapping + codecMapping + bitrateMapping + rateMapping + languageMapping;
 	}
 }

@@ -168,6 +168,11 @@ public class Merge extends Shutter {
 
 		if (caseChangeAudioCodec.isSelected())
 		{
+			if (comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
+			{
+				return ""; //handled with setCustomAudio
+			}
+			
 			if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
 			{
 				switch (comboAudioCodec.getSelectedIndex()) 
@@ -222,39 +227,46 @@ public class Merge extends Shutter {
 	
 	private static String setAudioMapping() {
 	
-		String mapping = "";
-		if (comboAudio1.getSelectedIndex() == 0
-			&& comboAudio2.getSelectedIndex() == 1
-			&& comboAudio3.getSelectedIndex() == 2
-			&& comboAudio4.getSelectedIndex() == 3
-			&& comboAudio5.getSelectedIndex() == 4
-			&& comboAudio6.getSelectedIndex() == 5
-			&& comboAudio7.getSelectedIndex() == 6
-			&& comboAudio8.getSelectedIndex() == 7)
+		if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 		{
-			return " -map a?" + AudioSettings.setAudioLanguage();	
+			return AudioSettings.setCustomAudio();
 		}
 		else
 		{
-			if (comboAudio1.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
-			if (comboAudio2.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
-			if (comboAudio3.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
-			if (comboAudio4.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
-			if (comboAudio5.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
-			if (comboAudio6.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
-			if (comboAudio7.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
-			if (comboAudio8.getSelectedIndex() != 16)
-				mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+			String mapping = "";
+			if (comboAudio1.getSelectedIndex() == 0
+				&& comboAudio2.getSelectedIndex() == 1
+				&& comboAudio3.getSelectedIndex() == 2
+				&& comboAudio4.getSelectedIndex() == 3
+				&& comboAudio5.getSelectedIndex() == 4
+				&& comboAudio6.getSelectedIndex() == 5
+				&& comboAudio7.getSelectedIndex() == 6
+				&& comboAudio8.getSelectedIndex() == 7)
+			{
+				return " -map a?";	
+			}
+			else
+			{
+				if (comboAudio1.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio1.getSelectedIndex()) + "?";
+				if (comboAudio2.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio2.getSelectedIndex()) + "?";
+				if (comboAudio3.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio3.getSelectedIndex()) + "?";
+				if (comboAudio4.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio4.getSelectedIndex()) + "?";
+				if (comboAudio5.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio5.getSelectedIndex()) + "?";
+				if (comboAudio6.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio6.getSelectedIndex()) + "?";
+				if (comboAudio7.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio7.getSelectedIndex()) + "?";
+				if (comboAudio8.getSelectedIndex() != 16)
+					mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
+			}
+			
+			return mapping;
 		}
-		
-		return mapping + AudioSettings.setAudioLanguage();
 	}
 	
 	private static void lastActions(File fileOut) {
