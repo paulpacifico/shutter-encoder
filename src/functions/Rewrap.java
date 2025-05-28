@@ -192,7 +192,7 @@ public class Rewrap extends Shutter {
 						String audioMapping = setAudioMapping();
 																						
 		            	//Timecode
-						String timecode = Timecode.setTimecode();
+						String timecode = Timecode.setTimecode(file);
 						
 						//DAR
 						String aspect = "";

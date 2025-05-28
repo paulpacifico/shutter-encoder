@@ -97,7 +97,7 @@ public class VMAF extends Shutter {
 						
 						//Show detection
 						if (cancelled == false)
-							showDetection(fileName);				
+							showDetection(file);				
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
@@ -119,36 +119,40 @@ public class VMAF extends Shutter {
 		
     }
 
-	private static void showDetection(String file) {
+	private static void showDetection(File file) {
 		
 		if (FFMPEG.VMAFScore != null && Shutter.cancelled == false && FFMPEG.error == false)
 		{
-			 JOptionPane.showMessageDialog(frame, file + System.lineSeparator() + FFMPEG.VMAFScore, "VMAF", JOptionPane.INFORMATION_MESSAGE);
-			 int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("saveResult") , Shutter.language.getProperty("analyzeEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
-			 
-			 if (q == JOptionPane.YES_OPTION)
-			 {
-				FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveResult"), FileDialog.SAVE);
-				dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
-				dialog.setVisible(true);
-	
-				 if (dialog.getFile() != null)
-				 { 
-					try {
-						PrintWriter writer = new PrintWriter(dialog.getDirectory() + dialog.getFile().replace(".txt", "") + ".txt", "UTF-8");
-						writer.println(Shutter.language.getProperty("analyzeOf") + " " + file);
-						writer.println("");
-						writer.println(FFMPEG.VMAFScore);
-						writer.close();
-					} catch (FileNotFoundException | UnsupportedEncodingException e) {}
-	
-				 }
+			if (comboFilter.getSelectedIndex() == 0) // Display
+			{
+				JOptionPane.showMessageDialog(frame, file.getName() + System.lineSeparator() + FFMPEG.VMAFScore, "VMAF", JOptionPane.INFORMATION_MESSAGE);
+			}
+			else // Save
+			{
+				//File output name
+				String prefix = "";	
+				if (casePrefix.isSelected())
+				{
+					prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+				}
 				
-			 }//End Question
-			 else
-			 {
-				 cancelled = false;
-			 }
+				String extensionName = "";	
+				if (btnExtension.isSelected())
+				{
+					extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
+				}
+				
+				//Output name
+				String fileOutputName =  FunctionUtils.setOutputDestination("", file).replace("\\", "/") + "/" + prefix + file.getName() + extensionName; 
+				
+				try {
+					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
+					writer.println(Shutter.language.getProperty("analyzeOf") + " " + file.getName());
+					writer.println("");
+					writer.println(FFMPEG.VMAFScore);
+					writer.close();
+				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
+			}
 		}	
 	}
 	

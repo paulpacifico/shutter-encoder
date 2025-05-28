@@ -97,8 +97,8 @@ private static Boolean horizontal = true;
 					}
 					
 					//Analyse des données	
-					while ((line = br.readLine()) != null) {	
-						
+					while ((line = br.readLine()) != null)
+					{						
 						  Console.consoleEXIFTOOL.append(line + System.lineSeparator());		
 					    
 						  if (line.contains("Error"))
@@ -115,7 +115,7 @@ private static Boolean horizontal = true;
 						  }
 						  
 						  if (line.contains("Create Date") && line.contains("+") == false)
-						  {								  							 
+						  {								  													  
 							  String l = line.substring(line.indexOf(":") + 2);							 
 							  String f[] = l.split(" ");								  
 							  creationDate = f[0].toString(); //2018:04:06
@@ -139,7 +139,6 @@ private static Boolean horizontal = true;
 							  
 							  scanOrientation = false;
 						  }
-
 					}				
 					process.waitFor();
 					

@@ -741,7 +741,7 @@ public class VideoEncoders extends Shutter {
 						}	
 												
 						//Timecode
-						String timecode = Timecode.setTimecode();
+						String timecode = Timecode.setTimecode(file);
 			            
 						//PixelFormat
 						String pixelFormat = setPixelFormat(filterComplex);

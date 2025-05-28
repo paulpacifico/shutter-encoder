@@ -370,7 +370,7 @@ public class Colorimetry extends Shutter {
 			if (eq != "")
 				eq += ",";
 
-			eq += "colortemperature=" + (int) (13000 - Shutter.sliderBalance.getValue()); 
+			eq += "colortemperature=" + Shutter.sliderBalance.getValue() + ":pl=1"; 
 		}
 		
 		return eq;

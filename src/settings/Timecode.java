@@ -19,14 +19,22 @@
 
 package settings;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 import application.Shutter;
 import application.VideoPlayer;
-import library.EXIFTOOL;
 import library.FFPROBE;
 
 public class Timecode extends Shutter {
 
-	public static String setTimecode() {
+	public static String setTimecode(File file) {
 		
    		String dropFrame = ":";
         if (isDropFrame())
@@ -46,9 +54,17 @@ public class Timecode extends Shutter {
 
 		if (caseGenerateFromDate.isSelected())
 		{
-			String s[] = EXIFTOOL.creationHours.split(":");
-			
-			return " -timecode " + '"' + s[0] + ":" + s[1] + ":" + s[2] + dropFrame + "00" + '"';
+			try {		
+				
+	            BasicFileAttributes attrs = Files.readAttributes(Paths.get(file.toString()), BasicFileAttributes.class);
+	            Instant creationTime = attrs.creationTime().toInstant();
+	            String date = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault()).format(creationTime);
+	            
+	            String s[] = date.split(":");
+				
+				return " -timecode " + '"' + s[0] + ":" + s[1] + ":" + s[2] + dropFrame + "00" + '"';
+				
+	        } catch (IOException e) {}		
 		}		
 		else if (caseSetTimecode.isSelected())
 		{

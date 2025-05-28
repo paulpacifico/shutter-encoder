@@ -99,7 +99,7 @@ public class Merge extends Shutter {
 
 							if (i == 0)
 							{
-								timecode = Timecode.setTimecode();	
+								timecode = Timecode.setTimecode(null);	
 							}
 							totalLength += FFPROBE.totalLength;
 							FFPROBE.totalLength = 0;
