@@ -184,7 +184,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "19.0";
+	public static String actualVersion = "19.1";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -19547,7 +19547,7 @@ public class Shutter {
 					caseForceTune.setEnabled(true);
 				}
 
-				//changeSections(false);
+				changeSections(false);
 
 				if ("Apple ProRes".equals(comboFonctions.getSelectedItem().toString())
 						&& System.getProperty("os.name").contains("Mac") && arch.equals("arm64")) {
