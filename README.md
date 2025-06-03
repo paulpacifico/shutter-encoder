@@ -1,7 +1,7 @@
 <img align=left src="https://www.shutterencoder.com/images/icon.png" width="64">
 <h1>Shutter Encoder v19.1</h1>
 
-![logo](/SocialBanner.png)
+<img src="https://www.shutterencoder.com/images/SocialBanner_2025.jpg" style="border-radius: 30px;" width="330">
 
 Download required [dependencies](../master/Library/sources.txt) into "Library" folder.
 
