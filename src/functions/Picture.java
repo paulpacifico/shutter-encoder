@@ -216,7 +216,7 @@ public class Picture extends Shutter {
 						if (FFPROBE.totalLength > 40)
 						{
 							//InOut	
-							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
 							
 							if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())
 							{

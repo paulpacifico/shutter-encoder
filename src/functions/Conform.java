@@ -103,7 +103,7 @@ public class Conform extends Shutter {
 						String audio = setAudio();						
 			           	
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
 						
 						//File output
 						File fileOut = new File(fileOutputName);				

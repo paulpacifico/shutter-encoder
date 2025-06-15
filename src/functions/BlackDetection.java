@@ -64,7 +64,7 @@ public class BlackDetection extends Shutter {
 							continue;			         
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
 						
 						String levels = "0.1";
 						if (comboFilter.getSelectedIndex() == 1)

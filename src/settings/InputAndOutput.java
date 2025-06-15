@@ -28,7 +28,7 @@ public class InputAndOutput extends Shutter {
 	public static String inPoint = "";
 	public static String outPoint = "";
 	
-	public static void getInputAndOutput(boolean setInputAndOutput) {
+	public static void getInputAndOutput(boolean setInputAndOutput, boolean useDuration) {
 			
 		if (setInputAndOutput)
 		{
@@ -54,14 +54,7 @@ public class InputAndOutput extends Shutter {
 		    		
 		    		outPoint = " -frames:v " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 2]) / outputFPS);
 	        	}
-	        	else if (FFPROBE.audioOnly || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false) 
-				|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
-				|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap"))
-	        	|| comboFonctions.getSelectedItem().toString().equals("VP8")
-	        	|| comboFonctions.getSelectedItem().toString().equals("VP9")
-	        	|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
-				|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-				|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Issue for audio, libvpx & added mute track
+	        	else if (FFPROBE.audioOnly || useDuration || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false))	        
 	        	{
 	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 2]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
 	        	}

@@ -478,7 +478,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (isVideoPlayer)
 			{
 				inputFile = new File(VideoPlayer.videoPath);
-				InputAndOutput.getInputAndOutput(true);
+				InputAndOutput.getInputAndOutput(true, false);
 			}
 			else if (inputDeviceIsRunning == false) //Already analyzed
 			{

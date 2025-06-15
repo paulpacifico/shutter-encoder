@@ -138,7 +138,7 @@ public class Rewrap extends Shutter {
 						String mapSubtitles = "";
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));					
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), true);					
 						
 						//Framerate
 						String frameRate = "";						

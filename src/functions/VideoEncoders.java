@@ -170,7 +170,16 @@ public class VideoEncoders extends Shutter {
 						}
 												
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+						if (comboFonctions.getSelectedItem().toString().equals("VP8")
+						|| comboFonctions.getSelectedItem().toString().equals("VP9")
+						|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
+						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
+						|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Issue for audio, libvpx & added mute track)
+						{
+							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), true);	
+						}
+						else
+							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -1521,7 +1530,7 @@ public class VideoEncoders extends Shutter {
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Vulkan Video"))
-						return " -c:v ffv1_vulkan";
+						return " -c:v ffv1_vulkan -slicecrc 0";
 				}
 				else
 					return " -c:v ffv1 -level 3";

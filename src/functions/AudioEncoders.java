@@ -99,7 +99,7 @@ public class AudioEncoders extends Shutter {
 							continue;	
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), true);	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);

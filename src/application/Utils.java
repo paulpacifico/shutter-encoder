@@ -2374,6 +2374,7 @@ public class Utils extends Shutter {
 				
 		UIManager.put("ScrollBar.thumbInsets", new Insets( 2, 2, 2, 2 ));
 		
+		UIManager.put("Label.margin", new Insets(0,0,0,0));
 		UIManager.put("Label.foreground", c225);		
 		
 		UIManager.put("OptionPane.background", c30);

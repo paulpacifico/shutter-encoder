@@ -63,7 +63,7 @@ public class OfflineDetection extends Shutter {
 							continue;		         
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
 						
 						//Stats_file
 						String stats_file;
