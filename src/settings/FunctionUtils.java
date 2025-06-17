@@ -1322,15 +1322,20 @@ public class FunctionUtils extends Shutter {
 		
 		String mapping = "";		
 		String audioFiltering = "";	
+	
+		//EQ
+		audioFiltering = AudioSettings.setEQ(audioFiltering);
 		
 		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
+			if (audioFiltering != "") audioFiltering += ",";
+			
 			audioFiltering += Transitions.setAudioFadeIn(false);
 		}
 		
 		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
-			if (audioFiltering != "")	audioFiltering += ",";
+			if (audioFiltering != "") audioFiltering += ",";
 			
 			audioFiltering += Transitions.setAudioFadeOut(false);
 		}
@@ -1341,7 +1346,7 @@ public class FunctionUtils extends Shutter {
 			
 			audioFiltering += Transitions.setAudioSpeed();
 		}		
-		
+			
 		//Audio normalization		
 		if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
 		{				

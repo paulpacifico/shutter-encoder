@@ -38,6 +38,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -103,6 +104,9 @@ public class VideoWeb {
 	private JCheckBox caseWAV;
 	private JCheckBox caseAuto;
 	public static JCheckBox caseMetadata;
+	public static JCheckBox caseTimecode;
+	public static JTextField textTimecodeIn;
+	public static JTextField textTimecodeOut;
 	public static JCheckBox caseCookies;
 	private JComboBox<String> comboCookies;
 	private JCheckBox caseUser;
@@ -121,7 +125,7 @@ public class VideoWeb {
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
-		frame.setSize(420, 338);
+		frame.setSize(420, 338 + 22);
 		frame.setResizable(false);
 		frame.setModal(true);
 		frame.setAlwaysOnTop(true);
@@ -582,10 +586,93 @@ public class VideoWeb {
 		caseMetadata.setBounds(66, caseAuto.getY() + 22, caseMetadata.getPreferredSize().width, 16);	
 		grpURL.add(caseMetadata);
 		
+		caseTimecode = new JCheckBox(Shutter.language.getProperty("caseSetTimecode"));
+		caseTimecode.setName("caseTimecode");
+		caseTimecode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseTimecode.setBounds(66, caseMetadata.getY() + 22, caseTimecode.getPreferredSize().width, 16);	
+		grpURL.add(caseTimecode);
+		
+		caseTimecode.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+					
+				if (caseTimecode.isSelected())
+				{
+					textTimecodeIn.setEnabled(true);
+					textTimecodeOut.setEnabled(true);
+				}
+				else
+				{
+					textTimecodeIn.setEnabled(false);
+					textTimecodeOut.setEnabled(false);
+				}
+			}
+			
+		});
+ 		
+		textTimecodeIn = new JTextField("00:00:00");
+		textTimecodeIn.setHorizontalAlignment(SwingConstants.CENTER);
+		textTimecodeIn.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		textTimecodeIn.setBounds(caseTimecode.getLocation().x + caseTimecode.getWidth() + 4, caseTimecode.getY() - 4, 70, 21);
+		textTimecodeIn.setEnabled(false);	
+		grpURL.add(textTimecodeIn);
+		
+		textTimecodeIn.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+				char caracter = e.getKeyChar();
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != ':' && caracter != '￿')
+				{
+					e.consume();
+				}
+				else if (textTimecodeIn.getText().length() >= 8)
+				{
+					textTimecodeIn.setText("");
+				}
+				else if ((textTimecodeIn.getText().length() == 2 || textTimecodeIn.getText().length() == 5) && caracter != ':')
+				{
+					textTimecodeIn.setText(textTimecodeIn.getText() + ":");
+				}
+			}
+
+		});
+		
+		textTimecodeOut = new JTextField("00:00:00");
+		textTimecodeOut.setHorizontalAlignment(SwingConstants.CENTER);
+		textTimecodeOut.setFont(new Font("SansSerif", Font.PLAIN, 12));
+		textTimecodeOut.setBounds(textTimecodeIn.getLocation().x + textTimecodeIn.getWidth() + 4, textTimecodeIn.getY(), textTimecodeIn.getWidth(), 21);
+		textTimecodeOut.setEnabled(false);	
+		grpURL.add(textTimecodeOut);
+		
+		textTimecodeOut.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyTyped(KeyEvent e)
+			{
+				char caracter = e.getKeyChar();
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != ':' && caracter != '￿')
+				{
+					e.consume();
+				}
+				else if (textTimecodeOut.getText().length() >= 8)
+				{
+					textTimecodeOut.setText("");
+				}
+				else if ((textTimecodeOut.getText().length() == 2 || textTimecodeOut.getText().length() == 5) && caracter != ':')
+				{
+					textTimecodeOut.setText(textTimecodeOut.getText() + ":");
+				}
+			}
+
+		});
+		
 		caseCookies = new JCheckBox(Shutter.language.getProperty("caseCookies"));
 		caseCookies.setName("caseCookies");
 		caseCookies.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		caseCookies.setBounds(66, caseMetadata.getY() + 22, caseCookies.getPreferredSize().width, 16);	
+		caseCookies.setBounds(66, caseTimecode.getY() + 22, caseCookies.getPreferredSize().width, 16);	
 		grpURL.add(caseCookies);
 		
 		caseCookies.addActionListener(new ActionListener() {
@@ -633,7 +720,7 @@ public class VideoWeb {
 		comboFormats.addItem("up to 240p");
 		comboFormats.addItem("bestvideo");
 		comboFormats.addItem("bestaudio");
-		comboFormats.setLocation(16, 246);	
+		comboFormats.setLocation(16, 246 + 22);	
 		comboFormats.setSize(380, 22);
 		comboFormats.setMaximumRowCount(10);
 		grpURL.add(comboFormats);
@@ -738,7 +825,7 @@ public class VideoWeb {
 		caseVideoPass = new JCheckBox(Shutter.language.getProperty("caseVideoPass"));
 		caseVideoPass.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseVideoPass.setSize(caseVideoPass.getPreferredSize().width, 16);	
-		caseVideoPass.setLocation(66, 221);
+		caseVideoPass.setLocation(66, 221 + 22);
 		grpURL.add(caseVideoPass);
 			
 		caseVideoPass.addActionListener(new ActionListener() {
@@ -829,6 +916,11 @@ public class VideoWeb {
 		if (caseMetadata.isSelected())
 		{
 			options += " --embed-thumbnail --embed-metadata";
+		}
+		
+		if (caseTimecode.isSelected())
+		{
+			options += " --download-sections " + '"' + "*" + textTimecodeIn.getText() + "-" + textTimecodeOut.getText() + '"';
 		}
 		
 		if (caseCookies.isSelected())

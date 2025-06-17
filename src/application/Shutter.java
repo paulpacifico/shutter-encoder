@@ -616,6 +616,7 @@ public class Shutter {
 	public static int frameCropX;
 	public static int frameCropY;
 	public static boolean shift = false;
+	public static boolean alt = false;
 	public static boolean ctrl = false;
 	public static JCheckBox caseEnableCrop;
 	public static JComboBox<String> comboPreset;
@@ -625,6 +626,8 @@ public class Shutter {
 	public static JTextField textCropPosY;
 	public static JTextField textCropWidth;
 	public static JTextField textCropHeight;
+	public static JLabel cropLock;
+	public static boolean cropIsLocked = false;
 
 	// grpOverlay
 	public static JPanel grpOverlay;
@@ -1214,7 +1217,8 @@ public class Shutter {
 							frame.requestFocus();
 						}
 
-						if (VideoPlayer.fullscreenPlayer) {
+						if (VideoPlayer.fullscreenPlayer)
+						{
 							if (ke.getKeyCode() == KeyEvent.VK_K || ke.getKeyCode() == KeyEvent.VK_SPACE) {
 								ke.consume();
 								VideoPlayer.btnPlay.doClick();
@@ -8930,15 +8934,21 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (comboPreset.getSelectedIndex() == 0) {
+				if (comboPreset.getSelectedIndex() == 0) //None
+				{
+					cropLock.setVisible(false);
+					
 					selection.setBounds(VideoPlayer.player.getWidth() / 4, VideoPlayer.player.getHeight() / 4,
 							VideoPlayer.player.getWidth() / 2, VideoPlayer.player.getHeight() / 2);
 					anchorRight = selection.getLocation().x + selection.getWidth();
 					anchorBottom = selection.getLocation().y + selection.getHeight();
 
 					VideoPlayer.checkSelection();
-				} else if (comboPreset.getSelectedIndex() == 1) // Auto
+				}
+				else if (comboPreset.getSelectedIndex() == 1) // Auto
 				{
+					cropLock.setVisible(false);
+					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 					Thread t = new Thread(new Runnable() {
@@ -8954,7 +8964,9 @@ public class Shutter {
 						}
 					});
 					t.start();
-				} else if (comboPreset.getSelectedItem().toString().isEmpty() == false) {
+				}
+				else if (comboPreset.getSelectedItem().toString().isEmpty() == false)
+				{
 					try {
 
 						String s[] = FFPROBE.imageResolution.split("x");
@@ -8966,7 +8978,7 @@ public class Shutter {
 						if (inputRatio.length() > 4)
 							inputRatio = inputRatio.substring(0, 4);
 
-						float outputRatio;
+						float outputRatio;						
 						if (comboPreset.getSelectedItem().toString().contains("/")) {
 							String d[] = comboPreset.getSelectedItem().toString().split("/");
 							outputRatio = (float) Integer.parseInt(d[0]) / Integer.parseInt(d[1]);
@@ -8995,18 +9007,12 @@ public class Shutter {
 							textCropPosY.setText(String.valueOf((h - Integer.parseInt(textCropHeight.getText())) / 2));
 						}
 
-						int x = (int) Math.round(
-								(float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayer.player.getHeight())
-										/ FFPROBE.imageHeight);
-						int y = (int) Math
-								.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayer.player.getWidth())
-										/ FFPROBE.imageWidth);
-						int width = (int) Math.ceil(
-								(float) (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight())
-										/ FFPROBE.imageHeight);
-						int height = (int) Math.floor(
-								(float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getWidth())
-										/ FFPROBE.imageWidth);
+						int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+						
+						int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
+						
+						int width = (int) Math.ceil((float) (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+						int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
 
 						if (width > VideoPlayer.player.getWidth())
 							width = VideoPlayer.player.getWidth();
@@ -9016,13 +9022,58 @@ public class Shutter {
 
 						selection.setBounds(x, y, width, height);
 
-					} catch (Exception er) {
-					}
+						cropLock.setVisible(true);
+						
+					} catch (Exception er) {}
 				}
 			}
 
 		});
 
+		cropLock = new JLabel(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+		cropLock.setName("cropUnlock");
+		cropLock.setVisible(false);
+		cropLock.setHorizontalAlignment(SwingConstants.CENTER);
+		cropLock.setBounds(comboPreset.getX() + comboPreset.getWidth() + 3, comboPreset.getY(), 21, 21);
+		grpCrop.add(cropLock);
+
+		cropLock.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+
+				if (cropIsLocked) {
+					cropLock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+					cropIsLocked = false;
+					cropLock.setName("cropUnlock");
+				} else {
+					cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+					cropIsLocked = true;
+					cropLock.setName("cropLock");
+				}
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+
+		});
+		
 		// Selection
 		selection = new JPanel();
 		selection.setOpaque(false);
@@ -9036,10 +9087,8 @@ public class Shutter {
 				selectionDrag = true;
 
 				// Mouse position from click mouse
-				int mouseX = MouseInfo.getPointerInfo().getLocation().x - frame.getLocation().x - startCropX
-						- frameCropX;
-				int mouseY = MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y - startCropY
-						- frameCropY;
+				int mouseX = MouseInfo.getPointerInfo().getLocation().x - frame.getLocation().x - startCropX - frameCropX;
+				int mouseY = MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y - startCropY - frameCropY;
 
 				if (mouseX < 0)
 					mouseX = 0;
@@ -9050,141 +9099,242 @@ public class Shutter {
 				int mouseInPictureX = MouseInfo.getPointerInfo().getLocation().x - frame.getLocation().x - frameCropX;
 				int mouseInPictureY = MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y - frameCropY;
 
-				if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR)) {
-					if (mouseInPictureX >= 0 && mouseInPictureY >= 0) {
+				float selectionRatio = 1;
+				if (comboPreset.getSelectedItem().toString().contains("/"))
+				{
+					String d[] = comboPreset.getSelectedItem().toString().split("/");
+					selectionRatio = (float) Integer.parseInt(d[0]) / Integer.parseInt(d[1]);
+				}
+				else if (comboPreset.getSelectedItem().toString().contains("."))
+				{
+					selectionRatio = Float.parseFloat(comboPreset.getSelectedItem().toString());
+				}
+				
+				if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR))
+				{
+					if (mouseInPictureX >= 0 && mouseInPictureY >= 0)
+					{
 						selection.setLocation(mouseX, mouseY);
 
-						if (shift) {
-							selection.setSize(2 * anchorRight - 2 * mouseX - selection.getWidth(),
-									2 * anchorBottom - 2 * mouseY - selection.getHeight());
-						} else
+						if (shift)
+						{
+							selection.setSize(2 * anchorRight - 2 * mouseX - selection.getWidth(), 2 * anchorBottom - 2 * mouseY - selection.getHeight());
+						}
+						else
 							selection.setSize(anchorRight - mouseX, anchorBottom - mouseY);
-					} else {
-						if (mouseInPictureX < 0) {
+					}
+					else
+					{
+						if (mouseInPictureX < 0)
+						{
 							selection.setBounds(0, selection.getY(), selection.getWidth(), selection.getHeight());
-						} else if (mouseInPictureY < 0) {
+						}
+						else if (mouseInPictureY < 0)
+						{
 							selection.setBounds(selection.getX(), 0, selection.getWidth(), selection.getHeight());
 						}
 					}
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR)) {
-					if (mouseInPictureY >= 0) {
+				}
+				else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR))
+				{
+					if (mouseInPictureY >= 0)
+					{
 						selection.setLocation(selection.getLocation().x, mouseY);
 
-						if (shift) {
-							selection.setSize(selection.getSize().width,
-									2 * anchorBottom - 2 * mouseY - selection.getHeight());
-						} else
+						if (shift)
+						{
+							selection.setSize(selection.getSize().width, 2 * anchorBottom - 2 * mouseY - selection.getHeight());
+						}
+						else
 							selection.setSize(selection.getSize().width, anchorBottom - mouseY);
-					} else {
-						selection.setBounds(selection.getX(), 0, selection.getWidth(), selection.getHeight());
+						
 					}
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR)) {
-					if (mouseInPictureY >= 0 && mouseInPictureX <= VideoPlayer.player.getWidth()) {
-						if (shift) {
+					else
+						selection.setBounds(selection.getX(), 0, selection.getWidth(), selection.getHeight());					
+					
+				}
+				else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR))
+				{
+					if (mouseInPictureY >= 0 && mouseInPictureX <= VideoPlayer.player.getWidth())
+					{
+						if (shift)
+						{
 							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()),
 									mouseY);
 							selection.setSize(e.getX() - (selection.getWidth() - e.getX()),
 									2 * anchorBottom - 2 * mouseY - selection.getHeight());
-						} else {
+						}
+						else
+						{
 							selection.setLocation(selection.getLocation().x, mouseY);
 							selection.setSize(e.getX(), anchorBottom - mouseY);
 						}
-					} else {
-						if (mouseInPictureY < 0) {
+						
+					}
+					else
+					{
+						if (mouseInPictureY < 0)
+						{
 							selection.setBounds(selection.getX(), 0, selection.getWidth(), selection.getHeight());
-						} else if (mouseInPictureX > VideoPlayer.player.getWidth()) {
-							selection.setBounds(selection.getX(), selection.getY(),
-									VideoPlayer.player.getWidth() - selection.getX(), selection.getHeight());
+						}
+						else if (mouseInPictureX > VideoPlayer.player.getWidth())
+						{
+							selection.setBounds(selection.getX(), selection.getY(), VideoPlayer.player.getWidth() - selection.getX(), selection.getHeight());
 						}
 					}
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) {
-					if (mouseInPictureX <= VideoPlayer.player.getWidth()) {
-						if (shift) {
-							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()),
-									selection.getLocation().y);
-							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), selection.getSize().height);
-						} else
+					
+				}
+				else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR))
+				{
+					if (mouseInPictureX <= VideoPlayer.player.getWidth())
+					{
+						if (shift)
+						{
+							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), selection.getLocation().y);
+							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), selection.getSize().height);							
+						}
+						else
 							selection.setSize(e.getX(), selection.getSize().height);
-					} else {
-						selection.setBounds(selection.getX(), selection.getY(),
-								VideoPlayer.player.getWidth() - selection.getX(), selection.getHeight());
+						
+					}
+					else
+					{
+						selection.setBounds(selection.getX(), selection.getY(), VideoPlayer.player.getWidth() - selection.getX(), selection.getHeight());
 					}
 
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR)) {
-					if (mouseInPictureY <= VideoPlayer.player.getHeight()
-							&& mouseInPictureX <= VideoPlayer.player.getWidth()) {
-						if (shift) {
-							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()),
-									selection.getLocation().y + (selection.getHeight() - e.getY()));
-							selection.setSize(e.getX() - (selection.getWidth() - e.getX()),
-									e.getY() - (selection.getHeight() - e.getY()));
-						} else
+				}
+				else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR))
+				{
+					if (mouseInPictureY <= VideoPlayer.player.getHeight() && mouseInPictureX <= VideoPlayer.player.getWidth())
+					{ 
+						if (shift)
+						{
+							selection.setLocation(selection.getLocation().x + (selection.getWidth() - e.getX()), selection.getLocation().y + (selection.getHeight() - e.getY()));
+							selection.setSize(e.getX() - (selection.getWidth() - e.getX()), e.getY() - (selection.getHeight() - e.getY()));
+						}
+						else
 							selection.setSize(e.getX(), e.getY());
-					} else {
-						if (mouseInPictureY > VideoPlayer.player.getHeight()) {
-							selection.setBounds(selection.getX(), selection.getY(), selection.getWidth(),
-									VideoPlayer.player.getHeight() - selection.getY());
-						} else if (mouseInPictureX > VideoPlayer.player.getWidth()) {
-							selection.setBounds(selection.getX(), selection.getY(),
-									VideoPlayer.player.getWidth() - selection.getX(), selection.getHeight());
+						
+					} else
+					{
+						if (mouseInPictureY > VideoPlayer.player.getHeight())
+						{
+							selection.setBounds(selection.getX(), selection.getY(), selection.getWidth(), VideoPlayer.player.getHeight() - selection.getY());
+						}
+						else if (mouseInPictureX > VideoPlayer.player.getWidth())
+						{
+							selection.setBounds(selection.getX(), selection.getY(), VideoPlayer.player.getWidth() - selection.getX(), selection.getHeight());
 						}
 					}
 
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR)) {
-					if (mouseInPictureY < VideoPlayer.player.getHeight()) {
-						if (shift) {
+				}
+				else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR))
+				{
+					if (mouseInPictureY < VideoPlayer.player.getHeight())
+					{
+						if (shift)
+						{
 							textCropPosY.setText("0");
-							selection.setLocation(selection.getLocation().x,
-									selection.getLocation().y + (selection.getHeight() - e.getY()));
+							
+							selection.setLocation(selection.getLocation().x, selection.getLocation().y + (selection.getHeight() - e.getY()));
 							selection.setSize(selection.getSize().width, e.getY() - (selection.getHeight() - e.getY()));
-						} else
+						}
+						else
 							selection.setSize(selection.getSize().width, e.getY());
-					} else {
-						selection.setBounds(selection.getX(), selection.getY(), selection.getWidth(),
-								VideoPlayer.player.getHeight() - selection.getY());
+						
 					}
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR)) {
-					if (mouseInPictureY <= VideoPlayer.player.getHeight() && mouseInPictureX >= 0) {
-						if (shift) {
-							selection.setLocation(mouseX,
-									selection.getLocation().y + (selection.getHeight() - e.getY()));
-							selection.setSize(2 * anchorRight - 2 * mouseX - selection.getWidth(),
-									e.getY() - (selection.getHeight() - e.getY()));
-						} else {
+					else
+					{
+						selection.setBounds(selection.getX(), selection.getY(), selection.getWidth(), VideoPlayer.player.getHeight() - selection.getY());
+					}
+				}
+				else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR))
+				{
+					if (mouseInPictureY <= VideoPlayer.player.getHeight() && mouseInPictureX >= 0)
+					{
+						if (shift)
+						{
+							selection.setLocation(mouseX, selection.getLocation().y + (selection.getHeight() - e.getY()));
+							selection.setSize(2 * anchorRight - 2 * mouseX - selection.getWidth(), e.getY() - (selection.getHeight() - e.getY()));
+						}
+						else
+						{
 							selection.setLocation(mouseX, selection.getLocation().y);
 							selection.setSize(anchorRight - mouseX, e.getY());
 						}
-					} else {
-						if (mouseInPictureY > VideoPlayer.player.getHeight()) {
-							selection.setBounds(selection.getX(), selection.getY(), selection.getWidth(),
-									VideoPlayer.player.getHeight() - selection.getY());
-						} else if (mouseInPictureX < 0) {
+						
+					}
+					else
+					{
+						if (mouseInPictureY > VideoPlayer.player.getHeight())
+						{
+							selection.setBounds(selection.getX(), selection.getY(), selection.getWidth(), VideoPlayer.player.getHeight() - selection.getY());
+						}
+						else if (mouseInPictureX < 0)
+						{
 							selection.setBounds(0, selection.getY(), selection.getWidth(), selection.getHeight());
 						}
 					}
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) {
-					if (mouseInPictureX >= 0) {
+				}
+				else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR))
+				{
+					if (mouseInPictureX >= 0)
+					{
 						selection.setLocation(mouseX, selection.getLocation().y);
 
-						if (shift) {
-							selection.setSize(2 * anchorRight - 2 * mouseX - selection.getWidth(),
-									selection.getSize().height);
-						} else
+						if (shift)
+						{
+							selection.setSize(2 * anchorRight - 2 * mouseX - selection.getWidth(), selection.getSize().height);
+						}
+						else
 							selection.setSize(anchorRight - mouseX, selection.getSize().height);
-					} else {
+					}
+					else
+					{
 						selection.setBounds(0, selection.getY(), selection.getWidth(), selection.getHeight());
 					}
-				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR)) {
-					if (shift && ctrl) {
+					
+				} else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
+				{
+					if (shift && ctrl)
+					{
 						selection.setLocation(mouseX, selection.getLocation().y);
-					} else if (shift) {
+					}
+					else if (shift)
+					{
 						selection.setLocation(selection.getLocation().x, mouseY);
-					} else if (ctrl) {
+					}
+					else if (ctrl)
+					{
 						selection.setLocation(mouseX, selection.getLocation().y);
-					} else
+					}
+					else
 						selection.setLocation(mouseX, mouseY);
-				}
+				}		
 
+				if (cropLock.isVisible() && (cropIsLocked || alt))
+				{				
+					if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR) || frame.getCursor() == Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR))
+					{
+						int newValue = (int) Math.round((float) selection.getWidth() / selectionRatio);
+						selection.setSize(selection.getWidth(), newValue);
+					}
+					else
+					{
+						int newValue = (int) Math.round((float) selection.getHeight() * selectionRatio);
+						
+						if (shift)
+						{
+							if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR) == false && frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR) == false)
+							{
+								selection.setLocation(selection.getLocation().x + (selection.getWidth() - newValue), selection.getLocation().y);
+							}
+						}
+						
+						selection.setSize(newValue, selection.getHeight());
+					}
+				}
+				
 				// Location limits
 				if (selection.getX() < 0) {
 					selection.setLocation(0, selection.getY());
@@ -17385,9 +17535,11 @@ public class Shutter {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				char caracter = e.getKeyChar();
-				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿'
-						|| gopSize.getText().length() >= 3 || String.valueOf(caracter).matches("[éèçàù]"))
+				
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
 					e.consume();
+				else if (gopSize.getText().length() >= 3)
+					gopSize.setText("");
 			}
 
 			@Override
@@ -17399,6 +17551,7 @@ public class Shutter {
 
 			}
 		});
+		
 
 		caseFilmGrain = new JCheckBox(language.getProperty("caseFilmGrain"));
 		caseFilmGrain.setName("caseFilmGrain");
@@ -18902,6 +19055,9 @@ public class Shutter {
 					// grpCrop
 					if (caseEnableCrop.isSelected())
 						caseEnableCrop.doClick();
+					
+					cropLock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+					cropIsLocked = false;
 
 					// grpOverlay
 					if (caseShowTimecode.isSelected())
@@ -23194,7 +23350,7 @@ public class Shutter {
 											caseFilmGrainDenoise.getY() + 3);
 									grpAdvanced.add(comboFilmGrainDenoise);
 									caseDecimate.setLocation(7, caseFilmGrainDenoise.getLocation().y + 17);
-								} else if ("MPEG-1".equals(function) || "MPEG-2".equals(function)) {
+								} else if ("MPEG-1".equals(function) || "MPEG-2".equals(function) || "Theora".equals(function)) {
 									caseGOP.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);

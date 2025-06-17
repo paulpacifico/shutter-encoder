@@ -469,6 +469,7 @@ public class AdvancedFeatures extends Shutter {
 			case "VP9":
 			case "MPEG-1":
 			case "MPEG-2":
+			case "Theora":
 			case "Blu-ray":
 		       
 				if (caseGOP.isSelected())

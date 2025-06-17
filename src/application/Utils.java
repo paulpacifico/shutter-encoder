@@ -1019,7 +1019,10 @@ public class Utils extends Shutter {
 									component.appendChild(cName);
 									
 									//Value
-									if (p.getName().equals("lock") == false && p.getName().equals("unlock") == false)
+									if (p.getName().equals("lock") == false
+									&& p.getName().equals("unlock") == false
+									&& p.getName().equals("cropLock") == false
+									&& p.getName().equals("cropUnlock") == false)
 									{
 										cValue = document.createElement("Value");
 										cValue.appendChild(document.createTextNode(((JLabel) p).getText()));
@@ -1564,6 +1567,42 @@ public class Utils extends Shutter {
 					
 					root.appendChild(color);
 				}	
+				
+				//Saving equalizer values	
+				Element equalizer = document.createElement("Equalizer");
+				
+				if (Shutter.caseEqualizer.isSelected())
+				{			
+					for (Component c : Equalizer.frame.getContentPane().getComponents())
+					{
+						if (c.getName() != "" && c.getName() != null)
+						{
+							if (c instanceof JSlider)
+							{		
+								Element componentEQ = document.createElement("Component");
+								
+								//Type
+								cType = document.createElement("Type");
+								cType.appendChild(document.createTextNode("JSlider"));
+								componentEQ.appendChild(cType);
+
+								//Name
+								cName = document.createElement("Name");
+								cName.appendChild(document.createTextNode(c.getName()));
+								componentEQ.appendChild(cName);
+								
+								//Value
+								cValue = document.createElement("Value");
+								cValue.appendChild(document.createTextNode(String.valueOf(((JSlider) c).getValue())));
+								componentEQ.appendChild(cValue);		
+								
+								equalizer.appendChild(componentEQ);
+								
+								root.appendChild(equalizer);
+							}
+						}
+					}
+				}
 																													
 				// creation du fichier XML
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -1659,6 +1698,13 @@ public class Utils extends Shutter {
 													isLocked = true;
 													lock.setName("lock");
 												}
+												
+												if ((p.getName().equals("cropLock") || p.getName().equals("cropUnlock")) && eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropLock"))
+												{
+													cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+													cropIsLocked = true;
+													cropLock.setName("cropLock");
+												}
 											}
 																			
 											if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
@@ -1666,7 +1712,10 @@ public class Utils extends Shutter {
 												if (p instanceof JLabel)
 												{										
 													//Value
-													if (p.getName().equals("lock") == false && p.getName().equals("unlock") == false)
+													if (p.getName().equals("lock") == false
+													&& p.getName().equals("unlock") == false
+													&& p.getName().equals("cropLock") == false
+													&& p.getName().equals("cropUnlock") == false)
 													{
 														((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 													}
@@ -1898,6 +1947,23 @@ public class Utils extends Shutter {
 										}
 									}
 								}
+								
+								//Equalizer
+								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().contains("sliderEQ")
+								|| eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderGain"))
+								{
+									for (Component c : Equalizer.frame.getContentPane().getComponents())
+									{
+										if (c instanceof JSlider)
+										{		
+											if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals(((JSlider) c).getName()))
+											{
+												//Value
+												((JSlider) c).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+											}																						
+										}
+									}
+								}								
 																
 								//grpWatermak
 								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkFile"))

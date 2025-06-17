@@ -25,6 +25,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -42,6 +44,7 @@ public class FFPROBE extends Shutter {
 public static Process process;
 public static boolean isRunning = false;
 public static boolean calcul = false;
+private static boolean videoStreamAnalyzed = false;
 public static boolean audioOnly = true;
 public static boolean hasAudio = false;
 public static boolean attachedPic = false;
@@ -119,6 +122,7 @@ public static boolean isRotated = false;
 				fieldOrder = null;
 			}
 			
+			videoStreamAnalyzed = false;
 			currentFPS = 25.0f; //Used to play audio with the Video Player
 			dropFrameTC = "";
 			surround = false;
@@ -133,6 +137,9 @@ public static boolean isRotated = false;
 				audioOnly = true;
 			creationTime = "";
 			lumaLevel = "unavailable";
+			imageWidth = 0;
+        	imageHeight = 0;
+        	imageResolution = null;
 			videoCodec = null;
 			audioCodec = null;
 			audioCodecs = new String[50];
@@ -284,10 +291,10 @@ public static boolean isRotated = false;
 								}
 				            }
 				            
-				            // Détection YUVJ
-							if (line.contains("Video:") && line.contains("attached pic") == false)
-							{			
-								//Codec vidéo
+				            // Video stream
+							if (line.contains("Video:") && line.contains("attached pic") == false && line.contains("unspecified size") == false && videoStreamAnalyzed == false)
+							{											
+								//Video codec
 								String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");
 																		
 								videoCodec = splitVideo[1].replace(",", "");
@@ -302,165 +309,146 @@ public static boolean isRotated = false;
 									videoCodec = "qt animation";
 								}
 								
-								//Création de la waveform pour le lecteur vidéo
+								//Player waveform
 					            audioOnly = false;
 								 
-								// Niveaux					 
+								//Levels					 
 				                if (line.contains("tv"))
 				                   lumaLevel = "16-235";
 				                else if (line.contains("(pc)"))
 				                   lumaLevel = "0-255";
 				                			                
-				                // Lecture
 							 	String data = line;
 				                data = line.substring(data.indexOf("Video:"));
-	
-				                // Timecode Size
-				                String split[] = data.split(",");
-				                int i = 0;
-				                do {
-				                    i ++;
-				                } while ((split[i].contains("x") == false || split[i].contains("xyz")) && i < split.length - 1);
+				
+				                // Image resolution
+				                Pattern resolutionPattern = Pattern.compile("(\\d{2,5})x(\\d{2,5})");
+				                Matcher matcher = resolutionPattern.matcher(line);
 				                
-				                if (split[i].contains("["))
+				                if (matcher.find())
 				                {
-				                	String s[] = split[i].split("\\[");
-				                	split[i] = s[0].replace(" ","");
+				                	imageWidth = Integer.parseInt(matcher.group(1));
+				                	imageHeight = Integer.parseInt(matcher.group(2));
+				                	imageResolution = imageWidth + "x" + imageHeight;
 				                }
-			
-				                //Bug workaround when it shows "unspecified size" && is a scale form like 1920x1080
-				                if (split[i].contains("unspecified size") == false && split[i].contains("x"))
-				                {		
-					                String resolution = split[i].substring(split[i].indexOf("x") + 1);
-					              	String splitr[] = resolution.split(" ");
-		
-					              	// Crop Image
-					                String height = split[i];
-					                
-					                String splitx[]= height.split("x");
-					                
-					                String getHeight[] = splitx[1].split(" ");
-		
-						            imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
-						            imageHeight = Integer.parseInt(splitr[0]);
-					                imageResolution = imageWidth + "x" + getHeight[0];
-					                					                
-					                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
-					                {
-					                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
-					                	imageWidth = RecordInputDevice.screenWidth;
-					                	imageHeight = RecordInputDevice.screenHeigth;
-					                }
-					              					                			               			                
-					                //Ratio du lecteur
-					                if (line.contains("DAR"))
-					                {
-					                	String[] splitDAR = line.split("DAR");
-					                	String[] splitDAR2 = splitDAR[1].split(",");
-					                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
-					                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
-					                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
-					                	imageRatio = (float) ratioWidth / ratioHeight;
-					                }
-					                else
-					                	imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);      
-					                
-									
-									if (isRotated)
-									{	
-										Integer h = imageHeight;
-										Integer w = imageWidth;
-										  
-										imageWidth =  h;
-										imageHeight = w;
-										imageRatio = (float) imageWidth / imageHeight;
-									}
-									
-					                // Crop Form
-					                int largeur = 0;
-					                int hauteur = 0;			               
-				                	
-					                // Pixels cropés
-					                if (ratioFinal < ((float) imageWidth / imageHeight))
-					                {
-						                int pixelsWidth = (imageWidth - hauteur);
-						                cropPixelsWidth =  (int) (float) pixelsWidth / 2;
-						                cropPixelsHeight = 0;
-					                }
-					                else 
-					                {
-						                int pixelsHeight = (imageHeight - largeur);
-						                cropPixelsHeight = (int) (float) pixelsHeight / 2;
-						                cropPixelsWidth = 0;
-					                }	
-					                
-					                // FPS
-					                if (inputDeviceIsRunning)
-					            	{
-					            		if (file.equals("Capture.current.screen"))
-					            			currentFPS = Float.parseFloat(RecordInputDevice.txtScreenRecord.getText());
-					            		else
-					            			currentFPS = Float.parseFloat(RecordInputDevice.txtInputDevice.getText());
-					            	}
-					                else
-					                {
-							            if (line.contains("fps")) 
-							            {						            	
-							                String str[] = line.split("fps");
-							                							                
+				                					                
+				                if (inputDeviceIsRunning && file.equals("Capture.current.screen"))
+				                {
+				                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
+				                	imageWidth = RecordInputDevice.screenWidth;
+				                	imageHeight = RecordInputDevice.screenHeigth;
+				                }
+				              					                			               			                
+				                //Video player ratio
+				                if (line.contains("DAR"))
+				                {
+				                	String[] splitDAR = line.split("DAR");
+				                	String[] splitDAR2 = splitDAR[1].split(",");
+				                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
+				                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
+				                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
+				                	imageRatio = (float) ratioWidth / ratioHeight;
+				                }
+				                else
+				                	imageRatio = (float) imageWidth / imageHeight;      
+				                
+								
+								if (isRotated)
+								{	
+									Integer h = imageHeight;
+									Integer w = imageWidth;
+									  
+									imageWidth =  h;
+									imageHeight = w;
+									imageRatio = (float) imageWidth / imageHeight;
+								}
+								
+				                //Crop form
+				                int width = 0;
+				                int height = 0;			               
+			                	
+				                //Cropped pixels
+				                if (ratioFinal < ((float) imageWidth / imageHeight))
+				                {
+					                int pixelsWidth = (imageWidth - height);
+					                cropPixelsWidth =  (int) (float) pixelsWidth / 2;
+					                cropPixelsHeight = 0;
+				                }
+				                else 
+				                {
+					                int pixelsHeight = (imageHeight - width);
+					                cropPixelsHeight = (int) (float) pixelsHeight / 2;
+					                cropPixelsWidth = 0;
+				                }	
+				                
+				                //FPS
+				                if (inputDeviceIsRunning)
+				            	{
+				            		if (file.equals("Capture.current.screen"))
+				            			currentFPS = Float.parseFloat(RecordInputDevice.txtScreenRecord.getText());
+				            		else
+				            			currentFPS = Float.parseFloat(RecordInputDevice.txtInputDevice.getText());
+				            	}
+				                else
+				                {
+						            if (line.contains("fps")) 
+						            {						            	
+						                String str[] = line.split("fps");
+						                							                
+						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+						                
+						                //For DV format
+						                if (str[1].contains("k"))
+						                {
+						                	str = line.split("tbr");
 							                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-							                
-							                //For DV format
-							                if (str[1].contains("k"))
-							                {
+						                }
+						               							                
+						                currentFPS = Float.parseFloat(str[1].replace("k", "000"));
+						                
+						                //Used for VFR						      
+						                str = String.valueOf(currentFPS).split("\\.");	
+
+						                if (str[1].length() == 2 && str[1].equals("00") == false)
+						                {
+						                	if (str[1].equals("88") == false //119.88
+						                	&& str[1].equals("94") == false //59.94
+						                	&& str[1].equals("97") == false //29.97
+						                	&& str[1].equals("98") == false) //23.98
+						                	{						                	
 							                	str = line.split("tbr");
 								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-							                }
-							               							                
-							                currentFPS = Float.parseFloat(str[1].replace("k", "000"));
-							                
-							                //Used for VFR						      
-							                str = String.valueOf(currentFPS).split("\\.");	
-	
-							                if (str[1].length() == 2 && str[1].equals("00") == false)
-							                {
-							                	if (str[1].equals("88") == false //119.88
-							                	&& str[1].equals("94") == false //59.94
-							                	&& str[1].equals("97") == false //29.97
-							                	&& str[1].equals("98") == false) //23.98
-							                	{						                	
-								                	str = line.split("tbr");
-									                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-									                currentFPS = Float.parseFloat(str[1]);
-							                	}
-							                }
-							            } 
-							            else if (line.contains("tbr"))
-							            {
-							            	String str[] = line.split("tbr");
-						                	
-							                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-							                
-							                currentFPS = Float.parseFloat(str[1]);
-							                
-							                //Used for VFR						      
-							                str = String.valueOf(currentFPS).split("\\.");	
-	
-							                if (str[1].length() == 2 && str[1].equals("00") == false)
-							                {
-							                	if (str[1].equals("88") == false //119.88
-							                	&& str[1].equals("94") == false //59.94
-							                	&& str[1].equals("97") == false //29.97
-							                	&& str[1].equals("98") == false) //23.98
-							                	{						                	
-								                	str = line.split("tbr");
-									                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-									                currentFPS = Float.parseFloat(str[1]);
-							                	}
-							                }
-							            }
-					                }
+								                currentFPS = Float.parseFloat(str[1]);
+						                	}
+						                }
+						            } 
+						            else if (line.contains("tbr"))
+						            {
+						            	String str[] = line.split("tbr");
+					                	
+						                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+						                
+						                currentFPS = Float.parseFloat(str[1]);
+						                
+						                //Used for VFR						      
+						                str = String.valueOf(currentFPS).split("\\.");	
+
+						                if (str[1].length() == 2 && str[1].equals("00") == false)
+						                {
+						                	if (str[1].equals("88") == false //119.88
+						                	&& str[1].equals("94") == false //59.94
+						                	&& str[1].equals("97") == false //29.97
+						                	&& str[1].equals("98") == false) //23.98
+						                	{						                	
+							                	str = line.split("tbr");
+								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
+								                currentFPS = Float.parseFloat(str[1]);
+						                	}
+						                }
+						            }
 				                }
+				                
+				                videoStreamAnalyzed = true;
 							 }
 							 
 							 if (line.contains("attached pic"))
@@ -468,6 +456,7 @@ public static boolean isRotated = false;
 								 attachedPic = true;
 							 }
 							
+							 //Audio stream
 				        	 if (line.contains("Audio:") && (line.contains("0 channels")) == false)
 				        	 {
 				        		 hasAudio = true;
@@ -597,6 +586,7 @@ public static boolean isRotated = false;
 								
 					} catch (Exception e) {	
 						FFMPEG.error = true;
+						e.printStackTrace();
 					} finally {
 						isRunning = false;
 						btnStart.setEnabled(true);

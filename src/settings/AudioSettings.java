@@ -24,6 +24,7 @@ import java.io.File;
 
 import javax.swing.JComboBox;
 
+import application.Equalizer;
 import application.RecordInputDevice;
 import application.Shutter;
 import application.Utils;
@@ -222,8 +223,13 @@ public class AudioSettings extends Shutter {
 			
 			String audioFiltering = "";
 			
+			//EQ
+			audioFiltering = AudioSettings.setEQ(audioFiltering);
+			
 			if (Transitions.setAudioFadeIn(false) !=  "")
 			{
+				if (audioFiltering != "") audioFiltering += ",";
+				
 				audioFiltering += Transitions.setAudioFadeIn(false);
 			}
 			
@@ -556,6 +562,70 @@ public class AudioSettings extends Shutter {
 		}
 	}
 
+	public static String setEQ(String filter) {
+		
+		if (Shutter.caseEqualizer.isSelected())
+		{					
+			if (Equalizer.sliderEQ1.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=60:g=" + Equalizer.sliderEQ1.getValue();		
+			}
+			if (Equalizer.sliderEQ2.getValue() != 0)
+			{	
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=170:g=" + Equalizer.sliderEQ2.getValue();
+			}
+			if (Equalizer.sliderEQ3.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=310:g=" + Equalizer.sliderEQ3.getValue();
+			}
+			if (Equalizer.sliderEQ4.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=600:g=" + Equalizer.sliderEQ4.getValue();
+			}
+			if (Equalizer.sliderEQ5.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=1000:g=" + Equalizer.sliderEQ5.getValue();
+			}
+			if (Equalizer.sliderEQ6.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=3000:g=" + Equalizer.sliderEQ6.getValue();
+			}
+			if (Equalizer.sliderEQ7.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=6000:g=" + Equalizer.sliderEQ7.getValue();
+			}
+			if (Equalizer.sliderEQ8.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=12000:g=" + Equalizer.sliderEQ8.getValue();
+			}
+			if (Equalizer.sliderEQ9.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=14000:g=" + Equalizer.sliderEQ9.getValue();
+			}
+			if (Equalizer.sliderEQ10.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "equalizer=f=16000:g=" + Equalizer.sliderEQ10.getValue();		
+			}	
+			if (Equalizer.sliderGain.getValue() != 0)
+			{
+				if (filter != "") filter += ",";				
+				filter += "volume=" + Equalizer.sliderGain.getValue() + "dB";		
+			}	
+		}
+		
+		return filter;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public static String setCustomAudio() {
 		

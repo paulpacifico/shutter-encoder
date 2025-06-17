@@ -30,6 +30,7 @@ import application.Utils;
 import application.VideoPlayer;
 import library.FFMPEG;
 import library.FFPROBE;
+import settings.AudioSettings;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 import settings.Transitions;
@@ -374,6 +375,12 @@ public class AudioEncoders extends Shutter {
 		String audio = "";	
 		String audioFiltering = "";	
 		
+		//EQ
+		if (AudioSettings.setEQ(audioFiltering) != "")
+		{
+			audioFiltering = "," + AudioSettings.setEQ(audioFiltering);
+		}
+		
 		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
 			audioFiltering += "," + Transitions.setAudioFadeIn(false);
@@ -388,7 +395,7 @@ public class AudioEncoders extends Shutter {
 		{
 			audioFiltering += "," + Transitions.setAudioSpeed();
 		}
-		
+				
 		//Audio normalization		
 		if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
 		{				
@@ -503,21 +510,27 @@ public class AudioEncoders extends Shutter {
 	
 	private static void splitAudio(String codec, String prefix, String fileName, String extension, File file, String output, String container, String DRC) throws InterruptedException {
 		
-		String audioFilter = "";	
+		String audioFiltering = "";	
+		
+		//EQ
+		if (AudioSettings.setEQ(audioFiltering) != "")
+		{
+			audioFiltering = "," + AudioSettings.setEQ(audioFiltering);
+		}
 		
 		if (Transitions.setAudioFadeIn(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeIn(false);
+			audioFiltering += "," + Transitions.setAudioFadeIn(false);
 		}
 		
 		if (Transitions.setAudioFadeOut(false) !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioFadeOut(false);
+			audioFiltering += "," + Transitions.setAudioFadeOut(false);
 		}
 		
 		if (Transitions.setAudioSpeed() !=  "")
 		{
-			audioFilter += "," + Transitions.setAudioSpeed();
+			audioFiltering += "," + Transitions.setAudioSpeed();
 		}
 		
 		//Frequence d'échantillonnage
@@ -539,7 +552,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFilter + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + yesno;
+				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFiltering + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
@@ -572,10 +585,10 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				if (audioFilter != "")     
-					audioFilter = audioFilter.replaceFirst(",", " -filter_complex ");
+				if (audioFiltering != "")     
+					audioFiltering = audioFiltering.replaceFirst(",", " -filter_complex ");
 				
-				String cmd = audioFilter + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + yesno;
+				String cmd = audioFiltering + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
@@ -607,7 +620,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFilter + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + yesno;
+				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
 				
 				do
