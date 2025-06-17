@@ -985,7 +985,7 @@ public class VideoPlayer {
 	public static void playerSetTime(float time) {
 					
 		if ((setTime == null || setTime.isAlive() == false) && (frameVideo != null || playerCurrentFrame > 0) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames  - 2 && videoPath != null)
-		{				
+		{			
 			setTime = new Thread(new Runnable() {
 
 				@Override
@@ -3408,6 +3408,14 @@ public class VideoPlayer {
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						slider.setValue((int) ((long) slider.getMaximum() * cursorWaveform.getLocation().x / waveformContainer.getSize().width));
 					}
+					
+					//Allows to wait for the last frame to load					
+					while (setTime.isAlive())
+					{
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {}						
+					}	
                 }
 			}
 
@@ -3415,7 +3423,7 @@ public class VideoPlayer {
 			public void mouseReleased(MouseEvent e) {	
 				
 				mouseIsPressed = false;
-				
+
 				if (Shutter.liste.getSize() > 0)
                 {	
 					//Allows to wait for the last frame to load					
