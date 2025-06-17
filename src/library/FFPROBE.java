@@ -455,9 +455,9 @@ public static boolean isRotated = false;
 							 {
 								 attachedPic = true;
 							 }
-							
+														 
 							 //Audio stream
-				        	 if (line.contains("Audio:") && (line.contains("0 channels")) == false)
+				        	 if (line.contains("Audio:") && (line.contains("Could not find codec parameters")) == false)
 				        	 {
 				        		 hasAudio = true;
 				        		 
