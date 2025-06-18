@@ -698,6 +698,7 @@ public class Shutter {
 	// grpSubtitles
 	public static JPanel grpSubtitles;
 	public static JCheckBox caseAddSubtitles;
+	public static JComboBox<String> comboChooseSubsSource;
 	public static String outline = "1";
 	public static JComboBox<String> comboSubsFont;
 	public static Color fontSubsColor = Color.WHITE;
@@ -8929,7 +8930,7 @@ public class Shutter {
 		comboPreset.setBounds(lblPresets.getX() + lblPresets.getWidth() + 4, lblPresets.getY() - 2, 82, 22);
 		grpCrop.add(comboPreset);
 
-		comboPreset.addActionListener(new ActionListener() {
+		ActionListener comboListener = new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -9023,13 +9024,18 @@ public class Shutter {
 						selection.setBounds(x, y, width, height);
 
 						cropLock.setVisible(true);
+						cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+						cropIsLocked = true;
+						cropLock.setName("cropLock");
 						
 					} catch (Exception er) {}
 				}
 			}
 
-		});
+		};
 
+		comboPreset.addActionListener(comboListener);
+		
 		cropLock = new JLabel(new FlatSVGIcon("contents/unlock.svg", 16, 16));
 		cropLock.setName("cropUnlock");
 		cropLock.setVisible(false);
@@ -9317,7 +9323,16 @@ public class Shutter {
 					if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR) || frame.getCursor() == Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR))
 					{
 						int newValue = (int) Math.round((float) selection.getWidth() / selectionRatio);
-						selection.setSize(selection.getWidth(), newValue);
+						
+						if (newValue < VideoPlayer.player.getHeight())
+						{
+							selection.setSize(selection.getWidth(), newValue);
+						}
+						else
+						{
+							newValue = (int) Math.round((float) selection.getHeight() * selectionRatio);							
+							selection.setSize(newValue, selection.getHeight());
+						}							
 					}
 					else
 					{
@@ -9330,9 +9345,30 @@ public class Shutter {
 								selection.setLocation(selection.getLocation().x + (selection.getWidth() - newValue), selection.getLocation().y);
 							}
 						}
+						else if (frame.getCursor() == Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR) || frame.getCursor() == Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR))
+						{
+							selection.setLocation(selection.getLocation().x + (selection.getWidth() - newValue), selection.getLocation().y);
+						}
 						
-						selection.setSize(newValue, selection.getHeight());
+						if (newValue < VideoPlayer.player.getWidth())
+						{
+							selection.setSize(newValue, selection.getHeight());
+						}
+						else
+						{
+							newValue = (int) Math.round((float) selection.getWidth() / selectionRatio);
+							selection.setSize(selection.getWidth(), newValue);
+						}
 					}
+				}
+				else
+				{
+					comboPreset.removeActionListener(comboListener);
+					float ratio = (float) selection.getWidth() / selection.getHeight();
+					comboPreset.setSelectedItem(Math.round(ratio * 100.0) / 100.0);
+					comboPreset.addActionListener(comboListener);
+					
+					cropLock.setVisible(false);
 				}
 				
 				// Location limits
@@ -9715,6 +9751,13 @@ public class Shutter {
 					e.consume();
 				else if (textCropWidth.getText().length() >= 4)
 					textCropWidth.setText("");
+				
+				comboPreset.removeActionListener(comboListener);
+				float ratio = (float) selection.getWidth() / selection.getHeight();
+				comboPreset.setSelectedItem(Math.round(ratio * 100.0) / 100.0);
+				comboPreset.addActionListener(comboListener);
+				
+				cropLock.setVisible(false);	
 			}
 
 		});
@@ -9759,6 +9802,13 @@ public class Shutter {
 									/ FFPROBE.imageHeight);
 					selection.setSize(value, selection.getHeight());
 				}
+
+				comboPreset.removeActionListener(comboListener);
+				float ratio = (float) selection.getWidth() / selection.getHeight();
+				comboPreset.setSelectedItem(Math.round(ratio * 100.0) / 100.0);
+				comboPreset.addActionListener(comboListener);
+				
+				cropLock.setVisible(false);	
 			}
 
 			@Override
@@ -9813,6 +9863,13 @@ public class Shutter {
 					e.consume();
 				else if (textCropHeight.getText().length() >= 4)
 					textCropHeight.setText("");
+				
+				comboPreset.removeActionListener(comboListener);
+				float ratio = (float) selection.getWidth() / selection.getHeight();
+				comboPreset.setSelectedItem(Math.round(ratio * 100.0) / 100.0);
+				comboPreset.addActionListener(comboListener);
+				
+				cropLock.setVisible(false);				
 			}
 
 		});
@@ -9857,6 +9914,13 @@ public class Shutter {
 									/ FFPROBE.imageHeight);
 					selection.setSize(selection.getWidth(), value);
 				}
+				
+				comboPreset.removeActionListener(comboListener);
+				float ratio = (float) selection.getWidth() / selection.getHeight();
+				comboPreset.setSelectedItem(Math.round(ratio * 100.0) / 100.0);
+				comboPreset.addActionListener(comboListener);
+				
+				cropLock.setVisible(false);	
 			}
 
 			@Override
@@ -12044,7 +12108,7 @@ public class Shutter {
 
 		});
 
-		caseAddSubtitles = new JCheckBox(Shutter.language.getProperty("caseSubtitles"));
+		caseAddSubtitles = new JCheckBox(Shutter.language.getProperty("caseSubtitles") + Shutter.language.getProperty("colon"));
 		caseAddSubtitles.setName("caseAddSubtitles");
 		caseAddSubtitles.setBounds(8, 16, caseAddSubtitles.getPreferredSize().width + 8, 23);
 		caseAddSubtitles.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
@@ -12327,7 +12391,8 @@ public class Shutter {
 										Shutter.changeSections(false);
 										Shutter.caseDisplay.setSelected(false);
 
-										if (caseAddSubtitles.isSelected()) {
+										if (caseAddSubtitles.isSelected())
+										{
 											for (Component c : grpSubtitles.getComponents()) {
 												if (c instanceof JCheckBox == false) {
 													c.setEnabled(false);
@@ -12401,11 +12466,13 @@ public class Shutter {
 										Shutter.caseDisplay.setSelected(false);
 									}
 
-									for (Component c : grpSubtitles.getComponents()) {
+									for (Component c : grpSubtitles.getComponents())
+									{
 										if (c instanceof JCheckBox == false) {
 											c.setEnabled(false);
-										}
+										}										
 									}
+									comboChooseSubsSource.setEnabled(true);
 
 									if (autoEmbed == false)
 									{
@@ -12461,12 +12528,19 @@ public class Shutter {
 							c.setEnabled(false);
 						}
 					}
+					comboChooseSubsSource.setEnabled(true);
 
 					VideoPlayer.sliderSpeed.setEnabled(true);
 				}
 			}
 		});
 
+		comboChooseSubsSource = new JComboBox<String>(new String[] { language.getProperty("file"), language.getProperty("source") });
+		comboChooseSubsSource.setName("comboChooseSubsSource");		
+		comboChooseSubsSource.setBounds(caseAddSubtitles.getX() + caseAddSubtitles.getWidth() - 12, caseAddSubtitles.getY() + 1, comboChooseSubsSource.getPreferredSize().width, 20);
+		comboChooseSubsSource.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
+		grpSubtitles.add(comboChooseSubsSource);
+		
 		JLabel lblFont = new JLabel(Shutter.language.getProperty("lblFont"));
 		lblFont.setAlignmentX(SwingConstants.RIGHT);
 		lblFont.setForeground(Utils.themeColor);
@@ -13178,6 +13252,7 @@ public class Shutter {
 				c.setEnabled(false);
 			}
 		}
+		comboChooseSubsSource.setEnabled(true);
 	}
 
 	private void grpWatermark() {
@@ -19164,7 +19239,9 @@ public class Shutter {
 					lblOPATOM.setText("OP-Atom");
 					caseOPATOM.setSelected(false);
 					if (caseAddSubtitles != null)
-						caseAddSubtitles.setSelected(false);
+						caseAddSubtitles.setSelected(false);					
+					comboChooseSubsSource.setEnabled(true);	
+					comboChooseSubsSource.setSelectedIndex(0);
 					caseConform.setSelected(false);
 					comboConform.setEnabled(false);
 					caseDecimate.setSelected(false);
@@ -25222,6 +25299,7 @@ public class Shutter {
 			} else
 				components[i].setEnabled(true);
 		}
+		comboChooseSubsSource.setEnabled(true);
 
 		if (caseAddSubtitles.isSelected() && subtitlesBurn == false) {
 			for (Component c : grpSubtitles.getComponents()) {
@@ -25229,6 +25307,7 @@ public class Shutter {
 					c.setEnabled(false);
 				}
 			}
+			comboChooseSubsSource.setEnabled(true);
 		}
 
 		components = grpWatermark.getComponents();

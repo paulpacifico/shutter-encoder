@@ -693,9 +693,9 @@ public class VideoPlayer {
 								else if (playerPlayVideo)
 								{										
 					            	long delay = startTime - System.nanoTime();
-					                			
+					            						                			
 					            	if (delay > 0)
-					            	{		
+					            	{							            		
 					            		//Because the next loop is very cpu intensive but accurate, this sleep reduce the cpu usage by waiting just less than needed
 						            	try {
 						            		Thread.sleep((int) (delay / 1500000));
@@ -706,6 +706,11 @@ public class VideoPlayer {
 						            	long time = System.nanoTime();
 						            	while (System.nanoTime() - time < delay) {}		
 					                }
+					            	else
+					            	{
+					            		//Restart audio for sync
+					            		playerAudioSetTime(playerCurrentFrame);
+					            	}
 								}								
 								
 								frameIsComplete = true;		
@@ -763,17 +768,17 @@ public class VideoPlayer {
 						offsetVideo = (long) inputTime - Integer.parseInt(Shutter.txtAudioOffset.getText());
 						offsetAudio = (long) inputTime + Integer.parseInt(Shutter.txtAudioOffset.getText());
 					}	
-					
+
 					do {
 						
 						if (playerLoop && (forceLoop || playerIsPlaying()))
-						{			
+						{		
 							if (playerIsPlaying())
 							{
 								long time = System.currentTimeMillis();
 								
-								do {
-	
+								while (frameIsComplete == false)
+								{	
 									try {
 										Thread.sleep(1);
 									} catch (InterruptedException e) {}
@@ -781,14 +786,13 @@ public class VideoPlayer {
 									if (frameVideo == null || System.currentTimeMillis() - time > 5000)
 									{
 										frameIsComplete = true;
-									}
-																
-								} while (frameIsComplete == false);
+									}						
+								}
 							}
 							
 							//Audio volume	
 							if (audioInputStream != null && audioSetTimeIsRunning == false && ((casePlaySound.isSelected() || playerIsPlaying()) && (mouseIsPressed == false || FFPROBE.audioOnly)))					       
-							{								
+							{										
 								closeAudioStream = true;
 								double gain = (double) sliderVolume.getValue() / 100;   
 						        float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
@@ -819,7 +823,7 @@ public class VideoPlayer {
 								}
 							}
 							else
-								closeAudioStream = false;
+								closeAudioStream = false;		
 							
 							forceLoop = false;
 						}
