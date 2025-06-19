@@ -1518,7 +1518,7 @@ public class VideoEncoders extends Shutter {
 
 			case "AVC-Intra 100":
 				
-				return " -shortest -c:v libx264 -coder 0 -g 1 -b:v 100M -tune psnr -preset veryslow -vsync 1 -color_range 2 -avcintra-class 100 -me_method hex -subq 5 -cmp chroma -pix_fmt yuv422p10le";
+				return " -shortest -c:v libx264 -coder 0 -g 1 -b:v 100M -tune psnr -preset veryslow -fps_mode cfr -color_range 2 -avcintra-class 100 -me_method hex -subq 5 -cmp chroma -pix_fmt yuv422p10le";
 			
 			case "DNxHD":
 			case "DNxHR":

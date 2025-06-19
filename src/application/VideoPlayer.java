@@ -707,7 +707,7 @@ public class VideoPlayer {
 						            	while (System.nanoTime() - time < delay) {}		
 					                }
 					            	else
-					            	{
+					            	{					            		
 					            		//Restart audio for sync
 					            		playerAudioSetTime(playerCurrentFrame);
 					            	}
@@ -823,7 +823,7 @@ public class VideoPlayer {
 								}
 							}
 							else
-								closeAudioStream = false;		
+								closeAudioStream = false;	
 							
 							forceLoop = false;
 						}
@@ -4951,7 +4951,7 @@ public class VideoPlayer {
 	
 	            bufferedReader.close();  
 	            bufferedWriter.close();
-	
+	            	            
 			} catch (Exception e) {}
 		}
 	}
@@ -5424,7 +5424,7 @@ public class VideoPlayer {
 	public static void writeSub(String srt, Charset encoding) 
 	{
 		try {
-
+			
 			writeCurrentSubs(playerCurrentFrame, true);
 			loadImage(true);
 

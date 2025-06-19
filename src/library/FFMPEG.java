@@ -372,6 +372,34 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 	}
 			
+	public static void runSilently(String cmd) {
+		
+		runProcess = new Thread(new Runnable()  {
+			
+			@Override
+			public void run() {
+				
+				try {
+					
+					ProcessBuilder processFFMPEG;
+					
+					if (System.getProperty("os.name").contains("Windows"))
+					{														
+						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner " + cmd);								
+						process = processFFMPEG.start();					
+					}
+					else
+					{													
+						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner " + cmd);							
+						process = processFFMPEG.start();
+					}	
+									   					     																		
+				} catch (IOException io) {}//Bug Linux							
+			}
+		});		
+		runProcess.start();
+	}
+	
 	public static void checkForErrors(String line) {
 		
 		if (line.contains("No such file or directory")

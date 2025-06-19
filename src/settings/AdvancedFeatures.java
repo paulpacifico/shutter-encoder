@@ -632,7 +632,7 @@ public class AdvancedFeatures extends Shutter {
 		}
 		else if (inputDeviceIsRunning)
 		{
-			return " -vsync vfr";
+			return " -fps_mode vfr";
 		}
 		
 		if (caseForcerDesentrelacement.isSelected() && (lblTFF.getText().contains("x2") || comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine")))
@@ -736,7 +736,7 @@ public class AdvancedFeatures extends Shutter {
 		
 		if (Settings.comboSync.getSelectedItem().equals("auto") == false && caseDecimate.isSelected() == false)
 		{
-			flags += " -vsync " + Settings.comboSync.getSelectedItem();	
+			flags += " -fps_mode " + Settings.comboSync.getSelectedItem();	
 		}
 		
 		if (caseGamma.isSelected())
@@ -835,7 +835,7 @@ public class AdvancedFeatures extends Shutter {
 					flags += " -movflags faststart";
 				
 				if (caseDecimate.isSelected())		
-					flags += " -vsync vfr";	
+					flags += " -fps_mode vfr";	
 
 				break;	
 			
@@ -853,7 +853,7 @@ public class AdvancedFeatures extends Shutter {
 				
 				if (caseDecimate.isSelected())		
 				{
-					flags += " -vsync vfr";	
+					flags += " -fps_mode vfr";	
 				}
 				
 				break;

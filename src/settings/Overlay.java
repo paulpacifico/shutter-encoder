@@ -428,12 +428,13 @@ public class Overlay extends Shutter {
 			|| new File (file.replace(ext, ".vtt")).exists()
 			|| new File (file.replace(ext, ".ass")).exists()
 			|| new File (file.replace(ext, ".ssa")).exists()
-			|| new File (file.replace(ext, ".scc")).exists())
+			|| new File (file.replace(ext, ".scc")).exists()
+			|| comboSubsSource.getSelectedIndex() == 1)
 			{
 				caseAddSubtitles.doClick();
 				caseAddSubtitles.doClick();
 			}
-						
+									
 			autoBurn = false;
 			autoEmbed = false;
 			caseAddSubtitles.setEnabled(false);
@@ -468,6 +469,12 @@ public class Overlay extends Shutter {
 				//Set the input seeking
 				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());			
 				VideoPlayer.writeCurrentSubs(timeIn, false);
+				
+	            //Delete created .srt file
+	            if (comboSubsSource.getSelectedIndex() == 1)
+	            {
+	            	subtitlesFilePath.delete();
+	            }
 				
 				if (limitToFHD || comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{

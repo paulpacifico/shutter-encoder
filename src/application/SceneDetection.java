@@ -786,7 +786,7 @@ import javax.swing.JScrollPane;
 					        		
 						//Command
 						String tol = String.valueOf((float) (100 - Integer.valueOf(application.SceneDetection.tolerance.getValue().toString())) / 100);
-						cmd = " -vf select=" + '"' + "gt(scene\\," + tol  + ")" + '"' + ",showinfo -vsync 2 -f image2 ";
+						cmd = " -vf select=" + '"' + "gt(scene\\," + tol  + ")" + '"' + ",showinfo -fps_mode vfr -f image2 ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/%01d.png" + '"');		
 						
 						do
