@@ -640,7 +640,11 @@ public class VideoPlayer {
 			        
 		            line.open(audioFormat);
 		            gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
-		            gainControl.setValue(gainControl.getMinimum());
+		            
+		            double gain = (double) sliderVolume.getValue() / 100;   
+			        float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
+			        gainControl.setValue(dB);
+			        
 		            line.start();	
 				} catch (Exception e) {}
 			}
@@ -794,10 +798,6 @@ public class VideoPlayer {
 							if (audioInputStream != null && audioSetTimeIsRunning == false && ((casePlaySound.isSelected() || playerIsPlaying()) && (mouseIsPressed == false || FFPROBE.audioOnly)))					       
 							{										
 								closeAudioStream = true;
-								double gain = (double) sliderVolume.getValue() / 100;   
-						        float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
-						        if (gainControl != null)
-						        	gainControl.setValue(dB);
 		
 								///Read 1 audio frame
 								if (playerCurrentFrame >= offsetAudio)
@@ -1458,7 +1458,8 @@ public class VideoPlayer {
 								|| new File (videoPath.replace(ext, ".vtt")).exists()
 								|| new File (videoPath.replace(ext, ".ass")).exists()
 								|| new File (videoPath.replace(ext, ".ssa")).exists()
-								|| new File (videoPath.replace(ext, ".scc")).exists())
+								|| new File (videoPath.replace(ext, ".scc")).exists()
+								|| Shutter.comboSubsSource.getSelectedIndex() == 1)
 								{
 									Shutter.caseAddSubtitles.doClick();
 									Shutter.caseAddSubtitles.doClick();
@@ -3612,6 +3613,22 @@ public class VideoPlayer {
 		sliderVolume.setValue(50);			
 		Shutter.frame.getContentPane().add(sliderVolume);
 				
+		sliderVolume.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				
+				if (playerAudio != null && playerAudio.isAlive())
+				{
+					double gain = (double) sliderVolume.getValue() / 100;   
+			        float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
+			        if (gainControl != null)
+			        	gainControl.setValue(dB);
+				}
+			}
+			
+		});
+		
 		lblVolume = new JLabel(new FlatSVGIcon("contents/volume.svg", 15, 15));
 		lblVolume.setFont(new Font("", Font.PLAIN, 12));
 		lblVolume.setSize(lblVolume.getPreferredSize().width + 3, 16);			

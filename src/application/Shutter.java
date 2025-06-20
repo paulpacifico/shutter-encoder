@@ -9331,8 +9331,8 @@ public class Shutter {
 						}
 						else
 						{
-							newValue = (int) Math.round((float) selection.getHeight() * selectionRatio);							
-							selection.setSize(newValue, selection.getHeight());
+							newValue = (int) Math.round((float) VideoPlayer.player.getHeight() * selectionRatio);							
+							selection.setSize(newValue, VideoPlayer.player.getHeight());
 						}							
 					}
 					else
@@ -9357,8 +9357,8 @@ public class Shutter {
 						}
 						else
 						{
-							newValue = (int) Math.round((float) selection.getWidth() / selectionRatio);
-							selection.setSize(selection.getWidth(), newValue);
+							newValue = (int) Math.round((float) VideoPlayer.player.getWidth() / selectionRatio);
+							selection.setSize(VideoPlayer.player.getWidth(), newValue);
 						}
 					}
 				}
