@@ -710,11 +710,6 @@ public class VideoPlayer {
 						            	long time = System.nanoTime();
 						            	while (System.nanoTime() - time < delay) {}		
 					                }
-					            	else
-					            	{					            		
-					            		//Restart audio for sync
-					            		playerAudioSetTime(playerCurrentFrame);
-					            	}
 								}								
 								
 								frameIsComplete = true;		
@@ -772,7 +767,9 @@ public class VideoPlayer {
 						offsetVideo = (long) inputTime - Integer.parseInt(Shutter.txtAudioOffset.getText());
 						offsetAudio = (long) inputTime + Integer.parseInt(Shutter.txtAudioOffset.getText());
 					}	
-
+					
+					float inputVideoFrameToSeconds = (float) inputTime / FFPROBE.currentFPS;
+						
 					do {
 						
 						if (playerLoop && (forceLoop || playerIsPlaying()))
@@ -808,6 +805,23 @@ public class VideoPlayer {
 											
 											bytesRead = audioInputStream.read(buffer, 0, buffer.length);
 							        		line.write(buffer, 0, bytesRead);
+							        									        		
+											if (playerPlayVideo)
+											{
+												if (audioSetTimeIsRunning)
+													inputVideoFrameToSeconds = (float) playerCurrentFrame / FFPROBE.currentFPS - (float) line.getLongFramePosition() / 48000;
+												
+												float videoClock = (float) ((float) playerCurrentFrame / FFPROBE.currentFPS) * 1000;
+												float audioClock = (float) ((float) line.getLongFramePosition() / 48000 + inputVideoFrameToSeconds) * 1000;
+												float delay = (audioClock - videoClock);
+																							
+												if (delay >= 50) //When the unsync is more than 50ms
+												{	
+									            	try {
+														Thread.sleep(Math.round(delay));
+													} catch (InterruptedException e) {}	
+												}
+											}
 							        		
 										} catch (Exception e) {
 											
@@ -824,7 +838,7 @@ public class VideoPlayer {
 							}
 							else
 								closeAudioStream = false;	
-							
+														
 							forceLoop = false;
 						}
 						else
@@ -841,7 +855,7 @@ public class VideoPlayer {
 								} catch (InterruptedException e) {}
 							} while (playerLoop == false && playerVideo.isAlive());
 						}
-						
+												
 					} while (playerThread.isAlive());					
 				}
 				
@@ -1176,8 +1190,8 @@ public class VideoPlayer {
 	public static void playerAudioSetTime(float inputTime) {
 		
 		if (playerAudio != null)
-		{
-			playerAudio.destroy();	
+		{			
+			playerAudio.destroy();
 			
 			audioSetTimeIsRunning = true;
 			
@@ -1205,7 +1219,7 @@ public class VideoPlayer {
 						audio = playerAudio.getInputStream();	
 						audioInputStream = null;
 						audioInputStream = AudioSystem.getAudioInputStream(audio);		    
-					} catch (Exception e) {}
+					} catch (Exception e) {}	
 				}
 				
 				if (playerIsPlaying())
