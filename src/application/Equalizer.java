@@ -335,10 +335,10 @@ public class Equalizer {
 				
 				if (c.getName() != null && c.getName().equals("sliderTextGain"))
 				{
-					c.setBounds(labelX + 8, topPanel.getHeight() + 7 + 150 + 7, 34, 16);
+					c.setBounds(labelX + 6, topPanel.getHeight() + 7 + 150 + 7, 38, 16);
 				}
 				else
-					c.setBounds(labelX, topPanel.getHeight() + 7 + 150 + 7, 22, 16);
+					c.setBounds(labelX, topPanel.getHeight() + 7 + 150 + 7, 24, 16);
 				
 				frame.getContentPane().add(c);	
 			}
@@ -346,10 +346,10 @@ public class Equalizer {
 			{
 				if (c.getName() != null && c.getName().equals("sliderGain"))
 				{
-					c.setBounds(labelX + 15, topPanel.getHeight() + 7, 22, 150);
+					c.setBounds(labelX + 15, topPanel.getHeight() + 7, 24, 150);
 				}
 				else
-					c.setBounds(labelX, topPanel.getHeight() + 7, 22, 150);
+					c.setBounds(labelX, topPanel.getHeight() + 7, 24, 150);
 				
 				frame.getContentPane().add(c);
 				

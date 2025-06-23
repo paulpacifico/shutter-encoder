@@ -26,11 +26,11 @@ import java.text.DecimalFormat;
 
 import javax.swing.JTextField;
 
-import application.VideoPlayer;
-import functions.VideoEncoders;
 import application.RecordInputDevice;
 import application.Shutter;
 import application.SubtitlesEmbed;
+import application.VideoPlayer;
+import functions.VideoEncoders;
 import library.FFMPEG;
 import library.FFPROBE;
 
@@ -429,10 +429,18 @@ public class Overlay extends Shutter {
 			|| new File (file.replace(ext, ".ass")).exists()
 			|| new File (file.replace(ext, ".ssa")).exists()
 			|| new File (file.replace(ext, ".scc")).exists()
-			|| comboSubsSource.getSelectedIndex() == 1)
+			|| comboSubsSource.getSelectedIndex() != 0)
 			{
-				caseAddSubtitles.doClick();
-				caseAddSubtitles.doClick();
+				FunctionUtils.addSubtitles(false);
+				if (VideoPlayer.runProcess != null)
+				{
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {}
+					} while (VideoPlayer.runProcess.isAlive());
+				}
+				FunctionUtils.addSubtitles(true);
 			}
 									
 			autoBurn = false;
@@ -471,7 +479,7 @@ public class Overlay extends Shutter {
 				VideoPlayer.writeCurrentSubs(timeIn, false);
 				
 	            //Delete created .srt file
-	            if (comboSubsSource.getSelectedIndex() == 1)
+	            if (comboSubsSource.getSelectedIndex() != 0)
 	            {
 	            	subtitlesFilePath.delete();
 	            }
@@ -585,8 +593,8 @@ public class Overlay extends Shutter {
 	
     	return "";
 	}
-	
-	public static String setLogo() {
+
+ 	public static String setLogo() {
 		
 		if (Shutter.caseAddWatermark.isSelected() && Shutter.overlayDeviceIsRunning)
 		{

@@ -456,8 +456,16 @@ public class Rewrap extends Shutter {
 			|| new File (file.replace(ext, ".ssa")).exists()
 			|| new File (file.replace(ext, ".scc")).exists())
 			{
-				caseAddSubtitles.doClick();
-				caseAddSubtitles.doClick();
+				FunctionUtils.addSubtitles(false);
+				if (VideoPlayer.runProcess != null)
+				{
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {}
+					} while (VideoPlayer.runProcess.isAlive());
+				}
+				FunctionUtils.addSubtitles(true);
 			}
 
 			autoEmbed = false;

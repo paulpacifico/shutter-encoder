@@ -52,16 +52,17 @@ public class Merge extends Shutter {
 				String fileOutputName;
 				
 				int toExtension = liste.firstElement().toString().lastIndexOf('.');
-				String extension =  liste.firstElement().substring(toExtension);		
+				String container =  liste.firstElement().substring(toExtension);		
 				
 				FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseFileName"), FileDialog.SAVE);
 				dialog.setDirectory(new File(liste.elementAt(0).toString()).getParent());
+				dialog.setFile(language.getProperty("functionMerge") + container);
 
 				dialog.setVisible(true);
 			    
 			    if (dialog.getFile() != null)
 			    {
-					fileOutputName = dialog.getDirectory() + dialog.getFile().toString().replace(extension, "") + extension;
+					fileOutputName = dialog.getDirectory() + dialog.getFile().toString().replace(container, "") + container;
 					File listeBAB = new File(dialog.getDirectory() + dialog.getFile().toString() + ".txt");
 
 					try {
@@ -119,7 +120,7 @@ public class Merge extends Shutter {
 						//Metadatas
 			    		String metadatas = FunctionUtils.setMetadata();
 						
-						//Output Name
+						//File output
 						File fileOut = new File(fileOutputName);							
 						
 						//Audio
@@ -131,14 +132,15 @@ public class Merge extends Shutter {
 							openGOP = " -copyinkf";
 						
 						//Command
-						String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + metadatas + " -map s? -y ";
-						FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
-				
-						do
+						if (cancelled == false)
 						{
-							Thread.sleep(100);
+							String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + metadatas + " -map s? -y ";
+							FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
+					
+							do {
+								Thread.sleep(100);
+							} while(FFMPEG.runProcess.isAlive());
 						}
-						while(FFMPEG.runProcess.isAlive());
 													
 						listeBAB.delete();							
 

@@ -91,6 +91,7 @@ import javax.swing.text.StyleConstants;
 import org.apache.commons.io.FileUtils;
 
 import library.FFPROBE;
+import settings.FunctionUtils;
 import settings.Timecode;
 
 public class SubtitlesTimeline {
@@ -217,9 +218,9 @@ public class SubtitlesTimeline {
 					 if (q == 0)
 					 {
 						 if (Shutter.caseAddSubtitles.isSelected())
-							 Shutter.caseAddSubtitles.doClick();
+							 FunctionUtils.addSubtitles(false);
 						 
-						 Shutter.caseAddSubtitles.doClick();
+						FunctionUtils.addSubtitles(true);
 					 }
 					 else
 					 {

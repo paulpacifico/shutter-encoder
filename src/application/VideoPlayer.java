@@ -806,7 +806,7 @@ public class VideoPlayer {
 											bytesRead = audioInputStream.read(buffer, 0, buffer.length);
 							        		line.write(buffer, 0, bytesRead);
 							        									        		
-											if (playerPlayVideo)
+											if (playerPlayVideo && FFPROBE.audioOnly == false)
 											{
 												if (audioSetTimeIsRunning)
 													inputVideoFrameToSeconds = (float) playerCurrentFrame / FFPROBE.currentFPS - (float) line.getLongFramePosition() / 48000;
@@ -1473,10 +1473,18 @@ public class VideoPlayer {
 								|| new File (videoPath.replace(ext, ".ass")).exists()
 								|| new File (videoPath.replace(ext, ".ssa")).exists()
 								|| new File (videoPath.replace(ext, ".scc")).exists()
-								|| Shutter.comboSubsSource.getSelectedIndex() == 1)
+								|| Shutter.comboSubsSource.getSelectedIndex() != 0)
 								{
-									Shutter.caseAddSubtitles.doClick();
-									Shutter.caseAddSubtitles.doClick();
+									FunctionUtils.addSubtitles(false);
+									if (VideoPlayer.runProcess != null)
+									{
+										do {
+											try {
+												Thread.sleep(100);
+											} catch (InterruptedException e) {}
+										} while (VideoPlayer.runProcess.isAlive());
+									}
+									FunctionUtils.addSubtitles(true);
 								}
 								
 								Shutter.autoBurn = false;
@@ -1487,6 +1495,16 @@ public class VideoPlayer {
 										Thread.sleep(100);
 									} while (FFMPEG.isRunning);
 								} catch (InterruptedException e) {}		
+							}
+							
+							if (FFPROBE.subtitleStreams != Shutter.comboSubsSource.getItemCount() - 1)
+							{
+								Shutter.comboSubsSource.removeAllItems();
+								Shutter.comboSubsSource.addItem(Shutter.language.getProperty("file"));
+								for (int i = 0 ; i < FFPROBE.subtitleStreams ; i++)
+								{
+									Shutter.comboSubsSource.addItem(Shutter.language.getProperty("source") + " #" + (i + 1));
+								}
 							}
 							
 							//Image sequence
@@ -5202,15 +5220,7 @@ public class VideoPlayer {
 					{				
 						bufferedFrames.clear();
 					}
-				
-					//Important permet de lancer le runtime process dans FFMPEG
-					boolean display = false;
-					if (Shutter.caseDisplay.isSelected())
-					{
-						display = true;
-						Shutter.caseDisplay.setSelected(false);
-					}
-					
+								
 					//Stop player
 					if (playerIsPlaying())
 					{
@@ -5381,13 +5391,17 @@ public class VideoPlayer {
 				    }
 			        finally 
 			        {	
+			        	do {
+			        		try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {}
+			        	} while (FFMPEG.isRunning);
+						
 	          			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 	        				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 	        			else
 	        				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
-	          			
-			    		if (display)
-			    			Shutter.caseDisplay.setSelected(true);
+						
 			        }
 				}
 			});
