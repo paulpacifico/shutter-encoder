@@ -19,7 +19,6 @@
 
 package functions;
 
-import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -30,6 +29,7 @@ import javax.swing.JOptionPane;
 import application.Shutter;
 import application.VideoPlayer;
 import library.FFMPEG;
+import library.FFPROBE;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 
@@ -67,7 +67,7 @@ public class BlackDetection extends Shutter {
 						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
 						
 						String levels = "0.1";
-						if (comboFilter.getSelectedIndex() == 1)
+						if (FFPROBE.lumaLevel.equals("0-255"))
 							levels = "0.0";
 						
 						//Command
@@ -87,7 +87,7 @@ public class BlackDetection extends Shutter {
 						
 						//Show detection
 						if (cancelled == false)
-							showDetection(fileName);
+							showDetection(file);
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
@@ -109,39 +109,51 @@ public class BlackDetection extends Shutter {
 		
     }
 	
-	private static void showDetection(String fileName) {
+	private static void showDetection(File file) {
 		
-		if (FFMPEG.blackFrame.length() > 0 && Shutter.cancelled == false && FFMPEG.error == false)
+		if (Shutter.cancelled == false && FFMPEG.error == false)
 		{
-			 JOptionPane.showMessageDialog(frame, FFMPEG.blackFrame, Shutter.language.getProperty("functionBlackDetection"), JOptionPane.ERROR_MESSAGE);
-			 int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("saveResult"), Shutter.language.getProperty("analyzeEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
-			 
-			 if (q == JOptionPane.YES_OPTION)
-			 {
-				FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveResult"), FileDialog.SAVE);
-				dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
-				dialog.setVisible(true);
-
-				 if (dialog.getFile() != null)
-				 { 
-					try {
-						PrintWriter writer = new PrintWriter(dialog.getDirectory() + dialog.getFile().replace(".txt", "") + ".txt", "UTF-8");
-						writer.println(Shutter.language.getProperty("analyzeOf") + " " + fileName);
-						writer.println("");
-						writer.println(FFMPEG.blackFrame);
-						writer.close();
-					} catch (FileNotFoundException | UnsupportedEncodingException e) {}
-
-				 }
+			if (comboFilter.getSelectedIndex() == 0) // Display
+			{
+				if (FFMPEG.blackFrame.length() > 0)
+				{
+					JOptionPane.showMessageDialog(frame, FFMPEG.blackFrame, Shutter.language.getProperty("functionBlackDetection"), JOptionPane.ERROR_MESSAGE);
+				}
+				else
+					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionBlackDetection"), JOptionPane.INFORMATION_MESSAGE);
+			}
+			else // Save
+			{
+				//File output name
+				String prefix = "";	
+				if (casePrefix.isSelected())
+				{
+					prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+				}
 				
-			 }
-			 else
-			 {
-				 cancelled = false;
-			 }
+				String extensionName = "";	
+				if (btnExtension.isSelected())
+				{
+					extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
+				}
+				
+				//Output name
+				String fileOutputName =  FunctionUtils.setOutputDestination("", file).replace("\\", "/") + "/" + prefix + file.getName() + extensionName; 
+				
+				try {
+					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
+					writer.println(Shutter.language.getProperty("analyzeOf") + " " + file.getName());
+					writer.println("");
+					if (FFMPEG.blackFrame.length() > 0)
+					{
+						writer.println(FFMPEG.blackFrame);
+					}
+					else
+						writer.println(Shutter.language.getProperty("noErrorDetected"));
+					writer.close();
+				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
+			}
 		}
-		else
-			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionBlackDetection"), JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private static boolean lastActions(File file, String fileName) {	

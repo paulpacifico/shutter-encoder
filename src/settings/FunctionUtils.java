@@ -85,7 +85,7 @@ public class FunctionUtils extends Shutter {
 	public static boolean bestBitrateMode;
 	public static boolean goodBitrateMode;
 	public static boolean autoBitrateMode;
-	private static boolean deleteSRT = false;
+	public static boolean deleteSRT = false;
 	private static StringBuilder mailFileList = new StringBuilder();
 	
 	public static boolean analyze(File file, boolean isRaw) throws InterruptedException {
@@ -1737,14 +1737,16 @@ public class FunctionUtils extends Shutter {
 				{	
 					try {
 						
+						File srt = new File(video.toString().replace(ext, ".srt"));
+						
 						//Command
 						FFMPEG.runSilently(" -i " + '"' + video.toString() + '"' + " -vn -an -map s:" + (comboSubsSource.getSelectedIndex() - 1) + "? -y " + '"'  + video.toString().replace(ext, ".srt") + '"');	
 
 						do {
 							Thread.sleep(100);
-						} while (FFMPEG.runProcess.isAlive());
+						} while (FFMPEG.process.isAlive() && FFMPEG.error == false);
 						
-						if (new File(video.toString().replace(ext, ".srt")).exists())
+						if (srt.exists())
 						{
 							deleteSRT = true;
 						}	
@@ -1813,7 +1815,7 @@ public class FunctionUtils extends Shutter {
 
 										do {
 											Thread.sleep(100);													
-										} while (FFMPEG.runProcess.isAlive());
+										} while (FFMPEG.process.isAlive() && FFMPEG.error == false);
 										
 									} catch (InterruptedException e) {}
 

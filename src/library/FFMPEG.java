@@ -303,7 +303,9 @@ public static StringBuilder errorLog = new StringBuilder();
 						            	
 										do {
 											
-											if (btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
+											if (btnStart.getText().equals(language.getProperty("btnPauseFunction"))
+											|| btnStart.getText().equals(language.getProperty("btnStopRecording"))
+											|| cancelled) //Empty the buffer
 											{	
 												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);	
 												VideoPlayer.player.repaint();
@@ -374,6 +376,8 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 	public static void runSilently(String cmd) {
 		
+		error = false;
+		
 		runProcess = new Thread(new Runnable()  {
 			
 			@Override
@@ -393,8 +397,20 @@ public static StringBuilder errorLog = new StringBuilder();
 						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner " + cmd);							
 						process = processFFMPEG.start();
 					}	
+					
+					String line;
+					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+					
+					while ((line = input.readLine()) != null)
+					{			
+						checkForErrors(line);
+					}					
+					process.waitFor();
 									   					     																		
-				} catch (IOException io) {}//Bug Linux							
+				} catch (IOException io) {//Bug Linux							
+				} catch (Exception e) {
+					error = true;	
+				}
 			}
 		});		
 		runProcess.start();

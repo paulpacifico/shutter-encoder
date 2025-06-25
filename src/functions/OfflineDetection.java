@@ -19,7 +19,6 @@
 
 package functions;
 
-import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -88,7 +87,7 @@ public class OfflineDetection extends Shutter {
 						
 						//Show detection
 						if (cancelled == false)
-							showDetection(fileName);
+							showDetection(file);
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
@@ -110,39 +109,51 @@ public class OfflineDetection extends Shutter {
 		
     }
 	
-	private static void showDetection(String fileName) {
+	private static void showDetection(File file) {
 		
-		if (FFMPEG.mediaOfflineFrame.length() > 0 && Shutter.cancelled == false && FFMPEG.error == false)
+		if (Shutter.cancelled == false && FFMPEG.error == false)
 		{
-			 JOptionPane.showMessageDialog(frame, FFMPEG.mediaOfflineFrame, Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.ERROR_MESSAGE);
-			 int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("saveResult"), Shutter.language.getProperty("analyzeEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
-			 
-			 if (q == JOptionPane.YES_OPTION)
+			if (comboFilter.getSelectedIndex() == 0) // Display
+			{
+				if (FFMPEG.mediaOfflineFrame.length() > 0)
 				{
-					FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("saveResult"), FileDialog.SAVE);
-					dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
-					dialog.setVisible(true);
-
-					 if (dialog.getFile() != null)
-					 { 
-						try {
-							PrintWriter writer = new PrintWriter(dialog.getDirectory() + dialog.getFile().replace(".txt", "") + ".txt", "UTF-8");
-							writer.println(Shutter.language.getProperty("analyzeOf") + " " + fileName);
-							writer.println("");
-							writer.println(FFMPEG.mediaOfflineFrame);
-							writer.close();
-						} catch (FileNotFoundException | UnsupportedEncodingException e) {}
-
-					 }
-					
-				}//End Question
-			 else
-			 {
-				 cancelled = false;
-			 }
+					JOptionPane.showMessageDialog(frame, FFMPEG.mediaOfflineFrame, Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.ERROR_MESSAGE);
+				}
+				else
+					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.INFORMATION_MESSAGE);					
+			}
+			else // Save
+			{
+				//File output name
+				String prefix = "";	
+				if (casePrefix.isSelected())
+				{
+					prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
+				}
+				
+				String extensionName = "";	
+				if (btnExtension.isSelected())
+				{
+					extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
+				}
+				
+				//Output name
+				String fileOutputName =  FunctionUtils.setOutputDestination("", file).replace("\\", "/") + "/" + prefix + file.getName() + extensionName; 
+				
+				try {
+					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
+					writer.println(Shutter.language.getProperty("analyzeOf") + " " + file.getName());
+					writer.println("");
+					if (FFMPEG.mediaOfflineFrame.length() > 0)
+					{
+						writer.println(FFMPEG.mediaOfflineFrame);
+					}
+					else
+						writer.println(Shutter.language.getProperty("noErrorDetected"));
+					writer.close();
+				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
+			}
 		}
-		else
-			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	private static boolean lastActions(File file, String fileName) {	

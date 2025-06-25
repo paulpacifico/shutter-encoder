@@ -1325,7 +1325,13 @@ public class Shutter {
 
 									Utils.killProcesses();
 
-									if (VideoPlayer.waveform != null) {
+									if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
+									{
+										subtitlesFilePath.delete();
+									}
+									
+									if (VideoPlayer.waveform != null)
+									{
 										VideoPlayer.waveform = null;
 									}
 								}
@@ -1624,14 +1630,21 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
-				if (accept) {
+				if (accept)
+				{
 					Settings.saveSettings();
 
 					Utils.changeFrameVisibility(frame, true);
 
 					Utils.killProcesses();
 
-					if (VideoPlayer.waveform != null) {
+					if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
+					{
+						subtitlesFilePath.delete();
+					}
+										
+					if (VideoPlayer.waveform != null)
+					{
 						VideoPlayer.waveform = null;
 					}
 
@@ -2071,6 +2084,11 @@ public class Shutter {
 					addToList.setVisible(true);
 					lblFilesEnded.setVisible(false);
 
+					if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
+					{
+						subtitlesFilePath.delete();
+					}						
+					
 					// H264 Settings
 					if (isLocked == false) {
 						bitrateSize.setText("-");
@@ -19844,22 +19862,24 @@ public class Shutter {
 			txtSubFolder.setEnabled(false);
 
 		// btnStart text
-		if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) {
+		if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")))
+		{
 			btnStart.setText(language.getProperty("btnDownload"));
-		} else if (RenderQueue.frame != null) {
+		}
+		else if (RenderQueue.frame != null)
+		{
 			if (RenderQueue.frame.isVisible()
-					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false
-					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionInsert")) == false
-					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
-					&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
-					&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
-					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionNormalization")) == false
-					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
-					&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
-					&& comboFonctions.getSelectedItem()
-							.equals(language.getProperty("functionOfflineDetection")) == false
-					&& comboFonctions.getSelectedItem().equals("VMAF") == false
-					&& comboFonctions.getSelectedItem().equals("FrameMD5") == false) {
+				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false
+				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionInsert")) == false
+				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
+				&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
+				&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
+				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionNormalization")) == false
+				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
+				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
+				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
+				&& comboFonctions.getSelectedItem().equals("VMAF") == false
+				&& comboFonctions.getSelectedItem().equals("FrameMD5") == false) {
 				btnStart.setText(language.getProperty("btnAddToRender"));
 			} else {
 				if (FFMPEG.isRunning == false)
@@ -24030,22 +24050,6 @@ public class Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 
-			} else if (comboFonctions.getSelectedItem().toString()
-					.equals(Shutter.language.getProperty("functionBlackDetection"))) {
-
-				lblFilter.setText(Shutter.language.getProperty("levels"));
-				lblFilter.setVisible(true);
-				comboFilter.setVisible(true);
-				lblFilter.setLocation(164, 21);
-				lblFilter.setIcon(null);
-
-				String types[] = { "16-235", "0-255" };
-				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
-				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
-					comboFilter.setModel(model);
-					comboFilter.setSelectedIndex(0);
-				}
-
 			} else if (comboFonctions.getSelectedItem().toString().equals("DV PAL")) {
 
 				lblFilter.setText(" ");
@@ -24420,7 +24424,10 @@ public class Shutter {
 					comboFilter.setSelectedIndex(2);
 				}
 			}
-			else if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak") || comboFonctions.getSelectedItem().toString().equals("VMAF"))
+			else if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak")
+			|| comboFonctions.getSelectedItem().toString().equals("VMAF")
+			|| comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionBlackDetection"))
+			|| comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionOfflineDetection")))
 			{
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);

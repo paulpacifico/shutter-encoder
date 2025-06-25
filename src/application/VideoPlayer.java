@@ -4911,7 +4911,7 @@ public class VideoPlayer {
 	
 	public static void writeCurrentSubs(float inputTime, boolean firstSub) {	
 				
-		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFilePath.exists() &&  Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{
 			try {
 	
@@ -5001,7 +5001,9 @@ public class VideoPlayer {
 	            bufferedReader.close();  
 	            bufferedWriter.close();
 	            	            
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
