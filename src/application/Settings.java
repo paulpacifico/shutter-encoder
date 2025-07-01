@@ -188,7 +188,10 @@ public class Settings {
 		
 		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
 		frame.setTitle(Shutter.language.getProperty("frameSettings"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
@@ -199,7 +202,9 @@ public class Settings {
         shape1.add(shape2);
 		frame.setShape(shape1);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
-		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 				
 		topPanel();
 		

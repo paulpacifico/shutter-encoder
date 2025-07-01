@@ -79,7 +79,10 @@ public class SubtitlesEdit {
 		frame.getContentPane().setLayout(null);
 		frame.setSize(620, 640);
 		frame.setAlwaysOnTop(true);
-		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
+		
 		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));

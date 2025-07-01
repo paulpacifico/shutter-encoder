@@ -85,7 +85,9 @@ public class Update {
 		{
 			frame.setUndecorated(true);
 			frame.setShape(new AntiAliasedRoundRectangle(0, 0, frame.getWidth() + 15, frame.getHeight(), 15, 15));
-			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+			
+			if (System.getProperty("os.name").contains("Mac") == false)
+				frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		}
 		
 		content();		

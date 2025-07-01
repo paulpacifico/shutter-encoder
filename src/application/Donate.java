@@ -68,7 +68,9 @@ public class Donate {
 		frame.setShape(shape1);
 		frame.setAlwaysOnTop(true);
 		
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
 		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() / 2 - frame.getHeight()));
 				
 		JPanel topPanel = new JPanel();

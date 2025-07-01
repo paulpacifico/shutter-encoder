@@ -88,7 +88,9 @@ public class HashGenerator {
 		frame.getContentPane().setLayout(null);
 		frame.setSize(600, 143);
 		frame.setResizable(false);
-		frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
 		{
@@ -98,7 +100,9 @@ public class HashGenerator {
 	        shape1.add(shape2);
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
-			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());	
+			
+			if (System.getProperty("os.name").contains("Mac") == false)
+				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("contents/icon.png"))).getImage());	
 		}
 				
 		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() / 2 - frame.getHeight()));		

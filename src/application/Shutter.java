@@ -183,7 +183,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "19.1";
+	public static String actualVersion = "19.2";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -861,7 +861,8 @@ public class Shutter {
 		shape1.add(shape2);
 		frame.setShape(shape1);
 
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -19517,8 +19518,10 @@ public class Shutter {
 				oldVersions.setSize(1600, 423);
 				oldVersions.setShape(new AntiAliasedRoundRectangle(0, 0, oldVersions.getWidth() + 18,
 						oldVersions.getHeight(), 15, 15));
-				oldVersions.setIconImage(
-						new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+				
+				if (System.getProperty("os.name").contains("Mac") == false)
+					oldVersions.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+				
 				oldVersions.setLocation(frame.getX() + (frame.getWidth() - oldVersions.getWidth()) / 2, frame.getY() + (frame.getHeight() - oldVersions.getHeight()) / 2);
 				oldVersions.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				oldVersions.setTitle("2013-2017");

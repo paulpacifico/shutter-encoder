@@ -51,7 +51,9 @@ public class GOP {
 		frame.getContentPane().setLayout(null);
 		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());			
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());			
 				
 		scrollBar = new JScrollBar();
 		scrollBar.setOrientation(JScrollBar.HORIZONTAL);

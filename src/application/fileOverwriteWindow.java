@@ -21,7 +21,10 @@ public class fileOverwriteWindow  {
 		JDialog frame = new JDialog();
 		frame.setTitle(file + " " + Shutter.language.getProperty("alreadyExist").toLowerCase());
 		frame.setLayout(null);
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
 		frame.setResizable(false);
     	frame.setModal(true);
 		frame.getContentPane().setLayout(null);	

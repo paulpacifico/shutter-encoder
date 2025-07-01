@@ -83,7 +83,10 @@ public class RecordInputDevice {
 		
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(Utils.bg32);
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
 		frame.setLocation((Shutter.frame.getLocation().x + Shutter.frame.getWidth() / 2) - frame.getWidth() / 2, (Shutter.frame.getLocation().y + Shutter.frame.getHeight() / 3) - frame.getHeight() / 2);

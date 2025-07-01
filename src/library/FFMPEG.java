@@ -759,7 +759,9 @@ public static StringBuilder errorLog = new StringBuilder();
 			player.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);	
 			player.setBackground(Utils.c42);
 			player.getContentPane().setLayout(null);
-			player.setIconImage(frame.getIconImage());
+			
+			if (System.getProperty("os.name").contains("Windows"))
+				player.setIconImage(frame.getIconImage());
 						
 			if (RecordInputDevice.frame != null && RecordInputDevice.frame.isVisible())
 			{

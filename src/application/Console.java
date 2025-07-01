@@ -83,7 +83,10 @@ public class Console extends JFrame {
 		frmConsole = new JFrame();
 		frmConsole.setTitle("Console");
 		frmConsole.setLayout(null);
-		frmConsole.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frmConsole.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
 		frmConsole.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmConsole.setSize(800, 670);
 		frmConsole.getContentPane().setLayout(null);

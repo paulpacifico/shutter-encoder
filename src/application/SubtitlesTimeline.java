@@ -153,7 +153,10 @@ public class SubtitlesTimeline {
     	frame = new JFrame();
     	frame.setResizable(true);
     	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    	frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+    	
+    	if (System.getProperty("os.name").contains("Mac") == false)
+    		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+    	
     	frame.getContentPane().setBackground(Utils.bg32);
     	frame.getContentPane().setLayout(null);
     	frame.setAlwaysOnTop(true);

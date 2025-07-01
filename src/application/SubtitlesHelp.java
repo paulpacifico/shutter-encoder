@@ -36,7 +36,10 @@ public class SubtitlesHelp {
 		frame.setResizable(false);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitles"));
 		frame.getContentPane().setBackground(Utils.bg32);
-		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
+		if (System.getProperty("os.name").contains("Mac") == false)
+			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
+		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
 		frame.setLocation(Shutter.frame.getLocation().x + Shutter.frame.getSize().width/2 - 200, Shutter.frame.getLocation().y + Shutter.frame.getHeight() /2 - 150);
