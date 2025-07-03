@@ -3771,7 +3771,10 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (comboFonctions.getSelectedItem().toString().contains("-") && comboFonctions.getSelectedItem().toString().contains(":"))
+				if (comboFonctions.getSelectedItem().toString().contains("-")
+				&& comboFonctions.getSelectedItem().toString().contains(":")
+				&& comboFonctions.getSelectedItem().toString().contains("ffmpeg") == false
+				&& comboFonctions.getSelectedItem().toString().contains("exiftool") == false)
 				{
 					comboFonctions.setSelectedIndex(comboFonctions.getSelectedIndex() + 1);
 				}
