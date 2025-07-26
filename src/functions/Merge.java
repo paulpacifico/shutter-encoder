@@ -189,6 +189,10 @@ public class Merge extends Shutter {
 						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 				}
 			}
+			else if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+			{
+				return " -c:a flac -ar " + lbl48k.getSelectedItem().toString() + " -compression_level " + comboAudioBitrate.getSelectedItem().toString();
+			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
 				if (System.getProperty("os.name").contains("Mac"))

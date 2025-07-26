@@ -168,18 +168,18 @@ public class VideoEncoders extends Shutter {
 							FFPROBE.imageHeight = 1080;
 							FFPROBE.imageResolution = "1920x1080";
 						}
-												
-						//InOut	
-						if (comboFonctions.getSelectedItem().toString().equals("VP8")
-						|| comboFonctions.getSelectedItem().toString().equals("VP9")
-						|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
-						|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-						|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Issue for audio, libvpx & added mute track)
-						{
-							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), true);	
+										
+						//Write the in and out values before getInputAndOutput()
+						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+						{							
+							VideoPlayer.videoPath = file.toString();							
+							VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
+							VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.setFileList();	
 						}
-						else
-							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
+						
+						//InOut	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -1627,18 +1627,12 @@ public class VideoEncoders extends Shutter {
 			case "H.266":
 			case "VP9":
 				
-				String yuv = "yuv";
-				
+				String yuv = "yuv";				
 				if (caseAlpha.isSelected())
 		        {
 		        	yuv += "a";
 		        }
 				
-		        if (caseForceOutput.isSelected() && lblNiveaux.getText().equals("0-255"))
-		        {
-		        	yuv += "j";
-		        }		
-
 		        if (caseForceLevel.isSelected())
 		        {
 		        	if (comboForceProfile.getSelectedItem().toString().contains("422"))
@@ -1650,6 +1644,17 @@ public class VideoEncoders extends Shutter {
 		        }
 		        else
 		        	yuv += "420p";
+		        
+				String range = "";
+		        if (caseForceOutput.isSelected())
+		        {
+		        	if (lblNiveaux.getText().equals("0-255"))
+		        	{
+		        		range = " -color_range full";
+		        	}
+		        	else
+		        		range = " -color_range limited";
+		        }	
 		        
 				if (caseColorspace.isSelected())
 				{
@@ -1669,20 +1674,20 @@ public class VideoEncoders extends Shutter {
 					{
 						if (filterComplex.contains("format=p010"))
 						{
-							return " -pix_fmt " + yuv;
+							return " -pix_fmt " + yuv + range;
 						}
 						else
-							return "";				
+							return range;				
 					}
 					else if ("H.266".equals(comboFonctions.getSelectedItem().toString()))
 			        {
-						return " -pix_fmt yuv420p10le";
+						return " -pix_fmt yuv420p10le" + range;
 			        }
 					else						
-						return " -pix_fmt " + yuv;
+						return " -pix_fmt " + yuv + range;
 				}
-				
-				return " -pix_fmt " + yuv;
+								
+				return " -pix_fmt " + yuv + range;
 			
 			case "VP8":
 

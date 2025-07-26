@@ -521,7 +521,7 @@ public class FunctionUtils extends Shutter {
 				int h = Integer.parseInt(VideoPlayer.caseInH.getText());
 				int m = Integer.parseInt(VideoPlayer.caseInM.getText());
 				int s = Integer.parseInt(VideoPlayer.caseInS.getText());
-				int f = (int) (Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));	
+				int f = (int) Math.floor(Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.accurateFPS));	
 				
 				writer.println("file " + "'" + file + "'");							
 				writer.println("outpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
@@ -529,7 +529,7 @@ public class FunctionUtils extends Shutter {
 				h = Integer.parseInt(VideoPlayer.caseOutH.getText());
 				m = Integer.parseInt(VideoPlayer.caseOutM.getText());
 				s = Integer.parseInt(VideoPlayer.caseOutS.getText());
-				f = (int) (Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));	
+				f = (int) Math.floor(Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.accurateFPS));	
 				
 				writer.println("file " + "'" + file + "'");	
 				writer.println("inpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
@@ -1500,8 +1500,9 @@ public class FunctionUtils extends Shutter {
 		int n = 1;
 		File fileOut = new File(path + "/" + file.replace(oldExt, surname.substring(0, surname.length() - 1) + newExt));
 		
-		//Nom identique à la source
-		if (file.equals(file.replace(oldExt.toLowerCase(), surname.substring(0, surname.length() - 1) + newExt)) && caseChangeFolder1.isSelected() == false)
+		//Same name as source
+		if (caseChangeFolder1.isSelected() == false && file.equals(file.replace(oldExt.toLowerCase(), surname.substring(0, surname.length() - 1) + newExt))
+		|| caseChangeFolder1.isSelected() && path.equals(new File(FFPROBE.analyzedMedia).getParent()))
 		{
 			do {
 				fileOut = new File(path + "/" + file.replace(oldExt, surname + n + newExt));

@@ -27,10 +27,12 @@ public class InputAndOutput extends Shutter {
 
 	public static String inPoint = "";
 	public static String outPoint = "";
+	public static float savedInPoint = 0;
+	public static float savedOutPoint = 0;
 	
-	public static void getInputAndOutput(boolean setInputAndOutput, boolean useDuration) {
-			
-		if (setInputAndOutput)
+	public static void getInputAndOutput(boolean setInputAndOutput) {
+					
+		if (setInputAndOutput && FFPROBE.totalLength > 40)
 		{
 			float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
 			
@@ -54,14 +56,15 @@ public class InputAndOutput extends Shutter {
 		    		
 		    		outPoint = " -frames:v " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 2]) / outputFPS);
 	        	}
-	        	else if (FFPROBE.audioOnly || useDuration || (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")) == false))	        
-	        	{
-	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 2]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
-	        	}
-	        	else
+	        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))	        
 	        	{
 		        	outPoint = " -frames:v " + Integer.parseInt(frames[frames.length - 2]);
 	        	}
+	        	else
+	        	{
+	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 2]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
+	        	}
+	        	
 	        }
 	        else
 	        	outPoint = "";

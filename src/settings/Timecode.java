@@ -103,7 +103,7 @@ public class Timecode extends Shutter {
 		//NTSC framerates && non drop frame timecode => remove a frame to reach round framerate
 		if (isNonDropFrame() && currentFrame > 0)
 		{							
-			float currentTime = VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS;
+			float currentTime = currentFrame * VideoPlayer.inputFramerateMS;
 			
 			if (FFPROBE.currentFPS == 23.98f)
 			{

@@ -357,6 +357,9 @@ public class Shutter {
 	protected static JCheckBox caseForceOutput;
 	protected static JCheckBox caseFastStart;
 	protected static JCheckBox caseFastDecode;
+	protected static JComboBox<String> comboFastDecode;
+	protected static JCheckBox caseVarianceBoost;
+	protected static JComboBox<String> comboVarianceBoost;
 	protected static JCheckBox caseAlpha;
 	protected static JCheckBox caseGOP;
 	protected static JTextField gopSize;
@@ -2250,19 +2253,20 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				int totalLength = 0;
+				float totalLength = 0;
 				FFPROBE.totalLength = 0;
 				FFPROBE.analyzedMedia = null;
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 				for (String file : fileList.getSelectedValuesList()) {
+					
 					FFPROBE.Data(file);
+					
 					do {
 						try {
 							Thread.sleep(1);
-						} catch (InterruptedException e1) {
-						}
+						} catch (InterruptedException e1) {}
 					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
 
 					// IMPORTANT
@@ -2278,7 +2282,8 @@ public class Shutter {
 				}
 
 				// IMPORTANT
-				if (VideoPlayer.videoPath != null) {
+				if (VideoPlayer.videoPath != null)
+				{
 					FFPROBE.Data(VideoPlayer.videoPath);
 					do {
 						try {
@@ -2298,24 +2303,29 @@ public class Shutter {
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
+				totalLength = ((float) totalLength / 1000 * FFPROBE.currentFPS);
+				
+				//NTSC framerate
+				totalLength = Timecode.setNonDropFrameTC(totalLength);
+				
 				// Formatage
-				int h = (totalLength / 3600000);
-				int m = (totalLength / 60000) % 60;
-				int s = (totalLength) / 1000 % 60;
-				int f = (int) (totalLength / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);
+				int h = (int) Math.floor(totalLength / FFPROBE.currentFPS / 3600);
+				int m = (int) (Math.floor(totalLength / FFPROBE.currentFPS / 60) % 60);
+				int s = (int) (Math.floor(totalLength / FFPROBE.currentFPS) % 60);   
+				int f = (int) Math.floor(totalLength % FFPROBE.currentFPS);
 
-				String dureeFinale;
+				String finalDuration;
 				if (h > 0)
-					dureeFinale = h + "h " + m + "min " + s + "sec " + f + "i";
+					finalDuration = h + "h " + m + "min " + s + "sec " + f + "i";
 				else if (m > 0)
-					dureeFinale = m + "min " + s + "sec " + f + "i";
+					finalDuration = m + "min " + s + "sec " + f + "i";
 				else
-					dureeFinale = s + "sec " + f + "i";
+					finalDuration = s + "sec " + f + "i";
 
 				JOptionPane.showMessageDialog(frame,
 						fileList.getSelectedIndices().length + " " + language.getProperty("selectedFiles")
 								+ System.lineSeparator() + System.lineSeparator() + language.getProperty("totalTime")
-								+ " " + dureeFinale,
+								+ " " + finalDuration,
 						language.getProperty("totalTimeFiles"), JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
@@ -6764,6 +6774,13 @@ public class Shutter {
 						comboAudioBitrate.setEnabled(true);
 						lbl48k.setEnabled(true);
 					}
+					
+					if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+					{
+						lblKbs.setVisible(false);
+					}
+					else
+						lblKbs.setVisible(true);
 					
 					if (grpSetAudio.getSize().getHeight() == 241)
 					{
@@ -16534,7 +16551,8 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseEnableSequence.isSelected()) {
+				if (caseEnableSequence.isSelected())
+				{
 					String[] data = new String[liste.getSize()];
 
 					for (int i = 0; i < liste.getSize(); i++) {
@@ -16549,7 +16567,8 @@ public class Shutter {
 					}
 
 					caseSequenceFPS.setEnabled(true);
-				} else
+				}
+				else
 					caseSequenceFPS.setEnabled(false);
 
 				VideoPlayer.setMedia();
@@ -17221,7 +17240,60 @@ public class Shutter {
 		caseFastDecode.setName("caseFastDecode");
 		caseFastDecode.setFont(new Font(mainFont, Font.PLAIN, 12));
 		caseFastDecode.setSize(caseFastDecode.getPreferredSize().width, 23);
+		
+		caseFastDecode.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (caseFastDecode.isSelected()) {
+					comboFastDecode.setEnabled(true);
+				} else {
+					comboFastDecode.setEnabled(false);
+				}
+			}
+
+		});
+
+		comboFastDecode = new JComboBox<String>();
+		comboFastDecode.setName("comboFastDecode");
+		comboFastDecode.setEnabled(false);
+		comboFastDecode.setMaximumRowCount(15);
+		comboFastDecode.setModel(new DefaultComboBoxModel<String>(new String[] { "1", "2" }));
+		comboFastDecode.setSelectedIndex(0);
+		comboFastDecode.setFont(new Font(mainFont, Font.PLAIN, 10));
+		comboFastDecode.setEditable(false);
+		comboFastDecode.setSize(40, 16);
+		
+		caseVarianceBoost = new JCheckBox(language.getProperty("caseVarianceBoost"));
+		caseVarianceBoost.setName("caseVarianceBoost");
+		caseVarianceBoost.setFont(new Font(mainFont, Font.PLAIN, 12));
+		caseVarianceBoost.setSize(caseVarianceBoost.getPreferredSize().width, 23);
+		
+		caseVarianceBoost.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (caseVarianceBoost.isSelected()) {
+					comboVarianceBoost.setEnabled(true);
+				} else {
+					comboVarianceBoost.setEnabled(false);
+				}
+			}
+
+		});
+
+		comboVarianceBoost = new JComboBox<String>();
+		comboVarianceBoost.setName("comboVarianceBoost");
+		comboVarianceBoost.setEnabled(false);
+		comboVarianceBoost.setMaximumRowCount(15);
+		comboVarianceBoost.setModel(new DefaultComboBoxModel<String>(new String[] { "1", "2", "3", "4" }));
+		comboVarianceBoost.setSelectedIndex(1);
+		comboVarianceBoost.setFont(new Font(mainFont, Font.PLAIN, 10));
+		comboVarianceBoost.setEditable(false);
+		comboVarianceBoost.setSize(40, 16);
+		
 		caseAlpha = new JCheckBox(language.getProperty("caseAlpha"));
 		caseAlpha.setName("caseAlpha");
 		caseAlpha.setFont(new Font(mainFont, Font.PLAIN, 12));
@@ -17277,7 +17349,6 @@ public class Shutter {
 			}
 		});
 		
-
 		caseFilmGrain = new JCheckBox(language.getProperty("caseFilmGrain"));
 		caseFilmGrain.setName("caseFilmGrain");
 		caseFilmGrain.setFont(new Font(mainFont, Font.PLAIN, 12));
@@ -18452,7 +18523,7 @@ public class Shutter {
 					|| language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString())
 					|| language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
 					{
-						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "AAC", "MP3", "AC3", "Opus", "Vorbis",
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "FLAC", "AAC", "MP3", "AC3", "Opus", "Vorbis",
 								"Dolby Digital Plus", language.getProperty("noAudio"), language.getProperty("custom") }));
 						comboAudioCodec.setSelectedIndex(0);
 						caseNormalizeAudio.setEnabled(false);
@@ -18845,6 +18916,9 @@ public class Shutter {
 					caseForceOutput.setSelected(false);
 					caseFastStart.setSelected(false);
 					caseFastDecode.setSelected(false);
+					comboFastDecode.setEnabled(false);
+					caseVarianceBoost.setSelected(false);
+					comboVarianceBoost.setEnabled(false);
 					caseAlpha.setSelected(false);
 					caseGOP.setSelected(false);
 					gopSize.setEnabled(false);
@@ -19340,8 +19414,6 @@ public class Shutter {
 					caseForceTune.setSelected(false);
 					caseForceTune.setEnabled(false);
 					comboForceTune.setEnabled(false);
-					caseForceOutput.setSelected(false);
-					caseForceOutput.setEnabled(false);
 					case2pass.setSelected(false);
 					case2pass.setEnabled(false);
 				} else {
@@ -19385,7 +19457,6 @@ public class Shutter {
 					if (lblVBR.getText().equals("CQ") == false)
 						case2pass.setEnabled(true);
 
-					caseForceOutput.setEnabled(true);
 					caseForcerEntrelacement.setEnabled(true);
 
 					lblVBR.setVisible(true);
@@ -20718,7 +20789,7 @@ public class Shutter {
 									caseEqualizer.setSelected(false);
 								}
 
-								if ((comboAudioCodec.getItemCount() != 12
+								if ((comboAudioCodec.getItemCount() != 13
 										|| comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
 										&& action) {
 									if (lblAudioMapping.getItemCount() != 4) {
@@ -20729,7 +20800,7 @@ public class Shutter {
 									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 
 									comboAudioCodec.setModel(
-											new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "AAC", "MP3", "AC3", "Opus", "Vorbis",
+											new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "FLAC", "AAC", "MP3", "AC3", "Opus", "Vorbis",
 													"Dolby Digital Plus", language.getProperty("noAudio"), language.getProperty("custom") }));
 									comboAudioCodec.setSelectedIndex(0);
 									caseNormalizeAudio.setEnabled(false);
@@ -20845,7 +20916,7 @@ public class Shutter {
 								grpSetAudio.removeAll();
 								grpSetAudio.add(caseChangeAudioCodec);
 
-								if ((comboAudioCodec.getItemCount() != 12
+								if ((comboAudioCodec.getItemCount() != 13
 										|| comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
 										&& action) {
 									if (lblAudioMapping.getItemCount() != 4) {
@@ -20856,7 +20927,7 @@ public class Shutter {
 									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 
 									comboAudioCodec.setModel(
-											new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "AAC", "MP3", "AC3", "Opus", "Vorbis",
+											new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "FLAC", "AAC", "MP3", "AC3", "Opus", "Vorbis",
 													"Dolby Digital Plus", language.getProperty("noAudio"), language.getProperty("custom") }));
 									comboAudioCodec.setSelectedIndex(0);
 									caseNormalizeAudio.setEnabled(false);
@@ -21355,7 +21426,8 @@ public class Shutter {
 								grpSetTimecode.setLocation(grpSetTimecode.getX(),
 										grpImageSequence.getSize().height + grpImageSequence.getLocation().y + 6);
 
-								if (comboColorspace.getItemCount() != 3) {
+								if (comboColorspace.getItemCount() != 3)
+								{
 									comboColorspace.setModel(new DefaultComboBoxModel<Object>(
 											new String[] { "Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG" }));
 
@@ -21984,7 +22056,6 @@ public class Shutter {
 									if (caseQMax.isSelected() == false)
 										caseForcePreset.setEnabled(true);
 									caseForceTune.setEnabled(true);
-									caseForceOutput.setEnabled(true);
 
 									if (lblVBR.getText().equals("CQ")) {
 										bitrateSize.setText("-");
@@ -22378,12 +22449,15 @@ public class Shutter {
 								if ("H.266".equals(function)) {
 									caseForcePreset.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseForcePreset);
-									comboForcePreset.setLocation(
-											caseForcePreset.getLocation().x + caseForcePreset.getWidth() + 4,
-											caseForcePreset.getLocation().y + 4);
+									comboForcePreset.setLocation(caseForcePreset.getLocation().x + caseForcePreset.getWidth() + 4, caseForcePreset.getLocation().y + 4);
 									grpAdvanced.add(comboForcePreset);
+									
+									caseForceOutput.setLocation(7, caseForcePreset.getLocation().y + 17);
+									grpAdvanced.add(caseForceOutput);
+									lblNiveaux.setLocation(caseForceOutput.getLocation().x + caseForceOutput.getWidth() + 4, caseForceOutput.getLocation().y + 4);
+									grpAdvanced.add(lblNiveaux);
 
-									caseGOP.setLocation(7, caseForcePreset.getLocation().y + 17);
+									caseGOP.setLocation(7, caseForceOutput.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
@@ -22394,9 +22468,7 @@ public class Shutter {
 
 									caseForceOutput.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseForceOutput);
-									lblNiveaux.setLocation(
-											caseForceOutput.getLocation().x + caseForceOutput.getWidth() + 4,
-											caseForceOutput.getLocation().y + 4);
+									lblNiveaux.setLocation(caseForceOutput.getLocation().x + caseForceOutput.getWidth() + 4, caseForceOutput.getLocation().y + 4);
 									grpAdvanced.add(lblNiveaux);
 									caseForceLevel.setLocation(7, caseForceOutput.getLocation().y + 17);
 									grpAdvanced.add(caseForceLevel);
@@ -22984,7 +23056,8 @@ public class Shutter {
 										lblTFF.getLocation().y - 1);
 								grpAdvanced.add(comboForcerDesentrelacement);
 
-								if ("VP8".equals(function) || "VP9".equals(function)) {
+								if ("VP8".equals(function) || "VP9".equals(function))
+								{
 									if (caseQMax.isSelected() == false) {
 										caseForceQuality.setEnabled(true);
 										caseForcePreset.setEnabled(true);
@@ -23033,7 +23106,9 @@ public class Shutter {
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 									caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
-								} else if ("AV1".equals(function)) {
+								}
+								else if ("AV1".equals(function))
+								{
 									if (caseQMax.isSelected() == false)
 										caseForceLevel.setEnabled(true);
 
@@ -23043,15 +23118,16 @@ public class Shutter {
 										comboForceProfile.setSelectedIndex(0);
 									}
 
-									caseForceLevel.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
+									caseForceOutput.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
+									grpAdvanced.add(caseForceOutput);
+									lblNiveaux.setLocation(caseForceOutput.getLocation().x + caseForceOutput.getWidth() + 4, caseForceOutput.getLocation().y + 4);
+									grpAdvanced.add(lblNiveaux);
+									
+									caseForceLevel.setLocation(7, caseForceOutput.getLocation().y + 17);
 									grpAdvanced.add(caseForceLevel);
-									comboForceProfile.setLocation(
-											caseForceLevel.getLocation().x + caseForceLevel.getWidth() + 4,
-											caseForceLevel.getLocation().y + 4);
+									comboForceProfile.setLocation(caseForceLevel.getLocation().x + caseForceLevel.getWidth() + 4,caseForceLevel.getLocation().y + 4);
 									grpAdvanced.add(comboForceProfile);
-									comboForceLevel.setLocation(
-											comboForceProfile.getLocation().x + comboForceProfile.getWidth() + 4,
-											comboForceProfile.getLocation().y);
+									comboForceLevel.setLocation(comboForceProfile.getLocation().x + comboForceProfile.getWidth() + 4, comboForceProfile.getLocation().y);
 									grpAdvanced.add(comboForceLevel);
 									caseForceSpeed.setLocation(7, caseForceLevel.getLocation().y + 17);
 									grpAdvanced.add(caseForceSpeed);
@@ -23065,16 +23141,22 @@ public class Shutter {
 											caseForceTune.getLocation().x + caseForceTune.getWidth() + 4,
 											caseForceTune.getLocation().y + 4);
 									grpAdvanced.add(comboForceTune);
-									if (comboForceTune.getModel().getSize() != 2) {
+									if (comboForceTune.getModel().getSize() != 3) {
 										comboForceTune.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "visual quality", "psnr" }));
+												new String[] { "visual quality", "psnr", "ssim" }));
 										comboForceTune.setSelectedIndex(0);
 									}
 									caseFastStart.setLocation(7, caseForceTune.getLocation().y + 17);
 									grpAdvanced.add(caseFastStart);
 									caseFastDecode.setLocation(7, caseFastStart.getLocation().y + 17);
-									grpAdvanced.add(caseFastDecode);
-									caseGOP.setLocation(7, caseFastDecode.getLocation().y + 17);
+									grpAdvanced.add(caseFastDecode);									
+									comboFastDecode.setLocation(caseFastDecode.getX() + caseFastDecode.getWidth() + 3, caseFastDecode.getY() + 3);
+									grpAdvanced.add(comboFastDecode);									
+									caseVarianceBoost.setLocation(7, caseFastDecode.getLocation().y + 17);
+									grpAdvanced.add(caseVarianceBoost);									
+									comboVarianceBoost.setLocation(caseVarianceBoost.getX() + caseVarianceBoost.getWidth() + 3, caseVarianceBoost.getY() + 3);
+									grpAdvanced.add(comboVarianceBoost);									
+									caseGOP.setLocation(7, caseVarianceBoost.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
@@ -25048,7 +25130,13 @@ public class Shutter {
 
 		if (caseGOP.isSelected() == false)
 			gopSize.setEnabled(false);
+		
+		if (caseFastDecode.isSelected() == false)
+			comboFastDecode.setEnabled(false);
 
+		if (caseVarianceBoost.isSelected() == false)
+			comboVarianceBoost.setEnabled(false);
+		
 		if (caseFilmGrain.isSelected() == false)
 			comboFilmGrain.setEnabled(false);
 
@@ -25057,12 +25145,12 @@ public class Shutter {
 
 		if (caseChunks.isSelected() == false)
 			chunksSize.setEnabled(false);
+		
+		if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
+			VideoPlayer.caseApplyCutToAll.setEnabled(false);
 
-		if ((comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false
-				|| lblVBR.getText().equals("CQ"))) {
-			if (lblVBR.getText().equals("CQ") == false)
-				caseForceOutput.setEnabled(false);
-
+		if ((comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false || lblVBR.getText().equals("CQ")))
+		{
 			case2pass.setEnabled(false);
 		}
 

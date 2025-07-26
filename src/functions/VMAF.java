@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import application.Shutter;
 import application.VideoPlayer;
 import library.FFMPEG;
+import library.FFPROBE;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
 
@@ -76,9 +77,18 @@ public class VMAF extends Shutter {
 						//Data analyze
 						if (FunctionUtils.analyze(file, false) == false)
 							continue;
+
+						//Write the in and out values before getInputAndOutput()
+						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+						{							
+							VideoPlayer.videoPath = file.toString();							
+							VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
+							VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.setFileList();	
+						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 						//Sending command
 						String cmd;

@@ -133,9 +133,6 @@ public class Picture extends Shutter {
 																		
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
-						
-				        //Framerate
-						filterComplex = setFramerate(filterComplex);
 
 						//No GPU acceleration when using this function
 						FFMPEG.isGPUCompatible = false;
@@ -182,6 +179,9 @@ public class Picture extends Shutter {
 		            	//Timecode
 						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), videoPlayerCapture);			         
 	
+						 //Framerate
+						filterComplex = setFramerate(filterComplex);
+						
 						//Crop
 						filterComplex = Image.setCrop(filterComplex, file);
 				        
@@ -215,8 +215,17 @@ public class Picture extends Shutter {
 						//InOut	
 						if (FFPROBE.totalLength > 40)
 						{
+							//Write the in and out values before getInputAndOutput()
+							if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+							{							
+								VideoPlayer.videoPath = file.toString();							
+								VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
+								VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+								VideoPlayer.setFileList();	
+							}
+							
 							//InOut	
-							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
+							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 							
 							if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())
 							{

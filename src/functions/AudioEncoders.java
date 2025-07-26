@@ -99,8 +99,17 @@ public class AudioEncoders extends Shutter {
 						if (FunctionUtils.analyze(file, false) == false)
 							continue;	
 						
+						//Write the in and out values before getInputAndOutput()
+						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+						{							
+							VideoPlayer.videoPath = file.toString();							
+							VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
+							VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.setFileList();	
+						}
+						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), true);	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);

@@ -766,7 +766,15 @@ public class AdvancedFeatures extends Shutter {
 					if (av1Flags != "")
 						av1Flags += ":";
 					
-					av1Flags += "fast-decode=1";
+					av1Flags += "fast-decode=" + comboFastDecode.getSelectedItem().toString();
+				}
+				
+				if (caseVarianceBoost.isSelected())
+				{
+					if (av1Flags != "")
+						av1Flags += ":";
+					
+					av1Flags += "enable-variance-boost=1:variance-boost-strength=" + comboVarianceBoost.getSelectedItem().toString();
 				}
 				
 				if (caseForceTune.isSelected())

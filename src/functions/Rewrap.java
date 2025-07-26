@@ -136,9 +136,18 @@ public class Rewrap extends Shutter {
 						String newExtension = extension;
 						String subtitles = "";
 						String mapSubtitles = "";
+
+						//Write the in and out values before getInputAndOutput()
+						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+						{							
+							VideoPlayer.videoPath = file.toString();							
+							VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
+							VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.setFileList();	
+						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), true);					
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));					
 						
 						//Framerate
 						String frameRate = "";						
@@ -355,6 +364,10 @@ public class Rewrap extends Shutter {
 					case 3 :
 						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
 				}
+			}
+			else if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+			{
+				return " -c:a flac -ar " + lbl48k.getSelectedItem().toString() + " -compression_level " + comboAudioBitrate.getSelectedItem().toString() + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{

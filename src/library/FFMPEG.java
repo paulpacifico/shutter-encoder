@@ -272,7 +272,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
 							process = processFFMPEG.start();
 						}	
-						
+
 						//IMPORTANT
 						if (cmd.contains("cropdetect") == false
 						&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
@@ -522,7 +522,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (isVideoPlayer)
 			{
 				inputFile = new File(VideoPlayer.videoPath);
-				InputAndOutput.getInputAndOutput(true, false);
+				InputAndOutput.getInputAndOutput(true);
 			}
 			else if (inputDeviceIsRunning == false) //Already analyzed
 			{

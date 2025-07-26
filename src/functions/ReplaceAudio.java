@@ -48,7 +48,7 @@ public class ReplaceAudio extends Shutter {
 		lblCurrentEncoding.setText(fileName);			
 		
 		//InOut	
-		InputAndOutput.getInputAndOutput(true, false);		
+		InputAndOutput.getInputAndOutput(true);		
 		
 		//Output folder
 		String labelOutput = FunctionUtils.setOutputDestination("", videoFile);
@@ -179,7 +179,7 @@ public class ReplaceAudio extends Shutter {
 								
 									//Allows to get the shortest file duration
 									FFPROBE.Data(liste.getElementAt(i+1));
-									
+
 									do {
 										Thread.sleep(100);
 									} while (FFPROBE.isRunning);
@@ -188,7 +188,7 @@ public class ReplaceAudio extends Shutter {
 									{
 										shortestLength = FFPROBE.totalLength;
 									}
-									
+								
 									if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) && caseChangeAudioCodec.isSelected())
 									{
 										audioFiles = " -map 0:v?";
@@ -217,6 +217,9 @@ public class ReplaceAudio extends Shutter {
 																
 								//Start replacement
 								main(audioFiles, audioExt, videoFile);
+								
+								//IMPORTANT
+								shortestLength = 0;
 								
 								if (FFMPEG.error || Shutter.cancelled)
 								{
@@ -368,6 +371,10 @@ public class ReplaceAudio extends Shutter {
 						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k";
 				}
 			}
+			else if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
+			{
+				return " -c:a flac -ar " + lbl48k.getSelectedItem().toString() + " -compression_level " + comboAudioBitrate.getSelectedItem().toString();
+			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
 				if (System.getProperty("os.name").contains("Mac"))
@@ -411,18 +418,6 @@ public class ReplaceAudio extends Shutter {
 			
 			switch (ext.toLowerCase()) 
 			{			
-				case ".mp4":
-					if (audioExt.equals(".m4a") == false)
-					{
-						if (System.getProperty("os.name").contains("Mac"))
-						{
-							return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";
-						}
-						else
-							return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";
-					}
-					else
-						return  " -c:a copy";
 				case ".mp3":
 					if (audioExt.equals(".mp3") == false)
 						return " -c:a libmp3lame -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k";

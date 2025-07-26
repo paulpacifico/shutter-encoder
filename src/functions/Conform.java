@@ -101,9 +101,18 @@ public class Conform extends Shutter {
 						
 			           	//Audio
 						String audio = setAudio();						
-			           	
+
+						//Write the in and out values before getInputAndOutput()
+						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+						{							
+							VideoPlayer.videoPath = file.toString();							
+							VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
+							VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.setFileList();	
+						}
+						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()), false);	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
 						
 						//File output
 						File fileOut = new File(fileOutputName);				

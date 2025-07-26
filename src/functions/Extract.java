@@ -31,8 +31,9 @@ import settings.FunctionUtils;
 
 public class Extract extends Shutter {
 	
-	private static int subStream = 0;		
+	private static int videoStream = 0;	
 	private static int audioStream = 0;
+	private static int subStream = 0;	
 	private static boolean extractComplete = false;
 	
 	public static void main() {
@@ -49,6 +50,7 @@ public class Extract extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
+				videoStream = 0;
 				audioStream = 0;				
 				subStream = 0;
 				
@@ -87,11 +89,11 @@ public class Extract extends Shutter {
 						
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
 						{
-							extensionName =  "_" + Shutter.language.getProperty("video");
+							extensionName =  "_" + Shutter.language.getProperty("video") + "_" + (videoStream + 1);
 							
 							if (btnExtension.isSelected())
 							{
-								extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
+								extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false) + "_" + (videoStream + 1);;
 							}
 						}
 						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
@@ -197,6 +199,20 @@ public class Extract extends Shutter {
 								break;
 						}
 						
+						//Loop the same file until the last videoStream				
+						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
+						{
+							if (videoStream < (FFPROBE.videoStreams - 1))
+							{
+								videoStream ++;
+								i --;
+							}
+							else
+							{
+								videoStream = 0;
+							}
+						}
+						
 						//Loop the same file until the last audioStream				
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 						{
@@ -261,6 +277,22 @@ public class Extract extends Shutter {
 					} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
 				}
 				
+				//Extract video
+				if (FFPROBE.videoStreams > 0 && cancelled == false && FFMPEG.error == false)
+				{
+					comboFilter.setSelectedItem(language.getProperty("video"));
+					Extract.main();	
+					
+					if (cancelled == false && FFMPEG.error == false)
+					{
+						do {
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e1) {}
+						} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
+					}
+				}
+				
 				//Extract audio
 				if (FFPROBE.audioStreams > 0 && cancelled == false && FFMPEG.error == false)
 				{
@@ -303,7 +335,7 @@ public class Extract extends Shutter {
 		
 		if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
 		{
-			return " -an -sn -c:v copy -map v:0?";
+			return " -an -sn -c:v copy -map v:" + videoStream + "?";
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 		{

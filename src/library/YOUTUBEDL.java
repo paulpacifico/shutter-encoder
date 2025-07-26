@@ -35,6 +35,7 @@ import javax.swing.JOptionPane;
 
 import application.Console;
 import application.Shutter;
+import application.VideoWeb;
 
 public class YOUTUBEDL extends Shutter {
 	
@@ -107,14 +108,45 @@ public static String format = "";
 			         
 			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
 			        BufferedReader br = new BufferedReader(isr);
+			        BufferedReader ffmpegOutput = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			        			        
 			        String lineOutput;
+			        boolean readFFmpeg = false;
 			        		
 			        Console.consoleYOUTUBEDL.append(System.lineSeparator());
 			        
 					do {
-												
-						lineOutput = br.readLine();
 																		
+				        if (VideoWeb.caseTimecode.isSelected() && readFFmpeg)
+				        {		
+				        	String i[] = VideoWeb.textTimecodeIn.getText().split(":");
+				        	int inH = Integer.parseInt(i[0]) * 3600;
+				        	int inM = Integer.parseInt(i[1]) * 60;				        	
+				        	int inS = Integer.parseInt(i[2]);
+				        	int totalIn = inH + inM + inS;
+				        	
+				        	String o[] = VideoWeb.textTimecodeOut.getText().split(":");
+				        	int outH = Integer.parseInt(o[0]) * 3600;
+				        	int outM = Integer.parseInt(o[1]) * 60;				        	
+				        	int outS = Integer.parseInt(o[2]);
+				        	int totalOut = outH + outM + outS;
+				        	
+				        	int duration = (int) totalOut - totalIn;
+				        	
+				        	lineOutput = ffmpegOutput.readLine();
+				        	
+				        	if (lineOutput != null && lineOutput.contains("time=") && lineOutput.contains("time=-") == false && lineOutput.contains("time=N/A") == false)
+				        	{
+				        		String str = lineOutput.substring(lineOutput.indexOf(":") - 2);
+				        		String[] split = str.split("b");	 
+				        		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");		
+				        		
+			        			progressBar1.setValue((int) Math.floor((float) ((float) FFMPEG.getTimeToSeconds(ffmpegTime) * 100) / duration));
+				        	}				        				        	
+				        }
+				        else
+				        	lineOutput = br.readLine();
+				        																									
 					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());
 		                
 					    if (lineOutput != null)
@@ -124,9 +156,14 @@ public static String format = "";
 					    		 lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 					    		 lblCurrentEncoding.setText(lineOutput.substring(24).replace(lblDestination1.getText(), "").substring(1));
 					    		 outputFile = new File(lblDestination1.getText() + "/" + lblCurrentEncoding.getText());
+					    		 
+					    		 if (VideoWeb.caseTimecode.isSelected())
+					    		 {
+					    			 readFFmpeg = true;
+					    		 }
 					    	}
 					    		
-						    if (lineOutput.contains("ETA") && lineOutput.contains("Unknown ETA") == false && lineOutput.contains("ETA Unknown") == false)
+						    if (lineOutput.contains("ETA") && lineOutput.contains("Unknown ETA") == false && lineOutput.contains("ETA Unknown") == false && VideoWeb.caseTimecode.isSelected() == false)
 						    {
 		                        String[] splitPercent= lineOutput.split("%");
 		                        String progress = splitPercent[0].replace("[download]", "");
@@ -152,7 +189,7 @@ public static String format = "";
 						    }
 					    }
 					    						          						        		
-					} while(lineOutput != null && Shutter.cancelled == false);	
+					} while (lineOutput != null && Shutter.cancelled == false);	
 					
 					process.waitFor();
 

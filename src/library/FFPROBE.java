@@ -57,11 +57,13 @@ public static Thread processSetLength;
 public static String analyzedMedia = null;
 public static String subtitlesCodec = "";
 public static int subtitleStreams = 0;
+public static int videoStreams = 0;
 public static int audioStreams = 0;
 public static int totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
 public static float currentFPS;
+public static float accurateFPS;
 public static String interlaced;
 public static String fieldOrder;
 private static boolean videoStream = false;
@@ -124,6 +126,7 @@ public static boolean isRotated = false;
 			
 			videoStreamAnalyzed = false;
 			currentFPS = 25.0f; //Used to play audio with the Video Player
+			accurateFPS = currentFPS;
 			dropFrameTC = "";
 			surround = false;
 			channelLayout = "";
@@ -132,6 +135,7 @@ public static boolean isRotated = false;
 			subtitlesCodec = "";
 	 		subtitleStreams = 0;
 	 		audioSampleRate = 48000;
+	 		videoStreams = 0;
 	 		audioStreams = 0;
 			if (calcul == false) //pour ne pas réactive audioOnly lors de l'analyse calculH264
 				audioOnly = true;
@@ -273,7 +277,7 @@ public static boolean isRotated = false;
 							
 			                // Durée
 				            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false)
-				            {			            	 
+				            {			
 					    		String str = line.substring(line.indexOf(":") + 2);
 					    		String s[] = str.split(",");	 
 					    		
@@ -450,6 +454,19 @@ public static boolean isRotated = false;
 				                
 				                videoStreamAnalyzed = true;
 							 }
+							
+							 if (currentFPS == 23.98f)
+							 {
+							 	 accurateFPS = (float) 24000/1001;
+							 }
+							 else if (currentFPS == 29.97f)
+							 {
+								 accurateFPS = (float) 30000/1001;
+							 }
+							 else if (currentFPS == 59.94f)
+							 {
+								 accurateFPS = (float) 60000/1001;
+							 }
 							 
 							 if (line.contains("attached pic"))
 							 {
@@ -520,6 +537,10 @@ public static boolean isRotated = false;
 								 audioBitrate =	bitrate[bitrate.length - 1];		
 				        		 
 				        	 }
+				        	 
+				        	 //Extract Audio	
+				        	 if (line.contains("Video:"))
+				        		 videoStreams ++;
 				        	 
 				        	 //Extract Audio	
 				        	 if (line.contains("Audio:"))
