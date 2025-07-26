@@ -283,15 +283,15 @@ public class VideoPlayer {
 				if (caseApplyCutToAll.isSelected())
 				{
 					float timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
-										
-					InputAndOutput.savedInPoint = (float) Math.floor(timeIn * 100 / 100);	
+							
+					InputAndOutput.savedInPoint = (float) Math.ceil(timeIn);	
 					
 					if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 					{
 						float totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 						float total = (totalFrames - totalOut); //Get how much frames to remove from totalFrames					
 												
-						InputAndOutput.savedOutPoint = (float) Math.floor(total * 100 / 100);					
+						InputAndOutput.savedOutPoint = total;					
 					}
 				}
 				else
@@ -1586,26 +1586,26 @@ public class VideoPlayer {
 								lblPosition.setVisible(true);
 								lblDuration.setVisible(true);
 							}
-														
-							playerInMark = 0;
-							playerOutMark = waveformContainer.getWidth() - 2;
-							
-							waveformContainer.repaint();
-							
+																					
 							totalFrames = ((float) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS);
 							slider.setMaximum((int) (totalFrames));
 							
 							//Reset boxes
 							if (caseApplyCutToAll.isVisible() && caseApplyCutToAll.isSelected())
 							{
-								updateGrpIn(InputAndOutput.savedInPoint);
-								updateGrpOut(totalFrames - InputAndOutput.savedOutPoint);
+								updateGrpIn(Timecode.getNonDropFrameTC(InputAndOutput.savedInPoint));
+								updateGrpOut(Timecode.getNonDropFrameTC(totalFrames - InputAndOutput.savedOutPoint));
 							}
 							else
 							{
 								updateGrpIn(0);
 								updateGrpOut(totalFrames);	
+								
+								playerInMark = 0;
+								playerOutMark = waveformContainer.getWidth() - 2;
 							}
+							
+							waveformContainer.repaint();
 							
 							//Setup fileList
 							if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
@@ -4549,7 +4549,7 @@ public class VideoPlayer {
 			//NTSC framerate
 			timeOut = Timecode.setNonDropFrameTC(totalFrames);
 		}
-		
+
 		caseOutH.setText(Shutter.formatter.format(Math.floor(timeOut / FFPROBE.accurateFPS / 3600)));
 		caseOutM.setText(Shutter.formatter.format(Math.floor(timeOut / FFPROBE.accurateFPS / 60) % 60));
 		caseOutS.setText(Shutter.formatter.format(Math.floor(timeOut / FFPROBE.accurateFPS) % 60));    		

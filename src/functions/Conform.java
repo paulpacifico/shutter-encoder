@@ -29,6 +29,7 @@ import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
 import settings.InputAndOutput;
+import settings.Timecode;
 
 public class Conform extends Shutter {
 	
@@ -106,8 +107,8 @@ public class Conform extends Shutter {
 						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
 						{							
 							VideoPlayer.videoPath = file.toString();							
-							VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
-							VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.updateGrpIn(Timecode.getNonDropFrameTC(InputAndOutput.savedInPoint));
+							VideoPlayer.updateGrpOut(Timecode.getNonDropFrameTC((float) FFPROBE.totalLength / ((float) 1000 / FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
 							VideoPlayer.setFileList();	
 						}
 						

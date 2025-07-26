@@ -467,6 +467,8 @@ public static boolean isRotated = false;
 							 {
 								 accurateFPS = (float) 60000/1001;
 							 }
+							 else
+								 accurateFPS = currentFPS;
 							 
 							 if (line.contains("attached pic"))
 							 {

@@ -44,6 +44,7 @@ import settings.FunctionUtils;
 import settings.Image;
 import settings.InputAndOutput;
 import settings.Overlay;
+import settings.Timecode;
 
 public class Picture extends Shutter {
 		
@@ -219,8 +220,8 @@ public class Picture extends Shutter {
 							if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
 							{							
 								VideoPlayer.videoPath = file.toString();							
-								VideoPlayer.updateGrpIn(InputAndOutput.savedInPoint);
-								VideoPlayer.updateGrpOut(((float) FFPROBE.totalLength / (float) (1000 / FFPROBE.currentFPS)) - InputAndOutput.savedOutPoint);							
+								VideoPlayer.updateGrpIn(Timecode.getNonDropFrameTC(InputAndOutput.savedInPoint));
+								VideoPlayer.updateGrpOut(Timecode.getNonDropFrameTC((float) FFPROBE.totalLength / ((float) 1000 / FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
 								VideoPlayer.setFileList();	
 							}
 							
