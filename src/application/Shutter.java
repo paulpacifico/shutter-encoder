@@ -976,8 +976,7 @@ public class Shutter {
 		settingsScrollBar.setMaximum(100);
 		settingsScrollBar.setBackground(Utils.bg32);
 		settingsScrollBar.setOrientation(JScrollBar.VERTICAL);
-		settingsScrollBar.setBounds(extendedWidth - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11,
-				frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
+		settingsScrollBar.setBounds(extendedWidth - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11, frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
 		frame.getContentPane().add(settingsScrollBar);
 
 		settingsScrollBar.addMouseListener(new MouseAdapter() {
