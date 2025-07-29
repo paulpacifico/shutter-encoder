@@ -29,7 +29,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import application.Shutter;
-import application.VideoPlayer;
 import library.FFPROBE;
 
 public class Timecode extends Shutter {
@@ -98,12 +97,12 @@ public class Timecode extends Shutter {
 			return false;
 	}
 	
-	public static float setNonDropFrameTC(float currentFrame) {
+	public static double setNonDropFrameTC(double currentFrame) {
 		
 		//NTSC framerates && non drop frame timecode => remove a frame to reach round framerate
 		if (isNonDropFrame() && currentFrame > 0)
 		{							
-			float currentTime = currentFrame * VideoPlayer.inputFramerateMS;
+			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
 			
 			if (FFPROBE.currentFPS == 23.98f)
 			{
@@ -115,19 +114,22 @@ public class Timecode extends Shutter {
 			}
 			else if (FFPROBE.currentFPS == 59.94f)
 			{
+				
 				currentFrame -= (currentTime * 0.06 / 1000) - 1;
 			}
+			
+			return (float) Math.floor(currentFrame);	
 		}
 		
 		return currentFrame;
 	}
 	
-	public static float getNonDropFrameTC(float currentFrame) {
-				
+	public static double getNonDropFrameTC(double currentFrame) {
+		
 		//Allows to set the current seeking values
 		if (isNonDropFrame())
 		{				
-			float currentTime = currentFrame * VideoPlayer.inputFramerateMS;
+			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
 				
 			if (FFPROBE.currentFPS == 23.98f)
 			{
@@ -145,7 +147,7 @@ public class Timecode extends Shutter {
 			return (float) Math.floor(currentFrame);	
 		}
 
-		return currentFrame;		
+		return currentFrame;	
 	}
 	
 }

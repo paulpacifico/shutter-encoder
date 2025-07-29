@@ -63,7 +63,7 @@ public static int totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
 public static float currentFPS;
-public static float accurateFPS;
+public static double accurateFPS;
 public static String interlaced;
 public static String fieldOrder;
 private static boolean videoStream = false;
@@ -98,7 +98,7 @@ public static float HDRmin = 0;
 public static float HDRmax = 0;
 public static int maxCLL = 0;
 public static int maxFALL = 0;
-public static float keyFrame = 0;
+public static double keyFrame = 0;
 public static int gopCount = 0;
 public static int gopSpace = 124;
 public static boolean hasAlpha = false;
@@ -940,14 +940,14 @@ public static boolean isRotated = false;
 		processGOP.start();
 	}
 	
-	public static void Keyframes(final String file, float inputTime, boolean getTheNextKey) {
+	public static void Keyframes(final String file, double inputTime, boolean getTheNextKey) {
 
 		keyFrame = 0;
 		FFMPEG.error = false;	
 				
 		processFrameData = new Thread(new Runnable()  {
 			
-			float seekTime = inputTime;
+			double seekTime = inputTime;
 			
 			@Override
 			public void run() {

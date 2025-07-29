@@ -2252,7 +2252,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				float totalLength = 0;
+				double totalLength = 0;
 				FFPROBE.totalLength = 0;
 				FFPROBE.analyzedMedia = null;
 
@@ -2302,7 +2302,7 @@ public class Shutter {
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-				totalLength = ((float) totalLength / 1000 * FFPROBE.currentFPS);
+				totalLength = ((double) totalLength / 1000 * FFPROBE.currentFPS);
 				
 				//NTSC framerate
 				totalLength = Timecode.setNonDropFrameTC(totalLength);
@@ -10367,8 +10367,8 @@ public class Shutter {
 							timeIn = 0;
 						}
 
-						float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
-						float offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
+						double currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
+						double offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
 
 						if (offset < 0)
 							offset = 0;

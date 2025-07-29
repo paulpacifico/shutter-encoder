@@ -140,7 +140,7 @@ public static String format = "";
 				        		String str = lineOutput.substring(lineOutput.indexOf(":") - 2);
 				        		String[] split = str.split("b");	 
 				        		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");		
-				        		
+	
 			        			progressBar1.setValue((int) Math.floor((float) ((float) FFMPEG.getTimeToSeconds(ffmpegTime) * 100) / duration));
 				        	}				        				        	
 				        }

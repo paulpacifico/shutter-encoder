@@ -129,8 +129,8 @@ public class Overlay extends Shutter {
 					timeIn = 0;
 				}
 												
-				float currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
-				float offset = (currentTime - timeIn) + tcH + tcM + tcS + Integer.parseInt(tc4);
+				double currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
+				double offset = (currentTime - timeIn) + tcH + tcM + tcS + Integer.parseInt(tc4);
 
 				if (offset < 0)
 					offset = 0;

@@ -27,21 +27,21 @@ public class InputAndOutput extends Shutter {
 
 	public static String inPoint = "";
 	public static String outPoint = "";
-	public static float savedInPoint = 0;
-	public static float savedOutPoint = 0;
+	public static double savedInPoint = 0;
+	public static double savedOutPoint = 0;
 	
 	public static void getInputAndOutput(boolean setInputAndOutput) {
 					
 		if (setInputAndOutput && FFPROBE.totalLength > 40)
 		{
-			float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
+			double timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
 			
 			//NTSC timecode
 			timeIn = Timecode.getNonDropFrameTC(timeIn);
 			
 			if (timeIn > 0.0f)
 	        {		        
-				inPoint = " -ss " + (long) (timeIn * VideoPlayer.inputFramerateMS) + "ms";
+				inPoint = " -ss " + Math.floor((double) timeIn * VideoPlayer.inputFramerateMS) + "ms";
 		    }
 		    else
 		        inPoint = "";	
@@ -52,9 +52,9 @@ public class InputAndOutput extends Shutter {
 				
 	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
 	        	{		        	
-		    		float outputFPS = FFPROBE.currentFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
+	        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 		    		
-		    		outPoint = " -frames:v " + (int) Math.ceil(Integer.parseInt(frames[frames.length - 2]) / outputFPS);
+		    		outPoint = " -frames:v " + (int) Math.ceil((double) Integer.parseInt(frames[frames.length - 2]) / outputFPS);
 	        	}
 	        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))	        
 	        	{
@@ -62,7 +62,7 @@ public class InputAndOutput extends Shutter {
 	        	}
 	        	else
 	        	{
-	        		outPoint = " -t " + (int) Math.floor(Integer.parseInt(frames[frames.length - 2]) * ((float) 1000 / FFPROBE.currentFPS)) + "ms";
+	        		outPoint = " -t " + Math.floor((double) Integer.parseInt(frames[frames.length - 2]) * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
 	        	}
 	        	
 	        }
