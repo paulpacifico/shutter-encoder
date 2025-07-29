@@ -99,8 +99,8 @@ public class Timecode extends Shutter {
 	
 	public static double setNonDropFrameTC(double currentFrame) {
 		
-		//NTSC framerates && non drop frame timecode => remove a frame to reach round framerate
-		if (isNonDropFrame() && currentFrame > 0)
+		//NTSC framerates => remove a frame to reach round framerate
+		if (currentFrame > 0)
 		{							
 			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
 			
@@ -108,15 +108,27 @@ public class Timecode extends Shutter {
 			{
 				currentFrame -= (currentTime * 0.024 / 1000) - 1;
 			}
-			if (FFPROBE.currentFPS == 29.97f)
+			else if (FFPROBE.currentFPS == 29.97f)
 			{
 				currentFrame -= (currentTime * 0.03 / 1000) - 1;
+				
+				if (isDropFrame())
+				{
+					int m = (int) (Math.floor(currentFrame / FFPROBE.currentFPS / 60) % 60);
+					currentFrame += m * 2;			
+				}
 			}
 			else if (FFPROBE.currentFPS == 59.94f)
 			{
-				
 				currentFrame -= (currentTime * 0.06 / 1000) - 1;
+				
+				if (isDropFrame())
+				{
+					int m = (int) (Math.floor(currentFrame / FFPROBE.currentFPS / 60) % 60);
+					currentFrame += m * 4;			
+				}
 			}
+			
 			
 			return (float) Math.floor(currentFrame);	
 		}
@@ -126,28 +138,35 @@ public class Timecode extends Shutter {
 	
 	public static double getNonDropFrameTC(double currentFrame) {
 		
-		//Allows to set the current seeking values
-		if (isNonDropFrame())
-		{				
-			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
-				
-			if (FFPROBE.currentFPS == 23.98f)
-			{
-				currentFrame += (currentTime * 0.024 / 1000);
-			}
-			else if (FFPROBE.currentFPS == 29.97f)
-			{
-				currentFrame += (currentTime * 0.03 / 1000);
-			}
-			else if (FFPROBE.currentFPS == 59.94f)
-			{
-				currentFrame += (currentTime * 0.06 / 1000);
-			}
+		//Allows to set the current seeking values		
+		double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
 			
-			return (float) Math.floor(currentFrame);	
+		if (FFPROBE.currentFPS == 23.98f)
+		{
+			currentFrame += (currentTime * 0.024 / 1000);
 		}
-
-		return currentFrame;	
+		else if (FFPROBE.currentFPS == 29.97f)
+		{
+			currentFrame += (currentTime * 0.03 / 1000);
+			
+			if (isDropFrame())
+			{
+				int m = (int) (Math.floor(currentFrame / FFPROBE.accurateFPS / 60) % 60);
+				currentFrame -= m * 2;			
+			}
+		}
+		else if (FFPROBE.currentFPS == 59.94f)
+		{
+			currentFrame += (currentTime * 0.06 / 1000);
+			
+			if (isDropFrame())
+			{
+				int m = (int) (Math.floor(currentFrame / FFPROBE.accurateFPS / 60) % 60);
+				currentFrame -= m * 4;			
+			}
+		}
+				
+		return (float) Math.floor(currentFrame);		
 	}
 	
 }
