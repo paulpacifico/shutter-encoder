@@ -6567,7 +6567,13 @@ public class VideoPlayer {
 			String s = Shutter.formatter.format(Math.floor(time / FFPROBE.accurateFPS) % 60);   
 			String f = Shutter.formatter.format(Math.floor(time % FFPROBE.accurateFPS));
 	        
-			lblPosition.setText(h + ":" + m + ":" + s + ":" + f + " | " + Math.round(playerCurrentFrame));	    
+			String dropFrame = ":";
+			if (Timecode.isDropFrame())
+			{
+				dropFrame = ";";
+			}
+			
+			lblPosition.setText(h + ":" + m + ":" + s + dropFrame + f + " | " + Math.round(playerCurrentFrame));	    
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 			{
