@@ -97,8 +97,8 @@ public class Timecode extends Shutter {
 			return false;
 	}
 	
-	public static double setNonDropFrameTC(double currentFrame) {
-		
+	public static double setNTSCtimecode(double currentFrame) {
+				
 		//NTSC framerates => remove a frame to reach round framerate
 		if (currentFrame > 0)
 		{							
@@ -111,32 +111,17 @@ public class Timecode extends Shutter {
 			else if (FFPROBE.currentFPS == 29.97f)
 			{
 				currentFrame -= (currentTime * 0.03 / 1000) - 1;
-				
-				if (isDropFrame())
-				{
-					int m = (int) (Math.floor(currentFrame / FFPROBE.currentFPS / 60) % 60);
-					currentFrame += m * 2;			
-				}
 			}
 			else if (FFPROBE.currentFPS == 59.94f)
-			{
+			{					
 				currentFrame -= (currentTime * 0.06 / 1000) - 1;
-				
-				if (isDropFrame())
-				{
-					int m = (int) (Math.floor(currentFrame / FFPROBE.currentFPS / 60) % 60);
-					currentFrame += m * 4;			
-				}
 			}
-			
-			
-			return (float) Math.floor(currentFrame);	
 		}
 		
-		return currentFrame;
+		return (float) Math.floor(currentFrame);	
 	}
 	
-	public static double getNonDropFrameTC(double currentFrame) {
+	public static double getNTSCtimecode(double currentFrame) {
 		
 		//Allows to set the current seeking values		
 		double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
@@ -148,22 +133,10 @@ public class Timecode extends Shutter {
 		else if (FFPROBE.currentFPS == 29.97f)
 		{
 			currentFrame += (currentTime * 0.03 / 1000);
-			
-			if (isDropFrame())
-			{
-				int m = (int) (Math.floor(currentFrame / FFPROBE.accurateFPS / 60) % 60);
-				currentFrame -= m * 2;			
-			}
 		}
 		else if (FFPROBE.currentFPS == 59.94f)
 		{
 			currentFrame += (currentTime * 0.06 / 1000);
-			
-			if (isDropFrame())
-			{
-				int m = (int) (Math.floor(currentFrame / FFPROBE.accurateFPS / 60) % 60);
-				currentFrame -= m * 4;			
-			}
 		}
 				
 		return (float) Math.floor(currentFrame);		

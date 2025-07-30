@@ -129,7 +129,7 @@ public class Overlay extends Shutter {
 					timeIn = 0;
 				}
 												
-				double currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
+				double currentTime = Timecode.setNTSCtimecode(VideoPlayer.playerCurrentFrame);
 				double offset = (currentTime - timeIn) + tcH + tcM + tcS + Integer.parseInt(tc4);
 
 				if (offset < 0)

@@ -2305,7 +2305,7 @@ public class Shutter {
 				totalLength = ((double) totalLength / 1000 * FFPROBE.currentFPS);
 				
 				//NTSC framerate
-				totalLength = Timecode.setNonDropFrameTC(totalLength);
+				totalLength = Timecode.setNTSCtimecode(totalLength);
 				
 				// Formatage
 				int h = (int) Math.floor(totalLength / FFPROBE.currentFPS / 3600);
@@ -10367,7 +10367,7 @@ public class Shutter {
 							timeIn = 0;
 						}
 
-						double currentTime = Timecode.setNonDropFrameTC(VideoPlayer.playerCurrentFrame);
+						double currentTime = Timecode.setNTSCtimecode(VideoPlayer.playerCurrentFrame);
 						double offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
 
 						if (offset < 0)

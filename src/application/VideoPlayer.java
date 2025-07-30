@@ -1617,8 +1617,8 @@ public class VideoPlayer {
 							//Reset boxes
 							if (caseApplyCutToAll.isVisible() && caseApplyCutToAll.isSelected())
 							{
-								updateGrpIn(Timecode.getNonDropFrameTC(InputAndOutput.savedInPoint));
-								updateGrpOut(Timecode.getNonDropFrameTC(totalFrames - InputAndOutput.savedOutPoint));
+								updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+								updateGrpOut(Timecode.getNTSCtimecode(totalFrames - InputAndOutput.savedOutPoint));
 							}
 							else
 							{
@@ -2842,7 +2842,7 @@ public class VideoPlayer {
 				playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 				
 				//NTSC framerate
-				playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+				playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 				
 				playerSetTime(playerCurrentFrame);
 			}
@@ -2888,7 +2888,7 @@ public class VideoPlayer {
 				playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 
 				//NTSC framerate
-				playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+				playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 				
 				playerSetTime(playerCurrentFrame - 1);
 			}
@@ -3602,8 +3602,8 @@ public class VideoPlayer {
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 					
 					//NTSC framerate
-					timeIn = Timecode.getNonDropFrameTC(timeIn);
-					timeOut = Timecode.getNonDropFrameTC(timeOut);
+					timeIn = Timecode.getNTSCtimecode(timeIn);
+					timeOut = Timecode.getNTSCtimecode(timeOut);
 					
 					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * timeIn) / totalFrames);
 					if ((int) Math.ceil(timeOut) < totalFrames)
@@ -3775,8 +3775,8 @@ public class VideoPlayer {
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 									
 					//NTSC framerate
-					timeIn = Timecode.getNonDropFrameTC(timeIn);
-					timeOut = Timecode.getNonDropFrameTC(timeOut);
+					timeIn = Timecode.getNTSCtimecode(timeIn);
+					timeOut = Timecode.getNTSCtimecode(timeOut);
 										
 					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * timeIn) / totalFrames);			
 					if ((int) Math.ceil(timeOut) < totalFrames)
@@ -4076,7 +4076,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 					
 					playerSetTime(playerCurrentFrame);
 					
@@ -4145,7 +4145,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 					
 					playerSetTime(playerCurrentFrame);
 					
@@ -4214,7 +4214,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 					
 					playerSetTime(playerCurrentFrame);	
 					
@@ -4283,7 +4283,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 					
 					playerSetTime(playerCurrentFrame);
 
@@ -4322,7 +4322,7 @@ public class VideoPlayer {
 			
 		//NTSC framerate
 		if (timeIn > 0)
-			timeIn = Timecode.setNonDropFrameTC(timeIn);
+			timeIn = Timecode.setNTSCtimecode(timeIn);
 						
 		caseInH.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.accurateFPS / 3600)));
 		caseInM.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.accurateFPS / 60) % 60));
@@ -4426,7 +4426,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText()) - 1;
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 					
 					playerSetTime(playerCurrentFrame);
 					
@@ -4495,7 +4495,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText()) - 1;
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 										
 					playerSetTime(playerCurrentFrame);
 					
@@ -4564,7 +4564,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText()) - 1;
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 					
 					playerSetTime(playerCurrentFrame);
 					
@@ -4633,7 +4633,7 @@ public class VideoPlayer {
 					playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText()) - 1;
 
 					//NTSC framerate
-					playerCurrentFrame = Timecode.getNonDropFrameTC(playerCurrentFrame);
+					playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 					
 					playerSetTime(playerCurrentFrame);
 					
@@ -4672,12 +4672,12 @@ public class VideoPlayer {
 		if (playerOutMark < waveformContainer.getWidth() - 2)
 		{
 			//NTSC framerate
-			timeOut = Timecode.setNonDropFrameTC(timeOut);
+			timeOut = Timecode.setNTSCtimecode(timeOut);
 		}	
 		else
 		{
 			//NTSC framerate
-			timeOut = Timecode.setNonDropFrameTC(totalFrames);
+			timeOut = Timecode.setNTSCtimecode(totalFrames);
 		}
 
 		caseOutH.setText(Shutter.formatter.format(Math.floor(timeOut / FFPROBE.accurateFPS / 3600)));
@@ -6065,8 +6065,8 @@ public class VideoPlayer {
 						double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 						
 						//NTSC framerate
-						timeIn = Timecode.getNonDropFrameTC(timeIn);
-						timeOut = Timecode.getNonDropFrameTC(timeOut);
+						timeIn = Timecode.getNTSCtimecode(timeIn);
+						timeOut = Timecode.getNTSCtimecode(timeOut);
 						
 						//Used for encoding
 						if (Shutter.caseEnableSequence.isSelected())
@@ -6307,8 +6307,8 @@ public class VideoPlayer {
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 						
 					//NTSC framerate
-					timeIn = Timecode.getNonDropFrameTC(timeIn);
-					timeOut = Timecode.getNonDropFrameTC(timeOut);
+					timeIn = Timecode.getNTSCtimecode(timeIn);
+					timeOut = Timecode.getNTSCtimecode(timeOut);
 					
 					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * timeIn) / totalFrames);			
 					if ((int) Math.ceil(timeOut) < totalFrames)
@@ -6558,8 +6558,8 @@ public class VideoPlayer {
 		}
 
 		//NTSC framerate
-		time = Timecode.setNonDropFrameTC(time);
-				
+		time = Timecode.setNTSCtimecode(time);
+						
     	if (playerVideo != null && time - offset < totalFrames)
     	{    					    			 		
 			String h = Shutter.formatter.format(Math.floor(time / FFPROBE.accurateFPS / 3600));
@@ -6568,21 +6568,22 @@ public class VideoPlayer {
 			String f = Shutter.formatter.format(Math.floor(time % FFPROBE.accurateFPS));
 	        
 			String dropFrame = ":";
+			/*
 			if (Timecode.isDropFrame())
 			{
 				dropFrame = ";";
-			}
+			}*/
 			
 			lblPosition.setText(h + ":" + m + ":" + s + dropFrame + f + " | " + Math.round(playerCurrentFrame));	    
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 			{
-				updateGrpIn(time - offset);
+				updateGrpIn(Timecode.getNTSCtimecode(time) - offset);
 			}			
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && mouseIsPressed)
 			{
-				updateGrpOut(time - offset + 1);
+				updateGrpOut(Timecode.getNTSCtimecode(time) - offset + 1);
 			}
 			
     		if (sliderChange == false && Shutter.windowDrag == false)
@@ -6659,7 +6660,7 @@ public class VideoPlayer {
 			durationS = (int) Math.floor(total / FFPROBE.accurateFPS) % 60;
 			durationF = (int) Math.floor(total % FFPROBE.accurateFPS);
 									
-			lblDuration.setText(Shutter.language.getProperty("lblBitrateTimecode") + " " + Shutter.formatter.format(durationH) + ":" + Shutter.formatter.format(durationM) + ":" + Shutter.formatter.format(durationS) + ":" + Shutter.formatter.format(durationF) + " | " + (int) Timecode.getNonDropFrameTC(total) + " " + Shutter.language.getProperty("lblTotalFrames"));
+			lblDuration.setText(Shutter.language.getProperty("lblBitrateTimecode") + " " + Shutter.formatter.format(durationH) + ":" + Shutter.formatter.format(durationM) + ":" + Shutter.formatter.format(durationS) + ":" + Shutter.formatter.format(durationF) + " | " + (int) Timecode.getNTSCtimecode(total) + " " + Shutter.language.getProperty("lblTotalFrames"));
 			
 			if (total <= 0)
 			{

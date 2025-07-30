@@ -37,7 +37,7 @@ public class InputAndOutput extends Shutter {
 			double timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
 			
 			//NTSC timecode
-			timeIn = Timecode.getNonDropFrameTC(timeIn);
+			timeIn = Timecode.getNTSCtimecode(timeIn);
 			
 			if (timeIn > 0.0f)
 	        {		        

@@ -220,8 +220,8 @@ public class Picture extends Shutter {
 							if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
 							{							
 								VideoPlayer.videoPath = file.toString();							
-								VideoPlayer.updateGrpIn(Timecode.getNonDropFrameTC(InputAndOutput.savedInPoint));
-								VideoPlayer.updateGrpOut(Timecode.getNonDropFrameTC((float) FFPROBE.totalLength / ((float) 1000 / FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
+								VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+								VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode((float) FFPROBE.totalLength / ((float) 1000 / FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
 								VideoPlayer.setFileList();	
 							}
 							
