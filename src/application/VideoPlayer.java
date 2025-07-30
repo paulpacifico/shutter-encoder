@@ -2866,6 +2866,13 @@ public class VideoPlayer {
 					waveformContainer.repaint();
 					updateGrpOut(playerCurrentFrame + 1);
 					
+					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+					
+					//NTSC framerate
+					//timeOut = Timecode.getNTSCtimecode(timeOut);
+					
+					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
+
 					//FileList
 					setFileList();
 				}
@@ -2889,7 +2896,7 @@ public class VideoPlayer {
 
 				//NTSC framerate
 				playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
-				
+								
 				playerSetTime(playerCurrentFrame - 1);
 			}
 			
@@ -2997,7 +3004,7 @@ public class VideoPlayer {
                 	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
                 	
-                	cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
+                	cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
                 }
                 
                 //Get the current fps
@@ -3429,12 +3436,12 @@ public class VideoPlayer {
 	                {
 		                g2.setColor(Utils.themeColor);
 		                int alpha = 255;
-		                int splitTime = (int) (playerInMark + Math.round((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames)));
+		                int splitTime = (int) (playerInMark + Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames)));
 		                do {
 		                	
 		                	g2.fillRect(splitTime + 1, 0, 1, getHeight() - 1);
 		                	
-		                	splitTime += Math.round((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames));
+		                	splitTime += Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames));
 		                	
 		                	g2.setColor(new Color(Utils.themeColor.getRed(), Utils.themeColor.getGreen(), Utils.themeColor.getBlue(), alpha));
 		                	
@@ -3602,13 +3609,13 @@ public class VideoPlayer {
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 					
 					//NTSC framerate
-					timeIn = Timecode.getNTSCtimecode(timeIn);
-					timeOut = Timecode.getNTSCtimecode(timeOut);
+					//timeIn = Timecode.getNTSCtimecode(timeIn);
+					//timeOut = Timecode.getNTSCtimecode(timeOut);
 					
-					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * timeIn) / totalFrames);
-					if ((int) Math.ceil(timeOut) < totalFrames)
+					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());
+					if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 					{
-						playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
+						playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
 					}
 					else
 						playerOutMark = waveformContainer.getWidth();
@@ -3635,12 +3642,7 @@ public class VideoPlayer {
 						} catch (InterruptedException e1) {}
 					} while (setTime.isAlive());
 
-					if (Timecode.isNonDropFrame())
-					{
-						playerSetTime(playerCurrentFrame - 1);		
-					}
-					else
-						playerSetTime(playerCurrentFrame);		
+					playerSetTime(playerCurrentFrame);		
 					
 					waveformContainer.repaint();
 					
@@ -3775,23 +3777,23 @@ public class VideoPlayer {
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 									
 					//NTSC framerate
-					timeIn = Timecode.getNTSCtimecode(timeIn);
-					timeOut = Timecode.getNTSCtimecode(timeOut);
+					//timeIn = Timecode.getNTSCtimecode(timeIn);
+					//timeOut = Timecode.getNTSCtimecode(timeOut);
 										
-					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * timeIn) / totalFrames);			
-					if ((int) Math.ceil(timeOut) < totalFrames)
+					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());	
+					if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 					{
-						playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
+						playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
 					}
 					else
 						playerOutMark = waveformContainer.getWidth();
 					
 					waveformContainer.repaint();
 					
-					cursorWaveform.setBounds((int) Math.round((double) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
+					cursorWaveform.setBounds((int) Math.floor((double) (waveformContainer.getSize().width * Timecode.setNTSCtimecode(slider.getValue())) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
 					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 					
-					cursorCurrentFrame.setBounds((int) ((double) playerCurrentFrame * waveformContainer.getWidth() / totalFrames), 0, 1, waveformContainer.getHeight());
+					cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
 					
 					waveformIcon.setSize(waveformContainer.getSize());
 					
@@ -4080,7 +4082,7 @@ public class VideoPlayer {
 					
 					playerSetTime(playerCurrentFrame);
 					
-					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 					
 					//FileList
@@ -4149,7 +4151,7 @@ public class VideoPlayer {
 					
 					playerSetTime(playerCurrentFrame);
 					
-					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 
 					//FileList
@@ -4218,7 +4220,7 @@ public class VideoPlayer {
 					
 					playerSetTime(playerCurrentFrame);	
 					
-					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 
 					//FileList
@@ -4287,7 +4289,7 @@ public class VideoPlayer {
 					
 					playerSetTime(playerCurrentFrame);
 
-					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 
 					//FileList
@@ -4430,7 +4432,7 @@ public class VideoPlayer {
 					
 					playerSetTime(playerCurrentFrame);
 					
-					playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 
 					//FileList
@@ -4499,7 +4501,7 @@ public class VideoPlayer {
 										
 					playerSetTime(playerCurrentFrame);
 					
-					playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 
 					//FileList
@@ -4568,7 +4570,7 @@ public class VideoPlayer {
 					
 					playerSetTime(playerCurrentFrame);
 					
-					playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 
 					//FileList
@@ -4637,7 +4639,7 @@ public class VideoPlayer {
 					
 					playerSetTime(playerCurrentFrame);
 					
-					playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
+					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * playerCurrentFrame) / slider.getMaximum());
 					waveformContainer.repaint();
 
 					//FileList
@@ -6065,8 +6067,8 @@ public class VideoPlayer {
 						double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 						
 						//NTSC framerate
-						timeIn = Timecode.getNTSCtimecode(timeIn);
-						timeOut = Timecode.getNTSCtimecode(timeOut);
+						//timeIn = Timecode.getNTSCtimecode(timeIn);
+						//timeOut = Timecode.getNTSCtimecode(timeOut);
 						
 						//Used for encoding
 						if (Shutter.caseEnableSequence.isSelected())
@@ -6078,10 +6080,10 @@ public class VideoPlayer {
 						
 						totalFrames = ((double) fileDuration / 1000 * FFPROBE.accurateFPS);
 						
-						playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * timeIn) / totalFrames);
-						if ((int) Math.ceil(timeOut) < totalFrames)
+						playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());
+						if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 						{
-							playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
+							playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
 						}
 						else
 							playerOutMark = waveformContainer.getWidth();
@@ -6294,7 +6296,7 @@ public class VideoPlayer {
 				}
 				else
 				{
-					cursorWaveform.setBounds((int) Math.round((double) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
+					cursorWaveform.setBounds((int) Math.floor((double) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
 					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 				}
 			}
@@ -6307,13 +6309,13 @@ public class VideoPlayer {
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 						
 					//NTSC framerate
-					timeIn = Timecode.getNTSCtimecode(timeIn);
-					timeOut = Timecode.getNTSCtimecode(timeOut);
+					//timeIn = Timecode.getNTSCtimecode(timeIn);
+					//timeOut = Timecode.getNTSCtimecode(timeOut);
 					
-					playerInMark = (int) Math.round((double) (waveformContainer.getSize().width * timeIn) / totalFrames);			
-					if ((int) Math.ceil(timeOut) < totalFrames)
+					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());			
+					if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 					{
-						playerOutMark = (int) Math.round((double) (waveformContainer.getSize().width * timeOut - 1) / totalFrames);
+						playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
 					}
 					else
 						playerOutMark = waveformContainer.getWidth();	
@@ -6587,11 +6589,11 @@ public class VideoPlayer {
 			}
 			
     		if (sliderChange == false && Shutter.windowDrag == false)
-    		{   		    			    			
+    		{   		
     			slider.setValue((int) playerCurrentFrame);
     			
-    			int newValue = (int) Math.round((double) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum());
-    			
+    			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * time) / slider.getMaximum());
+    			    			
     			if (cursorWaveform != null)
     			{
     				if (playerCurrentFrame <= 1)
