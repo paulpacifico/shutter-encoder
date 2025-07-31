@@ -218,7 +218,7 @@ public class Picture extends Shutter {
 						if (FFPROBE.totalLength > 40)
 						{
 							//Write the in and out values before getInputAndOutput()
-							if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+							if (VideoPlayer.caseApplyCutToAll.isSelected())
 							{							
 								VideoPlayer.videoPath = file.toString();							
 								VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));

@@ -169,11 +169,11 @@ public class VideoEncoders extends Shutter {
 							FFPROBE.imageHeight = 1080;
 							FFPROBE.imageResolution = "1920x1080";
 						}
-										
+							
 						//Write the in and out values before getInputAndOutput()
-						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+						if (VideoPlayer.caseApplyCutToAll.isSelected())
 						{							
-							VideoPlayer.videoPath = file.toString();							
+							VideoPlayer.videoPath = file.toString();													
 							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
 							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
 							VideoPlayer.setFileList();	

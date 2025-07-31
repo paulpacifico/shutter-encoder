@@ -65,7 +65,7 @@ public class LoudnessTruePeak extends Shutter {
 							continue;
 
 						//Write the in and out values before getInputAndOutput()
-						if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.caseApplyCutToAll.isSelected())
+						if (VideoPlayer.caseApplyCutToAll.isSelected())
 						{							
 							VideoPlayer.videoPath = file.toString();							
 							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
