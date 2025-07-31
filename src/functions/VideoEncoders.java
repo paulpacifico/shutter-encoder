@@ -38,6 +38,7 @@ import org.apache.commons.io.FileUtils;
 
 import application.Ftp;
 import application.RecordInputDevice;
+import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
 import application.VideoPlayer;
@@ -118,7 +119,7 @@ public class VideoEncoders extends Shutter {
 								isSelected = true;
 							}
 						}	
-						
+												
 						if (isSelected == false)
 						{
 							continue;
@@ -174,12 +175,12 @@ public class VideoEncoders extends Shutter {
 						{							
 							VideoPlayer.videoPath = file.toString();							
 							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode((float) FFPROBE.totalLength / ((float) 1000 / FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);
 							VideoPlayer.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -717,7 +718,15 @@ public class VideoEncoders extends Shutter {
 				        		break;
 				        	}
 				        	else				        	
+				        	{
+				        		//Allows to add the file to the queue
+				        		if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				        		{
+				        			enableAll();
+				        		}
+				        		
 				        		lblCurrentEncoding.setText(file.getName());										
+				        	}
 						}
 			            
 		            	//filterComplex					
@@ -1202,9 +1211,24 @@ public class VideoEncoders extends Shutter {
 				FunctionUtils.OPAtomFolder = null;
 				FunctionUtils.silentTrack = "";
 
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 				{
-					enfOfFunction();
+					if (fileList.getSelectedValuesList().size() > 1)
+					{
+						//Reset data for the current selected file
+						VideoPlayer.videoPath = null;
+						VideoPlayer.setMedia();
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {}
+						} while (VideoPlayer.loadMedia.isAlive());
+						RenderQueue.frame.toFront();
+					}
+				}
+				else
+				{
+					enfOfFunction();					
 				}
 			}
 			

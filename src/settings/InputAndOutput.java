@@ -38,31 +38,32 @@ public class InputAndOutput extends Shutter {
 			
 			//NTSC timecode
 			timeIn = Timecode.getNTSCtimecode(timeIn);
-			
+					
 			if (timeIn > 0.0f)
 	        {		        
 				inPoint = " -ss " + Math.floor((double) timeIn * VideoPlayer.inputFramerateMS) + "ms";
 		    }
 		    else
 		        inPoint = "";	
-									
+			
 			if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
-	        {
-				String frames[] = VideoPlayer.lblDuration.getText().split(" ");
-				
+	        {			
+				String framesText[] = VideoPlayer.lblDuration.getText().split(" ");
+				Integer frames =  Integer.parseInt(framesText[framesText.length - 2]);
+
 	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
 	        	{		        	
 	        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 		    		
-		    		outPoint = " -frames:v " + (int) Math.ceil((double) Integer.parseInt(frames[frames.length - 2]) / outputFPS);
+		    		outPoint = " -frames:v " + (int) Math.ceil((double) frames / outputFPS);
 	        	}
 	        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))	        
 	        	{
-		        	outPoint = " -frames:v " + Integer.parseInt(frames[frames.length - 2]);
+		        	outPoint = " -frames:v " + frames;
 	        	}
 	        	else
 	        	{
-	        		outPoint = " -t " + Math.floor((double) Integer.parseInt(frames[frames.length - 2]) * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
+	        		outPoint = " -t " + Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
 	        	}
 	        	
 	        }

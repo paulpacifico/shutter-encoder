@@ -24,8 +24,10 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import application.Ftp;
+import application.RenderQueue;
 import application.Shutter;
 import application.Utils;
+import application.VideoPlayer;
 import library.FFMPEG;
 import library.FFPROBE;
 import settings.FunctionUtils;
@@ -232,8 +234,25 @@ public class AudioNormalization extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
-					enfOfFunction();
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+				{
+					if (fileList.getSelectedValuesList().size() > 1)
+					{
+						//Reset data for the current selected file
+						VideoPlayer.videoPath = null;
+						VideoPlayer.setMedia();
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {}
+						} while (VideoPlayer.loadMedia.isAlive());
+						RenderQueue.frame.toFront();
+					}
+				}
+				else
+				{
+					enfOfFunction();					
+				}
 			}
 			
 		});

@@ -2097,8 +2097,9 @@ public class Shutter {
 						bitrateSize.setText("-");
 					}
 
-					// Lecteur
-					if (VideoPlayer.waveform != null) {
+					// Player
+					if (VideoPlayer.waveform != null)
+					{
 						VideoPlayer.waveform = null;
 						VideoPlayer.waveformIcon.setIcon(null);
 						VideoPlayer.waveformIcon.repaint();
@@ -3397,8 +3398,7 @@ public class Shutter {
 				FunctionUtils.noToAll = false;
 				FunctionUtils.skipToAll = false;
 
-				if ((btnStart.getText().equals(language.getProperty("btnStartFunction"))
-						|| btnStart.getText().equals(language.getProperty("btnAddToRender"))) && liste.getSize() > 0) {
+				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && liste.getSize() > 0) {
 					grpDestination.setSelectedIndex(0);
 					FFMPEG.error = false;
 					FFMPEG.errorLog.setLength(0);
@@ -18003,9 +18003,8 @@ public class Shutter {
 							int frames = VideoPlayer.durationF;
 							
 							int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-							float tailleFinale = Float.parseFloat(bitrateSize.getText().replace(",", "."));
-							float result = (float) tailleFinale
-									/ ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
+							float finalSize = Float.parseFloat(bitrateSize.getText().replace(",", "."));
+							float result = (float) finalSize / ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
 							float resultAudio = (float) audio / 8 / 1024;
 							float resultatdebit = (result - resultAudio) * 8 * 1024;
 							debitVideo.getModel().setSelectedItem((int) resultatdebit);

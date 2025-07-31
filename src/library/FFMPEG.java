@@ -173,7 +173,8 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (cmd.contains("-pass 2") == false)
 				saveToXML(cmd);
 		}
-		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("-f rawvideo") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false)
+		else if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled() && cmd.contains("-f rawvideo") == false
+		&& cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false && cmd.contains("preview.png") == false && cmd.contains("ebur128=peak=true") == false)
 		{			
 			//On récupère le nom précédent
 			if (lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")))

@@ -1217,7 +1217,9 @@ public static boolean isRotated = false;
 			{
 				int h = VideoPlayer.durationH;
 				int min = VideoPlayer.durationM;
-				int sec = VideoPlayer.durationS;				
+				int sec = VideoPlayer.durationS;	
+				int frames = VideoPlayer.durationF;
+				
 				int audio = 0;
 				if (comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()))
 				{
@@ -1248,7 +1250,7 @@ public static boolean isRotated = false;
 				if (isLocked)
 				{
 					float finalSize = Float.parseFloat(bitrateSize.getText().replace(",", "."));
-					float result = (float) finalSize / ((h * 3600) + (min * 60) + sec);
+					float result = (float) finalSize / ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
 					float resultAudio = (float) (audio*multi) / 8 / 1024;
 					float resultatBitrate = (result - resultAudio) * 8 * 1024;
 					debitVideo.getModel().setSelectedItem((int) resultatBitrate);
@@ -1262,7 +1264,7 @@ public static boolean isRotated = false;
 												
 					float resultVideo = (float) videoBitrate / 8 / 1024;
 					float resultAudio =  (float) (audio*multi) / 8 / 1024;
-					float resultatBitrate = (resultVideo + resultAudio) * ( (h * 3600)+(min * 60)+sec);
+					float resultatBitrate = (resultVideo + resultAudio) * ( (h * 3600)+(min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
 					
 					if (resultatBitrate < 10)
 					{
@@ -1273,7 +1275,12 @@ public static boolean isRotated = false;
 				}
 			}
 			else
-				bitrateSize.setText("-");
+			{				
+				if (isLocked == false)
+				{
+					bitrateSize.setText("-");
+				}
+			}
 		
         }
 		

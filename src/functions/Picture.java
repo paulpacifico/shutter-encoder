@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 
 import application.Ftp;
 import application.RecordInputDevice;
+import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
 import application.Utils;
@@ -221,12 +222,12 @@ public class Picture extends Shutter {
 							{							
 								VideoPlayer.videoPath = file.toString();							
 								VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-								VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode((float) FFPROBE.totalLength / ((float) 1000 / FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
+								VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
 								VideoPlayer.setFileList();	
 							}
 							
 							//InOut	
-							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString()));	
+							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));	
 							
 							if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())
 							{
@@ -418,8 +419,25 @@ public class Picture extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && encode)
-					enfOfFunction();
+				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && encode)
+				{
+					if (fileList.getSelectedValuesList().size() > 1)
+					{
+						//Reset data for the current selected file
+						VideoPlayer.videoPath = null;
+						VideoPlayer.setMedia();
+						do {
+							try {
+								Thread.sleep(10);
+							} catch (InterruptedException e) {}
+						} while (VideoPlayer.loadMedia.isAlive());
+						RenderQueue.frame.toFront();
+					}
+				}
+				else
+				{
+					enfOfFunction();					
+				}
 			}
 			
 		});
