@@ -106,7 +106,7 @@ public class AudioEncoders extends Shutter {
 						{							
 							VideoPlayer.videoPath = file.toString();							
 							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS)) - InputAndOutput.savedOutPoint);							
+							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayer.setFileList();	
 						}
 						
