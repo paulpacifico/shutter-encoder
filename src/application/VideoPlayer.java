@@ -1114,7 +1114,7 @@ public class VideoPlayer {
 							
 					int framesToSkip = (int) ((double) time - playerCurrentFrame);
 					int framesToSkipBackward = (int) ((double) time - bufferCurrentFrame);
-
+					
 					//Read buffered frames if they exists
 					if (bufferedFrames.size() > 0 && time < bufferCurrentFrame + 1 && framesToSkip >= 0 && useBuffer)
 					{
@@ -2252,7 +2252,7 @@ public class VideoPlayer {
 				}
 			}
 			
-			return " -v quiet -hide_banner -ss " + Math.floor((double) inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v rawvideo -pix_fmt rgb24 -an -f rawvideo -";
+			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v rawvideo -pix_fmt rgb24 -an -f rawvideo -";
 		}
 		else
 		{
@@ -2314,7 +2314,7 @@ public class VideoPlayer {
 			if (FFPROBE.hasAlpha)
 				colorFormat = "rgba";
 
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + Math.floor((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
@@ -2344,7 +2344,7 @@ public class VideoPlayer {
 				else
 					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + FFMPEG.PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);	
 								
-				cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + Math.floor((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+				cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			}
 									
 			if (Shutter.inputDeviceIsRunning)
@@ -2406,7 +2406,7 @@ public class VideoPlayer {
 					mapping = setAudioFilter();
 			}
 
-			return " -v quiet -hide_banner -ss " + Math.floor((double) inputTime * inputFramerateMS) + "ms" + input + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1" + mapping + " -f wav -";
+			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + input + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1" + mapping + " -f wav -";
 		}		
 		
 	}
@@ -2485,7 +2485,7 @@ public class VideoPlayer {
 						{		
 							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 							{
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=1000,amerge=inputs=" + FFPROBE.channels + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 							else
 							{
@@ -2979,7 +2979,6 @@ public class VideoPlayer {
 		comboAudioTrack.setBackground(new Color(comboAudioTrack.getBackground().getRed(),comboAudioTrack.getBackground().getGreen(),comboAudioTrack.getBackground().getBlue(), 0));	
 		comboAudioTrack.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		comboAudioTrack.setMaximumRowCount(16);		
-		Shutter.frame.getContentPane().add(comboAudioTrack);
 
 		comboAudioTrack.addActionListener(new ActionListener() {
 
@@ -3498,6 +3497,20 @@ public class VideoPlayer {
 		                g2.fillRoundRect(playerOutMark + 2, 0, getWidth() - playerOutMark - 2, getHeight() - 1, 5, 5);
 	                }
 	                
+	                /*
+	                //Buffer
+	                if (bufferedFrames.size() > 0)	                	
+	                {		                
+	                	g2.setColor(Color.GREEN);
+			            
+			            double bufferPosition = (bufferCurrentFrame - bufferedFrames.size());       
+			            
+			            int x = (int) ((double) waveformContainer.getSize().width * bufferPosition) / slider.getMaximum();
+			            int width = (int) ((double) waveformContainer.getSize().width * bufferedFrames.size()) / slider.getMaximum();
+			            
+			            g2.drawLine(x, 1, x + width, 1);
+	                }*/
+	                
 	                totalDuration();
                 }			
 		    }
@@ -3506,7 +3519,9 @@ public class VideoPlayer {
 		waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));		
 		waveformContainer.setLayout(null);	
 		Shutter.frame.getContentPane().add(waveformContainer);
-				
+		
+		waveformContainer.add(comboAudioTrack);
+						
 		cursorHead = new JPanel()
 		{
 	        @Override
@@ -3816,7 +3831,7 @@ public class VideoPlayer {
 					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 					
 					cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
-					
+				
 					waveformIcon.setSize(waveformContainer.getSize());
 					
 					ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
@@ -3848,7 +3863,7 @@ public class VideoPlayer {
 	        }
 		};
 		waveformContainer.add(cursorCurrentFrame);
-		
+				
 		waveformScrollPane = new JScrollPane();
 		waveformScrollPane.getViewport().add(waveformContainer);
 		waveformScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -5510,7 +5525,7 @@ public class VideoPlayer {
 							deinterlace = " -vf yadif=0:" + FFPROBE.fieldOrder + ":0";		
 	
 						//Input point
-						String inputPoint = " -ss " + Math.floor((double) playerCurrentFrame * inputFramerateMS) + "ms";
+						String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
 						if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 							inputPoint = "";
 															
@@ -6455,7 +6470,7 @@ public class VideoPlayer {
 			
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			showScale.setBounds(player.getX(), showFPS.getY(), player.getWidth() / 2, showScale.getPreferredSize().height);
-			comboAudioTrack.setBounds(waveformContainer.getX() + 7, waveformContainer.getY() + (waveformContainer.getHeight() / 2) - 8, 40, 16);
+			comboAudioTrack.setBounds(7, (waveformContainer.getHeight() / 2) - 8, 40, 16);
 						
 			if (showScale.getY() < Shutter.topPanel.getHeight() || FFPROBE.audioOnly || videoPath == null || Shutter.frame.getSize().width <= 654 || fullscreenPlayer)
 			{
