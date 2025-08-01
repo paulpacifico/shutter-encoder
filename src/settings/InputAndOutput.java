@@ -47,7 +47,7 @@ public class InputAndOutput extends Shutter {
 		        inPoint = "";	
 			
 			if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
-	        {			
+	        {				
 				String framesText[] = VideoPlayer.lblDuration.getText().split(" ");
 				Integer frames =  Integer.parseInt(framesText[framesText.length - 2]);
 

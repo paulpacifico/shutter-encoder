@@ -353,7 +353,7 @@ public class VideoEncoders extends Shutter {
 						
 						//Codec
 						String codec = setCodec();
-						
+												
 						//Bitrate
 						String bitrate = setBitrate();						
 

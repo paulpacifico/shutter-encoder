@@ -286,7 +286,7 @@ public static boolean isRotated = false;
 					    		getVideoLengthTC = ffmpegTime;
 					    		totalLength = (getTimeToMS(ffmpegTime));
 					    		    		
-					         	if (grpBitrate.isVisible() && totalLength != 0)
+					         	if (totalLength != 0)
 								{     				
 						      		if (VideoPlayer.playerVideo != null)	
 						     			VideoPlayer.totalDuration();
@@ -1187,9 +1187,8 @@ public static boolean isRotated = false;
 	
 	@SuppressWarnings("rawtypes")
 	public static void setFilesize() {
-		
 		if (grpBitrate.isVisible())
-        {
+		{
 			int multi = 0;
 			if (lblAudioMapping.getSelectedItem().toString().equals("Multi") && comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()) == false)
 			{
@@ -1219,7 +1218,7 @@ public static boolean isRotated = false;
 				int min = VideoPlayer.durationM;
 				int sec = VideoPlayer.durationS;	
 				int frames = VideoPlayer.durationF;
-				
+								
 				int audio = 0;
 				if (comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()))
 				{
@@ -1245,7 +1244,7 @@ public static boolean isRotated = false;
 				}
 				else
 					audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
-				
+							
 				//Set Bitrate
 				if (isLocked)
 				{
@@ -1281,9 +1280,7 @@ public static boolean isRotated = false;
 					bitrateSize.setText("-");
 				}
 			}
-		
-        }
-		
+		}
 	}
 	
 	private static int getTimeToMS(String time) {

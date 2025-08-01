@@ -1113,7 +1113,12 @@ public class FunctionUtils extends Shutter {
 			return videoBitrate;
 		}
 		else
-		{			
+		{		
+			if (Shutter.isLocked)
+			{
+				FFPROBE.setFilesize();
+			}
+			
 			return Integer.parseInt(debitVideo.getSelectedItem().toString());
 		}
 	}

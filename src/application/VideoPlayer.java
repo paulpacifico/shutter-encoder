@@ -6067,14 +6067,17 @@ public class VideoPlayer {
 			
 			if (fileList.length() > 0 && fileDuration > 40 && Shutter.caseEnableSequence.isSelected() == false)
 			{
+				boolean fileExists = false;
 				for (String line : fileList.toString().split(System.lineSeparator()))
 				{	
 					String s[] = line.split("\\|");
 					String in[] = s[1].split(":");
 					String out[] = s[2].split(":");
 					
+					totalFrames = ((double) fileDuration / 1000 * FFPROBE.accurateFPS);
+					
 					if (s[0].equals(file))
-					{			
+					{											
 						caseInH.setText(in[0]);
 						caseInM.setText(in[1]);
 						caseInS.setText(in[2]);
@@ -6084,35 +6087,51 @@ public class VideoPlayer {
 						caseOutM.setText(out[1]);
 						caseOutS.setText(out[2]);
 						caseOutF.setText(out[3]);
-
-						double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
-						double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
-												
-						//Used for encoding
-						if (Shutter.caseEnableSequence.isSelected())
-						{						
-							inputFramerateMS = Float.parseFloat(Shutter.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
-						}
-						else			
-							inputFramerateMS = (double) (1000 / FFPROBE.accurateFPS);	
 						
-						totalFrames = ((double) fileDuration / 1000 * FFPROBE.accurateFPS);
-												
-						playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());
-						if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
-						{
-							playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
-						}
-						else
-							playerOutMark = waveformContainer.getWidth();
+						fileExists = true;						
+						break;
+					}
+					else
+					{
+						updateGrpIn(0);						
+						updateGrpOut(totalFrames);
 						
-						slider.setMaximum((int) (totalFrames));							
-						waveformContainer.repaint();	
-						totalDuration();
-						
-						return true;
+						fileExists = false;
 					}
 				}
+								
+				double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
+				double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+										
+				//Used for encoding
+				if (Shutter.caseEnableSequence.isSelected())
+				{						
+					inputFramerateMS = Float.parseFloat(Shutter.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
+				}
+				else			
+					inputFramerateMS = (double) (1000 / FFPROBE.accurateFPS);	
+				
+				slider.setMaximum((int) (totalFrames));	
+															
+				playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());
+				if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
+				{
+					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
+				}
+				else
+				{
+					playerOutMark = waveformContainer.getWidth();
+				}
+										
+				waveformContainer.repaint();	
+				totalDuration();
+				
+				if (fileExists)
+				{
+					return true;
+				}
+				else
+					return false;
 			}		
 			
 		} catch (Exception e) {}		
