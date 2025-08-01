@@ -93,7 +93,7 @@ public class LoudnessTruePeak extends Shutter {
 							Thread.sleep(100);
 						}
 						while(FFMPEG.runProcess.isAlive());
-						
+												
 						//Show detection
 						if (cancelled == false)
 							showDetection(file);				

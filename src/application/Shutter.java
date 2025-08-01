@@ -3148,7 +3148,8 @@ public class Shutter {
 
 				cancelled = true;
 
-				if (FFMPEG.runProcess != null && FFMPEG.runProcess.isAlive()) {
+				if (FFMPEG.runProcess != null && FFMPEG.runProcess.isAlive())
+				{
 					FFMPEG.isRunning = false;
 
 					if (btnStart.getText().equals(language.getProperty("resume"))) {

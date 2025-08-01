@@ -349,12 +349,10 @@ public static StringBuilder errorLog = new StringBuilder();
 									else
 										setProgress(line, false, cmd);	
 								}
-							}
-							else
-								break;																			
+							}																		
 						}					
 						process.waitFor();
-						
+											
 						if (cancelled == false)
 						{							
 							postAnalyse();	
