@@ -56,6 +56,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -111,7 +112,7 @@ import settings.Transitions;
 public class VideoPlayer {
 	
     //Player
-	public static JPanel player; 
+	public static JPanel player;
     public static Process playerVideo;
     public static Process bufferVideo;
     public static Process playerAudio;	
@@ -140,7 +141,7 @@ public class VideoPlayer {
     public static int maxBufferedFrames = 500;
     public static BufferedImage frameVideo;
     private static BufferedImage fullSizeWatermark;
-	public static double screenRefreshRate = 16.7; //Vsync in ms
+    public static double screenRefreshRate = 16.7; //Vsync in ms
 	private static long lastEvTime = 0;
     public static boolean playerLoop = false;
     public static boolean frameIsComplete = false;
@@ -163,7 +164,7 @@ public class VideoPlayer {
 	public static boolean fullscreenPlayer = false;
 	private static Thread mouseClickThread;
 	private static String freezeFrame = "";
-	private static double fileDuration = 0;
+	public static double fileDuration = 0;
 	private static int waveformZoom = 1;
 	
 	//Buttons & Checkboxes
@@ -767,6 +768,7 @@ public class VideoPlayer {
 										}
 										else
 											frameVideo = readFrame(videoInputStream, player.getWidth(), player.getHeight());															
+										
 									}
 									
 									playerRepaint();
@@ -956,27 +958,79 @@ public class VideoPlayer {
 		
 	}
 	
-	public static BufferedImage readFrame(BufferedInputStream is, int width, int height) throws IOException
-	{
-        int frameSize = width * height * 3;
-        if (FFPROBE.hasAlpha)
-        	frameSize = width * height * 4;
-        
-		byte[] frameData = new byte[frameSize];
+	public static BufferedImage readFrame(BufferedInputStream is, int width, int height) throws IOException {
+							
+		if (FFPROBE.hasAlpha)
+		{		
+		    int frameSize = width * height * 4; // RGBA
+		    byte[] rgba = new byte[frameSize];
 		
-        int read = is.readNBytes(frameData, 0, frameData.length);
-        if (read == frameData.length)
-        {
-        	BufferedImage frame = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-        	if (FFPROBE.hasAlpha)
-        		frame = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
-        	
-            frame.getRaster().setDataElements(0, 0, width, height, frameData);
-            
-            return frame;
-        }
-        
-        return null;
+		    int read = is.readNBytes(rgba, 0, frameSize);
+		    if (read != frameSize)
+		    	return null;
+
+		    BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+		    byte[] abgr = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+		
+		    int p = 0;
+		    for (int i = 0; i < frameSize; i += 4) {
+		        abgr[p++] = rgba[i + 3]; // A
+		        abgr[p++] = rgba[i + 2]; // B
+		        abgr[p++] = rgba[i + 1]; // G
+		        abgr[p++] = rgba[i];     // R
+		    }
+		
+		    return img;
+		}
+	    else
+	    {
+	    	int frameSize = width * height * 3 / 2; // YUV420p size
+	        byte[] yuv = new byte[frameSize];
+
+	        int read = is.readNBytes(yuv, 0, frameSize);
+	        if (read != frameSize)
+	        	return null;
+	        
+		    BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		    byte[] rgb = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+	
+		    int frameSizeY = width * height;
+		    int frameSizeU = frameSizeY / 4;
+		    int yIndex = 0;
+		    int uIndex = frameSizeY;
+		    int vIndex = frameSizeY + frameSizeU;
+	
+		    int rgbIndex = 0;
+		    for (int y = 0; y < height; y++)
+		    {
+		        int uvRow = (y / 2) * (width / 2);
+		        for (int x = 0; x < width; x++)
+		        {
+		            int Y = yuv[yIndex + y * width + x] & 0xFF;
+		            int U = yuv[uIndex + uvRow + (x / 2)] & 0xFF;
+		            int V = yuv[vIndex + uvRow + (x / 2)] & 0xFF;
+	
+		            int C = Y - 16;
+		            int D = U - 128;
+		            int E = V - 128;
+	
+		            int R = clamp((298 * C + 409 * E + 128) >> 8);
+		            int G = clamp((298 * C - 100 * D - 208 * E + 128) >> 8);
+		            int B = clamp((298 * C + 516 * D + 128) >> 8);
+	
+		            // TYPE_3BYTE_BGR => Blue, Green, Red order
+		            rgb[rgbIndex++] = (byte) B;
+		            rgb[rgbIndex++] = (byte) G;
+		            rgb[rgbIndex++] = (byte) R;
+		        }
+		    }
+		    
+		    return img;
+	    }	
+	}
+
+	private static int clamp(int val) {
+	    return (val < 0) ? 0 : ((val > 255) ? 255 : val);
 	}
 	
 	private static void playerPlayAudioOnly(double inputTime) {
@@ -1067,12 +1121,12 @@ public class VideoPlayer {
 		{			  
 		    long time = System.currentTimeMillis();
 		    
-		    if (time > (lastEvTime + screenRefreshRate)) //Vsync
+		    if ((time - lastEvTime) >= screenRefreshRate) //Vsync
 		    {			    	
 		    	lastEvTime = time;		      
 		    	player.repaint();
 		    	getTimePoint(playerCurrentFrame); 
-		    }			
+		    }	
 		}			
 	}
 	
@@ -1499,11 +1553,14 @@ public class VideoPlayer {
 
 							} catch (InterruptedException e) {}
 							
+							//Check GPU again because it's the video player set to true
+							FFMPEG.checkGPUCapabilities(videoPath, true);
+							
 							//IMPORTANT
 							btnStop.doClick();
-							Shutter.fileList.repaint();
+							Shutter.fileList.repaint();							
 							fileDuration = FFPROBE.totalLength; //Avoid a bug when totalLength is loader somewhere else
-							
+
 							if (isRaw)
 							{
 								Shutter.btnStart.setEnabled(true);
@@ -2252,7 +2309,7 @@ public class VideoPlayer {
 				}
 			}
 			
-			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v rawvideo -pix_fmt rgb24 -an -f rawvideo -";
+			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v rawvideo -pix_fmt yuv420p -an -f rawvideo -";
 		}
 		else
 		{
@@ -2310,7 +2367,7 @@ public class VideoPlayer {
 				freezeFrame = "";
 			
 			//Alpha
-			String colorFormat = "rgb24";
+			String colorFormat = "yuv420p";
 			if (FFPROBE.hasAlpha)
 				colorFormat = "rgba";
 
@@ -2711,13 +2768,16 @@ public class VideoPlayer {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				//Allows to wait for the last frame to load					
-				while (setTime.isAlive())
+				//Allows to wait for the last frame to load
+				if (setTime != null)
 				{
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e1) {}						
-				} 
+					while (setTime.isAlive())
+					{
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e1) {}						
+					}			
+				}
 				
 				if (btnPlay.getName().equals("pause"))
 				{
@@ -2758,7 +2818,6 @@ public class VideoPlayer {
 												
 						playerSetTime(playerCurrentFrame);
 					}
-					
 					
 					//Loop the player
 					if (playerCurrentFrame >= totalFrames - 2)
@@ -2994,8 +3053,8 @@ public class VideoPlayer {
 	
     @SuppressWarnings("serial")
 	private void player() {		
-    	
-		player = new JPanel() {
+
+    	player = new JPanel() {
 			
             @Override
             protected void paintComponent(Graphics g) {
@@ -3009,6 +3068,7 @@ public class VideoPlayer {
                                
                 g2.setColor(Color.BLACK);
                 
+                //Avoid black frame display
                 if (playerIsPlaying() && frameVideo == null)
                 {
                 	long time = System.currentTimeMillis();
@@ -3031,7 +3091,7 @@ public class VideoPlayer {
                 else
                 {
                 	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            		g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this); 
+                	g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this);
                 	
                 	cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
                 }
@@ -3054,7 +3114,7 @@ public class VideoPlayer {
 		            	{
 		            		showFPS.setForeground(Color.GREEN);
 		            		
-		            		String fps[] = String.valueOf(FFPROBE.accurateFPS).split("\\.");
+		            		String fps[] = String.valueOf(FFPROBE.currentFPS).split("\\.");
 		            		if (fps[1].equals("0"))
 		            			showFPS.setText(String.valueOf(FFPROBE.currentFPS).replace(".0", "") + " " + Shutter.language.getProperty("fps"));
 		            		else
@@ -3183,7 +3243,7 @@ public class VideoPlayer {
          	   return (p - distance);
          }
         };
-        
+    	
         // Drag & Drop
  		player.setTransferHandler(new ListeFileTransferHandler());
         
@@ -3400,7 +3460,7 @@ public class VideoPlayer {
 		player.setBackground(Color.BLACK);
 		Shutter.frame.getContentPane().add(player);		
 	}
-	    
+    	    
 	@SuppressWarnings("serial")
 	private void sliders() {
 		
@@ -5517,7 +5577,7 @@ public class VideoPlayer {
 						String deinterlace = "";
 						
 						//Alpha
-						String colorFormat = "rgb24";
+						String colorFormat = "yuv420p";
 						if (FFPROBE.hasAlpha)
 							colorFormat = "rgba";
 						
@@ -6640,7 +6700,7 @@ public class VideoPlayer {
     		{   		
     			slider.setValue((int) playerCurrentFrame);
     			
-    			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * time) / slider.getMaximum());
+    			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * (time - offset)) / slider.getMaximum());
     			    			
     			if (cursorWaveform != null)
     			{

@@ -278,7 +278,7 @@ public class AudioSettings extends Shutter {
 			
 			if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")) && isBroadcastCodec == false)
 			{
-				return setCustomAudio();
+				return setCustomAudio(isBroadcastCodec, audioFiltering);
 			}
 			else if (FFPROBE.stereo)
 		    {
@@ -627,7 +627,7 @@ public class AudioSettings extends Shutter {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public static String setCustomAudio() {
+	public static String setCustomAudio(Boolean isBroadcastCodec, String audioFiltering) {
 		
 		//Mapping
 		String audioMapping = "";
@@ -776,7 +776,16 @@ public class AudioSettings extends Shutter {
 			i++;
 			}
 		}		
+		
+		if (isBroadcastCodec) //Managed from FunctionUtils
+		{
+	    	audioFiltering = "";
+		}
+	    else if (audioFiltering != "")
+		{
+			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
+		}
 			
-		return audioMapping + codecMapping + bitrateMapping + rateMapping + languageMapping;
+		return audioFiltering + audioMapping + codecMapping + bitrateMapping + rateMapping + languageMapping;
 	}
 }

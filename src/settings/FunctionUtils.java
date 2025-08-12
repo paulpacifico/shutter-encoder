@@ -152,7 +152,7 @@ public class FunctionUtils extends Shutter {
 				return false;
 			
 			//Check GPU
-			FFMPEG.checkGPUCapabilities(file.toString());
+			FFMPEG.checkGPUCapabilities(file.toString(), false);
 					
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
 			{
@@ -619,6 +619,7 @@ public class FunctionUtils extends Shutter {
 			progressBar1.setMaximum((int) (mergeDuration / 1000));
 			
 			FFPROBE.totalLength = mergeDuration;
+			VideoPlayer.fileDuration = FunctionUtils.mergeDuration;			
 			FFMPEG.fileLength = progressBar1.getMaximum();
 						
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {

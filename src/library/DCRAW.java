@@ -45,7 +45,6 @@
 package library;
 
 import java.awt.Cursor;
-import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -138,7 +137,7 @@ public static Process process;
 						
 						if (cmd.contains("-f rawvideo"))
 						{
-							VideoPlayer.preview = (BufferedImage) VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight());
+							VideoPlayer.preview = VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight());
 							VideoPlayer.frameVideo = VideoPlayer.preview;
 							
 							inputStream.close();

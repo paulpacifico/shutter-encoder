@@ -3948,26 +3948,27 @@ public class Shutter {
 
 										if (System.getProperty("os.name").contains("Windows")) {
 											FFMPEG.hwaccel(
-													"-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -s 640x360 -f null -"
+													"-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -b:v 5000k -s 640x360 -f null -"
 															+ '"');
 
 											if (FFMPEG.error == false)
 												graphicsAccel.add("Nvidia NVENC");
 
 											FFMPEG.hwaccel(
-													"-f lavfi -i nullsrc -t 1 -c:v av1_qsv -s 640x360 -f null -" + '"');
+													"-f lavfi -i nullsrc -t 1 -c:v av1_qsv -b:v 5000k -s 640x360 -f null -" + '"');
 
 											if (FFMPEG.error == false)
 												graphicsAccel.add("Intel Quick Sync");
 
 											FFMPEG.hwaccel(
-													"-f lavfi -i nullsrc -t 1 -c:v av1_amf -s 640x360 -f null -" + '"');
+													"-f lavfi -i nullsrc -t 1 -c:v av1_amf -b:v 5000k -s 640x360 -f null -" + '"');
 
 											if (FFMPEG.error == false)
 												graphicsAccel.add("AMD AMF Encoder");
+											
 										} else if (System.getProperty("os.name").contains("Mac")) {
 											FFMPEG.hwaccel(
-													"-f lavfi -i nullsrc -t 1 -c:v av1_videotoolbox -s 640x360 -f null -");
+													"-f lavfi -i nullsrc -t 1 -c:v av1_videotoolbox -b:v 5000k -s 640x360 -f null -");
 
 											if (FFMPEG.error == false)
 												graphicsAccel.add("OSX VideoToolbox");
@@ -5601,10 +5602,6 @@ public class Shutter {
 						changeFilters();
 						FFPROBE.setFilesize();
 					}
-				}
-
-				if (VideoPlayer.videoPath != null) {
-					FFMPEG.checkGPUCapabilities(VideoPlayer.videoPath);
 				}
 
 				if (NCNN.isRunning && NCNN.process != null) {
@@ -19278,10 +19275,6 @@ public class Shutter {
 					}
 				}
 
-				if (VideoPlayer.videoPath != null) {
-					// FFMPEG.checkGPUCapabilities(VideoPlayer.videoPath);
-				}
-
 				VideoPlayer.frameIsComplete = false;
 
 				VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());
@@ -21941,25 +21934,25 @@ public class Shutter {
 
 													if (arch.equals("arm64")) {
 														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-																+ "_mf -s 640x360 -f null -" + '"');
+																+ "_mf -b:v 5000k -s 640x360 -f null -" + '"');
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("Media Foundation");
 													} else {
 														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-																+ "_nvenc -b_ref_mode 0 -s 640x360 -f null -" + '"');
+																+ "_nvenc -b:v 5000k -b_ref_mode 0 -s 640x360 -f null -" + '"');
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("Nvidia NVENC");
 
 														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-																+ "_qsv -s 640x360 -f null -" + '"');
+																+ "_qsv -b:v 5000k -s 640x360 -f null -" + '"');
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("Intel Quick Sync");
 
 														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-																+ "_amf -s 640x360 -f null -" + '"');
+																+ "_amf -b:v 5000k -s 640x360 -f null -" + '"');
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("AMD AMF Encoder");
@@ -21967,7 +21960,7 @@ public class Shutter {
 														FFMPEG.hwaccel(
 																"-init_hw_device vulkan -f lavfi -i nullsrc -t 1 -c:v "
 																		+ codec
-																		+ "_vulkan -vf format=nv12,hwupload -f null -"
+																		+ "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -"
 																		+ '"');
 
 														if (FFMPEG.error == false)
@@ -21976,33 +21969,33 @@ public class Shutter {
 														/*
 														 * if (codec == "hevc") {
 														 * FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec +
-														 * "_d3d12va -s 640x360 -f null -" + '"');
+														 * "_d3d12va -b:v 5000k -s 640x360 -f null -" + '"');
 														 * 
 														 * if (FFMPEG.error == false) graphicsAccel.add("D3D12VA"); }
 														 */
 													}
 												} else if (System.getProperty("os.name").contains("Linux")) {
 													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-															+ "_nvenc -s 640x360 -f null -");
+															+ "_nvenc -b:v 5000k -s 640x360 -f null -");
 
 													if (FFMPEG.error == false)
 														graphicsAccel.add("Nvidia NVENC");
 
 													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-															+ "_vaapi -s 640x360 -f null -");
+															+ "_vaapi -b:v 5000k -s 640x360 -f null -");
 
 													if (FFMPEG.error == false)
 														graphicsAccel.add("VAAPI");
 
 													if (comboFonctions.getSelectedItem().toString().equals("H.264")) {
 														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-																+ "_v4l2m2m -s 640x360 -f null -");
+																+ "_v4l2m2m -b:v 5000k -s 640x360 -f null -");
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("V4L2 M2M");
 
 														FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-																+ "_omx -s 640x360 -f null -");
+																+ "_omx -b:v 5000k -s 640x360 -f null -");
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("OpenMAX");
@@ -22010,7 +22003,7 @@ public class Shutter {
 												} else // Accélération graphique Mac
 												{
 													FFMPEG.hwaccel("-f lavfi -i nullsrc -t 1 -c:v " + codec
-															+ "_videotoolbox -s 640x360 -f null -");
+															+ "_videotoolbox -b:v 5000k -s 640x360 -f null -");
 
 													if (FFMPEG.error == false)
 														graphicsAccel.add("OSX VideoToolbox");
@@ -22577,14 +22570,14 @@ public class Shutter {
 												if ("VP9".equals(comboFonctions.getSelectedItem().toString())) {
 													if (System.getProperty("os.name").contains("Windows")) {
 														FFMPEG.hwaccel(
-																"-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -s 640x360 -f null -"
+																"-f lavfi -i nullsrc -t 1 -c:v vp9_qsv -b:v 5000k -s 640x360 -f null -"
 																		+ '"');
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("Intel Quick Sync");
 													} else if (System.getProperty("os.name").contains("Linux")) {
 														FFMPEG.hwaccel(
-																"-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -s 640x360 -f null -");
+																"-f lavfi -i nullsrc -t 1 -c:v vp9_vaapi -b:v 5000k -s 640x360 -f null -");
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("VAAPI");
@@ -22593,28 +22586,28 @@ public class Shutter {
 													if (System.getProperty("os.name").contains("Windows")) {
 														if (arch.equals("arm64")) {
 															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -t 1 -c:v av1_mf -s 640x360 -f null -"
+																	"-f lavfi -i nullsrc -t 1 -c:v av1_mf -b:v 5000k -s 640x360 -f null -"
 																			+ '"');
 
 															if (FFMPEG.error == false)
 																graphicsAccel.add("Media Foundation");
 														} else {
 															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -s 640x360 -f null -"
+																	"-f lavfi -i nullsrc -t 1 -c:v av1_nvenc -b:v 5000k -s 640x360 -f null -"
 																			+ '"');
 
 															if (FFMPEG.error == false)
 																graphicsAccel.add("Nvidia NVENC");
 
 															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -t 1 -c:v av1_qsv -s 640x360 -f null -"
+																	"-f lavfi -i nullsrc -t 1 -c:v av1_qsv -b:v 5000k -s 640x360 -f null -"
 																			+ '"');
 
 															if (FFMPEG.error == false)
 																graphicsAccel.add("Intel Quick Sync");
 
 															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -t 1 -c:v av1_amf -s 640x360 -f null -"
+																	"-f lavfi -i nullsrc -t 1 -c:v av1_amf -b:v 5000k -s 640x360 -f null -"
 																			+ '"');
 
 															if (FFMPEG.error == false)
@@ -22622,7 +22615,7 @@ public class Shutter {
 														}
 													} else if (System.getProperty("os.name").contains("Mac")) {
 														FFMPEG.hwaccel(
-																"-f lavfi -i nullsrc -t 1 -c:v av1_videotoolbox -s 640x360 -f null -");
+																"-f lavfi -i nullsrc -t 1 -c:v av1_videotoolbox -b:v 5000k -s 640x360 -f null -");
 
 														if (FFMPEG.error == false)
 															graphicsAccel.add("OSX VideoToolbox");

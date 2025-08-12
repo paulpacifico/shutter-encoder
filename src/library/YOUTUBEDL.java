@@ -56,6 +56,17 @@ public static String format = "";
 		Shutter.cancelled  = false;
 		
         outputFile = new File(lblDestination1.getText() + "/%(title)s.%(ext)s");
+        if (caseSubFolder.isSelected() && txtSubFolder.getText().equals("") == false)
+		{
+        	outputFile = new File(lblDestination1.getText() + "/" + txtSubFolder.getText());
+			
+			if (outputFile.exists() == false)
+			{
+				outputFile.mkdirs();
+			}
+			
+			outputFile = new File(lblDestination1.getText() + "/" + txtSubFolder.getText() + "/%(title)s.%(ext)s");
+		}
         
 	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + format + " " + cmd + options + " --no-continue -o " + '"' + outputFile + '"' + System.lineSeparator());
 

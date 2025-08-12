@@ -252,9 +252,14 @@ public class Merge extends Shutter {
 	
 	private static String setAudioMapping() {
 	
+		String audioFiltering = "";
+		
+		//EQ
+		audioFiltering = AudioSettings.setEQ(audioFiltering);
+		
 		if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 		{
-			return AudioSettings.setCustomAudio();
+			return AudioSettings.setCustomAudio(false, audioFiltering);
 		}
 		else
 		{
@@ -268,7 +273,12 @@ public class Merge extends Shutter {
 				&& comboAudio7.getSelectedIndex() == 6
 				&& comboAudio8.getSelectedIndex() == 7)
 			{
-				return " -map a?";	
+				if (audioFiltering != "")
+	    		{
+	    			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
+	    		}
+				
+				return audioFiltering + " -map a?";
 			}
 			else
 			{
@@ -289,6 +299,11 @@ public class Merge extends Shutter {
 				if (comboAudio8.getSelectedIndex() != 16)
 					mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
 			}
+			
+			if (audioFiltering != "")
+    		{
+    			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
+    		}
 			
 			return mapping;
 		}

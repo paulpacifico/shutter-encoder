@@ -1087,7 +1087,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 
-	public static void checkGPUCapabilities(String file) {
+	public static void checkGPUCapabilities(String file, boolean isVideoPlayer) {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
@@ -1141,7 +1141,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						bitDepth = "p010";
 					}	
 					
-					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false || isVideoPlayer)
 					{								
 						//Check for Nvidia or Intel GPU
 						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto"))
