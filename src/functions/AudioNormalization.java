@@ -293,13 +293,13 @@ public class AudioNormalization extends Shutter {
 				switch (comboAudioCodec.getSelectedIndex()) 
 				{
 					case 0 :
-						return " -c:a pcm_f32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";						
 					case 1 :
-						return " -c:a pcm_s32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_s24le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";						
 					case 2 :
-						return " -c:a pcm_s24le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_s32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
 					case 3 :
-						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";
+						return " -c:a pcm_f32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k -map v:0? -map a? -map s?";						
 				}
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))

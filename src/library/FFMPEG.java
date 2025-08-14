@@ -1159,7 +1159,7 @@ public static StringBuilder errorLog = new StringBuilder();
 									cudaAvailable = true;
 								
 								//QSV
-								FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
+								FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2 -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
 								
 								do {
 									Thread.sleep(100);
@@ -1217,6 +1217,10 @@ public static StringBuilder errorLog = new StringBuilder();
 							if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan"))
 							{
 								device = " -init_hw_device vulkan";
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
+							{
+								device = " -init_hw_device qsv:hw,child_device_type=dxva2";
 							}
 							
 							FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + device + " -i " + '"' + file + '"' + " -vf scale_" + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');

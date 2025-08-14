@@ -866,7 +866,7 @@ public class VideoEncoders extends Shutter {
 								}
 								else if (FFMPEG.qsvAvailable)
 								{
-									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
+									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2";
 								}
 								else if (FFMPEG.videotoolboxAvailable)
 								{
@@ -893,8 +893,12 @@ public class VideoEncoders extends Shutter {
 						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Vulkan Video") && (Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan") || FFMPEG.vulkanAvailable == false))			
 						{
 							gpuDecoding += " -init_hw_device vulkan";
-						}						
-												
+						}				
+						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync") && (Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv") || FFMPEG.qsvAvailable == false))
+						{
+							gpuDecoding += " -init_hw_device qsv:hw,child_device_type=dxva2";
+						}
+							
 						//GPU filtering
 			        	if (filterComplex.contains("hwdownload") && comboAccel.getSelectedItem().equals("AMD AMF Encoder") == false) //When GPU scaling is used
 			    		{

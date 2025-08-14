@@ -8323,9 +8323,17 @@ public class Shutter {
 			grpSetAudio.add(comboAudioRate8);
 			comboLanguage8.setLocation(comboAudioRate8.getX() + comboAudioRate8.getWidth(), comboAudioRate8.getLocation().y);
 			grpSetAudio.add(comboLanguage8);
-						
+					
+			int itemsCount = 0;
+			if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())
+			|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
+			|| language.getProperty("functionMerge").equals(comboFonctions.getSelectedItem().toString()))
+			{
+				itemsCount = 1;
+			}
+			
 			//comboAudioCodec Model
-			if (comboAudioCodec1.getModel().getSize() != comboAudioCodec.getModel().getSize() - 2)
+			if (comboAudioCodec1.getModel().getSize() != comboAudioCodec.getModel().getSize() - (2 - itemsCount))
 			{				
 				for (Component c : grpSetAudio.getComponents())
 				{
@@ -8334,8 +8342,8 @@ public class Shutter {
 						((JComboBox) c).removeAllItems();
 					}
 				}
-				
-				for (int i = 0 ; i < comboAudioCodec.getModel().getSize() - 3 ; i++)
+			
+				for (int i = 0 ; i < comboAudioCodec.getModel().getSize() - (3 - itemsCount) ; i++)
 				{
 					for (Component c : grpSetAudio.getComponents())
 					{
@@ -20781,9 +20789,8 @@ public class Shutter {
 									caseEqualizer.setSelected(false);
 								}
 
-								if ((comboAudioCodec.getItemCount() != 13
-										|| comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
-										&& action) {
+								if ((comboAudioCodec.getItemCount() != 13 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 16Bits") == false) && action)
+								{
 									if (lblAudioMapping.getItemCount() != 4) {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",
@@ -20908,9 +20915,8 @@ public class Shutter {
 								grpSetAudio.removeAll();
 								grpSetAudio.add(caseChangeAudioCodec);
 
-								if ((comboAudioCodec.getItemCount() != 13
-										|| comboAudioCodec.getModel().getElementAt(0).equals("PCM 32Float") == false)
-										&& action) {
+								if ((comboAudioCodec.getItemCount() != 13 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 16Bits") == false) && action)
+								{
 									if (lblAudioMapping.getItemCount() != 4) {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",

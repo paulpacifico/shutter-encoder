@@ -41,7 +41,7 @@ public class InputAndOutput extends Shutter {
 					
 			if (timeIn > 0.0f)
 	        {		        
-				inPoint = " -ss " + Math.floor((double) timeIn * VideoPlayer.inputFramerateMS) + "ms";
+				inPoint = " -ss " + (long) ((double) timeIn * VideoPlayer.inputFramerateMS) + "ms";
 		    }
 		    else
 		        inPoint = "";	

@@ -196,7 +196,32 @@ public class Rewrap extends Shutter {
 						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + newExtension); 	
-														
+										
+						//Audio normalization
+			        	if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+			        	{
+				        	AudioNormalization.main(file);
+				        							
+				        	do {
+								Thread.sleep(100);
+							} while (AudioNormalization.thread.isAlive());
+				        	
+				        	if (cancelled)
+				        	{
+				        		break;
+				        	}
+				        	else				        	
+				        	{
+				        		//Allows to add the file to the queue
+				        		if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				        		{
+				        			enableAll();
+				        		}
+				        		
+				        		lblCurrentEncoding.setText(fileName);
+				        	}
+			        	}
+						
 						//Audio
 						String audio = setAudio();
 						String audioMapping = setAudioMapping();
@@ -254,32 +279,7 @@ public class Rewrap extends Shutter {
 								file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 							else
 								concat = " -noaccurate_seek";
-										
-							//Audio normalization
-				        	if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
-				        	{
-					        	AudioNormalization.main(file);
-					        							
-					        	do {
-									Thread.sleep(100);
-								} while (AudioNormalization.thread.isAlive());
-					        	
-					        	if (cancelled)
-					        	{
-					        		break;
-					        	}
-					        	else				        	
-					        	{
-					        		//Allows to add the file to the queue
-					        		if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
-					        		{
-					        			enableAll();
-					        		}
-					        		
-					        		lblCurrentEncoding.setText(fileName);
-					        	}
-				        	}
-							
+
 							//Command
 							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + flags + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
@@ -372,7 +372,7 @@ public class Rewrap extends Shutter {
 			//Simple volume compensation
 			String normalization = "";
 			
-			if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+			if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible() && Shutter.caseEqualizer.isSelected() == false)
 			{
 				normalization = " -af volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";	
 			}
@@ -382,13 +382,13 @@ public class Rewrap extends Shutter {
 				switch (comboAudioCodec.getSelectedIndex()) 
 				{
 					case 0 :
-						return " -c:a pcm_f32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
-					case 1 :
-						return " -c:a pcm_s32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
-					case 2 :
-						return " -c:a pcm_s24le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
-					case 3 :
 						return " -c:a pcm_s16le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
+					case 1 :
+						return " -c:a pcm_s24le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
+					case 2 :
+						return " -c:a pcm_s32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
+					case 3 :
+						return " -c:a pcm_f32le -ar " + lbl48k.getSelectedItem().toString() + " -b:a 1536k" + normalization;
 				}
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("FLAC"))
@@ -439,6 +439,13 @@ public class Rewrap extends Shutter {
 		
 		//EQ
 		audioFiltering = AudioSettings.setEQ(audioFiltering);
+		
+		if (caseEqualizer.isSelected() && caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+		{
+			if (audioFiltering != "") audioFiltering += ",";		
+			
+			audioFiltering += "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";
+		}	
 		
 		if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 		{

@@ -2336,7 +2336,7 @@ public class VideoPlayer {
 					}
 					else if (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_qsv"))
 					{
-						gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
+						gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2";
 					}	
 					else if (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_vt"))
 					{
@@ -2354,7 +2354,7 @@ public class VideoPlayer {
 					gpuDecoding = " -hwaccel auto";
 				}
 			}
-
+			
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 					
 			int framesToSkip = (int) ((double) slider.getValue() - playerCurrentFrame);
@@ -3932,7 +3932,8 @@ public class VideoPlayer {
 		waveformScrollPane.setBorder(null);
 	    Shutter.frame.getContentPane().add(waveformScrollPane, BorderLayout.CENTER);
 		
-		sliderVolume.setName("sliderVolume");		
+		sliderVolume.setName("sliderVolume");	
+		sliderVolume.setVisible(false);
 		sliderVolume.setValue(50);			
 		Shutter.frame.getContentPane().add(sliderVolume);
 				
@@ -3954,6 +3955,7 @@ public class VideoPlayer {
 		
 		lblVolume = new JLabel(new FlatSVGIcon("contents/volume.svg", 15, 15));
 		lblVolume.setFont(new Font("", Font.PLAIN, 12));
+		lblVolume.setVisible(false);
 		lblVolume.setSize(lblVolume.getPreferredSize().width + 3, 16);			
 		lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, sliderVolume.getY() + 2);	
 		
@@ -4019,6 +4021,7 @@ public class VideoPlayer {
 		sliderSpeed = new JSlider();
 		sliderSpeed.setMaximum(4);
 		sliderSpeed.setValue(2);
+		sliderSpeed.setVisible(false);
 		sliderSpeed.setMinorTickSpacing(1);
 		sliderSpeed.setMajorTickSpacing(1);
 		sliderSpeed.setSize(80, 22);
@@ -4136,6 +4139,7 @@ public class VideoPlayer {
 		lblSpeed = new JLabel("x1"); //0.25 allow to get max preferred size width
 		lblSpeed.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblSpeed.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
+		lblSpeed.setVisible(false);
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
 			Shutter.frame.getContentPane().add(lblSpeed);
 		
@@ -6656,11 +6660,8 @@ public class VideoPlayer {
 	}
 	
 	public static void getTimePoint(double time) {	
-		
-		if (caseInternalTc.isSelected())
-			time += offset;
-		
-		if (time - offset >= totalFrames)
+				
+		if (time >= totalFrames)
 		{
 			sliderChange = true;
 			slider.setValue(slider.getMaximum());
@@ -6669,6 +6670,9 @@ public class VideoPlayer {
 
 		//NTSC framerate
 		time = Timecode.setNTSCtimecode(time);
+		
+		if (caseInternalTc.isSelected())
+			time += offset;
 						
     	if (playerVideo != null && time - offset < totalFrames)
     	{    					    			 		
