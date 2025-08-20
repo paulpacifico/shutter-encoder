@@ -1566,7 +1566,7 @@ public class VideoEncoders extends Shutter {
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Vulkan Video"))
-						return " -c:v ffv1_vulkan -slicecrc 0";
+						return " -c:v ffv1_vulkan -level 3";
 				}
 				else
 					return " -c:v ffv1 -level 3";
