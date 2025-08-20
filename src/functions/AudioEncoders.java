@@ -450,7 +450,7 @@ public class AudioEncoders extends Shutter {
 		
 		if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")) && FFPROBE.surround)		
 		{
-			audio += "-af " + '"' + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + '"' + " ";
+			audio += "-af " + '"' + "pan=stereo|FL=FC+0.30*FL+0.30*BL|FR=FC+0.30*FR+0.30*BR" + audioFiltering + '"' + " ";
 		}
 		else if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")))						
 		{
@@ -567,6 +567,12 @@ public class AudioEncoders extends Shutter {
 		if (Transitions.setAudioSpeed() !=  "")
 		{
 			audioFiltering += "," + Transitions.setAudioSpeed();
+		}
+		
+		//Audio normalization		
+		if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
+		{				
+			audioFiltering += ",volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
 		}
 		
 		//Frequence d'échantillonnage

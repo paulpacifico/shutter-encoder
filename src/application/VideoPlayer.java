@@ -1554,7 +1554,8 @@ public class VideoPlayer {
 							} catch (InterruptedException e) {}
 							
 							//Check GPU again because it's the video player set to true
-							FFMPEG.checkGPUCapabilities(videoPath, true);
+							if (FFPROBE.totalLength > 40 && FFPROBE.audioOnly == false)
+								FFMPEG.checkGPUCapabilities(videoPath, true);
 							
 							//IMPORTANT
 							btnStop.doClick();
@@ -2329,10 +2330,14 @@ public class VideoPlayer {
 			{
 				if (FFMPEG.isGPUCompatible)
 				{
-					//Auto GPU Shutter.selection
+					//Auto GPU
 					if (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_cuda"))
 					{
 						gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
+					}
+					else if (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("vpp_amf"))
+					{
+						gpuDecoding = " -hwaccel auto"; //Works differently don't even really need -hwaccel auto
 					}
 					else if (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_qsv"))
 					{
@@ -5898,8 +5903,7 @@ public class VideoPlayer {
 			filter += "null";
 		}
 		else if (FFMPEG.isGPUCompatible && FFPROBE.isRotated == false
-		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto")
-		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto")
+		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
 		&& noGPU == false && previousFrame == false
 		&& mouseIsPressed == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
 		&& Colorimetry.setInputCodec(extension) == ""
@@ -5916,6 +5920,10 @@ public class VideoPlayer {
 			{
 				filter = filter.replace("yadif", "yadif_cuda");			
 				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=" + algorithm.replace("neighbor", "nearest").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
+			}
+			else if (FFMPEG.amfAvailable && yadif == "")
+			{
+				filter += "vpp_amf=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
 			else if (FFMPEG.qsvAvailable && yadif == "")
 			{
@@ -6311,39 +6319,36 @@ public class VideoPlayer {
 			{			
 				ratio = (double) Integer.parseInt(Shutter.textCropWidth.getText()) / Integer.parseInt(Shutter.textCropHeight.getText());
 			}
-						
-			if (ratio < 1.3f)
+			
+			int maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2;
+			if (Shutter.noSettings)
 			{
-				int maxHeight = (int) (Shutter.frame.getHeight() / 1.6f);
-				
-				if (fileDuration <= 40 && Shutter.caseEnableSequence.isSelected() == false || isPiping) //Image
-				{
-					maxHeight = Shutter.frame.getHeight() - (Shutter.grpChooseFiles.getY() + 8) - (Shutter.frame.getHeight() - (Shutter.grpProgression.getY() + Shutter.grpProgression.getHeight()));
-				}
-				
-				if (fullscreenPlayer)
-				{
-					maxHeight = Shutter.frame.getHeight();
-				}
-				
-				player.setSize((int) (maxHeight * ratio), maxHeight);
+				maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth();
+			}			
+			if (fullscreenPlayer)
+			{
+				maxWidth = Shutter.frame.getWidth();
 			}
-			else
+			
+			int maxHeight = (int) (Shutter.frame.getHeight() - (Shutter.topPanel.getHeight() + Shutter.statusBar.getHeight()) - 40);
+			if (fileDuration <= 40 && Shutter.caseEnableSequence.isSelected() == false || isPiping) //Image
 			{
-				int maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2;
-				
-				if (Shutter.noSettings)
-				{
-					maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth();
-				}
-				
-				if (fullscreenPlayer)
-				{
-					maxWidth = Shutter.frame.getWidth();
-				}
-				
-				player.setSize(maxWidth, (int) (maxWidth / ratio));		
-			}	
+				maxHeight = Shutter.frame.getHeight() - (Shutter.grpChooseFiles.getY() + 8) - (Shutter.frame.getHeight() - (Shutter.grpProgression.getY() + Shutter.grpProgression.getHeight()));
+			}			
+			if (fullscreenPlayer)
+			{
+				maxHeight = Shutter.frame.getHeight();
+			}
+			
+			int width = (int) (maxHeight * ratio);
+			int height = (int) (maxWidth / ratio);	
+						
+			if (width <= maxWidth)
+			{								
+				player.setSize(width, maxHeight);
+			}
+			else							
+				player.setSize(maxWidth, height);			
 			
 			if (fullscreenPlayer == false && Shutter.frame.getHeight() - player.getHeight() < 220 && (fileDuration > 40 || Shutter.caseEnableSequence.isSelected()))
 			{

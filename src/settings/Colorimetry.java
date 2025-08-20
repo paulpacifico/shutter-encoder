@@ -153,7 +153,7 @@ public class Colorimetry extends Shutter {
 		else if (FFPROBE.videoCodec != null)
 		{
 			//Preserve the alpha channel
-			if (FFPROBE.videoCodec.contains("vp9"))
+			if (FFPROBE.videoCodec.contains("vp9") && FFPROBE.hasAlpha)
 			{
 				return " -c:v libvpx-vp9";
 			}

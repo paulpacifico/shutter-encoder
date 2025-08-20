@@ -267,7 +267,7 @@ public class Image extends Shutter {
 			        }
 					else
 					{					       	
-			        	//Original sup. à la sortie
+			        	//Source > to output
 			        	if (iw > ow || ih > oh)
 			        	{
 			        		//Si la hauteur calculée est > à la hauteur de sortie
@@ -339,7 +339,8 @@ public class Image extends Shutter {
 		//GPU Scaling
 		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=")
 		&& comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false
-		&& FFPROBE.videoCodec.contains("vp9") == false && FFPROBE.videoCodec.contains("vp8") == false
+		&& (FFPROBE.videoCodec.contains("vp9") == false || (FFPROBE.videoCodec.contains("vp9") && FFPROBE.hasAlpha == false))
+		&& FFPROBE.videoCodec.contains("vp8") == false
 		&& VideoPlayer.mouseIsPressed == false)
 		{
 			//Scaling
@@ -352,6 +353,7 @@ public class Image extends Shutter {
 			//Auto GPU selection
 			boolean autoQSV = false;
 			boolean autoCUDA = false;
+			boolean autoAMF = false;
 			boolean autoVIDEOTOOLBOX = false;
 			boolean autoVULKAN = false;			
 			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
@@ -359,6 +361,10 @@ public class Image extends Shutter {
 				if (FFMPEG.cudaAvailable)
 				{
 					autoCUDA = true;
+				}
+				else if (FFMPEG.amfAvailable)
+				{
+					autoAMF = true;
 				}
 				else if (FFMPEG.qsvAvailable)
 				{
@@ -389,6 +395,12 @@ public class Image extends Shutter {
 					
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
+			}
+			else if ((autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			{
+				filterComplex = filterComplex.replace("scale=", "vpp_amf=");
+				
+				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
 			else if ((autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{

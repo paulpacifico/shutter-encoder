@@ -856,13 +856,17 @@ public class VideoEncoders extends Shutter {
 						
 						//GPU decoding
 						String gpuDecoding = "";						
-						if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
+						if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("vpp_amf") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
 						{
 							if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 							{
 								if (FFMPEG.cudaAvailable)
 								{
 									gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
+								}
+								else if (FFMPEG.amfAvailable)
+								{
+									gpuDecoding = " -hwaccel auto"; //Works differently don't even really need -hwaccel auto
 								}
 								else if (FFMPEG.qsvAvailable)
 								{
@@ -1334,6 +1338,10 @@ public class VideoEncoders extends Shutter {
 					{
 						return " -c:v av1_amf";
 					}
+					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
+					{
+						return " -c:v av1_vulkan";
+					}
 					else if (comboAccel.getSelectedItem().equals("Media Foundation"))
 					{
 						return " -c:v av1_mf";
@@ -1698,7 +1706,7 @@ public class VideoEncoders extends Shutter {
 				else
 				{
 					//Switching to GPU nv12 or p010 to avoid useless pix_fmt conversion
-					if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
+					if (FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("vpp_amf") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
 					{
 						if (filterComplex.contains("format=p010"))
 						{
@@ -1726,7 +1734,7 @@ public class VideoEncoders extends Shutter {
 				else				
 				{
 					//Switching to GPU nv12 to avoid useless pix_fmt conversion
-					if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
+					if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("vpp_amf") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
 					{
 						return "";				
 					}
@@ -1747,7 +1755,7 @@ public class VideoEncoders extends Shutter {
 			case "Xvid":
 				
 				//Switching to GPU nv12 to avoid useless pix_fmt conversion
-				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
+				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("scale_cuda") || filterComplex.contains("vpp_amf") || filterComplex.contains("scale_qsv") || filterComplex.contains("scale_vt") || filterComplex.contains("scale_vulkan")))
 				{
 					return "";				
 				}

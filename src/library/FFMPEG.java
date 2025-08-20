@@ -120,6 +120,7 @@ public static StringBuilder audioDevices;
 public static StringBuilder hwaccels = new StringBuilder();
 public static boolean isGPUCompatible = false;
 public static boolean cudaAvailable = false;
+public static boolean amfAvailable = false;
 public static boolean qsvAvailable = false;
 public static boolean videotoolboxAvailable = false;
 public static boolean vulkanAvailable = false;
@@ -1086,13 +1087,15 @@ public static StringBuilder errorLog = new StringBuilder();
 			isRunning = false;
 		}
 	}
-
+	
+	@SuppressWarnings("deprecation")
 	public static void checkGPUCapabilities(String file, boolean isVideoPlayer) {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		isGPUCompatible = false;
 		cudaAvailable = false;
+		amfAvailable = false;
 		qsvAvailable = false;
 		videotoolboxAvailable = false;
 		vulkanAvailable = false;
@@ -1132,148 +1135,198 @@ public static StringBuilder errorLog = new StringBuilder();
 						
 			if (isGPUCompatible)
 			{
-				try {	
-					
-					//Scaling
-					String bitDepth = "nv12";
-					if (FFPROBE.imageDepth == 10)
+				//Scaling
+				String bitDepth = "nv12";
+				if (FFPROBE.imageDepth == 10)
+				{
+					bitDepth = "p010";
+				}	
+				
+				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false || isVideoPlayer)
+				{								
+					//Check for Nvidia/AMD or Intel GPU
+					if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto"))
 					{
-						bitDepth = "p010";
-					}	
-					
-					if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false || isVideoPlayer)
-					{								
-						//Check for Nvidia or Intel GPU
-						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto"))
+						if (System.getProperty("os.name").contains("Windows"))
 						{
-							if (System.getProperty("os.name").contains("Windows"))
+							boolean hasNvidiaGPU = false;
+							boolean hasAMDGPU = false;
+							boolean hasIntelGPU = false;
+							
+							//Checking GPU available
+							try {
+								
+								Process process;								
+								double version = Double.parseDouble(System.getProperty("os.version"));
+								if (version >= 10.0)
+								{
+									process = Runtime.getRuntime().exec("powershell -Command \"Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name\"");
+								}
+								else
+									process = Runtime.getRuntime().exec("wmic path win32_VideoController get name");
+								
+						        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+						        String line;
+						        while ((line = reader.readLine()) != null)
+						        {
+						            line = line.trim();
+						            if (!line.isEmpty() && !line.toLowerCase().contains("name"))
+						            {
+						                if (line.contains("NVIDIA"))
+						                	hasNvidiaGPU = true;	
+						                else if (line.contains("AMD"))
+						                	hasAMDGPU = true;							                
+						                else if (line.contains("Intel"))
+						                	hasIntelGPU = true;							                					                	
+						            }
+						        }
+							}
+							catch (IOException e) //If the Windows command crashes, set all values to true, then check all GPUs using FFmpeg
+							{
+								hasNvidiaGPU = true;
+								hasAMDGPU = true;
+								hasIntelGPU = true;
+							}
+							
+							if (hasNvidiaGPU)
 							{
 								//Cuda
-								FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
-								
-								do {
-									Thread.sleep(100);
-								} while(FFMPEG.runProcess.isAlive());
+								FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 																
 								if (FFMPEG.error == false)
 									cudaAvailable = true;
-								
+							}
+							else if (hasAMDGPU)
+							{
+								//AMF
+								FFMPEG.gpuFilter(" -i " + '"' + file + '"' + " -vf vpp_amf=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+																
+								if (FFMPEG.error == false)
+									amfAvailable = true;
+							}
+							
+							if (hasIntelGPU && cudaAvailable == false && amfAvailable == false) //Priority to Nvidia and AMD GPU
+							{
 								//QSV
-								FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2 -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
-								
-								do {
-									Thread.sleep(100);
-								} while(FFMPEG.runProcess.isAlive());
+								FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2 -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 								
 								if (FFMPEG.error == false)
 									qsvAvailable = true;
-								
+							}
+							
+							if (cudaAvailable == false && amfAvailable == false && qsvAvailable == false)
+							{
 								//Vulkan
-								FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
-								
-								do {
-									Thread.sleep(100);
-								} while(FFMPEG.runProcess.isAlive());	
-								
+								FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+
 								if (FFMPEG.error == false)
 									vulkanAvailable = true;
-								
-								if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
-								{								
-									if (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use CUDA decoding with QSV encoding
-									{
-										cudaAvailable = false;
-									}
-									else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use QSV decoding with NVENC encoding
-									{
-										qsvAvailable = false;
-									}
-									else if (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Nvidia NVENC")) //Cannot use VULKAN decoding with QSV encoding
-									{
-										vulkanAvailable = false;
-									}
-								}
-							}
-							else //Mac
-							{
-								//videotoolbox
-								FFMPEG.gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -");
-								
-								do {
-									Thread.sleep(100);
-								} while(FFMPEG.runProcess.isAlive());
-	
-								if (FFMPEG.error == false)
-									videotoolboxAvailable = true;								
 							}
 							
-							//Disable GPU if not available
-							if (cudaAvailable == false && qsvAvailable == false && videotoolboxAvailable == false && vulkanAvailable == false)
-								isGPUCompatible = false;
-						}
-						else //Check the current selection
-						{		
-							String device = "";
-							if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan"))
-							{
-								device = " -init_hw_device vulkan";
-							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
-							{
-								device = " -init_hw_device qsv:hw,child_device_type=dxva2";
-							}
-							
-							FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + device + " -i " + '"' + file + '"' + " -vf scale_" + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -t 1 -f null -" + '"');
-							
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
-							
-							if (FFMPEG.error)
+							if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 							{								
-								isGPUCompatible = false;
-								
-								if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
+								if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use CUDA decoding with AMF or QSV encoding
 								{
 									cudaAvailable = false;
 								}
-								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+								else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use AMF decoding with NVENC or QSV encoding
+								{
+									amfAvailable = false;
+								}
+								else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use QSV decoding with NVENC or AMF encoding
 								{
 									qsvAvailable = false;
 								}
-								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
-								{
-									videotoolboxAvailable = false;
-								}
-								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
+								else if (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder")) //Cannot use VULKAN decoding with QSV encoding
 								{
 									vulkanAvailable = false;
 								}
 							}
-							else
+						}
+						else //Mac
+						{
+							//videotoolbox
+							FFMPEG.gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
+
+							if (FFMPEG.error == false)
+								videotoolboxAvailable = true;								
+						}
+						
+						//Disable GPU if not available
+						if (cudaAvailable == false && amfAvailable == false && qsvAvailable == false && videotoolboxAvailable == false && vulkanAvailable == false)
+							isGPUCompatible = false;
+					}
+					else //Check the current selection
+					{		
+						String device = "";
+						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan"))
+						{
+							device = " -init_hw_device vulkan";
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
+						{
+							device = " -init_hw_device qsv:hw,child_device_type=dxva2";
+						}
+						
+						String scaleFilter = "scale_";
+						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("amf"))
+						{
+							scaleFilter = "vpp_" ;
+						}
+						
+						FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+						
+						if (FFMPEG.error)
+						{								
+							isGPUCompatible = false;
+							
+							if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
 							{
-								if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
-								{
-									cudaAvailable = true;
-								}
-								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
-								{
-									qsvAvailable = true;
-								}
-								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
-								{
-									videotoolboxAvailable = true;
-								}
-								else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
-								{
-									vulkanAvailable = true;
-								}
+								cudaAvailable = false;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("amf"))
+							{
+								amfAvailable = false;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+							{
+								qsvAvailable = false;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+							{
+								videotoolboxAvailable = false;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
+							{
+								vulkanAvailable = false;
 							}
 						}
-					}						
-					
-				} catch (InterruptedException e) {}
-				
+						else
+						{
+							if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
+							{
+								cudaAvailable = true;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("amf"))
+							{
+								amfAvailable = true;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+							{
+								qsvAvailable = true;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+							{
+								videotoolboxAvailable = true;
+							}
+							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
+							{
+								vulkanAvailable = true;
+							}
+						}
+					}
+				}						
+
 				FFMPEG.error = false;
 				FFMPEG.errorLog.setLength(0);
 				
@@ -1341,50 +1394,42 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 	    //Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
-		runProcess = new Thread(new Runnable()  {
+		try {
 			
-			@Override
-			public void run() {
-				
-			try {
-					
-					ProcessBuilder processFFMPEG;
+			ProcessBuilder processFFMPEG;
 
-					if (System.getProperty("os.name").contains("Windows"))
-					{							
-						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
-						process = processFFMPEG.start();
-					}
-					else
-					{
-						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
-						process = processFFMPEG.start();
-					}	
-						
-					String line;
-					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
-					
-					//Console.consoleFFMPEG.append(System.lineSeparator());
-					
-					while ((line = input.readLine()) != null) {
-						
-						//Console.consoleFFMPEG.append(line + System.lineSeparator());		
-						
-						//Errors
-						checkForErrors(line);					
-																		
-					}					
-					process.waitFor();		
-					
-					//Console.consoleFFMPEG.append(System.lineSeparator());
-						
-				} catch (IOException io) {//Bug Linux							
-				} catch (InterruptedException e) {
-					error = true;
-				}				
-			}				
-		});		
-		runProcess.start();
+			if (System.getProperty("os.name").contains("Windows"))
+			{							
+				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
+				process = processFFMPEG.start();
+			}
+			else
+			{
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
+				process = processFFMPEG.start();
+			}	
+				
+			String line;
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
+			
+			//Console.consoleFFMPEG.append(System.lineSeparator());
+			
+			while ((line = input.readLine()) != null) {
+				
+				//Console.consoleFFMPEG.append(line + System.lineSeparator());		
+				
+				//Errors
+				checkForErrors(line);					
+																
+			}					
+			process.waitFor();		
+			
+			//Console.consoleFFMPEG.append(System.lineSeparator());
+				
+		} catch (IOException io) {//Bug Linux							
+		} catch (InterruptedException e) {
+			error = true;
+		}
 	}
 	
 	public static void devices(final String cmd) {
@@ -1788,7 +1833,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			else
 				fileLength = (getTimeToSeconds(ffmpegTime));
-						
+			
 			if (caseConform.isSelected())
 			{
 				float newFPS = Float.parseFloat((comboFPS.getSelectedItem().toString()).replace(",", "."));	
@@ -1842,11 +1887,11 @@ public static StringBuilder errorLog = new StringBuilder();
 		}  	
 	    	    	    
     	//Progression
-    	if (line.contains("time=") && line.contains("time=N/A") == false
+    	if (line.contains("time=") && line.contains("time=N/A") == false && line.contains("ebur128") == false
 	  	&& lblCurrentEncoding.getText().equals(language.getProperty("lblEncodageEnCours")) == false 
 	  	&& lblCurrentEncoding.getText().equals(language.getProperty("processCancelled")) == false
 	  	&& lblCurrentEncoding.getText().equals(language.getProperty("processEnded")) == false)
-    	{		  
+    	{	    		
 		  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
 		  	error = false;
 
@@ -2107,7 +2152,7 @@ public static StringBuilder errorLog = new StringBuilder();
                
                for (String allValues : getAll.toString().split(System.lineSeparator()))            	   
                {
-	    	 		if (allValues.contains("Parsed_ebur128") && allValues.contains("Summary:") == false)
+	    	 		if (allValues.contains("Parsed_ebur128") && allValues.contains("Summary:") == false && allValues.contains("TARGET"))
 	    	 		{	    	 			
 	    	 			//Temps
 	    			   	String spliter[] = allValues.split(":"); 	    				
@@ -2299,7 +2344,7 @@ public static StringBuilder errorLog = new StringBuilder();
 	}
 	
 	public static int getTimeToSeconds(String time) {
-		
+				
 		String[] t = time.split(":");
 
 		int heures = Integer.parseInt(t[0]);
