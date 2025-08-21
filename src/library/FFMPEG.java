@@ -119,6 +119,10 @@ public static StringBuilder videoDevices;
 public static StringBuilder audioDevices;
 public static StringBuilder hwaccels = new StringBuilder();
 public static boolean isGPUCompatible = false;
+public static int GPUCount = 0;
+public static boolean hasNvidiaGPU = false;
+public static boolean hasAMDGPU = false;
+public static boolean hasIntelGPU = false;
 public static boolean cudaAvailable = false;
 public static boolean amfAvailable = false;
 public static boolean qsvAvailable = false;
@@ -1075,7 +1079,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					checkForErrors(line);																										
 				}	
 				
-				Console.consoleFFMPEG.append(System.lineSeparator());
+				//Console.consoleFFMPEG.append(System.lineSeparator());
 			}					
 			process.waitFor();	
 							     																		
@@ -1089,6 +1093,59 @@ public static StringBuilder errorLog = new StringBuilder();
 	}
 	
 	@SuppressWarnings("deprecation")
+	public static void checkGPUAvailable()
+	{
+		if (System.getProperty("os.name").contains("Windows"))
+		{
+			try {
+				
+				Process process;								
+				double version = Double.parseDouble(System.getProperty("os.version"));
+				if (version >= 10.0)
+				{
+					process = Runtime.getRuntime().exec("powershell -Command \"Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name\"");
+				}
+				else
+					process = Runtime.getRuntime().exec("wmic path win32_VideoController get name");
+				
+		        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		        String line;
+		        while ((line = reader.readLine()) != null)
+		        {
+		            line = line.trim();
+		            if (!line.isEmpty() && !line.toLowerCase().contains("name"))
+		            {
+		            	Console.consoleFFMPEG.append(line + System.lineSeparator());
+		            	
+		                if (line.contains("NVIDIA"))
+		                {
+		                	hasNvidiaGPU = true;	
+		                	GPUCount ++;
+		                }
+		                else if (line.contains("AMD"))
+		                {
+		                	hasAMDGPU = true;	
+		                	GPUCount ++;
+		                }
+		                else if (line.contains("Intel"))
+		                {
+		                	hasIntelGPU = true;	
+		                	GPUCount ++;
+		                }
+		            }
+		        }
+		        
+		        Console.consoleFFMPEG.append(System.lineSeparator());
+			}
+			catch (IOException e) //If the Windows command crashes, set all values to true, then check all GPUs using FFmpeg
+			{
+				hasNvidiaGPU = true;
+				hasAMDGPU = true;
+				hasIntelGPU = true;
+			}
+		}
+	}
+	
 	public static void checkGPUCapabilities(String file, boolean isVideoPlayer) {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -1148,46 +1205,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto"))
 					{
 						if (System.getProperty("os.name").contains("Windows"))
-						{
-							boolean hasNvidiaGPU = false;
-							boolean hasAMDGPU = false;
-							boolean hasIntelGPU = false;
-							
-							//Checking GPU available
-							try {
-								
-								Process process;								
-								double version = Double.parseDouble(System.getProperty("os.version"));
-								if (version >= 10.0)
-								{
-									process = Runtime.getRuntime().exec("powershell -Command \"Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty Name\"");
-								}
-								else
-									process = Runtime.getRuntime().exec("wmic path win32_VideoController get name");
-								
-						        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-						        String line;
-						        while ((line = reader.readLine()) != null)
-						        {
-						            line = line.trim();
-						            if (!line.isEmpty() && !line.toLowerCase().contains("name"))
-						            {
-						                if (line.contains("NVIDIA"))
-						                	hasNvidiaGPU = true;	
-						                else if (line.contains("AMD"))
-						                	hasAMDGPU = true;							                
-						                else if (line.contains("Intel"))
-						                	hasIntelGPU = true;							                					                	
-						            }
-						        }
-							}
-							catch (IOException e) //If the Windows command crashes, set all values to true, then check all GPUs using FFmpeg
-							{
-								hasNvidiaGPU = true;
-								hasAMDGPU = true;
-								hasIntelGPU = true;
-							}
-							
+						{			
 							if (hasNvidiaGPU)
 							{
 								//Cuda
@@ -1205,7 +1223,7 @@ public static StringBuilder errorLog = new StringBuilder();
 									amfAvailable = true;
 							}
 							
-							if (hasIntelGPU && cudaAvailable == false && amfAvailable == false) //Priority to Nvidia and AMD GPU
+							if (hasIntelGPU)
 							{
 								//QSV
 								FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2 -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
@@ -1214,14 +1232,16 @@ public static StringBuilder errorLog = new StringBuilder();
 									qsvAvailable = true;
 							}
 							
-							if (cudaAvailable == false && amfAvailable == false && qsvAvailable == false)
+							//Vulkan
+							if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 							{
-								//Vulkan
-								FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-
-								if (FFMPEG.error == false)
-									vulkanAvailable = true;
+								FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 							}
+							else
+								FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+								
+							if (FFMPEG.error == false)
+								vulkanAvailable = true;
 							
 							if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 							{								
@@ -1261,7 +1281,13 @@ public static StringBuilder errorLog = new StringBuilder();
 						String device = "";
 						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan"))
 						{
-							device = " -init_hw_device vulkan";
+							if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+							{
+								device = " -init_hw_device vulkan=gpu:1";
+							}
+							else
+								device = " -init_hw_device vulkan=gpu:0";
+							
 						}
 						else if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
 						{

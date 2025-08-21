@@ -860,25 +860,30 @@ public class VideoEncoders extends Shutter {
 						{
 							if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 							{
-								if (FFMPEG.cudaAvailable)
+								if (FFMPEG.cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 								{
 									gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
 								}
-								else if (FFMPEG.amfAvailable)
+								else if (FFMPEG.amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 								{
 									gpuDecoding = " -hwaccel auto"; //Works differently don't even really need -hwaccel auto
 								}
-								else if (FFMPEG.qsvAvailable)
+								else if (FFMPEG.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 								{
 									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2";
 								}
-								else if (FFMPEG.videotoolboxAvailable)
+								else if (FFMPEG.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 								{
 									gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
 								}
-								else if (FFMPEG.vulkanAvailable)
+								else if (FFMPEG.vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 								{
-									gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan";
+									if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+									{
+										gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1";
+									}
+									else
+										gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0";
 								}
 							}
 							else
@@ -896,7 +901,12 @@ public class VideoEncoders extends Shutter {
 						}
 						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Vulkan Video") && (Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan") || FFMPEG.vulkanAvailable == false))			
 						{
-							gpuDecoding += " -init_hw_device vulkan";
+							if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+							{
+								gpuDecoding += " -init_hw_device vulkan=gpu:1";
+							}
+							else
+								gpuDecoding += " -init_hw_device vulkan=gpu:0";
 						}				
 						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync") && (Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv") || FFMPEG.qsvAvailable == false))
 						{

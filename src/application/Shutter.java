@@ -919,6 +919,9 @@ public class Shutter {
 
 		// Initialize FFmpeg path
 		FFMPEG.getFFmpegPath();
+		
+		//Check GPUs
+		FFMPEG.checkGPUAvailable();
 
 		Splash.increment();
 		topPanel();
@@ -21191,23 +21194,28 @@ public class Shutter {
 										  
 										  try {
 										  
-											  FFMPEG.hwaccel("-init_hw_device vulkan -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3 -vf format=nv12,hwupload -f null -" + '"');
+												if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+												{
+													FFMPEG.hwaccel("-init_hw_device vulkan=gpu:1 -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3 -vf format=nv12,hwupload -f null -" + '"');
+												}
+												else
+													FFMPEG.hwaccel("-init_hw_device vulkan=gpu:0 -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3 -vf format=nv12,hwupload -f null -" + '"');
+												
+												if (FFMPEG.error == false)
+													graphicsAccel.add("Vulkan Video");
 											  
-											  if (FFMPEG.error == false)
-												  graphicsAccel.add("Vulkan Video");
+												int index = comboAccel.getSelectedIndex();
+												comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
 											  
-											  int index = comboAccel.getSelectedIndex();
-											  comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
+												if (index <= comboAccel.getModel().getSize())
+													comboAccel.setSelectedIndex(index);
 											  
-											  if (index <= comboAccel.getModel().getSize())
-											  comboAccel.setSelectedIndex(index);
-											  
-											  //load hwaccel value after checking gpu capabilities
-											  if (Utils.loadEncFile != null && Utils.hwaccel != "")
-											  {
-												  comboAccel.setSelectedItem(Utils.hwaccel);
-												  Utils.hwaccel = "";
-											  }
+												//load hwaccel value after checking gpu capabilities
+												if (Utils.loadEncFile != null && Utils.hwaccel != "")
+												{
+													comboAccel.setSelectedItem(Utils.hwaccel);
+													Utils.hwaccel = "";
+												}
 									  
 										  } catch (Exception e) {}
 									  
@@ -22005,12 +22013,14 @@ public class Shutter {
 														if (FFMPEG.error == false)
 															graphicsAccel.add("AMD AMF Encoder");
 
-														FFMPEG.hwaccel(
-																"-init_hw_device vulkan -f lavfi -i nullsrc -frames:v 1 -c:v "
-																		+ codec
-																		+ "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -"
-																		+ '"');
-
+														
+														if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+														{
+															FFMPEG.hwaccel("-init_hw_device vulkan=gpu:1 -f lavfi -i nullsrc -frames:v 1 -c:v " + codec + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
+														}
+														else
+															FFMPEG.hwaccel("-init_hw_device vulkan=gpu:0 -f lavfi -i nullsrc -frames:v 1 -c:v " + codec + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
+														
 														if (FFMPEG.error == false)
 															graphicsAccel.add("Vulkan Video");
 
@@ -22669,8 +22679,14 @@ public class Shutter {
 															if (FFMPEG.error == false)
 																graphicsAccel.add("AMD AMF Encoder");
 															
-															FFMPEG.hwaccel("-init_hw_device vulkan -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
-
+															
+															if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+															{
+																FFMPEG.hwaccel("-init_hw_device vulkan=gpu:1 -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
+															}
+															else
+																FFMPEG.hwaccel("-init_hw_device vulkan=gpu:0 -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
+															
 															if (FFMPEG.error == false)
 																graphicsAccel.add("Vulkan Video");
 														}

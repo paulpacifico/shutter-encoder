@@ -358,35 +358,29 @@ public class Image extends Shutter {
 			boolean autoVULKAN = false;			
 			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
 			{
-				if (FFMPEG.cudaAvailable)
+				if (FFMPEG.cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 				{
 					autoCUDA = true;
 				}
-				else if (FFMPEG.amfAvailable)
+				else if (FFMPEG.amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 				{
 					autoAMF = true;
 				}
-				else if (FFMPEG.qsvAvailable)
+				else if (FFMPEG.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 				{
 					autoQSV = true;
 				}
-				else if (FFMPEG.videotoolboxAvailable)
+				else if (FFMPEG.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 				{
 					autoVIDEOTOOLBOX = true;
 				}
-				else if (FFMPEG.vulkanAvailable)
+				else if (FFMPEG.vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 				{
 					autoVULKAN = true;
 				}
 			}
 			
-			if ((autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
-			{
-				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
-				
-				filterComplex += ",hwdownload,format=" + bitDepth;
-			}
-			else if (autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda") && FFMPEG.isGPUCompatible)
+			if (autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
 			{
 				if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && filterComplex.contains("yadif"))
 				{
@@ -396,19 +390,25 @@ public class Image extends Shutter {
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
 			}
-			else if ((autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf")) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "vpp_amf=");
 				
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
-			else if ((autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false)
+			{
+				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
+				
+				filterComplex += ",hwdownload,format=" + bitDepth;
+			}
+			else if ((autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_vt=");
 				
 				filterComplex += ",hwdownload,format=" + bitDepth;
 			}
-			else if ((autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan") && FFMPEG.isGPUCompatible) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("yadif") == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace("scale=", "scale_vulkan=");
 				

@@ -2349,7 +2349,12 @@ public class VideoPlayer {
 					}
 					else if (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_vulkan"))
 					{
-						gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan";
+						if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+						{
+							gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1";
+						}
+						else
+							gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0";
 					}
 					else
 						gpuDecoding = " -hwaccel auto";
