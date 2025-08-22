@@ -1327,6 +1327,8 @@ public class FunctionUtils extends Shutter {
         	}
         	else
         		filterComplex += " -c:s mov_text -map s?";
+        	
+        	filterComplex += " -disposition:s 0";
         }
         
         return filterComplex;
