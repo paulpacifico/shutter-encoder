@@ -1233,6 +1233,7 @@ public class FunctionUtils extends Shutter {
 			case "H.264":
 			case "H.265":
 			case "H.266":
+			case "AV1":
 			case "VP9":
 			case "FFV1":
 				

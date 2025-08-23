@@ -852,6 +852,7 @@ public static boolean isRotated = false;
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
 						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -select_streams v:0 -show_frames");
 					}	
+					
 					processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 					
 					isRunning = true;	
@@ -979,6 +980,8 @@ public static boolean isRotated = false;
 						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
 					}					
 				
+					processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
+					
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					isRunning = true;	
 					Process process = processFFPROBE.start();
@@ -988,12 +991,12 @@ public static boolean isRotated = false;
 			        			        
 			        String line;
 			        
-			        Console.consoleFFPROBE.append(System.lineSeparator());
+			        //Console.consoleFFPROBE.append(System.lineSeparator());
 			        			        
 					//Analyse des données	
 			        while ((line = br.readLine()) != null) 
 			        {	
-						Console.consoleFFPROBE.append(line + System.lineSeparator());	
+						//Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
 						//Errors
 						FFMPEG.checkForErrors(line);
@@ -1029,7 +1032,7 @@ public static boolean isRotated = false;
 				
 			        process.waitFor();		
 			        
-			        Console.consoleFFPROBE.append(System.lineSeparator());
+			        //Console.consoleFFPROBE.append(System.lineSeparator());
 							
 				} catch (Exception e) {				
 					FFMPEG.error = true;					
@@ -1061,7 +1064,9 @@ public static boolean isRotated = false;
 				PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 				PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
 				processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -show_streams");
-			}				
+			}			
+			
+			processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 			
 			isRunning = true;	
 			Process process = processFFPROBE.start();

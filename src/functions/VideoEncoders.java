@@ -1663,7 +1663,7 @@ public class VideoEncoders extends Shutter {
 		return "";		
 	}
 
-	private static String setPixelFormat(String filterComplex) {
+	public static String setPixelFormat(String filterComplex) {
 		
 		switch (comboFonctions.getSelectedItem().toString())
 		{

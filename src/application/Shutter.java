@@ -19383,12 +19383,16 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false) {
-					if ("H.264".equals(comboFonctions.getSelectedItem().toString())) {
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
+				{
+					if ("H.264".equals(comboFonctions.getSelectedItem().toString()))
+					{
 						comboForceProfile
 								.setModel(new DefaultComboBoxModel<String>(new String[] { "base", "main", "high" }));
 						comboForceProfile.setSelectedIndex(2);
-					} else {
+					}
+					else
+					{
 						comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main" }));
 						comboForceProfile.setSelectedIndex(0);
 
@@ -19398,25 +19402,32 @@ public class Shutter {
 						}
 					}
 
-					if (comboAccel.getSelectedItem().equals("Nvidia NVENC")
-							|| comboAccel.getSelectedItem().equals("Intel Quick Sync")) {
-						if (comboForcePreset.getModel().getSize() != 7) {
+					if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+					{
+						if (comboForcePreset.getModel().getSize() != 7)
+						{
 							comboForcePreset.setModel(new DefaultComboBoxModel<String>(new String[] { "veryfast",
 									"faster", "fast", "medium", "slow", "slower", "veryslow" }));
 							comboForcePreset.setSelectedIndex(3);
 						}
-					} else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder")
-							|| comboAccel.getSelectedItem().equals("OSX VideoToolbox")
-							|| comboAccel.getSelectedItem().equals("Vulkan Video")) {
+						
+					}
+					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder")
+					|| comboAccel.getSelectedItem().equals("OSX VideoToolbox")
+					|| comboAccel.getSelectedItem().equals("Vulkan Video"))
+					{
 						caseForcePreset.setSelected(false);
 						caseForcePreset.setEnabled(false);
 						comboForcePreset.setEnabled(false);
 					}
 
-					if (comboAccel.getSelectedItem().equals("OSX VideoToolbox")) {
+					if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					{
 						caseQMax.setEnabled(false);
 						caseQMax.setSelected(false);
-					} else {
+					}
+					else
+					{
 						caseAlpha.setEnabled(false);
 						caseAlpha.setSelected(false);
 					}
@@ -19447,7 +19458,9 @@ public class Shutter {
 					comboForceTune.setEnabled(false);
 					case2pass.setSelected(false);
 					case2pass.setEnabled(false);
-				} else {
+				}
+				else
+				{
 					comboForceLevel.setVisible(true);
 
 					if ("H.264".equals(comboFonctions.getSelectedItem().toString())) {
@@ -19496,6 +19509,11 @@ public class Shutter {
 						caseForcePreset.setEnabled(true);
 
 					caseForceTune.setEnabled(true);
+				}
+				
+				if (Settings.btnPreviewOutput.isSelected())
+				{
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);
 				}
 
 				changeSections(false);

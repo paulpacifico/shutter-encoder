@@ -2385,10 +2385,7 @@ public class VideoPlayer {
 			
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
-			&& Shutter.comboFonctions.getSelectedItem().toString().equals("DNxHD") == false
-			&& Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false
 			&& Shutter.comboFonctions.getSelectedItem().toString().equals("QT Animation") == false
-			&& Shutter.comboFonctions.getSelectedItem().toString().equals("GoPro CineForm") == false
 			&& Shutter.comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100") == false)
 			{
 				String format = "matroska";
@@ -2404,14 +2401,63 @@ public class VideoPlayer {
 					yadif = " -vf " + yadif;
 				}
 				
+				String device = "";
+				if (Shutter.comboAccel.getSelectedItem().equals("Vulkan Video"))
+				{
+					if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+					{
+						device = " -init_hw_device vulkan=gpu:1";
+					}
+					else
+						device = " -init_hw_device vulkan=gpu:0";
+					
+				}
+				else if (Shutter.comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+				{
+					device = " -init_hw_device qsv:hw,child_device_type=dxva2";
+				}
+				
+				//Hardware encoding
+				String hwupload = "";
+				switch (Shutter.comboFonctions.getSelectedItem().toString())
+				{
+					case "H.264":
+					case "H.265":
+					case "H.266":
+					case "AV1":
+					case "VP9":
+					case "FFV1":
+						
+						if (Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase()) == false
+						&& Shutter.comboAccel.getSelectedItem().equals("VAAPI") || Shutter.comboAccel.getSelectedItem().equals("Vulkan Video"))			
+						{		
+							if (yadif != "")
+							{
+								hwupload = ",format=nv12,hwupload";
+							}
+							else
+								hwupload = " -vf format=nv12,hwupload";
+						}
+				}
+				
+				String pixelFormat = "";
+				if (Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase()) == false)
+				{
+					pixelFormat = " -pix_fmt yuv420p";
+				}	
+				
+				codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + hwupload + freezeFrame + pixelFormat + " -an -f " + format + " pipe:1 | ";
+				
 				if (System.getProperty("os.name").contains("Windows"))
 				{	
-					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + '"' + FFMPEG.PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);
+					codec += '"' + FFMPEG.PathToFFMPEG + '"';
 				}
 				else
-					codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + freezeFrame + " -an -f " + format + " pipe:1 | " + FFMPEG.PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);	
+					codec += FFMPEG.PathToFFMPEG;
+				
+				codec += " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);
 								
-				cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+				cmd = device + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			}
 									
 			if (Shutter.inputDeviceIsRunning)
@@ -2744,7 +2790,7 @@ public class VideoPlayer {
 					
 					if (seekOnKeyFrames && FFPROBE.isRunning == false)
 					{									
-						FFPROBE.Keyframes(videoPath, playerCurrentFrame * inputFramerateMS, true);
+						FFPROBE.Keyframes(videoPath, (playerCurrentFrame + 1) * inputFramerateMS, true);
 						
 						do {
 							try {
@@ -5868,6 +5914,12 @@ public class VideoPlayer {
 		//Scaling
 		int width = player.getWidth();
 		int height = player.getHeight();
+		
+		String bitDepth = "nv12";
+		if (FFPROBE.imageDepth == 10)
+		{
+			bitDepth = "p010";
+		}	
 
 		//Crop & Pad
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
@@ -5877,6 +5929,12 @@ public class VideoPlayer {
 			if (filter.contains("scale"))
 			{
 				filter += settings.Image.setPad("", false) + ",";
+			}
+			
+			//Removing GPU scaling
+			if (Settings.btnPreviewOutput.isSelected())
+			{
+				filter = filter.replace("scale_cuda", "scale").replace("vpp_amf", "scale").replace("scale_qsv", "scale").replace("scale_vt", "scale").replace("scale_vulkan", "scale").replace(",hwdownload,format=" + bitDepth, "");
 			}
 		}
 		else			
@@ -5912,14 +5970,9 @@ public class VideoPlayer {
 		&& noGPU == false && previousFrame == false
 		&& mouseIsPressed == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
 		&& Colorimetry.setInputCodec(extension) == ""
-		&& Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")))
+		&& Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
+		&& Settings.btnPreviewOutput.isSelected() == false)
 		{
-			String bitDepth = "nv12";
-			if (FFPROBE.imageDepth == 10)
-			{
-				bitDepth = "p010";
-			}			
-			
 			//Auto GPU
 			if (FFMPEG.cudaAvailable)
 			{
@@ -5932,7 +5985,7 @@ public class VideoPlayer {
 			}
 			else if (FFMPEG.qsvAvailable && yadif == "")
 			{
-				filter += "scale_qsv=" + width + ":" + height + ":mode=low_power,hwdownload,format=" + bitDepth;
+				filter += "scale_qsv=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}	
 			else if (FFMPEG.videotoolboxAvailable && yadif == "")
 			{
