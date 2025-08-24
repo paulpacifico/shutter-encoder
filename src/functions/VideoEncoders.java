@@ -76,7 +76,7 @@ import settings.Transitions;
  * Xvid
  * Blu-ray
  * DVD
- * DV PAL
+ * DV
  * AVC-Intra 100
  * Apple ProRes
  * DNxHD
@@ -256,7 +256,7 @@ public class VideoEncoders extends Shutter {
 							case "MJPEG":
 							case "QT Animation":
 							case "Uncompressed":
-							case "DV PAL":
+							case "DV":
 								
 								container = ".mov";
 								break;
@@ -399,9 +399,15 @@ public class VideoEncoders extends Shutter {
 								resolution = Image.limitToFHD();									
 								break;
 							
-							case "DV PAL":
+							case "DV":
 								
-								resolution = " -s 720x576";									
+								if (FFPROBE.currentFPS == 25.0f)
+								{
+									resolution = " -s 720x576";									
+								}
+								else
+									resolution = " -s 720x480";
+									
 								break;
 						}
 						
@@ -703,7 +709,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Transitions.setVideoFade(filterComplex, false);
 										
 		            	//Audio
-			            if (comboFonctions.getSelectedItem().toString().equals("DV PAL"))
+			            if (comboFonctions.getSelectedItem().toString().equals("DV"))
 			            {
 			            	audio = " -c:a pcm_s16le -ar 48000 -map v:0 -map a?";
 			            }
@@ -730,7 +736,7 @@ public class VideoEncoders extends Shutter {
 						}
 			            
 		            	//filterComplex					
-						if (comboFonctions.getSelectedItem().toString().equals("DV PAL"))
+						if (comboFonctions.getSelectedItem().toString().equals("DV"))
 						{
 							if (filterComplex != "") 
 							{
@@ -786,9 +792,15 @@ public class VideoEncoders extends Shutter {
 								frameRate = AdvancedFeatures.setFramerate(true);								
 								break;
 							
-							case "DV PAL":
+							case "DV":
 								
-								frameRate = " -r 25";								
+								if (FFPROBE.currentFPS == 25.0f)
+								{
+									frameRate = " -r 25";							
+								}
+								else
+									frameRate = " -r 29.97";	
+								
 								break;
 							
 							default:
@@ -828,7 +840,7 @@ public class VideoEncoders extends Shutter {
 								case "WMV":
 								case "Xvid":
 								case "Blu-ray":
-								case "DV PAL":
+								case "DV":
 									
 									output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=matroska]pipe:1" + '"';
 									break;
@@ -1409,7 +1421,7 @@ public class VideoEncoders extends Shutter {
 				else
 					return " -aspect 16:9 -target ntsc-dvd -s 720x480";
 				
-			case "DV PAL":
+			case "DV":
 				
 				return " -c:v dvvideo -b:v 25000k -aspect " + comboFilter.getSelectedItem().toString().replace("/", ":");
 				
@@ -1775,6 +1787,15 @@ public class VideoEncoders extends Shutter {
 			case "MJPEG":
 				
 				return " -pix_fmt yuvj422p";
+				
+			case "DV":
+				
+				if (FFPROBE.currentFPS == 25.0f)
+				{
+					return " -pix_fmt yuv420p";							
+				}
+				else
+					return " -pix_fmt yuv411p";
 				
 			//The other cases are managed from setCodec
 		}

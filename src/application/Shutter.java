@@ -183,7 +183,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "19.3";
+	public static String actualVersion = "19.4";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -3628,7 +3628,7 @@ public class Shutter {
 									|| "Theora".equals(function) || "MJPEG".equals(function) || "Xvid".equals(function)
 									|| "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function)
 									|| "AVC-Intra 100".equals(function) || "XAVC".equals(function)
-									|| "HAP".equals(function) || "FFV1".equals(function) || "DV PAL".equals(function)) {
+									|| "HAP".equals(function) || "FFV1".equals(function) || "DV".equals(function)) {
 								VideoEncoders.main();
 
 							} else if ("DVD".equals(function)) {
@@ -3744,7 +3744,7 @@ public class Shutter {
 				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC",
 				"HAP",
 
-				language.getProperty("itemOldCodecs"), "Theora", "MPEG-2", "MJPEG", "Xvid", "DV PAL", "WMV", "MPEG-1",
+				language.getProperty("itemOldCodecs"), "Theora", "MPEG-2", "MJPEG", "Xvid", "DV", "WMV", "MPEG-1",
 
 				language.getProperty("itemArchiveCodecs"), "FFV1",
 
@@ -19762,7 +19762,7 @@ public class Shutter {
 			|| "FrameMD5".equals(function) || "DNxHD".equals(function) || "DNxHR".equals(function)
 			|| "Apple ProRes".equals(function) || "QT Animation".equals(function)
 			|| ("GoPro CineForm").equals(function) || "Uncompressed".equals(function) || "H.264".equals(function)
-			|| "H.265".equals(function) || "H.266".equals(function) || "DV PAL".equals(function)
+			|| "H.265".equals(function) || "H.266".equals(function) || "DV".equals(function)
 			|| "WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function)
 			|| "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function)
 			|| "Theora".equals(function) || "MJPEG".equals(function) || "Xvid".equals(function)
@@ -20130,7 +20130,7 @@ public class Shutter {
 
 			lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
 			lblYears.setVisible(false);
-		} else if (language.getProperty("functionConform").equals(function) || "DV PAL".equals(function)
+		} else if (language.getProperty("functionConform").equals(function) || "DV".equals(function)
 				|| language.getProperty("functionSubtitles").equals(function) || "Loudness & True Peak".equals(function)
 				|| language.getProperty("functionBlackDetection").equals(function)
 				|| language.getProperty("functionOfflineDetection").equals(function) || "VMAF".equals(function)) {
@@ -23322,7 +23322,7 @@ public class Shutter {
 								casePreserveSubs.setLocation(7, casePreserveMetadata.getLocation().y + 17);
 								grpAdvanced.add(casePreserveSubs);
 
-							} else if ("DV PAL".equals(function)) {
+							} else if ("DV".equals(function)) {
 
 								addToList.setText(language.getProperty("filesVideo"));
 								caseDisplay.setEnabled(true);
@@ -24253,7 +24253,7 @@ public class Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 
-			} else if (comboFonctions.getSelectedItem().toString().equals("DV PAL")) {
+			} else if (comboFonctions.getSelectedItem().toString().equals("DV")) {
 
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
