@@ -23,6 +23,7 @@ import java.io.File;
 
 import application.Ftp;
 import application.RenderQueue;
+import application.Settings;
 import application.Shutter;
 import application.Utils;
 import application.VideoPlayer;
@@ -431,7 +432,7 @@ public class ReplaceAudio extends Shutter {
 		{
 			if (audioExt.equals(".thd"))
 			{
-				return  " -c:a copy -strict -2";
+				return  " -c:a copy -strict " + Settings.comboStrict.getSelectedItem();
 			}
 			
 			switch (ext.toLowerCase()) 

@@ -137,7 +137,7 @@ public static Process process;
 						
 						if (cmd.contains("-f rawvideo"))
 						{
-							VideoPlayer.preview = VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight());
+							VideoPlayer.preview = VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), true);
 							VideoPlayer.frameVideo = VideoPlayer.preview;
 							
 							inputStream.close();
@@ -148,7 +148,7 @@ public static Process process;
 							}
 						}
 						
-						while((line = input.readLine()) != null)
+						while ((line = input.readLine()) != null)
 						{							
 							if (line.contains("Video: ppm"))
 							{			

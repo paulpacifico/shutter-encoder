@@ -610,7 +610,7 @@ public class Picture extends Shutter {
 		{
 			return " -r " + comboImageOption.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".");
 		}
-		else if (comboFilter.getSelectedItem().toString().equals(".webp"))
+		else if (comboFilter.getSelectedItem().toString().equals(".webp") && FFPROBE.totalLength > 40)
 		{
 			return " -loop 0";
 		}

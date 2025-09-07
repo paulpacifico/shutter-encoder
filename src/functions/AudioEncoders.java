@@ -211,7 +211,7 @@ public class AudioEncoders extends Shutter {
 								
 							case "Dolby TrueHD":
 								
-								audioCodec = "truehd -strict -2";									
+								audioCodec = "truehd -strict " + Settings.comboStrict.getSelectedItem();									
 								container = ".thd";
 								stereoOutput = true;
 								break;

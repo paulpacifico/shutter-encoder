@@ -882,7 +882,7 @@ public class VideoEncoders extends Shutter {
 								}
 								else if (FFMPEG.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 								{
-									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2";
+									gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
 								}
 								else if (FFMPEG.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 								{
@@ -892,10 +892,10 @@ public class VideoEncoders extends Shutter {
 								{
 									if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 									{
-										gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1";
+										gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
 									}
 									else
-										gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0";
+										gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
 								}
 							}
 							else
@@ -911,7 +911,7 @@ public class VideoEncoders extends Shutter {
 						{
 							gpuDecoding += " -vaapi_device /dev/dri/renderD128";
 						}
-						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Vulkan Video") && (Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan") || FFMPEG.vulkanAvailable == false))			
+						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Vulkan Video"))			
 						{
 							if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 							{
@@ -920,7 +920,7 @@ public class VideoEncoders extends Shutter {
 							else
 								gpuDecoding += " -init_hw_device vulkan=gpu:0";
 						}				
-						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync") && (Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv") || FFMPEG.qsvAvailable == false))
+						else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 						{
 							gpuDecoding += " -init_hw_device qsv:hw,child_device_type=dxva2";
 						}

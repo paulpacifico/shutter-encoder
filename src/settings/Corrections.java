@@ -130,10 +130,13 @@ public class Corrections extends Shutter {
 		if (Shutter.caseDenoise.isSelected())
 		{
 			int value = Shutter.sliderDenoise.getValue();
+			int r = 2;
+			if (value >= 4 && value < 8) r = 4;
+			else if (value >= 8) r = 6;
 			
 			if (filterComplex != "") filterComplex += ",";
 			
-			filterComplex += "hqdn3d=" + value + ":" + value + ":" + value + ":" + value;
+			filterComplex += "nlmeans=s=" + value + ":p=3:r=" + r + ":pc=0";
 		}
 		
 		return filterComplex;

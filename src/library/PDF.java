@@ -56,10 +56,13 @@ public static int pagesCount = 1;
 					PDDocument document = PDDocument.load(file);
 					PDFRenderer pdfRenderer = new PDFRenderer(document);
 					
-					pagesCount = document.getNumberOfPages();	
+					pagesCount = document.getNumberOfPages();
 					
-					VideoPlayer.preview = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.RGB);				
-															
+					BufferedImage converted = new BufferedImage(VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+					converted.getGraphics().drawImage(pdfRenderer.renderImageWithDPI(pageNumber, 300), 0, 0, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), null);
+					
+					VideoPlayer.preview = converted;								
+					
 					document.close();
 					
 					FFPROBE.interlaced = null;						

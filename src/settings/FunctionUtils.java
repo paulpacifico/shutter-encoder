@@ -1328,8 +1328,6 @@ public class FunctionUtils extends Shutter {
         	}
         	else
         		filterComplex += " -c:s mov_text -map s?";
-        	
-        	filterComplex += " -disposition:s 0";
         }
         
         return filterComplex;
@@ -1842,8 +1840,7 @@ public class FunctionUtils extends Shutter {
 														/ ((float) FFPROBE.imageHeight
 																/ VideoPlayer.player.getHeight())));
 
-								subsCanvas.setLocation(
-										(VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
+								subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
 								VideoPlayer.player.add(subsCanvas);
 
 								for (Component c : grpSubtitles.getComponents()) {

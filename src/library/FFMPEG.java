@@ -169,7 +169,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		firstInput = true;
 		
 		Console.consoleFFMPEG.append(System.lineSeparator());
-	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
+	    Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
 	    getAll = new StringBuilder();
 
@@ -243,11 +243,11 @@ public static StringBuilder errorLog = new StringBuilder();
 								String pipe = "";								
 								if (cmd.contains("pipe:1"))
 								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
+									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
-								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
+								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
 								
 								//Back to default
 								if (Settings.btnCustomFFmpegPath.isSelected() && Settings.txtCustomFFmpegPath.getText().equals("") == false)
@@ -263,7 +263,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							}
 							else //Allow to suspend FFmpeg process
 							{
-								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));								
+								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));								
 								process = processFFMPEG.start();	
 							}					
 						}
@@ -272,10 +272,10 @@ public static StringBuilder errorLog = new StringBuilder();
 							String pipe = "";								
 							if (cmd.contains("pipe:1"))
 							{
-								pipe =  " | " + PathToFFMPEG + " -strict -2 -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
+								pipe =  " | " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
 							}
 							
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
 							process = processFFMPEG.start();
 						}	
 
@@ -393,12 +393,12 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					if (System.getProperty("os.name").contains("Windows"))
 					{														
-						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner " + cmd);								
+						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner " + cmd);								
 						process = processFFMPEG.start();					
 					}
 					else
 					{													
-						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner " + cmd);							
+						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner " + cmd);							
 						process = processFFMPEG.start();
 					}	
 					
@@ -515,7 +515,7 @@ public static StringBuilder errorLog = new StringBuilder();
 
 			hstack += "hstack=" + n + "[out]";
 
-			FFMPEG.toFFPLAY(" -strict -2 -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map " + '"' + "[out]" + '"' + " -an -f nut pipe:1");
+			FFMPEG.toFFPLAY(" -strict " + Settings.comboStrict.getSelectedItem() + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + input + " -filter_complex " + '"' + filter + hstack + '"' + " -c:v rawvideo -map " + '"' + "[out]" + '"' + " -an -f nut pipe:1");
 		}
 		else
 		{
@@ -661,7 +661,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			if (isVideoPlayer)
 			{
-				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + concat + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -strict -2 -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
+				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + concat + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
 			}
 			else if (inputDeviceIsRunning)
 			{
@@ -672,12 +672,12 @@ public static StringBuilder errorLog = new StringBuilder();
 					cmd = cmd.replace("-an", "-map " + '"' + "[v]" + '"');
 					
 				if (overlayDeviceIsRunning)
-					FFMPEG.toFFPLAY(" -strict -2 -v quiet " + RecordInputDevice.setInputDevices() + " " + RecordInputDevice.setOverlayDevice() + cmd);
+					FFMPEG.toFFPLAY(" -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet " + RecordInputDevice.setInputDevices() + " " + RecordInputDevice.setOverlayDevice() + cmd);
 				else
-					FFMPEG.toFFPLAY(" -strict -2 -v quiet " + RecordInputDevice.setInputDevices() + cmd);
+					FFMPEG.toFFPLAY(" -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet " + RecordInputDevice.setInputDevices() + cmd);
 			} 
 			else
-				FFMPEG.toFFPLAY(loop + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -strict -2 -v quiet -i " + '"' + inputFile + '"' + cmd);					
+				FFMPEG.toFFPLAY(loop + " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i " + '"' + inputFile + '"' + cmd);					
 						
 			progressBar1.setValue(0);
 		}
@@ -710,7 +710,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (System.getProperty("os.name").contains("Windows"))
 			{
 				//VIDEO STREAM
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -");
+				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c",  '"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd +  " | " + '"' + PathToFFMPEG + '"' + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -");
 				process = pbv.start();
 								
 				//AUDIO STREAM
@@ -734,7 +734,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			else
 			{
 				//VIDEO STREAM									
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -");	
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -");	
 				process = processFFMPEG.start();
 			
 				//AUDIO STREAM
@@ -756,7 +756,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			}	
 			
-			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -" + System.lineSeparator());
+			Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
 			player.getContentPane().setBackground(Utils.c42);
@@ -1038,12 +1038,12 @@ public static StringBuilder errorLog = new StringBuilder();
 			ProcessBuilder processFFMPEG;
 			if (System.getProperty("os.name").contains("Windows"))
 			{							
-				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
+				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
 				process = processFFMPEG.start();
 			}
 			else
 			{
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
 				process = processFFMPEG.start();
 			}		
 			
@@ -1418,7 +1418,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		error = false;	
 		
-	    //Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -strict -2 -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
+	    //Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
 		try {
 			
@@ -1703,16 +1703,16 @@ public static StringBuilder errorLog = new StringBuilder();
 			ProcessBuilder processFFMPEG;
 			if (System.getProperty("os.name").contains("Windows"))
 			{							
-				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -" + '"');
+				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -" + '"');
 				process = processFFMPEG.start();
 			}
 			else
 			{
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -");							
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -");							
 				process = processFFMPEG.start();
 			}		
 						
-			Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -");
+			Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -t 5 -f null -");
 			
 			String line;
 	

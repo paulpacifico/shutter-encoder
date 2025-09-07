@@ -199,18 +199,18 @@ public static boolean isRotated = false;
 									String id[] = s[1].split("\"");
 									String inputDevice = id[0] + '"' + id[1] + '"';
 	
-									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -f " + inputDevice);
+									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -f " + inputDevice);
 								}
 								else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
 								{
 									String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
-									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
+									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
 								}
 								else
-									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0" + '"');	
+									processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0" + '"');	
 							}	
 							else
-								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"');
+								processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"');
 						}
 						else
 						{
@@ -232,18 +232,18 @@ public static boolean isRotated = false;
 	
 									String inputDevice = id[0] + '"' + id[1] + '"';
 									
-									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict -2 -hide_banner -f " + inputDevice);
+									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -f " + inputDevice);
 								}
 								else if (file.equals("Capture.input.device") && RecordInputDevice.videoDeviceIndex > 0)
 								{
 									String[] deviceSize = RecordInputDevice.inputDeviceResolution.split("x");
-									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict -2 -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
+									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -f lavfi -i nullsrc=s=" + deviceSize[0] + "x" + deviceSize[1] + ":d=0:r=" + currentFPS + '"');	
 								}
 								else
-									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict -2 -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0");	
+									processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -f lavfi -i nullsrc=s=" + RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth + ":d=0");	
 							}
 							else
-								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"');
+								processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"');
 						}
 						
 						isRunning = true;
@@ -319,7 +319,7 @@ public static boolean isRotated = false;
 								//Levels					 
 				                if (line.contains("tv"))
 				                   lumaLevel = "16-235";
-				                else if (line.contains("(pc)"))
+				                else if (line.contains("pc"))
 				                   lumaLevel = "0-255";
 				                			                
 							 	String data = line;
@@ -411,18 +411,20 @@ public static boolean isRotated = false;
 						                currentFPS = Float.parseFloat(str[1].replace("k", "000"));
 						                
 						                //Used for VFR						      
-						                str = String.valueOf(currentFPS).split("\\.");	
-
+						                str = String.valueOf(currentFPS).split("\\.");
+						                
 						                if (str[1].length() == 2 && str[1].equals("00") == false)
-						                {
+						                {  	
 						                	if (str[1].equals("88") == false //119.88
 						                	&& str[1].equals("94") == false //59.94
 						                	&& str[1].equals("97") == false //29.97
 						                	&& str[1].equals("98") == false) //23.98
 						                	{						                	
-							                	str = line.split("tbr");
+							                	str = line.split("tbr");							                	
 								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-								                currentFPS = Float.parseFloat(str[1]);
+
+								               	if (str[1].contains("k") == false)
+								               		currentFPS = Float.parseFloat(str[1]);
 						                	}
 						                }
 						            } 
@@ -446,7 +448,9 @@ public static boolean isRotated = false;
 						                	{						                	
 							                	str = line.split("tbr");
 								                str = str[0].substring(str[0].lastIndexOf(",")).split(" ");
-								                currentFPS = Float.parseFloat(str[1]);
+								                
+								                if (str[1].contains("k") == false)
+								                	currentFPS = Float.parseFloat(str[1]);
 						                	}
 						                }
 						            }
@@ -652,14 +656,14 @@ public static boolean isRotated = false;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -show_frames -show_streams -read_intervals %+#1 -loglevel warning -i " + '"' + file + '"');
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_frames -show_streams -read_intervals %+#1 -loglevel warning -i " + '"' + file + '"');
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning");
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning");
 					}	
 					
 					isRunning = true;	
@@ -843,14 +847,14 @@ public static boolean isRotated = false;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -show_frames -select_streams v:0 -i " + '"' + file + '"');						
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_frames -select_streams v:0 -i " + '"' + file + '"');						
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -select_streams v:0 -show_frames");
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -select_streams v:0 -show_frames");
 					}	
 					
 					processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
@@ -970,14 +974,14 @@ public static boolean isRotated = false;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0 -i " + '"' + file + '"');
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0 -i " + '"' + file + '"');
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
 					}					
 				
 					processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
@@ -1056,14 +1060,14 @@ public static boolean isRotated = false;
 				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 				PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-				processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict -2 -hide_banner -show_streams" + " -i " + '"' + file + '"');
+				processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_streams" + " -i " + '"' + file + '"');
 			}
 			else
 			{
 				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 				PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-				processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict -2 -hide_banner -i " + '"' + file + '"' + " -show_streams");
+				processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -show_streams");
 			}			
 			
 			processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING

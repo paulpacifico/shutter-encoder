@@ -152,6 +152,7 @@ import functions.Command;
 import functions.Conform;
 import functions.DVDRIP;
 import functions.Extract;
+import functions.Transcribe;
 import functions.FrameMD5;
 import functions.LoudnessTruePeak;
 import functions.Merge;
@@ -172,6 +173,7 @@ import library.MEDIAINFO;
 import library.NCNN;
 import library.SEVENZIP;
 import library.TSMUXER;
+import library.WHISPER;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
 import settings.FunctionUtils;
@@ -919,6 +921,7 @@ public class Shutter {
 
 		// Initialize FFmpeg path
 		FFMPEG.getFFmpegPath();
+		WHISPER.getWhisperModel();
 		
 		//Check GPUs
 		FFMPEG.checkGPUAvailable();
@@ -1128,7 +1131,8 @@ public class Shutter {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 
-				if (e.getStateChange() == ItemEvent.SELECTED) {
+				if (e.getStateChange() == ItemEvent.SELECTED)
+				{
 					changeFunction(true);
 					changeFilters();
 
@@ -1157,6 +1161,12 @@ public class Shutter {
 						VideoPlayer.btnPlay.requestFocus();
 					} else {
 						frame.requestFocus();
+					}
+					
+					//Whisper model
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")))
+					{								
+						WHISPER.downloadModel();
 					}
 				}
 			}
@@ -3217,6 +3227,12 @@ public class Shutter {
 						NCNN.process.destroy();
 					}
 				}
+				
+				if (WHISPER.runProcess != null) {
+					if (WHISPER.runProcess.isAlive()) {
+						WHISPER.process.destroy();
+					}
+				}
 
 				if (scanIsRunning) {
 					enableAll();
@@ -3504,6 +3520,17 @@ public class Shutter {
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else
 									VideoInserts.main();
+							} else if (language.getProperty("functionTranscribe").equals(function)) {
+														
+								if (inputDeviceIsRunning)
+								{
+									JOptionPane.showMessageDialog(frame,								
+									language.getProperty("incompatibleInputDevice"),
+									language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								}
+								else
+									Transcribe.main();							
+								
 							} else if (language.getProperty("functionReplaceAudio").equals(function)) {
 								if (inputDeviceIsRunning)
 									JOptionPane.showMessageDialog(frame,
@@ -3731,7 +3758,7 @@ public class Shutter {
 				language.getProperty("functionReplaceAudio"), language.getProperty("functionRewrap"),
 				language.getProperty("functionConform"), language.getProperty("functionMerge"),
 				language.getProperty("functionExtract"), language.getProperty("functionSubtitles"),
-				language.getProperty("functionInsert"),
+				language.getProperty("functionInsert"), language.getProperty("functionTranscribe"),
 
 				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "ALAC", "MP3", "AAC", "AC3", "Opus",
 				"Vorbis", "Dolby Digital Plus", "Dolby TrueHD",
@@ -5659,6 +5686,7 @@ public class Shutter {
 				} else if (comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false
 						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract")) == false
 						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionInsert")) == false
+						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranscribe")) == false
 						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
 						&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
 						&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
@@ -14169,7 +14197,8 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseColorspace.isSelected()) {
+				if (caseColorspace.isSelected())
+				{
 					comboColorspace.setEnabled(true);
 
 					if (comboFonctions.getSelectedItem().toString().equals("VP9")
@@ -14235,6 +14264,9 @@ public class Shutter {
 				}
 
 				FFPROBE.setFilesize();
+				
+				if (VideoPlayer.frameVideo == null) //Only apply filter when the video can't be loaded
+					VideoPlayer.btnStop.doClick(); // Use VideoPlayer.resizeAll and reload the frame
 			}
 
 		});
@@ -19775,8 +19807,10 @@ public class Shutter {
 			changeSections(anim);
 
 		} else if (language.getProperty("functionExtract").equals(function)
-				|| language.getProperty("functionInsert").equals(function) || "CD RIP".equals(function)
-				|| "DVD Rip".equals(function) || language.getProperty("functionSceneDetection").equals(function)
+				|| language.getProperty("functionInsert").equals(function) 
+				|| language.getProperty("functionTranscribe").equals(function)
+				|| "CD RIP".equals(function) || "DVD Rip".equals(function)
+				|| language.getProperty("functionSceneDetection").equals(function)
 				|| language.getProperty("functionWeb").equals(function)) {
 			changeWidth(false);
 			changeSections(anim);
@@ -19800,21 +19834,22 @@ public class Shutter {
 
 		// Render queue
 		if (comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionInsert")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
-				&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
-				&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionNormalization")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
-				&& comboFonctions.getSelectedItem().equals("VMAF") == false
-				&& comboFonctions.getSelectedItem().equals("FrameMD5") == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
-				&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
-				&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)
-				&& comboResolution.getSelectedItem().toString().contains("AI") == false) {
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionInsert")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranscribe")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
+		&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
+		&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionNormalization")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
+		&& comboFonctions.getSelectedItem().equals("VMAF") == false
+		&& comboFonctions.getSelectedItem().equals("FrameMD5") == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
+		&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)
+		&& comboResolution.getSelectedItem().toString().contains("AI") == false) {
 			iconList.setVisible(true);
 
 			if (iconPresets.isVisible()) {
@@ -20586,7 +20621,8 @@ public class Shutter {
 		
 		if (frame.getWidth() > 332
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionExtract"))
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionExtract"))		
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe"))
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")))
 		{			
 			Thread changeSize = new Thread(new Runnable() {
@@ -21355,31 +21391,36 @@ public class Shutter {
 									grpSetAudio.add(lblAudio8);
 									grpSetAudio.add(comboAudio8);
 								}
-
-								if (comboAudio1.getSelectedIndex() == 0 && comboAudio2.getSelectedIndex() == 1
-										&& comboAudio3.getSelectedIndex() == 2 && comboAudio4.getSelectedIndex() == 3
-										&& comboAudio5.getSelectedIndex() == 4 && comboAudio6.getSelectedIndex() == 5
-										&& comboAudio7.getSelectedIndex() == 6 && comboAudio8.getSelectedIndex() == 7
-										&& function.equals("HAP") == false && function.equals("FFV1") == false
-										&& caseAS10.isSelected() == false) {
-									comboAudio5.setSelectedIndex(16);
-									comboAudio6.setSelectedIndex(16);
-									comboAudio7.setSelectedIndex(16);
-									comboAudio8.setSelectedIndex(16);
-								} else if (comboAudio1.getSelectedIndex() == 0 && comboAudio2.getSelectedIndex() == 1
-										&& comboAudio3.getSelectedIndex() == 2 && comboAudio4.getSelectedIndex() == 3
-										&& comboAudio5.getSelectedIndex() == 16 && comboAudio6.getSelectedIndex() == 16
-										&& comboAudio7.getSelectedIndex() == 16 && comboAudio8.getSelectedIndex() == 16
-										&& (function.equals("HAP") || function.equals("FFV1")
-												|| caseAS10.isSelected())) {
-									comboAudio1.setSelectedIndex(0);
-									comboAudio2.setSelectedIndex(1);
-									comboAudio3.setSelectedIndex(2);
-									comboAudio4.setSelectedIndex(3);
-									comboAudio5.setSelectedIndex(4);
-									comboAudio6.setSelectedIndex(5);
-									comboAudio7.setSelectedIndex(6);
-									comboAudio8.setSelectedIndex(7);
+								
+								if (Utils.loadEncFile.isAlive() == false)
+								{
+									if (comboAudio1.getSelectedIndex() == 0 && comboAudio2.getSelectedIndex() == 1
+									&& comboAudio3.getSelectedIndex() == 2 && comboAudio4.getSelectedIndex() == 3
+									&& comboAudio5.getSelectedIndex() == 4 && comboAudio6.getSelectedIndex() == 5
+									&& comboAudio7.getSelectedIndex() == 6 && comboAudio8.getSelectedIndex() == 7
+									&& function.equals("HAP") == false && function.equals("FFV1") == false
+									&& caseAS10.isSelected() == false)
+									{
+										comboAudio5.setSelectedIndex(16);
+										comboAudio6.setSelectedIndex(16);
+										comboAudio7.setSelectedIndex(16);
+										comboAudio8.setSelectedIndex(16);
+									}
+									else if (comboAudio1.getSelectedIndex() == 0 && comboAudio2.getSelectedIndex() == 1
+									&& comboAudio3.getSelectedIndex() == 2 && comboAudio4.getSelectedIndex() == 3
+									&& comboAudio5.getSelectedIndex() == 16 && comboAudio6.getSelectedIndex() == 16
+									&& comboAudio7.getSelectedIndex() == 16 && comboAudio8.getSelectedIndex() == 16
+									&& (function.equals("HAP") || function.equals("FFV1") || caseAS10.isSelected()))
+									{
+										comboAudio1.setSelectedIndex(0);
+										comboAudio2.setSelectedIndex(1);
+										comboAudio3.setSelectedIndex(2);
+										comboAudio4.setSelectedIndex(3);
+										comboAudio5.setSelectedIndex(4);
+										comboAudio6.setSelectedIndex(5);
+										comboAudio7.setSelectedIndex(6);
+										comboAudio8.setSelectedIndex(7);
+									}
 								}
 
 								// Ajout partie résolution
@@ -23846,7 +23887,7 @@ public class Shutter {
 								{
 									addToList.setText(language.getProperty("filesVideo"));
 								}
-								else if (language.getProperty("functionMerge").equals(function))
+								else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionTranscribe").equals(function))
 								{
 									addToList.setText(language.getProperty("filesVideoOrAudio"));
 								}
@@ -24236,8 +24277,7 @@ public class Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 
-			} else if (comboFonctions.getSelectedItem().toString()
-					.equals(Shutter.language.getProperty("functionExtract"))) {
+			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionExtract"))) {
 
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
@@ -24252,7 +24292,21 @@ public class Shutter {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
 				}
+			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionTranscribe")))	{
+				
+				lblFilter.setText(" ");
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
+				lblFilter.setLocation(165, 23);
+				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 
+				final String types[] = { ".srt", ".vtt", ".txt" };
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
+				
 			} else if (comboFonctions.getSelectedItem().toString().equals("DV")) {
 
 				lblFilter.setText(" ");

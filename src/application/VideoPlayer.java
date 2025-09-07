@@ -70,7 +70,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -758,16 +757,16 @@ public class VideoPlayer {
 								{		
 									if (Shutter.inputDeviceIsRunning)
 									{
-										frameVideo = readFrame(videoInputStream, FFPROBE.imageWidth, FFPROBE.imageHeight);	
+										frameVideo = readFrame(videoInputStream, FFPROBE.imageWidth, FFPROBE.imageHeight, false);	
 									}
 									else
 									{
 										if (Shutter.windowDrag && fullscreenPlayer == false)
 										{
-											frameVideo = readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight());
+											frameVideo = readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight(), false);
 										}
 										else
-											frameVideo = readFrame(videoInputStream, player.getWidth(), player.getHeight());															
+											frameVideo = readFrame(videoInputStream, player.getWidth(), player.getHeight(), false);															
 										
 									}
 									
@@ -958,8 +957,8 @@ public class VideoPlayer {
 		
 	}
 	
-	public static BufferedImage readFrame(BufferedInputStream is, int width, int height) throws IOException {
-							
+	public static BufferedImage readFrame(BufferedInputStream is, int width, int height, boolean RGB) throws IOException {
+				
 		if (FFPROBE.hasAlpha)
 		{		
 		    int frameSize = width * height * 4; // RGBA
@@ -981,6 +980,27 @@ public class VideoPlayer {
 		    }
 		
 		    return img;
+		}
+		else if (RGB)
+		{
+			int frameSize = width * height * 3; // RGB
+			byte[] rgb = new byte[frameSize];
+
+			int read = is.readNBytes(rgb, 0, frameSize);
+			if (read != frameSize)
+			    return null;
+
+			BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+			byte[] bgr = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
+
+			int p = 0;
+			for (int i = 0; i < frameSize; i += 3) {
+			    bgr[p++] = rgb[i + 2]; // B
+			    bgr[p++] = rgb[i + 1]; // G
+			    bgr[p++] = rgb[i];     // R
+			}
+
+			return img;
 		}
 	    else
 	    {
@@ -1197,7 +1217,7 @@ public class VideoPlayer {
 								
 								i++;
 								
-								frameVideo = readFrame(videoInputStream, player.getWidth(), player.getHeight());
+								frameVideo = readFrame(videoInputStream, player.getWidth(), player.getHeight(), false);
 								updateCurrentFrame();				
 								
 								//Limit the buffer size into memory
@@ -2381,7 +2401,7 @@ public class VideoPlayer {
 			if (FFPROBE.hasAlpha)
 				colorFormat = "rgba";
 
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
@@ -2457,12 +2477,12 @@ public class VideoPlayer {
 				
 				codec += " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);
 								
-				cmd = device + Colorimetry.setInputCodec(extension) + " -strict -2 -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+				cmd = device + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			}
 									
 			if (Shutter.inputDeviceIsRunning)
 			{
-				cmd = " -strict -2 -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+				cmd = " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			}
 
 			Console.consoleFFMPEG.append(cmd + System.lineSeparator());
@@ -5280,22 +5300,17 @@ public class VideoPlayer {
     			Integer subsOffset = 0;	            
 	            String line;
 	            int subNumber = 0;
+	            boolean startWriting = false;
+	            
 	            while ((line = bufferedReader.readLine()) != null)
 	            {
 	            	//Removes UTF-8 with BOM
 	            	line = line.replace("\uFEFF", "");
-		            	
-	            	if (line.matches("[0-9]+"))
-	             	{
-	            		subNumber = Integer.parseInt(line);
-	             		bufferedWriter.write(line);
-	             		bufferedWriter.newLine();
-	             	}
 	            	
 	        		if (line.contains("-->") )
 	        		{ 	     
 	        			//Offset
-	        			if (subNumber == 1)
+	        			if (subNumber == 0)
 	        			{
 	        				String s[] = line.split(":");
 	        				subsOffset = Integer.parseInt(s[0]);
@@ -5309,39 +5324,55 @@ public class VideoPlayer {
 	    				int inM = Integer.parseInt(inTimecode[1]) * 60;
 	    				int inS = Integer.parseInt(inTimecode[2]);
 	    				int inF = Integer.parseInt(inTimecode[3]);
+	    				 					
 	    				double subsInTime = (inH + inM + inS) * FFPROBE.accurateFPS + inF / inputFramerateMS;
 	    				
-	    				if (subNumber == 1 && firstSub)
-	            		{
-	    					sliderChange = true;
-	    					slider.setValue((int) subsInTime);
-	    					sliderChange = false;
-	    					waveformContainer.repaint();
+	    				//Reset player position to the first sub
+	    				if (subNumber == 0 && firstSub)
+	            		{    					
+	    					playerSetTime(subsInTime);
+	    					break;
 	            		}
-	    				
-	    				int outH = (Integer.parseInt(outTimecode[0]) - subsOffset) * 3600;
-	    				int outM = Integer.parseInt(outTimecode[1]) * 60;
-	    				int outS = Integer.parseInt(outTimecode[2]);
-	    				int outF = Integer.parseInt(outTimecode[3]);
-	    				double subsOuTime = (outH + outM + outS) * FFPROBE.accurateFPS + outF / inputFramerateMS;
-	
-	    				long inOffset = (long) (subsInTime - inputTime);
-						long outOffset = (long) (subsOuTime - inputTime);
-						
-						String iH = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 3600));
-						String iM = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 60) % 60);
-						String iS = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS) % 60);    		
-						String iF = Shutter.formatterToMs.format(Math.floor(inOffset % FFPROBE.accurateFPS * inputFramerateMS));
-						
-						String oH = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 3600));
-						String oM = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 60) % 60);
-						String oS = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS) % 60);    		
-						String oF = Shutter.formatterToMs.format(Math.floor(outOffset % FFPROBE.accurateFPS * inputFramerateMS));
-						
-						bufferedWriter.write(iH + ":" + iM + ":" + iS + "," + iF + " --> " + oH + ":" + oM + ":" + oS + "," + oF);
-	            		bufferedWriter.newLine();
+	    				else
+	    				{
+		    				int outH = (Integer.parseInt(outTimecode[0]) - subsOffset) * 3600;
+		    				int outM = Integer.parseInt(outTimecode[1]) * 60;
+		    				int outS = Integer.parseInt(outTimecode[2]);
+		    				int outF = Integer.parseInt(outTimecode[3]);
+		    				double subsOuTime = (outH + outM + outS) * FFPROBE.accurateFPS + outF / inputFramerateMS;
+		
+		    				long inOffset = (long) (subsInTime - inputTime);
+							long outOffset = (long) (subsOuTime - inputTime);							    					
+							
+							if (outOffset > 0)
+							{
+			    				if (inOffset < 0)
+			    				{
+			    					inOffset = 0;
+			    				}
+			    				
+								startWriting = true;							
+								subNumber ++;
+		            			
+			             		bufferedWriter.write(String.valueOf(subNumber));
+			             		bufferedWriter.newLine();
+								
+								String iH = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 3600));
+								String iM = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 60) % 60);
+								String iS = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS) % 60);    		
+								String iF = Shutter.formatterToMs.format(Math.floor(inOffset % FFPROBE.accurateFPS * inputFramerateMS));
+								
+								String oH = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 3600));
+								String oM = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 60) % 60);
+								String oS = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS) % 60);    		
+								String oF = Shutter.formatterToMs.format(Math.floor(outOffset % FFPROBE.accurateFPS * inputFramerateMS));
+												
+								bufferedWriter.write(iH + ":" + iM + ":" + iS + "," + iF + " --> " + oH + ":" + oM + ":" + oS + "," + oF);
+			            		bufferedWriter.newLine();
+							}
+	    				}
 	        		}
-	        		else if (line.contains("-->") == false && line.matches("[0-9]+") == false && line.isEmpty() == false)
+	        		else if (firstSub == false && startWriting && line.contains("-->") == false && line.matches("[0-9]+") == false && line.isEmpty() == false)
 	        		{           			
 	        			if (Shutter.lblSubsBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
 	    					bufferedWriter.write("\\h" + line + "\\h");
@@ -5350,7 +5381,7 @@ public class VideoPlayer {
 	    			
 	        			bufferedWriter.newLine();
 	        		}
-	        		else if (line.isEmpty())
+	        		else if (firstSub == false && startWriting && line.isEmpty())
 	        		{
 	        			bufferedWriter.newLine();
 	        		}
@@ -5559,11 +5590,12 @@ public class VideoPlayer {
 				@Override
 				public void run() {
 										
-					do {
+					while (runProcess.isAlive())
+					{
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {}
-					} while (runProcess.isAlive());
+					}
 				}
 			});
 			waitProcess.start();
@@ -5637,7 +5669,7 @@ public class VideoPlayer {
 						String deinterlace = "";
 						
 						//Alpha
-						String colorFormat = "yuv420p";
+						String colorFormat = "rgb24";
 						if (FFPROBE.hasAlpha)
 							colorFormat = "rgba";
 						
@@ -5648,7 +5680,7 @@ public class VideoPlayer {
 						String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
 						if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 							inputPoint = "";
-															
+				
 						//Creating preview file																
 						String cmd = deinterlace + " -frames:v 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
 						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
@@ -5670,7 +5702,7 @@ public class VideoPlayer {
 							else if (isRaw)
 							{									
 								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								DCRAW.run(" -v -w -c -q 0 -o 1 -h -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+								DCRAW.run(" -v -w -c -q 0 -o 1 -h -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 								
 					            do {
 					            	Thread.sleep(10);  					            	
@@ -5732,7 +5764,7 @@ public class VideoPlayer {
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
 						}	
 						
-						if (Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && (preview != null || Shutter.caseAddSubtitles.isSelected()))
+						if (preview != null || Shutter.caseAddSubtitles.isSelected())
 						{						
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
@@ -5740,8 +5772,13 @@ public class VideoPlayer {
 								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -"); 
 							}
 							else
-							{		
-								generatePreview(" -v quiet -hide_banner -i pipe:0" + setFilter("","", true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+							{	
+								//Input pipe format
+								String inputFormat = "bgr24";
+								if (FFPROBE.hasAlpha)
+									inputFormat = "abgr";
+																
+								generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + inputFormat +" -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + setFilter("","", true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 							}
 						}
 			        }
@@ -5794,13 +5831,8 @@ public class VideoPlayer {
 			{
 		        OutputStream outputStream = process.getOutputStream();
 		        
-		        if (FFPROBE.hasAlpha)
-		        {
-		        	ImageIO.write(preview, "png", outputStream);		        
-		        }
-		        else
-		        	ImageIO.write(preview, "bmp", outputStream);		   
-		        
+		        byte[] frame = ((DataBufferByte) preview.getRaster().getDataBuffer()).getData();
+		        outputStream.write(frame);
 		        outputStream.close();
 			}				     	
 	        
@@ -5809,12 +5841,12 @@ public class VideoPlayer {
 
 			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 			{
-				preview = (BufferedImage) readFrame(inputStream, player.getWidth(), player.getHeight());
+				preview = (BufferedImage) readFrame(inputStream, player.getWidth(), player.getHeight(), true);
 				frameVideo = preview;
 			}
 			else
-				frameVideo = readFrame(inputStream, player.getWidth(), player.getHeight());
-			
+				frameVideo = readFrame(inputStream, player.getWidth(), player.getHeight(), true);
+
 			inputStream.close();
 		
 		} catch (Exception e) {
@@ -6030,6 +6062,15 @@ public class VideoPlayer {
 		
 		//Levels
 		setEQ = Colorimetry.setLevels(setEQ);
+		
+		//Colorspace metadata
+		setEQ = Colorimetry.setMetadata(setEQ);
+		
+		if (Shutter.caseLevels.isSelected() == false && fileDuration > 40 && FFPROBE.lumaLevel.equals("0-255"))
+		{
+			if (setEQ != "") setEQ += ",";
+				setEQ += "scale=in_range=full:out_range=full";
+		}
 		
 		//Colormatrix
 		setEQ = Colorimetry.setColormatrix(setEQ);

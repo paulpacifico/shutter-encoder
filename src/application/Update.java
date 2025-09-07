@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -54,11 +55,13 @@ import org.jsoup.nodes.Element;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
+import library.WHISPER;
+
 public class Update {
 
 	public static JDialog frame;
 	private final static JProgressBar progressBar = new JProgressBar();
-	private final JLabel lblNewVersion = new JLabel(Shutter.language.getProperty("lblNewVersion"));
+	public static JLabel lblNewVersion = new JLabel(Shutter.language.getProperty("lblNewVersion"));
 	
 	private static JPanel topPanel;
 	private static JLabel quit;
@@ -67,7 +70,7 @@ public class Update {
 			
 	private static int MousePositionY;
 	
-	private Update() {
+	public Update() {
 		
 		frame = new JDialog();
 		frame.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
@@ -136,14 +139,24 @@ public class Update {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
+				
 				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
 				accept = true;
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
+				
 				if (accept)			
 				{
+					File model = new File(WHISPER.whisperModel);
+					try {
+						if (model.exists() && Files.size(model.toPath()) != 3095033483L)				
+						{
+							model.delete();
+						}
+					} catch (IOException e1) {}
+						
 					cancelled = true;
 					frame.dispose();
 				}
@@ -483,50 +496,55 @@ public class Update {
 	}
 	
 	@SuppressWarnings("deprecation")
-	private static void HTTPDownload(String adresse, String destination) {
+	public static void HTTPDownload(String address, String destination) {
 	
 		OutputStream out = null;
         URLConnection conn = null;
         InputStream in = null;
 		 try {
-	        	URL url = new URL(adresse.replace(" ", "%20"));
+	        	URL url = new URL(address.replace(" ", "%20"));
 	            out = new BufferedOutputStream(new FileOutputStream(destination));
 	            conn = url.openConnection();
 	            in = conn.getInputStream();
 	            byte[] buffer = new byte[1024];
 	            
-	            progressBar.setMaximum(conn.getContentLength());
+	            progressBar.setMaximum(100);
 	            
 	            int numRead;
 	            long numWritten = 0;
+	            long fileSize = conn.getContentLength();
 
-	            while ((numRead = in.read(buffer)) != -1) {
-		                out.write(buffer, 0, numRead);
-		                numWritten += numRead;
-		                progressBar.setValue((int) numWritten);
-		                if (cancelled)
-		                	break;
-	            	}
-		 		}
-	           catch (Exception exception) { 
-	                exception.printStackTrace();
+	            while ((numRead = in.read(buffer)) != -1)
+	            {
+	                out.write(buffer, 0, numRead);
+	                numWritten += numRead;
+	               
+	                progressBar.setValue((int) ((float) ((float) numWritten * 100) / fileSize));
 	                
-					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadFailed"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);	 
-					
-					try {
-						File toDelete = new File(destination);
-						toDelete.delete();
-					} catch (Exception e) {}					
-	                         
-	            } 
-	            finally {
-	                try {
-	                    if (in != null)
-	                        in.close();
-	                    if (out != null)
-	                        out.close();
-	                	}
-	                	catch (IOException io) {}
-	            }
+	                if (cancelled)
+	                	break;
+            	}
+		 	}
+            catch (Exception exception)
+		 	{ 
+                exception.printStackTrace();
+                
+				JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadFailed"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);	 
+				
+				try {
+					File toDelete = new File(destination);
+					toDelete.delete();
+				} catch (Exception e) {}					
+                         
+             } 
+             finally {
+                 try {
+                    if (in != null)
+                        in.close();
+                    if (out != null)
+                        out.close();
+                	}
+                	catch (IOException io) {}
+            }
 	}
 }

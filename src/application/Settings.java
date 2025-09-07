@@ -108,6 +108,8 @@ public class Settings {
 	public static JTextField txtThreads = new JTextField();
 	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
+	private JLabel lblStrictMode = new JLabel(Shutter.language.getProperty("lblStrictMode"));
+	public static JComboBox<String> comboStrict = new JComboBox<String>(new String [] {"experimental", "unofficial", "normal"});	
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});	
 	public static JCheckBox btnPreviewOutput = new JCheckBox(Shutter.language.getProperty("btnPreviewOutput"));
@@ -174,13 +176,14 @@ public class Settings {
 		lastUsedOutput1.setName("lastUsedOutput1");
 		lastUsedOutput2.setName("lastUsedOutput2");
 		lastUsedOutput3.setName("lastUsedOutput3");
+		comboStrict.setName("comboStrict");
 		comboScale.setName("comboScale");
 		comboSync.setName("comboSync");
 		txtThreads.setName("txtThreads");
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370,750);		
+		frame.setSize(370,770);		
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 50, frame.getHeight());
@@ -595,8 +598,18 @@ public class Settings {
 			
 		});
 		
+		lblStrictMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblStrictMode.setBounds(12, btnPreviewOutput.getLocation().y + btnPreviewOutput.getHeight() + 10, lblStrictMode.getPreferredSize().width, 16);
+		frame.getContentPane().add(lblStrictMode);
+		
+		comboStrict.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboStrict.setEditable(false);
+		comboStrict.setBounds(lblStrictMode.getX() + lblStrictMode.getWidth() + 6, lblStrictMode.getLocation().y - 4, comboStrict.getPreferredSize().width, 22);
+		comboStrict.setMaximumRowCount(10);
+		frame.getContentPane().add(comboStrict);
+		
 		lblScaleMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		lblScaleMode.setBounds(12, btnPreviewOutput.getLocation().y + btnPreviewOutput.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
+		lblScaleMode.setBounds(12, lblStrictMode.getLocation().y + lblStrictMode.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblScaleMode);
 				
 		comboScale.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));

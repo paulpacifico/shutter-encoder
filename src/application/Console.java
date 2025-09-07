@@ -62,6 +62,7 @@ public class Console extends JFrame {
 	public static JTextArea consoleYOUTUBEDL =  new JTextArea();
 	public static JTextArea consoleEXIFTOOL =  new JTextArea();
 	public static JTextArea consoleNCNN =  new JTextArea();
+	public static JTextArea consoleWHISPER =  new JTextArea();
 	public static JTabbedPane tabbedPane;
 	private JScrollPane scrollFFMPEG;
 	private JScrollPane scrollFFPLAY;
@@ -73,6 +74,7 @@ public class Console extends JFrame {
 	private JScrollPane scrollYOUTUBEDL;
 	private JScrollPane scrollEXIFTOOL;
 	private JScrollPane scrollNCNN;
+	private JScrollPane scrollWHISPER;
 	
 	private JMenuBar menuBar;
 	private final JSpinner spinner;
@@ -140,6 +142,9 @@ public class Console extends JFrame {
 					case 9:
 						consoleNCNN.setText("");
 						break;
+					case 10:
+						consoleWHISPER.setText("");
+						break;
 				}
 			}
 			
@@ -155,6 +160,44 @@ public class Console extends JFrame {
 					dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
 				else
 					dialog.setDirectory(System.getProperty("user.home") + "\\Desktop");
+				
+				switch (tabbedPane.getSelectedIndex())
+				{
+					case 0:
+						dialog.setFile("FFMPEG");
+						break;
+					case 1:
+						dialog.setFile("FFPLAY");
+						break;
+					case 2:
+						dialog.setFile("FFPROBE");
+						break;
+					case 3:
+						dialog.setFile("BMXTRANSWRAP");
+						break;
+					case 4:
+						dialog.setFile("DVDAUTHOR");
+						break;
+					case 5: 
+						dialog.setFile("TSMUXER");
+						break;
+					case 6:
+						dialog.setFile("MEDIAINFO");
+						break;
+					case 7:
+						dialog.setFile("YOUTUBEDL");
+						break;
+					case 8:
+						dialog.setFile("EXIFTOOL");
+						break;
+					case 9:
+						dialog.setFile("NCNN");
+						break;
+					case 10:
+						dialog.setFile("WHISPER");
+						break;
+				}
+				
 				dialog.setLocation(frmConsole.getLocation().x - 50, frmConsole.getLocation().y + 50);
 				dialog.setAlwaysOnTop(true);
 				dialog.setVisible(true);
@@ -194,6 +237,9 @@ public class Console extends JFrame {
 									break;
 								case 9:
 									writer.write(consoleNCNN.getText());
+									break;
+								case 10:
+									writer.write(consoleWHISPER.getText());
 									break;
 							}
 						writer.close();
@@ -267,6 +313,7 @@ public class Console extends JFrame {
 				consoleYOUTUBEDL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleWHISPER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 			}
 			
 		});
@@ -321,6 +368,11 @@ public class Console extends JFrame {
 		consoleNCNN.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleNCNN.setWrapStyleWord(true);
 		consoleNCNN.addKeyListener(kl);
+		consoleWHISPER.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleWHISPER.setBackground(Utils.c30);
+		consoleWHISPER.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
+		consoleWHISPER.setWrapStyleWord(true);
+		consoleWHISPER.addKeyListener(kl);
 
 		scrollFFMPEG = new JScrollPane();	
 		scrollFFMPEG.getViewport().add(consoleFFMPEG);
@@ -351,6 +403,9 @@ public class Console extends JFrame {
 		
 		scrollNCNN = new JScrollPane();	
 		scrollNCNN.getViewport().add(consoleNCNN); 
+		
+		scrollWHISPER = new JScrollPane();	
+		scrollWHISPER.getViewport().add(consoleWHISPER); 
 		
 		scrollFFMPEG.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
@@ -421,6 +476,13 @@ public class Console extends JFrame {
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
+		scrollWHISPER.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
+	        public void adjustmentValueChanged(AdjustmentEvent e) {  
+	        	if (followLine.isSelected())
+	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
+	        }
+	    });
 	
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, frmConsole.getWidth(), frmConsole.getHeight());
@@ -434,6 +496,7 @@ public class Console extends JFrame {
 		tabbedPane.add("YT-DLP", scrollYOUTUBEDL);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
 		tabbedPane.add("NCNN", scrollNCNN);
+		tabbedPane.add("WHISPER", scrollWHISPER);
 		frmConsole.getContentPane().add(tabbedPane);		
 	}
 }
