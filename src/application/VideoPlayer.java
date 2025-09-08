@@ -959,6 +959,16 @@ public class VideoPlayer {
 	
 	public static BufferedImage readFrame(BufferedInputStream is, int width, int height, boolean RGB) throws IOException {
 				
+		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false
+		&& Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
+		{
+			int w = width;
+			int h = height;			
+			
+			width = h;
+			height = w;
+		}
+		
 		if (FFPROBE.hasAlpha)
 		{		
 		    int frameSize = width * height * 4; // RGBA
@@ -2271,10 +2281,10 @@ public class VideoPlayer {
 	public static String setVideoCommand(double inputTime, int width, int height, boolean isPlaying) throws InterruptedException {
 
 		//Deinterlacer		
-		String yadif = AdvancedFeatures.setDeinterlace(true);		
+		String deinterlace = AdvancedFeatures.setDeinterlace(true);		
 		if (mouseIsPressed)
 		{
-			yadif = "";
+			deinterlace = "";
 		}
 				
 		//Speed slider
@@ -2351,23 +2361,23 @@ public class VideoPlayer {
 				if (FFMPEG.isGPUCompatible)
 				{
 					//Auto GPU
-					if (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_cuda"))
+					if (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_cuda"))
 					{
 						gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
 					}
-					else if (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("vpp_amf"))
+					else if (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("vpp_amf"))
 					{
 						gpuDecoding = " -hwaccel auto"; //Works differently don't even really need -hwaccel auto
 					}
-					else if (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_qsv"))
+					else if (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_qsv"))
 					{
 						gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2";
 					}	
-					else if (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_vt"))
+					else if (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_vt"))
 					{
 						gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
 					}
-					else if (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(yadif, speed, false).contains("scale_vulkan"))
+					else if (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_vulkan"))
 					{
 						if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 						{
@@ -2401,7 +2411,7 @@ public class VideoPlayer {
 			if (FFPROBE.hasAlpha)
 				colorFormat = "rgba";
 
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(yadif, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(deinterlace, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
@@ -2416,9 +2426,15 @@ public class VideoPlayer {
 				}	
 				
 				//Deinterlacer
-				if (yadif != "")
+				if (deinterlace != "")
 				{
-					yadif = " -vf " + yadif;
+					deinterlace = " -vf " + deinterlace;
+					
+					//Removing GPU filtering
+					if (Settings.btnPreviewOutput.isSelected())
+					{
+						deinterlace = deinterlace.replace("advanced=", "yadif").replace("bob=", "yadif");
+					}
 				}
 				
 				String device = "";
@@ -2451,7 +2467,7 @@ public class VideoPlayer {
 						if (Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase()) == false
 						&& Shutter.comboAccel.getSelectedItem().equals("VAAPI") || Shutter.comboAccel.getSelectedItem().equals("Vulkan Video"))			
 						{		
-							if (yadif != "")
+							if (deinterlace != "")
 							{
 								hwupload = ",format=nv12,hwupload";
 							}
@@ -2466,7 +2482,7 @@ public class VideoPlayer {
 					pixelFormat = " -pix_fmt yuv420p";
 				}	
 				
-				codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + yadif + hwupload + freezeFrame + pixelFormat + " -an -f " + format + " pipe:1 | ";
+				codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + deinterlace + hwupload + freezeFrame + pixelFormat + " -an -f " + format + " pipe:1 | ";
 				
 				if (System.getProperty("os.name").contains("Windows"))
 				{	
@@ -2482,7 +2498,7 @@ public class VideoPlayer {
 									
 			if (Shutter.inputDeviceIsRunning)
 			{
-				cmd = " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(yadif, speed, false) + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+				cmd = " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(deinterlace, speed, false) + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			}
 
 			Console.consoleFFMPEG.append(cmd + System.lineSeparator());
@@ -5881,7 +5897,7 @@ public class VideoPlayer {
 		}
 	}
 	
-	private static String setFilter(String yadif, String speed, boolean noGPU) {
+	private static String setFilter(String deinterlace, String speed, boolean noGPU) {
 				
 		//Subtitles
 		String background = "" ;
@@ -5929,19 +5945,13 @@ public class VideoPlayer {
 		}
 		
 		//Global Filter
-		String filter = " -vf " + '"';
+		String filter = "";
 
 		//Deinterlacer
-		if (yadif != "")
+		if (deinterlace != "")
 		{
-			filter += yadif + ",";
+			filter += deinterlace;
 		}	
-		
-		//Zoom
-		if (Shutter.sliderZoom.getValue() != 0)
-		{		
-			filter = Colorimetry.setZoom(filter, false) + ",";
-		}		
 
 		//Scaling
 		int width = player.getWidth();
@@ -5955,12 +5965,12 @@ public class VideoPlayer {
 
 		//Crop & Pad
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
-		{			
-			filter += settings.Image.setScale("", false);
+		{				
+			filter = settings.Image.setScale(filter, false);
 			
 			if (filter.contains("scale"))
 			{
-				filter += settings.Image.setPad("", false) + ",";
+				filter += settings.Image.setPad("", false);
 			}
 			
 			//Removing GPU scaling
@@ -5976,7 +5986,13 @@ public class VideoPlayer {
 				width = player.getHeight();
 				height = player.getWidth();		
 			}
-		}
+		}		
+		
+		//Zoom
+		if (Shutter.sliderZoom.getValue() != 0)
+		{		
+			filter = Colorimetry.setZoom(filter, false);
+		}	
 		
 		if (Shutter.grpColorimetry.isVisible() && Shutter.caseColormatrix.isSelected() && Shutter.comboInColormatrix.getSelectedItem().equals("HDR") == false)
 		{
@@ -6005,26 +6021,52 @@ public class VideoPlayer {
 		&& Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
 		&& Settings.btnPreviewOutput.isSelected() == false)
 		{
+			if (filter != "") filter += ",";
+			
 			//Auto GPU
-			if (FFMPEG.cudaAvailable)
+			if (FFMPEG.cudaAvailable && (Shutter.comboAccel.getSelectedItem().equals("Nvidia NVENC") || Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase())))
 			{
-				filter = filter.replace("yadif", "yadif_cuda");			
+				if (AdvancedFeatures.setDeinterlace(true) != "")
+				{
+					if (Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif") || Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif"))
+					{
+						filter = filter.replace("yadif", "yadif_cuda").replace("bwdif", "bwdif_cuda");
+					}
+					else
+						filter = filter.replace(AdvancedFeatures.setDeinterlace(true), "yadif_cuda");
+				}
+						
 				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=" + algorithm.replace("neighbor", "nearest").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.amfAvailable && yadif == "")
+			else if (FFMPEG.amfAvailable && deinterlace == "")
 			{
 				filter += "vpp_amf=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.qsvAvailable && yadif == "")
+			else if (FFMPEG.qsvAvailable && (Shutter.comboAccel.getSelectedItem().equals("Intel Quick Sync") || Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase())))
 			{
+				if (AdvancedFeatures.setDeinterlace(true) != "")
+				{
+					if (Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("bob"))
+					{
+						filter = filter.replace("advanced=", "vpp_qsv=deinterlace=2").replace("bob=", "vpp_qsv=deinterlace=1");
+					}
+					else
+						filter = filter.replace(AdvancedFeatures.setDeinterlace(true), "vpp_qsv=deinterlace=2");
+				}
+				
 				filter += "scale_qsv=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}	
-			else if (FFMPEG.videotoolboxAvailable && yadif == "")
+			else if (FFMPEG.videotoolboxAvailable && deinterlace == "")
 			{
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.vulkanAvailable && yadif == "")
+			else if (FFMPEG.vulkanAvailable && (Shutter.comboAccel.getSelectedItem().equals("Vulkan Video") || Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase())))
 			{
+				if (AdvancedFeatures.setDeinterlace(true) != "")
+				{
+					filter = filter.replace(AdvancedFeatures.setDeinterlace(true), "bwdif_vulkan");
+				}
+
 				filter += "scale_vulkan=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
 			else
@@ -6034,6 +6076,8 @@ public class VideoPlayer {
 		}
 		else
 		{
+			if (filter != "") filter += ",";
+			
 			filter += "scale=" + width + ":" + height + ":sws_flags=" + algorithm + ":sws_dither=none";		
 		}				
 		
@@ -6186,7 +6230,7 @@ public class VideoPlayer {
 		}
 		
 		//Close filter
-		filter += '"';		
+		filter = " -vf " + '"' + filter + '"';		
 		
 		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{						

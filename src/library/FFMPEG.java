@@ -56,6 +56,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -1358,10 +1359,68 @@ public static StringBuilder errorLog = new StringBuilder();
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
+
+			checkGPUDeinterlacing();
+			
 		}
 		
 	}
 
+	public static void checkGPUDeinterlacing() {
+
+		boolean limitToFHD = false;
+		switch (comboFonctions.getSelectedItem().toString())
+		{
+			//Limit to Full HD
+			case "AVC-Intra 100":
+			case "DNxHD":
+			case "XDCAM HD422":
+			case "XDCAM HD 35":
+			case "DVD" : //Needed 16:9 aspect ratio
+				
+				if (FFPROBE.imageResolution.equals("1440x1080") == false)
+				{
+					limitToFHD = true;	
+				}
+				
+				break;
+		}	
+		
+		//setScale gives already all the correct settings
+		if (settings.Image.setScale("", limitToFHD).contains("cuda"))
+		{
+			if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("yadif") == false)
+			{
+				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif" }));
+				comboForcerDesentrelacement.setSelectedIndex(0);
+			}
+		}
+		else if (settings.Image.setScale("", limitToFHD).contains("qsv"))
+		{
+			if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("advanced") == false)
+			{
+				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "advanced", "bob" }));
+				comboForcerDesentrelacement.setSelectedIndex(0);
+			}
+		}
+		else if (settings.Image.setScale("", limitToFHD).contains("vulkan"))
+		{
+			if (comboForcerDesentrelacement.getModel().getSize() != 1 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
+			{
+				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif" }));
+				comboForcerDesentrelacement.setSelectedIndex(0);
+			}
+		}
+		else
+		{
+			if (comboForcerDesentrelacement.getModel().getSize() != 5 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("yadif") == false)
+			{
+				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "w3fdif", "detelecine" }));
+				comboForcerDesentrelacement.setSelectedIndex(0);	
+			}
+		}
+	}
+	
 	public static void setCropDetect(File file) {
 	
 		cropdetect = "";

@@ -5619,6 +5619,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
 				if (comboResolution.getItemCount() > 0) // Contourne un bug lors de l'action sur le btnReset
 				{
 					if (comboFonctions.getSelectedItem().toString().contains("JPEG") || comboFonctions.getSelectedItem()
@@ -5643,6 +5644,8 @@ public class Shutter {
 						FFPROBE.setFilesize();
 					}
 				}
+				
+				FFMPEG.checkGPUDeinterlacing();
 
 				if (NCNN.isRunning && NCNN.process != null) {
 					NCNN.process.destroy();
@@ -16821,8 +16824,7 @@ public class Shutter {
 
 		comboForcerDesentrelacement = new JComboBox<String>();
 		comboForcerDesentrelacement.setName("comboForcerDesentrelacement");
-		comboForcerDesentrelacement.setModel(
-				new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "w3fdif", "detelecine" }));
+		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "w3fdif", "detelecine" }));
 		comboForcerDesentrelacement.setSelectedIndex(0);
 		comboForcerDesentrelacement.setFont(new Font(mainFont, Font.PLAIN, 10));
 		comboForcerDesentrelacement.setEditable(false);
@@ -16833,13 +16835,21 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine")
-						&& lblTFF.getText().contains("x2")) {
+				if (comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine") && lblTFF.getText().contains("x2"))
+				{
 					lblTFF.setText("TFF");
+					
 					if (caseForcerDesentrelacement.isSelected())
 						FFPROBE.fieldOrder = "0";
 				}
 
+				if (comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced"))
+				{
+					lblTFF.setEnabled(false);
+				}
+				else
+					lblTFF.setEnabled(true);
+					
 				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
 																			// frame
 			}
@@ -19335,9 +19345,7 @@ public class Shutter {
 						//Reload GPU checking
 						VideoPlayer.videoPath = null;
 						VideoPlayer.setMedia();
-					}
-					else
-						VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());
+					}				
 				}
 			}
 
@@ -19383,9 +19391,6 @@ public class Shutter {
 					VideoPlayer.videoPath = null;
 					VideoPlayer.setMedia();
 				}
-				else
-					VideoPlayer.playerSetTime(VideoPlayer.slider.getValue());
-
 				
 			}
 
@@ -19543,10 +19548,9 @@ public class Shutter {
 					caseForceTune.setEnabled(true);
 				}
 				
-				if (Settings.btnPreviewOutput.isSelected())
-				{
-					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);
-				}
+				FFMPEG.checkGPUDeinterlacing();
+				
+				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);
 
 				changeSections(false);
 
@@ -25150,6 +25154,13 @@ public class Shutter {
 			components[i].setEnabled(true);
 		}
 
+		if (comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced"))
+		{
+			lblTFF.setEnabled(false);
+		}
+		else
+			lblTFF.setEnabled(true);
+		
 		if (caseCreateTree.isSelected() == false) {
 			comboCreateTree.setEnabled(false);
 		}

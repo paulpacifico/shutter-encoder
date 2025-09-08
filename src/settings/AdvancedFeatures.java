@@ -55,7 +55,12 @@ public class AdvancedFeatures extends Shutter {
 				}
 			}
 			
-			return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+			if (comboForcerDesentrelacement.getSelectedItem().toString().equals("bob") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced"))
+			{
+				return comboForcerDesentrelacement.getSelectedItem().toString() + "="; //Because the name of the filter can be replaced, adding the "=" avoid to rename the filename
+			}
+			else
+				return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
 		}							
 		
 		return "";
