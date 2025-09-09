@@ -152,7 +152,7 @@ public class FunctionUtils extends Shutter {
 				return false;
 			
 			//Check GPU
-			FFMPEG.checkGPUCapabilities(file.toString(), false);
+			FFMPEG.checkGPUCapabilities(file.toString());
 					
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
 			{

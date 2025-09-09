@@ -121,6 +121,7 @@ public static StringBuilder audioDevices;
 public static StringBuilder hwaccels = new StringBuilder();
 public static boolean isGPUCompatible = false;
 public static int GPUCount = 0;
+public static String cpuName;
 public static boolean hasNvidiaGPU = false;
 public static boolean hasAMDGPU = false;
 public static boolean hasIntelGPU = false;
@@ -129,6 +130,11 @@ public static boolean amfAvailable = false;
 public static boolean qsvAvailable = false;
 public static boolean videotoolboxAvailable = false;
 public static boolean vulkanAvailable = false;
+public static boolean autoQSV = false;
+public static boolean autoCUDA = false;
+public static boolean autoAMF = false;
+public static boolean autoVIDEOTOOLBOX = false;
+public static boolean autoVULKAN = false;
 public static int differenceMax;
 
 //Moyenne de fps		
@@ -1093,6 +1099,45 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 	
+	public static void checkCPUInfo() {
+		
+		if (System.getProperty("os.name").contains("Windows"))
+		{
+			try {
+				Process process = Runtime.getRuntime().exec(new String[]{"wmic", "cpu", "get", "Name"});
+		        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		
+		        String line;
+		        while ((line = reader.readLine()) != null)
+		        {
+		            if (line.contains("Intel"))
+		            {
+		            	Console.consoleFFMPEG.append(line + System.lineSeparator());
+		            	cpuName = line;
+		            }
+		        }
+			} catch (Exception e) {}
+		}
+	}
+	
+	public static int detectIntelGen(String cpuName) {
+		
+	    int dash = cpuName.indexOf('-');
+	    if (dash == -1) return -1;
+
+	    String model = cpuName.substring(dash + 1).trim();
+	    if (model.length() < 3) return -1;
+
+	    // Handle 5-digit model numbers (10xxx, 11xxx, 12xxx, etc.)
+	    if (Character.isDigit(model.charAt(0)) && Character.isDigit(model.charAt(1))) {
+	        return Integer.parseInt(model.substring(0, 2));
+	    }
+
+	    // Otherwise, single digit gen
+	    return Character.getNumericValue(model.charAt(0));
+	}
+
+	
 	@SuppressWarnings("deprecation")
 	public static void checkGPUAvailable()
 	{
@@ -1147,7 +1192,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 	
-	public static void checkGPUCapabilities(String file, boolean isVideoPlayer) {
+	public static void checkGPUCapabilities(String file) {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
@@ -1157,12 +1202,11 @@ public static StringBuilder errorLog = new StringBuilder();
 		qsvAvailable = false;
 		videotoolboxAvailable = false;
 		vulkanAvailable = false;
-		
+				
 		//Check is GPU can decode				
 		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
 		&& Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-		|| (System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")))
+		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
 		{
 			String vcodec = "";
 			if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
@@ -1199,173 +1243,227 @@ public static StringBuilder errorLog = new StringBuilder();
 				{
 					bitDepth = "p010";
 				}	
-				
-				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false || isVideoPlayer)
-				{								
-					//Check for Nvidia/AMD or Intel GPU
-					if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto"))
-					{
-						if (System.getProperty("os.name").contains("Windows"))
-						{			
-							if (hasNvidiaGPU)
-							{
-								//Cuda
-								FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-																
-								if (FFMPEG.error == false)
-									cudaAvailable = true;
-							}
-							else if (hasAMDGPU)
-							{
-								//AMF
-								FFMPEG.gpuFilter(" -i " + '"' + file + '"' + " -vf vpp_amf=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-																
-								if (FFMPEG.error == false)
-									amfAvailable = true;
-							}
-							
-							if (hasIntelGPU)
-							{
-								//QSV
-								FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2 -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 								
-								if (FFMPEG.error == false)
-									qsvAvailable = true;
-							}
-							
-							//Vulkan
-							if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-							{
-								FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-							}
-							else
-								FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-								
+				//Check for Nvidia/AMD or Intel GPU
+				if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto"))
+				{
+					if (System.getProperty("os.name").contains("Windows"))
+					{			
+						if (hasNvidiaGPU)
+						{
+							//Cuda
+							FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+															
 							if (FFMPEG.error == false)
-								vulkanAvailable = true;
-							
-							if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
-							{								
-								if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use CUDA decoding with AMF or QSV encoding
-								{
-									cudaAvailable = false;
-								}
-								else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use AMF decoding with NVENC or QSV encoding
-								{
-									amfAvailable = false;
-								}
-								else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use QSV decoding with NVENC or AMF encoding
-								{
-									qsvAvailable = false;
-								}
-								else if (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder")) //Cannot use VULKAN decoding with QSV encoding
-								{
-									vulkanAvailable = false;
-								}
-							}
+								cudaAvailable = true;
 						}
-						else //Mac
+						else if (hasAMDGPU)
 						{
-							//videotoolbox
-							FFMPEG.gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
-
+							//AMF
+							FFMPEG.gpuFilter(" -i " + '"' + file + '"' + " -vf vpp_amf=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+															
 							if (FFMPEG.error == false)
-								videotoolboxAvailable = true;								
+								amfAvailable = true;
 						}
 						
-						//Disable GPU if not available
-						if (cudaAvailable == false && amfAvailable == false && qsvAvailable == false && videotoolboxAvailable == false && vulkanAvailable == false)
-							isGPUCompatible = false;
-					}
-					else //Check the current selection
-					{		
-						String device = "";
-						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan"))
+						if (hasIntelGPU)
 						{
-							if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+							String child = "dxva2";
+							if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
 							{
-								device = " -init_hw_device vulkan=gpu:1";
-							}
-							else
-								device = " -init_hw_device vulkan=gpu:0";
+								child = "d3d11va";
+							}					
+														
+							//QSV
+							FFMPEG.gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child + " -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 							
+							if (FFMPEG.error == false)
+								qsvAvailable = true;
 						}
-						else if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
+						
+						//Vulkan
+						if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 						{
-							device = " -init_hw_device qsv:hw,child_device_type=dxva2";
+							FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						}
+						else
+							FFMPEG.gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+							
+						if (FFMPEG.error == false)
+							vulkanAvailable = true;
 						
-						String scaleFilter = "scale_";
-						if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("amf"))
-						{
-							scaleFilter = "vpp_" ;
-						}
-						
-						FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-						
-						if (FFMPEG.error)
+						if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 						{								
-							isGPUCompatible = false;
-							
-							if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
+							if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use CUDA decoding with AMF or QSV encoding
 							{
 								cudaAvailable = false;
 							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("amf"))
+							else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use AMF decoding with NVENC or QSV encoding
 							{
 								amfAvailable = false;
 							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+							else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use QSV decoding with NVENC or AMF encoding
 							{
 								qsvAvailable = false;
 							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
-							{
-								videotoolboxAvailable = false;
-							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
+							else if (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder")) //Cannot use VULKAN decoding with QSV encoding
 							{
 								vulkanAvailable = false;
 							}
 						}
-						else
+					}
+					else //Mac
+					{
+						//videotoolbox
+						FFMPEG.gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
+
+						if (FFMPEG.error == false)
+							videotoolboxAvailable = true;								
+					}
+					
+					//Disable GPU if not available
+					if (cudaAvailable == false && amfAvailable == false && qsvAvailable == false && videotoolboxAvailable == false && vulkanAvailable == false)
+						isGPUCompatible = false;
+				}
+				else //Check the current selection
+				{		
+					String device = "";
+					if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan"))
+					{
+						if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 						{
-							if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
-							{
-								cudaAvailable = true;
-							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("amf"))
-							{
-								amfAvailable = true;
-							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
-							{
-								qsvAvailable = true;
-							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
-							{
-								videotoolboxAvailable = true;
-							}
-							else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
-							{
-								vulkanAvailable = true;
-							}
+							device = " -init_hw_device vulkan=gpu:1";
+						}
+						else
+							device = " -init_hw_device vulkan=gpu:0";
+						
+					}
+					else if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
+					{
+						String child = "dxva2";
+						if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
+						{
+							child = "d3d11va";
+						}					
+						
+						device = " -init_hw_device qsv:hw,child_device_type=" + child;
+					}
+					else if (Shutter.comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					{
+						device = " -init_hw_device cuda";
+					}
+					else if (Shutter.comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					{
+						device = " -init_hw_device videotoolbox";
+					}
+					
+					String scaleFilter = "scale_";
+					if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("amf"))
+					{
+						scaleFilter = "vpp_" ;
+					}
+					
+					FFMPEG.gpuFilter(" -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString() + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + Shutter.comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+					
+					if (FFMPEG.error)
+					{								
+						isGPUCompatible = false;
+						
+						if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
+						{
+							cudaAvailable = false;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("amf"))
+						{
+							amfAvailable = false;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+						{
+							qsvAvailable = false;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+						{
+							videotoolboxAvailable = false;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
+						{
+							vulkanAvailable = false;
 						}
 					}
-				}						
+					else
+					{
+						if (Shutter.comboGPUDecoding.getSelectedItem().equals("cuda"))
+						{
+							cudaAvailable = true;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("amf"))
+						{
+							amfAvailable = true;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("qsv"))
+						{
+							qsvAvailable = true;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+						{
+							videotoolboxAvailable = true;
+						}
+						else if (Shutter.comboGPUDecoding.getSelectedItem().equals("vulkan"))
+						{
+							vulkanAvailable = true;
+						}
+					}
+				}									
 
 				FFMPEG.error = false;
 				FFMPEG.errorLog.setLength(0);
 				
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
 			}
 
-			checkGPUDeinterlacing();
-			
+			checkGPUFiltering();
+			checkGPUDeinterlacing();			
 		}
 		
 	}
-
+	
+	public static void checkGPUFiltering() {
+		
+		//Auto GPU selection
+		autoQSV = false;
+		autoCUDA = false;
+		autoAMF = false;
+		autoVIDEOTOOLBOX = false;
+		autoVULKAN = false;
+		
+		if (FFPROBE.videoCodec.contains("vp8") == false && (FFPROBE.videoCodec.contains("vp9") == false || (FFPROBE.videoCodec.contains("vp9") && FFPROBE.hasAlpha == false)))
+		{					
+			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+			{
+				if (FFMPEG.cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+				{
+					autoCUDA = true;
+				}
+				else if (FFMPEG.amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+				{
+					autoAMF = true;
+				}
+				else if (FFMPEG.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+				{
+					autoQSV = true;
+				}
+				else if (FFMPEG.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+				{
+					autoVIDEOTOOLBOX = true;
+				}
+				else if (FFMPEG.vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+				{
+					autoVULKAN = true;
+				}
+			}
+		}
+	}
+	
 	public static void checkGPUDeinterlacing() {
 
 		boolean limitToFHD = false;
@@ -1419,6 +1517,85 @@ public static StringBuilder errorLog = new StringBuilder();
 				comboForcerDesentrelacement.setSelectedIndex(0);	
 			}
 		}
+	}
+	
+	public static String setGPUDevice(String filterComplex) {
+		
+		//GPU decoding
+		String gpuDecoding = "";						
+		if (FFMPEG.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
+		{
+			if (FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+			{
+				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
+			}
+			else if (FFMPEG.autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))
+			{
+				gpuDecoding = " -hwaccel auto"; //Works differently don't even really need -hwaccel auto
+			}
+			else if (FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))
+			{
+				gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
+			}
+			else if (FFMPEG.autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))
+			{
+				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
+			}
+			else if (FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))
+			{
+				if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+				{
+					gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
+				}
+				else
+					gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
+			}
+			else
+				gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none") + " -hwaccel_output_format " + Shutter.comboGPUFilter.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+		}
+		else
+		{
+			gpuDecoding = " -hwaccel " + Shutter.comboGPUDecoding.getSelectedItem().toString().replace(Shutter.language.getProperty("aucun"), "none");
+		}							
+		
+		//GPU initialization
+		if (comboAccel.getSelectedItem().equals("VAAPI"))			
+		{
+			gpuDecoding += " -vaapi_device /dev/dri/renderD128";
+		}
+		else if (comboAccel.getSelectedItem().equals("Vulkan Video"))			
+		{
+			if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+			{
+				gpuDecoding += " -init_hw_device vulkan=gpu:1";
+			}
+			else
+				gpuDecoding += " -init_hw_device vulkan=gpu:0";
+		}				
+		else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+		{
+			String child = "dxva2";
+			if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
+			{
+				child = "d3d11va";
+			}					
+			
+			gpuDecoding += " -init_hw_device qsv:hw,child_device_type=" + child;
+		}
+		else if (Shutter.comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		{
+			gpuDecoding += " -init_hw_device cuda";
+		}
+		else if (Shutter.comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+		{
+			gpuDecoding += " -init_hw_device wvideotoolbox";
+		}
+		else if (comboAccel.getSelectedItem().equals("VAAPI"))			
+		{
+			gpuDecoding += " -vaapi_device /dev/dri/renderD128";
+		}
+		
+		return gpuDecoding;
 	}
 	
 	public static void setCropDetect(File file) {

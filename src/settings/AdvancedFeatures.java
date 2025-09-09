@@ -21,6 +21,7 @@ package settings;
 
 import application.Settings;
 import application.Shutter;
+import library.FFMPEG;
 import library.FFPROBE;
 
 public class AdvancedFeatures extends Shutter {
@@ -55,12 +56,54 @@ public class AdvancedFeatures extends Shutter {
 				}
 			}
 			
-			if (comboForcerDesentrelacement.getSelectedItem().toString().equals("bob") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced"))
+			//Format
+			String bitDepth = "nv12";
+			if (FFPROBE.imageDepth == 10)
 			{
-				return comboForcerDesentrelacement.getSelectedItem().toString() + "="; //Because the name of the filter can be replaced, adding the "=" avoid to rename the filename
+				bitDepth = "p010";
+			}
+			
+			if (comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false)
+			{
+				if ((FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
+				{				
+					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+					{
+						return "yadif_cuda=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+					}
+					else
+						return comboForcerDesentrelacement.getSelectedItem().toString().replace("yadif", "yadif_cuda").replace("bwdif", "bwdif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+				}
+				else if ((FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))
+				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || comboForcerDesentrelacement.getSelectedItem().toString().equals("bob")))
+				{		
+					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+					{
+						return "vpp_qsv=deinterlace=2,hwdownload,format=" + bitDepth;
+					}
+					else
+						return comboForcerDesentrelacement.getSelectedItem().toString().replace("advanced", "vpp_qsv=deinterlace=2").replace("bob", "vpp_qsv=deinterlace=1" + ",hwdownload,format=" + bitDepth);
+				}
+				else if ((FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))
+				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
+				{
+					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+					{
+						return "bwdif_vulkan=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+					}
+					else
+						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_vulkan") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+				}
+				else
+				{				
+					return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+				}
 			}
 			else
+			{				
 				return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+			}
 		}							
 		
 		return "";
@@ -74,7 +117,7 @@ public class AdvancedFeatures extends Shutter {
 				
 				 if (caseQMax.isSelected())
 				 {
-					 if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					 if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        	 {
 			        	return " -preset p7 -tune uhq";
 	        		 }
@@ -98,15 +141,15 @@ public class AdvancedFeatures extends Shutter {
 				
 		        if (caseQMax.isSelected())
 		        {
-		        	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        	{
 		        		return " -preset p7";
 		        	}
-		        	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+		        	else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 		        	{
 		        		return " -quality quality";
 		        	}
-		        	else if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Vulkan Video"))
+		        	else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
 		        	{
 		        		return " -tune hq";
 		        	}
@@ -115,7 +158,7 @@ public class AdvancedFeatures extends Shutter {
 		        }
 		        else if (caseForcePreset.isSelected())
 		        {
-		        	if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        	{
 		        		return " -preset p" + (comboForcePreset.getSelectedIndex() + 1);
 		        	}

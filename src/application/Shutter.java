@@ -921,7 +921,12 @@ public class Shutter {
 
 		// Initialize FFmpeg path
 		FFMPEG.getFFmpegPath();
+		
+		//Retrieve whisper model path
 		WHISPER.getWhisperModel();
+		
+		//Check CPU
+		FFMPEG.checkCPUInfo();
 		
 		//Check GPUs
 		FFMPEG.checkGPUAvailable();
@@ -19548,6 +19553,7 @@ public class Shutter {
 					caseForceTune.setEnabled(true);
 				}
 				
+				FFMPEG.checkGPUFiltering();
 				FFMPEG.checkGPUDeinterlacing();
 				
 				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);

@@ -28,7 +28,7 @@ import library.FFPROBE;
 import library.FFMPEG;
 
 public class Image extends Shutter {
-
+	
 	public static String setCrop(String filterComplex, File file) {		
 		
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
@@ -335,95 +335,57 @@ public class Image extends Shutter {
 		{
 			filterComplex += "scale=256:256";
 		}
-				
-		//GPU Scaling
-		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=")
-		&& comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false
-		&& (FFPROBE.videoCodec.contains("vp9") == false || (FFPROBE.videoCodec.contains("vp9") && FFPROBE.hasAlpha == false))
-		&& FFPROBE.videoCodec.contains("vp8") == false
-		&& VideoPlayer.mouseIsPressed == false)
+					
+		if (filterComplex.contains("scale=") && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && VideoPlayer.mouseIsPressed == false)
 		{
-			//Scaling
+			//Format
 			String bitDepth = "nv12";
 			if (FFPROBE.imageDepth == 10)
 			{
 				bitDepth = "p010";
-			}			
-			
-			//Auto GPU selection
-			boolean autoQSV = false;
-			boolean autoCUDA = false;
-			boolean autoAMF = false;
-			boolean autoVIDEOTOOLBOX = false;
-			boolean autoVULKAN = false;			
-			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
-			{
-				if (FFMPEG.cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoCUDA = true;
-				}
-				else if (FFMPEG.amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoAMF = true;
-				}
-				else if (FFMPEG.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoQSV = true;
-				}
-				else if (FFMPEG.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoVIDEOTOOLBOX = true;
-				}
-				else if (FFMPEG.vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoVULKAN = true;
-				}
 			}
 			
-			if (autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+			boolean deinterlacing = false;
+			if (filterComplex.contains("yadif")
+			|| filterComplex.contains("bwdif")
+			|| filterComplex.contains("estdif")
+			|| filterComplex.contains("w3fdif")
+			|| filterComplex.contains("detelecine")
+			|| filterComplex.contains("advanced")
+			|| filterComplex.contains("bob"))
 			{
-				if (caseForcerDesentrelacement.isSelected())
-				{
-					filterComplex = filterComplex.replace("yadif=", "yadif_cuda=").replace("bwdif=", "bwdif_cuda=");						
-				}
-				
-				filterComplex = filterComplex.replace("scale=", "scale_cuda=");	
-				
-				filterComplex += ",hwdownload,format=" + bitDepth;
+				deinterlacing = true;
 			}
-			else if ((autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf")) && caseForcerDesentrelacement.isSelected() == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
-			{
-				filterComplex = filterComplex.replace("scale=", "vpp_amf=");
+
+			if (FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+			{				
+				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
-				filterComplex += ",hwdownload,format=" + bitDepth;
+				filterComplex = filterComplex.replace("scale=", "scale_cuda=") + ",hwdownload,format=" + bitDepth;	
 			}
-			else if ((autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")) && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((FFMPEG.autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf")) && deinterlacing == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
-				if (caseForcerDesentrelacement.isSelected())
-				{
-					filterComplex = filterComplex.replace("bob=", "vpp_qsv=deinterlace=1").replace("advanced=", "vpp_qsv=deinterlace=2");						
-				}
+				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
-				filterComplex = filterComplex.replace("scale=", "scale_qsv=");
-				
-				filterComplex += ",hwdownload,format=" + bitDepth;
+				filterComplex = filterComplex.replace("scale=", "vpp_amf=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")) && caseForcerDesentrelacement.isSelected() == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
-			{
-				filterComplex = filterComplex.replace("scale=", "scale_vt=");
+			else if ((FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")) && filterComplex.contains("force_original_aspect_ratio") == false)
+			{				
+				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
-				filterComplex += ",hwdownload,format=" + bitDepth;
+				filterComplex = filterComplex.replace("scale=", "scale_qsv=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((FFMPEG.autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
-				if (caseForcerDesentrelacement.isSelected())
-				{
-					filterComplex = filterComplex.replace("bwdif=", "bwdif_vulkan=");						
-				}
+				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
-				filterComplex = filterComplex.replace("scale=", "scale_vulkan=");
+				filterComplex = filterComplex.replace("scale=", "scale_vt=") + ",hwdownload,format=" + bitDepth;
+			}
+			else if ((FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			{
+				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
-				filterComplex += ",hwdownload,format=" + bitDepth;
+				filterComplex = filterComplex.replace("scale=", "scale_vulkan=") + ",hwdownload,format=" + bitDepth;
 			}
 		}
 				

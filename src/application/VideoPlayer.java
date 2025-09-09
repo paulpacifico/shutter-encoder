@@ -1582,11 +1582,7 @@ public class VideoPlayer {
 								FunctionUtils.analyze(new File(videoPath), isRaw);
 
 							} catch (InterruptedException e) {}
-							
-							//Check GPU again because it's the video player set to true
-							if (FFPROBE.totalLength > 40 && FFPROBE.audioOnly == false)
-								FFMPEG.checkGPUCapabilities(videoPath, true);
-							
+													
 							//IMPORTANT
 							btnStop.doClick();
 							Shutter.fileList.repaint();							
@@ -2279,25 +2275,6 @@ public class VideoPlayer {
     }
     
 	public static String setVideoCommand(double inputTime, int width, int height, boolean isPlaying) throws InterruptedException {
-
-		//Deinterlacer		
-		String deinterlace = AdvancedFeatures.setDeinterlace(true);		
-		if (mouseIsPressed)
-		{
-			deinterlace = "";
-		}
-				
-		//Speed slider
-		String speed = "";
-		if (sliderSpeed.getValue() != 2)
-		{
-			if (sliderSpeed.getValue() != 0)
-			{
-				speed += "setpts=" + (double) 1 / ((double) sliderSpeed.getValue() / 2) + "*PTS";
-			}
-			else
-				speed += "setpts=4*PTS";				
-		}	
 				
 		if (FFPROBE.audioOnly)
 		{			
@@ -2354,45 +2331,10 @@ public class VideoPlayer {
 				video = Shutter.dirTemp + "concat.txt";
 			}	
 
-			String gpuDecoding = "";
-			
+			String gpuDecoding = "";			
 			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && mouseIsPressed == false && previousFrame == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 			{
-				if (FFMPEG.isGPUCompatible)
-				{
-					//Auto GPU
-					if (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_cuda"))
-					{
-						gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
-					}
-					else if (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("vpp_amf"))
-					{
-						gpuDecoding = " -hwaccel auto"; //Works differently don't even really need -hwaccel auto
-					}
-					else if (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_qsv"))
-					{
-						gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=dxva2";
-					}	
-					else if (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_vt"))
-					{
-						gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
-					}
-					else if (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && setFilter(deinterlace, speed, false).contains("scale_vulkan"))
-					{
-						if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-						{
-							gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1";
-						}
-						else
-							gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0";
-					}
-					else
-						gpuDecoding = " -hwaccel auto";
-				}
-				else if (System.getProperty("os.name").contains("Mac"))
-				{
-					gpuDecoding = " -hwaccel auto";
-				}
+				gpuDecoding = FFMPEG.setGPUDevice(setFilter(false, false));
 			}
 			
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
@@ -2411,7 +2353,7 @@ public class VideoPlayer {
 			if (FFPROBE.hasAlpha)
 				colorFormat = "rgba";
 
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(deinterlace, speed, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(false, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
@@ -2425,16 +2367,17 @@ public class VideoPlayer {
 					format = "mxf";
 				}	
 				
+				//Deinterlacer		
+				String deinterlace = AdvancedFeatures.setDeinterlace(true);		
+				if (mouseIsPressed)
+				{
+					deinterlace = "";
+				}
+										
 				//Deinterlacer
 				if (deinterlace != "")
 				{
 					deinterlace = " -vf " + deinterlace;
-					
-					//Removing GPU filtering
-					if (Settings.btnPreviewOutput.isSelected())
-					{
-						deinterlace = deinterlace.replace("advanced=", "yadif").replace("bob=", "yadif");
-					}
 				}
 				
 				String device = "";
@@ -2450,7 +2393,21 @@ public class VideoPlayer {
 				}
 				else if (Shutter.comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 				{
-					device = " -init_hw_device qsv:hw,child_device_type=dxva2";
+					String child = "dxva2";
+					if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
+					{
+						child = "d3d11va";
+					}					
+					
+					device = " -init_hw_device qsv:hw,child_device_type=" + child;
+				}
+				else if (Shutter.comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+				{
+					device = " -init_hw_device cuda";
+				}
+				else if (Shutter.comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+				{
+					device = " -init_hw_device videotoolbox";
 				}
 				
 				//Hardware encoding
@@ -2491,14 +2448,14 @@ public class VideoPlayer {
 				else
 					codec += FFMPEG.PathToFFMPEG;
 				
-				codec += " -v quiet -hide_banner -i pipe:0" + setFilter("", speed, false);
+				codec += " -v quiet -hide_banner -i pipe:0" + setFilter(false, true);
 								
 				cmd = device + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS + codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			}
 									
 			if (Shutter.inputDeviceIsRunning)
 			{
-				cmd = " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(deinterlace, speed, false) + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
+				cmd = " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(false, false) + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -";
 			}
 
 			Console.consoleFFMPEG.append(cmd + System.lineSeparator());
@@ -5785,7 +5742,7 @@ public class VideoPlayer {
 							//Subtitles are visible only from a video file
 							if (Shutter.caseAddSubtitles.isSelected())
 							{				
-								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter("","", true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -"); 
+								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + colorFormat + " -an -f rawvideo -"); 
 							}
 							else
 							{	
@@ -5794,7 +5751,7 @@ public class VideoPlayer {
 								if (FFPROBE.hasAlpha)
 									inputFormat = "abgr";
 																
-								generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + inputFormat +" -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + setFilter("","", true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+								generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + inputFormat +" -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 							}
 						}
 			        }
@@ -5897,7 +5854,7 @@ public class VideoPlayer {
 		}
 	}
 	
-	private static String setFilter(String deinterlace, String speed, boolean noGPU) {
+	private static String setFilter(boolean noGPU, boolean noDeinterlacing) {
 				
 		//Subtitles
 		String background = "" ;
@@ -5947,12 +5904,25 @@ public class VideoPlayer {
 		//Global Filter
 		String filter = "";
 
+		//Deinterlacer		
+		String deinterlace = "";
+		if (noDeinterlacing == false && mouseIsPressed  == false)
+		{
+			deinterlace = AdvancedFeatures.setDeinterlace(true);	
+					
+			//Disable GPU when using CPU deinterlacing filter
+			if (deinterlace != "" && deinterlace.contains("_") == false)
+			{
+				noGPU = true;
+			}
+		}
+				
 		//Deinterlacer
 		if (deinterlace != "")
 		{
 			filter += deinterlace;
 		}	
-
+		
 		//Scaling
 		int width = player.getWidth();
 		int height = player.getHeight();
@@ -6024,49 +5994,29 @@ public class VideoPlayer {
 			if (filter != "") filter += ",";
 			
 			//Auto GPU
-			if (FFMPEG.cudaAvailable && (Shutter.comboAccel.getSelectedItem().equals("Nvidia NVENC") || Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase())))
-			{
-				if (AdvancedFeatures.setDeinterlace(true) != "")
-				{
-					if (Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif") || Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif"))
-					{
-						filter = filter.replace("yadif", "yadif_cuda").replace("bwdif", "bwdif_cuda");
-					}
-					else
-						filter = filter.replace(AdvancedFeatures.setDeinterlace(true), "yadif_cuda");
-				}
-						
+			if (FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+			{			
+				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=" + algorithm.replace("neighbor", "nearest").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.amfAvailable && deinterlace == "")
+			else if ((FFMPEG.autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf")) && deinterlace == "")
 			{
+				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "vpp_amf=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.qsvAvailable && (Shutter.comboAccel.getSelectedItem().equals("Intel Quick Sync") || Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase())))
-			{
-				if (AdvancedFeatures.setDeinterlace(true) != "")
-				{
-					if (Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || Shutter.comboForcerDesentrelacement.getSelectedItem().toString().equals("bob"))
-					{
-						filter = filter.replace("advanced=", "vpp_qsv=deinterlace=2").replace("bob=", "vpp_qsv=deinterlace=1");
-					}
-					else
-						filter = filter.replace(AdvancedFeatures.setDeinterlace(true), "vpp_qsv=deinterlace=2");
-				}
-				
+			else if (FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))
+			{		
+				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_qsv=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}	
-			else if (FFMPEG.videotoolboxAvailable && deinterlace == "")
+			else if ((FFMPEG.autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")) && deinterlace == "")
 			{
+				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.vulkanAvailable && (Shutter.comboAccel.getSelectedItem().equals("Vulkan Video") || Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase())))
+			else if (FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))
 			{
-				if (AdvancedFeatures.setDeinterlace(true) != "")
-				{
-					filter = filter.replace(AdvancedFeatures.setDeinterlace(true), "bwdif_vulkan");
-				}
-
+				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_vulkan=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
 			else
@@ -6081,11 +6031,16 @@ public class VideoPlayer {
 			filter += "scale=" + width + ":" + height + ":sws_flags=" + algorithm + ":sws_dither=none";		
 		}				
 		
-		//Speed
-		if (speed != "")
+		//Speed slider
+		if (sliderSpeed.getValue() != 2)
 		{
-			filter += "," + speed;
-		}			
+			if (sliderSpeed.getValue() != 0)
+			{
+				filter += ",setpts=" + (double) 1 / ((double) sliderSpeed.getValue() / 2) + "*PTS";
+			}
+			else
+				filter += ",setpts=4*PTS";				
+		}
 		
 		//EQ
 		setEQ = "";	
