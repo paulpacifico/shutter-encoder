@@ -1588,7 +1588,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 		else if (Shutter.comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
 		{
-			gpuDecoding += " -init_hw_device wvideotoolbox";
+			gpuDecoding += " -init_hw_device videotoolbox";
 		}
 		else if (comboAccel.getSelectedItem().equals("VAAPI"))			
 		{
