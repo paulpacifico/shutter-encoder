@@ -1179,6 +1179,7 @@ public class VideoPlayer {
 				@Override
 				public void run() {					
 
+					previewUpscale = false;
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
 					int t = (int) Math.ceil(time);
@@ -2445,7 +2446,7 @@ public class VideoPlayer {
 					pixelFormat = " -pix_fmt yuv420p";
 				}	
 				
-				codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + deinterlace + hwupload + freezeFrame + pixelFormat + " -an -f " + format + " pipe:1 | ";
+				codec = VideoEncoders.setCodec() + VideoEncoders.setBitrate() + AdvancedFeatures.setPreset() + deinterlace + hwupload + freezeFrame + pixelFormat + " -f " + format + " pipe:1 | ";
 				
 				if (System.getProperty("os.name").contains("Windows"))
 				{	
@@ -3198,8 +3199,6 @@ public class VideoPlayer {
                     int y = player.getHeight() - (int) (player.getHeight()/24);
                      
                 	g2.drawString(Shutter.language.getProperty("preview"), x, y);
-                	
-                	previewUpscale = false;
                 }
                                 
                 if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -5731,10 +5730,9 @@ public class VideoPlayer {
 								{
 									generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 								}
-								
-								do {
+									
+								if (preview.exists())
 									preview.delete();
-								} while (preview.exists());
 							}		
 							else									
 							{	
@@ -5908,17 +5906,15 @@ public class VideoPlayer {
 				background += ",Italic=1";
 		}
 		
-		//Global Filter
-		String filter = "";
-
 		//Deinterlacer		
 		String deinterlace = "";
 		if (noDeinterlacing == false && mouseIsPressed  == false)
 		{
 			deinterlace = AdvancedFeatures.setDeinterlace(true);
 		}
-				
-		//Deinterlacer
+			
+		//Global Filter
+		String filter = "";
 		if (deinterlace != "")
 		{
 			filter += deinterlace;
@@ -6149,6 +6145,9 @@ public class VideoPlayer {
 			filter += "," + setEQ;
 		}
 		
+		//Add filters
+		filter = " -vf " + '"' + filter;	
+		
 		if (caseVuMeter.isSelected() && FFPROBE.hasAudio && Shutter.caseAddSubtitles.isSelected() == false && preview == null)
 		{
 			String aspeed = "";
@@ -6182,10 +6181,10 @@ public class VideoPlayer {
 			}
 			
 			filter = " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "").replace("\"", "") + "[v];" + channels + audioOutput + "[v][volume]overlay=W-w:H-h";
-		}
+		}	
 		
 		//Close filter
-		filter = " -vf " + '"' + filter + '"';		
+		filter += '"';	
 		
 		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{						

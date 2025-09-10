@@ -19351,6 +19351,11 @@ public class Shutter {
 						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { "vulkan", language.getProperty("aucun") }));
 						comboGPUFilter.setEnabled(true);
 					}
+					else if (comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+					{
+						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { "videotoolbox", language.getProperty("aucun") }));
+						comboGPUFilter.setEnabled(true);
+					}
 					else
 					{
 						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("aucun") }));
@@ -19382,7 +19387,7 @@ public class Shutter {
 		comboGPUFilter.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboGPUFilter.setEditable(false);
 		comboGPUFilter.setVisible(false);
-		comboGPUFilter.setBounds(lblGpuFiltering.getX() + lblGpuFiltering.getWidth() + 6, comboGPUDecoding.getY(), comboGPUFilter.getPreferredSize().width, 16);
+		comboGPUFilter.setBounds(lblGpuFiltering.getX() + lblGpuFiltering.getWidth() + 6, comboGPUDecoding.getY(), comboGPUDecoding.getPreferredSize().width, 16);
 		comboGPUFilter.setMaximumRowCount(10);
 
 		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac")) && comboGPUDecoding.getSelectedItem().equals(language.getProperty("aucun")) == false)
