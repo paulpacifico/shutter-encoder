@@ -936,8 +936,7 @@ import settings.FunctionUtils;
 						
 						if (tableRow.getRowCount() > 0)
 							btnStartRender.setEnabled(true);
-						
-					}//End Run
+					}
 				});
 				render.start();
 			}			

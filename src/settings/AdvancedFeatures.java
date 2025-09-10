@@ -55,17 +55,17 @@ public class AdvancedFeatures extends Shutter {
 					field = "1";
 				}
 			}
-			
-			//Format
-			String bitDepth = "nv12";
-			if (FFPROBE.imageDepth == 10)
+						
+			if (FFMPEG.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false)
 			{
-				bitDepth = "p010";
-			}
-			
-			if (comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false)
-			{
-				if ((FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+				//Format
+				String bitDepth = "nv12";
+				if (FFPROBE.imageDepth == 10)
+				{
+					bitDepth = "p010";
+				}
+				
+				if ((FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
 				{				
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
@@ -75,7 +75,7 @@ public class AdvancedFeatures extends Shutter {
 					else
 						return comboForcerDesentrelacement.getSelectedItem().toString().replace("yadif", "yadif_cuda").replace("bwdif", "bwdif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
-				else if ((FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))
+				else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || comboForcerDesentrelacement.getSelectedItem().toString().equals("bob")))
 				{		
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
@@ -85,7 +85,7 @@ public class AdvancedFeatures extends Shutter {
 					else
 						return comboForcerDesentrelacement.getSelectedItem().toString().replace("advanced", "vpp_qsv=deinterlace=2").replace("bob", "vpp_qsv=deinterlace=1" + ",hwdownload,format=" + bitDepth);
 				}
-				else if ((FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))
+				else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
 				{
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
@@ -96,7 +96,7 @@ public class AdvancedFeatures extends Shutter {
 						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_vulkan") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
 				else
-				{				
+				{		
 					return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
 				}
 			}

@@ -236,18 +236,15 @@ public class AudioNormalization extends Shutter {
 				
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
 				{
-					if (fileList.getSelectedValuesList().size() > 1)
-					{
-						//Reset data for the current selected file
-						VideoPlayer.videoPath = null;
-						VideoPlayer.setMedia();
-						do {
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e) {}
-						} while (VideoPlayer.loadMedia.isAlive());
-						RenderQueue.frame.toFront();
-					}
+					//Reset data for the current selected file
+					VideoPlayer.videoPath = null;
+					VideoPlayer.setMedia();
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {}
+					} while (VideoPlayer.loadMedia.isAlive());
+					RenderQueue.frame.toFront();
 				}
 				else
 				{

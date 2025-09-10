@@ -2507,7 +2507,7 @@ public class Utils extends Shutter {
 	                } catch (Exception e) {}
 	            }
 	        }, 0, 60000);
-	    }
+	}
 	
 	public static void killProcesses() {
 		

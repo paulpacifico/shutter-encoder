@@ -2378,6 +2378,12 @@ public class VideoPlayer {
 				if (deinterlace != "")
 				{
 					deinterlace = " -vf " + deinterlace;
+					
+					//Removing GPU deinterlacer
+					if (Settings.btnPreviewOutput.isSelected())
+					{
+						deinterlace = deinterlace.replace(AdvancedFeatures.setDeinterlace(true), "yadif");
+					}
 				}
 				
 				String device = "";
@@ -2628,8 +2634,9 @@ public class VideoPlayer {
 								SubtitlesTimeline.waveform.repaint();
 							}
 							else
-							{	    						
-								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance(slider.getWidth() * waveformZoom, waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
+							{	    		
+								waveformIcon.setSize(waveformContainer.getSize());
+								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
 								
 								waveformIcon.setIcon(resizedWaveform);
 								waveformIcon.repaint();
@@ -3890,70 +3897,70 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
+								
+				if (e.getPreciseWheelRotation() < 0)
+				{
+		            if (waveformZoom < 100)
+		            {
+		            	if (waveformZoom >= 20)
+		            	{
+		            		waveformZoom += 10;
+		            	}
+		            	else
+		            		waveformZoom += 1;
+		            }
+		        }
+				else
+				{
+					if (waveformZoom > 1)
+		            {
+						if (waveformZoom >= 20)
+		            	{
+		            		waveformZoom -= 10;
+		            	}
+		            	else
+		            	{
+		            		waveformZoom -= 1;
+		            	}
+		            }
+		        }
 				
+				waveformContainer.setSize(slider.getWidth() * waveformZoom, slider.getHeight());
+				waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));	
+				
+				double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
+				double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+									
+				playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());	
+				if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
+				{
+					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
+				}
+				else
+					playerOutMark = waveformContainer.getWidth();
+				
+				waveformContainer.repaint();
+				
+				cursorWaveform.setBounds((int) Math.floor((double) (waveformContainer.getSize().width * Timecode.setNTSCtimecode(slider.getValue())) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
+				cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+				
+				cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
+			
 				if (waveformIcon.isVisible() && waveformIcon.getIcon() != null)
 				{
-					if (e.getPreciseWheelRotation() < 0)
-					{
-			            if (waveformZoom < 100)
-			            {
-			            	if (waveformZoom >= 20)
-			            	{
-			            		waveformZoom += 10;
-			            	}
-			            	else
-			            		waveformZoom += 1;
-			            }
-			        }
-					else
-					{
-						if (waveformZoom > 1)
-			            {
-							if (waveformZoom >= 20)
-			            	{
-			            		waveformZoom -= 10;
-			            	}
-			            	else
-			            	{
-			            		waveformZoom -= 1;
-			            	}
-			            }
-			        }
-					
-					waveformContainer.setSize(slider.getWidth() * waveformZoom, slider.getHeight());
-					waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));	
-					
-					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
-					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
-										
-					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());	
-					if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
-					{
-						playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
-					}
-					else
-						playerOutMark = waveformContainer.getWidth();
-					
-					waveformContainer.repaint();
-					
-					cursorWaveform.setBounds((int) Math.floor((double) (waveformContainer.getSize().width * Timecode.setNTSCtimecode(slider.getValue())) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
-					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
-					
-					cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
-				
 					waveformIcon.setSize(waveformContainer.getSize());
 					
 					ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
 					waveformIcon.setIcon(resizedWaveform);
 					waveformIcon.repaint();
-					
-					//Center cursor
-					int viewportWidth = waveformScrollPane.getViewport().getWidth();
-					int newViewPosX = cursorWaveform.getX() - (viewportWidth / 2);
-					int maxViewPosX = waveformContainer.getWidth() - viewportWidth;
-					newViewPosX = Math.max(0, Math.min(newViewPosX, maxViewPosX));
-					waveformScrollPane.getViewport().setViewPosition(new Point(newViewPosX, 0));
 				}
+				
+				//Center cursor
+				int viewportWidth = waveformScrollPane.getViewport().getWidth();
+				int newViewPosX = cursorWaveform.getX() - (viewportWidth / 2);
+				int maxViewPosX = waveformContainer.getWidth() - viewportWidth;
+				newViewPosX = Math.max(0, Math.min(newViewPosX, maxViewPosX));
+				waveformScrollPane.getViewport().setViewPosition(new Point(newViewPosX, 0));
 			}
 			
 		});
@@ -5908,13 +5915,7 @@ public class VideoPlayer {
 		String deinterlace = "";
 		if (noDeinterlacing == false && mouseIsPressed  == false)
 		{
-			deinterlace = AdvancedFeatures.setDeinterlace(true);	
-					
-			//Disable GPU when using CPU deinterlacing filter
-			if (deinterlace != "" && deinterlace.contains("_") == false)
-			{
-				noGPU = true;
-			}
+			deinterlace = AdvancedFeatures.setDeinterlace(true);
 		}
 				
 		//Deinterlacer
@@ -5959,10 +5960,10 @@ public class VideoPlayer {
 		}		
 		
 		//Zoom
-		if (Shutter.sliderZoom.getValue() != 0)
-		{		
-			filter = Colorimetry.setZoom(filter, false);
-		}	
+		if (Shutter.caseEnableColorimetry.isSelected() && Shutter.sliderZoom.getValue() != 0)
+		{	
+			filter = Colorimetry.setZoom(filter, false);	
+		}
 		
 		if (Shutter.grpColorimetry.isVisible() && Shutter.caseColormatrix.isSelected() && Shutter.comboInColormatrix.getSelectedItem().equals("HDR") == false)
 		{
@@ -5983,38 +5984,37 @@ public class VideoPlayer {
 		{
 			filter += "null";
 		}
-		else if (FFMPEG.isGPUCompatible && FFPROBE.isRotated == false
-		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-		&& noGPU == false && previousFrame == false
-		&& mouseIsPressed == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-		&& Colorimetry.setInputCodec(extension) == ""
+		else if ((deinterlace == "" || deinterlace.contains("_"))
+		&& noGPU == false && FFPROBE.isRotated == false && previousFrame == false && mouseIsPressed == false
+		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false		
+		&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false		
 		&& Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
-		&& Settings.btnPreviewOutput.isSelected() == false)
+		&& Settings.btnPreviewOutput.isSelected() == false && Colorimetry.setInputCodec(extension) == "")
 		{
 			if (filter != "") filter += ",";
 			
 			//Auto GPU
-			if (FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{			
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=" + algorithm.replace("neighbor", "nearest").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf")) && deinterlace == "")
+			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlace == "")
 			{
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "vpp_amf=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))
+			else if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 			{		
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_qsv=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}	
-			else if ((FFMPEG.autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")) && deinterlace == "")
+			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlace == "")
 			{
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))
+			else if (FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 			{
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_vulkan=" + width + ":" + height + ",hwdownload,format=" + bitDepth;

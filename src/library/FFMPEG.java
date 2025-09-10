@@ -1137,7 +1137,6 @@ public static StringBuilder errorLog = new StringBuilder();
 	    return Character.getNumericValue(model.charAt(0));
 	}
 
-	
 	@SuppressWarnings("deprecation")
 	public static void checkGPUAvailable()
 	{
@@ -1225,7 +1224,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			}
 
-			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || vcodec.equals("VP8") || vcodec.equals("VP9") || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2"))
+			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2"))
 			{
 				isGPUCompatible = true;
 			}
@@ -1435,31 +1434,28 @@ public static StringBuilder errorLog = new StringBuilder();
 		autoAMF = false;
 		autoVIDEOTOOLBOX = false;
 		autoVULKAN = false;
-		
-		if (FFPROBE.videoCodec.contains("vp8") == false && (FFPROBE.videoCodec.contains("vp9") == false || (FFPROBE.videoCodec.contains("vp9") && FFPROBE.hasAlpha == false)))
-		{					
-			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+			
+		if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals("auto") && Shutter.comboGPUFilter.getSelectedItem().toString().equals("auto"))
+		{
+			if (FFMPEG.cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 			{
-				if (FFMPEG.cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoCUDA = true;
-				}
-				else if (FFMPEG.amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoAMF = true;
-				}
-				else if (FFMPEG.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoQSV = true;
-				}
-				else if (FFMPEG.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoVIDEOTOOLBOX = true;
-				}
-				else if (FFMPEG.vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
-				{
-					autoVULKAN = true;
-				}
+				autoCUDA = true;
+			}
+			else if (FFMPEG.amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			{
+				autoAMF = true;
+			}
+			else if (FFMPEG.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			{
+				autoQSV = true;
+			}
+			else if (FFMPEG.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			{
+				autoVIDEOTOOLBOX = true;
+			}
+			else if (FFMPEG.vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			{
+				autoVULKAN = true;
 			}
 		}
 	}
@@ -1484,29 +1480,42 @@ public static StringBuilder errorLog = new StringBuilder();
 				break;
 		}	
 		
-		//setScale gives already all the correct settings
-		if (settings.Image.setScale("", limitToFHD).contains("cuda"))
+		if (caseEnableCrop.isSelected() == false
+		&& comboResolution.getSelectedItem().toString().contains("AI") == false
+		&& caseStabilisation.isSelected() == false)
 		{
-			if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("yadif") == false)
+			//setScale gives already all the correct settings
+			if (settings.Image.setScale("", limitToFHD).contains("cuda"))
 			{
-				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif" }));
-				comboForcerDesentrelacement.setSelectedIndex(0);
+				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("yadif") == false)
+				{
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif" }));
+					comboForcerDesentrelacement.setSelectedIndex(0);
+				}
 			}
-		}
-		else if (settings.Image.setScale("", limitToFHD).contains("qsv"))
-		{
-			if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("advanced") == false)
+			else if (settings.Image.setScale("", limitToFHD).contains("qsv"))
 			{
-				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "advanced", "bob" }));
-				comboForcerDesentrelacement.setSelectedIndex(0);
+				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("advanced") == false)
+				{
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "advanced", "bob" }));
+					comboForcerDesentrelacement.setSelectedIndex(0);
+				}
 			}
-		}
-		else if (settings.Image.setScale("", limitToFHD).contains("vulkan"))
-		{
-			if (comboForcerDesentrelacement.getModel().getSize() != 1 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
+			else if (settings.Image.setScale("", limitToFHD).contains("vulkan"))
 			{
-				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif" }));
-				comboForcerDesentrelacement.setSelectedIndex(0);
+				if (comboForcerDesentrelacement.getModel().getSize() != 1 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
+				{
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif" }));
+					comboForcerDesentrelacement.setSelectedIndex(0);
+				}
+			}
+			else
+			{
+				if (comboForcerDesentrelacement.getModel().getSize() != 5 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("yadif") == false)
+				{
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "w3fdif", "detelecine" }));
+					comboForcerDesentrelacement.setSelectedIndex(0);	
+				}
 			}
 		}
 		else
@@ -1516,7 +1525,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "w3fdif", "detelecine" }));
 				comboForcerDesentrelacement.setSelectedIndex(0);	
 			}
-		}
+		}	
 	}
 	
 	public static String setGPUDevice(String filterComplex) {
@@ -1525,23 +1534,23 @@ public static StringBuilder errorLog = new StringBuilder();
 		String gpuDecoding = "";						
 		if (FFMPEG.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
 		{
-			if (FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+			if (FFMPEG.autoCUDA || (cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{
 				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
 			}
-			else if (FFMPEG.autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))
+			else if (FFMPEG.autoAMF || (amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf")))
 			{
 				gpuDecoding = " -hwaccel auto"; //Works differently don't even really need -hwaccel auto
 			}
-			else if (FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))
+			else if (FFMPEG.autoQSV || (qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 			{
 				gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
 			}
-			else if (FFMPEG.autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))
+			else if (FFMPEG.autoVIDEOTOOLBOX || (videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")))
 			{
 				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
 			}
-			else if (FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))
+			else if (FFMPEG.autoVULKAN || (vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 			{
 				if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 				{

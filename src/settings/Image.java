@@ -335,8 +335,15 @@ public class Image extends Shutter {
 		{
 			filterComplex += "scale=256:256";
 		}
+		
+		//Not compatible with GPU filtering
+		boolean useGPU = true;
+		if (FFMPEG.isGPUCompatible == false || caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || caseStabilisation.isSelected())
+		{
+			useGPU = false;
+		}
 					
-		if (filterComplex.contains("scale=") && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && VideoPlayer.mouseIsPressed == false)
+		if (useGPU && filterComplex.contains("scale=") && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && VideoPlayer.mouseIsPressed == false)
 		{
 			//Format
 			String bitDepth = "nv12";
@@ -357,31 +364,31 @@ public class Image extends Shutter {
 				deinterlacing = true;
 			}
 
-			if (FFMPEG.autoCUDA || Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda"))
+			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
 				filterComplex = filterComplex.replace("scale=", "scale_cuda=") + ",hwdownload,format=" + bitDepth;	
 			}
-			else if ((FFMPEG.autoAMF || Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf")) && deinterlacing == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
 				filterComplex = filterComplex.replace("scale=", "vpp_amf=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoQSV || Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")) && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoVIDEOTOOLBOX || Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vt=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoVULKAN || Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				

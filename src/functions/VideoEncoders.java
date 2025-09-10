@@ -416,6 +416,9 @@ public class VideoEncoders extends Shutter {
 			            
 			            //EXR gamma
 						String inputCodec = Colorimetry.setInputCodec(extension);
+						
+						//Can set isGPUCompatible to false so it need to be called before any GPU filtering
+						setScalingFirst();
 			        
 				        //Deinterlace
 						String filterComplex = "";	
@@ -505,7 +508,7 @@ public class VideoEncoders extends Shutter {
 									break;
 							}
 						}	
-												
+											
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
@@ -1186,18 +1189,15 @@ public class VideoEncoders extends Shutter {
 
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 				{
-					if (fileList.getSelectedValuesList().size() > 1)
-					{
-						//Reset data for the current selected file
-						VideoPlayer.videoPath = null;
-						VideoPlayer.setMedia();
-						do {
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e) {}
-						} while (VideoPlayer.loadMedia.isAlive());
-						RenderQueue.frame.toFront();
-					}
+					//Reset data for the current selected file
+					VideoPlayer.videoPath = null;
+					VideoPlayer.setMedia();
+					do {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {}
+					} while (VideoPlayer.loadMedia.isAlive());
+					RenderQueue.frame.toFront();
 				}
 				else
 				{
@@ -1215,7 +1215,7 @@ public class VideoEncoders extends Shutter {
 		try {
 			
 			//Crop need to be before scaling
-			if (Shutter.caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || Shutter.caseStabilisation.isSelected())
+			if (caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || caseStabilisation.isSelected())
 			{
 				FFMPEG.isGPUCompatible = false;
 				return false;

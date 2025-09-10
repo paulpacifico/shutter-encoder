@@ -8939,7 +8939,8 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseEnableCrop.isSelected()) {
+				if (caseEnableCrop.isSelected())
+				{
 					// Make sure the crop is accurate to pixel resolution
 					float squareRatio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
 					if (Shutter.inputDeviceIsRunning == false && FFPROBE.imageRatio != squareRatio) {
@@ -9000,6 +9001,8 @@ public class Shutter {
 
 					comboPreset.setSelectedIndex(0);
 				}
+				
+				FFMPEG.checkGPUDeinterlacing();
 
 				if (VideoPlayer.frameVideo != null) {
 					VideoPlayer.player.repaint();
@@ -15784,6 +15787,15 @@ public class Shutter {
 		caseStabilisation.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		caseStabilisation.setSize(caseStabilisation.getPreferredSize().width, 23);
 
+		caseStabilisation.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				FFMPEG.checkGPUDeinterlacing();
+			}
+			
+		});
+		
 		caseDeflicker = new JCheckBox(Shutter.language.getProperty("caseDeflicker"));
 		caseDeflicker.setName("caseDeflicker");
 		caseDeflicker.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
@@ -19344,6 +19356,8 @@ public class Shutter {
 						comboGPUFilter.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("aucun") }));
 						comboGPUFilter.setEnabled(false);
 					}
+					
+					VideoPlayer.frameIsComplete = false;
 					
 					if (VideoPlayer.videoPath != null)
 					{
