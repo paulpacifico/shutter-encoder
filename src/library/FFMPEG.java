@@ -1581,8 +1581,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			else
 				gpuDecoding += " -init_hw_device vulkan=gpu:0";
 		}				
-		else if (comboAccel.getSelectedItem().equals("Intel Quick Sync")
-		 && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan"))) //Fails if there is no filter
+		else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 		{
 			String child = "dxva2";
 			if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)

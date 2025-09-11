@@ -19365,11 +19365,9 @@ public class Shutter {
 					VideoPlayer.frameIsComplete = false;
 					
 					if (VideoPlayer.videoPath != null)
-					{
-						//Reload GPU checking
-						VideoPlayer.videoPath = null;
-						VideoPlayer.setMedia();
-					}				
+						FFMPEG.checkGPUCapabilities(VideoPlayer.videoPath);
+					
+					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);			
 				}
 			}
 
@@ -19410,11 +19408,9 @@ public class Shutter {
 				VideoPlayer.frameIsComplete = false;
 				
 				if (VideoPlayer.videoPath != null)
-				{
-					//Reload GPU checking
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
-				}
+					FFMPEG.checkGPUCapabilities(VideoPlayer.videoPath);
+				
+				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);
 				
 			}
 
@@ -19572,8 +19568,10 @@ public class Shutter {
 					caseForceTune.setEnabled(true);
 				}
 				
-				FFMPEG.checkGPUFiltering();
-				FFMPEG.checkGPUDeinterlacing();
+				VideoPlayer.frameIsComplete = false;
+				
+				if (VideoPlayer.videoPath != null)
+					FFMPEG.checkGPUCapabilities(VideoPlayer.videoPath);
 				
 				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);
 
@@ -25602,7 +25600,7 @@ public class Shutter {
 
 	public static void lastActions() {
 
-		if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFMPEG.error == false)
+		if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFMPEG.error == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionReplaceAudio")) == false)
 			liste.clear();
 
 		Thread thread = new Thread(new Runnable() {

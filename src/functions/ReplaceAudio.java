@@ -327,6 +327,9 @@ public class ReplaceAudio extends Shutter {
 						//Start replacement
 						main(audioFiles, audioExt, videoFile);
 					}
+							
+				if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFMPEG.error == false)
+					liste.clear();
 					
 				} catch (InterruptedException e1) {					
 					FFMPEG.error  = true;
