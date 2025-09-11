@@ -21419,7 +21419,7 @@ public class Shutter {
 									grpSetAudio.add(comboAudio8);
 								}
 								
-								if (Utils.loadEncFile.isAlive() == false)
+								if (Utils.loadEncFile == null || Utils.loadEncFile.isAlive() == false)
 								{
 									if (comboAudio1.getSelectedIndex() == 0 && comboAudio2.getSelectedIndex() == 1
 									&& comboAudio3.getSelectedIndex() == 2 && comboAudio4.getSelectedIndex() == 3
