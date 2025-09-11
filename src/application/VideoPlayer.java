@@ -2388,7 +2388,9 @@ public class VideoPlayer {
 				}
 				
 				String device = "";
-				if (Shutter.comboAccel.getSelectedItem().equals("Vulkan Video"))
+				if (Shutter.comboAccel.getSelectedItem().equals("Vulkan Video")
+				|| Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
+				|| Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU)
 				{
 					if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 					{
@@ -2398,7 +2400,7 @@ public class VideoPlayer {
 						device = " -init_hw_device vulkan=gpu:0";
 					
 				}
-				else if (Shutter.comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+				else if (FFMPEG.qsvAvailable && (FFMPEG.comboGPUFilter.getSelectedItem().toString().equals("qsv") || FFMPEG.comboGPUFilter.getSelectedItem().toString().equals("auto"))) //It seems to not work on recent Intel GPU when set without any video filters
 				{
 					String child = "dxva2";
 					if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)

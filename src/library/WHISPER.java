@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
 
@@ -134,7 +135,12 @@ public class WHISPER extends Shutter {
 			{
 				new Update();
 				
-				Update.lblNewVersion.setText("AI model...");
+				if (getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+				{
+					Update.lblNewVersion.setText(language.getProperty("update"));
+				}
+				else
+					Update.lblNewVersion.setText(language.getProperty("update") + "...");
 				
 				//Download
 				Thread download = new Thread(new Runnable() {
