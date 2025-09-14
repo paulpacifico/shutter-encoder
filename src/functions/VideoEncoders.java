@@ -571,7 +571,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Colorimetry.setMetadata(filterComplex);
 
 						//Rotate
-						filterComplex = Image.setRotate(filterComplex);
+						filterComplex = Image.setRotate(filterComplex, false);
 						
 						//Color
 						filterComplex = Colorimetry.setColor(filterComplex);		
@@ -872,7 +872,7 @@ public class VideoEncoders extends Shutter {
 						String gpuDecoding = FFMPEG.setGPUDevice(filterComplex);
 						
 						//GPU filtering
-			        	if (filterComplex.contains("hwdownload") && comboAccel.getSelectedItem().equals("AMD AMF Encoder") == false) //When GPU scaling is used
+			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
 			    		{
 			    			//Input bitDepth
 			    			String bitDepth = "nv12";

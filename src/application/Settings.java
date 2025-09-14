@@ -1849,6 +1849,33 @@ public class Settings {
 							Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
 						}
 					}
+					
+					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("consoleLocation"))
+					{
+						String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
+						int x = Integer.parseInt(s[0]);
+						int y = Integer.parseInt(s[1]);
+						int width = Integer.parseInt(s[2]);
+						int height = Integer.parseInt(s[3]);
+						
+						boolean canBeDisplayed = false;
+
+				        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				        GraphicsDevice[] screens = ge.getScreenDevices();
+
+				        for (GraphicsDevice screen : screens) {
+				            Rectangle bounds = screen.getDefaultConfiguration().getBounds();
+				            if (bounds.contains(x, y)) {
+				            	canBeDisplayed = true;
+				                break;
+				            }
+				        }
+				        
+						if (canBeDisplayed)
+						{
+							Console.savedBounds = new Rectangle(x, y, width, height);
+						}
+					}
 				}
 			}		
 		}							
@@ -1885,6 +1912,29 @@ public class Settings {
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
+			
+			if (Console.frmConsole != null)
+			{
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JFrame"));
+				component.appendChild(cType);
+				
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("consoleLocation"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(String.valueOf((int) Console.frmConsole.getLocation().getX() + "," + (int) Console.frmConsole.getLocation().getY() + "," + (int) Console.frmConsole.getWidth() + "," + (int) Console.frmConsole.getHeight())));
+				component.appendChild(cValue);
+				
+				root.appendChild(component);
+			}
 			
 			for (Component p : frame.getContentPane().getComponents())
 			{

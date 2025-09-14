@@ -65,25 +65,26 @@ public class AdvancedFeatures extends Shutter {
 					bitDepth = "p010";
 				}
 				
+				//GPU filter
 				if ((FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
-				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
+				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 				{				
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 					{
-						return "yadif_cuda=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						return "bwdif_cuda=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 					}
 					else
-						return comboForcerDesentrelacement.getSelectedItem().toString().replace("yadif", "yadif_cuda").replace("bwdif", "bwdif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_cuda").replace("yadif", "yadif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
 				else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
-				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || comboForcerDesentrelacement.getSelectedItem().toString().equals("bob")))
+				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced")))
 				{		
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 					{
-						return "vpp_qsv=deinterlace=2,hwdownload,format=" + bitDepth;
+						return "vpp_qsv=deinterlace=1,hwdownload,format=" + bitDepth;
 					}
 					else
-						return comboForcerDesentrelacement.getSelectedItem().toString().replace("advanced", "vpp_qsv=deinterlace=2").replace("bob", "vpp_qsv=deinterlace=1" + ",hwdownload,format=" + bitDepth);
+						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
 				}
 				else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))

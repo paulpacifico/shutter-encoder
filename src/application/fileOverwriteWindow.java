@@ -109,7 +109,7 @@ public class fileOverwriteWindow  {
 			frame.setSize(btnCancel.getX() + btnCancel.getWidth() + 7, 90);
 		}
 		else
-			frame.setSize(btnCancel.getX() + btnCancel.getWidth() + 17, 100);
+			frame.setSize(btnCancel.getX() + btnCancel.getWidth() + 25, 100);
 			
 		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight()- frame.getHeight()) / 2);
 		frame.setVisible(true);

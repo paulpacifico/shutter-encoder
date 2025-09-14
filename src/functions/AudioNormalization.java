@@ -226,7 +226,7 @@ public class AudioNormalization extends Shutter {
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
-							break;
+								break;
 						}
 						
 					} catch (InterruptedException e) {
@@ -246,7 +246,7 @@ public class AudioNormalization extends Shutter {
 					} while (VideoPlayer.loadMedia.isAlive());
 					RenderQueue.frame.toFront();
 				}
-				else
+				else if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 				{
 					enfOfFunction();					
 				}

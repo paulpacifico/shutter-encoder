@@ -5698,14 +5698,10 @@ public class Shutter {
 						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
 						&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
 						&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
-						&& comboFonctions.getSelectedItem()
-								.equals(language.getProperty("functionNormalization")) == false
-						&& comboFonctions.getSelectedItem()
-								.equals(language.getProperty("functionSceneDetection")) == false
-						&& comboFonctions.getSelectedItem()
-								.equals(language.getProperty("functionBlackDetection")) == false
-						&& comboFonctions.getSelectedItem()
-								.equals(language.getProperty("functionOfflineDetection")) == false
+						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionNormalization")) == false
+						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSceneDetection")) == false
+						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection")) == false
+						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection")) == false
 						&& comboFonctions.getSelectedItem().equals("VMAF") == false
 						&& comboFonctions.getSelectedItem().equals("FrameMD5") == false
 						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
@@ -16829,7 +16825,7 @@ public class Shutter {
 				if (caseForcerDesentrelacement.isSelected()) {
 					comboForcerDesentrelacement.setEnabled(true);
 				} else {
-					comboForcerDesentrelacement.setSelectedItem("yadif");
+					comboForcerDesentrelacement.setSelectedItem("bwdif");
 					comboForcerDesentrelacement.setEnabled(false);
 				}
 
@@ -16841,7 +16837,7 @@ public class Shutter {
 
 		comboForcerDesentrelacement = new JComboBox<String>();
 		comboForcerDesentrelacement.setName("comboForcerDesentrelacement");
-		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "yadif", "bwdif", "estdif", "w3fdif", "detelecine" }));
+		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "yadif", "estdif", "w3fdif", "detelecine" }));
 		comboForcerDesentrelacement.setSelectedIndex(0);
 		comboForcerDesentrelacement.setFont(new Font(mainFont, Font.PLAIN, 10));
 		comboForcerDesentrelacement.setEditable(false);
@@ -16860,7 +16856,7 @@ public class Shutter {
 						FFPROBE.fieldOrder = "0";
 				}
 
-				if (comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced"))
+				if (comboForcerDesentrelacement.getModel().getSize() == 2 && comboForcerDesentrelacement.getModel().getElementAt(1).equals("advanced"))
 				{
 					lblTFF.setEnabled(false);
 				}
@@ -25177,7 +25173,7 @@ public class Shutter {
 			components[i].setEnabled(true);
 		}
 
-		if (comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced"))
+		if (comboForcerDesentrelacement.getModel().getSize() == 2 && comboForcerDesentrelacement.getModel().getElementAt(1).equals("advanced"))
 		{
 			lblTFF.setEnabled(false);
 		}
@@ -25476,13 +25472,15 @@ public class Shutter {
 				}
 			}
 
-			if (RenderQueue.frame != null && RenderQueue.frame.isVisible()) {
+			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+			{
 				String s[] = errorList.toString().split(System.lineSeparator());
 
 				int startRowCount = 0;
 				int removedRows = 0;
 
-				for (String line : s) {
+				for (String line : s)
+				{
 					if (line.contains(Shutter.language.getProperty("file") + " N°")) {
 						String item[] = line.split("-");
 						String clearItemNumber = item[0].replace(Shutter.language.getProperty("file") + " N°", "");
@@ -25505,7 +25503,8 @@ public class Shutter {
 
 				// Une fois terminé on supprime les fichiers au delà du dernier fichier qui
 				// contient l'erreur
-				for (int r = startRowCount; r < RenderQueue.tableRow.getRowCount(); r++) {
+				for (int r = startRowCount; r < RenderQueue.tableRow.getRowCount(); r++)
+				{
 					RenderQueue.tableRow.removeRow(r);
 					r--;
 				}

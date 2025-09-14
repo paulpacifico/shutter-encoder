@@ -110,10 +110,22 @@ public class Image extends Shutter {
     	return filterComplex;
 	}
 	
-	public static String setRotate(String filterComplex) {
+	public static String setRotate(String filterComplex, boolean noGPU) {
 		
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) || VideoPlayer.fullscreenPlayer)
 		{
+			//Checking if last filter is GPU accelerated
+			boolean filterGPU = false;
+			if (filterComplex != "")
+			{
+				String s[] = filterComplex.split(",");		
+				
+				if (s.length > 2 && s[s.length - 2].equals("hwdownload"))
+					filterGPU = true;
+			}
+			else //no filter before
+				filterGPU = true;
+			
 			String rotate = "";
 			if (caseRotate.isSelected()) 
 			{
@@ -151,6 +163,44 @@ public class Image extends Shutter {
 				if (filterComplex != "") filterComplex += ",";
 		
 				filterComplex += rotate;	
+			}
+			
+			//Format
+			String bitDepth = "nv12";
+			if (FFPROBE.imageDepth == 10)
+			{
+				bitDepth = "p010";
+			}
+						
+			//GPU filter	
+			if (noGPU == false && filterGPU)
+			{
+				if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))))
+				{				
+					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+					
+					filterComplex = filterComplex.replace("transpose", "vpp_qsv=transpose");
+					
+					if (caseMiror.isSelected())
+					{
+						filterComplex = filterComplex.replace("hflip", "vpp_qsv=transpose=hflip");
+					}
+					
+					filterComplex += ",hwdownload,format=" + bitDepth;
+				}
+				else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))))
+				{
+					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+					
+					filterComplex = filterComplex.replace("transpose", "transpose_vulkan");
+					
+					if (caseMiror.isSelected())
+					{
+						filterComplex = filterComplex.replace("hflip", "hflip_vulkan");
+					}
+					
+					filterComplex += ",hwdownload,format=" + bitDepth;
+				}	
 			}
 		}
 
@@ -358,8 +408,7 @@ public class Image extends Shutter {
 			|| filterComplex.contains("estdif")
 			|| filterComplex.contains("w3fdif")
 			|| filterComplex.contains("detelecine")
-			|| filterComplex.contains("advanced")
-			|| filterComplex.contains("bob"))
+			|| filterComplex.contains("advanced"))
 			{
 				deinterlacing = true;
 			}

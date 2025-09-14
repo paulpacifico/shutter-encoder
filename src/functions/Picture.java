@@ -149,7 +149,7 @@ public class Picture extends Shutter {
 						filterComplex = Colorimetry.setColormatrix(filterComplex);	
 												
 						//Rotate
-						filterComplex = Image.setRotate(filterComplex);
+						filterComplex = Image.setRotate(filterComplex, false);
 						
 						//Color
 						filterComplex = Colorimetry.setColor(filterComplex);

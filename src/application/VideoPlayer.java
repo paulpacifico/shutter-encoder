@@ -125,7 +125,6 @@ public class VideoPlayer {
     private static Thread playerThread;
     public static Thread loadMedia;
     public static Thread setTime;
-    private static String setEQ = "";	
 	public static double playerCurrentFrame = 0;
 	public static double bufferCurrentFrame = 0;
     private static long fpsTime = 0;
@@ -2383,7 +2382,7 @@ public class VideoPlayer {
 					//Removing GPU deinterlacer
 					if (Settings.btnPreviewOutput.isSelected())
 					{
-						deinterlace = deinterlace.replace(AdvancedFeatures.setDeinterlace(true), "yadif");
+						deinterlace = deinterlace.replace(AdvancedFeatures.setDeinterlace(true), "bwdif");
 					}
 				}
 				
@@ -2400,7 +2399,8 @@ public class VideoPlayer {
 						device = " -init_hw_device vulkan=gpu:0";
 					
 				}
-				else if (FFMPEG.qsvAvailable && (FFMPEG.comboGPUFilter.getSelectedItem().toString().equals("qsv") || FFMPEG.comboGPUFilter.getSelectedItem().toString().equals("auto"))) //It seems to not work on recent Intel GPU when set without any video filters
+				else if (Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
+				&& (Shutter.comboAccel.getSelectedItem().equals("Intel Quick Sync") || Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))) 
 				{
 					String child = "dxva2";
 					if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
@@ -5655,7 +5655,7 @@ public class VideoPlayer {
 							colorFormat = "rgba";
 						
 						if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
-							deinterlace = " -vf yadif=0:" + FFPROBE.fieldOrder + ":0";		
+							deinterlace = " -vf bwdif=0:" + FFPROBE.fieldOrder + ":0";		
 	
 						//Input point
 						String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
@@ -5969,7 +5969,108 @@ public class VideoPlayer {
 			width = (width - (width % 4));
 			height = (height - (height % 4));
 		}
+						
+		//Stabilisation
+		//if (Shutter.stabilisation != "")
+		//	setEQ = Shutter.stabilisation;
+		
+		//Blend
+		if (preview == null) //Show only on playing
+		{
+			filter = ImageSequence.setBlend(filter);
+			filter = ImageSequence.setMotionBlur(filter);
+		}
+		
+		//LUTs
+		filter = Colorimetry.setLUT(filter);	
+		
+		//Levels
+		filter = Colorimetry.setLevels(filter);
+		
+		//Colorspace metadata
+		filter = Colorimetry.setMetadata(filter);
+		
+		if (Shutter.caseLevels.isSelected() == false && fileDuration > 40 && FFPROBE.lumaLevel.equals("0-255"))
+		{
+			if (filter != "") filter += ",";
+				filter += "scale=in_range=full:out_range=full";
+		}
+		
+		//Colormatrix
+		filter = Colorimetry.setColormatrix(filter);
+		
+		//Rotate
+		if (Shutter.caseRotate.isSelected() || Shutter.caseMiror.isSelected())
+		{
+			filter = settings.Image.setRotate(filter, mouseIsPressed);
+		}
+		
+		//Colorimetry
+		if (Shutter.caseEnableColorimetry.isSelected())
+		{			
+			String color = Colorimetry.setEQ(false);
+						
+			if (filter != "" && color != "")
+			{
+				filter += "," + color;
+			}
+			else if (color != "")
+			{
+				filter += color;
+			}
+			
+			if (Shutter.sliderAngle.getValue() != 0)
+			{
+				if (filter.contains("scale"))
+				{
+					filter = filter.replace("scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight,  "scale=" + player.getWidth() + ":" + player.getHeight());
+				}
+				else
+				{
+					filter += ",scale=" + player.getWidth() + ":" + player.getHeight();
+				}
+			}
+		}
 				
+		//Deflicker			
+		filter = Corrections.setDeflicker(filter);
+			
+		//Deband			
+		filter = Corrections.setDeband(filter);
+				 
+		//Details			
+		filter = Corrections.setDetails(filter);				
+											            	
+		//Denoise			
+		filter = Corrections.setDenoiser(filter);
+		
+		//Exposure
+		if (preview == null) //Show only on playing
+			filter = Corrections.setSmoothExposure(filter);	
+		
+		//Limiter
+		filter = Corrections.setLimiter(filter);
+
+		//Fade-in Fade-out
+		if (Shutter.caseVideoFadeIn.isSelected() || Shutter.caseVideoFadeOut.isSelected())
+		{
+			filter = Transitions.setVideoFade(filter, true);
+		}
+		
+		/*
+		//Interpolation
+		filter = AdvancedFeatures.setInterpolation(filter);
+		
+		//Slow motion
+		filter = AdvancedFeatures.setSlowMotion(filter);
+							
+        //PTS
+		filter = AdvancedFeatures.setPTS(filter);		      		                     	
+
+		//Conform
+		filter = AdvancedFeatures.setConform(filter);
+		*/
+
 		String algorithm = "bilinear";
 		if (mouseIsPressed)
 		{
@@ -5978,15 +6079,25 @@ public class VideoPlayer {
 
 		String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 		
+		//Checking if last filter is GPU accelerated
+		boolean filterGPU = false;
+		if (filter != "")
+		{
+			String s[] = filter.split(",");		
+			
+			if (s.length > 2 && s[s.length - 2].equals("hwdownload"))
+				filterGPU = true;
+		}
+		else //no filter before
+			filterGPU = true;
+			
 		if (Shutter.inputDeviceIsRunning)
 		{
 			filter += "null";
 		}
-		else if ((deinterlace == "" || deinterlace.contains("_"))
-		&& noGPU == false && FFPROBE.isRotated == false && previousFrame == false && mouseIsPressed == false
-		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false		
+		else if (filterGPU && noGPU == false && FFPROBE.isRotated == false && previousFrame == false && mouseIsPressed == false
 		&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false		
-		&& Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
+		&& (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) || Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
 		&& Settings.btnPreviewOutput.isSelected() == false && Colorimetry.setInputCodec(extension) == "")
 		{
 			if (filter != "") filter += ",";
@@ -6038,113 +6149,6 @@ public class VideoPlayer {
 			}
 			else
 				filter += ",setpts=4*PTS";				
-		}
-		
-		//EQ
-		setEQ = "";	
-		
-		//Stabilisation
-		if (Shutter.stabilisation != "")
-			setEQ = Shutter.stabilisation;
-		
-		//Blend
-		if (preview == null) //Show only on playing
-		{
-			setEQ = ImageSequence.setBlend(setEQ);
-			setEQ = ImageSequence.setMotionBlur(setEQ);
-		}
-		
-		//LUTs
-		setEQ = Colorimetry.setLUT(setEQ);	
-		
-		//Levels
-		setEQ = Colorimetry.setLevels(setEQ);
-		
-		//Colorspace metadata
-		setEQ = Colorimetry.setMetadata(setEQ);
-		
-		if (Shutter.caseLevels.isSelected() == false && fileDuration > 40 && FFPROBE.lumaLevel.equals("0-255"))
-		{
-			if (setEQ != "") setEQ += ",";
-				setEQ += "scale=in_range=full:out_range=full";
-		}
-		
-		//Colormatrix
-		setEQ = Colorimetry.setColormatrix(setEQ);
-		
-		//Rotate
-		if (Shutter.caseRotate.isSelected() || Shutter.caseMiror.isSelected())
-			setEQ = settings.Image.setRotate(setEQ);
-		
-		//Colorimetry
-		if (Shutter.caseEnableColorimetry.isSelected())
-		{			
-			String color = Colorimetry.setEQ(false);
-						
-			if (setEQ != "" && color != "")
-			{
-				setEQ += "," + color;
-			}
-			else if (color != "")
-			{
-				setEQ += color;
-			}
-			
-			if (Shutter.sliderAngle.getValue() != 0)
-			{
-				if (setEQ.contains("scale"))
-				{
-					setEQ = setEQ.replace("scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight,  "scale=" + player.getWidth() + ":" + player.getHeight());
-				}
-				else
-				{
-					setEQ += ",scale=" + player.getWidth() + ":" + player.getHeight();
-				}
-			}
-		}
-				
-		//Deflicker			
-		setEQ = Corrections.setDeflicker(setEQ);
-			
-		//Deband			
-		setEQ = Corrections.setDeband(setEQ);
-				 
-		//Details			
-		setEQ = Corrections.setDetails(setEQ);				
-											            	
-		//Denoise			
-		setEQ = Corrections.setDenoiser(setEQ);
-		
-		//Exposure
-		if (preview == null) //Show only on playing
-			setEQ = Corrections.setSmoothExposure(setEQ);	
-		
-		//Limiter
-		setEQ = Corrections.setLimiter(setEQ);
-
-		//Fade-in Fade-out
-		if (Shutter.caseVideoFadeIn.isSelected() || Shutter.caseVideoFadeOut.isSelected())
-		{
-			setEQ = Transitions.setVideoFade(setEQ, true);
-		}
-		
-		/*
-		//Interpolation
-		setEQ = AdvancedFeatures.setInterpolation(setEQ);
-		
-		//Slow motion
-		setEQ = AdvancedFeatures.setSlowMotion(setEQ);
-							
-        //PTS
-		setEQ = AdvancedFeatures.setPTS(setEQ);		      		                     	
-
-		//Conform
-		setEQ = AdvancedFeatures.setConform(setEQ);
-		*/
-								
-		if (setEQ.isEmpty() == false)
-		{
-			filter += "," + setEQ;
 		}
 		
 		//Add filters
@@ -6715,13 +6719,7 @@ public class VideoPlayer {
 				
 				if (Shutter.inputDeviceIsRunning)
 				{
-					if (setEQ.isEmpty() == false)
-					{
-						loadImage(false);
-						waveformIcon.setVisible(false);
-					}
-					else
-						playerFreeze();
+					playerFreeze();
 				}
 				else if (fileDuration <= 40)
 				{

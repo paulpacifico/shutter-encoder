@@ -21,6 +21,7 @@ package application;
 
 import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -52,6 +53,7 @@ import javax.swing.event.ChangeListener;
 public class Console extends JFrame {
 
 	public static JFrame frmConsole;
+	public static Rectangle savedBounds;
 	public static JTextArea consoleFFMPEG =  new JTextArea();
 	public static JTextArea consoleFFPLAY =  new JTextArea();
 	public static JTextArea consoleFFPROBE =  new JTextArea();
@@ -90,9 +92,18 @@ public class Console extends JFrame {
 			frmConsole.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
 		
 		frmConsole.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frmConsole.setSize(800, 670);
 		frmConsole.getContentPane().setLayout(null);
-		frmConsole.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frmConsole.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frmConsole.getHeight()) / 2);
+
+		if (savedBounds != null)
+		{
+			frmConsole.setBounds(savedBounds.getBounds());
+		}
+		else
+		{
+			frmConsole.setSize(800, 670);
+			frmConsole.getContentPane().setLayout(null);
+			frmConsole.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frmConsole.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frmConsole.getHeight()) / 2);
+		}
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "false");
 		
