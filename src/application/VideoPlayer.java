@@ -958,7 +958,7 @@ public class VideoPlayer {
 	
 	public static BufferedImage readFrame(BufferedInputStream is, int width, int height, boolean RGB) throws IOException {
 				
-		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false
+		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
 		&& Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
 		{
 			int w = width;
@@ -2368,7 +2368,7 @@ public class VideoPlayer {
 				}	
 				
 				//Deinterlacer		
-				String deinterlace = AdvancedFeatures.setDeinterlace(true);		
+				String deinterlace = AdvancedFeatures.setDeinterlace(true, Settings.btnPreviewOutput.isSelected());		
 				if (mouseIsPressed)
 				{
 					deinterlace = "";
@@ -2378,12 +2378,6 @@ public class VideoPlayer {
 				if (deinterlace != "")
 				{
 					deinterlace = " -vf " + deinterlace;
-					
-					//Removing GPU deinterlacer
-					if (Settings.btnPreviewOutput.isSelected())
-					{
-						deinterlace = deinterlace.replace(AdvancedFeatures.setDeinterlace(true), "bwdif");
-					}
 				}
 				
 				String device = "";
@@ -5863,6 +5857,11 @@ public class VideoPlayer {
 	
 	private static String setFilter(boolean noGPU, boolean noDeinterlacing) {
 				
+		if (Settings.btnPreviewOutput.isSelected() || mouseIsPressed)
+		{
+			noGPU = true;
+		}
+		
 		//Subtitles
 		String background = "" ;
 		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
@@ -5910,9 +5909,9 @@ public class VideoPlayer {
 		
 		//Deinterlacer		
 		String deinterlace = "";
-		if (noDeinterlacing == false && mouseIsPressed  == false)
+		if (noDeinterlacing == false && mouseIsPressed == false)
 		{
-			deinterlace = AdvancedFeatures.setDeinterlace(true);
+			deinterlace = AdvancedFeatures.setDeinterlace(true, noGPU);
 		}
 			
 		//Global Filter
@@ -5935,17 +5934,11 @@ public class VideoPlayer {
 		//Crop & Pad
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
 		{				
-			filter = settings.Image.setScale(filter, false);
+			filter = settings.Image.setScale(filter, false, noGPU);
 			
 			if (filter.contains("scale"))
 			{
-				filter += settings.Image.setPad("", false);
-			}
-			
-			//Removing GPU scaling
-			if (Settings.btnPreviewOutput.isSelected())
-			{
-				filter = filter.replace("scale_cuda", "scale").replace("vpp_amf", "scale").replace("scale_qsv", "scale").replace("scale_vt", "scale").replace("scale_vulkan", "scale").replace(",hwdownload,format=" + bitDepth, "");
+				filter += settings.Image.setPad("", false, noGPU);
 			}
 		}
 		else			
@@ -6002,7 +5995,7 @@ public class VideoPlayer {
 		//Rotate
 		if (Shutter.caseRotate.isSelected() || Shutter.caseMiror.isSelected())
 		{
-			filter = settings.Image.setRotate(filter, mouseIsPressed);
+			filter = settings.Image.setRotate(filter, noGPU);
 		}
 		
 		//Colorimetry
@@ -6042,7 +6035,7 @@ public class VideoPlayer {
 		filter = Corrections.setDetails(filter);				
 											            	
 		//Denoise			
-		filter = Corrections.setDenoiser(filter);
+		filter = Corrections.setDenoiser(filter, noGPU);
 		
 		//Exposure
 		if (preview == null) //Show only on playing
@@ -6080,25 +6073,15 @@ public class VideoPlayer {
 		String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 		
 		//Checking if last filter is GPU accelerated
-		boolean filterGPU = false;
-		if (filter != "")
-		{
-			String s[] = filter.split(",");		
-			
-			if (s.length > 2 && s[s.length - 2].equals("hwdownload"))
-				filterGPU = true;
-		}
-		else //no filter before
-			filterGPU = true;
-			
+		boolean filterGPU = FunctionUtils.checkPreviousFilter(filter);
+		
 		if (Shutter.inputDeviceIsRunning)
 		{
 			filter += "null";
 		}
-		else if (filterGPU && noGPU == false && FFPROBE.isRotated == false && previousFrame == false && mouseIsPressed == false
-		&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false		
-		&& (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) || Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
-		&& Settings.btnPreviewOutput.isSelected() == false && Colorimetry.setInputCodec(extension) == "")
+		else if (filterGPU && noGPU == false && FFPROBE.isRotated == false && previousFrame == false
+		&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
+		&& Colorimetry.setInputCodec(extension) == "")
 		{
 			if (filter != "") filter += ",";
 			

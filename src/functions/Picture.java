@@ -132,13 +132,13 @@ public class Picture extends Shutter {
 						//Date filter
 						if (Filter.dateFilter(file) == false)
 							continue;
-																		
-			            //Deinterlace
-						String filterComplex = setDeinterlace(extension, isRaw);
-
+										
 						//No GPU acceleration when using this function
 						FFMPEG.isGPUCompatible = false;
 						
+			            //Deinterlace
+						String filterComplex = setDeinterlace(extension, isRaw);
+												
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
 						
@@ -164,7 +164,7 @@ public class Picture extends Shutter {
 		            	filterComplex = Corrections.setDetails(filterComplex);				
 														            	
 						//Denoise
-			    		filterComplex = Corrections.setDenoiser(filterComplex);
+			    		filterComplex = Corrections.setDenoiser(filterComplex, true);
 			    		
 			    		//Exposure
 						filterComplex = Corrections.setSmoothExposure(filterComplex);	
@@ -196,8 +196,8 @@ public class Picture extends Shutter {
 				        //Scaling
 				        if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Set scaling before or after depending on using a pad or stretch mode		
 			        	{
-				        	filterComplex = Image.setScale(filterComplex, false);
-				        	filterComplex = Image.setPad(filterComplex, false);		
+				        	filterComplex = Image.setScale(filterComplex, false, true);
+				        	filterComplex = Image.setPad(filterComplex, false, true);		
 			        	}
 				        
 				        //GIF Paletteuse

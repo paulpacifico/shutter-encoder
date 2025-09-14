@@ -125,7 +125,10 @@ public class Corrections extends Shutter {
 		return filterComplex;
 	}
 	
-	public static String setDenoiser(String filterComplex) {
+	public static String setDenoiser(String filterComplex, boolean noGPU) {
+		
+		//Checking if last filter is GPU accelerated
+		boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
 		
 		if (Shutter.caseDenoise.isSelected())
 		{
@@ -137,6 +140,26 @@ public class Corrections extends Shutter {
 			if (filterComplex != "") filterComplex += ",";
 			
 			filterComplex += "nlmeans=s=" + value + ":p=3:r=" + r + ":pc=0";
+			
+			//Format
+			String bitDepth = "nv12";
+			if (FFPROBE.imageDepth == 10)
+			{
+				bitDepth = "p010";
+			}
+						
+			//GPU filter	
+			if (noGPU == false && filterGPU)
+			{
+				if (FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+				{
+					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+					
+					filterComplex = filterComplex.replace("nlmeans", "nlmeans_vulkan").replace(":pc=0", "");
+					
+					filterComplex += ",hwdownload,format=" + bitDepth;
+				}		
+			}
 		}
 		
 		return filterComplex;

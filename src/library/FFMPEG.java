@@ -1491,7 +1491,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		&& caseStabilisation.isSelected() == false)
 		{
 			//setScale gives already all the correct settings
-			if (settings.Image.setScale("", limitToFHD).contains("cuda"))
+			if (settings.Image.setScale("", limitToFHD, false).contains("cuda"))
 			{
 				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("yadif") == false)
 				{
@@ -1499,7 +1499,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
-			else if (settings.Image.setScale("", limitToFHD).contains("qsv"))
+			else if (settings.Image.setScale("", limitToFHD, false).contains("qsv"))
 			{
 				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("advanced") == false)
 				{
@@ -1507,7 +1507,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
-			else if (settings.Image.setScale("", limitToFHD).contains("vulkan"))
+			else if (settings.Image.setScale("", limitToFHD, false).contains("vulkan"))
 			{
 				if (comboForcerDesentrelacement.getModel().getSize() != 1 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
 				{
@@ -1533,7 +1533,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 		}	
 	}
-	
+		
 	public static String setGPUDevice(String filterComplex) {
 		
 		//GPU decoding

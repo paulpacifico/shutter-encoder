@@ -1216,6 +1216,24 @@ public class FunctionUtils extends Shutter {
 		return subsMapping;
 	}
 	
+	public static boolean checkPreviousFilter(String filter) {
+		
+		//Checking if last filter is GPU accelerated
+		if (filter != "")
+		{
+			String s[] = filter.split(",");		
+			
+			if (s.length > 2 && s[s.length - 2].equals("hwdownload"))
+			{
+				return true;
+			}
+			else
+				return false;
+		}		
+		else //no filter before
+			return true;		
+	}
+	
 	public static String setFilterComplex(String filterComplex, String audio, boolean picture) {
 
 		//No audio

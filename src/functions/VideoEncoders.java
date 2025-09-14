@@ -438,17 +438,17 @@ public class VideoEncoders extends Shutter {
 								case "Xvid":
 								case "DNxHR":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(true);									
+									filterComplex = AdvancedFeatures.setDeinterlace(true, false);									
 									break;
 								
 								case "MPEG-1":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(true);
+									filterComplex = AdvancedFeatures.setDeinterlace(true, false);
 									break;
 									
 								case "MPEG-2":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(false);								
+									filterComplex = AdvancedFeatures.setDeinterlace(false, false);								
 									break;
 								
 								case "DNxHD":
@@ -465,12 +465,12 @@ public class VideoEncoders extends Shutter {
 						            	case "175":
 						            	case "175 X":
 						            		
-						            		filterComplex = AdvancedFeatures.setDeinterlace(true);					            		
+						            		filterComplex = AdvancedFeatures.setDeinterlace(true, false);					            		
 					            			break;
 					            		
 					            		default:
 					            			
-					            			filterComplex = AdvancedFeatures.setDeinterlace(false);				            			
+					            			filterComplex = AdvancedFeatures.setDeinterlace(false, false);				            			
 				            				break;
 						            }
 									
@@ -487,7 +487,7 @@ public class VideoEncoders extends Shutter {
 								case "XDCAM HD422":
 								case "XDCAM HD 35":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(false);								
+									filterComplex = AdvancedFeatures.setDeinterlace(false, false);								
 									break;
 								
 								case "Blu-ray":
@@ -529,21 +529,21 @@ public class VideoEncoders extends Shutter {
 										
 										if (FFPROBE.imageResolution.equals("1440x1080"))
 										{
-											filterComplex = Image.setScale(filterComplex, false);	
-											filterComplex = Image.setPad(filterComplex, false);			
+											filterComplex = Image.setScale(filterComplex, false, false);	
+											filterComplex = Image.setPad(filterComplex, false, false);			
 										}
 										else
 										{
-											filterComplex = Image.setScale(filterComplex, true);	
-											filterComplex = Image.setPad(filterComplex, true);		
+											filterComplex = Image.setScale(filterComplex, true, false);	
+											filterComplex = Image.setPad(filterComplex, true, false);		
 										}
 										
 										break;
 										
 									default:
 										
-										filterComplex = Image.setScale(filterComplex, false);	
-										filterComplex = Image.setPad(filterComplex, false);			
+										filterComplex = Image.setScale(filterComplex, false, false);	
+										filterComplex = Image.setPad(filterComplex, false, false);			
 										break;
 								}	
 			        		}
@@ -586,7 +586,7 @@ public class VideoEncoders extends Shutter {
 		            	filterComplex = Corrections.setDetails(filterComplex);				
 														            	
 						//Denoise
-			    		filterComplex = Corrections.setDenoiser(filterComplex);
+			    		filterComplex = Corrections.setDenoiser(filterComplex, false);
 			    		
 			    		//Exposure
 						filterComplex = Corrections.setSmoothExposure(filterComplex);	
@@ -647,21 +647,21 @@ public class VideoEncoders extends Shutter {
 										
 										if (FFPROBE.imageResolution.equals("1440x1080"))
 										{
-											filterComplex = Image.setScale(filterComplex, false);	
-											filterComplex = Image.setPad(filterComplex, false);			
+											filterComplex = Image.setScale(filterComplex, false, false);	
+											filterComplex = Image.setPad(filterComplex, false, false);			
 										}
 										else
 										{
-											filterComplex = Image.setScale(filterComplex, true);	
-											filterComplex = Image.setPad(filterComplex, true);		
+											filterComplex = Image.setScale(filterComplex, true, false);	
+											filterComplex = Image.setPad(filterComplex, true, false);		
 										}
 										
 										break;
 										
 									default:
 										
-										filterComplex = Image.setScale(filterComplex, false);	
-										filterComplex = Image.setPad(filterComplex, false);			
+										filterComplex = Image.setScale(filterComplex, false, false);	
+										filterComplex = Image.setPad(filterComplex, false, false);			
 										break;
 								}	
 			        		}
@@ -931,7 +931,7 @@ public class VideoEncoders extends Shutter {
 							{
 								String filter = "";
 								
-								filter = AdvancedFeatures.setDeinterlace(true);
+								filter = AdvancedFeatures.setDeinterlace(true, false);
 								filter = Image.setCrop(filter, file);
 								
 								if (filter != "")

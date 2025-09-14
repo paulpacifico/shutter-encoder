@@ -26,7 +26,7 @@ import library.FFPROBE;
 
 public class AdvancedFeatures extends Shutter {
 		
-	public static String setDeinterlace(boolean progressiveOutput) {		
+	public static String setDeinterlace(boolean progressiveOutput, boolean noGPU) {		
 		
 		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
 		{
@@ -56,7 +56,7 @@ public class AdvancedFeatures extends Shutter {
 				}
 			}
 						
-			if (FFMPEG.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false)
+			if (FFMPEG.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
 			{
 				//Format
 				String bitDepth = "nv12";

@@ -115,16 +115,7 @@ public class Image extends Shutter {
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) || VideoPlayer.fullscreenPlayer)
 		{
 			//Checking if last filter is GPU accelerated
-			boolean filterGPU = false;
-			if (filterComplex != "")
-			{
-				String s[] = filterComplex.split(",");		
-				
-				if (s.length > 2 && s[s.length - 2].equals("hwdownload"))
-					filterGPU = true;
-			}
-			else //no filter before
-				filterGPU = true;
+			boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
 			
 			String rotate = "";
 			if (caseRotate.isSelected()) 
@@ -175,7 +166,7 @@ public class Image extends Shutter {
 			//GPU filter	
 			if (noGPU == false && filterGPU)
 			{
-				if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))))
+				if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				{				
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -188,7 +179,7 @@ public class Image extends Shutter {
 					
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
-				else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))))
+				else if (FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -217,7 +208,7 @@ public class Image extends Shutter {
 			return " -s 1920x1080";
 	}
 	
-	public static String setScale(String filterComplex, boolean limitToFHD) {	
+	public static String setScale(String filterComplex, boolean limitToFHD, boolean noGPU) {	
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
@@ -393,7 +384,7 @@ public class Image extends Shutter {
 			useGPU = false;
 		}
 					
-		if (useGPU && filterComplex.contains("scale=") && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && VideoPlayer.mouseIsPressed == false)
+		if (useGPU && filterComplex.contains("scale=") && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && noGPU == false)
 		{
 			//Format
 			String bitDepth = "nv12";
@@ -448,7 +439,10 @@ public class Image extends Shutter {
 		return filterComplex;
 	}
 	
-	public static String setPad(String filterComplex, boolean limitToFHD) {	
+	public static String setPad(String filterComplex, boolean limitToFHD, boolean noGPU) {	
+		
+		//Checking if last filter is GPU accelerated
+		boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
@@ -576,6 +570,24 @@ public class Image extends Shutter {
 				}	
     		}
 			
+		}
+		
+		//Format
+		String bitDepth = "nv12";
+		if (FFPROBE.imageDepth == 10)
+		{
+			bitDepth = "p010";
+		}
+					
+		//GPU filter	
+		if (noGPU == false && filterComplex.contains("pad=") && filterGPU)
+		{
+			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+			{
+				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+				
+				filterComplex = filterComplex.replace("pad", "pad_cuda") + ",hwdownload,format=" + bitDepth;
+			}	
 		}
 		
 		return filterComplex;
