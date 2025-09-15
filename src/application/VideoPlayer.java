@@ -5839,7 +5839,7 @@ public class VideoPlayer {
 		try {
 			
 			writeCurrentSubs(playerCurrentFrame, true);
-			loadImage(true);
+			//loadImage(true);
 
 		} catch (Exception e) {
 			
@@ -6069,8 +6069,6 @@ public class VideoPlayer {
 		{
 			algorithm = "neighbor";
 		}
-
-		String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 		
 		//Checking if last filter is GPU accelerated
 		boolean filterGPU = FunctionUtils.checkPreviousFilter(filter);
@@ -6081,7 +6079,7 @@ public class VideoPlayer {
 		}
 		else if (filterGPU && noGPU == false && FFPROBE.isRotated == false && previousFrame == false
 		&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-		&& Colorimetry.setInputCodec(extension) == "")
+		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
 		{
 			if (filter != "") filter += ",";
 			

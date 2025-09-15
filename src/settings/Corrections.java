@@ -149,15 +149,13 @@ public class Corrections extends Shutter {
 			}
 						
 			//GPU filter	
-			if (noGPU == false && filterGPU)
+			if (noGPU == false && filterGPU && filterComplex.contains("nlmeans"))
 			{
 				if (FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
-					filterComplex = filterComplex.replace("nlmeans", "nlmeans_vulkan").replace(":pc=0", "");
-					
-					filterComplex += ",hwdownload,format=" + bitDepth;
+					filterComplex = filterComplex.replace("nlmeans", "nlmeans_vulkan").replace(":pc=0", "") + ",hwdownload,format=" + bitDepth;
 				}		
 			}
 		}

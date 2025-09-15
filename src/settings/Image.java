@@ -164,7 +164,7 @@ public class Image extends Shutter {
 			}
 						
 			//GPU filter	
-			if (noGPU == false && filterGPU)
+			if (noGPU == false && filterGPU && (filterComplex.contains("transpose") || filterComplex.contains("hflip")))
 			{
 				if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				{				
@@ -209,6 +209,9 @@ public class Image extends Shutter {
 	}
 	
 	public static String setScale(String filterComplex, boolean limitToFHD, boolean noGPU) {	
+		
+		//Checking if last filter is GPU accelerated
+		boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
@@ -267,16 +270,27 @@ public class Image extends Shutter {
         	float ir = (float) iw / ih;
         	float or = (float) ow / oh;
         	
-        	boolean upscale = true;
+    		//Ratio comparison
+        	if (ir != or 
+        	&& (caseAddTimecode.isSelected()
+        	|| caseShowTimecode.isSelected()
+        	|| caseAddText.isSelected()
+        	|| caseShowFileName.isSelected()    	
+        	|| caseAddWatermark.isSelected()))
+        	{
+        		noGPU = true;
+        	}
+        	
+        	boolean allowHigherScale = true;
     		if (btnNoUpscale.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false && comboResolution.getSelectedItem().toString().contains("%") == false)
     		{
     			if (iw < ow || ih < oh)
     			{
-    				upscale = false;
+    				allowHigherScale = false;
     			}
     		}
     		
-			if (upscale)
+			if (allowHigherScale)
 			{
 	        	if (filterComplex != "") filterComplex += ",";
 				
@@ -352,6 +366,17 @@ public class Image extends Shutter {
         	float ir = (float) iw / ih;
         	float or = (float) ow / oh;
         	
+    		//Ratio comparison
+        	if (ir != or 
+        	&& (caseAddTimecode.isSelected()
+        	|| caseShowTimecode.isSelected()
+        	|| caseAddText.isSelected()
+        	|| caseShowFileName.isSelected()    	
+        	|| caseAddWatermark.isSelected()))
+        	{
+        		noGPU = true;
+        	}
+        	
         	boolean upscale = true;
     		if (btnNoUpscale.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false && comboResolution.getSelectedItem().toString().contains("%") == false)
     		{
@@ -376,15 +401,10 @@ public class Image extends Shutter {
 		{
 			filterComplex += "scale=256:256";
 		}
-		
-		//Not compatible with GPU filtering
-		boolean useGPU = true;
-		if (FFMPEG.isGPUCompatible == false || caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || caseStabilisation.isSelected())
-		{
-			useGPU = false;
-		}
-					
-		if (useGPU && filterComplex.contains("scale=") && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && noGPU == false)
+						
+		//GPU scaling
+		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=") && noGPU == false && filterGPU
+		&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false)
 		{
 			//Format
 			String bitDepth = "nv12";
@@ -410,7 +430,7 @@ public class Image extends Shutter {
 				
 				filterComplex = filterComplex.replace("scale=", "scale_cuda=") + ",hwdownload,format=" + bitDepth;	
 			}
-			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
@@ -422,13 +442,13 @@ public class Image extends Shutter {
 				
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vt=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false && lblPad.getText().equals(language.getProperty("lblCrop")) == false)
+			else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				

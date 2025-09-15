@@ -416,13 +416,10 @@ public class VideoEncoders extends Shutter {
 			            
 			            //EXR gamma
 						String inputCodec = Colorimetry.setInputCodec(extension);
-						
-						//Can set isGPUCompatible to false so it need to be called before any GPU filtering
-						setScalingFirst();
-			        
+									        
 				        //Deinterlace
 						String filterComplex = "";	
-						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Deinterlacing is made before upscaling
+						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Deinterlacing is not made before upscaling
 						{
 							switch (comboFonctions.getSelectedItem().toString())
 							{
@@ -1212,74 +1209,63 @@ public class VideoEncoders extends Shutter {
 
 	public static boolean setScalingFirst() {
 		
-		try {
+		//Crop need to be before scaling
+		if (caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || caseStabilisation.isSelected())
+		{
+			return false;
+		}			
+		
+		//Set scaling before or after depending on using a pad or stretch mode
+		String i[] = FFPROBE.imageResolution.split("x");        
+		String o[] = FFPROBE.imageResolution.split("x");
+					
+		if (comboResolution.getSelectedItem().toString().contains("%"))
+		{
+			double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
 			
-			//Crop need to be before scaling
-			if (caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || caseStabilisation.isSelected())
+			o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
+			o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
+		}					
+		else if (comboResolution.getSelectedItem().toString().contains("x"))
+		{
+			if (comboResolution.getSelectedItem().toString().contains("AI"))
 			{
-				FFMPEG.isGPUCompatible = false;
-				return false;
-			}			
-			
-			//Set scaling before or after depending on using a pad or stretch mode
-			String i[] = FFPROBE.imageResolution.split("x");        
-			String o[] = FFPROBE.imageResolution.split("x");
-						
-			if (comboResolution.getSelectedItem().toString().contains("%"))
-			{
-				double value = (double) Integer.parseInt(comboResolution.getSelectedItem().toString().replace("%", "")) / 100;
-				
-				o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * value));
-				o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * value));
-			}					
-			else if (comboResolution.getSelectedItem().toString().contains("x"))
-			{
-				if (comboResolution.getSelectedItem().toString().contains("AI"))
+				if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 				{
-					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
-					{
-						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
-						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
-					}
-					else
-					{
-						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 4));
-						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 4));
-					}
+					o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
+					o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
 				}
 				else
-					o = comboResolution.getSelectedItem().toString().split("x");
+				{
+					o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 4));
+					o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 4));
+				}
 			}
 			else
-				return false;
-			
-			int iw = Integer.parseInt(i[0]);
-	    	int ih = Integer.parseInt(i[1]);          	
-	    	int ow = Integer.parseInt(o[0]);
-	    	int oh = Integer.parseInt(o[1]);        	
-	    	float ir = (float) iw / ih;
-	    	float or = (float) ow / oh;
-	
-	    	//Ratio comparison
-	    	if (ir != or 
-	    	&& (Shutter.caseAddTimecode.isSelected()
-	    	|| Shutter.caseShowTimecode.isSelected()
-	    	|| Shutter.caseAddText.isSelected()
-	    	|| Shutter.caseShowFileName.isSelected()    	
-	    	|| Shutter.caseAddWatermark.isSelected()))
-	    	{
-	    		FFMPEG.isGPUCompatible = false;
-	    		return false;
-	    	}
-	    	else
-	    		return true;
-	    	
+				o = comboResolution.getSelectedItem().toString().split("x");
 		}
-		catch (Exception e)
+		else
+			return false;
+		
+		int iw = Integer.parseInt(i[0]);
+    	int ih = Integer.parseInt(i[1]);          	
+    	int ow = Integer.parseInt(o[0]);
+    	int oh = Integer.parseInt(o[1]);        	
+    	float ir = (float) iw / ih;
+    	float or = (float) ow / oh;
+
+    	//Ratio comparison
+    	if (ir != or 
+    	&& (Shutter.caseAddTimecode.isSelected()
+    	|| Shutter.caseShowTimecode.isSelected()
+    	|| Shutter.caseAddText.isSelected()
+    	|| Shutter.caseShowFileName.isSelected()    	
+    	|| Shutter.caseAddWatermark.isSelected()))
     	{
-    		FFMPEG.isGPUCompatible = false;
     		return false;
     	}
+    	else
+    		return true;
 	
 	}
 	
