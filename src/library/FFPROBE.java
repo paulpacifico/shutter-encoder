@@ -1116,11 +1116,11 @@ public static boolean isRotated = false;
 					calcul = true;
 										
 					//Updating video file
-					if (Shutter.liste.getSize() != 0)
+					if (Shutter.list.getSize() != 0)
 					{
 						if (Shutter.scanIsRunning)
 						{
-							File dir = new File(Shutter.liste.firstElement());
+							File dir = new File(Shutter.list.firstElement());
 							for (File f : dir.listFiles())
 							{
 								if (f.isHidden() == false && f.isFile())
@@ -1221,7 +1221,7 @@ public static boolean isRotated = false;
 			else
 				multi = 1;
 			
-			if (Shutter.liste.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
+			if (Shutter.list.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
 			{
 				int h = VideoPlayer.durationH;
 				int min = VideoPlayer.durationM;

@@ -195,17 +195,17 @@ public class RecordInputDevice {
 
 			public void mouseClicked(MouseEvent e) {
 					
-					Shutter.liste.removeAllElements();
+					Shutter.list.removeAllElements();
 					
 					if (comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen"))
 					{
-						Shutter.liste.addElement("Capture.current.screen");
+						Shutter.list.addElement("Capture.current.screen");
 						if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
 							videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
 					}
 					else
 					{
-						Shutter.liste.addElement("Capture.input.device");
+						Shutter.list.addElement("Capture.input.device");
 						if (System.getProperty("os.name").contains("Windows"))
 							videoDeviceIndex = (comboScreenVideo.getSelectedIndex());
 						else
@@ -227,7 +227,7 @@ public class RecordInputDevice {
 					
 					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
 														
-					Shutter.liste.removeAllElements();					
+					Shutter.list.removeAllElements();					
 					Shutter.enableAll();
 					Shutter.progressBar1.setValue(0);
 			}
@@ -299,9 +299,9 @@ public class RecordInputDevice {
 
 				if (comboInputVideo.getSelectedIndex() > 0 || comboInputAudio.getSelectedIndex() > 0)
 				{					
-					Shutter.liste.removeAllElements();
+					Shutter.list.removeAllElements();
 					
-					Shutter.liste.addElement("Capture.input.device");
+					Shutter.list.addElement("Capture.input.device");
 					videoDeviceIndex = comboInputVideo.getSelectedIndex();
 					
 					//Second audio
@@ -322,7 +322,7 @@ public class RecordInputDevice {
 					else
 						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
 					
-					Shutter.liste.removeAllElements();					
+					Shutter.list.removeAllElements();					
 					Shutter.enableAll();
 					Shutter.progressBar1.setValue(0);
 				}
@@ -423,17 +423,17 @@ public class RecordInputDevice {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Shutter.liste.removeAllElements();
+				Shutter.list.removeAllElements();
 				
 				if (comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen"))
 				{
-					Shutter.liste.addElement("Capture.current.screen");
+					Shutter.list.addElement("Capture.current.screen");
 					if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
 						videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
 				}
 				else
 				{
-					Shutter.liste.addElement("Capture.input.device");
+					Shutter.list.addElement("Capture.input.device");
 					if (System.getProperty("os.name").contains("Windows"))
 						videoDeviceIndex = (comboScreenVideo.getSelectedIndex());
 					else
@@ -522,7 +522,7 @@ public class RecordInputDevice {
 	public static String setInputDevices() {
 		
 		String videoDevice = "";
-		if (Shutter.liste.getElementAt(0).equals("Capture.input.device"))
+		if (Shutter.list.getElementAt(0).equals("Capture.input.device"))
 		{
 			String getVideoDevices[] = FFMPEG.videoDevices.toString().split(":");
 			videoDevice = getVideoDevices[videoDeviceIndex];
@@ -565,7 +565,7 @@ public class RecordInputDevice {
 		Integer screenPositionX = allScreens[screenIndex].getDefaultConfiguration().getBounds().x;
 		Integer screenPositionY = allScreens[screenIndex].getDefaultConfiguration().getBounds().y;	
 		
-		if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
+		if (Shutter.list.getElementAt(0).equals("Capture.current.screen"))
 		{
 	        FFPROBE.imageWidth = screenWidth;
 	        FFPROBE.imageHeight = screenHeigth;
@@ -580,7 +580,7 @@ public class RecordInputDevice {
 		
 		if (System.getProperty("os.name").contains("Mac"))
 		{			
-			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
+			if (Shutter.list.getElementAt(0).equals("Capture.current.screen"))
 			{
 				if (setAudio != "") //Audio needs to be first for sync
 					return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
@@ -594,7 +594,7 @@ public class RecordInputDevice {
 		}
 		else if (System.getProperty("os.name").contains("Windows"))
 		{
-			if (Shutter.liste.getElementAt(0).equals("Capture.current.screen"))
+			if (Shutter.list.getElementAt(0).equals("Capture.current.screen"))
 			{				
 				if (setAudio != "") //Audio needs to be first for sync
 					return "-thread_queue_size 4096 -f dshow -i " + setAudio + " -thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"' + setSecondAudio;

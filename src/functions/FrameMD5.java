@@ -48,9 +48,9 @@ public class FrameMD5 extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
-				for (int i = 0 ; i < liste.getSize() ; i++)
+				for (int i = 0 ; i < list.getSize() ; i++)
 				{
-					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
+					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));		
 
 					if (file == null)
 						break;

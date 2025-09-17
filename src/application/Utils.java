@@ -571,7 +571,7 @@ public class Utils extends Shutter {
 			return "Scan...";
 
 		String labelName;
-		int total = liste.getSize();
+		int total = list.getSize();
 		if (total > 1 && total < 1000)
 			labelName = total + " " + language.getProperty("files");
 		else if (total <= 1)
@@ -601,55 +601,50 @@ public class Utils extends Shutter {
 				int s = f.getAbsoluteFile().toString().lastIndexOf('.');
 				String ext = f.getAbsoluteFile().toString().substring(s);
 				
-				if (f.getAbsoluteFile().toString().substring(s).toLowerCase().equals(comboFilter.getSelectedItem().toString())
-						|| comboFilter.getSelectedItem().toString().equals(language.getProperty("aucun"))
-						|| lblFilter.getText().equals(language.getProperty("lblFilter")) == false)
+				if (ext.equals(".enc")) 
 				{
-					if (ext.equals(".enc")) 
+					loadSettings(new File (f.getAbsoluteFile().toString()));
+				}
+				else if (f.isHidden() == false && f.getName().contains("."))
+				{			
+					if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
 					{
-						loadSettings(new File (f.getAbsoluteFile().toString()));
-					}
-					else if (f.isHidden() == false && f.getName().contains("."))
-					{			
-						if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
+						if (FunctionUtils.allowsInvalidCharacters == false) 
 						{
-							if (FunctionUtils.allowsInvalidCharacters == false) 
-							{
-								JOptionPane.showConfirmDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
-								JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
-								
-								FunctionUtils.allowsInvalidCharacters = true;
-							}
+							JOptionPane.showConfirmDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
+							JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
+							
+							FunctionUtils.allowsInvalidCharacters = true;
+						}
+					}
+					
+					if (Settings.btnExclude.isSelected())
+					{		
+						boolean allowed = true;
+						for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
+						{
+							if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+								allowed = false;
 						}
 						
-						if (Settings.btnExclude.isSelected())
-						{		
-							boolean allowed = true;
-							for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
-							{
-								if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
-									allowed = false;
-							}
-							
-							if (allowed)
-							{
-								Shutter.liste.addElement(f.getAbsoluteFile().toString());	
-								Shutter.addToList.setVisible(false);
-								Shutter.lblFiles.setText(Utils.filesNumber());
-							}
-						}
-						else
+						if (allowed)
 						{
-							Shutter.liste.addElement(f.getAbsoluteFile().toString());
+							Shutter.list.addElement(f.getAbsoluteFile().toString());	
 							Shutter.addToList.setVisible(false);
 							Shutter.lblFiles.setText(Utils.filesNumber());
 						}
+					}
+					else
+					{
+						Shutter.list.addElement(f.getAbsoluteFile().toString());
+						Shutter.addToList.setVisible(false);
+						Shutter.lblFiles.setText(Utils.filesNumber());
 					}
 				}
 			}
 		}
 		
-		lblFiles.setText(filesNumber());;
+		lblFiles.setText(filesNumber());
 	}
 	
 	public static void findDirectories(String path) {
@@ -664,7 +659,7 @@ public class Utils extends Shutter {
 			
 			if (f.isDirectory()) 
 			{
-				Shutter.liste.addElement(f.getAbsoluteFile().toString());
+				Shutter.list.addElement(f.getAbsoluteFile().toString());
 				Shutter.addToList.setVisible(false);
 				Shutter.lblFiles.setText(Utils.filesNumber());
 				
@@ -1646,7 +1641,7 @@ public class Utils extends Shutter {
 	
 		currentPreset = encFile.getName();
 		
-		if (liste.getSize() == 0)
+		if (list.getSize() == 0)
 		{
 			JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),	language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
 			Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

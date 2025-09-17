@@ -747,9 +747,9 @@ import javax.swing.JScrollPane;
 				Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 
 					
-				for (int i = 0 ; i < Shutter.liste.getSize() ; i++)
+				for (int i = 0 ; i < Shutter.list.getSize() ; i++)
 				{
-					File file = new File(Shutter.liste.getElementAt(i));
+					File file = new File(Shutter.list.getElementAt(i));
 					
 					if (i > 0)
 					{

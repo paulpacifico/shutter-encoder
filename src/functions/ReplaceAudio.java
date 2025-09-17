@@ -88,7 +88,7 @@ public class ReplaceAudio extends Shutter {
 			}
 			
 			String shortest = " -t " + shortestLength + "ms";
-			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || liste.getSize() < 2 || videoStream == liste.getSize())
+			if (comboFilter.getSelectedItem().toString().equals(language.getProperty("longest")) || list.getSize() < 2 || videoStream == list.getSize())
 				shortest = "";
 											
 			//Command				
@@ -146,17 +146,17 @@ public class ReplaceAudio extends Shutter {
 					
 					//Batch replace video analyze
 					videoStream = 0;							
-					if (liste.getSize() >= 2)
+					if (list.getSize() >= 2)
 					{								
-						for (int i = 0 ; i < liste.getSize() ; i++)
+						for (int i = 0 ; i < list.getSize() ; i++)
 						{
 							//Ignore mute tracks
-							if (liste.getElementAt(i).contains("lavfi") == false)
+							if (list.getElementAt(i).contains("lavfi") == false)
 							{
 								if (videoStream <= 1)
 								{
 									//Allows to get the shortest file duration
-									FFPROBE.Data(liste.getElementAt(i));
+									FFPROBE.Data(list.getElementAt(i));
 									
 									do {
 										Thread.sleep(100);
@@ -168,7 +168,7 @@ public class ReplaceAudio extends Shutter {
 									}
 								}
 								
-								if (FFPROBE.FindStreams(liste.getElementAt(i)))
+								if (FFPROBE.FindStreams(list.getElementAt(i)))
 								{
 									videoStream ++;				
 								}
@@ -182,19 +182,19 @@ public class ReplaceAudio extends Shutter {
 						//Start batch replace
 						if (videoStream > 1)
 						{
-							for (int i = 0 ; i < liste.getSize() ; i++)
+							for (int i = 0 ; i < list.getSize() ; i++)
 							{		
-								if (videoStream == liste.getSize()) //only video files in the list
+								if (videoStream == list.getSize()) //only video files in the list
 								{
-									videoFile = new File(liste.getElementAt(i));
+									videoFile = new File(list.getElementAt(i));
 									audioFiles = " -map 0:v? -map 0:a?";	
 								}								
 								else if (i % 2 == 0)
 								{
-									videoFile = new File(liste.getElementAt(i));
+									videoFile = new File(list.getElementAt(i));
 								
 									//Allows to get the shortest file duration
-									FFPROBE.Data(liste.getElementAt(i+1));
+									FFPROBE.Data(list.getElementAt(i+1));
 
 									do {
 										Thread.sleep(100);
@@ -215,15 +215,15 @@ public class ReplaceAudio extends Shutter {
 									}
 									else
 									{
-										audioFiles = " -i " + '"' + liste.getElementAt(i + 1)  + '"' + " -map 0:v -map 1:a";
-										audioExt = liste.getElementAt(i + 1).substring(liste.getElementAt(i + 1).lastIndexOf("."));
+										audioFiles = " -i " + '"' + list.getElementAt(i + 1)  + '"' + " -map 0:v -map 1:a";
+										audioExt = list.getElementAt(i + 1).substring(list.getElementAt(i + 1).lastIndexOf("."));
 									}
 								}	
 								else
 								{
 									if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) && caseChangeAudioCodec.isSelected() || caseChangeAudioCodec.isSelected())
 									{
-										videoFile = new File(liste.getElementAt(i));
+										videoFile = new File(list.getElementAt(i));
 									}
 									else									
 									{
@@ -245,12 +245,12 @@ public class ReplaceAudio extends Shutter {
 						}
 					}
 					
-					if (liste.getSize() <= 2 || videoStream == 1) //Replace one video file
+					if (list.getSize() <= 2 || videoStream == 1) //Replace one video file
 					{
-						if (liste.getSize() < 2)
+						if (list.getSize() < 2)
 						{	
-							videoFile = new File(liste.getElementAt(0));
-							if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) || (liste.getSize() == 1 && caseChangeAudioCodec.isSelected() == false))
+							videoFile = new File(list.getElementAt(0));
+							if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) || (list.getSize() == 1 && caseChangeAudioCodec.isSelected() == false))
 							{
 								audioFiles = " -map 0:v?";
 							}
@@ -274,24 +274,24 @@ public class ReplaceAudio extends Shutter {
 								else
 									offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 								
-								audioFiles = " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(0)  + '"' + " -map 0:v -map 1:a";
+								audioFiles = " -itsoffset " + offset + " -i " + '"' + list.getElementAt(0)  + '"' + " -map 0:v -map 1:a";
 							}
 						}	
 						else
 						{
-							videoFile = new File(liste.getElementAt(0));
+							videoFile = new File(list.getElementAt(0));
 							
-							if (liste.getElementAt(1).contains("lavfi")) //Mute track
+							if (list.getElementAt(1).contains("lavfi")) //Mute track
 							{
-								audioFiles = liste.getElementAt(1);
+								audioFiles = list.getElementAt(1);
 							}
 							else
-								audioFiles = " -i " + '"' + liste.getElementAt(1)  + '"';
+								audioFiles = " -i " + '"' + list.getElementAt(1)  + '"';
 							
 							//Ignore mute tracks
-							if (liste.getElementAt(1).contains("lavfi") == false)
+							if (list.getElementAt(1).contains("lavfi") == false)
 							{
-								audioExt = liste.getElementAt(1).substring(liste.getElementAt(1).lastIndexOf("."));								
+								audioExt = list.getElementAt(1).substring(list.getElementAt(1).lastIndexOf("."));								
 							}	
 							
 							float offset = 0;
@@ -316,7 +316,7 @@ public class ReplaceAudio extends Shutter {
 							
 							audioFiles += " -map 0:v -map 1:a";
 							
-							if (liste.getSize() > 2)
+							if (list.getSize() > 2)
 								audioFiles = setMulipleAudioFiles(videoFile, "", offset);
 															
 							do {
@@ -329,7 +329,7 @@ public class ReplaceAudio extends Shutter {
 					}
 							
 				if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFMPEG.error == false)
-					liste.clear();
+					list.clear();
 					
 				} catch (InterruptedException e1) {					
 					FFMPEG.error  = true;
@@ -341,31 +341,31 @@ public class ReplaceAudio extends Shutter {
 	
 	private static String setMulipleAudioFiles(File videoFile, String audioFiles, Float offset) {
 		
-		for (int i = 0 ; i < liste.getSize() ; i++)
+		for (int i = 0 ; i < list.getSize() ; i++)
 		{
-			if (liste.getElementAt(i).equals(" -f lavfi -i anullsrc=r=" + lbl48k.getSelectedItem().toString() + ":cl=mono")) //Si le fichier est une piste muette
+			if (list.getElementAt(i).equals(" -f lavfi -i anullsrc=r=" + lbl48k.getSelectedItem().toString() + ":cl=mono")) //Si le fichier est une piste muette
 			{
-				audioFiles += liste.getElementAt(i) ;
+				audioFiles += list.getElementAt(i) ;
 			}
-			else if (liste.getElementAt(i).equals(videoFile.toString()) == false) //Si le fichier n'est pas le fichier vidéo
+			else if (list.getElementAt(i).equals(videoFile.toString()) == false) //Si le fichier n'est pas le fichier vidéo
 			{
 				if (caseAudioOffset.isSelected())
 				{
-					audioFiles += " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(i)  + '"';
+					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';
 				}
 				else if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
 				{
 					offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
-					audioFiles += " -itsoffset " + offset + " -i " + '"' + liste.getElementAt(i)  + '"';
+					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';
 				}
 				else
-					audioFiles += " -i " + '"' + liste.getElementAt(i)  + '"';
+					audioFiles += " -i " + '"' + list.getElementAt(i)  + '"';
 			}
 	 	}
 							
 		audioFiles += " -map 0:v";
 		
-		for (int i = 1 ; i < liste.getSize() ; i++)
+		for (int i = 1 ; i < list.getSize() ; i++)
 		{
 			audioFiles +=  " -map " + i + ":a";
 		}

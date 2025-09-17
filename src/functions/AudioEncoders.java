@@ -64,7 +64,7 @@ public class AudioEncoders extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
-				for (int i = 0 ; i < liste.getSize() ; i++)
+				for (int i = 0 ; i < list.getSize() ; i++)
 				{
 					//Render queue only accept selected files
 					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
@@ -73,7 +73,7 @@ public class AudioEncoders extends Shutter {
 						
 						for (String input : Shutter.fileList.getSelectedValuesList())
 						{
-							if (liste.getElementAt(i).equals(input))
+							if (list.getElementAt(i).equals(input))
 							{
 								isSelected = true;
 							}
@@ -85,7 +85,7 @@ public class AudioEncoders extends Shutter {
 						}							
 					}
 										
-					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
+					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));		
 					
 					if (file == null)
 						break;
@@ -334,21 +334,21 @@ public class AudioEncoders extends Shutter {
 						{
 							String cmd = " " + audio + "-y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
-									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
-									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
-									" -i " + '"' + liste.getElementAt(2) + '"' + InputAndOutput.outPoint +
+									" -i " + '"' + list.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + list.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + list.getElementAt(2) + '"' + InputAndOutput.outPoint +
 									cmd + '"'  + fileOut + '"');
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 						{
 							String cmd = " " + audio + "-y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
-									" -i " + '"' + liste.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
-									" -i " + '"' + liste.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
-									" -i " + '"' + liste.getElementAt(2) + '"' + InputAndOutput.outPoint + DRC +
-									" -i " + '"' + liste.getElementAt(3) + '"' + InputAndOutput.outPoint + DRC +
-									" -i " + '"' + liste.getElementAt(4) + '"' + InputAndOutput.outPoint + DRC +
-									" -i " + '"' + liste.getElementAt(5) + '"' + InputAndOutput.outPoint +
+									" -i " + '"' + list.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + list.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + list.getElementAt(2) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + list.getElementAt(3) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + list.getElementAt(4) + '"' + InputAndOutput.outPoint + DRC +
+									" -i " + '"' + list.getElementAt(5) + '"' + InputAndOutput.outPoint +
 									cmd + '"'  + fileOut + '"');
 						}
 						else
@@ -451,26 +451,26 @@ public class AudioEncoders extends Shutter {
 		}
 		else if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")))						
 		{
-			for (int n = 1 ; n < liste.size() ; n++)
+			for (int n = 1 ; n < list.size() ; n++)
 			{
-				audio += "-i " + '"' + liste.elementAt(n) + '"' + " ";
+				audio += "-i " + '"' + list.elementAt(n) + '"' + " ";
 			}
 			
 			if (FFPROBE.stereo)
 			{
-				audio += "-filter_complex amerge=inputs=" + liste.size() + audioFiltering + " -ac 2 ";
+				audio += "-filter_complex amerge=inputs=" + list.size() + audioFiltering + " -ac 2 ";
 			}
 			else
 			{
 				audio += "-filter_complex " + '"';
 				
-				if (liste.size() > 2)
+				if (list.size() > 2)
 				{
 					String left = "";
 					int cl = 0;
 					String right = "";
 					int cr = 0;
-					for (int n = 0 ; n < liste.size() ; n++)
+					for (int n = 0 ; n < list.size() ; n++)
 					{
 						if (n % 2 == 0) //les chiffres paires à gauche
 						{
@@ -501,12 +501,12 @@ public class AudioEncoders extends Shutter {
 		}
 		else if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("mono")))						
 		{
-			for (int n = 1 ; n < liste.size() ; n++)
+			for (int n = 1 ; n < list.size() ; n++)
 			{
-				audio += "-i " + '"' + liste.elementAt(n) + '"' + " ";
+				audio += "-i " + '"' + list.elementAt(n) + '"' + " ";
 			}
 			
-			audio += "-filter_complex amerge=inputs=" + liste.size() + audioFiltering + " -ac 1 ";
+			audio += "-filter_complex amerge=inputs=" + list.size() + audioFiltering + " -ac 1 ";
 			
 		}
 		else if (FFPROBE.stereo)

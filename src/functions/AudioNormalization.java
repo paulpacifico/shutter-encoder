@@ -49,9 +49,9 @@ public class AudioNormalization extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
-				for (int i = 0 ; i < liste.getSize() ; i++)
+				for (int i = 0 ; i < list.getSize() ; i++)
 				{
-					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
+					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));		
 					
 					//Audio normalization from a video codec
 					if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)

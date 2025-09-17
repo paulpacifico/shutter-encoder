@@ -436,7 +436,7 @@ public class SubtitlesEmbed {
 		frame.setAlwaysOnTop(false);
 		
 		FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseSubtitles"),	FileDialog.LOAD);
-		dialog.setDirectory(new File(Shutter.liste.elementAt(0).toString()).getParent());
+		dialog.setDirectory(new File(Shutter.list.elementAt(0).toString()).getParent());
 		dialog.setFile("*.srt;*.vtt;*.ass;*.ssa;*.scc");
 		dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
 		dialog.setAlwaysOnTop(true);

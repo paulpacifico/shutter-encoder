@@ -614,7 +614,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				// On ajoute la vidéo
 				videoOutput = "[0:v]scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none[v]" + ";" + channels + "[v]";
 				
-				if (FFPROBE.channels == 0 || liste.getElementAt(0).equals("Capture.input.device")) {
+				if (FFPROBE.channels == 0 || list.getElementAt(0).equals("Capture.input.device")) {
 					videoOutput = "scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none" + '"';
 					audioOutput = "";
 				}
@@ -672,7 +672,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			else if (inputDeviceIsRunning)
 			{
-				if (liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && liste.getElementAt(0).equals("Capture.input.device") && RecordInputDevice.audioDeviceIndex > 0)
+				if (list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && list.getElementAt(0).equals("Capture.input.device") && RecordInputDevice.audioDeviceIndex > 0)
 					cmd = cmd.replace("0:v", "1:v");	
 				
 				if (overlayDeviceIsRunning && audioOutput == "")
@@ -2101,7 +2101,7 @@ public static StringBuilder errorLog = new StringBuilder();
 							
 			if (caseEnableSequence.isSelected())
 			{
-				fileLength = (int) (liste.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
+				fileLength = (int) (list.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
 			}
 			else if (FFPROBE.totalLength <= 40) //Image
 			{

@@ -498,6 +498,8 @@ public class Update {
 	@SuppressWarnings("deprecation")
 	public static void HTTPDownload(String address, String destination) {
 	
+		cancelled = false;
+		
 		OutputStream out = null;
         URLConnection conn = null;
         InputStream in = null;
@@ -513,6 +515,9 @@ public class Update {
 	            int numRead;
 	            long numWritten = 0;
 	            long fileSize = conn.getContentLength();
+	            
+	            if (destination.contains("ggml"))
+	            	fileSize = WHISPER.modelSize;
 
 	            while ((numRead = in.read(buffer)) != -1)
 	            {

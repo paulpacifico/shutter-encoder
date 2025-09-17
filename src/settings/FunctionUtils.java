@@ -276,9 +276,9 @@ public class FunctionUtils extends Shutter {
 
 			if (actualScanningFile == null)
 			{	
-				for (int i = 0 ; i < liste.getSize() ; i ++)
+				for (int i = 0 ; i < list.getSize() ; i ++)
 				{							
-					File dir = new File(liste.getElementAt(i));
+					File dir = new File(list.getElementAt(i));
 					btnStart.setEnabled(false);
 
 					for (File file : dir.listFiles())
@@ -316,16 +316,16 @@ public class FunctionUtils extends Shutter {
 							if (file.isDirectory() && file.isHidden() == false && file.getName().equals("completed") == false && file.getName().equals("error") == false)
 							{
 								boolean addFolder = true;
-								for (int f = 0 ; f < liste.getSize() ; f++)
+								for (int f = 0 ; f < list.getSize() ; f++)
 								{
-									if (liste.getElementAt(f).equals(file.toString()))
+									if (list.getElementAt(f).equals(file.toString()))
 									{
 										addFolder = false;
 									}									
 								}
 								
 								if (addFolder)
-									liste.addElement(file.toString());
+									list.addElement(file.toString());
 							}
 							
 							continue;
@@ -574,12 +574,12 @@ public class FunctionUtils extends Shutter {
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
 			PrintWriter writer = new PrintWriter(concatFile, "UTF-8");      
 			
-			for (int i = 0 ; i < liste.getSize() ; i++)
+			for (int i = 0 ; i < list.getSize() ; i++)
 			{				
 				//Scanning
 				if (Settings.btnWaitFileComplete.isSelected())
 	            {
-					File file = new File(liste.getElementAt(i));
+					File file = new File(list.getElementAt(i));
 					
 					if (waitFileCompleted(file) == false)
 						break;
@@ -588,7 +588,7 @@ public class FunctionUtils extends Shutter {
 				
 				if (Settings.btnSetBab.isSelected())
 				{
-					FFPROBE.Data(liste.getElementAt(i));
+					FFPROBE.Data(list.getElementAt(i));
 					do {
 						try {
 							Thread.sleep(1);
@@ -608,10 +608,10 @@ public class FunctionUtils extends Shutter {
 				else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 				{
 					FFPROBE.currentFPS = 25.0f; //Important
-					mergeDuration = (int) (Shutter.liste.getSize() * ((float) 1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
+					mergeDuration = (int) (Shutter.list.getSize() * ((float) 1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
 				}
 				
-				writer.println("file '" + liste.getElementAt(i) + "'");
+				writer.println("file '" + list.getElementAt(i) + "'");
 			}				
 			writer.close();
 									
@@ -1429,7 +1429,7 @@ public class FunctionUtils extends Shutter {
 				{ 
 					if (inputDeviceIsRunning)
 					{
-						if (liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+						if (list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
 							mapping = " -map a? -map 2?";
 						else
 							mapping = " -map a?";	
@@ -2272,7 +2272,7 @@ public class FunctionUtils extends Shutter {
 				millisecondsToTc = timecodeToMs + VideoPlayer.durationH * 3600000 + VideoPlayer.durationM * 60000 + VideoPlayer.durationS * 1000 + VideoPlayer.durationF * (int) (1000 / FFPROBE.currentFPS);
 			
 			if (caseEnableSequence.isSelected())
-				millisecondsToTc = Shutter.liste.getSize() * (int) (1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString()));
+				millisecondsToTc = Shutter.list.getSize() * (int) (1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString()));
 			
 			TCset1.setText(formatter.format(millisecondsToTc / 3600000));
 			TCset2.setText(formatter.format((millisecondsToTc / 60000) % 60));

@@ -37,15 +37,15 @@ public class AudioSettings extends Shutter {
 	public static String setAudioFiles(String audioFiles, File file) {
 		
     	int channels = 1;
-		for (int i2 = 0 ; i2 < liste.getSize() ; i2++)
+		for (int i2 = 0 ; i2 < list.getSize() ; i2++)
 		{
-			File audioName = new File(liste.getElementAt(i2));
+			File audioName = new File(list.getElementAt(i2));
 			audioName = new File(audioName.getName().substring(0, audioName.getName().lastIndexOf(".")));							
 			File videoName = new File(file.getName().substring(0, file.getName().lastIndexOf(".")));
 			
 			if (audioName.toString().contains(videoName.toString()) && audioName.toString().equals(videoName.toString()) == false) //L'audio contient le nom du fichier vidéo
 				{
-					audioFiles += " -i " + '"' + liste.getElementAt(i2) + '"' + " ";
+					audioFiles += " -i " + '"' + list.getElementAt(i2) + '"' + " ";
 					channels ++;
 				}
 		}
@@ -100,7 +100,7 @@ public class AudioSettings extends Shutter {
 			{
     			mapping = " -map a?";	
     			
-    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+    			if (inputDeviceIsRunning && list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
     			{
     				mapping += " -map 2?";
     			}
@@ -327,7 +327,7 @@ public class AudioSettings extends Shutter {
 		    				mapping = " -map a?";	
 		    			}
 		    			
-		    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+		    			if (inputDeviceIsRunning && list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
 		    			{
 		    				mapping += " -map 2?";
 		    			}
@@ -507,7 +507,7 @@ public class AudioSettings extends Shutter {
 		    				mapping = " -map a?";	
 		    			}
 		    			
-		    			if (inputDeviceIsRunning && liste.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+		    			if (inputDeviceIsRunning && list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
 		    			{
 		    				mapping += " -map 2?";
 		    			}

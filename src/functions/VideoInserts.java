@@ -52,29 +52,29 @@ public class VideoInserts extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 				
-				int toExtension = liste.firstElement().toString().lastIndexOf('.');
-				String extension =  liste.firstElement().substring(toExtension);		
+				int toExtension = list.firstElement().toString().lastIndexOf('.');
+				String extension =  list.firstElement().substring(toExtension);		
 				
 				//Liste de fichiers pour le Bout à Bout
 				File concatList = new File(""); 
 
 				try {
 					
-					String[] listeFichiers = new String[liste.getSize()];
+					String[] listeFichiers = new String[list.getSize()];
 					
 					//On récupère tous les plans avec leurs tc in et out
-					for (int i = 0 ; i < liste.getSize() ; i++)
+					for (int i = 0 ; i < list.getSize() ; i++)
 					{
 						//Scanning
 						if (Settings.btnWaitFileComplete.isSelected())
 			            {
-							File file = new File(liste.getElementAt(i));
+							File file = new File(list.getElementAt(i));
 							
 							if (FunctionUtils.waitFileCompleted(file) == false)
 								break;
 			            }
 						
-						FFPROBE.Data(liste.getElementAt(i));
+						FFPROBE.Data(list.getElementAt(i));
 						
 						do
 						{
@@ -82,13 +82,13 @@ public class VideoInserts extends Shutter {
 						}
 						while(FFPROBE.isRunning);
 						
-						listeFichiers[i] = tcInMs() + "=" + '"' + liste.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
+						listeFichiers[i] = tcInMs() + "=" + '"' + list.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
 					}
 																								
 					int temps = 0;	
 					String masterFile = listeFichiers[0];
 					//On cherche le fichier Master s'il y a insert au tout début
-					for (int i = 0 ; i < liste.getSize() ; i++)
+					for (int i = 0 ; i < list.getSize() ; i++)
 					{
 						String fichier[] = listeFichiers[i].split("=");
 						FFPROBE.Data(fichier[1].replace("\"", ""));
@@ -105,7 +105,7 @@ public class VideoInserts extends Shutter {
 					}
 																			
 					//On créé une liste trié par point d'entrée						
-					Integer[] array = new Integer [liste.getSize()];
+					Integer[] array = new Integer [list.getSize()];
 					for (int i = 0 ; i < listeFichiers.length; i++)
 					{
 						String timeIn[] = listeFichiers[i].split("=");
@@ -161,7 +161,7 @@ public class VideoInserts extends Shutter {
 					Arrays.sort(array);
 					
 					//On tri notre liste de fichier principale grâce à la liste ci-dessus
-					String[] listeFichiersSorted = new String[liste.getSize()];
+					String[] listeFichiersSorted = new String[list.getSize()];
 					listeFichiersSorted[0] = masterFile;
 					int f = 1;
 					for (int i = 0 ; i < array.length; i++)
@@ -169,7 +169,7 @@ public class VideoInserts extends Shutter {
 						for (int i2 = 0 ; i2 < listeFichiers.length; i2++)
 						{
 							String timeIn[] = listeFichiers[i2].split("=");
-							if (timeIn[0].equals(array[i].toString()) && listeFichiers[i2].equals(masterFile) == false && f < liste.getSize())
+							if (timeIn[0].equals(array[i].toString()) && listeFichiers[i2].equals(masterFile) == false && f < list.getSize())
 							{
 								String s[] = listeFichiers[i2].split("=");
 								String withTempFolder = '"' + temp.toString() + "/" + new File(s[1].replace("\"", "")).getName() + '"';

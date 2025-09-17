@@ -259,10 +259,10 @@ public class Shutter {
 	private static ImageIcon mailIcon;
 	private static ImageIcon streamIcon;
 
-	public static DefaultListModel<String> liste = new DefaultListModel<String>();
+	public static DefaultListModel<String> list = new DefaultListModel<String>();
 	protected static PopupMenu dropFiles;
 	public static JList<String> fileList;
-	static JLabel addToList = new JLabel();
+	public static JLabel addToList = new JLabel();
 	public static JComboBox<String[]> comboFonctions;
 	public static String[] functionsList;
 
@@ -921,10 +921,7 @@ public class Shutter {
 
 		// Initialize FFmpeg path
 		FFMPEG.getFFmpegPath();
-		
-		//Retrieve whisper model path
-		WHISPER.getWhisperModel();
-		
+				
 		//Check CPU
 		FFMPEG.checkCPUInfo();
 		
@@ -1162,7 +1159,7 @@ public class Shutter {
 						}
 					}
 
-					if (VideoPlayer.btnPlay.isVisible() && liste.getSize() > 0) {
+					if (VideoPlayer.btnPlay.isVisible() && list.getSize() > 0) {
 						VideoPlayer.btnPlay.requestFocus();
 					} else {
 						frame.requestFocus();
@@ -1170,8 +1167,52 @@ public class Shutter {
 					
 					//Whisper model
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")))
-					{								
-						WHISPER.downloadModel();
+					{		
+						File transcriberApp = null;
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							transcriberApp = new File("C:\\Program Files\\Shutter Transcriber");							
+							if (transcriberApp.exists())
+							{
+								WHISPER.PathToWHISPER = transcriberApp.toString() + "/Library/whisper-cli.exe";				
+							}
+							else
+								transcriberApp = null;
+						}
+						else if (System.getProperty("os.name").contains("Mac"))
+						{
+							transcriberApp = new File("/Applications/Shutter Transcriber.app");
+							if (transcriberApp.exists())
+							{
+								WHISPER.PathToWHISPER = transcriberApp.toString() +  "/Contents/Resources/Library/whisper-cli";
+							}
+							else
+								transcriberApp = null;
+						}
+						
+						if (transcriberApp != null)
+						{
+							WHISPER.downloadModel();
+						}
+						else
+						{
+							int q = JOptionPane.showConfirmDialog(frame, "This feature requires downloading Shutter Transcriber. \nDo you want to download it now?",
+							language.getProperty("functionTranscribe"), JOptionPane.YES_NO_OPTION,
+							JOptionPane.PLAIN_MESSAGE);
+
+							if (q == JOptionPane.YES_OPTION)
+							{
+								try {
+									Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=USD&amount=10&source=url"));
+								} catch (IOException | URISyntaxException er) {}								
+							}
+							else
+							{
+								comboFonctions.removeItem(language.getProperty("functionTranscribe"));
+							}
+							
+							comboFonctions.setSelectedItem("");
+						}
 					}
 				}
 			}
@@ -1488,7 +1529,7 @@ public class Shutter {
 
 					if (ext.equals(".enc") == false && droppedFiles.isHidden() == false
 							&& droppedFiles.getName().contains("."))
-						liste.addElement(droppedFiles.toString());
+						list.addElement(droppedFiles.toString());
 				} else
 					Utils.findFiles(droppedFiles.toString());
 			}
@@ -1556,7 +1597,7 @@ public class Shutter {
 						if (Settings.btnLoadPreset.isSelected() == false)
 							break;
 						
-					} while (liste.getSize() == 0 || FFMPEG.isRunning || FFPROBE.isRunning);
+					} while (list.getSize() == 0 || FFMPEG.isRunning || FFPROBE.isRunning);
 
 					if (Settings.btnLoadPreset.isSelected())
 					{
@@ -1803,8 +1844,7 @@ public class Shutter {
 
 					try {
 						Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/documentation/"));
-					} catch (IOException | URISyntaxException er) {
-					}
+					} catch (IOException | URISyntaxException er) {}
 				}
 			}
 
@@ -2048,7 +2088,7 @@ public class Shutter {
 				new Color(235, 235, 240)));
 		frame.getContentPane().add(grpChooseFiles);
 
-		fileList = new JList<String>(liste);
+		fileList = new JList<String>(list);
 		fileList.setBackground(Utils.c35);
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
@@ -2077,7 +2117,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (liste.getSize() > 0 && comboFonctions.getSelectedItem().toString()
+				if (list.getSize() > 0 && comboFonctions.getSelectedItem().toString()
 						.equals(Shutter.language.getProperty("functionSubtitles")) == false) {
 					// Screen record
 					if (inputDeviceIsRunning)
@@ -2101,7 +2141,7 @@ public class Shutter {
 
 					FunctionUtils.watchFolder.setLength(0);
 
-					liste.clear();
+					list.clear();
 					addToList.setVisible(true);
 					lblFilesEnded.setVisible(false);
 
@@ -2145,14 +2185,14 @@ public class Shutter {
 		grpChooseFiles.add(scrollBar);
 
 		// Drag & Drop
-		fileList.setTransferHandler(new ListeFileTransferHandler());
+		fileList.setTransferHandler(new ListFileTransferHandler());
 
 		fileList.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
 
-				if (liste.getSize() == 0) {
+				if (list.getSize() == 0) {
 					if (inputDeviceIsRunning)
 						caseDisplay.setSelected(false);
 
@@ -2176,14 +2216,14 @@ public class Shutter {
 
 				if (scanIsRunning == false) {
 					if ((e.getKeyCode() == KeyEvent.VK_A) && ((e.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0))
-						fileList.setSelectionInterval(0, liste.getSize() - 1);
+						fileList.setSelectionInterval(0, list.getSize() - 1);
 
-					if (e.getKeyCode() == 127 && liste.getSize() > 0 || e.getKeyCode() == 8 && liste.getSize() > 0) {
+					if (e.getKeyCode() == 127 && list.getSize() > 0 || e.getKeyCode() == 8 && list.getSize() > 0) {
 						do {
-							liste.remove(fileList.getSelectedIndex());
+							list.remove(fileList.getSelectedIndex());
 						} while (fileList.getSelectedIndices().length > 0);
 
-						if (liste.getSize() == 0)
+						if (list.getSize() == 0)
 							addToList.setVisible(true);
 
 						lblFiles.setText(Utils.filesNumber());
@@ -2221,7 +2261,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				liste.addElement(" -f lavfi -i anullsrc=r=" + lbl48k.getSelectedItem().toString() + ":cl=mono");
+				list.addElement(" -f lavfi -i anullsrc=r=" + lbl48k.getSelectedItem().toString() + ":cl=mono");
 			}
 		});
 
@@ -2835,19 +2875,19 @@ public class Shutter {
 
 				if (scan.getText().equals(language.getProperty("menuItemStartScan"))) {
 					File destination = null;
-					if (liste.getSize() > 0) {
+					if (list.getSize() > 0) {
 						if (fileList.getSelectedIndices().length > 0)
 							destination = new File(new File(fileList.getSelectedValue()).getParent());
 						else
-							destination = new File(new File(liste.getElementAt(0)).getParent());
+							destination = new File(new File(list.getElementAt(0)).getParent());
 
-						liste.clear();
+						list.clear();
 
 						if (System.getProperty("os.name").contains("Mac")
 								|| System.getProperty("os.name").contains("Linux"))
-							liste.add(0, destination + "/");
+							list.add(0, destination + "/");
 						else
-							liste.add(0, destination + "\\");
+							list.add(0, destination + "\\");
 
 						scan.setText(language.getProperty("menuItemStopScan"));
 						if (lblDestination1.getText().equals(language.getProperty("sameAsSource")))
@@ -2881,7 +2921,7 @@ public class Shutter {
 
 				if (FFMPEG.isRunning == false && BMXTRANSWRAP.isRunning == false && DVDAUTHOR.isRunning == false
 						&& TSMUXER.isRunning == false && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1
-						&& liste.getSize() > 0) {
+						&& list.getSize() > 0) {
 					menuDisplay.doClick();
 				}
 
@@ -2994,7 +3034,7 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
-				if (e.getButton() == MouseEvent.BUTTON1 && liste.getSize() > 0
+				if (e.getButton() == MouseEvent.BUTTON1 && list.getSize() > 0
 						&& fileList.getSelectedValue().equals(VideoPlayer.videoPath) == false) {
 					VideoPlayer.setMedia();
 				}
@@ -3091,7 +3131,7 @@ public class Shutter {
 							}
 						}
 
-						liste.addElement(file.getAbsolutePath());
+						list.addElement(file.getAbsolutePath());
 						addToList.setVisible(false);
 						lblFiles.setText(Utils.filesNumber());
 					}
@@ -3423,7 +3463,7 @@ public class Shutter {
 				FunctionUtils.noToAll = false;
 				FunctionUtils.skipToAll = false;
 
-				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && liste.getSize() > 0) {
+				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && list.getSize() > 0) {
 					grpDestination.setSelectedIndex(0);
 					FFMPEG.error = false;
 					FFMPEG.errorLog.setLength(0);
@@ -3605,7 +3645,7 @@ public class Shutter {
 								case 3:
 									FFMPEG.mseSensibility = 800f;
 									FileDialog dialog = new FileDialog(frame, "Custom", FileDialog.LOAD);
-									dialog.setDirectory(new File(liste.elementAt(0).toString()).getParent());
+									dialog.setDirectory(new File(list.elementAt(0).toString()).getParent());
 									dialog.setLocation(frame.getLocation().x - 50, frame.getLocation().y + 50);
 									dialog.setAlwaysOnTop(true);
 									dialog.setMultipleMode(false);
@@ -3805,8 +3845,14 @@ public class Shutter {
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
 
-		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64")) {
+		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
+		{
 			comboFonctions.removeItem("H.266");
+			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
+		}
+		else if (System.getProperty("os.name").contains("Linux"))
+		{
+			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
 		}
 
 		comboFonctions.addActionListener(new ActionListener() {
@@ -3879,7 +3925,7 @@ public class Shutter {
 
 					addToList.setText(language.getProperty("dropFilesHere"));
 
-					if (liste.getSize() == 0)
+					if (list.getSize() == 0)
 						addToList.setVisible(true);
 					else
 						addToList.setVisible(false);
@@ -3926,7 +3972,7 @@ public class Shutter {
 				}
 
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					if (VideoPlayer.btnPlay.isVisible() && liste.getSize() > 0) {
+					if (VideoPlayer.btnPlay.isVisible() && list.getSize() > 0) {
 						VideoPlayer.btnPlay.requestFocus();
 					} else {
 						frame.requestFocus();
@@ -4312,9 +4358,9 @@ public class Shutter {
 								caseOpenFolderAtEnd1.setSelected(false);
 
 								if (scan.getText().equals(language.getProperty("menuItemStopScan"))
-										&& liste.getSize() > 0) {
+										&& list.getSize() > 0) {
 									// Si le dossier d'entrée et de sortie est identique
-									if (liste.firstElement().substring(0, liste.firstElement().length() - 1)
+									if (list.firstElement().substring(0, list.firstElement().length() - 1)
 											.equals(lblDestination1.getText())) {
 										JOptionPane.showMessageDialog(frame,
 												language.getProperty("ChooseDifferentFolder"),
@@ -4555,9 +4601,9 @@ public class Shutter {
 								caseChangeFolder3.setEnabled(true);
 
 								if (scan.getText().equals(language.getProperty("menuItemStopScan"))
-										&& liste.getSize() > 0) {
+										&& list.getSize() > 0) {
 									// Si le dossier d'entrée et de sortie est identique
-									if (liste.firstElement().substring(0, liste.firstElement().length() - 1)
+									if (list.firstElement().substring(0, list.firstElement().length() - 1)
 											.equals(lblDestination2.getText())) {
 										JOptionPane.showMessageDialog(frame,
 												language.getProperty("ChooseDifferentFolder"),
@@ -4784,9 +4830,9 @@ public class Shutter {
 								caseOpenFolderAtEnd3.setEnabled(true);
 
 								if (scan.getText().equals(language.getProperty("menuItemStopScan"))
-										&& liste.getSize() > 0) {
+										&& list.getSize() > 0) {
 									// Si le dossier d'entrée et de sortie est identique
-									if (liste.firstElement().substring(0, liste.firstElement().length() - 1)
+									if (list.firstElement().substring(0, list.firstElement().length() - 1)
 											.equals(lblDestination3.getText())) {
 										JOptionPane.showMessageDialog(frame,
 												language.getProperty("ChooseDifferentFolder"),
@@ -5897,9 +5943,9 @@ public class Shutter {
 				}
 
 				if (caseCreateSequence.isSelected()) {
-					if (liste.getSize() > 0 && inputDeviceIsRunning == false) {
+					if (list.getSize() > 0 && inputDeviceIsRunning == false) {
 						// Analyse
-						FFPROBE.Data(liste.firstElement().toString());
+						FFPROBE.Data(list.firstElement().toString());
 						do
 							try {
 								Thread.sleep(10);
@@ -5962,13 +6008,13 @@ public class Shutter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// Définition de la taille
-				if (liste.getSize() > 0) {
+				if (list.getSize() > 0) {
 
 					String file = "";
 					// Fichiers sélectionnés ?
 					if (fileList.getSelectedIndices().length > 0) {
 						if (scanIsRunning) {
-							File dir = new File(Shutter.liste.firstElement());
+							File dir = new File(Shutter.list.firstElement());
 							for (File f : dir.listFiles()) {
 								if (f.isHidden() == false && f.isFile()) {
 									file = f.toString();
@@ -5979,7 +6025,7 @@ public class Shutter {
 							file = fileList.getSelectedValue().toString();
 
 					} else
-						file = liste.firstElement();
+						file = list.firstElement();
 
 					// Analyse
 					FFPROBE.Data(file.toString());
@@ -10349,7 +10395,7 @@ public class Shutter {
 			@Override
 			protected void paintComponent(Graphics g) {
 
-				if ((caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) && liste.getSize() > 0
+				if ((caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) && list.getSize() > 0
 						&& VideoPlayer.videoPath != null) {
 					super.paintComponent(g);
 
@@ -11273,7 +11319,7 @@ public class Shutter {
 			@Override
 			protected void paintComponent(Graphics g) {
 				if ((caseShowFileName.isSelected() || caseAddText.isSelected() && overlayText.getText().length() > 0)
-						&& liste.getSize() > 0 && VideoPlayer.videoPath != null) {
+						&& list.getSize() > 0 && VideoPlayer.videoPath != null) {
 					super.paintComponent(g);
 
 					Graphics2D g2 = (Graphics2D) g;
@@ -11297,7 +11343,7 @@ public class Shutter {
 
 					String file = VideoPlayer.videoPath;
 					if (Shutter.scanIsRunning) {
-						File dir = new File(Shutter.liste.firstElement());
+						File dir = new File(Shutter.list.firstElement());
 						for (File f : dir.listFiles()) {
 							if (f.isHidden() == false && f.isFile()) {
 								file = f.toString();
@@ -11958,7 +12004,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (caseShowTimecode.isSelected() && liste.getSize() > 0) {
+				if (caseShowTimecode.isSelected() && list.getSize() > 0) {
 					posX.setEnabled(true);
 					textTcPosX.setEnabled(true);
 					px1.setEnabled(true);
@@ -13303,7 +13349,7 @@ public class Shutter {
 							&& RecordInputDevice.comboInputVideo.getSelectedIndex() > 0)
 						addDevice = true;
 
-					if (Shutter.inputDeviceIsRunning && Shutter.liste.getElementAt(0).equals("Capture.current.screen")
+					if (Shutter.inputDeviceIsRunning && Shutter.list.getElementAt(0).equals("Capture.current.screen")
 							&& System.getProperty("os.name").contains("Windows") && addDevice == false) {
 						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("addInputDevice"),
 								Shutter.language.getProperty("menuItemInputDevice"), JOptionPane.YES_NO_OPTION,
@@ -13324,7 +13370,7 @@ public class Shutter {
 						}
 					}
 
-					if (Shutter.liste.getSize() == 0) {
+					if (Shutter.list.getSize() == 0) {
 						JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("addFileToList"),
 								Shutter.language.getProperty("noFileInList"), JOptionPane.ERROR_MESSAGE);
 						caseAddWatermark.setSelected(false);
@@ -16289,7 +16335,7 @@ public class Shutter {
 					caseVideoFadeOut.setSelected(false);
 				}
 
-				if (caseVideoFadeOut.isSelected() && liste.getSize() > 0) {
+				if (caseVideoFadeOut.isSelected() && list.getSize() > 0) {
 					spinnerVideoFadeOut.setEnabled(true);
 
 					float timeOut = (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600
@@ -16457,7 +16503,7 @@ public class Shutter {
 					caseAudioFadeOut.setSelected(false);
 				}
 
-				if (caseAudioFadeOut.isSelected() && liste.getSize() > 0) {
+				if (caseAudioFadeOut.isSelected() && list.getSize() > 0) {
 					spinnerAudioFadeOut.setEnabled(true);
 
 					float timeOut = (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600
@@ -16619,17 +16665,17 @@ public class Shutter {
 
 				if (caseEnableSequence.isSelected())
 				{
-					String[] data = new String[liste.getSize()];
+					String[] data = new String[list.getSize()];
 
-					for (int i = 0; i < liste.getSize(); i++) {
-						data[i] = (String) liste.getElementAt(i);
+					for (int i = 0; i < list.getSize(); i++) {
+						data[i] = (String) list.getElementAt(i);
 					}
 
 					Arrays.sort(data);
-					liste.clear();
+					list.clear();
 
 					for (int i = 0; i < data.length; i++) {
-						liste.addElement(data[i].toString());
+						list.addElement(data[i].toString());
 					}
 
 					caseSequenceFPS.setEnabled(true);
@@ -17096,24 +17142,24 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				for (int m = 0; m < liste.getSize(); m++) {
-					int s = liste.getElementAt(m).toString().lastIndexOf('.');
-					if (liste.getElementAt(m).toString().substring(s).toLowerCase().equals(".mxf") == false) {
-						liste.remove(m);
+				for (int m = 0; m < list.getSize(); m++) {
+					int s = list.getElementAt(m).toString().lastIndexOf('.');
+					if (list.getElementAt(m).toString().substring(s).toLowerCase().equals(".mxf") == false) {
+						list.remove(m);
 						m = -1;
 					}
 
-					String[] data = new String[liste.getSize()];
+					String[] data = new String[list.getSize()];
 
-					for (int i = 0; i < liste.getSize(); i++) {
-						data[i] = (String) liste.getElementAt(i);
+					for (int i = 0; i < list.getSize(); i++) {
+						data[i] = (String) list.getElementAt(i);
 					}
 
 					Arrays.sort(data);
-					liste.clear();
+					list.clear();
 
 					for (int i = 0; i < data.length; i++) {
-						liste.addElement(data[i].toString());
+						list.addElement(data[i].toString());
 					}
 				}
 				lblFiles.setText(Utils.filesNumber());
@@ -18064,7 +18110,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 
 				if (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false) {
-					if (liste.getSize() > 0 && fileList.getSelectedIndex() == -1) {
+					if (list.getSize() > 0 && fileList.getSelectedIndex() == -1) {
 						fileList.setSelectedIndex(0);
 						VideoPlayer.setMedia();
 					}
@@ -22575,7 +22621,7 @@ public class Shutter {
 										grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 
 								// CalculH264
-								if (liste.getSize() > 0 && FFPROBE.calcul == false)
+								if (list.getSize() > 0 && FFPROBE.calcul == false)
 									FFPROBE.setLength();
 
 								// Qualité Max
@@ -23200,7 +23246,7 @@ public class Shutter {
 										grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 
 								// CalculH264
-								if (liste.getSize() > 0 && FFPROBE.calcul == false)
+								if (list.getSize() > 0 && FFPROBE.calcul == false)
 									FFPROBE.setLength();
 								// Qualité Max
 								if (comboFonctions.getSelectedItem().equals("Theora")
@@ -23665,7 +23711,7 @@ public class Shutter {
 										grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 
 								// CalculH264
-								if (liste.getSize() > 0 && FFPROBE.calcul == false)
+								if (list.getSize() > 0 && FFPROBE.calcul == false)
 									FFPROBE.setLength();
 								// Qualité Max
 								caseQMax.setEnabled(true);
@@ -25600,7 +25646,7 @@ public class Shutter {
 	public static void lastActions() {
 
 		if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFMPEG.error == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionReplaceAudio")) == false)
-			liste.clear();
+			list.clear();
 
 		Thread thread = new Thread(new Runnable() {
 			@SuppressWarnings("deprecation")
@@ -25742,7 +25788,7 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 
 // Drag & Drop file list
 @SuppressWarnings("serial")
-class ListeFileTransferHandler extends TransferHandler {
+class ListFileTransferHandler extends TransferHandler {
 
 	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
 
@@ -25783,8 +25829,8 @@ class ListeFileTransferHandler extends TransferHandler {
 								if (file.toString().contains("completed") == false
 										&& file.toString().contains("error") == false) {
 									boolean folderExists = false;
-									for (int f = 0; f < Shutter.liste.getSize(); f++) {
-										if (Shutter.liste.getElementAt(f).equals(file.toString())) {
+									for (int f = 0; f < Shutter.list.getSize(); f++) {
+										if (Shutter.list.getElementAt(f).equals(file.toString())) {
 											folderExists = true;
 										}
 									}
@@ -25798,9 +25844,9 @@ class ListeFileTransferHandler extends TransferHandler {
 
 							if (System.getProperty("os.name").contains("Mac")
 									|| System.getProperty("os.name").contains("Linux"))
-								Shutter.liste.addElement(file + "/");
+								Shutter.list.addElement(file + "/");
 							else
-								Shutter.liste.addElement(file + "\\");
+								Shutter.list.addElement(file + "\\");
 
 							Shutter.addToList.setVisible(false);
 							Shutter.lblFiles.setText(Utils.filesNumber());
@@ -25855,7 +25901,7 @@ class ListeFileTransferHandler extends TransferHandler {
 											}
 										}
 
-										Shutter.liste.addElement(file.getCanonicalPath().toString());
+										Shutter.list.addElement(file.getCanonicalPath().toString());
 										Shutter.addToList.setVisible(false);
 										Shutter.lblFiles.setText(Utils.filesNumber());
 									}
@@ -25875,11 +25921,11 @@ class ListeFileTransferHandler extends TransferHandler {
 					case "QT Animation":
 					case "Uncompressed":
 						if (Shutter.caseOPATOM.isSelected()) {
-							for (int item = 0; item < Shutter.liste.getSize(); item++) {
-								int s = Shutter.liste.getElementAt(item).toString().lastIndexOf('.');
-								if (Shutter.liste.getElementAt(item).toString().substring(s).toLowerCase()
+							for (int item = 0; item < Shutter.list.getSize(); item++) {
+								int s = Shutter.list.getElementAt(item).toString().lastIndexOf('.');
+								if (Shutter.list.getElementAt(item).toString().substring(s).toLowerCase()
 										.equals(".mxf") == false) {
-									Shutter.liste.remove(item);
+									Shutter.list.remove(item);
 									item = -1;
 								}
 							}
@@ -25889,7 +25935,7 @@ class ListeFileTransferHandler extends TransferHandler {
 					}
 
 					// VideoPlayer.player
-					Shutter.fileList.setSelectedIndex(Shutter.liste.getSize() - 1);
+					Shutter.fileList.setSelectedIndex(Shutter.list.getSize() - 1);
 
 					VideoPlayer.setMedia();
 					
@@ -25972,7 +26018,7 @@ class DestinationFileTransferHandler extends TransferHandler {
 
 							if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan"))) {
 								// Si le dossier d'entrée et de sortie est identique
-								if (Shutter.liste.firstElement().substring(0, Shutter.liste.firstElement().length() - 1)
+								if (Shutter.list.firstElement().substring(0, Shutter.list.firstElement().length() - 1)
 										.equals(Shutter.lblDestination1.getText())) {
 									JOptionPane.showMessageDialog(Shutter.frame,
 											Shutter.language.getProperty("ChooseDifferentFolder"),

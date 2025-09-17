@@ -390,12 +390,12 @@ public class Renamer {
 								file.renameTo(newFile);
 								lblExample.setText(newFile.getName());
 								
-								for (int i = 0 ; i < Shutter.liste.getSize() ; i++)				
+								for (int i = 0 ; i < Shutter.list.getSize() ; i++)				
 								{
-									if (Shutter.liste.getElementAt(i).equals(item))
+									if (Shutter.list.getElementAt(i).equals(item))
 									{
-										Shutter.liste.add(i, newFile.toString());
-										Shutter.liste.remove(i + 1);
+										Shutter.list.add(i, newFile.toString());
+										Shutter.list.remove(i + 1);
 										break;
 									}
 								}

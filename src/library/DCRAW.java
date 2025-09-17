@@ -229,7 +229,7 @@ public static Process process;
 					ProcessBuilder processDCRAW;
 					File file;
 					if (fileList.getSelectedIndices().length == 0)
-						file = new File(liste.firstElement());
+						file = new File(list.firstElement());
 					else							
 						file = new File(fileList.getSelectedValue());
 					

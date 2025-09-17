@@ -60,7 +60,7 @@ public class Picture extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
-				for (int i = 0 ; i < liste.getSize() ; i++)
+				for (int i = 0 ; i < list.getSize() ; i++)
 				{
 					//Render queue only accept selected files
 					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
@@ -69,7 +69,7 @@ public class Picture extends Shutter {
 						
 						for (String input : Shutter.fileList.getSelectedValuesList())
 						{
-							if (liste.getElementAt(i).equals(input))
+							if (list.getElementAt(i).equals(input))
 							{
 								isSelected = true;
 							}
@@ -81,7 +81,7 @@ public class Picture extends Shutter {
 						}							
 					}
 					
-					File file = FunctionUtils.setInputFile(new File(liste.getElementAt(i)));		
+					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));		
 									
 					if (file == null)
 						break;
@@ -343,7 +343,7 @@ public class Picture extends Shutter {
 						{	
 							String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(Calendar.getInstance().getTime());	
 	
-							if ((liste.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
+							if ((list.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
 								cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");							
 							
 							FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + '"' + fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp) + '"');						

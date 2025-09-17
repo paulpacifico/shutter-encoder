@@ -67,7 +67,7 @@ public class Transitions extends Shutter {
 	    		if (caseEnableSequence.isSelected())
 	    		{
 	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
-		    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * liste.getSize()) - videoOutValue;
+		    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * list.getSize()) - videoOutValue;
 	    		}
 	    		else if (Settings.btnSetBab.isSelected())
 	    		{

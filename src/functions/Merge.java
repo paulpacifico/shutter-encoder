@@ -53,11 +53,11 @@ public class Merge extends Shutter {
 				
 				String fileOutputName;
 				
-				int toExtension = liste.firstElement().toString().lastIndexOf('.');
-				String container =  liste.firstElement().substring(toExtension);		
+				int toExtension = list.firstElement().toString().lastIndexOf('.');
+				String container =  list.firstElement().substring(toExtension);		
 				
 				FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseFileName"), FileDialog.SAVE);
-				dialog.setDirectory(new File(liste.elementAt(0).toString()).getParent());
+				dialog.setDirectory(new File(list.elementAt(0).toString()).getParent());
 				dialog.setFile(language.getProperty("functionMerge") + container);
 
 				dialog.setVisible(true);
@@ -75,18 +75,18 @@ public class Merge extends Shutter {
 						//Timecode
 						String timecode = "";
 							
-						for (int i = 0 ; i < liste.getSize() ; i++)
+						for (int i = 0 ; i < list.getSize() ; i++)
 						{
 							//Wait for file to be ready
 							if (Settings.btnWaitFileComplete.isSelected())
 				            {
-								File file = new File(liste.getElementAt(i));
+								File file = new File(list.getElementAt(i));
 								
 								if (FunctionUtils.waitFileCompleted(file) == false)
 									break;
 				            }
 							
-							FFPROBE.Data(liste.getElementAt(i));
+							FFPROBE.Data(list.getElementAt(i));
 							do {
 								try {
 									Thread.sleep(1);
@@ -107,7 +107,7 @@ public class Merge extends Shutter {
 							totalLength += FFPROBE.totalLength;
 							FFPROBE.totalLength = 0;
 							
-							writer.println("file '" + liste.getElementAt(i) + "'");
+							writer.println("file '" + list.getElementAt(i) + "'");
 						}				
 						writer.close();
 									
