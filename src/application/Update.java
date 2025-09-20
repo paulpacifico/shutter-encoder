@@ -35,10 +35,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -149,14 +147,6 @@ public class Update {
 				
 				if (accept)			
 				{
-					File model = new File(WHISPER.whisperModel);
-					try {
-						if (model.exists() && Files.size(model.toPath()) != 3095033483L)				
-						{
-							model.delete();
-						}
-					} catch (IOException e1) {}
-						
 					cancelled = true;
 					frame.dispose();
 				}
@@ -224,7 +214,8 @@ public class Update {
 		frame.getContentPane().add(topPanel);
 	}
 
-	public static void newVersion(){	
+	public static void newVersion() {	
+		
 		cancelled = false;
 		
 	        try {
@@ -243,34 +234,16 @@ public class Update {
 			    			    
 			    for (Element file : doc.select("a"))
 			    {		
-			    	if (System.getProperty("os.name").contains("Windows")) //PC
+			    	if (System.getProperty("os.name").contains("Windows"))
 	            	{
 	            		try {
 	            			
-		            		if (file.attr("href").contains("Shutter Encoder (PC Version"))
-			            	{
-		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
-		            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
-		            			
-		            			//Vérification d'une nouvelle mise à jour
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
-		            			{
-			            				
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
-		    						 if (q == JOptionPane.YES_OPTION)
-		    						 {	    									
-			    							runProcess(file.attr("href"));	
-		    							 	new Update();		    							 	
-		    						 }	
-		    						 break;
-		            			}
-			            	}
-		            		else if (file.attr("href").contains("Windows 64bits."))
+		            		if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Windows 64bits."))
 			            	{
 		            			String s[] = file.attr("href").split(" ");
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 		            			
-		            			//Vérification d'une nouvelle mise à jour
+		            			//Checking new update
 		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
 		            			{
 			            				
@@ -286,35 +259,18 @@ public class Update {
 		            		
 	            		} catch (Exception e) {}
 	            	}			    	
-			    	else if (System.getProperty("os.name").contains("Mac")) //MAC
+			    	else if (System.getProperty("os.name").contains("Mac"))
 	            	{
 	            		try {
 	            			
-	            			if (Shutter.arch.equals("x86_64")) //AMD64
+	            			if (Shutter.arch.equals("x86_64"))
 	            			{	            			
-			            		if (file.attr("href").contains("Shutter Encoder (MAC Version"))
-			            		{
-			            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
-			            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
-			            			
-			            			//Vérification d'une nouvelle mise à jour
-			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
-			            			{
-			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
-			    						 if (q == JOptionPane.YES_OPTION)
-			    						 {
-			    								runProcess(file.attr("href"));	   
-			    							 	new Update();		    							 	
-			    						 }	  	
-			    						 break;
-			            			}
-			            		}
-			            		else if (file.attr("href").contains("Mac 64bits."))
+			            		if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Mac 64bits."))
 			            		{
 			            			String s[] = file.attr("href").split(" ");
 			            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 			            			
-			            			//Vérification d'une nouvelle mise à jour
+			            			//Checking new update
 			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
 			            			{
 			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
@@ -329,12 +285,12 @@ public class Update {
 	            			}
 	            			else //ARM64 Apple Silicon
 	            			{
-	            				if (file.attr("href").contains("Apple Silicon."))
+	            				if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Apple Silicon."))
 			            		{
 			            			String s[] = file.attr("href").split(" ");
 			            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 			            			
-			            			//Vérification d'une nouvelle mise à jour
+			            			//Checking new update
 			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
 			            			{
 			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
@@ -352,28 +308,13 @@ public class Update {
 	            	else //Linux
 	            	{
 	            		try {
-		            		if (file.attr("href").contains("Shutter Encoder (Linux Version"))
-		            		{
-		            			String s[] = file.attr("href").substring(file.attr("href").lastIndexOf(" ") + 1).split("\\)");
-		            			int newVersion = Integer.parseInt(s[0].replace(".", ""));
-		            			
-		            			//Vérification d'une nouvelle mise à jour
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
-		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[0]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
-		    						 if (q == JOptionPane.YES_OPTION)
-		    						 {
-		    							 Desktop.getDesktop().browse(new URI("https://www.shutterencoder.com/en/#downloads"));		    							 
-		    						 }	  						
-		    						 break;
-		            			}
-		            		}		            			            		
-		            		else if (file.attr("href").contains("Linux 64bits.deb") && new File("/usr/lib/Shutter Encoder").exists()) //DEB package installed
+	            			
+		            		if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Linux 64bits.deb") && new File("/usr/lib/Shutter Encoder").exists()) //DEB package installed
 		            		{
 		            			String s[] = file.attr("href").split(" ");
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 		            			
-		            			//Vérification d'une nouvelle mise à jour
+		            			//Checking new update
 		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
 		            			{
 		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
@@ -385,12 +326,12 @@ public class Update {
 		    						 break;
 		            			}
 		            		}		            	
-		            		else if (file.attr("href").contains("Linux 64bits.AppImage"))
+		            		else if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Linux 64bits.AppImage"))
 		            		{
 		            			String s[] = file.attr("href").split(" ");
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 		            			
-		            			//Vérification d'une nouvelle mise à jour
+		            			//Checking new update
 		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
 		            			{
 		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
@@ -402,6 +343,7 @@ public class Update {
 		    						 break;
 		            			}
 		            		}
+		            		
 	            		} catch (Exception e) {}
 	            	}
 	            }
@@ -537,19 +479,34 @@ public class Update {
 				JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadFailed"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);	 
 				
 				try {
-					File toDelete = new File(destination);
-					toDelete.delete();
-				} catch (Exception e) {}					
-                         
-             } 
-             finally {
-                 try {
                     if (in != null)
                         in.close();
                     if (out != null)
                         out.close();
-                	}
-                	catch (IOException io) {}
-            }
+            	} catch (IOException io) {}
+				
+				try {
+					File toDelete = new File(destination);
+					toDelete.delete();
+				} catch (Exception e) {}					
+                         
+            } 
+		 	finally {
+		 		
+		 		try {
+                    if (in != null)
+                        in.close();
+                    if (out != null)
+                        out.close();
+            	} catch (IOException io) {}
+		 		
+		 		if (cancelled)
+	            {
+	            	try {
+						File toDelete = new File(destination);
+						toDelete.delete();
+					} catch (Exception e) {}	
+	            }
+		 	}
 	}
 }

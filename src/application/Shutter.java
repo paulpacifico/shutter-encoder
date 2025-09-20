@@ -22,6 +22,7 @@ package application;
 import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -1171,10 +1172,10 @@ public class Shutter {
 						File transcriberApp = null;
 						if (System.getProperty("os.name").contains("Windows"))
 						{
-							transcriberApp = new File("C:\\Program Files\\Shutter Transcriber");							
+							transcriberApp = new File("C:\\Program Files\\Shutter Transcriber\\Shutter Transcriber.exe");							
 							if (transcriberApp.exists())
 							{
-								WHISPER.PathToWHISPER = transcriberApp.toString() + "/Library/whisper-cli.exe";				
+								WHISPER.PathToWHISPER = transcriberApp.getParent()+ "/Library/whisper-cli.exe";				
 							}
 							else
 								transcriberApp = null;
@@ -1195,16 +1196,39 @@ public class Shutter {
 							WHISPER.downloadModel();
 						}
 						else
-						{
-							int q = JOptionPane.showConfirmDialog(frame, "This feature requires downloading Shutter Transcriber. \nDo you want to download it now?",
+						{							
+							ImageIcon app = new ImageIcon(getClass().getClassLoader().getResource("contents/Shutter Transcriber.png"));
+							Image scaled = app.getImage().getScaledInstance(400, -1, Image.SCALE_SMOOTH); 
+					        ImageIcon icon = new ImageIcon(scaled);
+					        
+					        JLabel background = new JLabel(icon);
+					        background.setLayout(new BorderLayout());
+					        
+					        JLabel text = new JLabel("<html>" + language.getProperty("shutterTranscriberRequired") + "<br>" + language.getProperty("wantToDownload") + "</html>", SwingConstants.CENTER);
+					        text.setForeground(Color.WHITE);
+					        text.setOpaque(false);
+					        text.setFont(text.getFont().deriveFont(Font.BOLD, 14f));
+					        
+					        background.add(text, BorderLayout.CENTER);
+					        
+							int q = JOptionPane.showConfirmDialog(frame, background,
 							language.getProperty("functionTranscribe"), JOptionPane.YES_NO_OPTION,
 							JOptionPane.PLAIN_MESSAGE);
 
 							if (q == JOptionPane.YES_OPTION)
 							{
-								try {
-									Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=USD&amount=10&source=url"));
-								} catch (IOException | URISyntaxException er) {}								
+								if (System.getProperty("os.name").contains("Windows"))
+								{
+									try {
+										Desktop.getDesktop().browse(new URI("https://www.paypal.com/ncp/payment/8BT2G3JWLLZPU"));
+									} catch (IOException | URISyntaxException er) {}	
+								}
+								else
+								{
+									try {
+										Desktop.getDesktop().browse(new URI("https://www.paypal.com/ncp/payment/WG4KV7R49DMY6"));
+									} catch (IOException | URISyntaxException er) {}	
+								}															
 							}
 							else
 							{
@@ -3911,7 +3935,8 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 
 				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")
-						|| comboFonctions.getEditor().getItem().toString().contains("exiftool")) {
+					|| comboFonctions.getEditor().getItem().toString().contains("exiftool"))
+				{
 					changeFilters();
 					changeWidth(false);
 
@@ -3929,7 +3954,9 @@ public class Shutter {
 						addToList.setVisible(true);
 					else
 						addToList.setVisible(false);
+					
 				} else {
+					
 					if (comboFonctions.getEditor().toString().length() <= 1)
 						text = String.valueOf(e.getKeyChar()).toLowerCase();
 
@@ -3938,11 +3965,16 @@ public class Shutter {
 						text += String.valueOf(e.getKeyChar()).toLowerCase();
 
 						ArrayList<String> newList = new ArrayList<String>();
-						for (int i = 0; i < comboFonctions.getItemCount(); i++) {
-							if (functionsList[i].toString().length() >= text.length()) {
+						
+						for (int i = 0; i < comboFonctions.getItemCount(); i++)
+						{
+							if (functionsList[i].toString().length() >= text.length())
+							{
 								if (functionsList[i].toString().toLowerCase().substring(0, text.length()).contains(text)
-										&& functionsList[i].toString().contains(":") == false) {
-									newList.add(functionsList[i].toString());
+								&& functionsList[i].toString().contains(":") == false)
+								{
+									if (functionsList[i].toString().equals(language.getProperty("functionTranscribe")) == false)
+										newList.add(functionsList[i].toString());
 								}
 							}
 						}

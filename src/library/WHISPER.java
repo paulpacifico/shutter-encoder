@@ -24,9 +24,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.util.Hashtable;
 import java.util.Locale;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 import application.Console;
 import application.Shutter;
@@ -131,40 +135,60 @@ public class WHISPER extends Shutter {
 	}
 
 	public static void downloadModel() {
-				
-		Object[] options = { "Accurate", "Balanced", "Fast" };
-		int m = JOptionPane.showOptionDialog(frame, language.getProperty("downloadModel") + language.getProperty("colon"),
-				language.getProperty("functionTranscribe"), JOptionPane.YES_NO_CANCEL_OPTION,
-				JOptionPane.PLAIN_MESSAGE, null, options, options[1]);
 		
-		switch (m)
-		{
-			case 0: //Accurate
+        JSlider slider = new JSlider(0, 2, 1);
+        slider.setSize(60, slider.getPreferredSize().height);
+        slider.setMajorTickSpacing(1);
+        slider.setPaintTicks(true);
+
+        Hashtable<Integer, JLabel> labels = new Hashtable<>();
+        labels.put(0, new JLabel("Fast"));
+        labels.put(1, new JLabel("Balanced"));
+        labels.put(2, new JLabel("Accurate"));
+        slider.setLabelTable(labels);
+        slider.setPaintLabels(true);
+
+        JPanel panel = new JPanel();
+        panel.add(slider);
+        
+        Object[] options = { Shutter.language.getProperty("btnApply") };
+        JOptionPane.showOptionDialog(frame, panel, language.getProperty("functionTranscribe"), 
+        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+		switch (slider.getValue())
+		{	
+			case 0: //Fast
 				
-				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin?download=true";
-				modelName = "ggml-large-v3-q5_0.bin";
-				modelSize = 1081140203L;
-				break;			
-				
+				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin?download=true";
+				modelName = "ggml-small.bin";
+				modelSize = 487601967L;	
+				break;
+			
 			case 1: //Balanced
 				
 				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q8_0.bin?download=true";
 				modelName = "ggml-large-v3-turbo-q8_0.bin";
-				modelSize = 874188075L;				
+				modelSize = 874188075L;			
 				break;
 				
-			case 2: //Fast
+			case 2: //Accurate
 				
-				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin?download=true";
-				modelName = "ggml-medium-q5_0.bin";
-				modelSize = 539212467L;		
-				break;
+				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin?download=true";
+				modelName = "ggml-large-v3-q5_0.bin";
+				modelSize = 1081140203L;
+				break;		
 			
 		}
 		
 		getWhisperModel();
 		
 		File model = new File(whisperModel);
+		File modelPath = new File(model.getParent());
+		
+		if (modelPath.exists() == false)
+		{
+			modelPath.mkdir();
+		}
 		
 		try {
 			if (model.exists() && Files.size(model.toPath()) != modelSize)				
@@ -192,11 +216,11 @@ public class WHISPER extends Shutter {
 					Utils.changeFrameVisibility(frame, true);
 					
 					Update.HTTPDownload(modelLink, whisperModel);	
-					
-					Update.frame.dispose();
-					
+
 					Utils.changeFrameVisibility(frame, false);
 					frame.toFront();
+					
+					Update.frame.dispose();
 					
 					if (model.exists() == false)
 					{
