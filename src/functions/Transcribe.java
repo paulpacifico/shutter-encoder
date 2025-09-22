@@ -38,6 +38,8 @@ import settings.FunctionUtils;
 
 public class Transcribe extends Shutter {
 
+	public static File transcriptionFolder;	
+	
 	public static void main() {
 		
 		Thread thread = new Thread(new Runnable() {	
@@ -71,8 +73,8 @@ public class Transcribe extends Shutter {
 						}							
 					}
 					
-					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));		
-									
+					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));	
+														
 					if (file == null)
 						break;
 					
@@ -85,7 +87,7 @@ public class Transcribe extends Shutter {
 				
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
-															
+									
 						//File output name
 						String prefix = "";	
 						if (casePrefix.isSelected())
@@ -123,7 +125,7 @@ public class Transcribe extends Shutter {
 						}
 						
 						//Transcription folder
-						File transcriptionFolder = new File(lblDestination1.getText() + "/transcription");		
+						transcriptionFolder = new File(lblDestination1.getText() + "/transcription");
 						
 						if (transcriptionFolder.exists())
 						{
@@ -189,20 +191,26 @@ public class Transcribe extends Shutter {
 														
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
-							//Removing temporary files
+							lastActions(fileOut);
+						}						
+					}
+					catch (Exception e)
+					{
+						FFMPEG.error  = true;
+					}	
+					finally
+					{							
+						//Removing temporary files
+						if (transcriptionFolder != null)
+						{
 							for (File f : transcriptionFolder.listFiles()) 
 							{
 								f.delete();
 							}
 							
-							transcriptionFolder.delete();
-							
-							lastActions(fileOut);
+							transcriptionFolder.delete();		
 						}
-						
-					} catch (Exception e) {
-						FFMPEG.error  = true;
-					}			
+					}
 				}
 
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))

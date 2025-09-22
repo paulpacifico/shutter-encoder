@@ -48,6 +48,7 @@ public class WHISPER extends Shutter {
 	public static String modelLink = "";	
 	public static String modelName;
 	public static long modelSize;
+	public static boolean useCPU = false;
 
 	public static void getWhisperModel() {
 		
@@ -57,6 +58,70 @@ public class WHISPER extends Shutter {
 		}
 		else
 			whisperModel = PathToWHISPER.replace("whisper-cli", "models/" + modelName);
+	}
+	
+	public static void detectVulkanVersion() {
+	       
+		try {
+			
+            Process process = new ProcessBuilder("cmd.exe", "/c", "vulkaninfo | findstr apiVersion")
+                    .redirectErrorStream(true)
+                    .start();
+
+            String version = null;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
+            {
+                String line;
+                while ((line = reader.readLine()) != null)
+                {
+                    if (line.contains("apiVersion"))
+                    {
+                        String[] parts = line.split("=");
+                        if (parts.length > 1)
+                        {
+                            version = parts[1].trim();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            process.waitFor();
+
+            if (version == null)
+                return;
+
+        	File ggml_vulkan = new File(PathToWHISPER.replace("whisper-cli.exe", "ggml_vulkan.dll"));
+        	File ggml_cpu = new File(PathToWHISPER.replace("whisper-cli.exe", "ggml_cpu.dll"));
+        	File ggml = new File(PathToWHISPER.replace("whisper-cli.exe", "ggml.dll"));
+            
+            String[] nums = version.split("\\.");
+            int major = nums.length > 0 ? Integer.parseInt(nums[0]) : 0;
+            int minor = nums.length > 1 ? Integer.parseInt(nums[1]) : 0;
+            
+            // Vulkan version min = 1.2.0
+            if (major > 1 || (major == 1 && minor >= 2))
+            {
+            	if (ggml_vulkan.exists())
+            	{
+            		ggml.renameTo(ggml_cpu);
+            		ggml_vulkan.renameTo(ggml);
+            	}
+            	
+            	useCPU = false;
+            }
+            else
+            {
+            	if (ggml_cpu.exists())
+            	{
+            		ggml.renameTo(ggml_vulkan);
+            		ggml_cpu.renameTo(ggml);
+            	}
+            	
+            	useCPU = true;
+            }
+
+        } catch (Exception e) {}
 	}
 	
 	public static void run(final String cmd) {
@@ -74,8 +139,14 @@ public class WHISPER extends Shutter {
 					
 					ProcessBuilder processWHISPER;
 					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						processWHISPER = new ProcessBuilder('"' + PathToWHISPER + '"' + " -m " + '"' + whisperModel + '"' + cmd);
+					{		
+						String threads = "";
+						if (useCPU)
+						{
+							threads = " -t " + Runtime.getRuntime().availableProcessors();
+						}
+						
+						processWHISPER = new ProcessBuilder('"' + PathToWHISPER + '"' + " -m " + '"' + whisperModel + '"' + threads + cmd);
 					}
 					else
 					{
@@ -130,8 +201,8 @@ public class WHISPER extends Shutter {
 					}
 									 
 				}				
-			});		
-			runProcess.start();
+		});		
+		runProcess.start();
 	}
 
 	public static void downloadModel() {

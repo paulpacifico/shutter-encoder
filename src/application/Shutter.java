@@ -928,7 +928,7 @@ public class Shutter {
 		
 		//Check GPUs
 		FFMPEG.checkGPUAvailable();
-
+		
 		Splash.increment();
 		topPanel();
 		Splash.increment();
@@ -1175,7 +1175,10 @@ public class Shutter {
 							transcriberApp = new File("C:\\Program Files\\Shutter Transcriber\\Shutter Transcriber.exe");							
 							if (transcriberApp.exists())
 							{
-								WHISPER.PathToWHISPER = transcriberApp.getParent()+ "/Library/whisper-cli.exe";				
+								WHISPER.PathToWHISPER = transcriberApp.getParent()+ "/Library/whisper-cli.exe";		
+								
+								//Check Whisper version
+								WHISPER.detectVulkanVersion();
 							}
 							else
 								transcriberApp = null;
@@ -1205,8 +1208,12 @@ public class Shutter {
 					        background.setLayout(new BorderLayout());
 					        
 					        JLabel text = new JLabel("<html>" + language.getProperty("shutterTranscriberRequired") + "<br>" + language.getProperty("wantToDownload") + "</html>", SwingConstants.CENTER);
-					        text.setForeground(Color.WHITE);
+					        Image transcriber = new ImageIcon(getClass().getClassLoader().getResource("contents/icon_transcriber.png")).getImage();
+					        Image newimg = transcriber.getScaledInstance(40, 40, java.awt.Image.SCALE_SMOOTH);
+							ImageIcon logo = new ImageIcon(newimg);
+							text.setIcon(logo);
 					        text.setOpaque(false);
+					        text.setForeground(Color.WHITE);
 					        text.setFont(text.getFont().deriveFont(Font.BOLD, 14f));
 					        
 					        background.add(text, BorderLayout.CENTER);
@@ -1410,6 +1417,17 @@ public class Shutter {
 									Settings.saveSettings();
 
 									Utils.killProcesses();
+									
+									//Removing temporary files
+									if (Transcribe.transcriptionFolder != null && Transcribe.transcriptionFolder.exists())
+									{					
+										for (File f : Transcribe.transcriptionFolder.listFiles()) 
+										{
+											f.delete();
+										}
+										
+										Transcribe.transcriptionFolder.delete();
+									}
 
 									if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
 									{
@@ -1723,6 +1741,17 @@ public class Shutter {
 					Utils.changeFrameVisibility(frame, true);
 
 					Utils.killProcesses();
+					
+					//Removing temporary files
+					if (Transcribe.transcriptionFolder != null && Transcribe.transcriptionFolder.exists())
+					{					
+						for (File f : Transcribe.transcriptionFolder.listFiles()) 
+						{
+							f.delete();
+						}
+						
+						Transcribe.transcriptionFolder.delete();
+					}
 
 					if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
 					{
@@ -2168,7 +2197,7 @@ public class Shutter {
 					list.clear();
 					addToList.setVisible(true);
 					lblFilesEnded.setVisible(false);
-
+	
 					if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
 					{
 						subtitlesFilePath.delete();
@@ -3302,7 +3331,7 @@ public class Shutter {
 						WHISPER.process.destroy();
 					}
 				}
-
+				
 				if (scanIsRunning) {
 					enableAll();
 					scan.setText(language.getProperty("menuItemStartScan"));
@@ -6524,7 +6553,7 @@ public class Shutter {
 			}
 
 		});
-
+		
 		TCset1 = new JTextField();
 		TCset1.setName("TCset1");
 		TCset1.setEnabled(false);

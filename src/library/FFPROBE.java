@@ -539,8 +539,16 @@ public static boolean isRotated = false;
 								 audioCodecs[channels - 1] = audioCodec;
 								 														 
 								 String[] splitBitrate = line.substring(line.indexOf("Audio:")).split(" kb/s");	
+								 
 								 String[] bitrate = splitBitrate[0].split(" ");
-								 audioBitrate =	bitrate[bitrate.length - 1];		
+								 String value = bitrate[bitrate.length - 1];
+								 
+								 if (value.matches("-?\\d+"))
+								 {
+									 audioBitrate =	value;		
+								 }
+								 else
+									 audioBitrate = "1536";
 				        		 
 				        	 }
 				        	 

@@ -96,7 +96,7 @@ public class AudioNormalization extends Shutter {
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + extension); 
 						
 						//Audio
-						String audio = setAudio(extension);
+						String audio = setAudio();
 						
 						//File output
 						File fileOut = new File(fileOutputName);				
@@ -281,7 +281,7 @@ public class AudioNormalization extends Shutter {
 	    	return " -af ebur128=peak=true";
 	}
 
-	private static String setAudio(String ext) {		
+	private static String setAudio() {		
 		
 		if (caseChangeAudioCodec.isSelected())
 		{
@@ -335,35 +335,7 @@ public class AudioNormalization extends Shutter {
 		}
 		else //Mode Auto
 		{
-			switch (ext.toLowerCase())
-			{			
-				case ".mp4":
-					
-					if (System.getProperty("os.name").contains("Mac"))
-					{
-						return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
-					}
-					else
-						return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
-
-				case ".mp3":
-					
-					return " -c:a mp3 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
-					
-				case ".wmv":
-					
-					return " -c:a wmav2 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
-					
-				case ".mpg":
-					
-					return " -c:a mp2 -ar " + lbl48k.getSelectedItem().toString() + " -b:a 256k -map v:0? -map a? -map s?";
-					
-				case ".ogv":
-				case ".av1":
-				case ".webm":
-					
-					return " -c:a libopus -ar " + lbl48k.getSelectedItem().toString() + " -b:a 192k -map v:0? -map a? -map s?";
-			}
+			return " -c:a " + FFPROBE.audioCodec + " -ar " + FFPROBE.audioSampleRate + " -b:a " + FFPROBE.audioBitrate + "k -map v:0? -map a? -map s?";
 		}
 		
 		if (FFPROBE.qantization == 24)
