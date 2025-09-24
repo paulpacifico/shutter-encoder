@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import application.Ftp;
-import application.RenderQueue;
 import application.Shutter;
 import application.Utils;
 import application.VideoPlayer;
@@ -38,11 +37,13 @@ import settings.FunctionUtils;
 
 public class Transcribe extends Shutter {
 
-	public static File transcriptionFolder;	
+	public static Thread thread;
+	public static File transcriptionFolder;
+	private static String currentFile = "";
 	
 	public static void main() {
 		
-		Thread thread = new Thread(new Runnable() {	
+		thread = new Thread(new Runnable() {	
 			
 			@Override
 			public void run() {
@@ -54,24 +55,15 @@ public class Transcribe extends Shutter {
 
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{	
-					//Render queue only accept selected files
-					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					if (comboFonctions.getSelectedItem().toString().equals("functionTranscribe") == false)
 					{
-						boolean isSelected = false;
-						
-						for (String input : Shutter.fileList.getSelectedValuesList())
-						{
-							if (list.getElementAt(i).equals(input))
-							{
-								isSelected = true;
-							}
-						}	
-												
-						if (isSelected == false)
+						if (list.getElementAt(i).equals(VideoPlayer.videoPath) == false)
 						{
 							continue;
-						}							
-					}
+						}
+						
+						currentFile = list.getElementAt(i);
+					}					
 					
 					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));	
 														
@@ -102,7 +94,9 @@ public class Transcribe extends Shutter {
 						}												
 						
 						//Container
-						String container = comboFilter.getSelectedItem().toString();								
+						String container = comboFilter.getSelectedItem().toString();	
+						if (comboFonctions.getSelectedItem().toString().equals("functionTranscribe") == false)
+							container = ".srt";
 						
 						//Output name
 						String fileOutputName = labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + container); 
@@ -155,22 +149,24 @@ public class Transcribe extends Shutter {
 							tempsEcoule.setVisible(false);
 							
 							boolean format = false;
-							if (comboFilter.getSelectedItem().toString().equals(".srt"))
+							if (container.equals(".srt"))
 							{
 								cmd = " --output-srt --max-len 74 --max-context 200 --split-on-word";
 								format = true;
 							}							
-							else if (comboFilter.getSelectedItem().toString().equals(".vtt"))
+							else if (container.equals(".vtt"))
 							{
 								cmd = " --output-vtt --max-len 74 --max-context 200 --split-on-word";
 								format = true;
 							}
-							else if (comboFilter.getSelectedItem().toString().equals(".txt"))
+							else if (container.equals(".txt"))
 							{
 								cmd = " --output-txt";
 							}
 							
-							WHISPER.run(" --language auto" + cmd + " --no-prints -f " + '"' + waveFile + '"');		
+							cmd += " --language " + WHISPER.comboLanguage.getSelectedItem().toString();
+														
+							WHISPER.run(cmd + " --no-prints -f " + '"' + waveFile + '"');		
 							
 							do {
 								Thread.sleep(100);
@@ -182,14 +178,14 @@ public class Transcribe extends Shutter {
 							{
 								if (format)
 								{
-									formatSubtitles(transcribedFile.toPath(), fileOut.toPath());
+									formatSubtitles(transcribedFile.toPath(), fileOut.toPath(), container);
 								}	
 								else
 									transcribedFile.renameTo(fileOut);
 							}
 						}
 														
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false)
 						{
 							lastActions(fileOut);
 						}						
@@ -213,21 +209,15 @@ public class Transcribe extends Shutter {
 					}
 				}
 
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				enfOfFunction();	
+				
+				if (comboFonctions.getSelectedItem().toString().equals("functionTranscribe") == false && FFMPEG.error == false && cancelled == false)
 				{
-					//Reset data for the current selected file
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayer.loadMedia.isAlive());
-					RenderQueue.frame.toFront();
-				}
-				else
-				{
-					enfOfFunction();					
+					fileList.setSelectedValue(currentFile, true);						
+					comboSubsSource.setSelectedIndex(0);
+					caseAddSubtitles.setSelected(true);
+					VideoPlayer.setMedia();					
+					currentFile = "";
 				}
 			}
 			
@@ -236,9 +226,8 @@ public class Transcribe extends Shutter {
 		
     }
 	
-	public static void formatSubtitles(Path input, Path output) throws IOException {
+	public static void formatSubtitles(Path input, Path output, String extension) throws IOException {
 
-        String extension = comboFilter.getSelectedItem().toString();
         boolean isVtt = extension.equals(".vtt");
 
         List<String> lines = Files.readAllLines(input);

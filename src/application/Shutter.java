@@ -22,7 +22,6 @@ package application;
 import java.awt.AWTEvent;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
@@ -282,7 +281,7 @@ public class Shutter {
 	protected static JComboBox<String> comboCLLvalue;
 	protected static JComboBox<String> comboFALLvalue;
 	protected static JButton btnLUTs;
-	protected static JButton btnStart;
+	public static JButton btnStart;
 	protected static JButton btnCancel;
 	protected static JCheckBox caseOpenFolderAtEnd1;
 	protected static JCheckBox caseOpenFolderAtEnd2;
@@ -461,7 +460,7 @@ public class Shutter {
 	protected static JTextField lblDestination1;
 	protected static JTextField lblDestination2;
 	protected static JTextField lblDestination3;
-	protected static JProgressBar progressBar1;
+	public static JProgressBar progressBar1;
 	protected static JLabel lblCurrentEncoding;
 	protected static JLabel lblImageSize;
 	protected static JLabel lblScreenshot;
@@ -1169,81 +1168,7 @@ public class Shutter {
 					//Whisper model
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")))
 					{		
-						File transcriberApp = null;
-						if (System.getProperty("os.name").contains("Windows"))
-						{
-							transcriberApp = new File("C:\\Program Files\\Shutter Transcriber\\Shutter Transcriber.exe");							
-							if (transcriberApp.exists())
-							{
-								WHISPER.PathToWHISPER = transcriberApp.getParent()+ "/Library/whisper-cli.exe";		
-								
-								//Check Whisper version
-								WHISPER.detectVulkanVersion();
-							}
-							else
-								transcriberApp = null;
-						}
-						else if (System.getProperty("os.name").contains("Mac"))
-						{
-							transcriberApp = new File("/Applications/Shutter Transcriber.app");
-							if (transcriberApp.exists())
-							{
-								WHISPER.PathToWHISPER = transcriberApp.toString() +  "/Contents/Resources/Library/whisper-cli";
-							}
-							else
-								transcriberApp = null;
-						}
-						
-						if (transcriberApp != null)
-						{
-							WHISPER.downloadModel();
-						}
-						else
-						{							
-							ImageIcon app = new ImageIcon(getClass().getClassLoader().getResource("contents/Shutter Transcriber.png"));
-							Image scaled = app.getImage().getScaledInstance(400, -1, Image.SCALE_SMOOTH); 
-					        ImageIcon icon = new ImageIcon(scaled);
-					        
-					        JLabel background = new JLabel(icon);
-					        background.setLayout(new BorderLayout());
-					        
-					        JLabel text = new JLabel("<html>" + language.getProperty("shutterTranscriberRequired") + "<br>" + language.getProperty("wantToDownload") + "</html>", SwingConstants.CENTER);
-					        Image transcriber = new ImageIcon(getClass().getClassLoader().getResource("contents/icon_transcriber.png")).getImage();
-					        Image newimg = transcriber.getScaledInstance(40, 40, java.awt.Image.SCALE_SMOOTH);
-							ImageIcon logo = new ImageIcon(newimg);
-							text.setIcon(logo);
-					        text.setOpaque(false);
-					        text.setForeground(Color.WHITE);
-					        text.setFont(text.getFont().deriveFont(Font.BOLD, 14f));
-					        
-					        background.add(text, BorderLayout.CENTER);
-					        
-							int q = JOptionPane.showConfirmDialog(frame, background,
-							language.getProperty("functionTranscribe"), JOptionPane.YES_NO_OPTION,
-							JOptionPane.PLAIN_MESSAGE);
-
-							if (q == JOptionPane.YES_OPTION)
-							{
-								if (System.getProperty("os.name").contains("Windows"))
-								{
-									try {
-										Desktop.getDesktop().browse(new URI("https://www.paypal.com/ncp/payment/8BT2G3JWLLZPU"));
-									} catch (IOException | URISyntaxException er) {}	
-								}
-								else
-								{
-									try {
-										Desktop.getDesktop().browse(new URI("https://www.paypal.com/ncp/payment/WG4KV7R49DMY6"));
-									} catch (IOException | URISyntaxException er) {}	
-								}															
-							}
-							else
-							{
-								comboFonctions.removeItem(language.getProperty("functionTranscribe"));
-							}
-							
-							comboFonctions.setSelectedItem("");
-						}
+						new WHISPER();
 					}
 				}
 			}
@@ -6230,32 +6155,14 @@ public class Shutter {
 		grpImageFilter.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageFilter);
 
-		grpImageFilter.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpImageFilter, 122);
-			}
+		grpImageFilter.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
+				extendSections(grpImageFilter, 122);
 			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-
+			
 		});
 
 		caseYear = new JCheckBox(language.getProperty("caseYear"));
@@ -6492,31 +6399,12 @@ public class Shutter {
 		caseSetTimecode.setBounds(7, 16, 150, 23);
 		grpSetTimecode.add(caseSetTimecode);
 
-		grpSetTimecode.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpSetTimecode, 93);
-			}
+		grpSetTimecode.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpSetTimecode, 93);
 			}
 
 		});
@@ -6731,10 +6619,10 @@ public class Shutter {
 		grpSetAudio.setBounds(frame.getWidth(), 343, 312, 47);
 		frame.getContentPane().add(grpSetAudio);
 
-		grpSetAudio.addMouseListener(new MouseListener() {
+		grpSetAudio.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 
 				if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false
 				&& language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
@@ -6762,25 +6650,6 @@ public class Shutter {
 
 					extendSections(grpSetAudio, size);
 				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
 			}
 
 		});
@@ -9001,31 +8870,12 @@ public class Shutter {
 		grpCrop.setLocation(frame.getWidth(), grpImageAdjustement.getY());
 		frame.getContentPane().add(grpCrop);
 
-		grpCrop.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpCrop, 90);
-			}
+		grpCrop.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpCrop, 90);
 			}
 
 		});
@@ -10185,31 +10035,12 @@ public class Shutter {
 		grpOverlay.setOpaque(false);
 		frame.getContentPane().add(grpOverlay);
 
-		grpOverlay.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpOverlay, 278);
-			}
+		grpOverlay.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpOverlay, 278);
 			}
 
 		});
@@ -12285,31 +12116,12 @@ public class Shutter {
 		grpSubtitles.setOpaque(false);
 		frame.getContentPane().add(grpSubtitles);
 
-		grpSubtitles.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpSubtitles, 131);
-			}
+		grpSubtitles.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpSubtitles, 131);
 			}
 
 		});
@@ -12331,7 +12143,7 @@ public class Shutter {
 			}
 		});
 
-		comboSubsSource = new JComboBox<String>(new String[] { language.getProperty("file") });
+		comboSubsSource = new JComboBox<String>(new String[] { language.getProperty("file"), language.getProperty("functionTranscribe") });
 		comboSubsSource.setName("comboSubsSource");	
 		if (System.getProperty("os.name").contains("Mac"))
 		{
@@ -13107,31 +12919,12 @@ public class Shutter {
 		grpWatermark.setOpaque(false);
 		frame.getContentPane().add(grpWatermark);
 
-		grpWatermark.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpWatermark, 113);
-			}
+		grpWatermark.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpWatermark, 113);
 			}
 
 		});
@@ -14045,31 +13838,12 @@ public class Shutter {
 		grpColorimetry.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpColorimetry);
 
-		grpColorimetry.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpColorimetry, 165);
-			}
+		grpColorimetry.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpColorimetry, 165);
 			}
 
 		});
@@ -14659,31 +14433,12 @@ public class Shutter {
 
 		frame.getContentPane().add(grpImageAdjustement);
 
-		grpImageAdjustement.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpImageAdjustement, 792);
-			}
+		grpImageAdjustement.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpImageAdjustement, 792);
 			}
 
 		});
@@ -15850,10 +15605,10 @@ public class Shutter {
 				312, 17);
 		frame.getContentPane().add(grpCorrections);
 
-		grpCorrections.addMouseListener(new MouseListener() {
+		grpCorrections.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 
 				int size = 25;
 				for (Component c : grpCorrections.getComponents()) {
@@ -15862,25 +15617,6 @@ public class Shutter {
 				}
 
 				extendSections(grpCorrections, size);
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
 			}
 
 		});
@@ -16157,31 +15893,12 @@ public class Shutter {
 		grpTransitions.setBounds(frame.getWidth(), grpCorrections.getY() + grpCorrections.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpTransitions);
 
-		grpTransitions.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpTransitions, 104);
-			}
+		grpTransitions.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpTransitions, 104);
 			}
 
 		});
@@ -16665,31 +16382,12 @@ public class Shutter {
 		grpImageSequence.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageSequence);
 
-		grpImageSequence.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-
-				extendSections(grpImageSequence, 93);
-			}
+		grpImageSequence.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
+				extendSections(grpImageSequence, 93);
 			}
 
 		});
@@ -16857,10 +16555,10 @@ public class Shutter {
 		grpAdvanced.setBounds(frame.getWidth(), 396, 312, 17);
 		frame.getContentPane().add(grpAdvanced);
 
-		grpAdvanced.addMouseListener(new MouseListener() {
+		grpAdvanced.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				int size = 25;
 				for (Component c : grpAdvanced.getComponents()) {
 					if (c instanceof JCheckBox)
@@ -16868,24 +16566,6 @@ public class Shutter {
 				}
 
 				extendSections(grpAdvanced, size);
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
 			}
 
 		});

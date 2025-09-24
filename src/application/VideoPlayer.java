@@ -1671,14 +1671,15 @@ public class VideoPlayer {
 								} catch (InterruptedException e) {}		
 							}
 							
-							if (FFPROBE.subtitleStreams != Shutter.comboSubsSource.getItemCount() - 1)
+							if (FFPROBE.subtitleStreams != Shutter.comboSubsSource.getItemCount() - 2)
 							{
 								Shutter.comboSubsSource.removeAllItems();
-								Shutter.comboSubsSource.addItem(Shutter.language.getProperty("file"));
+								Shutter.comboSubsSource.addItem(Shutter.language.getProperty("file"));								
 								for (int i = 0 ; i < FFPROBE.subtitleStreams ; i++)
 								{
 									Shutter.comboSubsSource.addItem(Shutter.language.getProperty("source") + " #" + (i + 1));
 								}
+								Shutter.comboSubsSource.addItem(Shutter.language.getProperty("functionTranscribe"));
 							}
 							
 							//Image sequence
@@ -5265,7 +5266,7 @@ public class VideoPlayer {
 	
 	public static void writeCurrentSubs(double inputTime, boolean firstSub) {	
 				
-		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFilePath.exists() &&  Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFilePath.exists() && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{
 			try {
 	

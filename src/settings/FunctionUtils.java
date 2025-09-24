@@ -65,11 +65,13 @@ import application.SubtitlesTimeline;
 import application.Utils;
 import application.VideoPlayer;
 import application.fileOverwriteWindow;
+import functions.Transcribe;
 import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
 import library.PDF;
+import library.WHISPER;
 
 public class FunctionUtils extends Shutter {
 
@@ -1733,7 +1735,7 @@ public class FunctionUtils extends Shutter {
 					slash = '\\';
 				
 				FileDialog dialog = new FileDialog(frame, Shutter.language.getProperty("chooseSubtitles"), FileDialog.LOAD);
-				if (comboSubsSource.getSelectedIndex() == 0)
+				if (comboSubsSource.getSelectedIndex() == 0) //File
 				{
 					if (new File(video.toString().replace(ext, ".srt")).exists()) {
 						dialog.setDirectory(video.getParent() + slash);
@@ -1758,6 +1760,13 @@ public class FunctionUtils extends Shutter {
 						dialog.setMultipleMode(false);
 						dialog.setVisible(true);
 					}							
+				}
+				else if (comboSubsSource.getSelectedItem().toString().equals(Shutter.language.getProperty("functionTranscribe")))
+				{
+					new WHISPER();
+					
+					if (WHISPER.whisperModel != null)
+						Transcribe.main();					
 				}
 				else
 				{	
