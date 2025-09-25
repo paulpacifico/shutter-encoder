@@ -49,6 +49,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
@@ -125,6 +127,7 @@ public static String cpuName;
 public static boolean hasNvidiaGPU = false;
 public static boolean hasAMDGPU = false;
 public static boolean hasIntelGPU = false;
+public static boolean isIntelArc = false;
 public static boolean cudaAvailable = false;
 public static boolean amfAvailable = false;
 public static boolean qsvAvailable = false;
@@ -1120,21 +1123,36 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 	
-	public static int detectIntelGen(String cpuName) {
+	public static int detectIntelGen() {
 		
-	    int dash = cpuName.indexOf('-');
-	    if (dash == -1) return -1;
-
-	    String model = cpuName.substring(dash + 1).trim();
-	    if (model.length() < 3) return -1;
-
-	    // Handle 5-digit model numbers (10xxx, 11xxx, 12xxx, etc.)
-	    if (Character.isDigit(model.charAt(0)) && Character.isDigit(model.charAt(1))) {
-	        return Integer.parseInt(model.substring(0, 2));
-	    }
-
-	    // Otherwise, single digit gen
-	    return Character.getNumericValue(model.charAt(0));
+		if (cpuName != null)
+		{
+		    int dash = cpuName.indexOf('-');
+		    if (dash == -1) return -1;
+	
+		    String model = cpuName.substring(dash + 1).trim();
+		    Pattern MODEL_PATTERN = Pattern.compile("\\b(\\d{3,5})([A-Za-z0-9]{0,3})\\b");
+		    Matcher version = MODEL_PATTERN.matcher(model);
+	
+		    version.find();
+	        String digits = version.group(1);
+	        int gen = Character.getNumericValue(digits.charAt(0));
+		    
+		    if (digits.length() == 4 && gen <= 9)
+	        {
+	            gen = Character.getNumericValue(digits.charAt(0)); // 1st–9th gen
+	        }
+	        else if (model.length() >= 4)
+	        {
+	            gen = Integer.parseInt(digits.substring(0, 2));   // 10th gen and later           
+	        }
+		    else
+		    	return -1;
+	
+		    return gen;
+		}
+		
+		return -1;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -1174,8 +1192,11 @@ public static StringBuilder errorLog = new StringBuilder();
 		                }
 		                else if (line.contains("Intel"))
 		                {
-		                	hasIntelGPU = true;	
+		                	hasIntelGPU = true;
 		                	GPUCount ++;
+		                	
+		                	if (line.contains("Arc"))
+		                		isIntelArc = true;
 		                }
 		            }
 		        }
@@ -1268,7 +1289,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						if (hasIntelGPU)
 						{
 							String child = "dxva2";
-							if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
+							if (FFMPEG.detectIntelGen() >= 9 || isIntelArc)
 							{
 								child = "d3d11va";
 							}					
@@ -1341,7 +1362,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					else if (comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
 					{
 						String child = "dxva2";
-						if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
+						if (FFMPEG.detectIntelGen() >= 9 || isIntelArc)
 						{
 							child = "d3d11va";
 						}					
@@ -1542,7 +1563,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		{
 			if (autoCUDA || (cudaAvailable && comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{
-				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda";
+				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda -init_hw_device cuda";
 			}
 			else if (autoAMF || (amfAvailable && comboGPUFilter.getSelectedItem().toString().equals("amf")))
 			{
@@ -1550,20 +1571,21 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			else if (autoQSV || (qsvAvailable && comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 			{
-				gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv";
+				String child = "dxva2";
+				if (detectIntelGen() >= 9 || isIntelArc)
+				{
+					child = "d3d11va";
+				}					
+
+				gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child;
 			}
 			else if (autoVIDEOTOOLBOX || (videotoolboxAvailable && comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")))
 			{
-				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld";
+				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -init_hw_device videotoolbox";
 			}
 			else if (autoVULKAN || (vulkanAvailable && comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 			{
-				if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-				{
-					gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
-				}
-				else
-					gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
+				gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
 			}
 			else
 				gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
@@ -1573,12 +1595,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
 		}							
 		
-		//GPU initialization
-		if (comboAccel.getSelectedItem().equals("VAAPI"))			
-		{
-			gpuDecoding += " -vaapi_device /dev/dri/renderD128";
-		}
-		else if (comboAccel.getSelectedItem().equals("Vulkan Video")
+		if (comboAccel.getSelectedItem().equals("Vulkan Video")
 		|| comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
 		{
@@ -1588,26 +1605,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			else
 				gpuDecoding += " -init_hw_device vulkan=gpu:0";
-		}				
-		else if (comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
-		&& (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboGPUDecoding.getSelectedItem().toString().equals("qsv")))
-		{
-			String child = "dxva2";
-			if (detectIntelGen(cpuName) >= 9)
-			{
-				child = "d3d11va";
-			}					
-			
-			gpuDecoding += " -init_hw_device qsv:hw,child_device_type=" + child;
-		}
-		else if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-		{
-			gpuDecoding += " -init_hw_device cuda";
-		}
-		else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
-		{
-			gpuDecoding += " -init_hw_device videotoolbox";
-		}
+		}	
 		else if (comboAccel.getSelectedItem().equals("VAAPI"))			
 		{
 			gpuDecoding += " -vaapi_device /dev/dri/renderD128";

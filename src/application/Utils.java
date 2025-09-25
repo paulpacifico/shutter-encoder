@@ -252,6 +252,11 @@ public class Utils extends Shutter {
 						Shutter.documents = new File("/Library/Preferences/Shutter Encoder");
 						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
 					}	
+					else if (new File("/Library/Application Support/Shutter Encoder").exists())
+					{
+						Shutter.documents = new File("/Library/Application Support/Shutter Encoder");
+						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+					}
 					else if (oldDocumentsPath.exists()) //old path
 					{
 						try {

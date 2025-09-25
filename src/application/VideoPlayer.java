@@ -2381,10 +2381,10 @@ public class VideoPlayer {
 					deinterlace = " -vf " + deinterlace;
 				}
 				
-				String device = "";
+				String device = "";				
 				if (Shutter.comboAccel.getSelectedItem().equals("Vulkan Video")
 				|| Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
-				|| Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU)
+				|| Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
 				{
 					if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 					{
@@ -2392,26 +2392,10 @@ public class VideoPlayer {
 					}
 					else
 						device = " -init_hw_device vulkan=gpu:0";
-					
-				}
-				else if (Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false
-				&& (Shutter.comboAccel.getSelectedItem().equals("Intel Quick Sync") || Shutter.comboGPUDecoding.getSelectedItem().toString().equals("qsv"))) 
+				}	
+				else if (Shutter.comboAccel.getSelectedItem().equals("VAAPI"))			
 				{
-					String child = "dxva2";
-					if (FFMPEG.detectIntelGen(FFMPEG.cpuName) >= 9)
-					{
-						child = "d3d11va";
-					}					
-					
-					device = " -init_hw_device qsv:hw,child_device_type=" + child;
-				}
-				else if (Shutter.comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-				{
-					device = " -init_hw_device cuda";
-				}
-				else if (Shutter.comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
-				{
-					device = " -init_hw_device videotoolbox";
+					device = " -vaapi_device /dev/dri/renderD128";
 				}
 				
 				//Hardware encoding
