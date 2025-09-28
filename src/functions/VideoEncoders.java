@@ -505,6 +505,9 @@ public class VideoEncoders extends Shutter {
 									break;
 							}
 						}	
+						
+						//Tiles
+						filterComplex = Image.setTiles(filterComplex, extension);
 											
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			

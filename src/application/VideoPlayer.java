@@ -5640,14 +5640,31 @@ public class VideoPlayer {
 						String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
 						if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 							inputPoint = "";
+						
+						String tiles = "";
+						if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
+						{
+							for (int i = 0 ; i < FFPROBE.tilesNumber ; i++)
+							{
+								tiles += "[0:v:" + i + "]";
+							}
+							
+							String scale = FFPROBE.imageWidth + ":" + FFPROBE.imageHeight + ":0:0";
+							if (FFPROBE.isRotated)
+							{
+								scale = FFPROBE.imageHeight + ":" + FFPROBE.imageWidth + ":0:0,transpose=1";
+							}
+							
+							tiles = " -filter_complex " + '"' + tiles  + "concat=n=" + FFPROBE.tilesNumber + ",tile=8x6,crop=" + scale + '"'; 
+						}
 				
 						//Creating preview file																
-						String cmd = deinterlace + " -frames:v 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
+						String cmd = deinterlace + tiles + " -frames:v 1 -an -s " + player.getWidth() + "x" + player.getHeight() + " -sws_flags bicubic -y ";	
 						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
 						{
-							cmd = deinterlace + " -frames:v 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
+							cmd = deinterlace + tiles + " -frames:v 1 -an -s " + player.getHeight() + "x" + player.getWidth() + " -sws_flags bicubic -y ";
 						}
-																		
+						
 						if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 						{
 							if (extension.toLowerCase().equals(".pdf"))

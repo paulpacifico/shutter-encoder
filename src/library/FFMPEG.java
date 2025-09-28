@@ -1752,8 +1752,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					Console.consoleFFMPEG.append(System.lineSeparator());
 					
-					while ((line = input.readLine()) != null) {						
-						
+					while ((line = input.readLine()) != null)
+					{					
 						Console.consoleFFMPEG.append(line + System.lineSeparator());		
 											
 						//Get devices Mac

@@ -138,6 +138,9 @@ public class Picture extends Shutter {
 						
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
+						
+						//Tiles
+						filterComplex = Image.setTiles(filterComplex, extension);
 												
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);

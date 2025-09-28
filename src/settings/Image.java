@@ -626,6 +626,30 @@ public class Image extends Shutter {
 		}
     	
     	return filterComplex;
+	}
+
+	public static String setTiles(String filterComplex, String extension) {
+		
+		if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
+		{
+			if (filterComplex != "") filterComplex += ",";
+			
+			String tiles = "";
+			for (int i = 0 ; i < FFPROBE.tilesNumber ; i++)
+			{
+				tiles += "[0:v:" + i + "]";
+			}
+			
+			String scale = FFPROBE.imageWidth + ":" + FFPROBE.imageHeight + ":0:0";
+			if (FFPROBE.isRotated)
+			{
+				scale = FFPROBE.imageHeight + ":" + FFPROBE.imageWidth + ":0:0,transpose=1";
+			}
+			
+			filterComplex += tiles  + "concat=n=" + FFPROBE.tilesNumber + ",tile=8x6,crop=" + scale; 
+		}
+		
+		return filterComplex;
 	}	
 	
 }

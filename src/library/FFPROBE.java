@@ -103,6 +103,7 @@ public static int gopCount = 0;
 public static int gopSpace = 124;
 public static boolean hasAlpha = false;
 public static boolean isRotated = false;
+public static int tilesNumber = 0;
 
 	public static void Data(final String file) {	
 			
@@ -151,6 +152,7 @@ public static boolean isRotated = false;
 			FFMPEG.error = false;
 			hasAudio = false; 		
 			attachedPic = false;
+			tilesNumber = 0;
 			btnStart.setEnabled(false);
 			
 			imageRatio = 1.777777f;
@@ -296,35 +298,38 @@ public static boolean isRotated = false;
 				            }
 				            
 				            // Video stream
-							if (line.contains("Video:") && line.contains("attached pic") == false && line.contains("unspecified size") == false && videoStreamAnalyzed == false)
+							if ((line.contains("Video:") || line.contains("Tile Grid:")) && line.contains("attached pic") == false && line.contains("unspecified size") == false && videoStreamAnalyzed == false)
 							{											
 								//Video codec
-								String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");
-																		
-								videoCodec = splitVideo[1].replace(",", "");
-							
-								if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
+								if (line.contains("Video:"))
 								{
-									videoCodec = "dnxhr";
+									String[] splitVideo = line.substring(line.indexOf("Video:")).split(" ");
+																			
+									videoCodec = splitVideo[1].replace(",", "");
+								
+									if (videoCodec.equals("dnxhd") && line.toLowerCase().contains("dnxhr"))
+									{
+										videoCodec = "dnxhr";
+									}
+									
+									if (videoCodec.equals("qtrle"))
+									{
+										videoCodec = "qt animation";
+									}
+									
+									//Player waveform
+						            audioOnly = false;
+									 
+									//Levels					 
+					                if (line.contains("tv"))
+					                   lumaLevel = "16-235";
+					                else if (line.contains("pc"))
+					                   lumaLevel = "0-255";
+					                			                
+								 	String data = line;
+					                data = line.substring(data.indexOf("Video:"));
 								}
 								
-								if (videoCodec.equals("qtrle"))
-								{
-									videoCodec = "qt animation";
-								}
-								
-								//Player waveform
-					            audioOnly = false;
-								 
-								//Levels					 
-				                if (line.contains("tv"))
-				                   lumaLevel = "16-235";
-				                else if (line.contains("pc"))
-				                   lumaLevel = "0-255";
-				                			                
-							 	String data = line;
-				                data = line.substring(data.indexOf("Video:"));
-				
 				                // Image resolution
 				                Pattern resolutionPattern = Pattern.compile("(\\d{2,5})x(\\d{2,5})");
 				                Matcher matcher = resolutionPattern.matcher(line);
@@ -454,6 +459,21 @@ public static boolean isRotated = false;
 						                	}
 						                }
 						            }
+				                }
+				                
+				                //Retrieve the tiles number for Video: stream
+				                if (line.contains("Tile Grid:"))
+				                {
+				                	do {				                		
+				                		line = input.readLine();	
+				                	} while (line.contains("Video:") == false && line != null);
+				                	
+				                	Pattern streamPattern = Pattern.compile("Stream #0:(\\d+).*Video:");
+				                	Matcher tiles = streamPattern.matcher(line);
+				                    if (tiles.find())
+				                    {
+				                    	tilesNumber = Integer.parseInt(tiles.group(1));
+				                    }				                    
 				                }
 				                
 				                videoStreamAnalyzed = true;
