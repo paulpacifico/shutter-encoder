@@ -630,12 +630,13 @@ public class Image extends Shutter {
 
 	public static String setTiles(String filterComplex, String extension) {
 		
-		if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
+		if ((extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif")) && FFPROBE.gridRows != 0 && FFPROBE.gridCols != 0)
 		{
 			if (filterComplex != "") filterComplex += ",";
 			
 			String tiles = "";
-			for (int i = 0 ; i < FFPROBE.tilesNumber ; i++)
+			int tilesNumber = FFPROBE.gridRows * FFPROBE.gridCols;
+			for (int i = 0 ; i < tilesNumber ; i++)
 			{
 				tiles += "[0:v:" + i + "]";
 			}
@@ -646,7 +647,7 @@ public class Image extends Shutter {
 				scale = FFPROBE.imageHeight + ":" + FFPROBE.imageWidth + ":0:0,transpose=1";
 			}
 			
-			filterComplex += tiles  + "concat=n=" + FFPROBE.tilesNumber + ",tile=8x6,crop=" + scale; 
+			filterComplex += tiles  + "concat=n=" + tilesNumber + ",tile=" + FFPROBE.gridRows + "x" + FFPROBE.gridCols + ",crop=" + scale; 
 		}
 		
 		return filterComplex;

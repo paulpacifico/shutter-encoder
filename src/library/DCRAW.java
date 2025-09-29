@@ -104,13 +104,13 @@ public static Process process;
 					try {
 						String PathToDCRAW;
 						String PathToFFMPEG;
-						ProcessBuilder processDCRAW;
+						ProcessBuilder processDCRAW = null;
 						if (System.getProperty("os.name").contains("Windows"))
 						{
 							PathToDCRAW = "Library\\dcraw.exe";
 							PathToFFMPEG = "Library\\ffmpeg.exe";
 							
-							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG)});
+							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG)});
 						}
 						else
 						{
@@ -123,20 +123,42 @@ public static Process process;
 							process = processDCRAW.start();
 						}
 						
+						processDCRAW.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
+						
 						Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));
 						
 						isRunning = true;
 						
-						String line;
-						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-						
-						Console.consoleFFMPEG.append(System.lineSeparator());
-						
-						InputStream is = process.getInputStream();				
-						BufferedInputStream inputStream = new BufferedInputStream(is);
+						//Get file info
+						if (cmd.contains("PathToFFMPEG") == false)
+						{
+							String line;
+							Console.consoleFFMPEG.append(System.lineSeparator());
+							
+							BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));						
+							while ((line = input.readLine()) != null)
+							{					
+								if (line.contains("Output size:"))
+								{			
+									String split[] = line.split(" ");					  
+									
+					                FFPROBE.imageWidth = Integer.parseInt(split[2]);
+					                FFPROBE.imageHeight = Integer.parseInt(split[4]);
+					                FFPROBE.imageResolution = FFPROBE.imageWidth + "x" + FFPROBE.imageHeight;
+					                FFPROBE.imageRatio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;  
+						            
+						            break;
+								}
+								
+							    Console.consoleFFMPEG.append(line + System.lineSeparator());																		
+							}	
+						}
 						
 						if (cmd.contains("-f rawvideo"))
 						{
+							InputStream is = process.getInputStream();				
+							BufferedInputStream inputStream = new BufferedInputStream(is);
+							
 							VideoPlayer.preview = VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), true);
 							VideoPlayer.frameVideo = VideoPlayer.preview;
 							
@@ -146,53 +168,7 @@ public static Process process;
 							{
 								VideoPlayer.player.repaint();
 							}
-						}
-						
-						while ((line = input.readLine()) != null)
-						{							
-							if (line.contains("Video: ppm"))
-							{			
-								String split[] = line.split(",");
-					            int i = 0;
-					            do {
-					                i ++;
-					            } while ((split[i].contains("x") == false || split[i].contains("xyz")) && i < split.length - 1);
-					            
-					            if (split[i].contains("["))
-					            {
-					            	String s[] = split[i].split("\\[");
-					            	split[i] = s[0].replace(" ","");
-					            }
-					            
-					            if (split[i].contains("unspecified size") == false && split[i].contains("x"))
-					            {		
-					                String resolution = split[i].substring(split[i].indexOf("x") + 1);
-					              	String splitr[] = resolution.split(" ");
-					                String height = split[i];						                
-					                String splitx[]= height.split("x");			
-					                String getHeight[] = splitx[1].split(" ");
-					                
-					                FFPROBE.imageWidth = Integer.parseInt(splitx[0].replace(" ", ""));
-					                FFPROBE.imageHeight = Integer.parseInt(splitr[0]);
-					                FFPROBE.imageResolution = FFPROBE.imageWidth + "x" + FFPROBE.imageHeight;
-					                
-					                //Ratio du lecteur
-					                if (line.contains("DAR"))
-					                {
-					                	String[] splitDAR = line.split("DAR");
-					                	String[] splitDAR2 = splitDAR[1].split(",");
-					                	String[] splitDAR3 = splitDAR2[0].replace(" ", "").replace("]", "").split(":");
-					                	int ratioWidth = Integer.parseInt(splitDAR3[0]);
-					                	int ratioHeight = Integer.parseInt(splitDAR3[1]);
-					                	FFPROBE.imageRatio = (float) ratioWidth / ratioHeight;
-					                }
-					                else
-					                	FFPROBE.imageRatio = (float) Integer.parseInt(splitx[0].replace(" ", "")) / Integer.parseInt(getHeight[0]);  
-					            }
-							}
-							
-						    Console.consoleFFMPEG.append(line + System.lineSeparator());																		
-						}							
+						}						
 						process.waitFor();
 
 						FFPROBE.interlaced = null;						

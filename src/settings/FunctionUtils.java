@@ -66,6 +66,7 @@ import application.Utils;
 import application.VideoPlayer;
 import application.fileOverwriteWindow;
 import functions.Transcribe;
+import library.DCRAW;
 import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -175,6 +176,14 @@ public class FunctionUtils extends Shutter {
 		}
 		else
 		{
+			if (isRaw)
+			{
+				DCRAW.run(" -i -v " + '"' + file + '"');
+				do {
+					Thread.sleep(100);
+				} while (DCRAW.isRunning);
+			}
+			
 			if (FFPROBE.interlaced == null)
 			{
 				FFPROBE.interlaced = "0";

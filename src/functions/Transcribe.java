@@ -55,7 +55,7 @@ public class Transcribe extends Shutter {
 
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{	
-					if (comboFonctions.getSelectedItem().toString().equals("functionTranscribe") == false)
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false)
 					{
 						if (list.getElementAt(i).equals(VideoPlayer.videoPath) == false)
 						{
@@ -95,7 +95,7 @@ public class Transcribe extends Shutter {
 						
 						//Container
 						String container = comboFilter.getSelectedItem().toString();	
-						if (comboFonctions.getSelectedItem().toString().equals("functionTranscribe") == false)
+						if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false)
 							container = ".srt";
 						
 						//Output name
@@ -211,7 +211,7 @@ public class Transcribe extends Shutter {
 
 				enfOfFunction();	
 				
-				if (comboFonctions.getSelectedItem().toString().equals("functionTranscribe") == false && FFMPEG.error == false && cancelled == false)
+				if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false && FFMPEG.error == false && cancelled == false)
 				{
 					fileList.setSelectedValue(currentFile, true);						
 					comboSubsSource.setSelectedIndex(0);

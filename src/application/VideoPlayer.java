@@ -5642,9 +5642,10 @@ public class VideoPlayer {
 							inputPoint = "";
 						
 						String tiles = "";
-						if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
+						int tilesNumber = FFPROBE.gridRows * FFPROBE.gridCols;
+						if ((extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif")) && FFPROBE.gridRows != 0 && FFPROBE.gridCols != 0)
 						{
-							for (int i = 0 ; i < FFPROBE.tilesNumber ; i++)
+							for (int i = 0 ; i < tilesNumber ; i++)
 							{
 								tiles += "[0:v:" + i + "]";
 							}
@@ -5655,7 +5656,7 @@ public class VideoPlayer {
 								scale = FFPROBE.imageHeight + ":" + FFPROBE.imageWidth + ":0:0,transpose=1";
 							}
 							
-							tiles = " -filter_complex " + '"' + tiles  + "concat=n=" + FFPROBE.tilesNumber + ",tile=8x6,crop=" + scale + '"'; 
+							tiles = " -filter_complex " + '"' + tiles  + "concat=n=" + tilesNumber + ",tile=" + FFPROBE.gridRows + "x" + FFPROBE.gridCols + ",crop=" + scale + '"'; 
 						}
 				
 						//Creating preview file																
@@ -5679,7 +5680,7 @@ public class VideoPlayer {
 							else if (isRaw)
 							{									
 								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								DCRAW.run(" -v -w -c -q 0 -o 1 -h -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+								DCRAW.run(" -v -w -c -q 0 -o 1 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 								
 					            do {
 					            	Thread.sleep(10);  					            	
@@ -5802,7 +5803,7 @@ public class VideoPlayer {
 			}	
 						
 			Console.consoleFFMPEG.append(cmd + System.lineSeparator());
-			
+
 			if (preview != null)
 			{
 		        OutputStream outputStream = process.getOutputStream();

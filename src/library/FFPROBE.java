@@ -103,7 +103,8 @@ public static int gopCount = 0;
 public static int gopSpace = 124;
 public static boolean hasAlpha = false;
 public static boolean isRotated = false;
-public static int tilesNumber = 0;
+public static int gridRows = 0;
+public static int gridCols = 0;
 
 	public static void Data(final String file) {	
 			
@@ -152,7 +153,6 @@ public static int tilesNumber = 0;
 			FFMPEG.error = false;
 			hasAudio = false; 		
 			attachedPic = false;
-			tilesNumber = 0;
 			btnStart.setEnabled(false);
 			
 			imageRatio = 1.777777f;
@@ -461,21 +461,6 @@ public static int tilesNumber = 0;
 						            }
 				                }
 				                
-				                //Retrieve the tiles number for Video: stream
-				                if (line.contains("Tile Grid:"))
-				                {
-				                	do {				                		
-				                		line = input.readLine();	
-				                	} while (line.contains("Video:") == false && line != null);
-				                	
-				                	Pattern streamPattern = Pattern.compile("Stream #0:(\\d+).*Video:");
-				                	Matcher tiles = streamPattern.matcher(line);
-				                    if (tiles.find())
-				                    {
-				                    	tilesNumber = Integer.parseInt(tiles.group(1));
-				                    }				                    
-				                }
-				                
 				                videoStreamAnalyzed = true;
 							 }
 							
@@ -655,7 +640,10 @@ public static int tilesNumber = 0;
 	}
 
 	public static void FrameData(final String file) {	
-						
+				
+		Console.consoleFFPROBE.append(System.lineSeparator());
+	    Console.consoleFFPROBE.append(language.getProperty("file") + language.getProperty("colon") + " " + file);
+		
 		videoStream = false;
 		pixelformat = "";
 		imageDepth = 8;		
@@ -666,7 +654,9 @@ public static int tilesNumber = 0;
 		maxFALL = 400;
 		hasAlpha = false;
 		isRotated = false;
-
+		gridRows = 0;
+		gridCols = 0;
+		
 		FFMPEG.error = false;
 		btnStart.setEnabled(false);
 		
@@ -675,7 +665,15 @@ public static int tilesNumber = 0;
 			@Override
 			public void run() {
 				
-				try {		
+				try {	
+					
+					String extension = file.substring(file.lastIndexOf("."));;
+					
+					String loglevel = "warning";
+					if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
+					{
+						loglevel = "trace";
+					}
 					
 					String PathToFFPROBE;
 					ProcessBuilder processFFPROBE;
@@ -684,14 +682,14 @@ public static int tilesNumber = 0;
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
 						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
-						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_frames -show_streams -read_intervals %+#1 -loglevel warning -i " + '"' + file + '"');
+						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_frames -show_streams -read_intervals %+#1 -loglevel " + loglevel + " -i " + '"' + file + '"');
 					}
 					else
 					{
 						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
 						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
-						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel warning");
+						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel " + loglevel);
 					}	
 					
 					isRunning = true;	
@@ -706,14 +704,25 @@ public static int tilesNumber = 0;
 					        InputStreamReader esr = new InputStreamReader(process.getErrorStream());
 					        BufferedReader bre = new BufferedReader(esr);
 							
-					        Console.consoleFFPROBE.append(System.lineSeparator());
-					        
 							String line;
 							try {
 								
 								while ((line = bre.readLine()) != null)
 								{
 									Console.consoleFFPROBE.append(line + System.lineSeparator());
+																		 						                
+						            //Retrieve the tiles number for Video: stream
+									if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
+									{							  
+										  
+										if (line.contains("grid_rows"))
+							            {	
+							            	String s[] = line.split("grid_rows");
+							            	String s2[] = s[1].split(" ");
+					            			gridCols = Integer.valueOf(s2[1]);		
+							            	gridRows = Integer.valueOf(s2[3]);
+							             }
+									 }
 								}
 								
 							} catch (IOException e) {}
@@ -841,12 +850,12 @@ public static int tilesNumber = 0;
 						  if (line.contains("alpha_mode=1") || FFPROBE.pixelformat.contains("a"))
 						  {
 							  hasAlpha = true;
-						  }
-						  
+						  }	
 					}										
 													
 				} catch (Exception e) {	
 					FFMPEG.error = true;
+					e.printStackTrace();
 				} finally {
 					isRunning = false;
 					btnStart.setEnabled(true);
@@ -856,6 +865,7 @@ public static int tilesNumber = 0;
 			}			
 		});
 		processFrameData.start();
+		
 	}
 	
 	public static void AnalyzeGOP(final String file, boolean isGOPWindow) {

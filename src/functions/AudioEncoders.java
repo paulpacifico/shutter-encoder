@@ -306,29 +306,7 @@ public class AudioEncoders extends Shutter {
 						//Command				
 						if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio
 						{
-							if (FFPROBE.surround)
-							{
-								if (lblSplit.getText().equals(language.getProperty("mono")))
-								{								
-									String cmd = " -filter_complex " + '"' + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -y ";
-									FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd
-									+ " -map " + '"' + "[FL]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FL" + container) + '"'
-									+ " -map " + '"' + "[FR]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FR" + container) + '"'
-									+ " -map " + '"' + "[FC]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_FC" + container) + '"'
-									+ " -map " + '"' + "[LFE]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_LFE" + container) + '"'
-									+ " -map " + '"' + "[BL]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_BL" + container) + '"'
-									+ " -map " + '"' + "[BR]" + '"' + " " + '"'  + fileOut.toString().replace(container, "_BR" + container) + '"');
-								}
-								else if (lblSplit.getText().equals(language.getProperty("stereo")))
-								{		
-									String cmd = " -af " + '"' + "pan=stereo|c0=FL|c1=FR" + '"' + " -y ";
-									FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
-								}
-							}
-							else 
-							{
-								splitAudio(audioCodec, prefix, fileName, extension, file, labelOutput, container, DRC);		
-							}
+							splitAudio(audioCodec, prefix, fileName, extension, file, labelOutput, fileOut.toString(), container, DRC);
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("2.1"))
 						{
@@ -508,7 +486,7 @@ public class AudioEncoders extends Shutter {
 			
 			audio += "-filter_complex amerge=inputs=" + list.size() + audioFiltering + " -ac 1 ";
 			
-		}
+		}		
 		else if (FFPROBE.stereo)
 		{
 			if (audioFiltering != "")     
@@ -541,7 +519,7 @@ public class AudioEncoders extends Shutter {
 		return audio;
 	}
 	
-	private static void splitAudio(String codec, String prefix, String fileName, String extension, File file, String output, String container, String DRC) throws InterruptedException {
+	private static void splitAudio(String codec, String prefix, String fileName, String extension, File file, String output, String fileOut, String container, String DRC) throws InterruptedException {
 		
 		String audioFiltering = "";	
 		
@@ -577,22 +555,46 @@ public class AudioEncoders extends Shutter {
 		if (caseSampleRate.isSelected())
 			sampleRate = " -ar " + lbl48k.getSelectedItem().toString();
 		
-		if (FFPROBE.channels == 1 && lblSplit.getText().equals(language.getProperty("mono")))
+		if (FFPROBE.surround)
+		{		
+			if (audioFiltering != "")
+			{
+				audioFiltering = audioFiltering.substring(1, audioFiltering.length()) + ",";
+			}
+			
+			if (lblSplit.getText().equals(language.getProperty("mono")))
+			{								
+				String cmd = " -filter_complex " + '"' + audioFiltering + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -y ";
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd
+				+ " -map " + '"' + "[FL]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FL" + container) + '"'
+				+ " -map " + '"' + "[FR]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FR" + container) + '"'
+				+ " -map " + '"' + "[FC]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FC" + container) + '"'
+				+ " -map " + '"' + "[LFE]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_LFE" + container) + '"'
+				+ " -map " + '"' + "[BL]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_BL" + container) + '"'
+				+ " -map " + '"' + "[BR]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_BR" + container) + '"');
+			}
+			else if (lblSplit.getText().equals(language.getProperty("stereo")))
+			{		
+				String cmd = " -af " + '"' + audioFiltering + "pan=stereo|c0=FL|c1=FR" + '"' + " -c:a " + codec + sampleRate + " -y ";
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
+			}
+		}
+		else if (FFPROBE.channels == 1 && lblSplit.getText().equals(language.getProperty("mono")))
 		{		
 			for (int i = 1 ; i < 3; i ++)
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + i + container));
-				if(fileOut.exists())
+				File fileOutput = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + i + container));
+				if(fileOutput.exists())
 				{										
-					fileOut = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + i + "_", container);
-					if (fileOut == null)
+					fileOutput = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + i + "_", container);
+					if (fileOutput == null)
 						yesno = " -n ";	
 				}
 				
 				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFiltering + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + yesno;
-				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOutput + '"');	
 				
 				do
 					Thread.sleep(100);
@@ -600,7 +602,7 @@ public class AudioEncoders extends Shutter {
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 				{
-					if (lastActions(file, fileName, fileOut, output))
+					if (lastActions(file, fileName, fileOutput, output))
 						break;
 				}
 			}
@@ -616,11 +618,11 @@ public class AudioEncoders extends Shutter {
 			{
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + i + container));
-				if(fileOut.exists())
+				File fileOutput = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + i + container));
+				if(fileOutput.exists())
 				{										
-					fileOut = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + i + "_", container);
-					if (fileOut == null)
+					fileOutput = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + i + "_", container);
+					if (fileOutput == null)
 						yesno = " -n ";	
 				}
 				
@@ -628,7 +630,7 @@ public class AudioEncoders extends Shutter {
 					audioFiltering = audioFiltering.replaceFirst(",", " -filter_complex ");
 				
 				String cmd = audioFiltering + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + yesno;
-				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOutput + '"');	
 				
 				do
 					Thread.sleep(100);
@@ -636,31 +638,29 @@ public class AudioEncoders extends Shutter {
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 				{
-					if (lastActions(file, fileName, fileOut, output))
+					if (lastActions(file, fileName, fileOutput, output))
 						break;
 				}
 			}
 		}
 		else if (FFPROBE.channels > 1 && lblSplit.getText().equals(Shutter.language.getProperty("stereo")))
 		{
-			
 			int number = 1;
 			
 			for (int i = 1 ; i < FFPROBE.channels + 1; i +=2)
-			{
-				
+			{				
 				//Si le fichier existe
 				String yesno = " -y ";
-				File fileOut = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + number + container));
-				if(fileOut.exists())
+				File fileOutput = new File(output + "/" + prefix + fileName.replace(extension, "_Audio_" + number + container));
+				if(fileOutput.exists())
 				{										
-					fileOut = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + number + "_", container);
-					if (fileOut == null)
+					fileOutput = FunctionUtils.fileReplacement(output, prefix + fileName, extension, "_Audio_" + number + "_", container);
+					if (fileOutput == null)
 						yesno = " -n ";	
 				}
 				
 				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + yesno;
-				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');	
+				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOutput + '"');	
 				
 				do
 					Thread.sleep(100);
@@ -668,7 +668,7 @@ public class AudioEncoders extends Shutter {
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 				{
-					if (lastActions(file, fileName, fileOut, output))
+					if (lastActions(file, fileName, fileOutput, output))
 						break;
 				}
 				
