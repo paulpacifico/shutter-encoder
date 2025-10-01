@@ -63,7 +63,7 @@ public class InputAndOutput extends Shutter {
 	        	}
 	        	else
 	        	{
-	        		outPoint = " -t " + Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
+	        		outPoint = " -t " + (long) Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
 	        	}
 	        	
 	        }
