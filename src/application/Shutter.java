@@ -12143,7 +12143,13 @@ public class Shutter {
 			}
 		});
 
-		comboSubsSource = new JComboBox<String>(new String[] { language.getProperty("file"), language.getProperty("functionTranscribe") });
+		if ((System.getProperty("os.name").contains("Mac") && Shutter.arch.equals("x86_64")) || System.getProperty("os.name").contains("Linux"))
+		{
+			comboSubsSource = new JComboBox<String>(new String[] { language.getProperty("file") });
+		}
+		else
+			comboSubsSource = new JComboBox<String>(new String[] { language.getProperty("file"), language.getProperty("functionTranscribe") });
+		
 		comboSubsSource.setName("comboSubsSource");	
 		if (System.getProperty("os.name").contains("Mac"))
 		{

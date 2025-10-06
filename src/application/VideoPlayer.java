@@ -1670,16 +1670,31 @@ public class VideoPlayer {
 									} while (FFMPEG.isRunning);
 								} catch (InterruptedException e) {}		
 							}
-							
-							if (FFPROBE.subtitleStreams != Shutter.comboSubsSource.getItemCount() - 2)
+														
+							if ((System.getProperty("os.name").contains("Mac") && Shutter.arch.equals("x86_64")) || System.getProperty("os.name").contains("Linux"))
 							{
-								Shutter.comboSubsSource.removeAllItems();
-								Shutter.comboSubsSource.addItem(Shutter.language.getProperty("file"));								
-								for (int i = 0 ; i < FFPROBE.subtitleStreams ; i++)
+								if (FFPROBE.subtitleStreams != Shutter.comboSubsSource.getItemCount() - 1)
 								{
-									Shutter.comboSubsSource.addItem(Shutter.language.getProperty("source") + " #" + (i + 1));
+									Shutter.comboSubsSource.removeAllItems();
+									Shutter.comboSubsSource.addItem(Shutter.language.getProperty("file"));
+									for (int i = 0 ; i < FFPROBE.subtitleStreams ; i++)
+									{
+										Shutter.comboSubsSource.addItem(Shutter.language.getProperty("source") + " #" + (i + 1));
+									}
 								}
-								Shutter.comboSubsSource.addItem(Shutter.language.getProperty("functionTranscribe"));
+							}
+							else
+							{
+								if (FFPROBE.subtitleStreams != Shutter.comboSubsSource.getItemCount() - 2)
+								{
+									Shutter.comboSubsSource.removeAllItems();
+									Shutter.comboSubsSource.addItem(Shutter.language.getProperty("file"));								
+									for (int i = 0 ; i < FFPROBE.subtitleStreams ; i++)
+									{
+										Shutter.comboSubsSource.addItem(Shutter.language.getProperty("source") + " #" + (i + 1));
+									}
+									Shutter.comboSubsSource.addItem(Shutter.language.getProperty("functionTranscribe"));
+								}
 							}
 							
 							//Image sequence

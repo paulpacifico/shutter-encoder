@@ -178,10 +178,14 @@ public class WHISPER {
 			transcriberApp = new File("C:\\Program Files\\Shutter Transcriber\\Shutter Transcriber.exe");							
 			if (transcriberApp.exists())
 			{
-				WHISPER.PathToWHISPER = transcriberApp.getParent()+ "/Library/whisper-cli.exe";		
-				
 				//Check Whisper version
-				WHISPER.detectVulkanVersion();
+				detectVulkanVersion();
+				
+				String hardware = "vulkan";
+				if (useCPU)
+					hardware = "cpu";
+				
+				WHISPER.PathToWHISPER = transcriberApp.getParent()+ "/Library/" + hardware + "/whisper-cli.exe";		
 			}
 			else
 				transcriberApp = null;
@@ -273,15 +277,15 @@ public class WHISPER {
 	public static void getWhisperModel() {
 		
 		if (System.getProperty("os.name").contains("Windows"))
-		{
-			whisperModel = PathToWHISPER.replace("whisper-cli.exe", "models/" + modelName);
+		{			
+			whisperModel = new File(PathToWHISPER).getParentFile().getParentFile() + "/models/" + modelName;
 		}
 		else
 			whisperModel = PathToWHISPER.replace("whisper-cli", "models/" + modelName);
 	}
 	
 	public static void detectVulkanVersion() {
-	       
+
 		try {
 			
 			Process process = new ProcessBuilder("cmd.exe", "/c", "vulkaninfo | findstr " + '"' + "Vulkan Instance Version" + '"')
@@ -311,40 +315,26 @@ public class WHISPER {
             if (version == null)
             {
             	useCPU = true;
-            	return;
-            }
-
-        	File ggml_vulkan = new File(PathToWHISPER.replace("whisper-cli.exe", "ggml_vulkan.dll"));
-        	File ggml_cpu = new File(PathToWHISPER.replace("whisper-cli.exe", "ggml_cpu.dll"));
-        	File ggml = new File(PathToWHISPER.replace("whisper-cli.exe", "ggml.dll"));
-            
-        	String[] nums = version.split("\\.");
-            int major = nums.length > 0 ? Integer.parseInt(nums[0]) : 0;
-            int minor = nums.length > 1 ? Integer.parseInt(nums[1]) : 0;
-            
-            // Vulkan version min = 1.2.0
-            if (major > 1 || (major == 1 && minor >= 2))
-            {
-            	if (ggml_vulkan.exists())
-            	{
-            		ggml.renameTo(ggml_cpu);
-            		ggml_vulkan.renameTo(ggml);
-            	}
-            	
-            	useCPU = false;
             }
             else
             {
-            	if (ggml_cpu.exists())
-            	{
-            		ggml.renameTo(ggml_vulkan);
-            		ggml_cpu.renameTo(ggml);
-            	}
-            	
-            	useCPU = true;
+            	String[] nums = version.split("\\.");
+                int major = nums.length > 0 ? Integer.parseInt(nums[0]) : 0;
+                int minor = nums.length > 1 ? Integer.parseInt(nums[1]) : 0;
+                
+                // Vulkan version min = 1.2.0
+                if (major > 1 || (major == 1 && minor >= 2))
+                {
+                	useCPU = false;
+                }
+                else
+                {
+                	useCPU = true;
+                }
             }
-
-        } catch (Exception e) {
+        }
+		catch (Exception e)
+		{
         	useCPU = true;
         }
 	}

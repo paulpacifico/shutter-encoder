@@ -1180,12 +1180,12 @@ public static StringBuilder errorLog = new StringBuilder();
 		            {
 		            	Console.consoleFFMPEG.append(line + System.lineSeparator());
 		            	
-		                if (line.contains("NVIDIA"))
+		                if (line.contains("NVIDIA") || line.contains("GeForce"))
 		                {
 		                	hasNvidiaGPU = true;	
 		                	GPUCount ++;
 		                }
-		                else if (line.contains("AMD"))
+		                else if (line.contains("AMD") || line.contains("Radeon"))
 		                {
 		                	hasAMDGPU = true;	
 		                	GPUCount ++;
