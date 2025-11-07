@@ -1843,8 +1843,8 @@ public class Settings {
 				                break;
 				            }
 				        }
-				        
-						if (canBeDisplayed)
+
+						if (canBeDisplayed && Shutter.minHeight == 731)
 						{
 							Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
 						}

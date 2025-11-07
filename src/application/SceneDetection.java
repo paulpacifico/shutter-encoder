@@ -813,7 +813,7 @@ import javax.swing.JScrollPane;
 				
 				errorList.setLength(0);
 				
-				FFMPEG.enfOfFunction();
+				FFMPEG.endOfFunction();
 			}
 			
 		});

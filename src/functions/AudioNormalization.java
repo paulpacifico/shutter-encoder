@@ -248,7 +248,7 @@ public class AudioNormalization extends Shutter {
 				}
 				else if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

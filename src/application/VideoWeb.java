@@ -980,7 +980,7 @@ public class VideoWeb {
 	        	           }
 	        			});
 	        			FFMPEG.enableAll();	 
-	        			FFMPEG.enfOfFunction();	     
+	        			FFMPEG.endOfFunction();	     
 	        		}
 	        		else 
 	        		{	
@@ -1089,7 +1089,7 @@ public class VideoWeb {
 									}
 						       }
 								FFMPEG.enableAll();
-								FFMPEG.enfOfFunction();							
+								FFMPEG.endOfFunction();							
 			        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
 	        				}
 	        			}

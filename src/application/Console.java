@@ -62,7 +62,8 @@ public class Console extends JFrame {
 	public static JTextArea consoleTSMUXER =  new JTextArea();
 	public static JTextArea consoleMEDIAINFO =  new JTextArea();
 	public static JTextArea consoleYOUTUBEDL =  new JTextArea();
-	public static JTextArea consoleEXIFTOOL =  new JTextArea();
+	public static JTextArea consoleDCRAW =  new JTextArea();
+	public static JTextArea consoleEXIFTOOL =  new JTextArea();	
 	public static JTextArea consoleNCNN =  new JTextArea();
 	public static JTextArea consoleWHISPER =  new JTextArea();
 	public static JTabbedPane tabbedPane;
@@ -74,6 +75,7 @@ public class Console extends JFrame {
 	private JScrollPane scrollTSMUXER;
 	private JScrollPane scrollMEDIAINFO;
 	private JScrollPane scrollYOUTUBEDL;
+	private JScrollPane scrollDCRAW;
 	private JScrollPane scrollEXIFTOOL;
 	private JScrollPane scrollNCNN;
 	private JScrollPane scrollWHISPER;
@@ -100,7 +102,7 @@ public class Console extends JFrame {
 		}
 		else
 		{
-			frmConsole.setSize(800, 670);
+			frmConsole.setSize(900, 800);
 			frmConsole.getContentPane().setLayout(null);
 			frmConsole.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frmConsole.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frmConsole.getHeight()) / 2);
 		}
@@ -148,12 +150,15 @@ public class Console extends JFrame {
 						consoleYOUTUBEDL.setText("");
 						break;
 					case 8:
-						consoleEXIFTOOL.setText("");
+						consoleDCRAW.setText("");
 						break;
 					case 9:
-						consoleNCNN.setText("");
+						consoleEXIFTOOL.setText("");
 						break;
 					case 10:
+						consoleNCNN.setText("");
+						break;
+					case 11:
 						consoleWHISPER.setText("");
 						break;
 				}
@@ -199,12 +204,15 @@ public class Console extends JFrame {
 						dialog.setFile("YOUTUBEDL");
 						break;
 					case 8:
-						dialog.setFile("EXIFTOOL");
+						dialog.setFile("DCRAW");
 						break;
 					case 9:
-						dialog.setFile("NCNN");
+						dialog.setFile("EXIFTOOL");
 						break;
 					case 10:
+						dialog.setFile("NCNN");
+						break;
+					case 11:
 						dialog.setFile("WHISPER");
 						break;
 				}
@@ -244,12 +252,15 @@ public class Console extends JFrame {
 									writer.write(consoleYOUTUBEDL.getText());
 									break;
 								case 8:
-									writer.write(consoleEXIFTOOL.getText());
+									writer.write(consoleDCRAW.getText());
 									break;
 								case 9:
-									writer.write(consoleNCNN.getText());
+									writer.write(consoleEXIFTOOL.getText());
 									break;
 								case 10:
+									writer.write(consoleNCNN.getText());
+									break;
+								case 11:
 									writer.write(consoleWHISPER.getText());
 									break;
 							}
@@ -321,7 +332,8 @@ public class Console extends JFrame {
 				consoleDVDAUTHOR.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleTSMUXER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleMEDIAINFO.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
-				consoleYOUTUBEDL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
+				consoleYOUTUBEDL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleDCRAW.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleWHISPER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
@@ -368,7 +380,12 @@ public class Console extends JFrame {
 		consoleYOUTUBEDL.setBackground(Utils.c30);
 		consoleYOUTUBEDL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleYOUTUBEDL.setWrapStyleWord(true);
-		consoleYOUTUBEDL.addKeyListener(kl);
+		consoleYOUTUBEDL.addKeyListener(kl);		
+		consoleDCRAW.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleDCRAW.setBackground(Utils.c30);
+		consoleDCRAW.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
+		consoleDCRAW.setWrapStyleWord(true);
+		consoleDCRAW.addKeyListener(kl);		
 		consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
 		consoleEXIFTOOL.setBackground(Utils.c30);
 		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
@@ -408,6 +425,9 @@ public class Console extends JFrame {
 		
 		scrollYOUTUBEDL = new JScrollPane();	
 		scrollYOUTUBEDL.getViewport().add(consoleYOUTUBEDL);
+		
+		scrollDCRAW = new JScrollPane();	
+		scrollDCRAW.getViewport().add(consoleDCRAW); 
 		
 		scrollEXIFTOOL = new JScrollPane();	
 		scrollEXIFTOOL.getViewport().add(consoleEXIFTOOL); 
@@ -474,6 +494,13 @@ public class Console extends JFrame {
 	        }
 	    });		
 		
+		scrollDCRAW.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
+	        public void adjustmentValueChanged(AdjustmentEvent e) {  
+	        	if (followLine.isSelected())
+	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
+	        }
+	    });
+		
 		scrollEXIFTOOL.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
@@ -505,6 +532,7 @@ public class Console extends JFrame {
 		tabbedPane.add("TSMUXER", scrollTSMUXER);
 		tabbedPane.add("MEDIAINFO", scrollMEDIAINFO);
 		tabbedPane.add("YT-DLP", scrollYOUTUBEDL);
+		tabbedPane.add("DCRAW", scrollDCRAW);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
 		tabbedPane.add("NCNN", scrollNCNN);
 		tabbedPane.add("WHISPER", scrollWHISPER);

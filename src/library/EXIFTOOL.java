@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 
 import application.Console;
 import application.Shutter;
+import application.VideoPlayer;
 
 public class EXIFTOOL extends Shutter {
 	
@@ -124,10 +125,10 @@ private static Boolean horizontal = true;
 							  creationHours = time[0] + ":" + time[1] + ":" + time[2];
 						  }	
 						  
-						  if (line.contains("Image Width"))
+						  if (line.contains("Image Width") && line.contains("Original") == false)
 							  exifWidth = line.substring(line.indexOf(":") + 2);
 						  
-						  if (line.contains("Image Height"))
+						  if (line.contains("Image Height") && line.contains("Original") == false)
 							  exifHeight = line.substring(line.indexOf(":") + 2);	
 						  
 						  if (line.contains("Orientation") && scanOrientation)
@@ -142,6 +143,10 @@ private static Boolean horizontal = true;
 					}				
 					process.waitFor();
 					
+					FFPROBE.audioOnly = false;
+					FFPROBE.interlaced = null;						
+					FFPROBE.analyzedMedia = VideoPlayer.videoPath;	
+
 					//Si il n'y a pas d'exif on lit la date de création système
 					if (exifDate == "" && exifHours == "")
 					{

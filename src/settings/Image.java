@@ -404,7 +404,8 @@ public class Image extends Shutter {
 						
 		//GPU scaling
 		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=") && noGPU == false && filterGPU
-		&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false)
+		&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
+		&& comboResolution.getSelectedItem().toString().contains("AI") == false)
 		{
 			//Format
 			String bitDepth = "nv12";

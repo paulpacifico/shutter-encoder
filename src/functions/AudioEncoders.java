@@ -372,7 +372,7 @@ public class AudioEncoders extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

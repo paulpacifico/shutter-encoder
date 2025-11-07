@@ -155,7 +155,7 @@ public class FrameMD5 extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

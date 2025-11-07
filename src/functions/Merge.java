@@ -173,7 +173,7 @@ public class Merge extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

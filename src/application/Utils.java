@@ -2214,6 +2214,12 @@ public class Utils extends Shutter {
 							logoLocY = logo.getLocation().y;
 						}
 						
+						//Reload comboPreset value
+						if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
+						{
+							Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
+						}
+						
 					}
 									
 				}

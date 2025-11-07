@@ -171,7 +171,7 @@ public class Conform extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

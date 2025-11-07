@@ -261,7 +261,7 @@ public class Extract extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 				
 				extractComplete = true;

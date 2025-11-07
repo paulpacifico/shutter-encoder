@@ -66,7 +66,6 @@ import application.Utils;
 import application.VideoPlayer;
 import application.fileOverwriteWindow;
 import functions.Transcribe;
-import library.DCRAW;
 import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -97,7 +96,8 @@ public class FunctionUtils extends Shutter {
 		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 						
-		if (caseGenerateFromDate.isSelected()
+		if (isRaw
+		|| caseGenerateFromDate.isSelected()
 		|| comboFonctions.getSelectedItem().toString().contains("JPEG")
 		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
 		{
@@ -176,13 +176,6 @@ public class FunctionUtils extends Shutter {
 		}
 		else
 		{
-			if (isRaw)
-			{
-				DCRAW.run(" -i -v " + '"' + file + '"');
-				do {
-					Thread.sleep(100);
-				} while (DCRAW.isRunning);
-			}
 			
 			if (FFPROBE.interlaced == null)
 			{
@@ -1726,7 +1719,7 @@ public class FunctionUtils extends Shutter {
 
 							} catch (Exception e) {
 							} finally {
-								Shutter.enfOfFunction();
+								Shutter.endOfFunction();
 							}
 
 						}
@@ -1807,9 +1800,11 @@ public class FunctionUtils extends Shutter {
 												
 					if (input.equals(".srt") || input.equals(".vtt") || input.equals(".ssa") || input.equals(".ass") || input.equals(".scc"))
 					{
-						if (System.getProperty("os.name").contains("Windows")) {
+						if (System.getProperty("os.name").contains("Windows"))
+						{
 							Shutter.subtitlesFile = new File(dialog.getFile());
-						} else
+						}
+						else
 							Shutter.subtitlesFile = new File(Shutter.dirTemp + dialog.getFile());
 						
 						if (input.equals(".srt") || input.equals(".vtt"))

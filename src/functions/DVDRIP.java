@@ -170,7 +170,7 @@ public class DVDRIP extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

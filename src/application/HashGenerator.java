@@ -308,7 +308,7 @@ public class HashGenerator {
 		                    	frame.setModal(true);
 		                        Shutter.progressBar1.setValue(100);
 		                		FFMPEG.enableAll();	 
-		                		FFMPEG.enfOfFunction();	     
+		                		FFMPEG.endOfFunction();	     
 		                		
 		                		try {
 		                			Shutter.frame.setOpacity(0.5f);
@@ -389,7 +389,7 @@ public class HashGenerator {
  		                    	frame.setModal(true);
  		                        Shutter.progressBar1.setValue(100);
  		                		FFMPEG.enableAll();	 
- 		                		FFMPEG.enfOfFunction();	     
+ 		                		FFMPEG.endOfFunction();	     
  		                		
  		                		try {
  		                			Shutter.frame.setOpacity(0.5f);

@@ -124,7 +124,7 @@ public class ReplaceAudio extends Shutter {
 		}
 		else
 		{
-			enfOfFunction();					
+			endOfFunction();					
 		}
 		
     }

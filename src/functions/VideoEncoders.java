@@ -869,7 +869,7 @@ public class VideoEncoders extends Shutter {
 							}	
 						}
 						
-						String gpuDecoding = FFMPEG.setGPUDevice(filterComplex);
+						String gpuDecoding = FFMPEG.setGPUDevice(filterComplex);						
 						
 						//GPU filtering
 			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
@@ -1100,7 +1100,7 @@ public class VideoEncoders extends Shutter {
 										
 										lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																												
-										BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName + '"' + " " + '"' + fileOut.toString() + '"');
+										BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + fileOut.toString() + '"');
 									
 										do
 										{
@@ -1201,7 +1201,7 @@ public class VideoEncoders extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

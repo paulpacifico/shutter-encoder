@@ -125,7 +125,7 @@ public class BlackDetection extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

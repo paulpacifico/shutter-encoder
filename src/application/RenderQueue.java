@@ -931,7 +931,7 @@ import settings.FunctionUtils;
 								parallelValue.setEnabled(true);
 							}
 						}
-						Shutter.enfOfFunction();
+						Shutter.endOfFunction();
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 						
 						if (tableRow.getRowCount() > 0)

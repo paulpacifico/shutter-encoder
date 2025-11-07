@@ -263,7 +263,7 @@ public class Rewrap extends Shutter {
 
 							lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
 																									
-							BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName + '"' + " " + '"' + file + '"');
+							BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + file + '"');
 						
 							do
 							{
@@ -329,7 +329,7 @@ public class Rewrap extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

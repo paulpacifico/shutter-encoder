@@ -113,7 +113,7 @@ public class SEVENZIP extends Shutter {
 				           }
 						});	
 										
-						FFMPEG.enfOfFunction();
+						FFMPEG.endOfFunction();
 						FFMPEG.enableAll();
 					 }
 					 

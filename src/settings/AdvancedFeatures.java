@@ -373,6 +373,11 @@ public class AdvancedFeatures extends Shutter {
 		    			else
 		    				profile = "main444-10";    
 		    		}
+		    		
+		    		if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+		    		{
+		    			profile = profile.replace("-", "");
+		    		}
 		        	
 		    		return " -profile:v " + profile + " -level:v " + Shutter.comboForceLevel.getSelectedItem().toString();
 		        }

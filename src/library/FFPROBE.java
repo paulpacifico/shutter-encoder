@@ -622,6 +622,12 @@ public static int gridCols = 0;
 					}		
 					process.waitFor();	
 	
+					//Reload comboPreset value
+					if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
+					{
+						Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
+					}
+					
 					Console.consoleFFPROBE.append(System.lineSeparator());
 								
 					} catch (Exception e) {	
@@ -644,6 +650,7 @@ public static int gridCols = 0;
 		Console.consoleFFPROBE.append(System.lineSeparator());
 	    Console.consoleFFPROBE.append(language.getProperty("file") + language.getProperty("colon") + " " + file);
 		
+	    videoStreamAnalyzed = false;
 		videoStream = false;
 		pixelformat = "";
 		imageDepth = 8;		
@@ -780,7 +787,13 @@ public static int gridCols = 0;
 			              //Detect video stream
 						  if (line.contains("codec_type="))
 						  {
-							  if (line.contains("codec_type=video"))
+							  //If already analyzed, stop the loop for the next iteration
+							  if (videoStream)
+							  {
+								  videoStreamAnalyzed = true;								  
+							  }
+							  
+							  if (line.contains("codec_type=video") && videoStreamAnalyzed == false)
 							  {
 								  videoStream = true;
 							  }
@@ -789,7 +802,7 @@ public static int gridCols = 0;
 						  }
 						  	
 						  if (line.contains("bits_per_raw_sample") && videoStream)
-						  {
+						  {							  
 							  String depth = line.substring(line.indexOf("bits_per_raw_sample") + 20);
 							  
 							  if (depth.equals("N/A") == false)
@@ -850,7 +863,7 @@ public static int gridCols = 0;
 						  if (line.contains("alpha_mode=1") || FFPROBE.pixelformat.contains("a"))
 						  {
 							  hasAlpha = true;
-						  }	
+						  }							  
 					}										
 													
 				} catch (Exception e) {	
@@ -1234,6 +1247,7 @@ public static int gridCols = 0;
 	
 	@SuppressWarnings("rawtypes")
 	public static void setFilesize() {
+		
 		if (grpBitrate.isVisible())
 		{
 			int multi = 0;

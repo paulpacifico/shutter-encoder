@@ -32,8 +32,11 @@ import application.Shutter;
 import application.Utils;
 import application.VideoPlayer;
 import library.FFMPEG;
+import library.FFPROBE;
 import library.WHISPER;
 import settings.FunctionUtils;
+import settings.InputAndOutput;
+import settings.Timecode;
 
 public class Transcribe extends Shutter {
 
@@ -75,7 +78,19 @@ public class Transcribe extends Shutter {
 						String fileName = file.getName();
 						String extension =  fileName.substring(fileName.lastIndexOf("."));
 						
-						lblCurrentEncoding.setText(fileName);						
+						lblCurrentEncoding.setText(fileName);	
+						
+						//Write the in and out values before getInputAndOutput()
+						if (VideoPlayer.caseApplyCutToAll.isSelected())
+						{							
+							VideoPlayer.videoPath = file.toString();							
+							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayer.setFileList();	
+						}
+						
+						//InOut	
+						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));
 				
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -137,7 +152,7 @@ public class Transcribe extends Shutter {
 						//Command
 						String cmd = " -c:a pcm_s16le -ac 1 -ar 16000 -vn -y ";
 										
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + waveFile + '"');		
+						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"' + waveFile + '"');		
 						
 						do {
 							Thread.sleep(100);
@@ -181,7 +196,7 @@ public class Transcribe extends Shutter {
 									formatSubtitles(transcribedFile.toPath(), fileOut.toPath(), container);
 								}	
 								else
-									transcribedFile.renameTo(fileOut);
+									formatText(transcribedFile.toPath(), fileOut.toPath());
 							}
 						}
 														
@@ -209,7 +224,7 @@ public class Transcribe extends Shutter {
 					}
 				}
 
-				enfOfFunction();	
+				endOfFunction();	
 				
 				if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false && FFMPEG.error == false && cancelled == false)
 				{
@@ -226,64 +241,102 @@ public class Transcribe extends Shutter {
 		
     }
 	
+	public static void formatText(Path input, Path output) throws IOException {
+	    List<String> lines = Files.readAllLines(input);
+	    List<String> cleaned = new ArrayList<>();
+
+	    for (String line : lines) {
+	        // Remove only leading whitespace, preserve internal and trailing
+	        cleaned.add(line.replaceFirst("^\\s+", ""));
+	    }
+
+	    Files.write(output, cleaned);
+	}
+	
 	public static void formatSubtitles(Path input, Path output, String extension) throws IOException {
 
-        boolean isVtt = extension.equals(".vtt");
+		boolean isVtt = extension.equalsIgnoreCase(".vtt");
 
-        List<String> lines = Files.readAllLines(input);
-        List<String> out = new ArrayList<>();
+	    List<String> lines = Files.readAllLines(input);
+	    List<String> out = new ArrayList<>();
 
-        for (int i = 0; i < lines.size();) {
-            String line = lines.get(i++).trim();
-            if (line.isEmpty()) continue;
+	    if (isVtt) {
+	        // Add mandatory header if missing
+	        if (lines.isEmpty() || !lines.get(0).startsWith("WEBVTT")) {
+	            out.add("WEBVTT");
+	            out.add("");
+	        }
+	    }
 
-            String index = "";
-            if (!isVtt && line.matches("\\d+")) { // SRT index
-                index = line;
-                line = lines.get(i++).trim();
-            }
+	    for (int i = 0; i < lines.size();) {
+	        String line = lines.get(i++).trim();
+	        if (line.isEmpty()) continue;
 
-            String timing = line;
-            if (isVtt) {
-                timing = timing.replace(',', '.'); // VTT uses dots
-            }
+	        String index = "";
+	        if (!isVtt && line.matches("\\d+")) { // SRT index
+	            index = line;
+	            line = lines.get(i++).trim();
+	        }
 
-            StringBuilder textBlock = new StringBuilder();
-            while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-                textBlock.append(" ").append(lines.get(i++).trim());
-            }
-            i++; // skip blank line
+	        String timing = line;
+	        if (isVtt) {
+	            timing = timing.replace(',', '.'); // ensure correct milliseconds format
+	        }
 
-            String wrapped = wrapText(textBlock.toString().trim(), 37);
+	        // Read full text block until blank line
+	        StringBuilder textBlock = new StringBuilder();
+	        while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
+	            String next = lines.get(i++).trim();
+	            // merge speaker lines with spaces
+	            if (textBlock.length() > 0) textBlock.append(" ");
+	            textBlock.append(next);
+	        }
 
-            if (!index.isEmpty()) out.add(index); // SRT index
-            out.add(timing);
-            out.addAll(Arrays.asList(wrapped.split("\n")));
-            out.add(""); // blank separator
-        }
+	        // Wrap while preserving "- " speaker markers and 2-line rule
+	        String wrapped = wrapText(textBlock.toString().trim(), 37);
 
-        Files.write(output, out);
+	        if (!index.isEmpty()) out.add(index); // SRT numbering
+	        out.add(timing);
+	        out.addAll(Arrays.asList(wrapped.split("\n")));
+	        out.add(""); // blank line separator
+	    }
+
+	    Files.write(output, out);
     }
 
     private static String wrapText(String text, int maxLineLength) {
     	
-    	String[] words = text.split(" ");
+    	// Split into words
+        String[] words = text.split("\\s+");
         StringBuilder line = new StringBuilder();
         List<String> lines = new ArrayList<>();
 
         for (String word : words) {
+            // Preserve "-" if it's a speaker prefix
+            if (word.equals("-")) {
+                if (line.length() > 0) {
+                    lines.add(line.toString().trim());
+                    line = new StringBuilder();
+                }
+                line.append("- ");
+                continue;
+            }
+
             if (line.length() + word.length() + 1 > maxLineLength) {
                 lines.add(line.toString().trim());
                 line = new StringBuilder();
             }
+
             line.append(word).append(" ");
         }
-        if (!line.isEmpty()) lines.add(line.toString().trim());
+        if (line.length() > 0) lines.add(line.toString().trim());
 
-        if (lines.size() > 2) { // max 2 lines
+        // Merge extra lines to ensure a max of 2
+        if (lines.size() > 2) {
             String second = String.join(" ", lines.subList(1, lines.size()));
             lines = Arrays.asList(lines.get(0), second);
         }
+
         return String.join("\n", lines);
     }
 	

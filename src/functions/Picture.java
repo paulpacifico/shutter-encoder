@@ -340,7 +340,7 @@ public class Picture extends Shutter {
 						{
 							btnStart.setEnabled(false);	
 							disableAll();
-							DCRAW.run(" -v -w -c -q 3 -o 1 -6 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');							
+							DCRAW.run(" -v -w -q 3 -o 1 -6 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');							
 						}
 						else if (inputDeviceIsRunning)
 						{	
@@ -436,7 +436,7 @@ public class Picture extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

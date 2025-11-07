@@ -123,7 +123,7 @@ public class LoudnessTruePeak extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

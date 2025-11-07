@@ -153,6 +153,7 @@ import functions.Conform;
 import functions.DVDRIP;
 import functions.Extract;
 import functions.Transcribe;
+import functions.Translate;
 import functions.FrameMD5;
 import functions.LoudnessTruePeak;
 import functions.Merge;
@@ -202,6 +203,7 @@ public class Shutter {
 	public static URL soundURL;
 	public static URL soundErrorURL;
 	public static JFrame frame = new JFrame();
+	public static int minHeight = 731;
 	public static int extendedWidth = 1350;
 	public static boolean noSettings = true;
 	public static boolean showDonateWindow = false;
@@ -849,6 +851,10 @@ public class Shutter {
 						+ language.getProperty("lblCrParPaul"), "About", JOptionPane.PLAIN_MESSAGE, icon);
 			});
 		}
+		
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+		taskBarHeight = (int) (dim.getHeight() - winSize.height);
 
 		frame.getContentPane().setBackground(Utils.bg32);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -856,8 +862,22 @@ public class Shutter {
 		frame.setBackground(Utils.bg32);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(332, 731);
-		frame.setMinimumSize(new Dimension(332, 731));
+		
+		if (minHeight > winSize.height)
+		{
+			minHeight = 651;
+			extendedWidth = 1130;
+			
+			frame.setSize(332, minHeight);
+			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, (dim.height - taskBarHeight) / 2 - frame.getSize().height / 2);
+		}
+		else
+		{
+			frame.setSize(332, minHeight);
+			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+		}
+		
+		frame.setMinimumSize(new Dimension(332, 651));
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45, 45, 45)));
@@ -868,11 +888,6 @@ public class Shutter {
 
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
-
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
-		frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 
 		frame.addWindowListener(new WindowAdapter() {
 
@@ -2600,9 +2615,9 @@ public class Shutter {
 
 						// list devices
 						if (System.getProperty("os.name").contains("Mac")) {
-							FFMPEG.devices("-f avfoundation -list_devices true -i dummy");
+							FFMPEG.devices("-hide_banner -f avfoundation -list_devices true -i dummy");
 						} else if (System.getProperty("os.name").contains("Windows")) {
-							FFMPEG.devices("-f dshow -list_devices true -i dummy" + '"');
+							FFMPEG.devices("-hide_banner -f dshow -list_devices true -i dummy" + '"');
 						} else // Linux
 						{
 							FFMPEG.videoDevices = new StringBuilder();
@@ -3554,6 +3569,17 @@ public class Shutter {
 								else
 									Transcribe.main();							
 								
+							} else if (language.getProperty("functionTranslate").equals(function)) {
+								
+								if (inputDeviceIsRunning)
+								{
+									JOptionPane.showMessageDialog(frame,								
+									language.getProperty("incompatibleInputDevice"),
+									language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								}
+								else
+									Translate.main();	
+
 							} else if (language.getProperty("functionReplaceAudio").equals(function)) {
 								if (inputDeviceIsRunning)
 									JOptionPane.showMessageDialog(frame,
@@ -3782,6 +3808,7 @@ public class Shutter {
 				language.getProperty("functionConform"), language.getProperty("functionMerge"),
 				language.getProperty("functionExtract"), language.getProperty("functionSubtitles"),
 				language.getProperty("functionInsert"), language.getProperty("functionTranscribe"),
+				language.getProperty("functionTranslate"),
 
 				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "ALAC", "MP3", "AAC", "AC3", "Opus",
 				"Vorbis", "Dolby Digital Plus", "Dolby TrueHD",
@@ -12167,7 +12194,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseAddSubtitles.isSelected())
+				if (caseAddSubtitles.isSelected() && VideoPlayer.loadMedia.isAlive() == false) //LoadMedia already load the subs
 				{
 					FunctionUtils.addSubtitles(false);
 					if (VideoPlayer.runProcess != null)
@@ -18968,7 +18995,7 @@ public class Shutter {
 
 				int i = e.getY() - 10;
 
-				if (frame.getSize().getHeight() + i < 731)
+				if (frame.getSize().getHeight() + i < 651)
 					i = 0;
 
 				int width = e.getX() + 10;
@@ -19106,7 +19133,14 @@ public class Shutter {
 		comboGPUDecoding.setName("comboGPUDecoding");
 		comboGPUDecoding.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboGPUDecoding.setEditable(false);
-		comboGPUDecoding.setSelectedItem("auto");
+		
+		if (System.getProperty("os.name").contains("Linux"))
+		{
+			comboGPUDecoding.setSelectedItem(language.getProperty("aucun"));
+		}
+		else
+			comboGPUDecoding.setSelectedItem("auto");
+		
 		comboGPUDecoding.setBounds(lblGpuDecoding.getX() + lblGpuDecoding.getWidth() + 6,
 				lblGpuDecoding.getLocation().y - 1, comboGPUDecoding.getPreferredSize().width, 16);
 		comboGPUDecoding.setMaximumRowCount(10);
@@ -19238,12 +19272,18 @@ public class Shutter {
 						comboForceProfile.setSelectedIndex(2);
 					}
 					else
-					{
-						comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main" }));
+					{					
+						if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+						{
+							comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main", "main422" }));
+						}
+						else
+							comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main" }));
+
 						comboForceProfile.setSelectedIndex(0);
 
-						if (comboFonctions.getSelectedItem().equals("H.265")
-								&& comboAccel.getSelectedItem().equals("Intel Quick Sync")) {
+						if (comboFonctions.getSelectedItem().equals("H.265") && comboAccel.getSelectedItem().equals("Intel Quick Sync"))
+						{
 							comboForceLevel.setVisible(false);
 						}
 					}
@@ -19309,13 +19349,14 @@ public class Shutter {
 				{
 					comboForceLevel.setVisible(true);
 
-					if ("H.264".equals(comboFonctions.getSelectedItem().toString())) {
-						comboForceProfile.setModel(new DefaultComboBoxModel<String>(
-								new String[] { "base", "main", "high", "high422", "high444" }));
+					if ("H.264".equals(comboFonctions.getSelectedItem().toString()))
+					{
+						comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "base", "main", "high", "high422", "high444" }));
 						comboForceProfile.setSelectedIndex(2);
-					} else {
-						comboForceProfile.setModel(
-								new DefaultComboBoxModel<String>(new String[] { "main", "main422", "main444" }));
+					}
+					else
+					{
+						comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main", "main422", "main444" }));
 						comboForceProfile.setSelectedIndex(0);
 					}
 
@@ -19600,8 +19641,9 @@ public class Shutter {
 			|| language.getProperty("functionCut").equals(function)
 			|| language.getProperty("functionRewrap").equals(function)
 			|| language.getProperty("functionMerge").equals(function)
-			|| language.getProperty("functionReplaceAudio").equals(function) || "WAV".equals(function)
-			|| "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function)
+			|| language.getProperty("functionReplaceAudio").equals(function) 
+			|| language.getProperty("functionTranscribe").equals(function)
+			|| "WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function)
 			|| "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "Opus".equals(function)
 			|| "Vorbis".equals(function) || "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)
 			|| "Loudness & True Peak".equals(function)
@@ -19623,8 +19665,8 @@ public class Shutter {
 			changeSections(anim);
 
 		} else if (language.getProperty("functionExtract").equals(function)
-				|| language.getProperty("functionInsert").equals(function) 
-				|| language.getProperty("functionTranscribe").equals(function)
+				|| language.getProperty("functionInsert").equals(function)				
+				|| language.getProperty("functionTranslate").equals(function)
 				|| "CD RIP".equals(function) || "DVD Rip".equals(function)
 				|| language.getProperty("functionSceneDetection").equals(function)
 				|| language.getProperty("functionWeb").equals(function)) {
@@ -19653,6 +19695,7 @@ public class Shutter {
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionInsert")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranscribe")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranslate")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
 		&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
 		&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
@@ -19970,8 +20013,8 @@ public class Shutter {
 		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false && forceFullSize == false) {
 			noSettings = true;
 
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 731) / 2,
-					332, 731);
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - minHeight) / 2,
+					332, minHeight);
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -19984,12 +20027,13 @@ public class Shutter {
 		} else if (language.getProperty("functionConform").equals(function) || "DV".equals(function)
 				|| language.getProperty("functionSubtitles").equals(function) || "Loudness & True Peak".equals(function)
 				|| language.getProperty("functionBlackDetection").equals(function)
-				|| language.getProperty("functionOfflineDetection").equals(function) || "VMAF".equals(function)) {
+				|| language.getProperty("functionOfflineDetection").equals(function)
+				|| language.getProperty("functionTranscribe").equals(function) || "VMAF".equals(function)) {
 			noSettings = true;
 
 			if (Settings.btnDisableVideoPlayer.isSelected()) {
 				frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2,
-						frame.getY() + (frame.getHeight() - 731) / 2, 332, 731);
+						frame.getY() + (frame.getHeight() - minHeight) / 2, 332, minHeight);
 				lblArrows.setVisible(true);
 				lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 				lblGpuDecoding.setVisible(false);
@@ -20079,8 +20123,8 @@ public class Shutter {
 		} else if (bigger == false && frame.getSize().width > 332 && forceFullSize == false) {
 			noSettings = true;
 
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - 731) / 2,
-					332, 731);
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - minHeight) / 2,
+					332, minHeight);
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -20171,12 +20215,12 @@ public class Shutter {
 			resizeAll(screenWidth, height);
 			frame.setLocation(screenX, screenOffset);
 		} else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth)) {
-			height = 731 - frame.getHeight();
+			height = minHeight - frame.getHeight();
 			resizeAll(extendedWidth, height);
 			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2,
 					dim.height / 2 - frame.getSize().height / 2 + screenOffset);
 		} else if (frame.getHeight() >= screenHeight - taskBarHeight) {
-			height = 731 - frame.getHeight();
+			height = minHeight - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), dim.height / 2 - frame.getSize().height / 2 + screenOffset);
 		} else {
@@ -20439,6 +20483,7 @@ public class Shutter {
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionExtract"))		
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe"))
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranslate"))
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")))
 		{			
 			Thread changeSize = new Thread(new Runnable() {
@@ -21015,10 +21060,11 @@ public class Shutter {
 										grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 
 							} else if ("Loudness & True Peak".equals(function)
-									|| language.getProperty("functionBlackDetection").equals(function)
-									|| language.getProperty("functionOfflineDetection").equals(function)
-									|| "VMAF".equals(function) || "FrameMD5".equals(function)
-									|| language.getProperty("functionInsert").equals(function)) {
+							|| language.getProperty("functionBlackDetection").equals(function)
+							|| language.getProperty("functionOfflineDetection").equals(function)
+							|| language.getProperty("functionTranscribe").equals(function)
+							|| "VMAF".equals(function) || "FrameMD5".equals(function)
+							|| language.getProperty("functionInsert").equals(function)) {
 
 								if (language.getProperty("functionBlackDetection").equals(function)
 										|| language.getProperty("functionOfflineDetection").equals(function)
@@ -22045,23 +22091,32 @@ public class Shutter {
 														"zerolatency", "psnr", "ssim" }));
 										comboForceTune.setSelectedIndex(0);
 									}
-								} else if ("H.265".equals(function)) {
-									if (comboAccel.getSelectedItem()
-											.equals(language.getProperty("aucune").toLowerCase()) == false
-											&& comboForceProfile.getModel().getSize() != 1) {
-										comboForceProfile
-												.setModel(new DefaultComboBoxModel<String>(new String[] { "main" }));
-										comboForceProfile.setSelectedIndex(0);
-									} else if (comboForceProfile.getModel().getSize() != 3 || comboForceProfile
-											.getModel().getElementAt(0).toString().equals("main") == false) {
-										comboForceProfile.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "main", "main422", "main444" }));
+								}
+								else if ("H.265".equals(function))
+								{
+									
+									if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
+									{
+										if (comboAccel.getSelectedItem().equals("OSX VideoToolbox") && comboForceProfile.getModel().getSize() != 2)
+										{
+											comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main", "main422" }));
+											comboForceProfile.setSelectedIndex(0);
+										}
+										else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox") == false && comboForceProfile.getModel().getSize() != 1)
+										{
+											comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main" }));
+											comboForceProfile.setSelectedIndex(0);
+										}										
+									}
+									else if (comboForceProfile.getModel().getSize() != 3 || comboForceProfile.getModel().getElementAt(0).toString().equals("main") == false)
+									{
+										comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main", "main422", "main444" }));
 										comboForceProfile.setSelectedIndex(0);
 									}
 
-									if (comboForceTune.getModel().getSize() != 6) {
-										comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "grain",
-												"animation", "fastdecode", "zerolatency", "psnr", "ssim" }));
+									if (comboForceTune.getModel().getSize() != 6)
+									{
+										comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "grain", "animation", "fastdecode", "zerolatency", "psnr", "ssim" }));
 										comboForceTune.setSelectedIndex(0);
 									}
 								}
@@ -23719,10 +23774,14 @@ public class Shutter {
 								{
 									addToList.setText(language.getProperty("dropFilesHere"));
 								}
+								else if (language.getProperty("functionTranslate").equals(function))
+								{
+									addToList.setText("<html>.txt<br>.srt<br>.vtt</html>");
+								}
 								else if (comboFonctions.getEditor().getItem().toString().isEmpty())
 								{
 									addToList.setText(language.getProperty("dropFilesHere"));
-								}
+								}								
 								else
 									addToList.setText(language.getProperty(""));
 
@@ -24121,6 +24180,35 @@ public class Shutter {
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
+				}
+				
+			} else if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranslate"))) {
+				
+				lblFilter.setText(" ");
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
+				lblFilter.setLocation(165, 23);
+				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
+
+				//Add comboBox languages
+				String[] allLanguages = new String[Utils.ISO_639_2_LANGUAGES.length];				
+				int x = 0;
+				for (String[] language : Utils.ISO_639_2_LANGUAGES)
+				{
+				    allLanguages[x] = language[2];
+				    x++;
+				}
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(allLanguages);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					
+					if (Utils.getLanguage.contains("("))
+					{
+						String s[] = Utils.getLanguage.split(" ");
+						comboFilter.setSelectedItem(s[0]);
+					}
+					else
+						comboFilter.setSelectedItem(Utils.getLanguage);
 				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("DV")) {
@@ -25221,7 +25309,7 @@ public class Shutter {
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
-	public static void enfOfFunction() {
+	public static void endOfFunction() {
 
 		if (errorList.length() != 0) {
 			if (Settings.btnDisableSound.isSelected() == false) {
@@ -25611,11 +25699,11 @@ class ListFileTransferHandler extends TransferHandler {
 
 						} else {
 							if (file.isFile() && file.getName().contains(".")) {
-								int s = file.getCanonicalPath().toString().lastIndexOf('.');
+								int s = file.toString().lastIndexOf('.');
 								String ext = file.getCanonicalFile().toString().substring(s);
 
 								if (ext.equals(".enc")) {
-									Utils.loadSettings(new File(file.getCanonicalPath().toString()));
+									Utils.loadSettings(new File(file.toString()));
 								} else {
 									if (file.isHidden() == false) {
 										boolean allowed = true;
@@ -25634,8 +25722,8 @@ class ListFileTransferHandler extends TransferHandler {
 											}
 										}
 
-										if (file.getCanonicalPath().toString().contains("\"")
-												|| file.getCanonicalPath().toString().contains("\'")
+										if (file.toString().contains("\"")
+												|| file.toString().contains("\'")
 												|| file.getName().contains("/") || file.getName().contains("\\")) {
 											if (FunctionUtils.allowsInvalidCharacters == false) {
 												JOptionPane.showConfirmDialog(Shutter.frame,
@@ -25648,13 +25736,13 @@ class ListFileTransferHandler extends TransferHandler {
 											}
 										}
 
-										Shutter.list.addElement(file.getCanonicalPath().toString());
+										Shutter.list.addElement(file.toString());
 										Shutter.addToList.setVisible(false);
 										Shutter.lblFiles.setText(Utils.filesNumber());
 									}
 								}
 							} else {
-								Utils.findFiles(file.getCanonicalPath().toString());
+								Utils.findFiles(file.toString());
 							}
 						}
 					}

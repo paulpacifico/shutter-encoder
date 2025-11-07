@@ -17,40 +17,11 @@
 * 
 ********************************************************************************************/
 
-/*
-   dcraw.c -- Dave Coffin's raw photo decoder
-   Copyright 1997-2016 by Dave Coffin, dcoffin a cybercom o net
-
-   This is a command-line ANSI C program to convert raw photos from
-   any digital camera on any computer running any operating system.
-
-   No license is required to download and use dcraw.c.  However,
-   to lawfully redistribute dcraw, you must either (a) offer, at
-   no extra charge, full source code* for all executable files
-   containing RESTRICTED functions, (b) distribute this code under
-   the GPL Version 2 or later, (c) remove all RESTRICTED functions,
-   re-implement them, or copy them from an earlier, unrestricted
-   Revision of dcraw.c, or (d) purchase a license from the author.
-
-   The functions that process Foveon images have been RESTRICTED
-   since Revision 1.237.  All other code remains free for all uses.
-
-   *If you have not modified dcraw.c in any way, a link to my
-   homepage qualifies as "full source code".
-
-   $Revision: 1.477 $
-   $Date: 2016/05/10 21:30:43 $
- */
-
 package library;
 
-import java.awt.Cursor;
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import application.Console;
 import application.RenderQueue;
@@ -75,18 +46,18 @@ public static Process process;
 			String PathToFFMPEG;
 			if (System.getProperty("os.name").contains("Windows"))
 			{
-				PathToDCRAW = "Library\\dcraw.exe";
+				PathToDCRAW = "Library\\dcraw_emu.exe";
 				PathToFFMPEG = "Library\\ffmpeg.exe";
 			}
 			else
 			{
 				PathToDCRAW = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				PathToDCRAW = PathToDCRAW.substring(0,PathToDCRAW.length()-1);
-				PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw";
-				PathToFFMPEG = PathToDCRAW.replace("dcraw", "ffmpeg");
+				PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw_emu";
+				PathToFFMPEG = PathToDCRAW.replace("dcraw_emu", "ffmpeg");
 			}
 			
-	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dcraw" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
+	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dcraw_emu" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
 	        RenderQueue.caseRunParallel.setSelected(false);
 	        RenderQueue.caseRunParallel.setEnabled(false);
 	        RenderQueue.parallelValue.setEnabled(false);
@@ -99,15 +70,17 @@ public static Process process;
 		else
 		{
 			runProcess = new Thread(new Runnable()  {
+				
 				@Override
 				public void run() {
+					
 					try {
 						String PathToDCRAW;
 						String PathToFFMPEG;
 						ProcessBuilder processDCRAW = null;
 						if (System.getProperty("os.name").contains("Windows"))
 						{
-							PathToDCRAW = "Library\\dcraw.exe";
+							PathToDCRAW = "Library\\dcraw_emu.exe";
 							PathToFFMPEG = "Library\\ffmpeg.exe";
 							
 							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG)});
@@ -116,8 +89,8 @@ public static Process process;
 						{
 							PathToDCRAW = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 							PathToDCRAW = PathToDCRAW.substring(0,PathToDCRAW.length()-1);
-							PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw";
-							PathToFFMPEG = PathToDCRAW.replace("dcraw", "ffmpeg");
+							PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw_emu";
+							PathToFFMPEG = PathToDCRAW.replace("dcraw_emu", "ffmpeg");
 							
 							processDCRAW = new ProcessBuilder("/bin/bash", "-c" , PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));								
 							process = processDCRAW.start();
@@ -125,34 +98,9 @@ public static Process process;
 						
 						processDCRAW.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 						
-						Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));
+						Console.consoleDCRAW.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));
 						
 						isRunning = true;
-						
-						//Get file info
-						if (cmd.contains("PathToFFMPEG") == false)
-						{
-							String line;
-							Console.consoleFFMPEG.append(System.lineSeparator());
-							
-							BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));						
-							while ((line = input.readLine()) != null)
-							{					
-								if (line.contains("Output size:"))
-								{			
-									String split[] = line.split(" ");					  
-									
-					                FFPROBE.imageWidth = Integer.parseInt(split[2]);
-					                FFPROBE.imageHeight = Integer.parseInt(split[4]);
-					                FFPROBE.imageResolution = FFPROBE.imageWidth + "x" + FFPROBE.imageHeight;
-					                FFPROBE.imageRatio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;  
-						            
-						            break;
-								}
-								
-							    Console.consoleFFMPEG.append(line + System.lineSeparator());																		
-							}	
-						}
 						
 						if (cmd.contains("-f rawvideo"))
 						{
@@ -170,105 +118,20 @@ public static Process process;
 							}
 						}						
 						process.waitFor();
-
-						FFPROBE.interlaced = null;						
-						FFPROBE.analyzedMedia = VideoPlayer.videoPath;	
 						
 						VideoPlayer.setInfo();
 						VideoPlayer.resizeAll();
 						
-						Console.consoleFFMPEG.append(System.lineSeparator());
+						Console.consoleDCRAW.append(System.lineSeparator());
 										
-						} catch (IOException | InterruptedException e) {
-							error = true;
-						} finally {
-							isRunning = false;	
-						}						
+					} catch (IOException | InterruptedException e) {
+						error = true;
+					} finally {
+						isRunning = false;	
+					}						
 				}				
 			});		
 			runProcess.start();
 		}
 	}
-	
-	public static void toFFPLAY(final String filter) {
-		
-		error = false;		
-		
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
-		runProcess = new Thread(new Runnable()  {
-			@Override
-			public void run() {
-				try {
-					
-					String PathToDCRAW;
-					ProcessBuilder processDCRAW;
-					File file;
-					if (fileList.getSelectedIndices().length == 0)
-						file = new File(list.firstElement());
-					else							
-						file = new File(fileList.getSelectedValue());
-					
-					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						PathToDCRAW = "Library\\dcraw.exe";						
-						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"'});
-					}
-					else
-					{
-						PathToDCRAW = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToDCRAW = PathToDCRAW.substring(0,PathToDCRAW.length()-1);
-						PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw";
-						processDCRAW = new ProcessBuilder("/bin/bash", "-c" , PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"');	
-						process = processDCRAW.start();
-					}
-									
-					Console.consoleFFPLAY.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + " -v -w -c -q 0 -6 " + '"' + file.toString() + '"' + " | " + PathToDCRAW.replace("dcraw", "ffplay") + " -fs -i -" + filter + " -window_title " + '"' + file + '"');
-						
-					isRunning = true;
-					
-					String line;
-					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));				
-					
-					Console.consoleFFPLAY.append(System.lineSeparator());
-					
-					while ((line = input.readLine()) != null) {
-						
-						Console.consoleFFPLAY.append(line + System.lineSeparator() );		
-					
-						//Erreurs
-						if (line.contains("Invalid data found when processing input") 
-								|| line.contains("No such file or directory")
-								|| line.contains("Invalid data found")
-								|| line.contains("No space left")
-								|| line.contains("does not contain any stream")
-								|| line.contains("Invalid argument")
-								|| line.contains("Error opening filters!")
-								|| line.contains("matches no streams")
-								|| line.contains("Error while opening encoder"))
-						{
-							error = true;
-							break;
-						} 								
-							 
-						 if (line.contains("frame"))
-							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));		
-						
-																		
-					}//While					
-					process.waitFor();	
-					
-					Console.consoleFFPLAY.append(System.lineSeparator());
-				   					     																		
-					} catch (IOException | InterruptedException e) {
-						error = true;
-					} finally {
-						isRunning = false;
-					}
-				
-			}				
-		});		
-		runProcess.start();	
-	}
-	
 }

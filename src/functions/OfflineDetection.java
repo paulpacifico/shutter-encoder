@@ -126,7 +126,7 @@ public class OfflineDetection extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

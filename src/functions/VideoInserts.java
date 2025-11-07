@@ -329,7 +329,7 @@ public class VideoInserts extends Shutter {
 				}
 				else
 				{
-					enfOfFunction();					
+					endOfFunction();					
 				}
 			}
 			

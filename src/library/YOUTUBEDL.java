@@ -30,6 +30,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
@@ -53,7 +55,7 @@ public static String format = "";
 		lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
         lblCurrentEncoding.setText(language.getProperty("getVideoName"));
 		error = false;
-		Shutter.cancelled  = false;
+		cancelled  = false;
 		
         outputFile = new File(lblDestination1.getText() + "/%(title)s.%(ext)s");
         if (caseSubFolder.isSelected() && txtSubFolder.getText().equals("") == false)
@@ -68,7 +70,7 @@ public static String format = "";
 			outputFile = new File(lblDestination1.getText() + "/" + txtSubFolder.getText() + "/%(title)s.%(ext)s");
 		}
         
-	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " " + format + " " + cmd + options + " --no-continue -o " + '"' + outputFile + '"' + System.lineSeparator());
+	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + language.getProperty("command") + " " + format + " " + cmd + options + " --no-continue -o " + '"' + outputFile + '"' + System.lineSeparator());
 
 		runProcess = new Thread(new Runnable()  {
 			
@@ -190,7 +192,7 @@ public static String format = "";
 		                            min = time[0].replace("TA", "") + "min ";
 		                        
 		                        lblBy.setVisible(false);
-		                        tempsRestant.setText(Shutter.language.getProperty("tempsRestant") + " " + min + time[1].replace(" ","") + "s");
+		                        tempsRestant.setText(language.getProperty("tempsRestant") + " " + min + time[1].replace(" ","") + "s");
 		                        tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
 		                        
 		                        if (tempsRestant.getX() + tempsRestant.getSize().width > lblArrows.getX())
@@ -198,22 +200,33 @@ public static String format = "";
 			       					lblArrows.setVisible(false);
 			       				}
 						    }
+						    
+						    if (lineOutput.contains("Sleeping"))
+						    {
+						    	Matcher m = Pattern.compile("\\d+(?:\\.\\d+)?").matcher(lineOutput);
+						    	
+						    	if (m.find())
+						    	{
+						    	    double value = Double.parseDouble(m.group());
+						    	    Thread.sleep((int) Math.ceil(value));
+						    	}
+						    }
 					    }
 					    						          						        		
-					} while (lineOutput != null && Shutter.cancelled == false);	
+					} while (lineOutput != null && cancelled == false);	
 					
 					process.waitFor();
 
 					Console.consoleYOUTUBEDL.append(System.lineSeparator());
 								     	
-                    if (Shutter.cancelled)
+                    if (cancelled)
                     	outputFile.delete();					
 														
 					} catch (IOException | InterruptedException e) {
 						
-	                    JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("downloadError"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+	                    JOptionPane.showMessageDialog(frame, language.getProperty("downloadError"), language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	                    error = true;
-	                    Shutter.cancelled = true;
+	                    cancelled = true;
 	                    
 					} finally {
 						isRunning = false;
@@ -297,9 +310,9 @@ public static String format = "";
 	
 	public static void update() {
 		error = false;
-		Shutter.cancelled  = false;
+		cancelled  = false;
 		
-	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -U " + System.lineSeparator());
+	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + language.getProperty("command") + " -U " + System.lineSeparator());
 
 		runProcess = new Thread(new Runnable()  {
 			
@@ -349,15 +362,15 @@ public static String format = "";
 												
 					    Console.consoleYOUTUBEDL.append(lineOutput + System.lineSeparator());		                
 						          						        		
-					} while(lineOutput != null && Shutter.cancelled == false);	
+					} while(lineOutput != null && cancelled == false);	
 					process.waitFor();			
 					
 					Console.consoleYOUTUBEDL.append(System.lineSeparator());
 														
 					} catch (IOException | InterruptedException e) {
-	                    JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("downloadError"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+	                    JOptionPane.showMessageDialog(frame, language.getProperty("downloadError"), language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 	                    error = true;
-	                    Shutter.cancelled = true;
+	                    cancelled = true;
 					} finally {
 						isRunning = false;
 					}
@@ -370,11 +383,11 @@ public static String format = "";
 	public static void getAvailableFormats(final String cmd, final String options) {
 		
 		lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-		lblCurrentEncoding.setText(Shutter.language.getProperty("getAvailableFormats"));
+		lblCurrentEncoding.setText(language.getProperty("getAvailableFormats"));
 		error = false;
-		Shutter.cancelled  = false;
+		cancelled  = false;
 		
-		Console.consoleYOUTUBEDL.append(System.lineSeparator() + Shutter.language.getProperty("command") + " -F " + cmd + options + System.lineSeparator());
+		Console.consoleYOUTUBEDL.append(System.lineSeparator() + language.getProperty("command") + " -F " + cmd + options + System.lineSeparator());
 		
 		runProcess = new Thread(new Runnable()  {
 			
@@ -439,16 +452,16 @@ public static String format = "";
 					do {
 						lineOutput = br.readLine();
 						formatsOutput.append(lineOutput + System.lineSeparator());															          						        		
-					} while(lineOutput != null && Shutter.cancelled == false);	
+					} while(lineOutput != null && cancelled == false);	
 			        
-					while ((line = input.readLine()) != null && Shutter.cancelled == false)
+					while ((line = input.readLine()) != null && cancelled == false)
 					{							
 					    Console.consoleYOUTUBEDL.append(line  + System.lineSeparator());
 					    
 				        if (line.contains("Not Found") || line.contains("Invalid URL") || line.contains("ERROR"))
 				        {
 				             error = true;
-				             Shutter.cancelled = true;
+				             cancelled = true;
 				        }
 					}	
 
@@ -458,7 +471,7 @@ public static String format = "";
 										
 				} catch (InterruptedException | IOException e) {
 					error = true;
-					Shutter.cancelled = true;
+					cancelled = true;
 				} finally {
 					isRunning = false;
 				}

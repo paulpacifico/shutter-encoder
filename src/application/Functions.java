@@ -752,11 +752,11 @@ public boolean importData(JComponent comp, Transferable t) {
 	          
 	          if (file.isFile() && file.getName().contains("."))
 	          {
-	          	int s = file.getCanonicalPath().toString().lastIndexOf('.');	
+	          	int s = file.toString().lastIndexOf('.');	
 	          	String ext = file.getCanonicalFile().toString().substring(s);
 	            if (ext.equals(".enc"))
 	            {
-	            	File droppedFile = new File(file.getCanonicalPath().toString());
+	            	File droppedFile = new File(file.toString());
 	            	File toCopy = new File(Functions.functionsFolder + "/" + droppedFile.getName());
 	            	InputStream inStream = new FileInputStream(droppedFile);
 	            	OutputStream outStream = new FileOutputStream(toCopy);
@@ -779,7 +779,7 @@ public boolean importData(JComponent comp, Transferable t) {
 	            else if (ext.equals(".zip"))
 	            {
 	            	Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	            	File droppedFile = new File(file.getCanonicalPath().toString());
+	            	File droppedFile = new File(file.toString());
 	            	SEVENZIP.run("e " + '"' + droppedFile.toString() + '"' + " -y -o" + '"' + Functions.functionsFolder + '"', false);
 	            	
 	            	try {

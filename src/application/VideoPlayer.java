@@ -1501,7 +1501,7 @@ public class VideoPlayer {
 						
 						//Reset when changing file													
 						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false && (new File(Shutter.fileList.getSelectedValue()).isFile() || Shutter.scanIsRunning))
-						{										
+						{					
 							//Clear the buffer
 							if (bufferedFrames.size() > 0)
 							{			
@@ -5271,46 +5271,44 @@ public class VideoPlayer {
 	
 				BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(Shutter.subtitlesFilePath.toString()),  StandardCharsets.UTF_8);
 	            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(Shutter.subtitlesFile.toString()),  StandardCharsets.UTF_8);
-	
-    			Integer subsOffset = 0;	            
+	            
 	            String line;
 	            int subNumber = 0;
 	            boolean startWriting = false;
 	            
 	            while ((line = bufferedReader.readLine()) != null)
-	            {
+	            {	            	
 	            	//Removes UTF-8 with BOM
 	            	line = line.replace("\uFEFF", "");
 	            	
 	        		if (line.contains("-->") )
-	        		{ 	     
-	        			//Offset
-	        			if (subNumber == 0)
-	        			{
-	        				String s[] = line.split(":");
-	        				subsOffset = Integer.parseInt(s[0]);
-	        			}
-	        			
+	        		{ 	     	        			
 	            		String split[] = line.split("-->");				
 	            		String inTimecode[] = split[0].replace(",", ":").replace(" ","").split(":");
 	            		String outTimecode[] = split[1].replace(",", ":").replace(" ","").split(":");
 		            		
-	    				int inH = (Integer.parseInt(inTimecode[0]) - subsOffset) * 3600;
+	    				int inH = (Integer.parseInt(inTimecode[0])) * 3600;
 	    				int inM = Integer.parseInt(inTimecode[1]) * 60;
 	    				int inS = Integer.parseInt(inTimecode[2]);
 	    				int inF = Integer.parseInt(inTimecode[3]);
 	    				 					
 	    				double subsInTime = (inH + inM + inS) * FFPROBE.accurateFPS + inF / inputFramerateMS;
-	    				
+
 	    				//Reset player position to the first sub
 	    				if (subNumber == 0 && firstSub)
-	            		{    					
+	            		{    		
+	    					while (setTime.isAlive())
+							{
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e) {}
+							}
 	    					playerSetTime(subsInTime);
 	    					break;
 	            		}
 	    				else
 	    				{
-		    				int outH = (Integer.parseInt(outTimecode[0]) - subsOffset) * 3600;
+		    				int outH = (Integer.parseInt(outTimecode[0])) * 3600;
 		    				int outM = Integer.parseInt(outTimecode[1]) * 60;
 		    				int outS = Integer.parseInt(outTimecode[2]);
 		    				int outF = Integer.parseInt(outTimecode[3]);
@@ -5691,11 +5689,11 @@ public class VideoPlayer {
 					            do {
 					            	Thread.sleep(10);  
 					            } while (PDF.isRunning && PDF.error == false);
-							}
+							}	
 							else if (isRaw)
 							{									
 								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								DCRAW.run(" -v -w -c -q 0 -o 1 -g 2.4 12.92 " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+								DCRAW.run(" -v -w -q 0 -o 1 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 								
 					            do {
 					            	Thread.sleep(10);  					            	
@@ -5827,6 +5825,14 @@ public class VideoPlayer {
 		        outputStream.write(frame);
 		        outputStream.close();
 			}				     	
+			/*
+			String line;
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));	
+			
+			while ((line = input.readLine()) != null)
+			{
+				System.out.println(line);
+			}*/
 	        
 	        InputStream is = process.getInputStream();				
 			BufferedInputStream inputStream = new BufferedInputStream(is);
@@ -6191,21 +6197,28 @@ public class VideoPlayer {
 		//Close filter
 		filter += '"';	
 		
-		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
-		{						
-			caseVuMeter.setEnabled(false);
+		try {
 			
-			int subsWidth = (int) ((double) (Integer.parseInt(Shutter.textSubsWidth.getText()) / Shutter.playerRatio));
-			int subsPosY = (int) ((double) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / Shutter.playerRatio);
+			if (Shutter.caseAddSubtitles.isSelected()
+			&& Shutter.subtitlesBurn
+			&& Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt")
+			&& Files.size(Shutter.subtitlesFile.toPath()) > 0)
+			{						
+				caseVuMeter.setEnabled(false);
+				
+				int subsWidth = (int) ((double) (Integer.parseInt(Shutter.textSubsWidth.getText()) / Shutter.playerRatio));
+				int subsPosY = (int) ((double) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / Shutter.playerRatio);
+				
+				filter = " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + subsWidth + ":" + player.getHeight() + "+" + subsPosY
+			  			+ ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + Shutter.textSubsSize.getText() + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"'
+			  			+ " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "").replace("\"", "") + "[v];[v][1:v]overlay=x=" + (int) ((player.getWidth() - subsWidth) / 2) + ",scale=" + player.getWidth() + ":" + player.getHeight() + '"';	
+			}
+			else
+			{
+				caseVuMeter.setEnabled(true);				
+			}
 			
-			filter = " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + subsWidth + ":" + player.getHeight() + "+" + subsPosY
-          			+ ",subtitles='" + Shutter.subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + Shutter.textSubsSize.getText() + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"'
-          			+ " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "").replace("\"", "") + "[v];[v][1:v]overlay=x=" + (int) ((player.getWidth() - subsWidth) / 2) + ",scale=" + player.getWidth() + ":" + player.getHeight() + '"';	
-		}
-		else
-		{
-			caseVuMeter.setEnabled(true);				
-		}
+		} catch (Exception e) {}
 		
 		return filter;
 	}
@@ -6642,7 +6655,7 @@ public class VideoPlayer {
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			showScale.setBounds(player.getX(), showFPS.getY(), player.getWidth() / 2, showScale.getPreferredSize().height);
 			comboAudioTrack.setBounds(7, (waveformContainer.getHeight() / 2) - 8, 40, 16);
-						
+
 			if (showScale.getY() < Shutter.topPanel.getHeight() || FFPROBE.audioOnly || videoPath == null || Shutter.frame.getSize().width <= 654 || fullscreenPlayer)
 			{
 				showScale.setVisible(false);
