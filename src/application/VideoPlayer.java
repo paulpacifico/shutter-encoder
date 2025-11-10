@@ -1986,7 +1986,7 @@ public class VideoPlayer {
     }
     
     public static void setPlayerButtons(boolean enable) {
-    	    	       	    	
+
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 		{
 			waveformScrollPane.setVisible(true);
@@ -2378,7 +2378,7 @@ public class VideoPlayer {
 			{
 				String format = "matroska";
 				
-				if (Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC"))
+				if (Shutter.comboFonctions.getSelectedItem().toString().contains("XAVC"))
 				{
 					format = "mxf";
 				}	
@@ -2854,10 +2854,10 @@ public class VideoPlayer {
 					
 				}
 				else if (btnPlay.getName().equals("play"))
-				{						
-					if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected() || previousFrame)
+				{		
+					if (bufferedFrames.size() > 0 || preview != null || previousFrame)
 					{				
-						if (bufferedFrames.size() > 0 || preview != null || Shutter.caseAddSubtitles.isSelected())
+						if (bufferedFrames.size() > 0 || preview != null)
 						{	
 							//Clear the buffer
 							bufferedFrames.clear();			

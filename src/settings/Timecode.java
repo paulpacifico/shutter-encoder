@@ -50,6 +50,8 @@ public class Timecode extends Shutter {
    			else 
    				dropFrame = ":";
    		}
+   		
+   		String function = comboFonctions.getSelectedItem().toString();
 
 		if (caseGenerateFromDate.isSelected())
 		{
@@ -59,15 +61,45 @@ public class Timecode extends Shutter {
 	            Instant creationTime = attrs.creationTime().toInstant();
 	            String date = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault()).format(creationTime);
 	            
-	            String s[] = date.split(":");
+	            String split[] = date.split(":");
+	            
+	            String audioTimecode = "";
+	            if ("WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function))
+				{
+	            	int h = Integer.parseInt(split[0]) * 3600;
+	            	int m = Integer.parseInt(split[1]) * 60;
+	            	int s = Integer.parseInt(split[2]);
+	            	
+	            	int totalSeconds = h + m + s;
+	            	int sampleRate = FFPROBE.audioSampleRate;
+	        		if (caseSampleRate.isSelected())
+	        			sampleRate = (int) (Float.parseFloat(lbl48k.getSelectedItem().toString().replace("k", "")) * 1000);
+	        		
+	            	audioTimecode = " -metadata time_reference=" + '"' + ((long) totalSeconds * sampleRate) + '"';
+				}
 				
-				return " -timecode " + '"' + s[0] + ":" + s[1] + ":" + s[2] + dropFrame + "00" + '"';
+				return " -timecode " + '"' + split[0] + ":" + split[1] + ":" + split[2] + dropFrame + "00" + '"' + audioTimecode;
 				
 	        } catch (IOException e) {}		
 		}		
 		else if (caseSetTimecode.isSelected())
 		{
-			return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"';
+			String audioTimecode = "";
+            if ("WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function))
+			{
+            	int h = Integer.parseInt(TCset1.getText()) * 3600;
+            	int m = Integer.parseInt(TCset2.getText()) * 60;
+            	int s = Integer.parseInt(TCset3.getText());
+            	
+            	int totalSeconds = h + m + s;
+            	int sampleRate = FFPROBE.audioSampleRate;
+        		if (caseSampleRate.isSelected())
+        			sampleRate = (int) (Float.parseFloat(lbl48k.getSelectedItem().toString().replace("k", "")) * 1000);
+        		
+            	audioTimecode = " -metadata time_reference=" + '"' + ((long) totalSeconds * sampleRate) + '"';
+			}
+            
+			return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"' + audioTimecode;
 		}
 		else if (FFPROBE.timecode1 != "")
 		{						

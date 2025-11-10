@@ -135,6 +135,9 @@ public class AudioEncoders extends Shutter {
 						{
 							DRC = " -drc_scale 0";
 						}
+						
+						//Timecode
+						String timecode = Timecode.setTimecode(file);
 
 						//Audio codec
 						String audioCodec = "";
@@ -306,11 +309,11 @@ public class AudioEncoders extends Shutter {
 						//Command				
 						if (caseSplitAudio.isSelected()) //Permet de créer la boucle de chaque canal audio
 						{
-							splitAudio(audioCodec, prefix, fileName, extension, file, labelOutput, fileOut.toString(), container, DRC);
+							splitAudio(audioCodec, prefix, fileName, extension, file, labelOutput, fileOut.toString(), container, DRC, timecode);
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("2.1"))
 						{
-							String cmd = " " + audio + "-y ";
+							String cmd = " " + audio + timecode + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
 									" -i " + '"' + list.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
 									" -i " + '"' + list.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
@@ -319,7 +322,7 @@ public class AudioEncoders extends Shutter {
 						}
 						else if (caseMixAudio.isSelected() && lblMix.getText().equals("5.1"))
 						{
-							String cmd = " " + audio + "-y ";
+							String cmd = " " + audio + timecode + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC +
 									" -i " + '"' + list.getElementAt(0) + '"' + InputAndOutput.outPoint + DRC +
 									" -i " + '"' + list.getElementAt(1) + '"' + InputAndOutput.outPoint + DRC +
@@ -331,7 +334,7 @@ public class AudioEncoders extends Shutter {
 						}
 						else
 						{
-							String cmd = " " + audio + "-y ";
+							String cmd = " " + audio + timecode + " -y ";
 							FFMPEG.run(InputAndOutput.inPoint + concat + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
 						}								
 						
@@ -519,7 +522,7 @@ public class AudioEncoders extends Shutter {
 		return audio;
 	}
 	
-	private static void splitAudio(String codec, String prefix, String fileName, String extension, File file, String output, String fileOut, String container, String DRC) throws InterruptedException {
+	private static void splitAudio(String codec, String prefix, String fileName, String extension, File file, String output, String fileOut, String container, String DRC, String timecode) throws InterruptedException {
 		
 		String audioFiltering = "";	
 		
@@ -564,7 +567,7 @@ public class AudioEncoders extends Shutter {
 			
 			if (lblSplit.getText().equals(language.getProperty("mono")))
 			{								
-				String cmd = " -filter_complex " + '"' + audioFiltering + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + " -y ";
+				String cmd = " -filter_complex " + '"' + audioFiltering + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + timecode + " -y ";
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd
 				+ " -map " + '"' + "[FL]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FL" + container) + '"'
 				+ " -map " + '"' + "[FR]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FR" + container) + '"'
@@ -575,7 +578,7 @@ public class AudioEncoders extends Shutter {
 			}
 			else if (lblSplit.getText().equals(language.getProperty("stereo")))
 			{		
-				String cmd = " -af " + '"' + audioFiltering + "pan=stereo|c0=FL|c1=FR" + '"' + " -c:a " + codec + sampleRate + " -y ";
+				String cmd = " -af " + '"' + audioFiltering + "pan=stereo|c0=FL|c1=FR" + '"' + " -c:a " + codec + sampleRate + timecode + " -y ";
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');
 			}
 		}
@@ -593,7 +596,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFiltering + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + yesno;
+				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFiltering + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + timecode + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOutput + '"');	
 				
 				do
@@ -629,7 +632,7 @@ public class AudioEncoders extends Shutter {
 				if (audioFiltering != "")     
 					audioFiltering = audioFiltering.replaceFirst(",", " -filter_complex ");
 				
-				String cmd = audioFiltering + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + yesno;
+				String cmd = audioFiltering + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + timecode + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOutput + '"');	
 				
 				do
@@ -659,7 +662,7 @@ public class AudioEncoders extends Shutter {
 						yesno = " -n ";	
 				}
 				
-				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + yesno;
+				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + timecode + yesno;
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOutput + '"');	
 				
 				do

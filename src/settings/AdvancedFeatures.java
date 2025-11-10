@@ -488,6 +488,7 @@ public class AdvancedFeatures extends Shutter {
 			case "FFV1":
 			case "HAP":
 			case "XAVC":
+			case "XAVC Long GOP":
 			case "XDCAM HD422":
 			case "XDCAM HD 35":				
 				
@@ -732,6 +733,7 @@ public class AdvancedFeatures extends Shutter {
 			case "AVC-Intra 100":
 			case "DNxHD":
 			case "XAVC":
+			case "XAVC Long GOP":
 			case "XDCAM HD422":
 			case "XDCAM HD 35":
 			case "FFV1":
@@ -927,6 +929,7 @@ public class AdvancedFeatures extends Shutter {
 				
 			case "AVC-Intra 100":
 			case "XAVC":
+			case "XAVC Long GOP":
 				
 				flags += " -f mxf";				
 				break;

@@ -76,7 +76,7 @@ public class AudioSettings extends Shutter {
 		}
 		else if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
 		|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-		|| comboFonctions.getSelectedItem().toString().equals("XAVC")) //Broadcast codecs
+		|| comboFonctions.getSelectedItem().toString().contains("XAVC")) //Broadcast codecs
 		{
 			isBroadcastCodec = true;
 		}

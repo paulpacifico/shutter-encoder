@@ -97,7 +97,7 @@ public class Extract extends Shutter {
 								extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false) + "_" + (videoStream + 1);;
 							}
 						}
-						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
+						else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("audio")))
 						{
 							extensionName =  "_" + Shutter.language.getProperty("audio") + "_" + (audioStream + 1);
 							
@@ -106,7 +106,7 @@ public class Extract extends Shutter {
 								extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false) + "_" + (audioStream + 1);
 							}
 						}
-						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
+						else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("subtitles")))
 						{
 							extensionName =  "_" + Shutter.language.getProperty("subtitles") + "_" + (subStream + 1);
 							
@@ -117,7 +117,7 @@ public class Extract extends Shutter {
 						}
 							
 						String container = extension;
-						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
+						if (comboFilter.getSelectedItem().toString().contains(language.getProperty("audio")))
 						{
 							FFPROBE.audioCodec = FFPROBE.audioCodecs[audioStream];							
 							
@@ -158,7 +158,7 @@ public class Extract extends Shutter {
 								container = ".mp2";	
 							}
 						}						
-						else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
+						else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("subtitles")))
 						{
 							container = ".srt";						
 						}
@@ -278,20 +278,7 @@ public class Extract extends Shutter {
 		{
 			@Override
 			public void run() {
-				
-				//Extract video
-				comboFilter.setSelectedItem(language.getProperty("video"));
-				Extract.main();			
-
-				if (cancelled == false && FFMPEG.error == false)
-				{
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e1) {}
-					} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
-				}
-				
+								
 				//Extract video
 				if (FFPROBE.videoStreams > 0 && cancelled == false && FFMPEG.error == false)
 				{
@@ -352,12 +339,24 @@ public class Extract extends Shutter {
 		{
 			return " -an -sn -c:v copy -map v:" + videoStream + "?";
 		}
-		else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
+		else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("audio")))
 		{
+			if (comboFilter.getSelectedItem().toString().contains("#"))
+			{
+				String s[] = comboFilter.getSelectedItem().toString().split("#");						
+				audioStream = Integer.valueOf(s[1]) - 1;
+			}
+			
 			return " -vn -sn -c:a copy -map a:" + audioStream + "?";
 		}
-		else if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
+		else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("subtitles")))
 		{
+			if (comboFilter.getSelectedItem().toString().contains("#"))
+			{
+				String s[] = comboFilter.getSelectedItem().toString().split("#");						
+				subStream = Integer.valueOf(s[1]) - 1;
+			}
+			
 			return " -vn -an -map s:" + subStream + "?";
 		}
 		
@@ -369,6 +368,11 @@ public class Extract extends Shutter {
 		if (FunctionUtils.cleanFunction(file, fileName, fileOut, output))
 			return true;
 
+		if (comboFilter.getSelectedItem().toString().contains("#"))
+		{
+			return true;
+		}
+		
 		//Sending processes
 		FunctionUtils.addFileForMail(fileName);
 		Ftp.sendToFtp(fileOut);

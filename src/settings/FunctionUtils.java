@@ -96,10 +96,7 @@ public class FunctionUtils extends Shutter {
 		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 						
-		if (isRaw
-		|| caseGenerateFromDate.isSelected()
-		|| comboFonctions.getSelectedItem().toString().contains("JPEG")
-		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+		if (isRaw || caseGenerateFromDate.isSelected())
 		{
 			EXIFTOOL.run('"' + file.toString() + '"');	
 			do
@@ -107,6 +104,9 @@ public class FunctionUtils extends Shutter {
 				Thread.sleep(100);
 			}						 
 			while (EXIFTOOL.isRunning);
+			
+			if (caseGenerateFromDate.isSelected())
+				FFPROBE.analyzedMedia = null; //Allow to load data with FFPROBE
 		}
 		
 		if (inputDeviceIsRunning)
@@ -144,7 +144,7 @@ public class FunctionUtils extends Shutter {
 		if (isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
 			FFPROBE.Data(file.toString());
-				
+			
 			do
 			{
 				Thread.sleep(100);
@@ -1822,7 +1822,7 @@ public class FunctionUtils extends Shutter {
 								}
 
 								if (Shutter.comboFilter.getSelectedItem().toString().equals(".mxf") == false
-								&& Shutter.comboFonctions.getSelectedItem().toString().equals("XAVC") == false
+								&& Shutter.comboFonctions.getSelectedItem().toString().contains("XAVC") == false
 								&& Shutter.caseCreateOPATOM.isSelected() == false
 								&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) == false
 								&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) == false)
@@ -1925,17 +1925,19 @@ public class FunctionUtils extends Shutter {
 									Shutter.language.getProperty("subtitlesEmbed") };
 
 							int sub = 0;
-							if (autoBurn == false && autoEmbed == false) {
+							if (autoBurn == false && autoEmbed == false)
+							{
 								if (Shutter.comboFilter.getSelectedItem().toString().equals(".mxf") == false
-										&& Shutter.comboFonctions.getSelectedItem().toString()
-												.equals("XAVC") == false
-										&& Shutter.caseCreateOPATOM.isSelected() == false) {
+								&& Shutter.comboFonctions.getSelectedItem().toString().contains("XAVC") == false
+								&& Shutter.caseCreateOPATOM.isSelected() == false)
+								{
 									sub = JOptionPane.showOptionDialog(frame,
 											Shutter.language.getProperty("chooseSubsIntegration"),
 											Shutter.language.getProperty("caseAddSubtitles"),
 											JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
 											null, options, options[0]);
 								}
+								
 							} else if (autoEmbed) {
 								sub = 1;
 							}

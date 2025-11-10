@@ -101,7 +101,7 @@ public class Utils extends Shutter {
 	public static Color c120 = new Color(120,120,120);
 	public static Color c225 = new Color(225,225,225);
 	public static Color bg32 = new Color(c15.getRed() + 17,c15.getGreen() + 16,c15.getBlue() + 17);
-	public static boolean disableSleepMode = true;
+	public static boolean breakSleepMode = true;
 	public final static String username = "info@shutterencoder.com";
 	public final static String password = "";
 	
@@ -2492,6 +2492,8 @@ public class Utils extends Shutter {
 
 	public static void disableSleepMode() {
 	 
+		if (Settings.btnPreventSleepMode.isSelected())
+		{
 	        Timer timer = new Timer();
 	        
 	        timer.scheduleAtFixedRate(new TimerTask() {
@@ -2505,7 +2507,7 @@ public class Utils extends Shutter {
 	                    robot.mouseMove(currentMousePosition.x + 1, currentMousePosition.y + 1);
 	                    robot.mouseMove(currentMousePosition.x, currentMousePosition.y);
 
-	                    if (disableSleepMode)
+	                    if (breakSleepMode)
 	                    {
 	                    	timer.cancel();
 	                    }
@@ -2513,6 +2515,7 @@ public class Utils extends Shutter {
 	                } catch (Exception e) {}
 	            }
 	        }, 0, 60000);
+		}
 	}
 	
 	public static void killProcesses() {

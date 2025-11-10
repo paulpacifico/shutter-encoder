@@ -3703,7 +3703,7 @@ public class Shutter {
 									|| "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function)
 									|| "Theora".equals(function) || "MJPEG".equals(function) || "Xvid".equals(function)
 									|| "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function)
-									|| "AVC-Intra 100".equals(function) || "XAVC".equals(function)
+									|| "AVC-Intra 100".equals(function) || "XAVC".equals(function) || "XAVC Long GOP".equals(function)
 									|| "HAP".equals(function) || "FFV1".equals(function) || "DV".equals(function)) {
 								VideoEncoders.main();
 
@@ -3818,8 +3818,7 @@ public class Shutter {
 
 				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "H.266", "VP8", "VP9", "AV1",
 
-				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC",
-				"HAP",
+				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC", "XAVC Long GOP", "HAP",
 
 				language.getProperty("itemOldCodecs"), "Theora", "MPEG-2", "MJPEG", "Xvid", "DV", "WMV", "MPEG-1",
 
@@ -3947,6 +3946,7 @@ public class Shutter {
 
 						ArrayList<String> newList = new ArrayList<String>();
 						
+						boolean addTranscribeFunction = false;
 						for (int i = 0; i < comboFonctions.getItemCount(); i++)
 						{
 							if (functionsList[i].toString().length() >= text.length())
@@ -3955,9 +3955,18 @@ public class Shutter {
 								&& functionsList[i].toString().contains(":") == false)
 								{
 									if (functionsList[i].toString().equals(language.getProperty("functionTranscribe")) == false)
+									{
 										newList.add(functionsList[i].toString());
+									}
+									else
+										addTranscribeFunction = true;
 								}
 							}
+						}
+						
+						if (addTranscribeFunction)
+						{
+							newList.add(language.getProperty("functionTranscribe"));
 						}
 
 						// Pour éviter d'afficher le premier item
@@ -18325,7 +18334,7 @@ public class Shutter {
 						lblAudioMapping.setSelectedItem("Multi");
 					} else if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
 							|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-							|| comboFonctions.getSelectedItem().toString().equals("XAVC")
+							|| comboFonctions.getSelectedItem().toString().contains("XAVC")
 							|| comboFonctions.getSelectedItem().toString().equals("HAP")
 							|| comboFonctions.getSelectedItem().toString().equals("FFV1")) {
 						lblAudioMapping.setModel(new DefaultComboBoxModel<String>(new String[] { "Multi" }));
@@ -18348,7 +18357,7 @@ public class Shutter {
 
 					if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
 							|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-							|| comboFonctions.getSelectedItem().toString().equals("XAVC")
+							|| comboFonctions.getSelectedItem().toString().contains("XAVC")
 							|| comboFonctions.getSelectedItem().toString().equals("HAP")
 							|| comboFonctions.getSelectedItem().toString().equals("FFV1")) {
 						comboAudio5.setSelectedIndex(16);
@@ -18684,7 +18693,7 @@ public class Shutter {
 
 						if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
 								|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-								|| comboFonctions.getSelectedItem().toString().equals("XAVC")) {
+								|| comboFonctions.getSelectedItem().toString().contains("XAVC")) {
 							comboAudioCodec.setSelectedIndex(1);
 						} else {
 							comboAudioCodec.setSelectedIndex(0);
@@ -18729,7 +18738,7 @@ public class Shutter {
 							|| comboFonctions.getSelectedItem().toString().equals("Uncompressed")
 							|| comboFonctions.getSelectedItem().toString().contains("XDCAM")
 							|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")
-							|| comboFonctions.getSelectedItem().toString().equals("XAVC")
+							|| comboFonctions.getSelectedItem().toString().contains("XAVC")
 							|| comboFonctions.getSelectedItem().toString().equals("HAP")
 							|| comboFonctions.getSelectedItem().toString().equals("FFV1")) {
 						lblPad.setVisible(true);
@@ -19651,13 +19660,13 @@ public class Shutter {
 			|| language.getProperty("functionOfflineDetection").equals(function) || "VMAF".equals(function)
 			|| "FrameMD5".equals(function) || "DNxHD".equals(function) || "DNxHR".equals(function)
 			|| "Apple ProRes".equals(function) || "QT Animation".equals(function)
-			|| ("GoPro CineForm").equals(function) || "Uncompressed".equals(function) || "H.264".equals(function)
+			|| "GoPro CineForm".equals(function) || "Uncompressed".equals(function) || "H.264".equals(function)
 			|| "H.265".equals(function) || "H.266".equals(function) || "DV".equals(function)
 			|| "WMV".equals(function) || "MPEG-1".equals(function) || "MPEG-2".equals(function)
 			|| "VP8".equals(function) || "VP9".equals(function) || "AV1".equals(function)
 			|| "Theora".equals(function) || "MJPEG".equals(function) || "Xvid".equals(function)
 			|| "XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function)
-			|| ("XAVC").equals(function) || "HAP".equals(function) || "FFV1".equals(function)
+			|| "XAVC".equals(function) || "XAVC Long GOP".equals(function) || "HAP".equals(function) || "FFV1".equals(function)
 			|| "DVD".equals(function) || "Blu-ray".equals(function) || "QT JPEG".equals(function)
 			|| language.getProperty("functionPicture").equals(function) || "JPEG".equals(function)
 			|| "JPEG XL".equals(function) || language.getProperty("functionNormalization").equals(function)) {
@@ -20013,8 +20022,7 @@ public class Shutter {
 		if (bigger == false && FFMPEG.isRunning && caseDisplay.isSelected() == false && forceFullSize == false) {
 			noSettings = true;
 
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - minHeight) / 2,
-					332, minHeight);
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - minHeight) / 2, 332, minHeight);
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -21041,20 +21049,31 @@ public class Shutter {
 								grpTransitions.setVisible(true);
 								grpImageSequence.setVisible(false);
 								grpImageFilter.setVisible(false);
-								grpSetTimecode.setVisible(false);
-								grpTransitions.setLocation(grpTransitions.getX(),
-										grpAudio.getSize().height + grpAudio.getLocation().y + 6);
+								grpTransitions.setLocation(grpTransitions.getX(), grpAudio.getSize().height + grpAudio.getLocation().y + 6);
+								
+								if ("WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function))
+								{
+									grpSetTimecode.setVisible(true);
+									grpSetTimecode.setLocation(grpSetTimecode.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+								}
+								else
+									grpSetTimecode.setVisible(false);
+								
 								grpAdvanced.removeAll();
 								grpAdvanced.setVisible(true);
 								caseCreateTree.setLocation(7, 14);
 								grpAdvanced.add(caseCreateTree);
-								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4,
-										caseCreateTree.getY() + 3);
+								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
 								grpAdvanced.add(comboCreateTree);
 								caseDRC.setLocation(7, caseCreateTree.getLocation().y + 17);
 								grpAdvanced.add(caseDRC);
-								grpAdvanced.setLocation(grpAdvanced.getX(),
-										grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
+								
+								if ("WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function))
+								{
+									grpAdvanced.setLocation(grpAdvanced.getX(), grpSetTimecode.getSize().height + grpSetTimecode.getLocation().y + 6);
+								}
+								else
+									grpAdvanced.setLocation(grpAdvanced.getX(), grpTransitions.getSize().height + grpTransitions.getLocation().y + 6);
 
 								btnReset.setLocation(btnReset.getX(),
 										grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
@@ -21097,8 +21116,8 @@ public class Shutter {
 								btnReset.setVisible(false);
 
 							} else if ("XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function)
-									|| "AVC-Intra 100".equals(function) || ("XAVC").equals(function)
-									|| "HAP".equals(function) || "FFV1".equals(function)) {
+							|| "AVC-Intra 100".equals(function) || "XAVC".equals(function) || "XAVC Long GOP".equals(function)
+							|| "HAP".equals(function) || "FFV1".equals(function)) {
 
 								if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
 										&& caseAS10.isSelected()) {
@@ -21174,7 +21193,7 @@ public class Shutter {
 									comboAudioCodec.setEnabled(true);
 									lbl48k.setEnabled(true);
 
-									if ("XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function))
+									if ("XDCAM HD422".equals(function) || "XDCAM HD 35".equals(function) || "AVC-Intra 100".equals(function) || ("XAVC").equals(function) || "XAVC Long GOP".equals(function))
 									{
 										comboAudioCodec.setSelectedIndex(1);
 									}
@@ -21500,7 +21519,7 @@ public class Shutter {
 									grpAdvanced.add(chunksSize);
 									casePreserveMetadata.setLocation(7, caseChunks.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);
-								} else if (comboFonctions.getSelectedItem().toString().equals("XAVC")) {
+								} else if (comboFonctions.getSelectedItem().toString().contains("XAVC")) {
 									caseGOP.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
@@ -24135,8 +24154,7 @@ public class Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 
-			} else if (comboFonctions.getSelectedItem().toString()
-					.equals(Shutter.language.getProperty("functionRewrap"))) {
+			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))) {
 
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
@@ -24154,19 +24172,61 @@ public class Shutter {
 
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionExtract"))) {
 
+				String value = comboFilter.getSelectedItem().toString();
+								
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
-				comboFilter.setVisible(true);
+				comboFilter.setVisible(true);					
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 
-				final String types[] = { language.getProperty("setAll"), language.getProperty("video"),
-						language.getProperty("audio"), language.getProperty("subtitles") };
-				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
-				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
-					comboFilter.setModel(model);
-					comboFilter.setSelectedIndex(0);
+				comboFilter.removeAllItems();
+				comboFilter.addItem(language.getProperty("setAll"));			
+				comboFilter.addItem(language.getProperty("video"));	
+				if (list.getSize() == 0)
+				{
+					comboFilter.addItem(language.getProperty("audio"));		
+					comboFilter.addItem(language.getProperty("subtitles"));
 				}
+				else
+				{					
+					if (FFPROBE.audioStreams > 0)
+					{
+						//Add each audio track
+						comboFilter.addItem(language.getProperty("audio"));					
+						if (FFPROBE.audioStreams > 1)
+						{
+							for (int i = 1 ; i < FFPROBE.audioStreams + 1 ; i++)
+							{
+								comboFilter.addItem(language.getProperty("audio") + " #" + i);
+							}	
+						}
+					}
+						
+					if (FFPROBE.subtitleStreams > 0)
+					{
+						//Add each subtitles track
+						comboFilter.addItem(language.getProperty("subtitles"));
+						if (FFPROBE.subtitleStreams > 1)
+						{
+							for (int i = 1 ; i < FFPROBE.subtitleStreams + 1 ; i++)
+							{
+								comboFilter.addItem(language.getProperty("subtitles") + " #" + i);
+							}	
+						}
+					}
+				}
+				
+				comboFilter.setSelectedIndex(0);
+				for (int i = 0 ; i < comboFilter.getModel().getSize() ; i++)
+				{
+					if (comboFilter.getModel().getElementAt(i).equals(value))
+					{
+						comboFilter.setSelectedIndex(i);
+						break;
+					}
+				}
+				
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionTranscribe")))	{
 				
 				lblFilter.setText(" ");
@@ -24513,6 +24573,21 @@ public class Shutter {
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(7);
 				}
+				
+			} else if (comboFonctions.getSelectedItem().toString().equals("XAVC Long GOP")) {
+
+				lblFilter.setText(" ");
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
+				lblFilter.setLocation(165, 23);
+				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
+
+				String types[] = { "25", "35", "50", "100", "150" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(2);
+				}
 
 			} else if (comboFonctions.getSelectedItem().toString().equals("MPEG-2")) {
 
@@ -24698,7 +24773,7 @@ public class Shutter {
 
 	public static void disableAll() {
 
-		Utils.disableSleepMode = false;
+		Utils.breakSleepMode = false;
 		Utils.disableSleepMode();
 
 		Component[] components = frame.getContentPane().getComponents();
@@ -24869,7 +24944,7 @@ public class Shutter {
 
 	public static void enableAll() {
 
-		Utils.disableSleepMode = true;
+		Utils.breakSleepMode = true;
 
 		Component[] components = frame.getContentPane().getComponents();
 

@@ -107,7 +107,7 @@ public static int gridRows = 0;
 public static int gridCols = 0;
 
 	public static void Data(final String file) {	
-			
+
 		if (file.equals(analyzedMedia) == false || scanIsRunning || Settings.btnWaitFileComplete.isSelected())
 		{
 			analyzedMedia = file;
@@ -286,7 +286,7 @@ public static int gridCols = 0;
 					    		String ffmpegTime = s[0].replace(".", ":");	  
 					    					    							    		
 					    		getVideoLengthTC = ffmpegTime;
-					    		totalLength = (getTimeToMS(ffmpegTime));
+					    		totalLength = getTimeToMS(ffmpegTime);
 					    		    		
 					         	if (totalLength != 0)
 								{     				
@@ -626,6 +626,12 @@ public static int gridCols = 0;
 					if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
 					{
 						Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
+					}
+					
+					//Refresh comboFilter for this function
+					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract")))
+					{
+						changeFilters();
 					}
 					
 					Console.consoleFFPROBE.append(System.lineSeparator());

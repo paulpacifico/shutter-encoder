@@ -145,7 +145,7 @@ private static Boolean horizontal = true;
 					
 					FFPROBE.audioOnly = false;
 					FFPROBE.interlaced = null;						
-					FFPROBE.analyzedMedia = VideoPlayer.videoPath;	
+					FFPROBE.analyzedMedia = VideoPlayer.videoPath; //Prevent to change data with FFPROBE
 
 					//Si il n'y a pas d'exif on lit la date de création système
 					if (exifDate == "" && exifHours == "")

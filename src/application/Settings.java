@@ -43,6 +43,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
@@ -133,6 +135,7 @@ public class Settings {
 	public static JCheckBox btnDisableUpdate = new JCheckBox(Shutter.language.getProperty("btnDisableUpdate"));
 	public static JCheckBox btnDisableVideoPlayer = new JCheckBox(Shutter.language.getProperty("btnDisableVideoPlayer"));	
 	public static JCheckBox btnDisableMinimizedWindow = new JCheckBox(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
+	public static JCheckBox btnPreventSleepMode = new JCheckBox(Shutter.language.getProperty("btnPreventSleepMode"));
 	public static JTextField txtExclude = new JTextField();
 	public static JCheckBox btnCustomFFmpegPath = new JCheckBox(Shutter.language.getProperty("btnCustomFFmpegPath"));
 	public static JTextField txtCustomFFmpegPath = new JTextField();
@@ -167,6 +170,7 @@ public class Settings {
 		btnDisableUpdate.setName("btnDisableUpdate");
 		btnDisableVideoPlayer.setName("btnDisableVideoPlayer");
 		btnDisableMinimizedWindow.setName("btnDisableMinimizedWindow");
+		btnPreventSleepMode.setName("btnPreventSleepMode");
 		btnEmptyListAtEnd.setName("btnEmptyListAtEnd");
 		btnCustomFFmpegPath.setName("btnCustomFFmpegPath");
 		txtCustomFFmpegPath.setName("txtCustomFFmpegPath");
@@ -183,7 +187,7 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370,770);		
+		frame.setSize(370,731);		
 		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 50, frame.getHeight());
@@ -211,8 +215,7 @@ public class Settings {
 				
 		topPanel();
 		
-		JScrollBar scrollBar = new JScrollBar();
-		scrollBar.setMaximum(40);
+		JScrollBar scrollBar = new JScrollBar();		
 		scrollBar.setBackground(Utils.bg32);
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
@@ -241,7 +244,7 @@ public class Settings {
 			
 		});
 		
-		//frame.getContentPane().add(scrollBar);
+		frame.getContentPane().add(scrollBar);
 				
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setName("backgroundPanel");
@@ -440,8 +443,12 @@ public class Settings {
 		btnDisableMinimizedWindow.setBounds(12, btnDisableVideoPlayer.getLocation().y + btnDisableVideoPlayer.getHeight() + 10, btnDisableMinimizedWindow.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableMinimizedWindow);
 		
+		btnPreventSleepMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnPreventSleepMode.setBounds(12, btnDisableMinimizedWindow.getLocation().y + btnDisableMinimizedWindow.getHeight() + 10, btnPreventSleepMode.getPreferredSize().width, 16);
+		frame.getContentPane().add(btnPreventSleepMode);
+		
 		btnEmptyListAtEnd.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		btnEmptyListAtEnd.setBounds(12, btnDisableMinimizedWindow.getLocation().y + btnDisableMinimizedWindow.getHeight() + 10, btnEmptyListAtEnd.getPreferredSize().width, 16);
+		btnEmptyListAtEnd.setBounds(12, btnPreventSleepMode.getLocation().y + btnPreventSleepMode.getHeight() + 10, btnEmptyListAtEnd.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEmptyListAtEnd);
 		
 		btnEndingAction.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
@@ -1278,7 +1285,7 @@ public class Settings {
 			}
 			
 		});
-		/*			
+					
 		frame.addMouseWheelListener(new MouseWheelListener(){
 
 			@Override
@@ -1286,7 +1293,7 @@ public class Settings {
 				scrollBar.setValue(scrollBar.getValue() + e.getWheelRotation() * 10);				
 			}
 			
-		});*/
+		});
 		
 		frame.addMouseListener(new MouseListener() {
 
@@ -1324,6 +1331,8 @@ public class Settings {
 				Settings.saveSettings();
             }
         });
+
+		scrollBar.setMaximum((lastUsedOutput3.getY() + backgroundPanel.getHeight()) - backgroundPanel.getY());
 		
 		loadSettings();
 		

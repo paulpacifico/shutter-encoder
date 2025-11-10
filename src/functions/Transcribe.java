@@ -26,6 +26,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import application.Ftp;
 import application.Shutter;
@@ -43,6 +45,8 @@ public class Transcribe extends Shutter {
 	public static Thread thread;
 	public static File transcriptionFolder;
 	private static String currentFile = "";
+	
+    private static final Pattern TIME_PATTERN = Pattern.compile("(\\d{2}:\\d{2}:\\d{2}\\.\\d{3}|\\d{2}:\\d{2}:\\d{2},\\d{3})");
 	
 	public static void main() {
 		
@@ -190,10 +194,19 @@ public class Transcribe extends Shutter {
 							File transcribedFile = new File(waveFile.toString().replace(".wav", ".wav" + container));
 							
 							if (transcribedFile.exists())
-							{
+							{						        
 								if (format)
 								{
-									formatSubtitles(transcribedFile.toPath(), fileOut.toPath(), container);
+									if (InputAndOutput.inPoint != "")
+									{
+										String content = Files.readString(transcribedFile.toPath());
+										String result = offsetAllTimestamps(content, Long.parseLong(InputAndOutput.inPoint.replace(" -ss ", "").replace("ms","")));
+										File output = new File(transcribedFile.toString().replace(container, "") + "_with_offset" + container);
+										Files.writeString(output.toPath(), result);
+										formatSubtitles(output.toPath(), fileOut.toPath(), container);
+									}
+									else
+										formatSubtitles(transcribedFile.toPath(), fileOut.toPath(), container);
 								}	
 								else
 									formatText(transcribedFile.toPath(), fileOut.toPath());
@@ -208,6 +221,7 @@ public class Transcribe extends Shutter {
 					catch (Exception e)
 					{
 						FFMPEG.error  = true;
+						e.printStackTrace();
 					}	
 					finally
 					{							
@@ -338,6 +352,45 @@ public class Transcribe extends Shutter {
         }
 
         return String.join("\n", lines);
+    }
+    
+    private static String offsetAllTimestamps(String text, long offsetMs) {
+        StringBuilder result = new StringBuilder();
+        Matcher matcher = TIME_PATTERN.matcher(text);
+        int lastEnd = 0;
+
+        while (matcher.find()) {
+            result.append(text, lastEnd, matcher.start());
+            String original = matcher.group(1);
+            String adjusted = offsetTimestamp(original, offsetMs);
+            result.append(adjusted);
+            lastEnd = matcher.end();
+        }
+
+        result.append(text.substring(lastEnd));
+        return result.toString();
+    }
+
+    private static String offsetTimestamp(String timestamp, long offsetMs) {
+        boolean isVtt = timestamp.contains(".");
+        String[] parts = timestamp.split("[:,\\.]");
+        long hours = Long.parseLong(parts[0]);
+        long minutes = Long.parseLong(parts[1]);
+        long seconds = Long.parseLong(parts[2]);
+        long millis = Long.parseLong(parts[3]);
+
+        long totalMs = (hours * 3600 + minutes * 60 + seconds) * 1000 + millis + offsetMs;
+        if (totalMs < 0) totalMs = 0;
+
+        long newH = totalMs / 3600000;
+        long newM = (totalMs % 3600000) / 60000;
+        long newS = (totalMs % 60000) / 1000;
+        long newMs = totalMs % 1000;
+
+        return String.format("%02d:%02d:%02d%s%03d",
+                newH, newM, newS,
+                isVtt ? "." : ",",
+                newMs);
     }
 	
 	private static void lastActions(File fileOut) {
