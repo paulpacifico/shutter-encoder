@@ -22,8 +22,13 @@ package library;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +43,7 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Optional;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -422,16 +428,55 @@ public class WHISPER {
 
 	public static void downloadModel() {
 		
-        JSlider slider = new JSlider(0, 2, 1);
+        JSlider slider = new JSlider(0, 3, 1);
         slider.setMajorTickSpacing(1);
         slider.setPaintTicks(true);
+        slider.setPreferredSize(new Dimension(300, 50));
 
         Hashtable<Integer, JLabel> labels = new Hashtable<>();
         labels.put(0, new JLabel("Fast"));
         labels.put(1, new JLabel("Balanced"));
         labels.put(2, new JLabel("Accurate"));
+        labels.put(3, new JLabel("Custom..."));
         slider.setLabelTable(labels);
         slider.setPaintLabels(true);
+        
+        slider.addMouseListener(new MouseAdapter() {
+
+        	String defaultFolder = "";
+        	
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				
+				if (slider.getValue() == 3)
+				{
+					FileDialog dialog = new FileDialog(Shutter.frame, "Choose model", FileDialog.LOAD);
+					if (defaultFolder == "") {
+						if (System.getProperty("os.name").contains("Mac")
+								|| System.getProperty("os.name").contains("Linux"))
+							dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
+						else
+							dialog.setDirectory(System.getProperty("user.home") + "\\Desktop");
+					}
+					dialog.setLocation(Shutter.frame.getLocation().x - 50, Shutter.frame.getLocation().y + 50);
+					dialog.setAlwaysOnTop(true);
+					dialog.setMultipleMode(false);
+					dialog.setVisible(true);
+
+					if (dialog.getFile() != null)
+					{
+						WHISPER.whisperModel = dialog.getDirectory() + dialog.getFile();
+						defaultFolder = dialog.getParent().toString();
+					}
+					else
+					{
+						slider.setValue(1);
+					}
+				}
+				
+			}
+        	
+        });
         
 		DefaultComboBoxModel<String> languages = new DefaultComboBoxModel<>();
 		languages.addElement("auto");
@@ -443,89 +488,96 @@ public class WHISPER {
 		comboLanguage.setSelectedIndex(0);
 		comboLanguage.setSize(120,26);
 		
-        JPanel panel = new JPanel();
-        panel.add(slider);
-        panel.add(comboLanguage);
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(slider);
+
+		JPanel bottomPanel = new JPanel(new FlowLayout());
+		bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		bottomPanel.add(comboLanguage);
+		panel.add(bottomPanel, BorderLayout.SOUTH);
         
         Object[] options = { Shutter.language.getProperty("btnApply") };
         JOptionPane.showOptionDialog(Shutter.frame, panel, Shutter.language.getProperty("functionTranscribe"), 
         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
-		switch (slider.getValue())
-		{	
-			case 0: //Fast
+        if (slider.getValue() != 3)
+        {	        
+			switch (slider.getValue())
+			{	
+				case 0: //Fast
+					
+					modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin?download=true";
+					modelName = "ggml-small.bin";
+					modelSize = 487601967L;	
+					break;
 				
-				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin?download=true";
-				modelName = "ggml-small.bin";
-				modelSize = 487601967L;	
-				break;
-			
-			case 1: //Balanced
+				case 1: //Balanced
+					
+					modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q8_0.bin?download=true";
+					modelName = "ggml-large-v3-turbo-q8_0.bin";
+					modelSize = 874188075L;			
+					break;
+					
+				case 2: //Accurate
+					
+					modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin?download=true";
+					modelName = "ggml-large-v3-q5_0.bin";
+					modelSize = 1081140203L;
+					break;
 				
-				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q8_0.bin?download=true";
-				modelName = "ggml-large-v3-turbo-q8_0.bin";
-				modelSize = 874188075L;			
-				break;
-				
-			case 2: //Accurate
-				
-				modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin?download=true";
-				modelName = "ggml-large-v3-q5_0.bin";
-				modelSize = 1081140203L;
-				break;		
-			
-		}
-		
-		getWhisperModel();
-		
-		File model = new File(whisperModel);
-		File modelPath = new File(model.getParent());
-		
-		if (modelPath.exists() == false)
-		{
-			modelPath.mkdir();
-		}
-		
-		try {
-			if (model.exists() && Files.size(model.toPath()) != modelSize)				
-			{
-				model.delete();
 			}
-		} catch (IOException e1) {}
+			
+			getWhisperModel();        
 		
-		if (model.exists() == false)
-		{
-			new Update();
+			File model = new File(whisperModel);
+			File modelPath = new File(model.getParent());
 			
-			if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+			if (modelPath.exists() == false)
 			{
-				Update.lblNewVersion.setText(Shutter.language.getProperty("update"));
+				modelPath.mkdir();
 			}
-			else
-				Update.lblNewVersion.setText(Shutter.language.getProperty("update") + "...");
 			
-			//Download
-			Thread download = new Thread(new Runnable() {
-				
-				public void run() {		
-			
-					Utils.changeFrameVisibility(Shutter.frame, true);
-					
-					Update.HTTPDownload(modelLink, whisperModel);	
-
-					Utils.changeFrameVisibility(Shutter.frame, false);
-					Shutter.frame.toFront();
-					
-					Update.frame.dispose();
-					
-					if (model.exists() == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
-					{
-						Shutter.comboFonctions.setSelectedItem("");;
-					}
+			try {
+				if (model.exists() && Files.size(model.toPath()) != modelSize)				
+				{
+					model.delete();
 				}
-			});
-			download.start();
-		}
+			} catch (IOException e1) {}
+			
+			if (model.exists() == false)
+			{
+				new Update();
+				
+				if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+				{
+					Update.lblNewVersion.setText(Shutter.language.getProperty("update"));
+				}
+				else
+					Update.lblNewVersion.setText(Shutter.language.getProperty("update") + "...");
+				
+				//Download
+				Thread download = new Thread(new Runnable() {
+					
+					public void run() {		
+				
+						Utils.changeFrameVisibility(Shutter.frame, true);
+						
+						Update.HTTPDownload(modelLink, whisperModel);	
+	
+						Utils.changeFrameVisibility(Shutter.frame, false);
+						Shutter.frame.toFront();
+						
+						Update.frame.dispose();
+						
+						if (model.exists() == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
+						{
+							Shutter.comboFonctions.setSelectedItem("");;
+						}
+					}
+				});
+				download.start();
+			}
+        }
 		
 	}   
 

@@ -94,9 +94,9 @@ public static Process process;
 							
 							processDCRAW = new ProcessBuilder("/bin/bash", "-c" , PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));								
 							process = processDCRAW.start();
+							
+							processDCRAW.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 						}
-						
-						processDCRAW.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 						
 						Console.consoleDCRAW.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));
 						
