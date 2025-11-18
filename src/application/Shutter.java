@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -365,6 +365,7 @@ public class Shutter {
 	protected static JCheckBox caseVarianceBoost;
 	protected static JComboBox<String> comboVarianceBoost;
 	protected static JCheckBox caseAlpha;
+	protected static JComboBox<String> comboAlpha;
 	protected static JCheckBox caseGOP;
 	protected static JTextField gopSize;
 	protected static JCheckBox caseFilmGrain;
@@ -1128,8 +1129,12 @@ public class Shutter {
 
 									long startTime = System.nanoTime();
 
-									// Animate size
-									animateSections(startTime, true);
+									// Slow down the loop
+									while (System.nanoTime() - startTime < 1000000) {
+										try {
+											Thread.sleep(0);
+										} catch (InterruptedException e) {}
+									}
 								}
 
 							}
@@ -1240,8 +1245,8 @@ public class Shutter {
 
 			public void eventDispatched(AWTEvent event) {
 
-				if (comboFonctions.getSelectedItem()
-						.equals(Shutter.language.getProperty("functionSubtitles")) == false) {
+				if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false) {
+					
 					KeyEvent ke = (KeyEvent) event;
 
 					if (ke.getID() == KeyEvent.KEY_PRESSED) {
@@ -1287,12 +1292,64 @@ public class Shutter {
 									VideoPlayer.btnMarkOut.doClick();
 								}
 							}
-
+							
+							if (ke.getKeyCode() == KeyEvent.VK_HOME)
+							{
+								ke.consume();
+								VideoPlayer.playerSetTime(0);
+							}
+								
+							if (ke.getKeyCode() == KeyEvent.VK_END)
+							{
+								ke.consume();
+								VideoPlayer.playerSetTime((double) VideoPlayer.totalFrames - 2);
+							}
+							
+							if (ke.getKeyCode() == KeyEvent.VK_PAGE_UP)
+							{								
+								VideoPlayer.btnGoToIn.doClick();
+							}
+							
+							if (ke.getKeyCode() == KeyEvent.VK_PAGE_DOWN )
+							{
+								VideoPlayer.btnGoToOut.doClick();
+							}
+							
 							if (ke.getKeyCode() == KeyEvent.VK_LEFT)
-								VideoPlayer.btnPrevious.doClick();
-
+							{					
+								if (Shutter.shift)
+								{
+									VideoPlayer.previousFrame = true;
+									VideoPlayer.playerSetTime((double) VideoPlayer.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS));
+								}
+								else if (Shutter.alt)
+								{
+									VideoPlayer.previousFrame = true;
+									VideoPlayer.playerSetTime((double) (VideoPlayer.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS) * 10));
+								}
+								else
+								{
+									VideoPlayer.btnPrevious.doClick();
+								}
+			  				}
+							
 							if (ke.getKeyCode() == KeyEvent.VK_RIGHT)
-								VideoPlayer.btnNext.doClick();
+							{						
+								if (Shutter.shift)
+								{
+									VideoPlayer.previousFrame = true;
+									VideoPlayer.playerSetTime((double) VideoPlayer.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS));
+								}
+								else if (Shutter.alt)
+								{
+									VideoPlayer.previousFrame = true;
+									VideoPlayer.playerSetTime((double) (VideoPlayer.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS) * 10));
+								}
+								else
+								{
+									VideoPlayer.btnNext.doClick();
+								}
+			  				}
 
 							if (ke.getKeyCode() == KeyEvent.VK_UP)
 								VideoPlayer.btnGoToOut.doClick();
@@ -6449,7 +6506,9 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (caseSetTimecode.isSelected()) {
+				
+				if (caseSetTimecode.isSelected())
+				{
 					TCset1.setEnabled(true);
 					TCset2.setEnabled(true);
 					TCset3.setEnabled(true);
@@ -14137,6 +14196,7 @@ public class Shutter {
 									|| comboColorspace.getSelectedItem().toString().contains("422"))) {
 						caseAlpha.setSelected(false);
 						caseAlpha.setEnabled(false);
+						comboAlpha.setEnabled(false);
 					}
 
 					if (comboColorspace.getSelectedItem().toString().contains("HDR")) {
@@ -14300,6 +14360,7 @@ public class Shutter {
 								|| comboColorspace.getSelectedItem().toString().contains("422"))) {
 					caseAlpha.setSelected(false);
 					caseAlpha.setEnabled(false);
+					comboAlpha.setEnabled(false);
 				} else if (comboFonctions.getSelectedItem().toString().equals("VP9") || comboFonctions.getSelectedItem()
 						.toString().equals("H.265")
 						&& (comboAccel.getSelectedItem().equals("OSX VideoToolbox")
@@ -17196,11 +17257,35 @@ public class Shutter {
 		comboVarianceBoost.setEditable(false);
 		comboVarianceBoost.setSize(40, 16);
 		
-		caseAlpha = new JCheckBox(language.getProperty("caseAlpha"));
+		caseAlpha = new JCheckBox(language.getProperty("caseAlpha") + language.getProperty("colon"));
 		caseAlpha.setName("caseAlpha");
 		caseAlpha.setFont(new Font(mainFont, Font.PLAIN, 12));
 		caseAlpha.setSize(caseAlpha.getPreferredSize().width, 23);
 
+		caseAlpha.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (caseAlpha.isSelected()) {
+					comboAlpha.setEnabled(true);
+				} else {
+					comboAlpha.setEnabled(false);
+				}
+			}
+
+		});
+		
+		comboAlpha = new JComboBox<String>();
+		comboAlpha.setName("comboAlpha");
+		comboAlpha.setEnabled(false);
+		comboAlpha.setMaximumRowCount(15);
+		comboAlpha.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("alphaStraight"), language.getProperty("alphaPremultiply") }));
+		comboAlpha.setSelectedIndex(0);
+		comboAlpha.setFont(new Font(mainFont, Font.PLAIN, 10));
+		comboAlpha.setEditable(false);
+		comboAlpha.setSize(80, 16);
+		
 		caseGOP = new JCheckBox(language.getProperty("caseGOP"));
 		caseGOP.setName("caseGOP");
 		caseGOP.setFont(new Font(mainFont, Font.PLAIN, 12));
@@ -18825,6 +18910,7 @@ public class Shutter {
 					caseVarianceBoost.setSelected(false);
 					comboVarianceBoost.setEnabled(false);
 					caseAlpha.setSelected(false);
+					comboAlpha.setEnabled(false);
 					caseGOP.setSelected(false);
 					gopSize.setEnabled(false);
 					caseFilmGrain.setSelected(false);
@@ -19521,7 +19607,7 @@ public class Shutter {
 
 		});
 
-		lblYears = new JLabel("2013-2025");
+		lblYears = new JLabel("2013-2026");
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYears.setForeground(Color.WHITE);
 		lblYears.setFont(new Font(mainFont, Font.PLAIN, 12));
@@ -20484,7 +20570,7 @@ public class Shutter {
 			comboAccel.setLocation(lblHWaccel.getLocation().x + lblHWaccel.getWidth() + 4, comboGPUDecoding.getY());
 		}
 	}
-
+	
 	public static void changeSections(final boolean action) {
 		
 		if (frame.getWidth() > 332
@@ -20503,8 +20589,9 @@ public class Shutter {
 					if (changeGroupes == false) // permet d'attendre la fin de l'action
 					{
 						try {
-
-							if (frame.getSize().width >= 1130 && action) {
+														
+							if (frame.getSize().width >= 1130 && action)
+							{
 								int i = frame.getWidth() - 312 - 12;
 
 								do {
@@ -21424,13 +21511,26 @@ public class Shutter {
 								grpSetTimecode.setLocation(grpSetTimecode.getX(),
 										grpImageSequence.getSize().height + grpImageSequence.getLocation().y + 6);
 
-								if (comboColorspace.getItemCount() != 3)
+								if (function.equals("XAVC Long GOP"))
 								{
-									comboColorspace.setModel(new DefaultComboBoxModel<Object>(
-											new String[] { "Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG" }));
+									if (comboColorspace.getItemCount() != 4) {
+										comboColorspace.setModel(new DefaultComboBoxModel<Object>(
+												new String[] { "Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits", "Rec. 2020 HLG 10bits" }));
 
-									comboHDRvalue.setVisible(false);
-									lblHDR.setVisible(false);
+										comboHDRvalue.setVisible(false);
+										lblHDR.setVisible(false);
+									}
+								}
+								else 
+								{
+									if (comboColorspace.getItemCount() != 3)
+									{
+										comboColorspace.setModel(new DefaultComboBoxModel<Object>(
+												new String[] { "Rec. 709", "Rec. 2020 PQ", "Rec. 2020 HLG" }));
+
+										comboHDRvalue.setVisible(false);
+										lblHDR.setVisible(false);
+									}
 								}
 								grpAdvanced.setVisible(true);
 								grpAdvanced.setLocation(grpAdvanced.getX(),
@@ -21511,7 +21611,7 @@ public class Shutter {
 									grpAdvanced.add(caseAS10);
 									casePreserveMetadata.setLocation(7, caseAS10.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);
-								} else if (comboFonctions.getSelectedItem().toString().equals("HAP")) {
+								} else if (function.equals("HAP")) {
 									caseChunks.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseChunks);
 									chunksSize.setLocation(caseChunks.getX() + caseChunks.getWidth() + 3,
@@ -21519,8 +21619,21 @@ public class Shutter {
 									grpAdvanced.add(chunksSize);
 									casePreserveMetadata.setLocation(7, caseChunks.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);
-								} else if (comboFonctions.getSelectedItem().toString().contains("XAVC")) {
+								} else if (function.equals("XAVC")) {
 									caseGOP.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
+									grpAdvanced.add(caseGOP);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									grpAdvanced.add(gopSize);
+
+									casePreserveMetadata.setLocation(7, caseGOP.getLocation().y + 17);
+									grpAdvanced.add(casePreserveMetadata);
+								} else if (function.equals("XAVC Long GOP")) {
+									caseForcePreset.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
+									grpAdvanced.add(caseForcePreset);
+									comboForcePreset.setLocation(caseForcePreset.getLocation().x + caseForcePreset.getWidth() + 4, caseForcePreset.getLocation().y + 4);
+									grpAdvanced.add(comboForcePreset);
+									
+									caseGOP.setLocation(7, caseForcePreset.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
@@ -21885,6 +21998,8 @@ public class Shutter {
 								if (comboFonctions.getSelectedItem().equals("GoPro CineForm")) {
 									caseAlpha.setLocation(7, caseForcerInversion.getY() + 17);
 									grpAdvanced.add(caseAlpha);
+									comboAlpha.setLocation(caseAlpha.getX() + caseAlpha.getWidth() + 4, caseAlpha.getLocation().y + 4);
+									grpAdvanced.add(comboAlpha);
 									caseCreateTree.setLocation(7, caseAlpha.getLocation().y + 17);
 								} else {
 									if (comboFonctions.getSelectedItem().toString().equals("DNxHR"))
@@ -22254,15 +22369,15 @@ public class Shutter {
 								grpSetAudio.add(comboNormalizeAudio);
 								grpSetAudio.add(caseEqualizer);
 								grpSetAudio.add(caseChangeAudioCodec);
-								if (comboAudioCodec.getItemCount() != 14
-										|| comboAudioCodec.getModel().getElementAt(0).equals("AAC") == false) {
+								if (comboAudioCodec.getItemCount() != 14 || comboAudioCodec.getModel().getElementAt(0).equals("AAC") == false)
+								{
 									if (lblAudioMapping.getItemCount() != 4) {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",
 														language.getProperty("mono"), "Mix" }));
 									}
 									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
-
+									
 									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "AAC",
 											"MP3", "AC3", "Opus", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits",
 											"ALAC 16Bits", "ALAC 24Bits", "Dolby Digital Plus",
@@ -22520,13 +22635,19 @@ public class Shutter {
 									if (comboFonctions.getSelectedItem().equals("H.265")) {
 										caseAlpha.setLocation(7, caseForceTune.getY() + 17);
 										grpAdvanced.add(caseAlpha);
+										comboAlpha.setLocation(caseAlpha.getX() + caseAlpha.getWidth() + 4, caseAlpha.getLocation().y + 4);
+										grpAdvanced.add(comboAlpha);
 
 										if (comboAccel.getSelectedItem().equals("OSX VideoToolbox")
 												|| comboAccel.getSelectedItem()
 														.equals(language.getProperty("aucune").toLowerCase())) {
 											caseAlpha.setEnabled(true);
-										} else
+										}
+										else
+										{
 											caseAlpha.setEnabled(false);
+											comboAlpha.setEnabled(false);
+										}
 
 										caseFastStart.setLocation(7, caseAlpha.getY() + 17);
 									} else
@@ -23147,6 +23268,8 @@ public class Shutter {
 									}
 									caseAlpha.setLocation(7, caseForceTune.getY() + 17);
 									grpAdvanced.add(caseAlpha);
+									comboAlpha.setLocation(caseAlpha.getX() + caseAlpha.getWidth() + 4, caseAlpha.getLocation().y + 4);
+									grpAdvanced.add(comboAlpha);
 									caseGOP.setLocation(7, caseAlpha.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
@@ -23813,7 +23936,8 @@ public class Shutter {
 							//Add language to grpSetAudio
 							advancedAudioSettings();
 
-							if (action && frame.getWidth() > 332) {
+							if (action && frame.getWidth() > 332)
+							{
 
 								int i2 = frame.getWidth();
 
@@ -23887,191 +24011,155 @@ public class Shutter {
 	}
 
 	public static void extendSections(Component grpPanel, int maxSize) {
+           
+		if (extendSectionsIsRunning) //Avoid double-clicking
+			return;
+	    
+	    extendSectionsIsRunning = true;
+	    
+	    // Cache component references once
+	    List<Component> componentsToMove = new ArrayList<>();
+	    Component firstComponent = null;
+	    Component lastComponent = grpPanel;
+	    int maxY = 0;
 
-		if (extendSectionsIsRunning == false) // Avoid double-click bug
-		{
-			Thread extend = new Thread(new Runnable() {
+	    for (Component a : frame.getContentPane().getComponents())
+	    {
+	        if (a instanceof JPanel && a.isVisible() && a.getX() == grpPanel.getX()) {
+	            if (firstComponent == null) {
+	                firstComponent = a;
+	            }
+	            
+	            if (a.getY() > grpPanel.getY() + grpPanel.getHeight()) {
+	                componentsToMove.add(a);
+	            }
+	            
+	            if (a.getY() > maxY) {
+	                maxY = a.getY();
+	                lastComponent = a;
+	            }
+	        }
+	    }
 
-				@Override
-				public void run() {
-
-					try {
-
-						extendSectionsIsRunning = true;
-
-						// Getting the first & last grpPanel
-						int i = 0;
-						int l = 1;
-						Component firstComponent = null;
-						Component lastComponent = grpPanel;
-
-						for (Component a : frame.getContentPane().getComponents()) {
-							if (a instanceof JPanel && a.isVisible() && a.getX() == grpPanel.getX()) {
-								if (firstComponent == null) {
-									firstComponent = a;
-								}
-
-								if (a.getY() > i) {
-									i = a.getY();
-									lastComponent = a;
-								}
-							}
-						}
-
-						i = 17;
-
-						if (grpPanel.getHeight() < maxSize) {
-							// Used for grpAudio
-							if (grpPanel.getHeight() > 17) {
-								i = grpPanel.getHeight();
-							}
-
-							do {
-
-								long startTime = System.nanoTime();
-
-								if (Settings.btnDisableAnimations.isSelected()) {
-									l = maxSize - grpPanel.getHeight();
-
-									for (Component c : frame.getContentPane().getComponents()) {
-										if (c instanceof JPanel && c.isVisible() && c.getX() == grpPanel.getX()
-												&& c.getY() > grpPanel.getY() + grpPanel.getHeight()) {
-											c.setLocation(c.getLocation().x, c.getY() + l);
-										}
-									}
-
-									grpPanel.setSize(312, maxSize);
-									btnReset.setLocation(btnReset.getX(),
-											lastComponent.getY() + lastComponent.getHeight() + 6);
-
-									if (frame.getSize().getHeight()
-											- (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
-										settingsScrollBar.setVisible(true);
-									} else
-										settingsScrollBar.setVisible(false);
-
-									break;
-								} else
-									i++;
-
-								for (Component c : frame.getContentPane().getComponents()) {
-									if (c instanceof JPanel && c.isVisible() && c.getX() == grpPanel.getX()
-											&& c.getY() > grpPanel.getY() + grpPanel.getHeight()) {
-										c.setLocation(c.getLocation().x, c.getY() + l);
-									}
-								}
-
-								grpPanel.setSize(312, i);
-
-								if (frame.getSize().getHeight()
-										- (btnReset.getLocation().y + btnReset.getHeight()) < 31) {
-									settingsScrollBar.setVisible(true);
-
-									if (grpPanel.getName() == null
-											|| grpPanel.getName().equals("grpImageAdjustement") == false) {
-										for (Component c2 : frame.getContentPane().getComponents()) {
-											if (c2 instanceof JPanel && c2.isVisible()
-													&& c2.getX() == grpPanel.getX()) {
-												c2.setLocation(c2.getLocation().x, c2.getY() - l);
-											}
-										}
-									}
-								} else
-									settingsScrollBar.setVisible(false);
-
-								btnReset.setLocation(btnReset.getX(),
-										lastComponent.getY() + lastComponent.getHeight() + 6);
-
-								// Animate size
-								animateSections(startTime, false);
-								
-							} while (i < maxSize);
-						} else {
-							int minSize = 17;
-
-							// Used for grpAudio
-							if (grpPanel.getHeight() > maxSize)
-							{
-								minSize = maxSize;
-								i = grpPanel.getHeight();
-							} else
-								i = maxSize;
-
-							do {
-
-								long startTime = System.nanoTime();
-
-								if (Settings.btnDisableAnimations.isSelected()) {
-									for (Component c : frame.getContentPane().getComponents()) {
-										if (c instanceof JPanel && c.isVisible() && c.getX() == grpPanel.getX()
-												&& c.getY() > grpPanel.getY() + grpPanel.getHeight())
-										{
-											
-											// Used for grpAudio
-											if (grpPanel.getHeight() > maxSize) {
-												c.setLocation(c.getLocation().x, c.getY() - (i - minSize));
-											} else
-												c.setLocation(c.getLocation().x, c.getY() - (maxSize - minSize));
-										}
-									}
-
-									grpPanel.setSize(312, minSize);
-									btnReset.setLocation(btnReset.getX(),
-											lastComponent.getY() + lastComponent.getHeight() + 6);
-
-									if (frame.getSize().getHeight()
-											- (btnReset.getLocation().y + btnReset.getHeight()) >= 31
-											&& firstComponent.getY() == 30) {
-										settingsScrollBar.setVisible(false);
-									}
-
-									break;
-								} else
-									i--;
-
-								for (Component c : frame.getContentPane().getComponents()) {
-									if (c instanceof JPanel && c.isVisible() && c.getX() == grpPanel.getX()
-											&& c.getY() > grpPanel.getY() + grpPanel.getHeight()) {
-										c.setLocation(c.getLocation().x, c.getY() - l);
-									}
-								}
-
-								grpPanel.setSize(312, i);
-
-								if (firstComponent.getY() < grpChooseFiles.getLocation().y
-										&& firstComponent.isVisible()) {
-									for (Component c2 : frame.getContentPane().getComponents()) {
-										if (c2 instanceof JPanel && c2.isVisible() && c2.getX() == grpPanel.getX()) {
-											c2.setLocation(c2.getLocation().x, c2.getY() + l);
-										}
-									}
-								}
-
-								btnReset.setLocation(btnReset.getX(),
-										lastComponent.getY() + lastComponent.getHeight() + 6);
-
-								if (frame.getSize().getHeight()
-										- (btnReset.getLocation().y + btnReset.getHeight()) >= 31) {
-									settingsScrollBar.setVisible(false);
-								}
-
-								// Animate size
-								animateSections(startTime, false);
-
-							} while (i > minSize);
-
-						}
-
-					} catch (Exception e1) {
-					} finally {
-						extendSectionsIsRunning = false;
-					}
-
-				}
-			});
-			extend.start();
-			extend.setPriority(Thread.MAX_PRIORITY);
-		}
+	    final Component finalFirstComponent = firstComponent;
+	    final Component finalLastComponent = lastComponent;
+	    
+	    // Determine animation parameters
+	    boolean expanding = grpPanel.getHeight() < maxSize;
+	    int startSize = grpPanel.getHeight() > 17 ? grpPanel.getHeight() : 17;
+	    int minSize = 17;
+	    
+	    // Handle special case for grpAudio
+	    if (grpPanel.getHeight() > maxSize) {
+	        minSize = maxSize;
+	        startSize = grpPanel.getHeight();
+	    }
+	    
+	    final int targetSize = expanding ? maxSize : minSize;
+	    final int[] currentSize = {startSize};
+	    
+	    if (Settings.btnDisableAnimations.isSelected())
+	    {	    	
+	        // Instant update - no animation
+	        int delta = targetSize - startSize;
+	        
+	        for (Component c : componentsToMove) {
+	            if (expanding) {
+	                c.setLocation(c.getX(), c.getY() + delta);
+	            } else {
+	                c.setLocation(c.getX(), c.getY() - Math.abs(delta));
+	            }
+	        }
+	        
+	        grpPanel.setSize(312, targetSize);
+	        btnReset.setLocation(btnReset.getX(), finalLastComponent.getY() + finalLastComponent.getHeight() + 6);
+	        
+	        boolean needsScroll = frame.getSize().getHeight() - (btnReset.getY() + btnReset.getHeight()) < 31;
+	        if (!needsScroll && finalFirstComponent != null && finalFirstComponent.getY() == 30) {
+	            settingsScrollBar.setVisible(false);
+	        } else {
+	            settingsScrollBar.setVisible(needsScroll);
+	        }
+	        
+	        extendSectionsIsRunning = false;
+	    } else {
+	    	
+	        // Smooth animation with Timer
+	        int step = expanding ? 10 : -10;
+	        
+	        Timer timer = new Timer(5, null);
+	        timer.addActionListener(e -> {
+	            int previousSize = currentSize[0];
+	            currentSize[0] += step;
+	            
+	            // Check if animation is complete
+	            boolean complete = false;
+	            if (expanding && currentSize[0] >= targetSize) {
+	                currentSize[0] = targetSize;
+	                complete = true;
+	            } else if (!expanding && currentSize[0] <= targetSize) {
+	                currentSize[0] = targetSize;
+	                complete = true;
+	            }
+	            
+	            int delta = Math.abs(currentSize[0] - previousSize);
+	            
+	            // Move components below the expanding/collapsing panel
+	            for (Component c : componentsToMove) {
+	                if (expanding) {
+	                    c.setLocation(c.getX(), c.getY() + delta);
+	                } else {
+	                    c.setLocation(c.getX(), c.getY() - delta);
+	                }
+	            }
+	            
+	            // Resize the panel
+	            grpPanel.setSize(312, currentSize[0]);
+	            
+	            // Handle scrollbar visibility and scroll position
+	            if (frame.getSize().getHeight() - (btnReset.getY() + btnReset.getHeight()) < 31) {
+	                settingsScrollBar.setVisible(true);
+	                
+	                if (expanding && (grpPanel.getName() == null || !grpPanel.getName().equals("grpImageAdjustement"))) {
+	                    // Scroll down when expanding
+	                    for (Component c2 : frame.getContentPane().getComponents()) {
+	                        if (c2 instanceof JPanel && c2.isVisible() && c2.getX() == grpPanel.getX()) {
+	                            c2.setLocation(c2.getX(), c2.getY() - delta);
+	                        }
+	                    }
+	                }
+	            } else {
+	                settingsScrollBar.setVisible(false);
+	            }
+	            
+	            // Handle scroll up when collapsing
+	            if (!expanding && finalFirstComponent != null && finalFirstComponent.getY() < grpChooseFiles.getY() && finalFirstComponent.isVisible()) {
+	                for (Component c2 : frame.getContentPane().getComponents()) {
+	                    if (c2 instanceof JPanel && c2.isVisible() && c2.getX() == grpPanel.getX()) {
+	                        c2.setLocation(c2.getX(), c2.getY() + delta);
+	                    }
+	                }
+	            }
+	            
+	            // Update reset button position
+	            btnReset.setLocation(btnReset.getX(), finalLastComponent.getY() + finalLastComponent.getHeight() + 6);
+	            
+	            // Check scrollbar visibility after collapse
+	            if (!expanding && frame.getSize().getHeight() - (btnReset.getY() + btnReset.getHeight()) >= 31) {
+	                if (finalFirstComponent != null && finalFirstComponent.getY() == 30) {
+	                    settingsScrollBar.setVisible(false);
+	                }
+	            }
+	            
+	            // Stop timer when complete
+	            if (complete) {
+	                ((Timer)e.getSource()).stop();
+	                extendSectionsIsRunning = false;
+	            }
+	        });
+	        
+	        timer.start();
+	    }
 
 	}
 
@@ -25292,6 +25380,9 @@ public class Shutter {
 		if (caseVarianceBoost.isSelected() == false)
 			comboVarianceBoost.setEnabled(false);
 		
+		if (caseAlpha.isSelected() == false)
+			comboAlpha.setEnabled(false);
+		
 		if (caseFilmGrain.isSelected() == false)
 			comboFilmGrain.setEnabled(false);
 
@@ -25324,12 +25415,12 @@ public class Shutter {
 		else
 			caseFastStart.setEnabled(false);
 
-		if (comboFonctions.getSelectedItem().toString().equals("VP9")
-				&& (comboColorspace.getSelectedItem().toString().contains("10bits")
-						|| comboColorspace.getSelectedItem().toString().contains("12bits")
-						|| comboColorspace.getSelectedItem().toString().contains("422"))) {
+		if (comboFonctions.getSelectedItem().toString().equals("VP9") && (comboColorspace.getSelectedItem().toString().contains("10bits")
+		|| comboColorspace.getSelectedItem().toString().contains("12bits")
+		|| comboColorspace.getSelectedItem().toString().contains("422"))) {
 			caseAlpha.setSelected(false);
 			caseAlpha.setEnabled(false);
+			comboAlpha.setEnabled(false);
 		} else if (comboFonctions.getSelectedItem().toString().equals("VP9")
 				|| comboFonctions.getSelectedItem().toString().equals("H.265")
 						&& (comboAccel.getSelectedItem().equals("OSX VideoToolbox")

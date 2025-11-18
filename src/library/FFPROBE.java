@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -88,6 +88,7 @@ public static boolean surround = false;
 public static String channelLayout = "";
 public static int channels;	
 public static int qantization;
+public static String videoFormat;
 public static String videoCodec;
 public static String audioCodec;
 public static String[] audioCodecs;
@@ -146,6 +147,7 @@ public static int gridCols = 0;
 			imageWidth = 0;
         	imageHeight = 0;
         	imageResolution = null;
+        	videoFormat = null;
 			videoCodec = null;
 			audioCodec = null;
 			audioCodecs = new String[50];
@@ -262,6 +264,12 @@ public static int gridCols = 0;
 									
 							//Errors
 							FFMPEG.checkForErrors(line);
+							
+							if (line.contains("Input"))
+							{
+								String s[] = line.split(",");
+								videoFormat = s[1].replace(" ", "");
+							}
 													
 							//Entrelacement
 							if (line.contains("top first") || line.contains("top coded first"))

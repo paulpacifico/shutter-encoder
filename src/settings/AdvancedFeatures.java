@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -537,7 +537,7 @@ public class AdvancedFeatures extends Shutter {
        
         return "";
 	}
-	
+		
 	public static String setCABAC() {
 		        
         if (caseCABAC.isSelected())
@@ -769,6 +769,18 @@ public class AdvancedFeatures extends Shutter {
 		}
 				
 		return filterComplex;
+	}
+	
+	public static String setAlpha(String filterComplex) {
+		
+		if (caseAlpha.isSelected() && comboAlpha.getSelectedIndex() == 1)
+		{
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += "premultiply=inplace=1";
+		}
+		
+		return filterComplex;		
 	}
 	
 	public static String setOPATOM(String audio) {

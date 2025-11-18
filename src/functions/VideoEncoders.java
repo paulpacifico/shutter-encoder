@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -588,11 +588,14 @@ public class VideoEncoders extends Shutter {
 		            	filterComplex = Corrections.setDetails(filterComplex);				
 														            	
 						//Denoise
-			    		filterComplex = Corrections.setDenoiser(filterComplex, false);
+			    		filterComplex = Corrections.setDenoiser(filterComplex, false);	
 			    		
 			    		//Exposure
 						filterComplex = Corrections.setSmoothExposure(filterComplex);	
 						
+						//Alpha
+			    		filterComplex = AdvancedFeatures.setAlpha(filterComplex);
+			    		
 						//Decimate
 						filterComplex = AdvancedFeatures.setDecimate(filterComplex);
 						
@@ -1605,7 +1608,13 @@ public class VideoEncoders extends Shutter {
 					gop = gopSize.getText();
 				}
 				
-				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g " + gop + " -keyint_min 0 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
+				String colorspace = " -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709";
+				if (caseColorspace.isSelected())
+				{
+					colorspace = ""; //Managed via filter_complex
+				}
+				
+				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g " + gop + " -keyint_min 0 -x264opts filler" + colorspace + " -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
 			
 			case "XAVC Long GOP":
 				
@@ -1615,7 +1624,25 @@ public class VideoEncoders extends Shutter {
 					gop = gopSize.getText();
 				}
 				
-				return " -shortest -c:v libx264 -preset slow -profile:v high -level 4.2 -b:v " + comboFilter.getSelectedItem().toString() + "M -maxrate " + comboFilter.getSelectedItem().toString() + "M -bufsize " + (float) Integer.parseInt(comboFilter.getSelectedItem().toString()) / 2 + "M -g " + gop + " -bf 2 -x264opts filler -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709 -x264opts force-cfr -movflags +faststart -pix_fmt yuv420p";
+				String preset = "slow";
+				if (caseForcePreset.isSelected())
+					preset = comboForcePreset.getSelectedItem().toString();
+					
+				colorspace = " -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709";
+				String profile = "high";
+				String bitDepth = " -pix_fmt yuv420p";
+				if (caseColorspace.isSelected())
+				{
+					colorspace = ""; //Managed via filter_complex
+
+					if (comboColorspace.getSelectedItem().toString().contains("10bits"))
+					{
+						profile = "high10";
+						bitDepth = " -pix_fmt yuv420p10le";
+					}
+				}
+				
+				return " -shortest -c:v libx264 -preset " + preset + " -profile:v " + profile + " -level 4.2 -b:v " + comboFilter.getSelectedItem().toString() + "M -maxrate " + comboFilter.getSelectedItem().toString() + "M -bufsize " + (float) Integer.parseInt(comboFilter.getSelectedItem().toString()) / 2 + "M -g " + gop + " -bf 2 -x264opts filler" + colorspace + " -x264opts force-cfr -movflags +faststart" + bitDepth;
 		}
 		
 		return "";		

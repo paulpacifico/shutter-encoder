@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -107,8 +107,8 @@ public static Process process;
 							InputStream is = process.getInputStream();				
 							BufferedInputStream inputStream = new BufferedInputStream(is);
 							
-							VideoPlayer.preview = VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), true);
-							VideoPlayer.frameVideo = VideoPlayer.preview;
+							VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), true);
+							VideoPlayer.preview = VideoPlayer.cloneBufferedImage(VideoPlayer.frameVideo);
 							
 							inputStream.close();
 

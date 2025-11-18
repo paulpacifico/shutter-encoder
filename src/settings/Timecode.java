@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import application.Shutter;
+import application.VideoPlayer;
 import library.FFPROBE;
 
 public class Timecode extends Shutter {
@@ -98,12 +99,27 @@ public class Timecode extends Shutter {
         		
             	audioTimecode = " -metadata time_reference=" + '"' + ((long) totalSeconds * sampleRate) + '"';
 			}
-            
-			return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"' + audioTimecode;
+                       
+            return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"' + audioTimecode;
 		}
 		else if (FFPROBE.timecode1 != "")
 		{						
-			return " -timecode " + '"' + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + dropFrame + FFPROBE.timecode4 + '"';
+			if (InputAndOutput.inPoint != "")
+            {
+				double time = (Integer.valueOf(FFPROBE.timecode1) + Integer.valueOf(VideoPlayer.caseInH.getText())) * 3600000
+							+ (Integer.valueOf(FFPROBE.timecode2) + Integer.valueOf(VideoPlayer.caseInM.getText())) * 60000
+							+ (Integer.valueOf(FFPROBE.timecode3) + Integer.valueOf(VideoPlayer.caseInS.getText())) * 1000
+							+ (Integer.valueOf(FFPROBE.timecode4) + Integer.valueOf(VideoPlayer.caseInF.getText())) * VideoPlayer.inputFramerateMS;	
+				
+				String h = Shutter.formatter.format(Math.floor(time / 1000) / 3600);
+				String m = Shutter.formatter.format((Math.floor(time / 1000) / 60) % 60);
+				String s = Shutter.formatter.format(Math.floor(time / 1000) % 60);    		
+				String f = Shutter.formatter.format((time % 1000) / VideoPlayer.inputFramerateMS);
+				
+            	return " -timecode " + '"' + h + ":" + m + ":" + s + dropFrame + f + '"';
+            }
+			else
+				return " -timecode " + '"' + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + dropFrame + FFPROBE.timecode4 + '"';
 		}
 		
 		return "";

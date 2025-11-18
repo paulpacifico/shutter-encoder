@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -191,7 +191,7 @@ public class Image extends Shutter {
 					}
 					
 					filterComplex += ",hwdownload,format=" + bitDepth;
-				}	
+				}
 			}
 		}
 

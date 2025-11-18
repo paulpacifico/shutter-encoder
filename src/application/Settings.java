@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2025 PACIFICO PAUL
+* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -1242,6 +1242,7 @@ public class Settings {
 			donate = new JButton("Donate");
 		
 		donate.setName("donate");
+		donate.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		donate.setSize(donate.getPreferredSize().width, donate.getPreferredSize().height);
 		donate.setLocation(backgroundPanel.getWidth() / 2 + 14, backgroundPanel.getHeight() / 2 - donate.getHeight() / 2);
 		backgroundPanel.add(donate);
