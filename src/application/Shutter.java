@@ -762,6 +762,9 @@ public class Shutter {
 
 	public static void main(String[] args) {
 
+		//JVM args
+		Utils.loadConfig();
+		
 		// Splashscreen
 		new Splash();
 		
@@ -20623,7 +20626,7 @@ public class Shutter {
 									btnReset.setLocation((i + 2), btnReset.getLocation().y);
 
 									// Animate size
-									animateSections(startTime, true);
+									animateSections(startTime);
 
 								} while (i < frame.getWidth());
 							}
@@ -20858,8 +20861,9 @@ public class Shutter {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",
 														language.getProperty("mono"), "Mix" }));
+										
+										lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 									}
-									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 
 									comboAudioCodec.setModel(
 											new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "FLAC", "AAC", "MP3", "AC3", "Opus", "Vorbis",
@@ -20986,8 +20990,9 @@ public class Shutter {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",
 														language.getProperty("mono"), "Mix" }));
+										
+										lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 									}
-									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 
 									comboAudioCodec.setModel(
 											new DefaultComboBoxModel<String>(new String[] { "PCM 16Bits", "PCM 24Bits", "PCM 32Bits" , "PCM 32Float", "FLAC", "AAC", "MP3", "AC3", "Opus", "Vorbis",
@@ -22375,8 +22380,9 @@ public class Shutter {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",
 														language.getProperty("mono"), "Mix" }));
-									}
-									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
+										
+										lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
+									}									
 									
 									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "AAC",
 											"MP3", "AC3", "Opus", "FLAC", "PCM 16Bits", "PCM 24Bits", "PCM 32Bits",
@@ -22972,8 +22978,9 @@ public class Shutter {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",
 														language.getProperty("mono"), "Mix" }));
-									}
-									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
+										
+										lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
+									}									
 
 									comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] {
 											"PCM 16Bits", "PCM 24Bits", "PCM 32Bits", language.getProperty("codecCopy"),
@@ -22981,14 +22988,17 @@ public class Shutter {
 									comboAudioCodec.setSelectedIndex(0);
 									debitAudio.setModel(comboAudioBitrate.getModel());
 									debitAudio.setSelectedIndex(0);
-								} else if ("MJPEG".equals(function) == false) {
-									if (lblAudioMapping.getItemCount() != 4) {
+								} else if ("MJPEG".equals(function) == false) {	
+									
+									if (lblAudioMapping.getItemCount() != 4)
+									{
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 												new String[] { language.getProperty("stereo"), "Multi",
 														language.getProperty("mono"), "Mix" }));
+										
+										lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 									}
-									lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
-
+									
 									if (comboAudioCodec.getModel().getElementAt(0).equals("WMA") == false
 											&& "WMV".equals(function)) {
 										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "WMA",
@@ -23522,8 +23532,9 @@ public class Shutter {
 											lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 													new String[] { language.getProperty("stereo"), "Multi",
 															language.getProperty("mono"), "Mix" }));
+											
+											lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 										}
-										lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 
 										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "AC3",
 												"Dolby Digital Plus", language.getProperty("codecCopy"),
@@ -23539,8 +23550,9 @@ public class Shutter {
 											lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
 													new String[] { language.getProperty("stereo"), "Multi",
 															language.getProperty("mono"), "Mix" }));
+											
+											lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 										}
-										lblAudioMapping.setSelectedItem(language.getProperty("stereo"));
 
 										comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "AC3",
 												language.getProperty("codecCopy"), language.getProperty("noAudio"), language.getProperty("custom") }));
@@ -23969,7 +23981,7 @@ public class Shutter {
 									btnReset.setLocation((i2 + 2), btnReset.getLocation().y);
 
 									// Animate size
-									animateSections(startTime, true);
+									animateSections(startTime);
 
 								} while (i2 > frame.getWidth() - 312 - 12);
 
@@ -24163,16 +24175,13 @@ public class Shutter {
 
 	}
 
-	public static void animateSections(long startTime, boolean horizontal) {
+	public static void animateSections(long startTime) {
 
-		int time = 200000;
-		if (horizontal) {
-			time = 1000000;
-		}
+		int time = 2000000;
 
 		while (System.nanoTime() - startTime < time) {
 			try {
-				Thread.sleep(0);
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 			}
 		}

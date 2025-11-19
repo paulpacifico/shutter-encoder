@@ -319,7 +319,7 @@ public class ReducedWindow extends JDialog {
 							long startTime = System.nanoTime();
 							
 							//Animate size
-							Shutter.animateSections(startTime, true);	
+							Shutter.animateSections(startTime);	
 							
 						 } catch (Exception e1) {}
 							
@@ -341,7 +341,7 @@ public class ReducedWindow extends JDialog {
 							long startTime = System.nanoTime();
 							
 							//Animate size
-							Shutter.animateSections(startTime, true);	
+							Shutter.animateSections(startTime);	
 													
 						 } catch (Exception e1) {}
 							
@@ -377,7 +377,7 @@ public class ReducedWindow extends JDialog {
 						long startTime = System.nanoTime();
 						
 						//Animate size
-						Shutter.animateSections(startTime, true);
+						Shutter.animateSections(startTime);
 						
 					 } catch (Exception e1) {}
 						

@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -2456,6 +2457,88 @@ public class Utils extends Shutter {
 		UIManager.put("ScrollBar.minimumThumbSize", new Dimension(11, 100));
 		
 		FlatInspector.install("ctrl shift alt X");		
+	}
+	
+	@SuppressWarnings("unused")
+	public static void loadConfig() {
+
+		if (System.getProperty("os.name").contains("Mac") == false)
+		{
+			try {
+
+				String javaPath = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();				
+				File configFile;
+				String appPath = "";
+				
+		        if (System.getProperty("os.name").contains("Windows"))
+		 		{							
+		        	javaPath = javaPath.substring(1,javaPath.length()-1);
+		        	configFile = new File(javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/config.properties");		        	
+		        	appPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/Shutter Encoder.exe";
+					javaPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/JRE/bin/java.exe";
+		 		}	
+		 		else
+		 		{
+		 			javaPath = javaPath.substring(0,javaPath.length()-1);
+		 			configFile = new File(javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/config.properties");
+		 			appPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/Shutter Encoder.jar";
+		 			javaPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/JRE/bin/java";
+		 		}
+
+		        //Config file et inside documents folder
+	        	if (new File(Shutter.documents + "/config.properties").exists())
+	        		configFile = new File(Shutter.documents + "/config.properties");
+		        
+	        	//Stop infinte loop
+		        File restartFile = new File(configFile.toString().replace("config", "restart"));
+		        if (new File(Shutter.documents + "/restart.properties").exists())
+		        {
+		        	restartFile = new File(Shutter.documents + "/restart.properties");
+		        	configFile = new File(Shutter.documents + "/config.properties");
+		        }
+		        
+		        if (restartFile.exists())
+		        {
+		        	restartFile.renameTo(configFile);
+		        }
+		        else if (configFile.exists())
+		        {
+	        		BufferedReader reader = new BufferedReader(new FileReader(configFile));
+	        				
+					String line = "";
+					StringBuilder args = new StringBuilder();
+										   
+				 	boolean restart = false;
+				 	while ((line = reader.readLine()) != null)						
+				 	{
+						if (line.startsWith("#") == false)
+						{								
+							args.append(" " + line);
+							restart = true;
+						}
+					}				 			
+				 	reader.close();
+
+				 	if (restart)
+				 	{		
+				 		configFile.renameTo(restartFile);
+				 		
+				 		if (System.getProperty("os.name").contains("Windows"))
+				 		{
+				 			Process proc = new ProcessBuilder('"' + javaPath + '"' + args + " -Xmx4G -jar " + '"' + appPath + '"').start();
+				 		}
+				 		else
+				 		{
+				 			Process proc = new ProcessBuilder("/bin/bash", "-c", '"' + javaPath + '"' + args + " -Xmx4G -jar " + '"' + appPath + '"').start();
+				 		}
+				 			
+						System.exit(0);
+				 	}	            
+		        }
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 	
 	@SuppressWarnings("unused")
