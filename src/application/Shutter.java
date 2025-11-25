@@ -147,6 +147,7 @@ import com.formdev.flatlaf.ui.FlatLineBorder;
 
 import functions.AudioEncoders;
 import functions.AudioNormalization;
+import functions.AudioSeparation;
 import functions.BlackDetection;
 import functions.Command;
 import functions.Conform;
@@ -166,6 +167,7 @@ import functions.VideoEncoders;
 import functions.VideoInserts;
 import library.BMXTRANSWRAP;
 import library.DCRAW;
+import library.DEMUCS;
 import library.DVDAUTHOR;
 import library.EXIFTOOL;
 import library.FFMPEG;
@@ -1188,6 +1190,12 @@ public class Shutter {
 						frame.requestFocus();
 					}
 					
+					//Install demucs
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionSeparation")))
+					{
+						DEMUCS.checkDemucs();						
+					}
+						
 					//Whisper model
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")))
 					{		
@@ -3332,6 +3340,12 @@ public class Shutter {
 					}
 				}
 				
+				if (DEMUCS.runProcess != null) {
+					if (DEMUCS.runProcess.isAlive()) {
+						DEMUCS.process.destroy();
+					}
+				}
+				
 				if (scanIsRunning) {
 					enableAll();
 					scan.setText(language.getProperty("menuItemStartScan"));
@@ -3618,6 +3632,19 @@ public class Shutter {
 											language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 								else
 									VideoInserts.main();
+							} else if (language.getProperty("functionSeparation").equals(function)) {
+								
+								if (inputDeviceIsRunning)
+								{
+									JOptionPane.showMessageDialog(frame,								
+									language.getProperty("incompatibleInputDevice"),
+									language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								}
+								else
+								{
+									AudioSeparation.main();
+								}
+								
 							} else if (language.getProperty("functionTranscribe").equals(function)) {
 														
 								if (inputDeviceIsRunning)
@@ -3863,12 +3890,13 @@ public class Shutter {
 
 		functionsList = new String[] {
 
+				language.getProperty("itemAITools"), language.getProperty("functionSeparation"), language.getProperty("functionTranscribe"),
+				language.getProperty("functionTranslate"),
 				language.getProperty("itemNoConversion"), language.getProperty("functionCut"),
 				language.getProperty("functionReplaceAudio"), language.getProperty("functionRewrap"),
 				language.getProperty("functionConform"), language.getProperty("functionMerge"),
 				language.getProperty("functionExtract"), language.getProperty("functionSubtitles"),
-				language.getProperty("functionInsert"), language.getProperty("functionTranscribe"),
-				language.getProperty("functionTranslate"),
+				language.getProperty("functionInsert"),
 
 				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "ALAC", "MP3", "AAC", "AC3", "Opus",
 				"Vorbis", "Dolby Digital Plus", "Dolby TrueHD",
@@ -4007,6 +4035,7 @@ public class Shutter {
 						ArrayList<String> newList = new ArrayList<String>();
 						
 						boolean addTranscribeFunction = false;
+						boolean addSeparationFunction = false;
 						for (int i = 0; i < comboFonctions.getItemCount(); i++)
 						{
 							if (functionsList[i].toString().length() >= text.length())
@@ -4014,12 +4043,16 @@ public class Shutter {
 								if (functionsList[i].toString().toLowerCase().substring(0, text.length()).contains(text)
 								&& functionsList[i].toString().contains(":") == false)
 								{
-									if (functionsList[i].toString().equals(language.getProperty("functionTranscribe")) == false)
+									if (functionsList[i].toString().equals(language.getProperty("functionTranscribe")))
 									{
-										newList.add(functionsList[i].toString());
+										addTranscribeFunction = true;										
+									}
+									else if (functionsList[i].toString().equals(language.getProperty("functionSeparation")))
+									{
+										addSeparationFunction = true;
 									}
 									else
-										addTranscribeFunction = true;
+										newList.add(functionsList[i].toString());
 								}
 							}
 						}
@@ -4027,6 +4060,11 @@ public class Shutter {
 						if (addTranscribeFunction)
 						{
 							newList.add(language.getProperty("functionTranscribe"));
+						}
+						
+						if (addSeparationFunction)
+						{
+							newList.add(language.getProperty("functionSeparation"));
 						}
 
 						// Pour éviter d'afficher le premier item
@@ -9178,9 +9216,6 @@ public class Shutter {
 						selection.setBounds(x, y, width, height);
 
 						cropLock.setVisible(true);
-						cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
-						cropIsLocked = true;
-						cropLock.setName("cropLock");
 						
 					} catch (Exception er) {}
 				}
@@ -9191,7 +9226,7 @@ public class Shutter {
 		comboPreset.addActionListener(comboListener);
 		
 		cropLock = new JLabel(new FlatSVGIcon("contents/unlock.svg", 16, 16));
-		cropLock.setName("cropLock");
+		cropLock.setName("cropUnlock");
 		cropLock.setVisible(false);
 		cropLock.setHorizontalAlignment(SwingConstants.CENTER);
 		cropLock.setBounds(comboPreset.getX() + comboPreset.getWidth() + 3, comboPreset.getY(), 21, 21);
@@ -19740,6 +19775,7 @@ public class Shutter {
 			|| language.getProperty("functionRewrap").equals(function)
 			|| language.getProperty("functionMerge").equals(function)
 			|| language.getProperty("functionReplaceAudio").equals(function) 
+			|| language.getProperty("functionSeparation").equals(function)
 			|| language.getProperty("functionTranscribe").equals(function)
 			|| "WAV".equals(function) || "AIFF".equals(function) || "FLAC".equals(function) || "ALAC".equals(function)
 			|| "MP3".equals(function) || "AAC".equals(function) || "AC3".equals(function) || "Opus".equals(function)
@@ -19792,6 +19828,7 @@ public class Shutter {
 		if (comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionInsert")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSeparation")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranscribe")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranslate")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
@@ -20125,7 +20162,9 @@ public class Shutter {
 				|| language.getProperty("functionSubtitles").equals(function) || "Loudness & True Peak".equals(function)
 				|| language.getProperty("functionBlackDetection").equals(function)
 				|| language.getProperty("functionOfflineDetection").equals(function)
-				|| language.getProperty("functionTranscribe").equals(function) || "VMAF".equals(function)) {
+				|| language.getProperty("functionSeparation").equals(function)
+				|| language.getProperty("functionTranscribe").equals(function)
+				|| "VMAF".equals(function)) {
 			noSettings = true;
 
 			if (Settings.btnDisableVideoPlayer.isSelected()) {
@@ -20576,12 +20615,7 @@ public class Shutter {
 	
 	public static void changeSections(final boolean action) {
 		
-		if (frame.getWidth() > 332
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionExtract"))		
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranslate"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")))
+		if (frame.getWidth() > 332)
 		{			
 			Thread changeSize = new Thread(new Runnable() {
 
@@ -21173,6 +21207,7 @@ public class Shutter {
 							} else if ("Loudness & True Peak".equals(function)
 							|| language.getProperty("functionBlackDetection").equals(function)
 							|| language.getProperty("functionOfflineDetection").equals(function)
+							|| language.getProperty("functionSeparation").equals(function)
 							|| language.getProperty("functionTranscribe").equals(function)
 							|| "VMAF".equals(function) || "FrameMD5".equals(function)
 							|| language.getProperty("functionInsert").equals(function)) {
@@ -23912,7 +23947,9 @@ public class Shutter {
 								{
 									addToList.setText(language.getProperty("filesVideo"));
 								}
-								else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionTranscribe").equals(function))
+								else if (language.getProperty("functionMerge").equals(function)
+								|| language.getProperty("functionSeparation").equals(function)
+								|| language.getProperty("functionTranscribe").equals(function))
 								{
 									addToList.setText(language.getProperty("filesVideoOrAudio"));
 								}
@@ -25777,14 +25814,22 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 			boolean isSelected, boolean cellHasFocus) {
 		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-		if (isSelected) {
-			setBackground(Utils.themeColor);
+		if (isSelected)
+		{
+			if (value.toString().contains(":") || value.toString().equals(Shutter.language.getProperty("itemMyFunctions")))
+			{
+				setBackground(Utils.c225);
+			}
+			else
+				setBackground(Utils.themeColor);
+			
 		} else {
 			setBackground(Utils.c42);
 		}
 
-		if (value.toString().contains(":")
-				|| value.toString().equals(Shutter.language.getProperty("itemMyFunctions"))) {
+		if (value.toString().contains(":") || value.toString().equals(Shutter.language.getProperty("itemMyFunctions")))
+		{
+			setForeground(Utils.themeColor);
 			setFont(new Font(Shutter.boldFont, Font.BOLD, 12));
 		} else {
 			setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));

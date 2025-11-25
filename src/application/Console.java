@@ -66,6 +66,7 @@ public class Console extends JFrame {
 	public static JTextArea consoleEXIFTOOL =  new JTextArea();	
 	public static JTextArea consoleNCNN =  new JTextArea();
 	public static JTextArea consoleWHISPER =  new JTextArea();
+	public static JTextArea consoleDEMUCS =  new JTextArea();
 	public static JTabbedPane tabbedPane;
 	private JScrollPane scrollFFMPEG;
 	private JScrollPane scrollFFPLAY;
@@ -79,6 +80,7 @@ public class Console extends JFrame {
 	private JScrollPane scrollEXIFTOOL;
 	private JScrollPane scrollNCNN;
 	private JScrollPane scrollWHISPER;
+	private JScrollPane scrollDEMUCS;
 	
 	private JMenuBar menuBar;
 	private final JSpinner spinner;
@@ -161,6 +163,9 @@ public class Console extends JFrame {
 					case 11:
 						consoleWHISPER.setText("");
 						break;
+					case 12:
+						consoleDEMUCS.setText("");
+						break;						
 				}
 			}
 			
@@ -215,6 +220,9 @@ public class Console extends JFrame {
 					case 11:
 						dialog.setFile("WHISPER");
 						break;
+					case 12:
+						dialog.setFile("DEMUCS");
+						break;
 				}
 				
 				dialog.setLocation(frmConsole.getLocation().x - 50, frmConsole.getLocation().y + 50);
@@ -262,6 +270,9 @@ public class Console extends JFrame {
 									break;
 								case 11:
 									writer.write(consoleWHISPER.getText());
+									break;
+								case 12:
+									writer.write(consoleDEMUCS.getText());
 									break;
 							}
 						writer.close();
@@ -337,6 +348,7 @@ public class Console extends JFrame {
 				consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleWHISPER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleDEMUCS.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 			}
 			
 		});
@@ -401,6 +413,11 @@ public class Console extends JFrame {
 		consoleWHISPER.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleWHISPER.setWrapStyleWord(true);
 		consoleWHISPER.addKeyListener(kl);
+		consoleDEMUCS.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleDEMUCS.setBackground(Utils.c30);
+		consoleDEMUCS.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
+		consoleDEMUCS.setWrapStyleWord(true);
+		consoleDEMUCS.addKeyListener(kl);
 
 		scrollFFMPEG = new JScrollPane();	
 		scrollFFMPEG.getViewport().add(consoleFFMPEG);
@@ -437,6 +454,9 @@ public class Console extends JFrame {
 		
 		scrollWHISPER = new JScrollPane();	
 		scrollWHISPER.getViewport().add(consoleWHISPER); 
+		
+		scrollDEMUCS = new JScrollPane();	
+		scrollDEMUCS.getViewport().add(consoleDEMUCS); 
 		
 		scrollFFMPEG.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
@@ -521,6 +541,13 @@ public class Console extends JFrame {
 	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
 	        }
 	    });
+		
+		scrollDEMUCS.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
+	        public void adjustmentValueChanged(AdjustmentEvent e) {  
+	        	if (followLine.isSelected())
+	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
+	        }
+	    });
 	
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, frmConsole.getWidth(), frmConsole.getHeight());
@@ -536,6 +563,7 @@ public class Console extends JFrame {
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
 		tabbedPane.add("NCNN", scrollNCNN);
 		tabbedPane.add("WHISPER", scrollWHISPER);
+		tabbedPane.add("DEMUCS", scrollDEMUCS);
 		frmConsole.getContentPane().add(tabbedPane);		
 	}
 }

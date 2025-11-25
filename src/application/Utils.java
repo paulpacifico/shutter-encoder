@@ -1693,18 +1693,36 @@ public class Utils extends Shutter {
 											//For lock icon only
 											if (p.getName() != "" && p.getName() != null)
 											{
-												if ((p.getName().equals("lock") || p.getName().equals("unlock")) && eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lock"))
+												if ((p.getName().equals("lock") || p.getName().equals("unlock")))
 												{
-													lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
-													isLocked = true;
-													lock.setName("lock");
+													if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lock"))
+													{
+														lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+														isLocked = true;
+														lock.setName("lock");
+													}
+													else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("unlock"))
+													{
+														lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+														isLocked = false;
+														lock.setName("unlock");
+													}
 												}
 												
-												if ((p.getName().equals("cropLock") || p.getName().equals("cropUnlock")) && eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropLock"))
+												if ((p.getName().equals("cropLock") || p.getName().equals("cropUnlock")))
 												{
-													cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
-													cropIsLocked = true;
-													cropLock.setName("cropLock");
+													if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropLock"))
+													{
+														cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+														cropIsLocked = true;
+														cropLock.setName("cropLock");
+													}
+													else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropUnlock"))
+													{
+														cropLock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+														cropIsLocked = false;
+														cropLock.setName("cropUnlock");
+													}
 												}
 											}
 																			
