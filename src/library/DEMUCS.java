@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import application.Console;
@@ -44,45 +45,71 @@ public class DEMUCS extends Shutter {
 		if (System.getProperty("os.name").contains("Windows"))
 		{
 			PYTHON_DIR = PYTHON_DIR.substring(1,PYTHON_DIR.length()-1);	
-			demucs = new File("Library/python/bin/demucs.exe");
+			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python";
+			demucs = new File(PYTHON_DIR + "/demucs/demucs.py");
 		}
 		else
 		{
 			PYTHON_DIR = PYTHON_DIR.substring(0,PYTHON_DIR.length()-1);		
-			demucs = new File("Library/python/bin/demucs");
+			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/bin";
+			demucs = new File(PYTHON_DIR + "/demucs");
 		}
-			
-		PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/bin";
-						
+							
 		if (demucs.exists() == false)
-		{			
-			installDemucs();
+		{		
+			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			if (q == JOptionPane.YES_OPTION)
+			{	    									
+				installDemucs();    							 	
+			}
+			else
+				comboFonctions.setSelectedItem("");
+			
 		}
 	}
 	
 	public static void installDemucs() {
 
-		btnStart.setEnabled(false);
-		
 		disableAll();
+		btnStart.setEnabled(false);
 		progressBar1.setIndeterminate(true);
 		progressBar1.setStringPainted(false);
-		lblCurrentEncoding.setText("Downloading additional files...");
+		lblCurrentEncoding.setText(language.getProperty("update") + "...");
 		
 		runProcess = new Thread(new Runnable() {	
 			
 			@Override
 			public void run() {
 					
-				try {					
+				try {	
 					
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
-					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3.exe", "-m", "pip", "install" ,"demucs", "torchcodec");
+					{						
+						//Install pip
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", PYTHON_DIR + "/get-pip.py", "--target", PYTHON_DIR);
+						processBuilder.redirectErrorStream(true);
+						
+						process = processBuilder.start();
+						
+						BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+						 
+						String line;		           
+			            while ((line = reader.readLine()) != null)
+			            {
+			            	if (cancelled)
+			            		break;
+			            	
+			            	lblCurrentEncoding.setText(line);
+			            	Console.consoleDEMUCS.append(line + System.lineSeparator());
+			            }
+			            process.waitFor();
+						
+						//Then install demucs
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-m", "pip", "install" ,"demucs", "torchcodec", "--target", PYTHON_DIR, "--no-warn-script-location");
 					}
 					else
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "pip", "install" ,"demucs", "torchcodec");
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "pip", "install" ,"demucs", "torchcodec", "--no-warn-script-location");
 					
 		            processBuilder.redirectErrorStream(true);
 		            process = processBuilder.start();
@@ -95,17 +122,25 @@ public class DEMUCS extends Shutter {
 		            	if (cancelled)
 		            		break;
 		            	
+		            	lblCurrentEncoding.setText(line);
 		            	Console.consoleDEMUCS.append(line + System.lineSeparator());
 		            }
-		            
 		            process.waitFor();
 		            		            
-		        } catch (Exception e) {}
+		        } catch (Exception e) {
+		        	e.printStackTrace();
+		        }
 				finally {
 					
 					if (demucs.exists() == false || cancelled)
 					{
-						comboFonctions.setSelectedItem("");						
+						comboFonctions.setSelectedItem("");	
+						lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
+					}
+					else
+					{
+						lblCurrentEncoding.setText(language.getProperty("processEnded"));
+						Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
 					}
 					
 					SwingUtilities.invokeLater(new Runnable()
@@ -113,8 +148,7 @@ public class DEMUCS extends Shutter {
 			           @Override
 			           public void run() {
 			        	   Shutter.progressBar1.setIndeterminate(false);
-			        	   progressBar1.setStringPainted(true);
-			        	   lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
+			        	   progressBar1.setStringPainted(true);			        	   
 			           }
 					});
 					 
@@ -127,11 +161,10 @@ public class DEMUCS extends Shutter {
 	
 	public static void run(String model, String output, String file) {
 		
+		disableAll();
 		error = false;
 		progressBar1.setValue(0);		
 		btnStart.setEnabled(false);
-		
-		disableAll();
 		
 		runProcess = new Thread(new Runnable() {	
 			
@@ -143,27 +176,22 @@ public class DEMUCS extends Shutter {
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3.exe", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
+						"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
 					}
 					else
 						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
 					
-					//Adding ffmpeg the the PATH environment
-					Map<String, String> env = processBuilder.environment();
-			        String currentPath = env.get("PATH");
-			        
-			        if (System.getProperty("os.name").contains("Windows"))
-					{
-			        	env.put("PATH", new File(FFMPEG.PathToFFMPEG).getParent() + ";" + currentPath);
-					}
-			        else
+					//Adding ffmpeg the the PATH environment						        			        
+			        if (System.getProperty("os.name").contains("Windows") == false)
 			        {
+			        	Map<String, String> env = processBuilder.environment();	
 			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
 			        }
 			        
 					processBuilder.redirectErrorStream(true);
 					 
-					Console.consoleDEMUCS.append(language.getProperty("command") + PYTHON_DIR + "/python3 -m demucs -n " + model + " -o " + output + " " + file);	
+					Console.consoleDEMUCS.append(language.getProperty("command") + " " + PYTHON_DIR + "/python3 -m demucs -n " + model + " -o " + output + " " + file);	
 					
 					isRunning = true;	
 					process = processBuilder.start();
@@ -174,9 +202,25 @@ public class DEMUCS extends Shutter {
 			        
 					progressBar1.setMaximum(100);
 		            		            
-		            String line;		           
+		            String line;		
+		            boolean downloadModel = false;
 		            while ((line = reader.readLine()) != null)
 		            {
+		            	if (line.contains("Downloading"))
+		            		downloadModel = true;
+		            	
+		            	if (downloadModel)
+		            	{
+		            		if (line.contains("Selected model"))
+		            		{
+		            			downloadModel = false;
+		            		}
+		            		else
+		            			lblCurrentEncoding.setText(language.getProperty("update") + "...");
+		            	}
+		            	else
+		            		lblCurrentEncoding.setText(new File(file).getName());
+		            	
 		            	if (line.contains("%"))
 		            	{
 		            		String s[] = line.split("%");
@@ -208,4 +252,3 @@ public class DEMUCS extends Shutter {
 		runProcess.start();
 	}
 }
-		
