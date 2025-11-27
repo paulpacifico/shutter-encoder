@@ -53,11 +53,16 @@ public class DEMUCS extends Shutter {
 			PYTHON_DIR = PYTHON_DIR.substring(0,PYTHON_DIR.length()-1);		
 			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/bin";
 			demucs = new File(PYTHON_DIR + "/demucs");
+		}		
+		
+		if (System.getProperty("os.name").contains("Linux"))
+		{
+			checkFFmpegForLinux();			
 		}
 							
 		if (demucs.exists() == false)
 		{		
-			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			if (q == JOptionPane.YES_OPTION)
 			{	    									
 				installDemucs();    							 	
@@ -66,6 +71,22 @@ public class DEMUCS extends Shutter {
 				comboFonctions.setSelectedItem("");
 			
 		}
+	}
+
+	@SuppressWarnings("unused")
+	public static void checkFFmpegForLinux() {
+		
+	    try {
+	        Process process = new ProcessBuilder("ffmpeg", "-version").start();
+	    } catch (Exception e) {	    	
+	    	try {		    		
+	    		Process process = new ProcessBuilder("pkexec", "apt-get", "install", "-y", "ffmpeg").start();		        
+	    	 } catch (Exception e1) {
+	    		 try {	
+	    			 Process process = new ProcessBuilder("pkexec", "dnf", "install", "-y", "ffmpeg").start();		   
+	 	    	 } catch (Exception e2) {}
+	    	 }
+	    }
 	}
 	
 	public static void installDemucs() {
@@ -109,7 +130,9 @@ public class DEMUCS extends Shutter {
 						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-m", "pip", "install" ,"demucs", "torchcodec", "--target", PYTHON_DIR, "--no-warn-script-location");
 					}
 					else
+					{
 						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "pip", "install" ,"demucs", "torchcodec", "--no-warn-script-location");
+					}
 					
 		            processBuilder.redirectErrorStream(true);
 		            process = processBuilder.start();
@@ -183,7 +206,7 @@ public class DEMUCS extends Shutter {
 						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
 					
 					//Adding ffmpeg the the PATH environment						        			        
-			        if (System.getProperty("os.name").contains("Windows") == false)
+			        if (System.getProperty("os.name").contains("Mac"))
 			        {
 			        	Map<String, String> env = processBuilder.environment();	
 			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
@@ -191,7 +214,7 @@ public class DEMUCS extends Shutter {
 			        
 					processBuilder.redirectErrorStream(true);
 					 
-					Console.consoleDEMUCS.append(language.getProperty("command") + " " + PYTHON_DIR + "/python3 -m demucs -n " + model + " -o " + output + " " + file);	
+					Console.consoleDEMUCS.append(language.getProperty("command") + " " + PYTHON_DIR + "/python3 -m demucs -n " + model + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
 					
 					isRunning = true;	
 					process = processBuilder.start();
@@ -216,7 +239,7 @@ public class DEMUCS extends Shutter {
 		            			downloadModel = false;
 		            		}
 		            		else
-		            			lblCurrentEncoding.setText(language.getProperty("update") + "...");
+		            			lblCurrentEncoding.setText(language.getProperty("downloadingAIModel"));
 		            	}
 		            	else
 		            		lblCurrentEncoding.setText(new File(file).getName());
@@ -226,6 +249,9 @@ public class DEMUCS extends Shutter {
 		            		String s[] = line.split("%");
 		            		progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
 		            	} 
+		            	
+		            	if (line.contains("RuntimeError"))
+		            		error = true;		            	
 		            	
 		            	if (cancelled)
 		            		break;

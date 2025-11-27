@@ -206,6 +206,11 @@ public class WHISPER {
 			else
 				transcriberApp = null;
 		}
+		else //Linux
+		{
+			transcriberApp = new File(FFMPEG.PathToFFMPEG);			
+			WHISPER.PathToWHISPER = transcriberApp.getParent().replace("\\", "") +  "/whisper-cli";			
+		}
 		
 		if (transcriberApp != null)
 		{
@@ -528,7 +533,7 @@ public class WHISPER {
 			}
 			
 			getWhisperModel();        
-		
+					
 			File model = new File(whisperModel);
 			File modelPath = new File(model.getParent());
 			

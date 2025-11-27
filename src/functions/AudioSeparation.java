@@ -21,9 +21,7 @@ package functions;
 
 import java.io.File;
 
-import application.Ftp;
 import application.Shutter;
-import application.Utils;
 import application.VideoPlayer;
 import library.DEMUCS;
 import library.FFMPEG;
@@ -74,48 +72,12 @@ public class AudioSeparation extends Shutter {
 						
 						//InOut	
 						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));
-				
+								
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
-									
-						//File output name
-						String prefix = "";	
-						if (casePrefix.isSelected())
-						{
-							prefix = FunctionUtils.setPrefixSuffix(txtPrefix.getText(), false);
-						}
-						
-						String extensionName = "";	
-						if (btnExtension.isSelected())
-						{
-							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
-						}												
-						
-						//Container
-						String container = ".wav";
-						
-						//Output name
-						String fileOutputName = labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + container); 
-						
-						//File output
-						File fileOut = new File(fileOutputName);				
-						if (fileOut.exists())		
-						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, extensionName + "_", container);
-							
-							if (fileOut == null)
-							{
-								cancelled = true;
-								break;
-							}
-							else if (fileOut.toString().equals("skip"))
-							{
-								continue;
-							}
-						}
 						
 						//Working folder
-						separationFolder = new File(lblDestination1.getText() + "/" + fileName.replace(extension, ""));
+						separationFolder = new File(labelOutput + "/" + fileName.replace(extension, ""));
 						
 						if (separationFolder.exists())
 						{
@@ -149,7 +111,7 @@ public class AudioSeparation extends Shutter {
 							//Run demucs
 							DEMUCS.run(model, separationFolder.getParent().toString(), waveFile.toString());
 							
-							File modelFolder = new File(lblDestination1.getText() + "/" + model);							
+							File modelFolder = new File(labelOutput + "/" + model);							
 							do {		
 								
 								if (modelFolder.exists())
@@ -166,7 +128,7 @@ public class AudioSeparation extends Shutter {
 														
 						if (FFMPEG.saveCode == false)
 						{
-							lastActions(fileOut);
+							lastActions(separationFolder);
 						}						
 					}
 					catch (Exception e)
@@ -189,8 +151,6 @@ public class AudioSeparation extends Shutter {
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileOut.toString());
-		Ftp.sendToFtp(fileOut);
-		Utils.copyFile(fileOut);
 	}
 	
 }

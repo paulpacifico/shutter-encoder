@@ -3095,8 +3095,8 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
-				if (e.getButton() == MouseEvent.BUTTON1 && list.getSize() > 0
-						&& fileList.getSelectedValue().equals(VideoPlayer.videoPath) == false) {
+				if (e.getButton() == MouseEvent.BUTTON1 && list.getSize() > 0 && fileList.getSelectedValue().equals(VideoPlayer.videoPath) == false)
+				{
 					VideoPlayer.setMedia();
 				}
 			}
@@ -3941,11 +3941,7 @@ public class Shutter {
 		{
 			comboFonctions.removeItem("H.266");
 			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
-		}
-		else if (System.getProperty("os.name").contains("Linux"))
-		{
-			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
-		}
+		}		
 
 		comboFonctions.addActionListener(new ActionListener() {
 
@@ -19926,6 +19922,7 @@ public class Shutter {
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionBlackDetection"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionOfflineDetection"))
 		|| comboFonctions.getSelectedItem().equals("VMAF")
+		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionSeparation"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles"))
 		|| comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) {
@@ -19952,6 +19949,7 @@ public class Shutter {
 			{
 				if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))
 				|| comboFonctions.getSelectedItem().equals("Loudness & True Peak")
+				|| comboFonctions.getSelectedItem().equals(language.getProperty("functionSeparation"))
 				|| comboFonctions.getSelectedItem().equals("VMAF"))
 				{
 					caseOpenFolderAtEnd1.setEnabled(true);
