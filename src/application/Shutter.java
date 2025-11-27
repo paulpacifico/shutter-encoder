@@ -382,6 +382,7 @@ public class Shutter {
 	protected static JCheckBox caseForceSpeed;
 	protected static JLabel lblHWaccel;
 	protected static JComboBox<String> comboAccel;
+	protected static JComboBox<String> comboSelectedGPU;
 	protected static JComboBox<String> comboForceProfile;
 	protected static JComboBox<String> comboForceLevel;
 	protected static JComboBox<String> comboForcePreset;
@@ -19386,7 +19387,21 @@ public class Shutter {
 		comboAccel.setEditable(false);
 		comboAccel.setBounds(lblHWaccel.getLocation().x + lblHWaccel.getWidth() + 4, comboGPUDecoding.getY(), 115, 16);
 		statusBar.add(comboAccel);
-
+		
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+		for (int i = 0 ; i < FFMPEG.multiGPU + 1 ; i++)
+		{
+			model.addElement("GPU #" + i);
+		}
+		
+		comboSelectedGPU = new JComboBox<String>(model);
+		comboSelectedGPU.setName("comboSelectedGPU");
+		comboSelectedGPU.setMaximumRowCount(20);
+		comboSelectedGPU.setVisible(false);
+		comboSelectedGPU.setFont(new Font(mainFont, Font.PLAIN, 10));
+		comboSelectedGPU.setEditable(false);
+		comboSelectedGPU.setBounds(comboAccel.getLocation().x + comboAccel.getWidth() + 6, comboGPUDecoding.getY(), 60, 16);		
+		
 		comboAccel.addActionListener(new ActionListener() {
 
 			@Override
@@ -19396,8 +19411,7 @@ public class Shutter {
 				{
 					if ("H.264".equals(comboFonctions.getSelectedItem().toString()))
 					{
-						comboForceProfile
-								.setModel(new DefaultComboBoxModel<String>(new String[] { "base", "main", "high" }));
+						comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "base", "main", "high" }));
 						comboForceProfile.setSelectedIndex(2);
 					}
 					else
@@ -19447,6 +19461,18 @@ public class Shutter {
 						caseAlpha.setSelected(false);
 					}
 
+					//Multi GPU
+					if (comboAccel.getSelectedItem().equals("Nvidia NVENC") && FFMPEG.multiGPU > 0)
+					{
+						statusBar.add(comboSelectedGPU);
+						comboSelectedGPU.setVisible(true);
+					}
+					else
+					{
+						statusBar.remove(comboSelectedGPU);
+						comboSelectedGPU.setVisible(false);
+					}
+					
 					if (lblVBR.getText().equals("CBR")
 							|| lblVBR.getText().equals("CQ") && comboAccel.getSelectedItem().equals("OSX VideoToolbox")
 									&& System.getProperty("os.arch").equals("amd64")) {
@@ -19542,6 +19568,21 @@ public class Shutter {
 				}
 			}
 
+		});
+
+		comboAccel.addPropertyChangeListener("enabled", evt -> {
+			
+		    boolean enabled = (boolean) evt.getNewValue();
+
+		    if (FFMPEG.multiGPU > 0)
+		    {
+			    if (enabled)
+			    {
+			    	comboSelectedGPU.setEnabled(true);
+			    }
+			    else
+			    	comboSelectedGPU.setEnabled(false);	
+		    }			
 		});
 
 		tempsRestant = new JLabel(language.getProperty("tempsRestant"));
@@ -20608,6 +20649,7 @@ public class Shutter {
 				lblHWaccel.setLocation(comboGPUDecoding.getX() + comboGPUDecoding.getWidth() + 6, lblBy.getY());
 			}
 			comboAccel.setLocation(lblHWaccel.getLocation().x + lblHWaccel.getWidth() + 4, comboGPUDecoding.getY());
+			comboSelectedGPU.setLocation(comboAccel.getLocation().x + comboAccel.getWidth() + 6, comboGPUDecoding.getY());
 		}
 	}
 	

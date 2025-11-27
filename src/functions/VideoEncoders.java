@@ -1281,6 +1281,10 @@ public class VideoEncoders extends Shutter {
 	
 	public static String setCodec() {
 		
+		String selectedGPU = "";
+		if (FFMPEG.multiGPU > 0)
+			selectedGPU = " -gpu " + comboSelectedGPU.getSelectedIndex();
+			
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "AV1":
@@ -1289,7 +1293,7 @@ public class VideoEncoders extends Shutter {
 				{
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
-						return " -c:v av1_nvenc";	
+						return " -c:v av1_nvenc" + selectedGPU;	
 					}
 					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{
@@ -1369,7 +1373,7 @@ public class VideoEncoders extends Shutter {
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-						return " -c:v h264_nvenc -b_ref_mode 0";	
+						return " -c:v h264_nvenc -b_ref_mode 0" + selectedGPU;	
 					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 						return " -c:v h264_qsv";	
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
@@ -1397,7 +1401,7 @@ public class VideoEncoders extends Shutter {
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-						return " -c:v hevc_nvenc -b_ref_mode 0";	
+						return " -c:v hevc_nvenc -b_ref_mode 0" + selectedGPU;	
 					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 						return " -c:v hevc_qsv";	
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))

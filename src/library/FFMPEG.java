@@ -123,6 +123,7 @@ public static StringBuilder audioDevices;
 public static StringBuilder hwaccels = new StringBuilder();
 public static boolean isGPUCompatible = false;
 public static int GPUCount = 0;
+public static int multiGPU = 0;
 public static String cpuName;
 public static boolean hasNvidiaGPU = false;
 public static boolean hasAMDGPU = false;
@@ -1184,11 +1185,14 @@ public static StringBuilder errorLog = new StringBuilder();
 		            	
 		                if (line.contains("NVIDIA") || line.contains("GeForce"))
 		                {
+		                	if (hasNvidiaGPU) //If it's already true there is more than 1 Nvidia GPU
+		                		multiGPU ++;
+		                	
 		                	hasNvidiaGPU = true;	
 		                	GPUCount ++;
 		                }
 		                else if (line.contains("AMD") || line.contains("Radeon"))
-		                {
+		                {		                	
 		                	hasAMDGPU = true;	
 		                	GPUCount ++;
 		                }
@@ -1256,6 +1260,10 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				isGPUCompatible = false;
 			}
+			
+			String selectedGPU = "";
+			if (FFMPEG.multiGPU > 0)
+				selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
 						
 			if (isGPUCompatible)
 			{
@@ -1274,7 +1282,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						if (hasNvidiaGPU)
 						{
 							//Cuda
-							FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+							FFMPEG.gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda" + selectedGPU + " -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 															
 							if (FFMPEG.error == false)
 								cudaAvailable = true;
@@ -1388,7 +1396,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						FFMPEG.gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString() + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+						FFMPEG.gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString() + device + selectedGPU + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 					}
 					else
 						FFMPEG.gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "videotoolbox_vld") + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "vt") + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
@@ -1558,14 +1566,18 @@ public static StringBuilder errorLog = new StringBuilder();
 	}
 		
 	public static String setGPUDevice(String filterComplex) {
+				
+		String selectedGPU = "";
+		if (FFMPEG.multiGPU > 0)
+			selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
 		
 		//GPU decoding
 		String gpuDecoding = "";						
 		if (isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
 		{
 			if (autoCUDA || (cudaAvailable && comboGPUFilter.getSelectedItem().toString().equals("cuda")))
-			{
-				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda -init_hw_device cuda";
+			{			
+				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda -init_hw_device cuda" + selectedGPU;
 			}
 			else if (autoAMF || (amfAvailable && comboGPUFilter.getSelectedItem().toString().equals("amf")))
 			{
@@ -1590,11 +1602,11 @@ public static StringBuilder errorLog = new StringBuilder();
 				gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
 			}
 			else
-				gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
+				gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + selectedGPU;
 		}
 		else
 		{
-			gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
+			gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + selectedGPU;
 		}							
 		
 		if (comboAccel.getSelectedItem().equals("Vulkan Video")
