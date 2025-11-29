@@ -149,6 +149,7 @@ import functions.AudioEncoders;
 import functions.AudioNormalization;
 import functions.AudioSeparation;
 import functions.BlackDetection;
+import functions.Colorize;
 import functions.Command;
 import functions.Conform;
 import functions.DVDRIP;
@@ -168,6 +169,7 @@ import functions.VideoInserts;
 import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DEMUCS;
+import library.DEOLDIFY;
 import library.DVDAUTHOR;
 import library.EXIFTOOL;
 import library.FFMPEG;
@@ -1201,6 +1203,12 @@ public class Shutter {
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")))
 					{		
 						new WHISPER();
+					}
+					
+					//Install deoldify
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionColorize")))
+					{
+						DEOLDIFY.checkDeoldify();				
 					}
 				}
 			}
@@ -3347,6 +3355,12 @@ public class Shutter {
 					}
 				}
 				
+				if (DEOLDIFY.runProcess != null) {
+					if (DEOLDIFY.runProcess.isAlive()) {
+						DEOLDIFY.process.destroy();
+					}
+				}
+				
 				if (scanIsRunning) {
 					enableAll();
 					scan.setText(language.getProperty("menuItemStartScan"));
@@ -3667,6 +3681,17 @@ public class Shutter {
 								}
 								else
 									Translate.main();	
+							}
+							else if (language.getProperty("functionColorize").equals(function))
+							{								
+								if (inputDeviceIsRunning)
+								{
+									JOptionPane.showMessageDialog(frame,								
+									language.getProperty("incompatibleInputDevice"),
+									language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								}
+								else
+									Colorize.main();
 
 							} else if (language.getProperty("functionReplaceAudio").equals(function)) {
 								if (inputDeviceIsRunning)
@@ -3892,7 +3917,7 @@ public class Shutter {
 		functionsList = new String[] {
 
 				language.getProperty("itemAITools"), language.getProperty("functionSeparation"), language.getProperty("functionTranscribe"),
-				language.getProperty("functionTranslate"),
+				language.getProperty("functionTranslate"), language.getProperty("functionColorize"),
 				language.getProperty("itemNoConversion"), language.getProperty("functionCut"),
 				language.getProperty("functionReplaceAudio"), language.getProperty("functionRewrap"),
 				language.getProperty("functionConform"), language.getProperty("functionMerge"),
@@ -19838,6 +19863,7 @@ public class Shutter {
 		} else if (language.getProperty("functionExtract").equals(function)
 				|| language.getProperty("functionInsert").equals(function)				
 				|| language.getProperty("functionTranslate").equals(function)
+				|| language.getProperty("functionColorize").equals(function)
 				|| "CD RIP".equals(function) || "DVD Rip".equals(function)
 				|| language.getProperty("functionSceneDetection").equals(function)
 				|| language.getProperty("functionWeb").equals(function)) {
@@ -19868,6 +19894,7 @@ public class Shutter {
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSeparation")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranscribe")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranslate")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionColorize")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
 		&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
 		&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
@@ -24443,6 +24470,21 @@ public class Shutter {
 					}
 					else
 						comboFilter.setSelectedItem(Utils.getLanguage);
+				}
+				
+			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionColorize"))) {
+				
+				lblFilter.setText(" ");
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
+				lblFilter.setLocation(165, 23);
+				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
+
+				String types[] = { "artistic", "stable", "video" };
+				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
 				}
 				
 			} else if (comboFonctions.getSelectedItem().toString().equals("DV")) {

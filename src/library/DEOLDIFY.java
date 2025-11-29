@@ -21,75 +21,79 @@ package library;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Map;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import application.Console;
 import application.Shutter;
+import application.Update;
+import application.Utils;
 
-public class DEMUCS extends Shutter {
+public class DEOLDIFY extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
-	private static File demucs;
+	private static File deoldify;
 	public static String PYTHON_DIR;
 	public static boolean error = false;
 	public static boolean isRunning = false;
+	
+	public static String deoldifyModel;
+	public static String modelLink = "";	
+	public static String modelName;
+	public static long modelSize;
 
-	public static void checkDemucs() {
+	public static void checkDeoldify() {
 		
 		PYTHON_DIR = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows"))
 		{
 			PYTHON_DIR = PYTHON_DIR.substring(1,PYTHON_DIR.length()-1);	
 			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python";
-			demucs = new File(PYTHON_DIR + "/demucs/demucs.py");
 		}
 		else
 		{
 			PYTHON_DIR = PYTHON_DIR.substring(0,PYTHON_DIR.length()-1);		
-			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/bin";
-			demucs = new File(PYTHON_DIR + "/demucs");
+			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/bin";			
 		}		
-		
-		if (System.getProperty("os.name").contains("Linux"))
+			
+		//Find correct python folder
+		Path lib = Paths.get(PYTHON_DIR.replace("/bin", "") + "/lib");
+		try (DirectoryStream<Path> dirs = Files.newDirectoryStream(lib, "python*"))
 		{
-			checkFFmpegForLinux();			
-		}
-							
-		if (demucs.exists() == false)
+            for (Path p : dirs)
+            {
+                Path target = p.resolve("site-packages/deoldify");
+                if (Files.isDirectory(target))
+                {
+                	deoldify = target.toFile();
+                	break;
+                }
+            }
+        } catch (IOException e) {}
+		
+		if (deoldify.exists() == false)
 		{		
-			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionColorize"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			if (q == JOptionPane.YES_OPTION)
 			{	    									
-				installDemucs();    							 	
+				installDeoldify();    							 	
 			}
 			else
 				comboFonctions.setSelectedItem("");
 			
 		}
 	}
-
-	@SuppressWarnings("unused")
-	public static void checkFFmpegForLinux() {
-		
-	    try {
-	        Process process = new ProcessBuilder("ffmpeg", "-version").start();
-	    } catch (Exception e) {	    	
-	    	try {		    		
-	    		Process process = new ProcessBuilder("pkexec", "apt-get", "install", "-y", "ffmpeg").start();		        
-	    	 } catch (Exception e1) {
-	    		 try {	
-	    			 Process process = new ProcessBuilder("pkexec", "dnf", "install", "-y", "ffmpeg").start();		   
-	 	    	 } catch (Exception e2) {}
-	    	 }
-	    }
-	}
 	
-	public static void installDemucs() {
+	public static void installDeoldify() {
 
 		disableAll();
 		btnStart.setEnabled(false);
@@ -126,12 +130,12 @@ public class DEMUCS extends Shutter {
 			            }
 			            process.waitFor();
 						
-						//Then install demucs
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-m", "pip", "install" ,"demucs", "torchcodec", "--target", PYTHON_DIR, "--no-warn-script-location");
+						//Then install deoldify
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-m", "pip", "install" ,"deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", PYTHON_DIR, "--no-warn-script-location");
 					}
 					else
 					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "pip", "install" ,"demucs", "torchcodec", "--no-warn-script-location");
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "pip", "install" ,"deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location");
 					}
 					
 		            processBuilder.redirectErrorStream(true);
@@ -155,7 +159,7 @@ public class DEMUCS extends Shutter {
 		        }
 				finally {
 					
-					if (demucs.exists() == false || cancelled)
+					if (deoldify.exists() == false || cancelled)
 					{
 						comboFonctions.setSelectedItem("");	
 						lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
@@ -182,7 +186,97 @@ public class DEMUCS extends Shutter {
 		runProcess.start();
 	}
 	
-	public static void run(String model, String output, String file) {
+	public static void getDeoldifyModel() {
+		
+		if (System.getProperty("os.name").contains("Windows"))
+		{			
+			deoldifyModel = new File(PYTHON_DIR).getParentFile() + "/models/" + modelName;
+		}
+		else
+			deoldifyModel = new File(PYTHON_DIR).getParentFile().getParentFile() + "/models/" + modelName;
+	}
+	
+    public static void downloadModel() {
+		        
+    	switch (comboFilter.getSelectedIndex())
+		{	
+			case 0: //Artistic
+				
+				modelLink = "https://huggingface.co/databuzzword/deoldify-artistic/resolve/aae6daa766bab0496224bf01a4b7959941703bce/ColorizeArtistic_gen.pth?download=true";
+				modelName = "ColorizeArtistic_gen.pth";
+				modelSize = 255144681L;	
+				break;
+			
+			case 1: //Stable
+				
+				modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeStable_gen.pth?download=true";
+				modelName = "ColorizeStable_gen.pth";
+				modelSize = 874066230L;			
+				break;
+				
+			case 2: //Video
+				
+				modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeVideo_gen.pth?download=true";
+				modelName = "ColorizeVideo_gen.pth";
+				modelSize = 874066230L;
+				break;
+			
+		}      
+    	
+    	getDeoldifyModel();
+				
+		File model = new File(deoldifyModel);
+		File modelPath = new File(model.getParent());
+		
+		if (modelPath.exists() == false)
+		{
+			modelPath.mkdir();
+		}
+		
+		try {
+			if (model.exists() && Files.size(model.toPath()) != modelSize)				
+			{
+				model.delete();
+			}
+		} catch (IOException e1) {}
+		
+		if (model.exists() == false)
+		{
+			new Update();
+			
+			if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+			{
+				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel"));
+			}
+			else
+				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + "...");
+			
+			//Download
+			Thread download = new Thread(new Runnable() {
+				
+				public void run() {		
+			
+					Utils.changeFrameVisibility(Shutter.frame, true);
+					
+					Update.HTTPDownload(modelLink, deoldifyModel);	
+
+					Utils.changeFrameVisibility(Shutter.frame, false);
+					Shutter.frame.toFront();
+					
+					Update.frame.dispose();
+					
+					if (model.exists() == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionColorize")))
+					{
+						Shutter.comboFonctions.setSelectedItem("");;
+					}
+				}
+			});
+			download.start();
+		}
+		
+	}   
+	
+	public static void run(String file, String model, String output) {
 		
 		disableAll();
 		error = false;
@@ -195,26 +289,21 @@ public class DEMUCS extends Shutter {
 			public void run() {
 					
 				try {		
+					
+					String colorizePath = FFMPEG.PathToFFMPEG.replace("\\", "").replace("ffmpeg", "colorize.py");
 										
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
-						"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", colorizePath, file, "-m", model, "-o", output);
 					}
 					else
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
+						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", colorizePath, file, "-m", model, "-o", output);
 					
-					//Adding ffmpeg the the PATH environment						        			        
-			        if (System.getProperty("os.name").contains("Mac"))
-			        {
-			        	Map<String, String> env = processBuilder.environment();	
-			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
-			        }
-			        
+					processBuilder.directory(new File("Library"));
 					processBuilder.redirectErrorStream(true);
 					 
-					Console.consolePYTHON.append(language.getProperty("command") + " " + PYTHON_DIR + "/python3 -m demucs -n " + model + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
+					Console.consolePYTHON.append(language.getProperty("command") + " " + PYTHON_DIR + "/python3 " + colorizePath + " " + file + " -m " + model + " -o " + output);	
 					
 					isRunning = true;	
 					process = processBuilder.start();
@@ -223,35 +312,17 @@ public class DEMUCS extends Shutter {
 		            
 		            Console.consolePYTHON.append(System.lineSeparator());
 			        
-					progressBar1.setMaximum(100);
-		            		            
-		            String line;		
-		            boolean downloadModel = false;
+		            progressBar1.setValue(0);
+					progressBar1.setMaximum(fileList.getModel().getSize());
+							            		            
+		            String line;
 		            while ((line = reader.readLine()) != null)
-		            {
-		            	if (line.contains("Downloading"))
-		            		downloadModel = true;
-		            	
-		            	if (downloadModel)
-		            	{
-		            		if (line.contains("Selected model"))
-		            		{
-		            			downloadModel = false;
-		            		}
-		            		else
-		            			lblCurrentEncoding.setText(language.getProperty("downloadingAIModel"));
-		            	}
-		            	else
-		            		lblCurrentEncoding.setText(new File(file).getName());
-		            	
-		            	if (line.contains("%"))
-		            	{
-		            		String s[] = line.split("%");
-		            		progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
-		            	} 
-		            	
+		            {		            			            	
 		            	if (line.contains("RuntimeError"))
-		            		error = true;		            	
+		            		error = true;		
+		            	
+		            	if (line.contains("Done!"))
+		            		progressBar1.setValue(progressBar1.getValue() + 1);
 		            	
 		            	if (cancelled)
 		            		break;

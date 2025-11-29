@@ -555,10 +555,10 @@ public class WHISPER {
 				
 				if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
 				{
-					Update.lblNewVersion.setText(Shutter.language.getProperty("update"));
+					Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel"));
 				}
 				else
-					Update.lblNewVersion.setText(Shutter.language.getProperty("update") + "...");
+					Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + "...");
 				
 				//Download
 				Thread download = new Thread(new Runnable() {

@@ -6244,7 +6244,7 @@ public class VideoPlayer {
 		
 		//Add filters
 		filter = " -vf " + '"' + filter;	
-		
+				
 		if (caseVuMeter.isSelected() && FFPROBE.hasAudio && Shutter.caseAddSubtitles.isSelected() == false && preview == null)
 		{
 			String aspeed = "";
@@ -6261,14 +6261,19 @@ public class VideoPlayer {
 			
 			String channels = "";
 			String audioOutput = "";
-			int i;
-			for (i = 0; i < FFPROBE.channels; i++) {
-				channels += "[0:a:" + i + "]" + aspeed + "showvolume=f=0:w=" + player.getWidth() + ":h=" + (int) Math.round(player.getHeight() / 90) + ":t=0:b=0:v=0:o=v:s=0:p=0.5[a" + i + "];";
-				audioOutput += "[a" + i + "]";
+			int i = 0;
+			for (int a = 0; a < FFPROBE.channels; a++)
+			{
+				if (FFPROBE.audioCodecs[a].equals("none") == false)
+				{
+					channels += "[0:a:" + a + "]" + aspeed + "showvolume=f=0:w=" + player.getWidth() + ":h=" + (int) Math.round(player.getHeight() / 90) + ":t=0:b=0:v=0:o=v:s=0:p=0.5[a" + a + "];";
+					audioOutput += "[a" + a + "]";
+					i++;
+				}
 			}
 			
-			if (FFPROBE.channels > 1)
-			{
+			if (i > 1)
+			{							
 				audioOutput += "hstack=" + i + "[volume];";
 			}
 			else
