@@ -63,7 +63,7 @@ public class DEOLDIFY extends Shutter {
 			{	    									
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					String[] cmd = { deoldifyFolder.toString() + "/python.exe", "-m", "pip", "install", "deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", deoldifyFolder.toString(), "--no-warn-script-location" };
+					String[] cmd = { deoldifyFolder.toString() + "/python.exe", "-m", "pip", "install", "deoldify", "matplotlib", "numpy==1.25.2", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", deoldifyFolder.toString(), "--no-warn-script-location" };
 					PYTHON.installModule(deoldifyFolder, cmd, deoldify);						 	
 				}
 				else
@@ -177,7 +177,7 @@ public class DEOLDIFY extends Shutter {
 					if (System.getProperty("os.name").contains("Windows"))
 					{
 						colorizePath = FFMPEG.PathToFFMPEG.replace("ffmpeg.exe", "colorize.py");
-						processBuilder = new ProcessBuilder("deoldify/python.exe", colorizePath, file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/python.exe", colorizePath, file, "-m", model, "-o", output);
 					}
 					else
 						processBuilder = new ProcessBuilder("deoldify/bin/python3", colorizePath, file, "-m", model, "-o", output);
@@ -198,13 +198,40 @@ public class DEOLDIFY extends Shutter {
 					progressBar1.setMaximum(fileList.getModel().getSize());
 							            		            
 		            String line;
+		            boolean downloadModel = false;
 		            while ((line = reader.readLine()) != null)
 		            {		            			            	
-		            	if (line.contains("RuntimeError"))
+		            	if (line.contains("RuntimeError") || line.contains("cannot identify image file"))
 		            		error = true;		
 		            	
-		            	if (line.contains("Done!"))
+		            	if (line.contains("Downloading:"))
+		            	{
+		            		downloadModel = true;
+		            		progressBar1.setMaximum(100);
+		            	}
+		            	
+		            	if (downloadModel)
+		            	{
+		            		if (progressBar1.getValue() == progressBar1.getMaximum())
+		            		{
+		            			downloadModel = false;
+		            			progressBar1.setValue(0);
+		            			progressBar1.setMaximum(fileList.getModel().getSize());
+		            			lblCurrentEncoding.setText(new File(file).getName());
+		            		}
+		            		else
+		            			lblCurrentEncoding.setText(language.getProperty("downloadingAIModel"));		
+		            	}
+		            	
+		            	if (downloadModel && line.contains("%"))
+		            	{
+		            		String s[] = line.split("\\.");
+		            		progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
+		            	} 
+		            	else if (line.contains("Done!"))
+		            	{
 		            		progressBar1.setValue(progressBar1.getValue() + 1);
+		            	}
 		            	
 		            	if (cancelled)
 		            		break;
