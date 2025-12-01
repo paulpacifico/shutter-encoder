@@ -104,7 +104,7 @@ public class DEOLDIFY extends Shutter {
 			
 		}      
     	
-    	deoldifyModel = deoldifyFolder + "/models/" + modelName;
+    	deoldifyModel = deoldifyFolder.getParent() + "/models/" + modelName;
 				
 		File model = new File(deoldifyModel);
 		File modelPath = new File(model.getParent());
@@ -177,10 +177,10 @@ public class DEOLDIFY extends Shutter {
 					if (System.getProperty("os.name").contains("Windows"))
 					{
 						colorizePath = FFMPEG.PathToFFMPEG.replace("ffmpeg.exe", "colorize.py");
-						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/python.exe", colorizePath, file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder("deoldify/python.exe", colorizePath, file, "-m", model, "-o", output);
 					}
 					else
-						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/bin/python3", colorizePath, file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder("deoldify/bin/python3", colorizePath, file, "-m", model, "-o", output);
 					
 					processBuilder.directory(new File("Library"));
 					processBuilder.redirectErrorStream(true);
