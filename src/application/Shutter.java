@@ -176,6 +176,7 @@ import library.FFMPEG;
 import library.FFPROBE;
 import library.MEDIAINFO;
 import library.NCNN;
+import library.PYTHON;
 import library.SEVENZIP;
 import library.TSMUXER;
 import library.WHISPER;
@@ -939,12 +940,15 @@ public class Shutter {
 
 		});
 
-		// Settings
+		//Settings
 		Settings.txtThreads.setText("0");
 		Settings.txtImageDuration.setText("10");
 
-		// Initialize FFmpeg path
+		//Initialize FFmpeg path
 		FFMPEG.getFFmpegPath();
+		
+		//Initialize Python path
+		PYTHON.getPythonPath();
 				
 		//Check CPU
 		FFMPEG.checkCPUInfo();
@@ -3349,6 +3353,12 @@ public class Shutter {
 					}
 				}
 				
+				if (PYTHON.runProcess != null) {
+					if (PYTHON.runProcess.isAlive()) {
+						PYTHON.process.destroy();
+					}
+				}
+				
 				if (DEMUCS.runProcess != null) {
 					if (DEMUCS.runProcess.isAlive()) {
 						DEMUCS.process.destroy();
@@ -4058,6 +4068,7 @@ public class Shutter {
 						
 						boolean addTranscribeFunction = false;
 						boolean addSeparationFunction = false;
+						boolean addColorizeFunction = false;
 						for (int i = 0; i < comboFonctions.getItemCount(); i++)
 						{
 							if (functionsList[i].toString().length() >= text.length())
@@ -4073,6 +4084,10 @@ public class Shutter {
 									{
 										addSeparationFunction = true;
 									}
+									else if (functionsList[i].toString().equals(language.getProperty("functionColorize")))
+									{
+										addColorizeFunction = true;
+									}
 									else
 										newList.add(functionsList[i].toString());
 								}
@@ -4087,6 +4102,11 @@ public class Shutter {
 						if (addSeparationFunction)
 						{
 							newList.add(language.getProperty("functionSeparation"));
+						}
+						
+						if (addColorizeFunction)
+						{
+							newList.add(language.getProperty("functionColorize"));
 						}
 
 						// Pour éviter d'afficher le premier item
@@ -19270,7 +19290,7 @@ public class Shutter {
 		lblGpuDecoding.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		lblGpuDecoding.setBounds(750, lblBy.getY(), lblGpuDecoding.getPreferredSize().width, 15);
 		statusBar.add(lblGpuDecoding);
-
+		
 		// GPU decoding
 		if (System.getProperty("os.name").contains("Windows"))
 			FFMPEG.hwaccel("-hwaccels" + '"');
@@ -19350,6 +19370,20 @@ public class Shutter {
 			}
 
 		});
+		
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+		for (int i = 0 ; i < FFMPEG.multiGPU + 1 ; i++)
+		{
+			model.addElement("GPU #" + i);
+		}
+		
+		comboSelectedGPU = new JComboBox<String>(model);
+		comboSelectedGPU.setName("comboSelectedGPU");
+		comboSelectedGPU.setMaximumRowCount(20);
+		comboSelectedGPU.setFont(new Font(mainFont, Font.PLAIN, 10));
+		comboSelectedGPU.setEditable(false);
+		comboSelectedGPU.setBounds(lblGpuDecoding.getLocation().x - comboSelectedGPU.getWidth() - 6, comboSelectedGPU.getY(), 60, 16);	
+		statusBar.add(comboSelectedGPU);
 
 		lblGpuFiltering = new JLabel(Shutter.language.getProperty("lblGpuFiltering"));
 		lblGpuFiltering.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
@@ -19412,21 +19446,7 @@ public class Shutter {
 		comboAccel.setEditable(false);
 		comboAccel.setBounds(lblHWaccel.getLocation().x + lblHWaccel.getWidth() + 4, comboGPUDecoding.getY(), 115, 16);
 		statusBar.add(comboAccel);
-		
-		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-		for (int i = 0 ; i < FFMPEG.multiGPU + 1 ; i++)
-		{
-			model.addElement("GPU #" + i);
-		}
-		
-		comboSelectedGPU = new JComboBox<String>(model);
-		comboSelectedGPU.setName("comboSelectedGPU");
-		comboSelectedGPU.setMaximumRowCount(20);
-		comboSelectedGPU.setVisible(false);
-		comboSelectedGPU.setFont(new Font(mainFont, Font.PLAIN, 10));
-		comboSelectedGPU.setEditable(false);
-		comboSelectedGPU.setBounds(comboAccel.getLocation().x + comboAccel.getWidth() + 6, comboGPUDecoding.getY(), 60, 16);		
-		
+				
 		comboAccel.addActionListener(new ActionListener() {
 
 			@Override
@@ -19484,18 +19504,6 @@ public class Shutter {
 					{
 						caseAlpha.setEnabled(false);
 						caseAlpha.setSelected(false);
-					}
-
-					//Multi GPU
-					if (comboAccel.getSelectedItem().equals("Nvidia NVENC") && FFMPEG.multiGPU > 0)
-					{
-						statusBar.add(comboSelectedGPU);
-						comboSelectedGPU.setVisible(true);
-					}
-					else
-					{
-						statusBar.remove(comboSelectedGPU);
-						comboSelectedGPU.setVisible(false);
 					}
 					
 					if (lblVBR.getText().equals("CBR")
@@ -19593,21 +19601,6 @@ public class Shutter {
 				}
 			}
 
-		});
-
-		comboAccel.addPropertyChangeListener("enabled", evt -> {
-			
-		    boolean enabled = (boolean) evt.getNewValue();
-
-		    if (FFMPEG.multiGPU > 0)
-		    {
-			    if (enabled)
-			    {
-			    	comboSelectedGPU.setEnabled(true);
-			    }
-			    else
-			    	comboSelectedGPU.setEnabled(false);	
-		    }			
 		});
 
 		tempsRestant = new JLabel(language.getProperty("tempsRestant"));
@@ -20344,6 +20337,16 @@ public class Shutter {
 				comboGPUFilter.setVisible(true);
 			}
 		}
+		
+		if (FFMPEG.multiGPU > 0)
+	    {
+		    if (comboGPUDecoding.isVisible())
+		    {
+		    	comboSelectedGPU.setVisible(true);
+		    }
+		    else
+		    	comboSelectedGPU.setVisible(false);	
+	    }
 
 		// Checking maximum screen width
 		GraphicsConfiguration config = frame.getGraphicsConfiguration();
@@ -20676,7 +20679,7 @@ public class Shutter {
 				lblHWaccel.setLocation(comboGPUDecoding.getX() + comboGPUDecoding.getWidth() + 6, lblBy.getY());
 			}
 			comboAccel.setLocation(lblHWaccel.getLocation().x + lblHWaccel.getWidth() + 4, comboGPUDecoding.getY());
-			comboSelectedGPU.setLocation(comboAccel.getLocation().x + comboAccel.getWidth() + 6, comboGPUDecoding.getY());
+			comboSelectedGPU.setLocation(lblGpuDecoding.getLocation().x - comboSelectedGPU.getWidth() - 6, comboGPUDecoding.getY());	
 		}
 	}
 	

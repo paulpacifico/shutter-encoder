@@ -368,8 +368,7 @@ public static int gridCols = 0;
 				                }
 				                else
 				                	imageRatio = (float) imageWidth / imageHeight;      
-				                
-								
+				                				               							
 								if (isRotated)
 								{	
 									Integer h = imageHeight;
@@ -378,6 +377,8 @@ public static int gridCols = 0;
 									imageWidth =  h;
 									imageHeight = w;
 									imageRatio = (float) imageWidth / imageHeight;
+									
+									imageResolution = imageWidth + "x" + imageHeight;
 								}
 								
 				                //Crop form

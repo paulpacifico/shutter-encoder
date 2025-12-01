@@ -101,22 +101,16 @@ public class AudioSeparation extends Shutter {
 							Thread.sleep(100);
 						} while (FFMPEG.runProcess.isAlive());
 						
+						String model = "htdemucs_6s";
 						if (cancelled == false)
 						{
 							lblCurrentEncoding.setText(fileName);
 							tempsEcoule.setVisible(false);
-							
-							String model = "htdemucs_6s";
-							
+														
 							//Run demucs
-							DEMUCS.run(model, separationFolder.getParent().toString(), waveFile.toString());
-							
-							File modelFolder = new File(labelOutput + "/" + model);							
+							DEMUCS.run(model, separationFolder.toString(), waveFile.toString());
+																			
 							do {		
-								
-								if (modelFolder.exists())
-									modelFolder.delete();
-								
 								Thread.sleep(100);								
 							} while (DEMUCS.runProcess.isAlive());
 							
@@ -124,7 +118,15 @@ public class AudioSeparation extends Shutter {
 						}
 						
 						if (cancelled || FFMPEG.error)
+						{
 							separationFolder.delete();
+						}
+						else
+						{
+							File modelFolder = new File(separationFolder.toString() + "/" + model);		
+							if (modelFolder.exists())
+								modelFolder.delete();
+						}
 														
 						if (FFMPEG.saveCode == false)
 						{

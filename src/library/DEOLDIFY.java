@@ -23,14 +23,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Locale;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import application.Console;
 import application.Shutter;
@@ -41,8 +37,8 @@ public class DEOLDIFY extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
+	private static File deoldifyFolder = new File("Library/deoldify");
 	private static File deoldify;
-	public static String PYTHON_DIR;
 	public static boolean error = false;
 	public static boolean isRunning = false;
 	
@@ -53,149 +49,34 @@ public class DEOLDIFY extends Shutter {
 
 	public static void checkDeoldify() {
 		
-		PYTHON_DIR = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows"))
 		{
-			PYTHON_DIR = PYTHON_DIR.substring(1,PYTHON_DIR.length()-1);	
-			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python";
+			deoldify = new File(deoldifyFolder.toString() + "/deoldify");
 		}
 		else
-		{
-			PYTHON_DIR = PYTHON_DIR.substring(0,PYTHON_DIR.length()-1);		
-			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/bin";			
-		}		
+			deoldify = new File(deoldifyFolder.toString() + "/lib/python3.10/site-packages/deoldify");	
 			
-		//Find correct python folder
-		Path lib = Paths.get(PYTHON_DIR.replace("/bin", "") + "/lib");
-		try (DirectoryStream<Path> dirs = Files.newDirectoryStream(lib, "python*"))
-		{
-            for (Path p : dirs)
-            {
-                Path target = p.resolve("site-packages/deoldify");
-                if (Files.isDirectory(target))
-                {
-                	deoldify = target.toFile();
-                	break;
-                }
-            }
-        } catch (IOException e) {}
-		
 		if (deoldify.exists() == false)
 		{		
-			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionColorize"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			if (q == JOptionPane.YES_OPTION)
 			{	    									
-				installDeoldify();    							 	
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					String[] cmd = { deoldifyFolder.toString() + "/python.exe", "-m", "pip", "install", "deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", deoldifyFolder.toString(), "--no-warn-script-location" };
+					PYTHON.installModule(deoldifyFolder, cmd, deoldify);						 	
+				}
+				else
+				{
+					String[] cmd = { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
+					PYTHON.installModule(deoldifyFolder, cmd, deoldify);			
+				}
 			}
 			else
-				comboFonctions.setSelectedItem("");
-			
+				comboFonctions.setSelectedItem("");			
 		}
 	}
-	
-	public static void installDeoldify() {
-
-		disableAll();
-		btnStart.setEnabled(false);
-		progressBar1.setIndeterminate(true);
-		progressBar1.setStringPainted(false);
-		lblCurrentEncoding.setText(language.getProperty("update") + "...");
 		
-		runProcess = new Thread(new Runnable() {	
-			
-			@Override
-			public void run() {
-					
-				try {	
-					
-					ProcessBuilder processBuilder;
-					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						//Install pip
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", PYTHON_DIR + "/get-pip.py", "--target", PYTHON_DIR);
-						processBuilder.redirectErrorStream(true);
-						
-						process = processBuilder.start();
-						
-						BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-						 
-						String line;		           
-			            while ((line = reader.readLine()) != null)
-			            {
-			            	if (cancelled)
-			            		break;
-			            	
-			            	lblCurrentEncoding.setText(line);
-			            	Console.consolePYTHON.append(line + System.lineSeparator());
-			            }
-			            process.waitFor();
-						
-						//Then install deoldify
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-m", "pip", "install" ,"deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", PYTHON_DIR, "--no-warn-script-location");
-					}
-					else
-					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "pip", "install" ,"deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location");
-					}
-					
-		            processBuilder.redirectErrorStream(true);
-		            process = processBuilder.start();
-		            
-		            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		            
-		            String line;		           
-		            while ((line = reader.readLine()) != null)
-		            {
-		            	if (cancelled)
-		            		break;
-		            	
-		            	lblCurrentEncoding.setText(line);
-		            	Console.consolePYTHON.append(line + System.lineSeparator());
-		            }
-		            process.waitFor();
-		            		            
-		        } catch (Exception e) {
-		        	e.printStackTrace();
-		        }
-				finally {
-					
-					if (deoldify.exists() == false || cancelled)
-					{
-						comboFonctions.setSelectedItem("");	
-						lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
-					}
-					else
-					{
-						lblCurrentEncoding.setText(language.getProperty("processEnded"));
-						Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
-					}
-					
-					SwingUtilities.invokeLater(new Runnable()
-					{
-			           @Override
-			           public void run() {
-			        	   Shutter.progressBar1.setIndeterminate(false);
-			        	   progressBar1.setStringPainted(true);			        	   
-			           }
-					});
-					 
-					enableAll();
-				}
-			}			
-		});
-		runProcess.start();
-	}
-	
-	public static void getDeoldifyModel() {
-		
-		if (System.getProperty("os.name").contains("Windows"))
-		{			
-			deoldifyModel = new File(PYTHON_DIR).getParentFile() + "/models/" + modelName;
-		}
-		else
-			deoldifyModel = new File(PYTHON_DIR).getParentFile().getParentFile() + "/models/" + modelName;
-	}
-	
     public static void downloadModel() {
 		        
     	switch (comboFilter.getSelectedIndex())
@@ -223,7 +104,7 @@ public class DEOLDIFY extends Shutter {
 			
 		}      
     	
-    	getDeoldifyModel();
+    	deoldifyModel = deoldifyFolder + "/models/" + modelName;
 				
 		File model = new File(deoldifyModel);
 		File modelPath = new File(model.getParent());
@@ -295,15 +176,16 @@ public class DEOLDIFY extends Shutter {
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", colorizePath, file, "-m", model, "-o", output);
+						colorizePath = FFMPEG.PathToFFMPEG.replace("ffmpeg.exe", "colorize.py");
+						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/python.exe", colorizePath, file, "-m", model, "-o", output);
 					}
 					else
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", colorizePath, file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/bin/python3", colorizePath, file, "-m", model, "-o", output);
 					
 					processBuilder.directory(new File("Library"));
 					processBuilder.redirectErrorStream(true);
 					 
-					Console.consolePYTHON.append(language.getProperty("command") + " " + PYTHON_DIR + "/python3 " + colorizePath + " " + file + " -m " + model + " -o " + output);	
+					Console.consolePYTHON.append(language.getProperty("command") + " python3 " + colorizePath + " " + file + " -m " + model + " -o " + output);	
 					
 					isRunning = true;	
 					process = processBuilder.start();

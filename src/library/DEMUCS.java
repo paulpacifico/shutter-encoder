@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import application.Console;
 import application.Shutter;
@@ -34,27 +33,21 @@ public class DEMUCS extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
+	private static File demucsFolder = new File("Library/demucs");
 	private static File demucs;
-	public static String PYTHON_DIR;
 	public static boolean error = false;
 	public static boolean isRunning = false;
 
 	public static void checkDemucs() {
-		
-		PYTHON_DIR = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+
 		if (System.getProperty("os.name").contains("Windows"))
 		{
-			PYTHON_DIR = PYTHON_DIR.substring(1,PYTHON_DIR.length()-1);	
-			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python";
-			demucs = new File(PYTHON_DIR + "/demucs/demucs.py");
+			demucs = new File(demucsFolder + "/demucs/demucs.py");
 		}
 		else
-		{
-			PYTHON_DIR = PYTHON_DIR.substring(0,PYTHON_DIR.length()-1);		
-			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/bin";
-			demucs = new File(PYTHON_DIR + "/demucs");
-		}		
+			demucs = new File(demucsFolder + "/bin/demucs");
 		
+		//Download ffmpeg for Linux because it need shared libs
 		if (System.getProperty("os.name").contains("Linux"))
 		{
 			checkFFmpegForLinux();			
@@ -65,11 +58,19 @@ public class DEMUCS extends Shutter {
 			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			if (q == JOptionPane.YES_OPTION)
 			{	    									
-				installDemucs();    							 	
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					String[] cmd = { demucsFolder.toString() + "/python.exe", "-m", "pip", "install", "demucs", "torchcodec", "--target", demucsFolder.toString(), "--no-warn-script-location" };
+					PYTHON.installModule(demucsFolder, cmd, demucs);						 	
+				}
+				else
+				{
+					String[] cmd = { demucsFolder.toString() + "/bin/python3", "-m", "pip", "install", "demucs", "torchcodec", "--no-warn-script-location" };
+					PYTHON.installModule(demucsFolder, cmd, demucs);			
+				}
 			}
 			else
-				comboFonctions.setSelectedItem("");
-			
+				comboFonctions.setSelectedItem("");			
 		}
 	}
 
@@ -88,100 +89,7 @@ public class DEMUCS extends Shutter {
 	    	 }
 	    }
 	}
-	
-	public static void installDemucs() {
-
-		disableAll();
-		btnStart.setEnabled(false);
-		progressBar1.setIndeterminate(true);
-		progressBar1.setStringPainted(false);
-		lblCurrentEncoding.setText(language.getProperty("update") + "...");
 		
-		runProcess = new Thread(new Runnable() {	
-			
-			@Override
-			public void run() {
-					
-				try {	
-					
-					ProcessBuilder processBuilder;
-					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						//Install pip
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", PYTHON_DIR + "/get-pip.py", "--target", PYTHON_DIR);
-						processBuilder.redirectErrorStream(true);
-						
-						process = processBuilder.start();
-						
-						BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-						 
-						String line;		           
-			            while ((line = reader.readLine()) != null)
-			            {
-			            	if (cancelled)
-			            		break;
-			            	
-			            	lblCurrentEncoding.setText(line);
-			            	Console.consolePYTHON.append(line + System.lineSeparator());
-			            }
-			            process.waitFor();
-						
-						//Then install demucs
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-m", "pip", "install" ,"demucs", "torchcodec", "--target", PYTHON_DIR, "--no-warn-script-location");
-					}
-					else
-					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "pip", "install" ,"demucs", "torchcodec", "--no-warn-script-location");
-					}
-					
-		            processBuilder.redirectErrorStream(true);
-		            process = processBuilder.start();
-		            
-		            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		            
-		            String line;		           
-		            while ((line = reader.readLine()) != null)
-		            {
-		            	if (cancelled)
-		            		break;
-		            	
-		            	lblCurrentEncoding.setText(line);
-		            	Console.consolePYTHON.append(line + System.lineSeparator());
-		            }
-		            process.waitFor();
-		            		            
-		        } catch (Exception e) {
-		        	e.printStackTrace();
-		        }
-				finally {
-					
-					if (demucs.exists() == false || cancelled)
-					{
-						comboFonctions.setSelectedItem("");	
-						lblCurrentEncoding.setText(language.getProperty("lblEncodageEnCours"));
-					}
-					else
-					{
-						lblCurrentEncoding.setText(language.getProperty("processEnded"));
-						Shutter.progressBar1.setValue(Shutter.progressBar1.getMaximum());
-					}
-					
-					SwingUtilities.invokeLater(new Runnable()
-					{
-			           @Override
-			           public void run() {
-			        	   Shutter.progressBar1.setIndeterminate(false);
-			        	   progressBar1.setStringPainted(true);			        	   
-			           }
-					});
-					 
-					enableAll();
-				}
-			}			
-		});
-		runProcess.start();
-	}
-	
 	public static void run(String model, String output, String file) {
 		
 		disableAll();
@@ -199,22 +107,23 @@ public class DEMUCS extends Shutter {
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
-						"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
+						processBuilder = new ProcessBuilder(demucsFolder.toString() + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
+						"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
 					}
 					else
-						processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{track}/{stem}.{ext}", file);
+						processBuilder = new ProcessBuilder(demucsFolder.toString() + "/bin/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
 					
 					//Adding ffmpeg the the PATH environment						        			        
 			        if (System.getProperty("os.name").contains("Mac"))
 			        {
-			        	Map<String, String> env = processBuilder.environment();	
+			        	Map<String, String> env = processBuilder.environment();			        	
+			        	env.put("PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", "") + ":" + System.getenv("PATH"));
 			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
 			        }
 			        
 					processBuilder.redirectErrorStream(true);
 					 
-					Console.consolePYTHON.append(language.getProperty("command") + " " + PYTHON_DIR + "/python3 -m demucs -n " + model + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
+					Console.consolePYTHON.append(language.getProperty("command") + " python3 -m demucs -n " + model + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
 					
 					isRunning = true;	
 					process = processBuilder.start();
