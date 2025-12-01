@@ -23,6 +23,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -42,7 +45,7 @@ public class PYTHON extends Shutter {
 		if (System.getProperty("os.name").contains("Windows"))
 		{
 			PYTHON_DIR = PYTHON_DIR.substring(1,PYTHON_DIR.length()-1);	
-			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/Scripts";
+			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python";
 		}
 		else
 		{
@@ -54,19 +57,31 @@ public class PYTHON extends Shutter {
 	
 	public static void createVirtualEnvironment(String output) throws InterruptedException, IOException {
 		
-		ProcessBuilder processBuilder;
-		
 		if (System.getProperty("os.name").contains("Windows"))
 		{
-			processBuilder = new ProcessBuilder(PYTHON_DIR + "/python.exe", "-m", "venv", output);
+			//There is no venv module on Windows...
+			Files.walk(new File(PYTHON_DIR).toPath()).forEach(path -> {
+	        
+			 try {
+		            Path dest = new File(output).toPath().resolve(new File(PYTHON_DIR).toPath().relativize(path));
+		            if (Files.isDirectory(path)) {
+		               Files.createDirectories(dest);					
+		            } else {
+		                Files.copy(path, dest, StandardCopyOption.REPLACE_EXISTING);
+		            }
+			 	} catch (IOException e) {
+			 		e.printStackTrace();
+				}
+	        });
 		}
 		else
-			processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "venv", output);
-		
-		process = processBuilder.start();
-		process.waitFor();
+		{
+			ProcessBuilder processBuilder = new ProcessBuilder(PYTHON_DIR + "/python3", "-m", "venv", output);
+			process = processBuilder.start();
+			process.waitFor();
+		}
 	}
-	
+		
 	public static void installModule(File modulePath, String[] cmd, File module) {
 		
 		disableAll();

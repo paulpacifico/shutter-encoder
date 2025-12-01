@@ -60,7 +60,7 @@ public class DEMUCS extends Shutter {
 			{	    									
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					String[] cmd = { demucsFolder.toString() + "/Scripts/python.exe", "-m", "pip", "install", "demucs", "torchcodec", "--target", demucsFolder.toString(), "--no-warn-script-location" };
+					String[] cmd = { demucsFolder.toString() + "/python.exe", "-m", "pip", "install", "demucs", "torchcodec", "--target", demucsFolder.toString(), "--no-warn-script-location" };
 					PYTHON.installModule(demucsFolder, cmd, demucs);						 	
 				}
 				else
@@ -107,7 +107,7 @@ public class DEMUCS extends Shutter {
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						processBuilder = new ProcessBuilder(demucsFolder.toString() + "/Scripts/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
+						processBuilder = new ProcessBuilder(demucsFolder.toString() + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
 						"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
 					}
 					else
