@@ -164,7 +164,7 @@ public class DEOLDIFY extends Shutter {
 				try {		
 					
 					//Copy colorize.py to allow writing into models folder
-					File colorizeSource = new File("Library/colorize.py");
+					File colorizeSource = new File(new File(FFMPEG.PathToFFMPEG.replace("\\ ", " ")).getParent() + "/colorize.py");
 					File colorizePath = new File(deoldifyFolder.toString() + "/colorize.py");
 					if (colorizePath.exists() == false)
 					{
@@ -179,7 +179,7 @@ public class DEOLDIFY extends Shutter {
 					else
 						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/bin/python3", colorizePath.toString(), file, "-m", model, "-o", output);
 					
-					processBuilder.directory(new File("Library"));
+					processBuilder.directory(deoldifyFolder);
 					processBuilder.redirectErrorStream(true);
 					 
 					Console.consolePYTHON.append(language.getProperty("command") + " python3 " + colorizePath + " " + file + " -m " + model + " -o " + output);	
