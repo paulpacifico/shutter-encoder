@@ -37,7 +37,7 @@ public class DEOLDIFY extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
-	private static File deoldifyFolder = new File("Library/deoldify");
+	private static File deoldifyFolder = new File(System.getProperty("user.home") + "/deoldify");
 	private static File deoldify;
 	public static boolean error = false;
 	public static boolean isRunning = false;
@@ -76,7 +76,7 @@ public class DEOLDIFY extends Shutter {
 				comboFonctions.setSelectedItem("");			
 		}
 	}
-		
+	
     public static void downloadModel() {
 		        
     	switch (comboFilter.getSelectedIndex())
@@ -104,11 +104,11 @@ public class DEOLDIFY extends Shutter {
 			
 		}      
     	
-    	deoldifyModel = deoldifyFolder.getParent() + "/models/" + modelName;
-				
+    	deoldifyModel = deoldifyFolder.toString() + "/models/" + modelName;
+    	
 		File model = new File(deoldifyModel);
 		File modelPath = new File(model.getParent());
-		
+				
 		if (modelPath.exists() == false)
 		{
 			modelPath.mkdir();
@@ -132,27 +132,19 @@ public class DEOLDIFY extends Shutter {
 			else
 				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + "...");
 			
-			//Download
-			Thread download = new Thread(new Runnable() {
-				
-				public void run() {		
+			Utils.changeFrameVisibility(Shutter.frame, true);
 			
-					Utils.changeFrameVisibility(Shutter.frame, true);
-					
-					Update.HTTPDownload(modelLink, deoldifyModel);	
+			Update.HTTPDownload(modelLink, deoldifyModel);	
 
-					Utils.changeFrameVisibility(Shutter.frame, false);
-					Shutter.frame.toFront();
-					
-					Update.frame.dispose();
-					
-					if (model.exists() == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionColorize")))
-					{
-						Shutter.comboFonctions.setSelectedItem("");;
-					}
-				}
-			});
-			download.start();
+			Utils.changeFrameVisibility(Shutter.frame, false);
+			Shutter.frame.toFront();
+			
+			Update.frame.dispose();
+			
+			if (model.exists() == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionColorize")))
+			{
+				Shutter.comboFonctions.setSelectedItem("");;
+			}
 		}
 		
 	}   
@@ -171,16 +163,21 @@ public class DEOLDIFY extends Shutter {
 					
 				try {		
 					
-					String colorizePath = FFMPEG.PathToFFMPEG.replace("\\", "").replace("ffmpeg", "colorize.py");
+					//Copy colorize.py to allow writing into models folder
+					File colorizeSource = new File("Library/colorize.py");
+					File colorizePath = new File(deoldifyFolder.toString() + "/colorize.py");
+					if (colorizePath.exists() == false)
+					{
+						Files.copy(colorizeSource.toPath(), colorizePath.toPath());
+					}
 										
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						colorizePath = FFMPEG.PathToFFMPEG.replace("ffmpeg.exe", "colorize.py");
-						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/python.exe", colorizePath, file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/python.exe", colorizePath.toString(), file, "-m", model, "-o", output);
 					}
 					else
-						processBuilder = new ProcessBuilder("deoldify/bin/python3", colorizePath, file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/bin/python3", colorizePath.toString(), file, "-m", model, "-o", output);
 					
 					processBuilder.directory(new File("Library"));
 					processBuilder.redirectErrorStream(true);

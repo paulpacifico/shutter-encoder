@@ -33,7 +33,7 @@ public class DEMUCS extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
-	private static File demucsFolder = new File("Library/demucs");
+	private static File demucsFolder = new File(System.getProperty("user.home") + "/demucs");
 	private static File demucs;
 	public static boolean error = false;
 	public static boolean isRunning = false;
