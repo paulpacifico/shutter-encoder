@@ -19382,6 +19382,7 @@ public class Shutter {
 		comboSelectedGPU.setMaximumRowCount(20);
 		comboSelectedGPU.setFont(new Font(mainFont, Font.PLAIN, 10));
 		comboSelectedGPU.setEditable(false);
+		comboSelectedGPU.setVisible(false);
 		comboSelectedGPU.setBounds(lblGpuDecoding.getLocation().x - comboSelectedGPU.getWidth() - 6, comboSelectedGPU.getY(), 60, 16);	
 		statusBar.add(comboSelectedGPU);
 
@@ -20679,14 +20680,26 @@ public class Shutter {
 				lblHWaccel.setLocation(comboGPUDecoding.getX() + comboGPUDecoding.getWidth() + 6, lblBy.getY());
 			}
 			comboAccel.setLocation(lblHWaccel.getLocation().x + lblHWaccel.getWidth() + 4, comboGPUDecoding.getY());
-			comboSelectedGPU.setLocation(lblGpuDecoding.getLocation().x - comboSelectedGPU.getWidth() - 6, comboGPUDecoding.getY());	
+			
+			if (FFMPEG.multiGPU > 0 && comboGPUDecoding.isVisible())
+		    {
+			    comboSelectedGPU.setLocation(lblGpuDecoding.getLocation().x - comboSelectedGPU.getWidth() - 6, comboGPUDecoding.getY());
+		    }	
+			else
+				comboSelectedGPU.setVisible(false);
 		}
 	}
 	
 	public static void changeSections(final boolean action) {
 		
-		if (frame.getWidth() > 332)
-		{			
+		if (frame.getWidth() > 332 //Other functions are for addToList text
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionExtract"))		
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe"))
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranslate"))
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionColorize"))
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")))
+		{		
 			Thread changeSize = new Thread(new Runnable() {
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -24031,7 +24044,9 @@ public class Shutter {
 								{
 									addToList.setText(language.getProperty("fileVideo"));
 								}
-								else if (language.getProperty("itemMyFunctions").equals(function))
+								else if (language.getProperty("itemMyFunctions").equals(function)
+								|| language.getProperty("functionTranslate").equals(function)
+								|| language.getProperty("functionColorize").equals(function))
 								{
 									addToList.setText(language.getProperty("dropFilesHere"));
 								}
@@ -24483,7 +24498,7 @@ public class Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 
-				String types[] = { "artistic", "stable", "video" };
+				String types[] = { "artistic", "stable" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);
