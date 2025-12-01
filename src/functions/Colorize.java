@@ -45,7 +45,7 @@ public class Colorize extends Shutter {
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
 				DEOLDIFY.downloadModel();
-				
+			
 				File tempFolder = null;
 				
 				for (int i = 0 ; i < list.getSize() ; i++)

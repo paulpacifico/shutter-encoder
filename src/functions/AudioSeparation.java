@@ -151,6 +151,9 @@ public class AudioSeparation extends Shutter {
 		
 		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, "");
 
+		VideoPlayer.videoPath = null;
+		VideoPlayer.playerRepaint();
+		
 		//Sending processes
 		FunctionUtils.addFileForMail(fileOut.toString());
 	}
