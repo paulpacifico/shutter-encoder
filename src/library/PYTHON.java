@@ -42,7 +42,7 @@ public class PYTHON extends Shutter {
 		if (System.getProperty("os.name").contains("Windows"))
 		{
 			PYTHON_DIR = PYTHON_DIR.substring(1,PYTHON_DIR.length()-1);	
-			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python";
+			PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python/Scripts";
 		}
 		else
 		{

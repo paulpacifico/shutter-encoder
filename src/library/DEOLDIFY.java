@@ -63,7 +63,7 @@ public class DEOLDIFY extends Shutter {
 			{	    									
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					String[] cmd = { deoldifyFolder.toString() + "/python.exe", "-m", "pip", "install", "deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", deoldifyFolder.toString(), "--no-warn-script-location" };
+					String[] cmd = { deoldifyFolder.toString() + "/Scripts/python.exe", "-m", "pip", "install", "deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", deoldifyFolder.toString(), "--no-warn-script-location" };
 					PYTHON.installModule(deoldifyFolder, cmd, deoldify);						 	
 				}
 				else
@@ -177,7 +177,7 @@ public class DEOLDIFY extends Shutter {
 					if (System.getProperty("os.name").contains("Windows"))
 					{
 						colorizePath = FFMPEG.PathToFFMPEG.replace("ffmpeg.exe", "colorize.py");
-						processBuilder = new ProcessBuilder("deoldify/python.exe", colorizePath, file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder("deoldify/Scripts/python.exe", colorizePath, file, "-m", model, "-o", output);
 					}
 					else
 						processBuilder = new ProcessBuilder("deoldify/bin/python3", colorizePath, file, "-m", model, "-o", output);
