@@ -21,11 +21,7 @@ package library;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -49,26 +45,9 @@ public class PYTHON extends Shutter {
 		else		
 			PYTHON_DIR = PYTHON_DIR.substring(0,PYTHON_DIR.length()-1);	
 		
-		PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python";	
+		PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python.7z";	
 	}
-	
-	public static void createVirtualEnvironment(String output) throws InterruptedException, IOException {
-		
-		Files.walk(new File(PYTHON_DIR).toPath()).forEach(path -> {
-	        
-			try {
-	            Path dest = new File(output).toPath().resolve(new File(PYTHON_DIR).toPath().relativize(path));
-	            if (Files.isDirectory(path)) {
-	               Files.createDirectories(dest);					
-	            } else {
-	                Files.copy(path, dest, StandardCopyOption.REPLACE_EXISTING);
-	            }
-		 	} catch (IOException e) {
-		 		e.printStackTrace();
-			}
-        });
-	}
-		
+			
 	public static void installModule(File modulePath, String[] cmd, File module) {
 		
 		disableAll();
@@ -88,7 +67,11 @@ public class PYTHON extends Shutter {
 					if (modulePath.exists() == false)
 					{
 						modulePath.mkdirs();
-						PYTHON.createVirtualEnvironment(modulePath.toString());			
+						SEVENZIP.run("x " + '"' + PYTHON_DIR + '"' + " -o" + '"' + modulePath + '"', false);	
+						
+						do {
+							Thread.sleep(10);
+						} while (SEVENZIP.runProcess.isAlive());
 					}
 					
 					File tempFolder = new File("C:\\temp");

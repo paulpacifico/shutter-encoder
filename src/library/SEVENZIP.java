@@ -37,7 +37,9 @@ public class SEVENZIP extends Shutter {
 	public static Thread runProcess;
 	public static boolean error = false;
 	
-	public static void run(final String cmd, final boolean notUpdate) {
+	public static void run(final String cmd, final boolean noUpdate) {
+		
+		error = false;
 		
 		runProcess = new Thread(new Runnable()  {
 			
@@ -60,7 +62,7 @@ public class SEVENZIP extends Shutter {
 					{
 						PathTo7za = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 						PathTo7za = PathTo7za.substring(0,PathTo7za.length()-1);
-						PathTo7za = PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/7za";
+						PathTo7za = PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/7zz";
 						process7za = new ProcessBuilder("/bin/bash", "-c" , PathTo7za + " " + cmd);
 					}
 						
@@ -90,11 +92,10 @@ public class SEVENZIP extends Shutter {
 					isRunning = false;	        
 					
 					} catch (IOException | InterruptedException e) {
-						System.out.println(cmd);
 						error = true;
 					}
 					
-					 if (notUpdate)
+					 if (noUpdate)
 					 {
 						 if (error == false)
 						 {

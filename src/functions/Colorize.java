@@ -47,7 +47,7 @@ public class Colorize extends Shutter {
 				DEOLDIFY.downloadModel();
 						
 				if (new File(DEOLDIFY.deoldifyModel).exists())
-				{
+				{						
 					File tempFolder = null;
 					
 					for (int i = 0 ; i < list.getSize() ; i++)

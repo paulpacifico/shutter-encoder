@@ -37,7 +37,7 @@ public class DEOLDIFY extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
-	private static File deoldifyFolder = new File(System.getProperty("user.home") + "/deoldify");
+	private static File deoldifyFolder = new File(documents.toString() + "/Library/deoldify");
 	private static File deoldify;
 	public static boolean error = false;
 	public static boolean isRunning = false;
@@ -69,6 +69,12 @@ public class DEOLDIFY extends Shutter {
 				else
 				{
 					String[] cmd = { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
+					
+					if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
+					{
+						cmd = new String[] { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "matplotlib", "numpy==1.25.2", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
+					}
+					
 					PYTHON.installModule(deoldifyFolder, cmd, deoldify);			
 				}
 			}
@@ -153,7 +159,8 @@ public class DEOLDIFY extends Shutter {
 		
 		disableAll();
 		error = false;
-		progressBar1.setValue(0);		
+		progressBar1.setValue(0);
+		progressBar1.setMaximum(100);
 		btnStart.setEnabled(false);
 		
 		runProcess = new Thread(new Runnable() {	
@@ -190,9 +197,6 @@ public class DEOLDIFY extends Shutter {
 		            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		            
 		            Console.consolePYTHON.append(System.lineSeparator());
-			        
-		            progressBar1.setValue(0);
-					progressBar1.setMaximum(fileList.getModel().getSize());
 							            		            
 		            String line;
 		            boolean downloadModel = false;
@@ -202,10 +206,7 @@ public class DEOLDIFY extends Shutter {
 		            		error = true;		
 		            	
 		            	if (line.contains("Downloading:"))
-		            	{
-		            		downloadModel = true;
-		            		progressBar1.setMaximum(100);
-		            	}
+		            		downloadModel = true;		            	
 		            	
 		            	if (downloadModel)
 		            	{
@@ -213,7 +214,6 @@ public class DEOLDIFY extends Shutter {
 		            		{
 		            			downloadModel = false;
 		            			progressBar1.setValue(0);
-		            			progressBar1.setMaximum(fileList.getModel().getSize());
 		            			lblCurrentEncoding.setText(new File(file).getName());
 		            		}
 		            		else
@@ -227,7 +227,7 @@ public class DEOLDIFY extends Shutter {
 		            	} 
 		            	else if (line.contains("Done!"))
 		            	{
-		            		progressBar1.setValue(progressBar1.getValue() + 1);
+		            		progressBar1.setValue(100);
 		            	}
 		            	
 		            	if (cancelled)

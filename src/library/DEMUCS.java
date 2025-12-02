@@ -33,7 +33,7 @@ public class DEMUCS extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
-	private static File demucsFolder = new File(System.getProperty("user.home") + "/demucs");
+	private static File demucsFolder = new File(documents.toString() + "/Library/demucs");
 	private static File demucs;
 	public static boolean error = false;
 	public static boolean isRunning = false;
@@ -66,6 +66,12 @@ public class DEMUCS extends Shutter {
 				else
 				{
 					String[] cmd = { demucsFolder.toString() + "/bin/python3", "-m", "pip", "install", "demucs", "torchcodec", "--no-warn-script-location" };
+					
+					if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
+					{
+						cmd = new String[] { demucsFolder.toString() + "/bin/python3", "-m", "pip", "install", "demucs", "torchcodec", "numpy==1.25.2", "--no-warn-script-location" };
+					}
+					
 					PYTHON.installModule(demucsFolder, cmd, demucs);			
 				}
 			}
