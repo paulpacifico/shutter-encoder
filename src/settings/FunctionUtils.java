@@ -92,8 +92,6 @@ public class FunctionUtils extends Shutter {
 	
 	public static boolean analyze(File file, boolean isRaw) throws InterruptedException {
 		
-		btnStart.setEnabled(false);	
-		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 						
 		if (isRaw || caseGenerateFromDate.isSelected())
@@ -109,11 +107,6 @@ public class FunctionUtils extends Shutter {
 				FFPROBE.analyzedMedia = null; //Allow to load data with FFPROBE
 		}
 		
-		if (inputDeviceIsRunning)
-		{
-			btnStart.setEnabled(true);
-		}
-				
 		//inputDeviceIsRunning is already analyzed
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
@@ -150,7 +143,8 @@ public class FunctionUtils extends Shutter {
 				Thread.sleep(100);
 			}
 			while (FFPROBE.isRunning);
-			 						
+			 			
+			
 			if (analyzeError(file.toString()))
 				return false;
 			
@@ -183,7 +177,7 @@ public class FunctionUtils extends Shutter {
 				FFPROBE.fieldOrder = "0";
 			}
 		}
-
+		
 		return true;
 	}
 

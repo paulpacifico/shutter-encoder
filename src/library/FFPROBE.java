@@ -155,7 +155,6 @@ public static int gridCols = 0;
 			FFMPEG.error = false;
 			hasAudio = false; 		
 			attachedPic = false;
-			btnStart.setEnabled(false);
 			
 			imageRatio = 1.777777f;
 						
@@ -650,7 +649,6 @@ public static int gridCols = 0;
 						e.printStackTrace();
 					} finally {
 						isRunning = false;
-						btnStart.setEnabled(true);
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
 							
@@ -680,7 +678,6 @@ public static int gridCols = 0;
 		gridCols = 0;
 		
 		FFMPEG.error = false;
-		btnStart.setEnabled(false);
 		
 		processFrameData = new Thread(new Runnable()  {
 			
@@ -886,7 +883,6 @@ public static int gridCols = 0;
 					e.printStackTrace();
 				} finally {
 					isRunning = false;
-					btnStart.setEnabled(true);
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 				

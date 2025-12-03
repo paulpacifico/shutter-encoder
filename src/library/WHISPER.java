@@ -470,7 +470,24 @@ public class WHISPER {
 
 					if (dialog.getFile() != null)
 					{
-						WHISPER.whisperModel = dialog.getDirectory() + dialog.getFile();
+						if (dialog.getFile().substring(dialog.getFile().lastIndexOf('.')).equals(".bin") == false)
+						{
+							JOptionPane.showConfirmDialog(Shutter.frame,
+							"Only .bin files accepted",
+							"Custom model", JOptionPane.PLAIN_MESSAGE, JOptionPane.ERROR_MESSAGE);
+							
+							if (WHISPER.useCPU)
+							{
+								slider.setValue(0);
+							}
+							else
+								slider.setValue(1);
+						}
+						else
+						{
+							WHISPER.whisperModel = dialog.getDirectory() + dialog.getFile();
+						}
+						
 						defaultFolder = dialog.getParent().toString();
 					}
 					else

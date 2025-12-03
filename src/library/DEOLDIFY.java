@@ -63,16 +63,16 @@ public class DEOLDIFY extends Shutter {
 			{	    									
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					String[] cmd = { deoldifyFolder.toString() + "/python.exe", "-m", "pip", "install", "deoldify", "matplotlib", "numpy==1.25.2", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", deoldifyFolder.toString(), "--no-warn-script-location" };
+					String[] cmd = { deoldifyFolder.toString() + "/python.exe", "-m", "pip", "install", "deoldify", "--only-binary=opencv-python", "matplotlib", "numpy==1.25.2", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--target", deoldifyFolder.toString(), "--no-warn-script-location" };
 					PYTHON.installModule(deoldifyFolder, cmd, deoldify);						 	
 				}
 				else
 				{
-					String[] cmd = { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
+					String[] cmd = { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "--only-binary=opencv-python", "matplotlib", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
 					
 					if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
 					{
-						cmd = new String[] { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "matplotlib", "numpy==1.25.2", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
+						cmd = new String[] { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "--only-binary=opencv-python", "matplotlib", "numpy==1.25.2", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
 					}
 					
 					PYTHON.installModule(deoldifyFolder, cmd, deoldify);			
@@ -133,10 +133,10 @@ public class DEOLDIFY extends Shutter {
 			
 			if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
 			{
-				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel"));
+				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + " 1/2");
 			}
 			else
-				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + "...");
+				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + " 1/2");
 			
 			Utils.changeFrameVisibility(Shutter.frame, true);
 			
@@ -217,7 +217,7 @@ public class DEOLDIFY extends Shutter {
 		            			lblCurrentEncoding.setText(new File(file).getName());
 		            		}
 		            		else
-		            			lblCurrentEncoding.setText(language.getProperty("downloadingAIModel"));		
+		            			lblCurrentEncoding.setText(language.getProperty("downloadingAIModel") + " 2/2");		
 		            	}
 		            	
 		            	if (downloadModel && line.contains("%"))

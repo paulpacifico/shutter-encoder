@@ -459,7 +459,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		|| line.contains("is not multiple of 4")
 		|| line.contains("cannot be smaller than input dimensions")
 		|| line.contains("Failed setup for format")
-		|| line.contains("Failed to get pixel format"))
+		|| line.contains("Failed to get pixel format")
+		|| line.contains("Your platform doesn't support hardware accelerated"))
 		{					
 			if (line.contains("error code") == false && line.contains("return code") == false)
 			{
@@ -1684,7 +1685,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 		error = false;	
 		
-	    //Console.consoleFFMPEGlanguage.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
+	    //Console.consoleFFMPEG.append(language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
 		try {
 			
@@ -1693,33 +1694,24 @@ public static StringBuilder errorLog = new StringBuilder();
 			if (System.getProperty("os.name").contains("Windows"))
 			{							
 				processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));
-				process = processFFMPEG.start();
 			}
 			else
-			{
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));									
-				process = processFFMPEG.start();
-			}	
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG));											
+			
+			processFFMPEG.redirectErrorStream(true);
+			process = processFFMPEG.start();
 				
 			String line;
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));		
 			
 			//Console.consoleFFMPEG.append(System.lineSeparator());
-			long time = System.currentTimeMillis();
-			
+
 			while ((line = input.readLine()) != null)
 			{				
 				//Console.consoleFFMPEG.append(line + System.lineSeparator());		
-
-				//Errors
-				checkForErrors(line);	
 				
-				if (error || System.currentTimeMillis() - time > 5000)
-				{
-					error = true;
-					break;
-				}
-																
+				//Errors
+				checkForErrors(line);																
 			}					
 			process.waitFor();		
 			
