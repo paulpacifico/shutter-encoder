@@ -1,92 +1,135 @@
-import argparse
-import os
-import sys
-from pathlib import Path
-from deoldify.visualize import *
-import warnings
-warnings.filterwarnings("ignore")
+#!/usr/bin/env python3
 
-# Enable progress bars
-from fastprogress import master_bar, progress_bar
-import fastai
+import argparse
+import warnings
+from pathlib import Path
+
+from deoldify.visualize import (
+    get_image_colorizer,
+    get_video_colorizer
+)
+
+# ----------------------------------------------------------------------
+# Optional: silence known non-actionable warnings
+# ----------------------------------------------------------------------
+
+warnings.filterwarnings(
+    "ignore",
+    message="Your training set is empty.*"
+)
+
+warnings.filterwarnings(
+    "ignore",
+    message="Your validation set is empty.*"
+)
+
+warnings.filterwarnings(
+    "ignore",
+    message="The parameter 'pretrained' is deprecated.*"
+)
+
+warnings.filterwarnings(
+    "ignore",
+    message="Arguments other than a weight enum.*"
+)
+
+warnings.filterwarnings(
+    "ignore",
+    message="torch.nn.utils.weight_norm is deprecated.*"
+)
+
+# ----------------------------------------------------------------------
+# CLI
+# ----------------------------------------------------------------------
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="DeOldify CLI (image or video via explicit --model)"
+    )
+
+    parser.add_argument(
+        "input",
+        type=Path,
+        help="Input image or video file"
+    )
+
+    parser.add_argument(
+        "--model",
+        choices=["artistic", "stable", "video"],
+        default="artistic",
+        help="Colorization model to use"
+    )
+
+    parser.add_argument(
+        "--render-factor",
+        type=int,
+        help="Render factor (image default: 35, video default: 21)"
+    )
+
+    parser.add_argument(
+        "--no-watermark",
+        action="store_true",
+        help="Disable watermark"
+    )
+
+    parser.add_argument(
+        "--no-post-process",
+        action="store_true",
+        help="Disable post-processing (video only)"
+    )
+
+    return parser.parse_args()
+
+
+# ----------------------------------------------------------------------
+# Main
+# ----------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description='Colorize images with DeOldify')
-    parser.add_argument('input', help='Input image path')
-    parser.add_argument('-m', '--model', 
-                        choices=['artistic', 'stable', 'video'],
-                        default='artistic',
-                        help='Model to use: artistic (vibrant), stable (realistic), or video (temporal consistency)')
-    parser.add_argument('--model-path', help='Custom path to model file (.pth) - overrides --model')
-    parser.add_argument('-o', '--output', help='Output directory', default='result_images')
-    parser.add_argument('-r', '--render-factor', type=int, default=35,
-                        help='Render factor (10-40, higher=better quality)')
-    
-    args = parser.parse_args()
-    
-    # If custom model path provided, use that
-    if args.model_path:
-        model_path = Path(args.model_path).resolve()
-        if not model_path.exists():
-            print(f"ERROR: Model file not found at {model_path}")
-            return
-        
-        print(f"Using custom model: {model_path}")
-        
-        # Create models directory
-        deoldify_models = Path('./models')
-        deoldify_models.mkdir(exist_ok=True)
-        
-        # Determine target name from custom model filename
-        if 'artistic' in model_path.name.lower():
-            target_name = 'ColorizeArtistic_gen.pth'
-            model_type = 'artistic'
-        elif 'video' in model_path.name.lower():
-            target_name = 'ColorizeVideo_gen.pth'
-            model_type = 'video'
-        else:
-            target_name = 'ColorizeStable_gen.pth'
-            model_type = 'stable'
-        
-        target_path = deoldify_models / target_name
-        
-        # Create symlink or copy
-        if not target_path.exists() or target_path.resolve() != model_path:
-            if target_path.exists():
-                target_path.unlink()
-            try:
-                os.symlink(model_path, target_path)
-                print(f"Created symlink: {target_path} -> {model_path}")
-            except OSError:
-                import shutil
-                shutil.copy(model_path, target_path)
-                print(f"Copied model to: {target_path}")
-    else:
-        # Use built-in model selection
-        model_type = args.model
-        print(f"Using {args.model} model")
-    
-    print(f"Colorizing: {args.input}")
-    print(f"Render factor: {args.render_factor}")
-    print("Processing...")
-    sys.stdout.flush()
-    
-    # Initialize colorizer based on model type
-    if model_type == 'artistic':
-        colorizer = get_image_colorizer(artistic=True)
-    elif model_type == 'video':
-        colorizer = get_video_colorizer()
-    else:  # stable
-        colorizer = get_stable_image_colorizer()
-    
-    # Colorize
-    colorizer.plot_transformed_image(
-        path=args.input,
-        render_factor=args.render_factor,
-        results_dir=Path(args.output)
-    )
-    
-    print(f"Done! Check {args.output}/ for your colorized image")
+    args = parse_args()
 
-if __name__ == '__main__':
+    input_path = args.input
+
+    if not input_path.exists():
+        raise FileNotFoundError(f"Input file not found: {input_path}")
+
+    # --------------------------------------------------------------
+    # VIDEO MODE (explicit)
+    # --------------------------------------------------------------
+    if args.model == "video":
+
+        colorizer = get_video_colorizer()
+
+        colorizer.colorize_from_file_name(
+            file_name=str(input_path),
+            render_factor=args.render_factor or 21,
+            watermarked=not args.no_watermark,
+            post_process=not args.no_post_process
+        )
+
+        print("Video frames colorized (video build disabled)")
+        return
+
+    # --------------------------------------------------------------
+    # IMAGE MODE (default)
+    # --------------------------------------------------------------
+    artistic = (args.model == "artistic")
+
+    colorizer = get_image_colorizer(artistic=artistic)
+
+    colorizer.plot_transformed_image(
+        path=str(input_path),
+        render_factor=args.render_factor or 35,
+        compare=False,
+        watermarked=not args.no_watermark
+    )
+
+    print("Image colorized")
+
+
+# ----------------------------------------------------------------------
+# Entrypoint
+# ----------------------------------------------------------------------
+
+if __name__ == "__main__":
     main()
