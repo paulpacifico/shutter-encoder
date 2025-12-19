@@ -630,6 +630,10 @@ public class Picture extends Shutter {
 		{
 			model = "realesrgan-x4plus-anime";
 		}	
+		else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
+		{
+			model = "4x_NMKD-Siax_200k";
+		}		
 		
 		if (caseCreateSequence.isSelected())
 		{			

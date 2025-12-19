@@ -637,7 +637,8 @@ public static int gridCols = 0;
 					}
 					
 					//Refresh comboFilter for this function
-					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract")))
+					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract"))
+					|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionColorize")))
 					{
 						changeFilters();
 					}

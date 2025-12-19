@@ -20,20 +20,31 @@
 package functions;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+
+import org.apache.commons.io.FileUtils;
 
 import application.Ftp;
 import application.Shutter;
 import application.Utils;
 import library.DEOLDIFY;
 import library.FFMPEG;
+import library.FFPROBE;
 import settings.FunctionUtils;
 
 public class Colorize extends Shutter {
 	
+	public static File sourceFile = null;
 	public static Thread thread;
 	
     public static void main() {
 				
+    	sourceFile = null;
+    	
 		thread = new Thread(new Runnable() {	
 			
 			@Override
@@ -44,6 +55,7 @@ public class Colorize extends Shutter {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
+				DEOLDIFY.patchDeoldify();
 				DEOLDIFY.downloadModel();
 						
 				if (new File(DEOLDIFY.deoldifyModel).exists())
@@ -106,21 +118,91 @@ public class Colorize extends Shutter {
 								}
 							}	
 							
-							tempFolder = new File(labelOutput + "/" + language.getProperty("functionColorize"));
-							tempFolder.mkdirs();
+							if (comboFilter.getSelectedItem().equals("video"))
+							{
+								tempFolder = new File(labelOutput + "/" + fileName.replace(extension, ""));
+								tempFolder.mkdirs();
+							}
 							
 							//Run deoldify
-							DEOLDIFY.run(file.toString(), model, tempFolder.toString());
-							do {
-								Thread.sleep(100);								
-							} while (DEOLDIFY.runProcess.isAlive());
-														
-							File tempFile = new File(tempFolder.toString() + "/" + fileName); 
-							if (tempFile.exists())
-								tempFile.renameTo(fileOut);	
+							DEOLDIFY.run(file.toString(), model);
 							
-							if (tempFolder.exists())
-								tempFolder.delete();
+							do {								
+								Thread.sleep(1000);		
+								
+								//Move the colored frames to output tempFolder
+								File sourceFolder = new File(DEOLDIFY.deoldifyFolder + "/video/colorframes/" + fileName.replace(extension, ""));
+								
+								if (comboFilter.getSelectedItem().equals("video") && sourceFolder.exists())
+								{									
+						            try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourceFolder.toPath()))
+						            {
+						                for (Path f : stream)
+						                {
+						                    if (Files.isRegularFile(f))
+						                    {
+						                        Path targetFile = tempFolder.toPath().resolve(f.getFileName());
+						                        Files.move(f, targetFile, StandardCopyOption.REPLACE_EXISTING);
+						                        
+						                        File BWFrame = new File(f.toString().replace("colorframes", "bwframes"));
+						                        BWFrame.delete();
+						                    }
+						                }
+						            }
+								}
+								
+							} while (DEOLDIFY.runProcess.isAlive());
+
+							if (comboFilter.getSelectedItem().equals("video"))		
+							{
+								//Delete the video folder
+								FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
+								
+								if (cancelled)
+								{	
+									if (tempFolder != null && tempFolder.exists())
+										FileUtils.deleteDirectory(tempFolder);										
+								}
+								else //Create the video from image sequence
+								{
+									sourceFile = file;
+									
+									if (FFPROBE.videoCodec != null)
+									{
+										String vcodec = FFPROBE.videoCodec.replace("video", "");
+										for (String s : Shutter.functionsList)
+										{
+											if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
+											|| s.toLowerCase().contains(vcodec.toLowerCase()))
+											{
+												comboFonctions.setSelectedItem(s);
+												break;
+											}
+											else
+												comboFonctions.setSelectedItem("H.264");
+										}
+									}
+									else
+										comboFonctions.setSelectedItem("H.264");
+									
+									list.clear();
+									for (File f : tempFolder.listFiles())
+									{
+										list.addElement(f.toString());
+									}
+									
+									caseEnableSequence.doClick();
+									caseSequenceFPS.setSelectedItem(String.valueOf(FFPROBE.currentFPS));
+									
+									break;
+								}
+							}
+							else //Move the image colorized from result_images folder
+							{
+								File tempFile = new File(DEOLDIFY.deoldifyFolder + "/result_images/" + fileName); 								
+								if (tempFile.exists())
+									tempFile.renameTo(fileOut);	
+							}
 							
 							if (FFMPEG.saveCode == false)
 							{
@@ -130,13 +212,17 @@ public class Colorize extends Shutter {
 						catch (Exception e)
 						{
 							if (tempFolder != null && tempFolder.exists())
-								tempFolder.delete();
+							{
+								try {
+									FileUtils.deleteDirectory(tempFolder);
+								} catch (IOException e1) {}
+							}
 							
 							FFMPEG.error  = true;
 							e.printStackTrace();
 						}
 					}
-	
+
 					endOfFunction();				
 				}
 			}

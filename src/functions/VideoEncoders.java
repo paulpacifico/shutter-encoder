@@ -895,8 +895,17 @@ public class VideoEncoders extends Shutter {
 			    			}
 			    		}
 			        	
+			        	
+			        	//Retrieving audio from colorized video
+			        	String audioFromColorizedVideo = "";
+			        	if (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && Colorize.sourceFile != null)
+			        	{
+			        		audioFromColorizedVideo = " -i " + '"' + Colorize.sourceFile.toString() + '"';
+			        		filterComplex = filterComplex.replace("-map a?", "-map 1:a?");
+			        	}
+			        	
 						//Command
-						String cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
+						String cmd = audioFromColorizedVideo + FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 										
 						//Screen capture
 						if (inputDeviceIsRunning)
@@ -990,7 +999,7 @@ public class VideoEncoders extends Shutter {
 								writer.close();
 							}
 
-							cmd = FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex.replace("0:a", "1:a").replace("-map a", "-map 1:a") + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
+							cmd = audioFromColorizedVideo + FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex.replace("0:a", "1:a").replace("-map a", "-map 1:a") + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 							
 							if (cancelled == false)
 							{
@@ -2042,6 +2051,10 @@ public class VideoEncoders extends Shutter {
 		{
 			model = "realesrgan-x4plus-anime";
 		}	
+		else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
+		{
+			model = "4x_NMKD-Siax_200k";
+		}
 		
 		if (inputFile != null) //Image sequence
 		{

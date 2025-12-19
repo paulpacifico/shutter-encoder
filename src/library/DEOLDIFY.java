@@ -23,8 +23,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -37,7 +40,7 @@ public class DEOLDIFY extends Shutter {
 	
 	public static Thread runProcess;
 	public static Process process;
-	private static File deoldifyFolder = new File(documents.toString() + "/Library/deoldify");
+	public static File deoldifyFolder = new File(documents.toString() + "/Library/deoldify");
 	private static File deoldify;
 	public static boolean error = false;
 	public static boolean isRunning = false;
@@ -75,12 +78,47 @@ public class DEOLDIFY extends Shutter {
 						cmd = new String[] { deoldifyFolder.toString() + "/bin/python3", "-m", "pip", "install", "deoldify", "--only-binary=opencv-python", "matplotlib", "numpy==1.25.2", "pandas", "scipy", "fastprogress", "torch==2.3.0", "torchvision", "torchaudio", "--no-warn-script-location" };
 					}
 					
-					PYTHON.installModule(deoldifyFolder, cmd, deoldify);			
+					PYTHON.installModule(deoldifyFolder, cmd, deoldify);					
 				}
 			}
 			else
 				comboFonctions.setSelectedItem("");			
-		}
+		}			
+		
+	}
+	
+	public static void patchDeoldify() {
+		
+		try {
+			
+			File visualize = new File(deoldify + "/visualize.py");
+		
+			if (visualize.exists())
+			{
+				//Edit the visualize.py file to get .png output
+		        String content = Files.readString(visualize.toPath(), StandardCharsets.UTF_8);
+	
+		        content = content.replace("mjpeg", "png");
+		        content = content.replace(".jpg", ".png");
+	
+		        Files.writeString(visualize.toPath(), content, StandardCharsets.UTF_8);
+		        
+		        //Remove the build_video function -> handled manually
+		        List<String> lines = Files.readAllLines(visualize.toPath(), StandardCharsets.UTF_8);
+		        for (int i = 0; i < lines.size(); i++) {
+		            String line = lines.get(i).trim();
+
+		            if (line.equals("return self._build_video(source_path)")) {
+		                lines.set(i,"        return source_path");
+		                break;
+		            }
+		        }
+
+		        Files.write(visualize.toPath(), lines, StandardCharsets.UTF_8);
+			}
+			
+		} catch (Exception e) {}
+		
 	}
 	
     public static void downloadModel() {
@@ -89,7 +127,7 @@ public class DEOLDIFY extends Shutter {
 		{	
 			case 0: //Artistic
 				
-				modelLink = "https://huggingface.co/databuzzword/deoldify-artistic/resolve/aae6daa766bab0496224bf01a4b7959941703bce/ColorizeArtistic_gen.pth?download=true";
+				modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeArtistic_gen.pth?download=true";
 				modelName = "ColorizeArtistic_gen.pth";
 				modelSize = 255144681L;	
 				break;
@@ -155,7 +193,7 @@ public class DEOLDIFY extends Shutter {
 		
 	}   
 	
-	public static void run(String file, String model, String output) {
+	public static void run(String file, String model) {
 		
 		disableAll();
 		error = false;
@@ -177,19 +215,33 @@ public class DEOLDIFY extends Shutter {
 					{
 						Files.copy(colorizeSource.toPath(), colorizePath.toPath());
 					}
+					
+					String quality = "35";
+					if (comboFilter.getSelectedItem().equals("video"))
+					{
+						quality = "21";
+					}
 										
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/python.exe", colorizePath.toString(), file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/python.exe", colorizePath.toString(), file, "--model", model, "--render-factor", quality, "--no-watermark");
 					}
 					else
-						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/bin/python3", colorizePath.toString(), file, "-m", model, "-o", output);
+						processBuilder = new ProcessBuilder(deoldifyFolder.toString() + "/bin/python3", colorizePath.toString(), file, "--model", model, "--render-factor", quality, "--no-watermark");
+					
+					//Adding ffmpeg the the PATH environment						        			        
+			        if (System.getProperty("os.name").contains("Mac"))
+			        {
+			        	Map<String, String> env = processBuilder.environment();			        	
+			        	env.put("PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", "") + ":" + System.getenv("PATH"));
+			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
+			        }
 					
 					processBuilder.directory(deoldifyFolder);
 					processBuilder.redirectErrorStream(true);
 					 
-					Console.consolePYTHON.append(language.getProperty("command") + " python3 " + colorizePath + " " + file + " -m " + model + " -o " + output);	
+					Console.consolePYTHON.append(language.getProperty("command") + " python3 " + colorizePath + " " + file + " --model " + model + " --render-factor " + quality + " --no-watermark");	
 					
 					isRunning = true;	
 					process = processBuilder.start();
@@ -220,10 +272,16 @@ public class DEOLDIFY extends Shutter {
 		            			lblCurrentEncoding.setText(language.getProperty("downloadingAIModel") + " 2/2");		
 		            	}
 		            	
-		            	if (downloadModel && line.contains("%"))
+		            	if ((downloadModel || comboFilter.getSelectedItem().equals("video")) && line.contains("%"))
 		            	{
 		            		String s[] = line.split("\\.");
-		            		progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
+		            		if (comboFilter.getSelectedItem().equals("video"))
+		            		{
+		            			String s2[] = s[0].split("\\|");
+		            			progressBar1.setValue(Integer.valueOf(s2[2].replace(" ","")));
+		            		}
+		            		else
+		            			progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
 		            	} 
 		            	else if (line.contains("Done!"))
 		            	{

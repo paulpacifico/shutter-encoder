@@ -148,6 +148,7 @@ import com.formdev.flatlaf.ui.FlatLineBorder;
 import functions.AudioEncoders;
 import functions.AudioNormalization;
 import functions.AudioSeparation;
+import functions.BackgroundRemover;
 import functions.BlackDetection;
 import functions.Colorize;
 import functions.Command;
@@ -166,6 +167,7 @@ import functions.Rewrap;
 import functions.VMAF;
 import functions.VideoEncoders;
 import functions.VideoInserts;
+import library.BACKGROUNDREMOVER;
 import library.BMXTRANSWRAP;
 import library.DCRAW;
 import library.DEMUCS;
@@ -1212,7 +1214,13 @@ public class Shutter {
 					//Install deoldify
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionColorize")))
 					{
-						DEOLDIFY.checkDeoldify();				
+						DEOLDIFY.checkDeoldify();						
+					}
+					
+					//Install Background Remover
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionBackgroundRemover")))
+					{
+						BACKGROUNDREMOVER.checkBackgroundRemover();
 					}
 				}
 			}
@@ -2281,6 +2289,7 @@ public class Shutter {
 						caseAddWatermark.setSelected(false);
 						overlayDeviceIsRunning = false;
 					}
+
 					changeFilters();
 				}
 			}
@@ -3702,8 +3711,19 @@ public class Shutter {
 								}
 								else
 									Colorize.main();
-
-							} else if (language.getProperty("functionReplaceAudio").equals(function)) {
+							}
+							else if (language.getProperty("functionBackgroundRemover").equals(function))
+							{
+								if (inputDeviceIsRunning)
+								{
+									JOptionPane.showMessageDialog(frame,								
+									language.getProperty("incompatibleInputDevice"),
+									language.getProperty("menuItemScreenRecord"), JOptionPane.ERROR_MESSAGE);
+								}
+								else
+									BackgroundRemover.main();							
+							}
+							else if (language.getProperty("functionReplaceAudio").equals(function)) {
 								if (inputDeviceIsRunning)
 									JOptionPane.showMessageDialog(frame,
 											language.getProperty("incompatibleInputDevice"),
@@ -3927,7 +3947,7 @@ public class Shutter {
 		functionsList = new String[] {
 
 				language.getProperty("itemAITools"), language.getProperty("functionSeparation"), language.getProperty("functionTranscribe"),
-				language.getProperty("functionTranslate"), language.getProperty("functionColorize"),
+				language.getProperty("functionTranslate"), language.getProperty("functionColorize"), language.getProperty("functionBackgroundRemover"),
 				language.getProperty("itemNoConversion"), language.getProperty("functionCut"),
 				language.getProperty("functionReplaceAudio"), language.getProperty("functionRewrap"),
 				language.getProperty("functionConform"), language.getProperty("functionMerge"),
@@ -4069,6 +4089,7 @@ public class Shutter {
 						boolean addTranscribeFunction = false;
 						boolean addSeparationFunction = false;
 						boolean addColorizeFunction = false;
+						boolean addBackgroundRemover = false;
 						for (int i = 0; i < comboFonctions.getItemCount(); i++)
 						{
 							if (functionsList[i].toString().length() >= text.length())
@@ -4087,6 +4108,10 @@ public class Shutter {
 									else if (functionsList[i].toString().equals(language.getProperty("functionColorize")))
 									{
 										addColorizeFunction = true;
+									}
+									else if (functionsList[i].toString().equals(language.getProperty("functionBackgroundRemover")))
+									{
+										addBackgroundRemover = true;
 									}
 									else
 										newList.add(functionsList[i].toString());
@@ -4107,6 +4132,11 @@ public class Shutter {
 						if (addColorizeFunction)
 						{
 							newList.add(language.getProperty("functionColorize"));
+						}
+						
+						if (addBackgroundRemover)
+						{
+							newList.add(language.getProperty("functionBackgroundRemover"));
 						}
 
 						// Pour éviter d'afficher le premier item
@@ -5818,7 +5848,8 @@ public class Shutter {
 		comboResolution = new JComboBox<String>();
 		comboResolution.setName("comboResolution");
 		comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] { language.getProperty("source"),
-				"AI real-life 4x", "AI real-life 2x", "AI animation 4x", "AI animation 2x", "1:2", "1:4", "1:8", "1:16",
+				"AI photo 4x", "AI photo 2x", "AI video 4x", "AI video 2x", "AI animation 4x", "AI animation 2x",
+				"1:2", "1:4", "1:8", "1:16",
 				"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "4096x2160", "3840x2160", "2560x1440",
 				"1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "1000x1000", "854x480", "720x576",
 				"640x360", "500x500", "320x180", "200x200", "100x100", "50x50" }));
@@ -19858,6 +19889,7 @@ public class Shutter {
 				|| language.getProperty("functionInsert").equals(function)				
 				|| language.getProperty("functionTranslate").equals(function)
 				|| language.getProperty("functionColorize").equals(function)
+				|| language.getProperty("functionBackgroundRemover").equals(function)
 				|| "CD RIP".equals(function) || "DVD Rip".equals(function)
 				|| language.getProperty("functionSceneDetection").equals(function)
 				|| language.getProperty("functionWeb").equals(function)) {
@@ -19889,6 +19921,7 @@ public class Shutter {
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranscribe")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionTranslate")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionColorize")) == false
+		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionBackgroundRemover")) == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false
 		&& comboFonctions.getSelectedItem().equals("DVD Rip") == false
 		&& comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
@@ -20698,6 +20731,7 @@ public class Shutter {
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe"))
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranslate"))
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionColorize"))
+		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBackgroundRemover"))
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")))
 		{		
 			Thread changeSize = new Thread(new Runnable() {
@@ -21557,9 +21591,9 @@ public class Shutter {
 												language.getProperty("source"), "1920x1080", "1280x720" }));
 									}
 								} else {
-									if (comboResolution.getItemCount() != 24) {
+									if (comboResolution.getItemCount() != 26) {
 										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
-												language.getProperty("source"), "AI real-life 4x", "AI real-life 2x",
+												language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI video 4x", "AI video 2x",
 												"AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160",
 												"2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x791",
 												"1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto",
@@ -21890,9 +21924,9 @@ public class Shutter {
 												language.getProperty("source"), "1920x1080", "1280x720" }));
 									}
 								} else {
-									if (comboResolution.getItemCount() != 24) {
+									if (comboResolution.getItemCount() != 26) {
 										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
-												language.getProperty("source"), "AI real-life 4x", "AI real-life 2x",
+												language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI video 4x", "AI video 2x",
 												"AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160",
 												"2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768",
 												"1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto",
@@ -22437,9 +22471,9 @@ public class Shutter {
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4,
 										caseForcerDAR.getLocation().y + 3);
 
-								if (comboResolution.getItemCount() != 24) {
+								if (comboResolution.getItemCount() != 26) {
 									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
-											language.getProperty("source"), "AI real-life 4x", "AI real-life 2x",
+											language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI video 4x", "AI video 2x",
 											"AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160", "2560x1440",
 											"1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "854x480",
 											"720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160",
@@ -22983,9 +23017,9 @@ public class Shutter {
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4,
 										caseForcerDAR.getLocation().y + 3);
 
-								if (comboResolution.getItemCount() != 24) {
+								if (comboResolution.getItemCount() != 26) {
 									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
-											language.getProperty("source"), "AI real-life 4x", "AI real-life 2x",
+											language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI video 4x", "AI video 2x",
 											"AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160", "2560x1440",
 											"1920x1080", "1440x1080", "1280x720", "1024x768", "1024x576", "854x480",
 											"720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160",
@@ -23576,9 +23610,9 @@ public class Shutter {
 									comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4,
 											caseForcerDAR.getLocation().y + 3);
 
-									if (comboResolution.getItemCount() != 24) {
+									if (comboResolution.getItemCount() != 26) {
 										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
-												language.getProperty("source"), "AI real-life 4x", "AI real-life 2x",
+												language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI video 4x", "AI video 2x",
 												"AI animation 4x", "AI animation 2x", "4096x2160", "3840x2160",
 												"2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768",
 												"1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto",
@@ -23835,9 +23869,9 @@ public class Shutter {
 
 								grpResolution.add(comboResolution);
 
-								if (comboResolution.getItemCount() != 31) {
+								if (comboResolution.getItemCount() != 33) {
 									comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
-											language.getProperty("source"), "AI real-life 4x", "AI real-life 2x",
+											language.getProperty("source"), "AI photo 4x", "AI photo 2x", "AI video 4x", "AI video 2x",
 											"AI animation 4x", "AI animation 2x", "1:2", "1:4", "1:8", "1:16",
 											"3840:auto", "1920:auto", "auto:2160", "auto:1080", "auto:720", "4096x2160",
 											"3840x2160", "2560x1440", "1920x1080", "1440x1080", "1280x720", "1024x768",
@@ -24046,7 +24080,8 @@ public class Shutter {
 								}
 								else if (language.getProperty("itemMyFunctions").equals(function)
 								|| language.getProperty("functionTranslate").equals(function)
-								|| language.getProperty("functionColorize").equals(function))
+								|| language.getProperty("functionColorize").equals(function)
+								|| language.getProperty("functionBackgroundRemover").equals(function))
 								{
 									addToList.setText(language.getProperty("dropFilesHere"));
 								}
@@ -24499,8 +24534,12 @@ public class Shutter {
 				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
 
 				String types[] = { "artistic", "stable" };
+				if (FFPROBE.totalLength > 40)
+					types = new String[]{ "video" };
+
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
-				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false)
+				{
 					comboFilter.setModel(model);
 					comboFilter.setSelectedIndex(0);
 				}

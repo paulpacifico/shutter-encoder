@@ -29,6 +29,7 @@ import application.RecordInputDevice;
 import application.Shutter;
 import application.Utils;
 import functions.AudioNormalization;
+import functions.Colorize;
 import library.FFMPEG;
 import library.FFPROBE;
 
@@ -129,8 +130,8 @@ public class AudioSettings extends Shutter {
 		}
 		else if ((debitAudio.getSelectedItem().toString().equals("0") && audioCodec != "FLAC" && isEditingCodec == false && isBroadcastCodec == false)
 		|| comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio"))
-		|| (grpImageSequence.isVisible() && caseEnableSequence.isSelected()))
-		{
+		|| (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && Colorize.sourceFile == null))
+		{			
 			return " -an";
 		}
 		else

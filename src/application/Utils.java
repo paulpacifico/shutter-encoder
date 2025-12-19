@@ -395,7 +395,8 @@ public class Utils extends Shutter {
 			else if (getLanguage.contains(Locale.of("ja").getDisplayLanguage())
 			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
 			|| getLanguage.equals(Locale.of("uk").getDisplayLanguage())
-			|| getLanguage.contains(Locale.of("ar").getDisplayLanguage())) //use system default font
+			|| getLanguage.contains(Locale.of("ar").getDisplayLanguage())
+				|| getLanguage.contains(Locale.of("ko").getDisplayLanguage())) //use system default font
 			{
 				Shutter.magnetoFont = "";
 				Shutter.boldFont = "";

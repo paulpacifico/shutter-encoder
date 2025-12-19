@@ -5802,7 +5802,11 @@ public class VideoPlayer {
 								if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
 								{
 									model = "realesrgan-x4plus-anime";
-								}	
+								}
+								else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
+								{
+									model = "4x_NMKD-Siax_200k";
+								}
 
 								Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 								Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
