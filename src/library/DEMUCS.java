@@ -96,7 +96,7 @@ public class DEMUCS extends Shutter {
 	    }
 	}
 		
-	public static void run(String model, String output, String file) {
+	public static void run(String model, String output, String file, String selection) {
 		
 		disableAll();
 		error = false;
@@ -111,13 +111,32 @@ public class DEMUCS extends Shutter {
 				try {		
 										
 					ProcessBuilder processBuilder;
-					if (System.getProperty("os.name").contains("Windows"))
+					
+					//Separate all tracks
+					if (comboFilter.getSelectedIndex() == 0)
 					{
-						processBuilder = new ProcessBuilder(demucsFolder.toString() + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
-						"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
+							"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
+						}
+						else
+							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/bin/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
+					
+						Console.consolePYTHON.append(language.getProperty("command") + " python3 -m demucs -n " + model + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
 					}
 					else
-						processBuilder = new ProcessBuilder(demucsFolder.toString() + "/bin/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
+					{
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
+							"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "--two-stems=" + selection, "-o", output, "--filename" ,"../{stem}.{ext}", file);
+						}
+						else
+							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/bin/python3", "-m", "demucs", "-n", model, "--two-stems=" + selection, "-o", output, "--filename" ,"../{stem}.{ext}", file);
+					
+						Console.consolePYTHON.append(language.getProperty("command") + " python3 -m demucs -n " + model + " --two-stems=" + selection + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
+					}
 					
 					//Adding ffmpeg the the PATH environment						        			        
 			        if (System.getProperty("os.name").contains("Mac"))
@@ -128,9 +147,7 @@ public class DEMUCS extends Shutter {
 			        }
 			        
 					processBuilder.redirectErrorStream(true);
-					 
-					Console.consolePYTHON.append(language.getProperty("command") + " python3 -m demucs -n " + model + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
-					
+
 					isRunning = true;	
 					process = processBuilder.start();
 		            

@@ -272,6 +272,7 @@ public class DEOLDIFY extends Shutter {
 		            			lblCurrentEncoding.setText(language.getProperty("downloadingAIModel") + " 2/2");		
 		            	}
 		            	
+		            	//Retrieve current progress output
 		            	if ((downloadModel || comboFilter.getSelectedItem().equals("video")) && line.contains("%"))
 		            	{
 		            		String s[] = line.split("\\.");
@@ -282,7 +283,7 @@ public class DEOLDIFY extends Shutter {
 		            		}
 		            		else
 		            			progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
-		            	} 
+		            	}		            	
 		            	else if (line.contains("Done!"))
 		            	{
 		            		progressBar1.setValue(100);

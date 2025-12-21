@@ -101,14 +101,14 @@ public class AudioSeparation extends Shutter {
 							Thread.sleep(100);
 						} while (FFMPEG.runProcess.isAlive());
 						
-						String model = "htdemucs_6s";
+						String model = "htdemucs_6s";						
 						if (cancelled == false)
 						{
 							lblCurrentEncoding.setText(fileName);
 							tempsEcoule.setVisible(false);
 														
 							//Run demucs
-							DEMUCS.run(model, separationFolder.toString(), waveFile.toString());
+							DEMUCS.run(model, separationFolder.toString(), waveFile.toString(), comboFilter.getSelectedItem().toString());
 																			
 							do {		
 								Thread.sleep(100);								

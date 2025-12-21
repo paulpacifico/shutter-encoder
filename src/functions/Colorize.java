@@ -126,37 +126,49 @@ public class Colorize extends Shutter {
 							
 							//Run deoldify
 							DEOLDIFY.run(file.toString(), model);
-							
-							do {								
-								Thread.sleep(1000);		
-								
-								//Move the colored frames to output tempFolder
-								File sourceFolder = new File(DEOLDIFY.deoldifyFolder + "/video/colorframes/" + fileName.replace(extension, ""));
-								
-								if (comboFilter.getSelectedItem().equals("video") && sourceFolder.exists())
-								{									
-						            try (DirectoryStream<Path> stream = Files.newDirectoryStream(sourceFolder.toPath()))
-						            {
-						                for (Path f : stream)
-						                {
-						                    if (Files.isRegularFile(f))
-						                    {
-						                        Path targetFile = tempFolder.toPath().resolve(f.getFileName());
-						                        Files.move(f, targetFile, StandardCopyOption.REPLACE_EXISTING);
-						                        
-						                        File BWFrame = new File(f.toString().replace("colorframes", "bwframes"));
-						                        BWFrame.delete();
-						                    }
-						                }
-						            }
-								}
-								
-							} while (DEOLDIFY.runProcess.isAlive());
+							if (comboFilter.getSelectedItem().equals("video"))
+							{
+								do {								
+									Thread.sleep(1000);		
+									
+									File extractFolder = new File(DEOLDIFY.deoldifyFolder + "/video/bwframes/" + fileName.replace(extension, ""));
+									File colorFolder = new File(DEOLDIFY.deoldifyFolder + "/video/colorframes/" + fileName.replace(extension, ""));
+									
+									//Get progress of extraction
+									if (extractFolder.exists() && colorFolder.exists() == false && cancelled == false)
+				            		{
+			            				int files = extractFolder.listFiles().length;
+					            		progressBar1.setValue((int) ((float) files * 100 / ((float) ((float) FFPROBE.totalLength / 1000) * FFPROBE.currentFPS)));
+				            		}
+									
+									//Move the colored frames to output tempFolder
+									if (comboFilter.getSelectedItem().equals("video") && colorFolder.exists())
+									{									
+							            try (DirectoryStream<Path> stream = Files.newDirectoryStream(colorFolder.toPath()))
+							            {
+							                for (Path f : stream)
+							                {
+							                    if (Files.isRegularFile(f))
+							                    {
+							                        Path targetFile = tempFolder.toPath().resolve(f.getFileName());
+							                        Files.move(f, targetFile, StandardCopyOption.REPLACE_EXISTING);
+							                        
+							                        File BWFrame = new File(f.toString().replace("colorframes", "bwframes"));
+							                        BWFrame.delete();
+							                    }
+							                }
+							            }
+									}
+									
+								} while (DEOLDIFY.runProcess.isAlive());	
+							}							
 
 							if (comboFilter.getSelectedItem().equals("video"))		
 							{
 								//Delete the video folder
-								FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
+								try {
+									FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
+								} catch (Exception e) {}
 								
 								if (cancelled)
 								{	

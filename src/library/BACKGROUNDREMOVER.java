@@ -136,6 +136,12 @@ public class BACKGROUNDREMOVER extends Shutter {
 		            
 		            process.waitFor();
 		            
+		            if (error == false && cancelled == false)
+		            {
+		            	progressBar1.setValue(progressBar1.getMaximum());		   
+		            	Thread.sleep(100);
+		            }
+		            
 		            Console.consolePYTHON.append(System.lineSeparator());
 					
 					isRunning = false;	    

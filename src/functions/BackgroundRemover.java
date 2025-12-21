@@ -79,13 +79,13 @@ public class BackgroundRemover extends Shutter {
 						}
 						
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + extension); 
+						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + ".png"); 
 									
 						//File output
 						File fileOut = new File(fileOutputName);						
 						if (fileOut.exists())
 						{						
-							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, "_", extension);
+							fileOut = FunctionUtils.fileReplacement(labelOutput, prefix + fileName, extension, "_", ".png");
 							
 							if (fileOut == null)
 							{
@@ -96,22 +96,25 @@ public class BackgroundRemover extends Shutter {
 							{
 								continue;
 							}
-						}	
+						}
 						
 						//Run BackgroundRemover
 						BACKGROUNDREMOVER.run(file.toString(), fileOut.toString());
 						do {
-							Thread.sleep(100);								
+							Thread.sleep(100);							
 						} while (BACKGROUNDREMOVER.runProcess.isAlive());
 						
 						if (FFMPEG.saveCode == false)
 						{
-							lastActions(new File(labelOutput));
+							lastActions(fileOut);
+							
+							if (cancelled)
+								break;
 						}						
 					}
 					catch (Exception e)
 					{
-						FFMPEG.error  = true;
+						FFMPEG.error = true;
 						e.printStackTrace();
 					}
 				}

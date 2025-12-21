@@ -1781,6 +1781,11 @@ public class Shutter {
 						
 						Transcribe.transcriptionFolder.delete();
 					}
+					
+					//Delete Colorize video folder
+					try {
+						FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
+					} catch (Exception er) {}
 
 					if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
 					{
@@ -3380,6 +3385,12 @@ public class Shutter {
 					}
 				}
 				
+				if (BACKGROUNDREMOVER.runProcess != null) {
+					if (BACKGROUNDREMOVER.runProcess.isAlive()) {
+						BACKGROUNDREMOVER.process.destroy();
+					}
+				}
+				
 				if (scanIsRunning) {
 					enableAll();
 					scan.setText(language.getProperty("menuItemStartScan"));
@@ -3392,8 +3403,7 @@ public class Shutter {
 				if (Ftp.isRunning) {
 					try {
 						Ftp.ftp.abort();
-					} catch (Exception e1) {
-					}
+					} catch (Exception e1) {}
 				}
 
 				progressBar1.setValue(0);
@@ -24481,6 +24491,21 @@ public class Shutter {
 					}
 				}
 				
+			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionSeparation"))) {
+					
+				lblFilter.setText(" ");
+				lblFilter.setVisible(true);
+				comboFilter.setVisible(true);
+				lblFilter.setLocation(165, 23);
+				lblFilter.setIcon(new FlatSVGIcon("contents/arrow.svg", 30, 30));
+
+				final String types[] = { language.getProperty("setAll"), "drums", "bass", "other", "vocals", "guitar", "piano" };
+				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
+				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
+					comboFilter.setModel(model);
+					comboFilter.setSelectedIndex(0);
+				}
+				
 			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionTranscribe")))	{
 				
 				lblFilter.setText(" ");
@@ -24524,7 +24549,7 @@ public class Shutter {
 					else
 						comboFilter.setSelectedItem(Utils.getLanguage);
 				}
-				
+			
 			} else if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionColorize"))) {
 				
 				lblFilter.setText(" ");

@@ -73,6 +73,9 @@ public class Extract extends Shutter {
 						
 						lblCurrentEncoding.setText(fileName);
 						
+						//Metadatas
+			    		String metadatas = setMetadata();
+						
 						//Mapping
 						String mapping = setMapping();
 						
@@ -184,7 +187,7 @@ public class Extract extends Shutter {
 						}		
 									
 						//Command
-						String cmd = mapping + " -y ";
+						String cmd = mapping + metadatas + " -y ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
 						
 						do
@@ -361,6 +364,22 @@ public class Extract extends Shutter {
 		}
 		
 		return " -c copy -map v:0? -map a? -map s?";
+	}
+	
+	public static String setMetadata() { 
+		
+		String metadata = "";				
+		
+		if (comboFilter.getSelectedItem().equals(language.getProperty("video")))
+		{
+			metadata = " -map_metadata 0 -map_metadata:s:v 0:s:v -movflags use_metadata_tags";			
+		}
+		else if (comboFilter.getSelectedItem().equals(language.getProperty("audio")))
+		{
+			metadata = " -map_metadata:s:a 0:s:a";
+		}
+				
+		return metadata;
 	}
 
 	private static boolean lastActions(File file, String fileName, File fileOut, String output) {
