@@ -213,7 +213,7 @@ public class Image extends Shutter {
 		//Checking if last filter is GPU accelerated
 		boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
 		
-		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
+		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && FFPROBE.imageResolution != null)
 		{
 			String i[] = FFPROBE.imageResolution.split("x");        
 			String o[] = FFPROBE.imageResolution.split("x");

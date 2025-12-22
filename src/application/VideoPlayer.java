@@ -3270,7 +3270,7 @@ public class VideoPlayer {
 		            	showFPS.setVisible(false);
                 }
                                          
-                if (previewUpscale && preview != null && fileDuration > 40)
+                if (previewUpscale && frameVideo != null && preview != null && fileDuration > 40)
                 {
                 	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);

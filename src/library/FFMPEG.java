@@ -1510,7 +1510,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			case "XDCAM HD 35":
 			case "DVD" : //Needed 16:9 aspect ratio
 				
-				if (FFPROBE.imageResolution.equals("1440x1080") == false)
+				if (FFPROBE.imageResolution != null && FFPROBE.imageResolution.equals("1440x1080") == false)
 				{
 					limitToFHD = true;	
 				}

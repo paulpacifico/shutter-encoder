@@ -934,7 +934,7 @@ public class VideoEncoders extends Shutter {
 								upscaleFolder.mkdir();					
 							
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
-							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, "%06d.png"));	
+							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, "%06d" + comboImageOption.getSelectedItem()));	
 							
 							if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 							{			
@@ -955,7 +955,17 @@ public class VideoEncoders extends Shutter {
 									filter = " -vf " + '"' + filter + '"';
 								}
 								
-								FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + filter + " -an -y " + '"' + fileOut + '"');
+								String quality = "";
+								if (comboImageOption.getSelectedItem().equals(".webp"))
+								{
+									quality = " -quality 100";
+								}
+								else if (comboImageOption.getSelectedItem().equals(".jpg"))
+								{
+									quality = " -q:v 0";
+								}
+								
+								FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + filter + quality + " -an -y " + '"' + fileOut + '"');
 								
 								int current = 0;
 								do {
@@ -1052,7 +1062,7 @@ public class VideoEncoders extends Shutter {
 							upscaleFolder.delete();	
 							
 							//IMPORTANT
-							fileOut = new File(lblDestination1.getText() + "/" + fileOut.getName().replace("%06d.png", ext));
+							fileOut = new File(lblDestination1.getText() + "/" + fileOut.getName().replace("%06d" + comboImageOption.getSelectedItem(), ext));
 						}
 						else if (FFPROBE.audioOnly)
 						{
@@ -1814,6 +1824,10 @@ public class VideoEncoders extends Shutter {
 					{
 						gpu = " -qp " + FunctionUtils.setVideoBitrate();
 					}
+					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+					{
+						gpu = " -qp_i " + FunctionUtils.setVideoBitrate() + " -qp_p " + FunctionUtils.setVideoBitrate() + " -qp_b " + FunctionUtils.setVideoBitrate();        			
+					}
 					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
 					{
 						gpu = " -global_quality " + FunctionUtils.setVideoBitrate();
@@ -2056,12 +2070,22 @@ public class VideoEncoders extends Shutter {
 			model = "4x_NMKD-Siax_200k";
 		}
 		
+		String format = "";
+		if (comboImageOption.getSelectedItem().equals(".webp"))
+		{
+			format = " -f webp";
+		}
+		else if (comboImageOption.getSelectedItem().equals(".jpg"))
+		{
+			format = " -f jpg";
+		}
+		
 		if (inputFile != null) //Image sequence
 		{
-			NCNN.run(" -v -i " + '"' + inputFile.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
+			NCNN.run(" -v -i " + '"' + inputFile.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + format + " -o " + '"' + fileOut.getParentFile() + '"', false);
 		}
 		else
-			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
+			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + format + " -o " + '"' + fileOut.getParentFile() + '"', false);
 		
 		do {
 			Thread.sleep(100);

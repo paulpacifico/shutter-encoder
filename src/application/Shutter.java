@@ -2259,6 +2259,7 @@ public class Shutter {
 
 					FFPROBE.analyzedMedia = null;
 					VideoPlayer.videoPath = null;
+					VideoPlayer.frameVideo = null;
 				}
 			}
 
@@ -4293,89 +4294,6 @@ public class Shutter {
 							});
 							hwaccel.start();
 						}
-
-						if (comboFilter.getSelectedItem().toString().equals(".png")) {
-							if (comboImageOption.getItemAt(0).equals("0%") == false) {
-								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "0%", "5%",
-										"10%", "15%", "20%", "25%", "30%", "35%", "40%", "45%", "50%", "55%", "60%",
-										"65", "70%", "75%", "80%", "85%", "90%", "95%", "100%" }));
-							}
-							comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
-									lblImageQuality.getLocation().y);
-							comboImageOption.setSize(50, 16);
-							comboImageOption.setEditable(false);
-							lblImageQuality.setText("Comp.:");
-							grpResolution.add(lblImageQuality);
-							grpResolution.add(comboImageOption);
-							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-							comboImageOption.repaint();
-						} else if (comboFilter.getSelectedItem().toString().equals(".webp")
-								|| comboFilter.getSelectedItem().toString().equals(".avif")) {
-							if (comboImageOption.getItemAt(0).equals("100%") == false) {
-								comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "100%", "95%",
-										"90%", "85%", "80%", "75%", "70%", "65%", "60%", "55%", "50%", "45%", "40%",
-										"35%", "30%", "25%", "20%", "15%", "10%", "5%", "0%" }));
-							}
-							comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
-									lblImageQuality.getLocation().y);
-							comboImageOption.setSize(50, 16);
-							comboImageOption.setEditable(false);
-							lblImageQuality.setText(language.getProperty("lblQualit"));
-							grpResolution.add(lblImageQuality);
-							grpResolution.add(comboImageOption);
-							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-							comboImageOption.repaint();
-						} else if (comboFilter.getSelectedItem().toString().equals(".tif")) {
-							if (comboImageOption.getItemAt(0).equals("packbits") == false) {
-								comboImageOption.setModel(new DefaultComboBoxModel<String>(
-										new String[] { "packbits", "raw", "lzw", "deflate" }));
-							}
-							comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6,
-									lblImageQuality.getLocation().y);
-							comboImageOption.setSize(90, 16);
-							comboImageOption.setEditable(false);
-							lblImageQuality.setText(language.getProperty("lblQualit"));
-							grpResolution.remove(lblImageQuality);
-							grpResolution.add(comboImageOption);
-							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-							comboImageOption.repaint();
-						} else if (comboFilter.getSelectedItem().toString().equals(".gif")
-								|| comboFilter.getSelectedItem().toString().equals(".apng")) {
-							if (comboImageOption.getItemAt(0)
-									.equals("15 " + Shutter.language.getProperty("fps")) == false) {
-								String fps[] = new String[17];
-								int a = 0;
-								for (int f = 15; f < 24; f++) {
-									fps[a] = f + " " + Shutter.language.getProperty("fps");
-									a++;
-								}
-
-								fps[a] = "23,98 " + Shutter.language.getProperty("fps");
-								fps[a + 1] = "24 " + Shutter.language.getProperty("fps");
-								fps[a + 2] = "25 " + Shutter.language.getProperty("fps");
-								fps[a + 3] = "29,97 " + Shutter.language.getProperty("fps");
-								fps[a + 4] = "30 " + Shutter.language.getProperty("fps");
-								fps[a + 5] = "50 " + Shutter.language.getProperty("fps");
-								fps[a + 6] = "59,94 " + Shutter.language.getProperty("fps");
-								fps[a + 7] = "60 " + Shutter.language.getProperty("fps");
-
-								comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
-							}
-							comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6,
-									lblImageQuality.getLocation().y);
-							comboImageOption.setSize(90, 16);
-							comboImageOption.setEditable(false);
-							grpResolution.remove(lblImageQuality);
-							grpResolution.add(comboImageOption);
-							lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
-							comboImageOption.repaint();
-						} else {
-							grpResolution.remove(lblImageQuality);
-							grpResolution.remove(comboImageOption);
-							lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
-						}
-
-						grpResolution.repaint();
 					}
 
 					if (comboFonctions.getSelectedItem().toString().equals("Blu-ray")) {
@@ -4402,6 +4320,8 @@ public class Shutter {
 							caseForcerInversion.setEnabled(true);
 						}
 					}
+					
+					changeComboOptions();
 				}
 			}
 
@@ -5876,27 +5796,26 @@ public class Shutter {
 				
 				if (comboResolution.getItemCount() > 0) // Contourne un bug lors de l'action sur le btnReset
 				{
-					if (comboFonctions.getSelectedItem().toString().contains("JPEG") || comboFonctions.getSelectedItem()
-							.toString().equals(language.getProperty("functionPicture"))) {
+					if (comboFonctions.getSelectedItem().toString().contains("JPEG")
+					|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+					{
 						changeFilters();
-
-						if (comboFonctions.getSelectedItem().toString().contains("JPEG")
-								|| comboFilter.getSelectedItem().toString().equals(".png")) {
-							grpResolution.remove(lblImageQuality);
-							grpResolution.remove(comboImageOption);
-							lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
-						}
-					} else {
+					}
+					else
+					{
 						if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source"))
-								|| comboResolution.getSelectedItem().toString().contains("AI")) {
+						|| comboResolution.getSelectedItem().toString().contains("AI"))
+						{
 							lblPad.setVisible(false);
-						} else {
-							lblPad.setVisible(true);
 						}
-
+						else
+							lblPad.setVisible(true);						
+						
 						changeFilters();
 						FFPROBE.setFilesize();
 					}
+					
+					changeComboOptions();
 				}
 				
 				FFMPEG.checkGPUDeinterlacing();
@@ -17976,11 +17895,11 @@ public class Shutter {
 		lblPad.addComponentListener(new ComponentAdapter() {
 
 			public void componentShown(ComponentEvent e) {
-				lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
+				changeComboOptions();
 			}
 
 			public void componentHidden(ComponentEvent e) {
-				lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
+				changeComboOptions();
 			}
 
 		});
@@ -18371,14 +18290,34 @@ public class Shutter {
 								|| comboFonctions.getSelectedItem().toString().equals("H.266")))) {
 					lblVBR.setText("CQ");
 					bitrateSize.setText("-");
-					String[] values = new String[53];
-					values[0] = language.getProperty("lblBest");
-					for (int i = 1; i < 52; i++) {
-						values[i] = String.valueOf(i);
+					
+					String[] values = new String[257];					
+					if (comboFonctions.getSelectedItem().toString().equals("AV1")
+					&& System.getProperty("os.name").contains("Windows")
+					&& comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
+					{
+						values[0] = language.getProperty("lblBest");
+						for (int i = 1; i < 256; i++) {
+							values[i] = String.valueOf(i);
+						}
+						values[256] = language.getProperty("lblWorst");
+						
+						debitVideo.setModel(new DefaultComboBoxModel<String>(values));
+						debitVideo.setSelectedIndex(127);
 					}
-					values[52] = language.getProperty("lblWorst");
-					debitVideo.setModel(new DefaultComboBoxModel<String>(values));
-					debitVideo.setSelectedIndex(23);
+					else
+					{
+						values = new String[53];
+						values[0] = language.getProperty("lblBest");
+						for (int i = 1; i < 52; i++) {
+							values[i] = String.valueOf(i);
+						}
+						values[52] = language.getProperty("lblWorst");
+						
+						debitVideo.setModel(new DefaultComboBoxModel<String>(values));
+						debitVideo.setSelectedIndex(23);
+					}
+					
 					lblVideoBitrate.setText(language.getProperty("lblValue"));
 					lblKbsH264.setVisible(false);
 					h264lines.setVisible(false);
@@ -19565,6 +19504,22 @@ public class Shutter {
 
 						FFPROBE.setLength();
 					}
+					
+					if (lblVBR.getText().equals("CQ") && comboFonctions.getSelectedItem().toString().equals("AV1"))
+					{
+						String[] values = new String[257];					
+						if (System.getProperty("os.name").contains("Windows") && debitVideo.getItemCount() != 257)
+						{
+							values[0] = language.getProperty("lblBest");
+							for (int i = 1; i < 256; i++) {
+								values[i] = String.valueOf(i);
+							}
+							values[256] = language.getProperty("lblWorst");
+							
+							debitVideo.setModel(new DefaultComboBoxModel<String>(values));
+							debitVideo.setSelectedIndex(127);
+						}
+					}
 
 					caseAlpha.setEnabled(true);
 					caseForcerEntrelacement.setSelected(false);
@@ -19603,7 +19558,20 @@ public class Shutter {
 								new String[] { "faster", "fast", "medium", "slow", "slower" }));
 						comboForcePreset.setSelectedIndex(2);
 					}
-
+					
+					if (lblVBR.getText().equals("CQ") && debitVideo.getItemCount() != 53)
+					{
+						String[] values = new String[53];
+						values[0] = language.getProperty("lblBest");
+						for (int i = 1; i < 52; i++) {
+							values[i] = String.valueOf(i);
+						}
+						values[52] = language.getProperty("lblWorst");
+						
+						debitVideo.setModel(new DefaultComboBoxModel<String>(values));
+						debitVideo.setSelectedIndex(23);
+					}
+					
 					caseForcerEntrelacement.setEnabled(true);
 
 					lblVBR.setVisible(true);
@@ -21582,15 +21550,12 @@ public class Shutter {
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4,
 										caseForcerDAR.getLocation().y + 3);
 
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source"))
-										|| comboResolution.getSelectedItem().toString().contains("AI")) {
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+								{
 									lblPad.setVisible(false);
-									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9,
-											21);
-								} else {
-									lblPad.setVisible(true);
-									lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 								}
+								else
+									lblPad.setVisible(true);
 
 								grpResolution.add(comboResolution);
 
@@ -21610,6 +21575,9 @@ public class Shutter {
 												"1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}
+								
+								// Set comboOptions
+								changeComboOptions();
 
 								addToList.setText(language.getProperty("filesVideoOrAudioOrPicture"));
 								if (subtitlesBurn)
@@ -21916,15 +21884,12 @@ public class Shutter {
 								comboDAR.setLocation(caseForcerDAR.getLocation().x + caseForcerDAR.getWidth() + 4,
 										caseForcerDAR.getLocation().y + 3);
 
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source"))
-										|| comboResolution.getSelectedItem().toString().contains("AI")) {
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+								{
 									lblPad.setVisible(false);
-									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9,
-											21);
-								} else {
-									lblPad.setVisible(true);
-									lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 								}
+								else
+									lblPad.setVisible(true);
 
 								grpResolution.add(comboResolution);
 
@@ -21943,6 +21908,9 @@ public class Shutter {
 												"1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
 								}
+								
+								// Set comboOptions
+								changeComboOptions();
 
 								grpBitrate.setVisible(false);
 								grpAudio.setVisible(false);
@@ -22489,6 +22457,9 @@ public class Shutter {
 											"720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160",
 											"auto:1080", "auto:720", "50%", "25%" }));
 								}
+								
+								// Set comboOptions
+								changeComboOptions();
 
 								grpBitrate.setVisible(true);
 								grpBitrate.setBounds(grpBitrate.getX(),
@@ -22510,15 +22481,12 @@ public class Shutter {
 								case2pass.setLocation(7, grpBitrate.getHeight() - 32);
 								caseQMax.setLocation(case2pass.getX() + case2pass.getWidth() + 4, case2pass.getY());
 
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source"))
-										|| comboResolution.getSelectedItem().toString().contains("AI")) {
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+								{
 									lblPad.setVisible(false);
-									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9,
-											21);
-								} else {
-									lblPad.setVisible(true);
-									lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 								}
+								else
+									lblPad.setVisible(true);
 
 								grpSetAudio.setVisible(true);
 								caseNormalizeAudio.setLocation(7,caseChangeAudioCodec.getY() + caseChangeAudioCodec.getHeight());
@@ -23035,8 +23003,12 @@ public class Shutter {
 											"720x576", "640x360", "320x180", "3840:auto", "1920:auto", "auto:2160",
 											"auto:1080", "auto:720", "50%", "25%" }));
 								}
+								
+								// Set comboOptions
+								changeComboOptions();
 
 								grpBitrate.setVisible(true);
+								
 								if ("AV1".equals(function) && lblVBR.getText().equals("CQ")) {
 									grpBitrate.setBounds(grpBitrate.getX(),
 											grpResolution.getSize().height + grpResolution.getLocation().y + 6, 312,
@@ -23070,15 +23042,12 @@ public class Shutter {
 								case2pass.setLocation(7, grpBitrate.getHeight() - 32);
 								caseQMax.setLocation(case2pass.getX() + case2pass.getWidth() + 4, case2pass.getY());
 
-								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source"))
-										|| comboResolution.getSelectedItem().toString().contains("AI")) {
+								if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+								{
 									lblPad.setVisible(false);
-									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9,
-											21);
-								} else {
-									lblPad.setVisible(true);
-									lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 								}
+								else
+									lblPad.setVisible(true);
 
 								if ("VP9".equals(function) || "AV1".equals(function)) {
 									lblVBR.setVisible(true);
@@ -23628,6 +23597,9 @@ public class Shutter {
 												"1024x576", "854x480", "720x576", "640x360", "320x180", "3840:auto",
 												"1920:auto", "auto:2160", "auto:1080", "auto:720", "50%", "25%" }));
 									}
+									
+									// Set comboOptions
+									changeComboOptions();
 
 									grpBitrate.setVisible(true);
 									grpBitrate.setBounds(grpBitrate.getX(),
@@ -23650,16 +23622,12 @@ public class Shutter {
 									case2pass.setLocation(7, grpBitrate.getHeight() - 32);
 									caseQMax.setLocation(case2pass.getX() + case2pass.getWidth() + 4, case2pass.getY());
 
-									if (comboResolution.getSelectedItem().toString()
-											.equals(language.getProperty("source"))
-											|| comboResolution.getSelectedItem().toString().contains("AI")) {
+									if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) || comboResolution.getSelectedItem().toString().contains("AI"))
+									{
 										lblPad.setVisible(false);
-										lblScreenshot.setLocation(
-												comboResolution.getX() + comboResolution.getWidth() + 9, 21);
-									} else {
-										lblPad.setVisible(true);
-										lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);
 									}
+									else
+										lblPad.setVisible(true);
 								}
 
 								grpSetAudio.setVisible(true);
@@ -23875,7 +23843,6 @@ public class Shutter {
 								caseMiror.setLocation(caseMiror.getX(), caseRotate.getY());
 								grpResolution.add(iconTVInterpret);
 								grpResolution.add(lblScreenshot);
-								lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
 
 								grpResolution.add(comboResolution);
 
@@ -23889,98 +23856,8 @@ public class Shutter {
 											"320x180", "200x200", "100x100", "50x50" }));
 								}
 
-								if (comboFilter.getSelectedItem().toString().equals(".png")) {
-									if (comboImageOption.getItemAt(0).equals("0%") == false) {
-										comboImageOption.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "0%", "5%", "10%", "15%", "20%", "25%", "30%", "35%",
-														"40%", "45%", "50%", "55%", "60%", "65", "70%", "75%", "80%",
-														"85%", "90%", "95%", "100%" }));
-									}
-									comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
-											lblImageQuality.getLocation().y);
-									comboImageOption.setSize(50, 16);
-									comboImageOption.setEditable(false);
-									lblImageQuality.setText("Comp.:");
-									grpResolution.add(lblImageQuality);
-									grpResolution.add(comboImageOption);
-									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9,
-											21);
-									comboImageOption.repaint();
-								} else if (comboFilter.getSelectedItem().toString().equals(".webp")
-										|| comboFilter.getSelectedItem().toString().equals(".avif")) // Ajout de la
-																										// quality pour
-																										// l'extension
-																										// .webp & .avif
-																										// & .tif
-								{
-									if (comboImageOption.getItemAt(0).equals("100%") == false) {
-										comboImageOption.setModel(
-												new DefaultComboBoxModel<String>(new String[] { "100%", "95%", "90%",
-														"85%", "80%", "75%", "70%", "65%", "60%", "55%", "50%", "45%",
-														"40%", "35%", "30%", "25%", "20%", "15%", "10%", "5%", "0%" }));
-									}
-									comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
-											lblImageQuality.getLocation().y);
-									comboImageOption.setSize(50, 16);
-									comboImageOption.setEditable(false);
-									grpResolution.add(lblImageQuality);
-									grpResolution.add(comboImageOption);
-									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9,
-											21);
-									comboImageOption.repaint();
-								} else if (comboFilter.getSelectedItem().toString().equals(".tif")) {
-									if (comboImageOption.getItemAt(0).equals("packbits") == false) {
-										comboImageOption.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "packbits", "raw", "lzw", "deflate" }));
-									}
-									comboImageOption.setLocation(
-											comboResolution.getX() + comboResolution.getWidth() + 6,
-											lblImageQuality.getLocation().y);
-									comboImageOption.setSize(90, 16);
-									comboImageOption.setEditable(false);
-									grpResolution.remove(lblImageQuality);
-									grpResolution.add(comboImageOption);
-									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9,
-											21);
-									comboImageOption.repaint();
-								} else if (comboFilter.getSelectedItem().toString().equals(".gif")
-										|| comboFilter.getSelectedItem().toString().equals(".apng")) {
-									if (comboImageOption.getItemAt(0)
-											.equals("15 " + Shutter.language.getProperty("fps")) == false) {
-										String fps[] = new String[17];
-										int a = 0;
-										for (int f = 15; f < 24; f++) {
-											fps[a] = f + " " + Shutter.language.getProperty("fps");
-											a++;
-										}
-
-										fps[a] = "23,98 " + Shutter.language.getProperty("fps");
-										fps[a + 1] = "24 " + Shutter.language.getProperty("fps");
-										fps[a + 2] = "25 " + Shutter.language.getProperty("fps");
-										fps[a + 3] = "29,97 " + Shutter.language.getProperty("fps");
-										fps[a + 4] = "30 " + Shutter.language.getProperty("fps");
-										fps[a + 5] = "50 " + Shutter.language.getProperty("fps");
-										fps[a + 6] = "59,94 " + Shutter.language.getProperty("fps");
-										fps[a + 7] = "60 " + Shutter.language.getProperty("fps");
-
-										comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
-									}
-									comboImageOption.setLocation(
-											comboResolution.getX() + comboResolution.getWidth() + 6,
-											lblImageQuality.getLocation().y);
-									comboImageOption.setSize(90, 16);
-									comboImageOption.setEditable(false);
-									grpResolution.remove(lblImageQuality);
-									grpResolution.add(comboImageOption);
-									lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9,
-											21);
-									comboImageOption.repaint();
-								} else {
-									grpResolution.remove(lblImageQuality);
-									grpResolution.remove(comboImageOption);
-									lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9,
-											21);
-								}
+								// Set comboOptions
+								changeComboOptions();
 
 								if (comboResolution.getSelectedItem().toString().contains("AI")) {
 									if (VideoPlayer.preview != null)
@@ -25001,6 +24878,122 @@ public class Shutter {
 				}
 			}
 		}
+	}
+	
+	private static void changeComboOptions() {
+	
+		if (comboFonctions.getSelectedItem().toString().contains("JPEG")
+		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+		{
+			if (comboFilter.getSelectedItem().toString().equals(".png")) {
+				if (comboImageOption.getItemAt(0).equals("0%") == false) {
+					comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "0%", "5%",
+							"10%", "15%", "20%", "25%", "30%", "35%", "40%", "45%", "50%", "55%", "60%",
+							"65", "70%", "75%", "80%", "85%", "90%", "95%", "100%" }));
+				}
+				comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
+						lblImageQuality.getLocation().y);
+				comboImageOption.setSize(50, 16);
+				comboImageOption.setEditable(false);
+				lblImageQuality.setText("Comp.:");
+				grpResolution.add(lblImageQuality);
+				grpResolution.add(comboImageOption);
+				lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+				comboImageOption.repaint();
+			} else if (comboFilter.getSelectedItem().toString().equals(".webp")
+					|| comboFilter.getSelectedItem().toString().equals(".avif")) {
+				if (comboImageOption.getItemAt(0).equals("100%") == false) {
+					comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "100%", "95%",
+							"90%", "85%", "80%", "75%", "70%", "65%", "60%", "55%", "50%", "45%", "40%",
+							"35%", "30%", "25%", "20%", "15%", "10%", "5%", "0%" }));
+				}
+				comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
+						lblImageQuality.getLocation().y);
+				comboImageOption.setSize(50, 16);
+				comboImageOption.setEditable(false);
+				lblImageQuality.setText(language.getProperty("lblQualit"));
+				grpResolution.add(lblImageQuality);
+				grpResolution.add(comboImageOption);
+				lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+				comboImageOption.repaint();
+			} else if (comboFilter.getSelectedItem().toString().equals(".tif")) {
+				if (comboImageOption.getItemAt(0).equals("packbits") == false) {
+					comboImageOption.setModel(new DefaultComboBoxModel<String>(
+							new String[] { "packbits", "raw", "lzw", "deflate" }));
+				}
+				comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6,
+						lblImageQuality.getLocation().y);
+				comboImageOption.setSize(90, 16);
+				comboImageOption.setEditable(false);
+				lblImageQuality.setText(language.getProperty("lblQualit"));
+				grpResolution.remove(lblImageQuality);
+				grpResolution.add(comboImageOption);
+				lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+				comboImageOption.repaint();
+			} else if (comboFilter.getSelectedItem().toString().equals(".gif")
+					|| comboFilter.getSelectedItem().toString().equals(".apng")) {
+				if (comboImageOption.getItemAt(0)
+						.equals("15 " + Shutter.language.getProperty("fps")) == false) {
+					String fps[] = new String[17];
+					int a = 0;
+					for (int f = 15; f < 24; f++) {
+						fps[a] = f + " " + Shutter.language.getProperty("fps");
+						a++;
+					}
+
+					fps[a] = "23,98 " + Shutter.language.getProperty("fps");
+					fps[a + 1] = "24 " + Shutter.language.getProperty("fps");
+					fps[a + 2] = "25 " + Shutter.language.getProperty("fps");
+					fps[a + 3] = "29,97 " + Shutter.language.getProperty("fps");
+					fps[a + 4] = "30 " + Shutter.language.getProperty("fps");
+					fps[a + 5] = "50 " + Shutter.language.getProperty("fps");
+					fps[a + 6] = "59,94 " + Shutter.language.getProperty("fps");
+					fps[a + 7] = "60 " + Shutter.language.getProperty("fps");
+
+					comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
+				}
+				comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6,
+						lblImageQuality.getLocation().y);
+				comboImageOption.setSize(90, 16);
+				comboImageOption.setEditable(false);
+				grpResolution.remove(lblImageQuality);
+				grpResolution.add(comboImageOption);
+				lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+				comboImageOption.repaint();
+			} else {
+				grpResolution.remove(lblImageQuality);
+				grpResolution.remove(comboImageOption);
+				lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
+			}	
+		}
+		else if (comboResolution.getSelectedItem().toString().contains("AI"))
+		{
+			if (comboImageOption.getItemAt(0).equals(".png") == false) {
+				comboImageOption.setModel(new DefaultComboBoxModel<String>(
+						new String[] { ".png", ".webp", ".jpg" }));
+			}
+			comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
+			comboImageOption.setSize(90, 16);
+			comboImageOption.setEditable(false);
+			grpResolution.remove(lblImageQuality);
+			grpResolution.add(comboImageOption);
+			lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
+			comboImageOption.repaint();
+		}
+		else
+		{
+			grpResolution.remove(lblImageQuality);
+			grpResolution.remove(comboImageOption);
+			
+			if (lblPad.isVisible())
+			{
+				lblScreenshot.setLocation(lblPad.getX() + lblPad.getWidth() + 9, 21);	
+			}
+			else
+				lblScreenshot.setLocation(comboResolution.getX() + comboResolution.getWidth() + 9, 21);
+		}
+		
+		grpResolution.repaint();
 	}
 
 	private static void setDestinationTabs(int tabs) {
