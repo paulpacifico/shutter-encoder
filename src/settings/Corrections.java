@@ -45,18 +45,16 @@ public class Corrections extends Shutter {
 			
 			//Analyse du fichier
 			String cmd;
-			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe - | PathToFFMPEG -i pipe:0 -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";					
+			if (System.getProperty("os.name").contains("Windows"))
+				cmd =  " -an -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -" + '"';					
 			else
-				cmd =  " -an -pix_fmt yuv420p -f yuv4mpegpipe - | PathToFFMPEG -i pipe:0 -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -" + '"';	
+				cmd =  " -an -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";	
 			
 			FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
 			
-			do
-			{
+			do {
 				Thread.sleep(100);
-			}
-			while(FFMPEG.runProcess.isAlive());						
+			} while(FFMPEG.runProcess.isAlive());						
 			
 			if (filterComplex != "") filterComplex += ",";
 			

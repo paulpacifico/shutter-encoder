@@ -2194,25 +2194,16 @@ public static StringBuilder errorLog = new StringBuilder();
     		if (progressBar1.getString().equals("NaN") || inputDeviceIsRunning)
     			progressBar1.setStringPainted(false);
     		else
-    			progressBar1.setStringPainted(true);
-    		    	
+    			progressBar1.setStringPainted(true);    		    	
     		
-    	    if (cmd.contains("vidstabdetect"))
-    	    {
-    	    	if (line.contains("size=N/A") == false)
-    	    		progressBar1.setValue(getTimeToSeconds(ffmpegTime));
-    	    }
-    	    else
-    	    {
-				if (pass2)
-				{
-					progressBar1.setValue((fileLength / 2) + getTimeToSeconds(ffmpegTime));
-				}
-				else
-				{
-					progressBar1.setValue(getTimeToSeconds(ffmpegTime));
-				}
-    	    }	
+    		if (pass2)
+			{
+				progressBar1.setValue((fileLength / 2) + getTimeToSeconds(ffmpegTime));
+			}
+			else
+			{
+				progressBar1.setValue(getTimeToSeconds(ffmpegTime));
+			}
     	}
 		  
 		//Elapsed time
