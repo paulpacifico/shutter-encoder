@@ -61,6 +61,10 @@ public class AudioSeparation extends Shutter {
 						
 						lblCurrentEncoding.setText(fileName);	
 						
+						//Data analyze
+						if (FunctionUtils.analyze(file, false) == false)
+							continue;	
+						
 						//Write the in and out values before getInputAndOutput()
 						if (VideoPlayer.caseApplyCutToAll.isSelected())
 						{							
@@ -93,7 +97,17 @@ public class AudioSeparation extends Shutter {
 						File waveFile = new File(separationFolder.toString() + "/" + fileName.replace(extension, ".wav"));
 						
 						//Command
-						String cmd = " -c:a pcm_s16le -vn -y ";
+						String cmd = " -c:a pcm_s16le -ar 44.1k -vn -y ";
+						
+						//audio bit depth
+						if (FFPROBE.audioCodec.contains("pcm_s24"))
+						{
+							cmd = " -c:a pcm_s24le -ar 44.1k -vn -y ";
+						}
+						else if (FFPROBE.audioCodec.contains("pcm_f32"))
+						{
+							cmd = " -c:a pcm_f32le -ar 44.1k -vn -y ";
+						}
 										
 						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"' + waveFile.toString() + '"');		
 						

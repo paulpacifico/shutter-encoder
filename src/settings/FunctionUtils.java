@@ -1761,7 +1761,7 @@ public class FunctionUtils extends Shutter {
 				{
 					new WHISPER();
 					
-					if (WHISPER.whisperModel != null)
+					if (WHISPER.whisper != null)
 						Transcribe.main();					
 				}
 				else

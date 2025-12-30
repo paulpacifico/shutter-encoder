@@ -23,8 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -167,31 +169,18 @@ public class Transcribe extends Shutter {
 							lblCurrentEncoding.setText(fileName);
 							tempsEcoule.setVisible(false);
 							
+							//Set command
 							boolean format = false;
-							if (container.equals(".srt"))
-							{
-								cmd = " --output-srt --max-len 74 --max-context 200 --split-on-word";
-								format = true;
-							}							
-							else if (container.equals(".vtt"))
-							{
-								cmd = " --output-vtt --max-len 74 --max-context 200 --split-on-word";
-								format = true;
-							}
-							else if (container.equals(".txt"))
-							{
-								cmd = " --output-txt";
-							}
-							
-							cmd += " --language " + WHISPER.comboLanguage.getSelectedItem().toString();
+							if (comboFilter.getSelectedItem().toString().equals(".srt") || comboFilter.getSelectedItem().toString().equals(".vtt"))
+								format = true;								
 														
-							WHISPER.run(cmd + " --no-prints -f " + '"' + waveFile + '"');		
-							
+							WHISPER.run(waveFile, fileName);		
+															
 							do {
 								Thread.sleep(100);
 							} while (WHISPER.runProcess.isAlive());
 							
-							File transcribedFile = new File(waveFile.toString().replace(".wav", ".wav" + container));
+							File transcribedFile = new File(waveFile.toString().replace(".wav", container));
 							
 							if (transcribedFile.exists())
 							{						        
@@ -203,13 +192,13 @@ public class Transcribe extends Shutter {
 										String result = offsetAllTimestamps(content, Long.parseLong(InputAndOutput.inPoint.replace(" -ss ", "").replace("ms","")));
 										File output = new File(transcribedFile.toString().replace(container, "") + "_with_offset" + container);
 										Files.writeString(output.toPath(), result);
-										formatSubtitles(output.toPath(), fileOut.toPath(), container);
+										formatSubtitles(output.toPath(), fileOut.toPath());
 									}
 									else
-										formatSubtitles(transcribedFile.toPath(), fileOut.toPath(), container);
+										formatSubtitles(transcribedFile.toPath(), fileOut.toPath());
 								}	
 								else
-									formatText(transcribedFile.toPath(), fileOut.toPath());
+									Files.move(transcribedFile.toPath(), fileOut.toPath());
 							}
 						}
 														
@@ -255,103 +244,101 @@ public class Transcribe extends Shutter {
 		
     }
 	
-	public static void formatText(Path input, Path output) throws IOException {
-	    List<String> lines = Files.readAllLines(input);
-	    List<String> cleaned = new ArrayList<>();
+	public static void formatSubtitles(Path input, Path output) throws IOException {
+		
+		List<String> lines = Files.readAllLines(input);
+        List<String> finalSub = new ArrayList<>();
+        boolean isVtt = input.toString().toLowerCase().endsWith(".vtt");
 
-	    for (String line : lines) {
-	        // Remove only leading whitespace, preserve internal and trailing
-	        cleaned.add(line.replaceFirst("^\\s+", ""));
-	    }
+        if (isVtt) finalSub.add("WEBVTT\n");
 
-	    Files.write(output, cleaned);
-	}
-	
-	public static void formatSubtitles(Path input, Path output, String extension) throws IOException {
+        int newIndex = 1;
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss" + (isVtt ? "." : ",") + "SSS");
 
-		boolean isVtt = extension.equalsIgnoreCase(".vtt");
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i).trim();
+            
+            if (line.contains("-->")) {
+                String timestamps = line;
+                StringBuilder textCollector = new StringBuilder();
+                
+                // Collect all text until next empty line or next index
+                int j = i + 1;
+                while (j < lines.size() && !lines.get(j).trim().isEmpty()) {
+                    textCollector.append(lines.get(j).trim()).append(" ");
+                    j++;
+                }
 
-	    List<String> lines = Files.readAllLines(input);
-	    List<String> out = new ArrayList<>();
-
-	    if (isVtt) {
-	        // Add mandatory header if missing
-	        if (lines.isEmpty() || !lines.get(0).startsWith("WEBVTT")) {
-	            out.add("WEBVTT");
-	            out.add("");
-	        }
-	    }
-
-	    for (int i = 0; i < lines.size();) {
-	        String line = lines.get(i++).trim();
-	        if (line.isEmpty()) continue;
-
-	        String index = "";
-	        if (!isVtt && line.matches("\\d+")) { // SRT index
-	            index = line;
-	            line = lines.get(i++).trim();
-	        }
-
-	        String timing = line;
-	        if (isVtt) {
-	            timing = timing.replace(',', '.'); // ensure correct milliseconds format
-	        }
-
-	        // Read full text block until blank line
-	        StringBuilder textBlock = new StringBuilder();
-	        while (i < lines.size() && !lines.get(i).trim().isEmpty()) {
-	            String next = lines.get(i++).trim();
-	            // merge speaker lines with spaces
-	            if (textBlock.length() > 0) textBlock.append(" ");
-	            textBlock.append(next);
-	        }
-
-	        // Wrap while preserving "- " speaker markers and 2-line rule
-	        String wrapped = wrapText(textBlock.toString().trim(), 37);
-
-	        if (!index.isEmpty()) out.add(index); // SRT numbering
-	        out.add(timing);
-	        out.addAll(Arrays.asList(wrapped.split("\n")));
-	        out.add(""); // blank line separator
-	    }
-
-	    Files.write(output, out);
+                List<String> chunks = splitLineChunks(textCollector.toString().trim());
+                splitTimeAndAdd(finalSub, timestamps, chunks, newIndex, isVtt, timeFormatter);
+                
+                newIndex += chunks.size();
+                i = j; 
+            }
+        }
+        Files.write(output, finalSub);
     }
-
-    private static String wrapText(String text, int maxLineLength) {
-    	
-    	// Split into words
+	
+	private static List<String> splitLineChunks(String text) {
+        List<String> chunks = new ArrayList<>();
         String[] words = text.split("\\s+");
-        StringBuilder line = new StringBuilder();
-        List<String> lines = new ArrayList<>();
+        
+        StringBuilder currentChunk = new StringBuilder();
+        StringBuilder currentLine = new StringBuilder();
+        int linesInChunk = 0;
 
         for (String word : words) {
-            // Preserve "-" if it's a speaker prefix
-            if (word.equals("-")) {
-                if (line.length() > 0) {
-                    lines.add(line.toString().trim());
-                    line = new StringBuilder();
+            if (currentLine.length() + word.length() + 1 > Integer.parseInt(WHISPER.textChars.getText())) {
+                currentChunk.append(currentLine.toString().trim()).append("\n");
+                currentLine.setLength(0);
+                linesInChunk++;
+
+                if (linesInChunk == Integer.parseInt(WHISPER.textLines.getText())) {
+                    chunks.add(currentChunk.toString().trim());
+                    currentChunk.setLength(0);
+                    linesInChunk = 0;
                 }
-                line.append("- ");
-                continue;
             }
-
-            if (line.length() + word.length() + 1 > maxLineLength) {
-                lines.add(line.toString().trim());
-                line = new StringBuilder();
-            }
-
-            line.append(word).append(" ");
+            currentLine.append(word).append(" ");
         }
-        if (line.length() > 0) lines.add(line.toString().trim());
-
-        // Merge extra lines to ensure a max of 2
-        if (lines.size() > 2) {
-            String second = String.join(" ", lines.subList(1, lines.size()));
-            lines = Arrays.asList(lines.get(0), second);
+        
+        if (currentLine.length() > 0 || currentChunk.length() > 0) {
+            currentChunk.append(currentLine.toString().trim());
+            chunks.add(currentChunk.toString().trim());
         }
+        return chunks;
+    }
 
-        return String.join("\n", lines);
+	private static void splitTimeAndAdd(List<String> result, String timestampRange, List<String> chunks, int index, boolean isVtt, DateTimeFormatter formatter) {
+        // Normalize separators for parsing
+        String normalizedRange = timestampRange.replace(",", ".");
+        String[] parts = normalizedRange.split(" --> ");
+        
+        // Handle VTT short timestamps (mm:ss.SSS) if necessary
+        LocalTime start = parseTimestamp(parts[0]);
+        LocalTime end = parseTimestamp(parts[1]);
+        
+        long totalDuration = ChronoUnit.MILLIS.between(start, end);
+        int totalChars = chunks.stream().mapToInt(String::length).sum();
+
+        LocalTime currentStart = start;
+        for (int i = 0; i < chunks.size(); i++) {
+            double ratio = (double) chunks.get(i).length() / Math.max(1, totalChars);
+            long chunkDuration = (long) (totalDuration * ratio);
+            LocalTime currentEnd = (i == chunks.size() - 1) ? end : currentStart.plus(chunkDuration, ChronoUnit.MILLIS);
+
+            if (!isVtt) result.add(String.valueOf(index + i));
+            result.add(currentStart.format(formatter) + " --> " + currentEnd.format(formatter));
+            result.add(chunks.get(i));
+            result.add("");
+            currentStart = currentEnd;
+        }
+    }
+
+    private static LocalTime parseTimestamp(String ts) {
+        // VTT can sometimes omit the hour (00:00.000)
+        if (ts.split(":").length == 2) ts = "00:" + ts;
+        return LocalTime.parse(ts, DateTimeFormatter.ofPattern("HH:mm:ss.SSS"));
     }
     
     private static String offsetAllTimestamps(String text, long offsetMs) {

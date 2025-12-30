@@ -47,7 +47,23 @@ public class PYTHON extends Shutter {
 		
 		PYTHON_DIR = PYTHON_DIR.substring(0,(int) (PYTHON_DIR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/python.7z";	
 	}
-			
+
+	@SuppressWarnings("unused")
+	public static void checkFFmpegForLinux() {
+		
+	    try {
+	        Process process = new ProcessBuilder("ffmpeg", "-version").start();
+	    } catch (Exception e) {	    	
+	    	try {		    		
+	    		Process process = new ProcessBuilder("pkexec", "apt-get", "install", "-y", "ffmpeg").start();		        
+	    	 } catch (Exception e1) {
+	    		 try {	
+	    			 Process process = new ProcessBuilder("pkexec", "dnf", "install", "-y", "ffmpeg").start();		   
+	 	    	 } catch (Exception e2) {}
+	    	 }
+	    }
+	}
+	
 	public static void installModule(File modulePath, String[] cmd, File module) {
 		
 		disableAll();

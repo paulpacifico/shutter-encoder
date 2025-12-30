@@ -277,7 +277,7 @@ public class Shutter {
 
 	protected static JButton btnBrowse;
 	protected static JButton btnEmptyList;
-	protected static JComboBox<Object> comboFilter;
+	public static JComboBox<Object> comboFilter;
 	protected static JComboBox<Object> comboLUTs;
 	protected static JComboBox<Object> comboGamma;
 	protected static JComboBox<Object> comboInLevels;
@@ -472,7 +472,7 @@ public class Shutter {
 	protected static JTextField lblDestination2;
 	protected static JTextField lblDestination3;
 	public static JProgressBar progressBar1;
-	protected static JLabel lblCurrentEncoding;
+	public static JLabel lblCurrentEncoding;
 	protected static JLabel lblImageSize;
 	protected static JLabel lblScreenshot;
 	public static boolean screenshotIsRunning = false;
@@ -820,8 +820,7 @@ public class Shutter {
 
 			arch = s[s.length - 1];
 
-		} catch (Exception e) {
-		}
+		} catch (Exception e) {}
 
 		// Drop files
 		if (args.length != 0) {
@@ -18265,7 +18264,11 @@ public class Shutter {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
+			}
 
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
 				if (lblVBR.getText().equals("VBR")
 						&& (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())
 								|| comboAccel.getSelectedItem()
@@ -18344,10 +18347,7 @@ public class Shutter {
 				if (comboFonctions.getSelectedItem().toString().equals("AV1")) {
 					changeSections(false);
 				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
+				
 			}
 
 			@Override

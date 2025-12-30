@@ -50,7 +50,7 @@ public class DEMUCS extends Shutter {
 		//Download ffmpeg for Linux because it need shared libs
 		if (System.getProperty("os.name").contains("Linux"))
 		{
-			checkFFmpegForLinux();			
+			PYTHON.checkFFmpegForLinux();			
 		}
 							
 		if (demucs.exists() == false)
@@ -79,22 +79,6 @@ public class DEMUCS extends Shutter {
 				comboFonctions.setSelectedItem("");			
 		}
 	}
-
-	@SuppressWarnings("unused")
-	public static void checkFFmpegForLinux() {
-		
-	    try {
-	        Process process = new ProcessBuilder("ffmpeg", "-version").start();
-	    } catch (Exception e) {	    	
-	    	try {		    		
-	    		Process process = new ProcessBuilder("pkexec", "apt-get", "install", "-y", "ffmpeg").start();		        
-	    	 } catch (Exception e1) {
-	    		 try {	
-	    			 Process process = new ProcessBuilder("pkexec", "dnf", "install", "-y", "ffmpeg").start();		   
-	 	    	 } catch (Exception e2) {}
-	    	 }
-	    }
-	}
 		
 	public static void run(String model, String output, String file, String selection) {
 		
@@ -110,33 +94,46 @@ public class DEMUCS extends Shutter {
 					
 				try {		
 										
-					ProcessBuilder processBuilder;
+					ProcessBuilder processBuilder = new ProcessBuilder();
 					
-					//Separate all tracks
-					if (comboFilter.getSelectedIndex() == 0)
+					if (System.getProperty("os.name").contains("Windows"))
 					{
-						if (System.getProperty("os.name").contains("Windows"))
-						{
-							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
-							"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
-						}
-						else
-							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/bin/python3", "-m", "demucs", "-n", model, "-o", output, "--filename" ,"../{stem}.{ext}", file);
-					
-						Console.consolePYTHON.append(language.getProperty("command") + " python3 -m demucs -n " + model + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
+						processBuilder.command().add(demucsFolder.toString() + "/python.exe");
+						processBuilder.command().add("-c");
+						processBuilder.command().add(
+						    "import os; os.add_dll_directory(r'" +
+						    new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") +
+						    "'); import runpy; runpy.run_module('demucs', run_name='__main__')"
+						);							
 					}
 					else
 					{
-						if (System.getProperty("os.name").contains("Windows"))
-						{
-							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/python.exe", "-c", "import os; os.add_dll_directory(r'" + new File(FFMPEG.PathToFFMPEG).getParent().replace("/", "\\") + "'); " +
-							"import runpy; runpy.run_module('demucs', run_name='__main__')", "-n", model, "--two-stems=" + selection, "-o", output, "--filename" ,"../{stem}.{ext}", file);
-						}
-						else
-							processBuilder = new ProcessBuilder(demucsFolder.toString() + "/bin/python3", "-m", "demucs", "-n", model, "--two-stems=" + selection, "-o", output, "--filename" ,"../{stem}.{ext}", file);
-					
-						Console.consolePYTHON.append(language.getProperty("command") + " python3 -m demucs -n " + model + " --two-stems=" + selection + " -o " + output + " --filename ../{track}/{stem}.{ext} " + file);	
+						processBuilder.command().add(demucsFolder.toString() + "/bin/python3");
+						processBuilder.command().add("-m");
+						processBuilder.command().add("demucs");
 					}
+					
+					processBuilder.command().add("-n");
+					processBuilder.command().add(model);
+					
+					//Separate all tracks
+					if (comboFilter.getSelectedIndex() != 0)
+						processBuilder.command().add("--two-stems=" + selection);
+					
+					//Audio bit depth
+					if (FFPROBE.audioCodec.contains("pcm_s24") || FFPROBE.audioCodec.contains("pcm_f32"))
+					{
+						processBuilder.command().add("--int24");
+						processBuilder.command().add("--flac");
+					}
+					
+					processBuilder.command().add("-o");
+					processBuilder.command().add(output);
+					processBuilder.command().add("--filename");
+					processBuilder.command().add("../{stem}.{ext}");
+					processBuilder.command().add(file);
+				
+					Console.consolePYTHON.append(language.getProperty("command") + String.join(" ", processBuilder.command()));	
 					
 					//Adding ffmpeg the the PATH environment						        			        
 			        if (System.getProperty("os.name").contains("Mac"))

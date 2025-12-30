@@ -53,8 +53,6 @@ import org.jsoup.nodes.Element;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import library.WHISPER;
-
 public class Update {
 
 	public static JDialog frame;
@@ -457,9 +455,6 @@ public class Update {
 	            int numRead;
 	            long numWritten = 0;
 	            long fileSize = conn.getContentLength();
-	            
-	            if (destination.contains("ggml"))
-	            	fileSize = WHISPER.modelSize;
 
 	            while ((numRead = in.read(buffer)) != -1)
 	            {

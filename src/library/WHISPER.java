@@ -23,12 +23,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.FileDialog;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -40,17 +39,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
-import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileSystemView;
 
@@ -58,7 +59,6 @@ import org.json.JSONObject;
 
 import application.Console;
 import application.Shutter;
-import application.Update;
 import application.Utils;
 
 public class WHISPER {
@@ -66,14 +66,16 @@ public class WHISPER {
 	public static boolean error = false;
 	public static boolean isRunning = false;
 	public static Thread runProcess;
-	public static String PathToWHISPER;
 	public static Process process;
+	private static File transcriberApp = null;
+	private static File whisperFolder = new File(System.getProperty("user.home") + "/Shutter Transcriber/Library/whisper");
 	public static String whisperModel;
-	public static String modelLink = "";	
-	public static String modelName;
-	public static long modelSize;
-	public static boolean useCPU = false;
+	public static File whisper;
 	public static JComboBox<String> comboLanguage;
+	public static JCheckBox boxVAD;
+	public static JCheckBox boxContext;
+	public static JTextField textChars;
+	public static JTextField textLines;
 	
 	public static String[][] WHISPER_LANGUAGES = {
 	    {"af", "Afrikaans"},
@@ -177,21 +179,13 @@ public class WHISPER {
 	};
 	
 	public WHISPER() {
-		
-		File transcriberApp = null;
+				
 		if (System.getProperty("os.name").contains("Windows"))
 		{
 			transcriberApp = new File("C:\\Program Files\\Shutter Transcriber\\Shutter Transcriber.exe");							
 			if (transcriberApp.exists())
-			{
-				//Check Whisper version
-				detectVulkanVersion();
-				
-				String hardware = "vulkan";
-				if (useCPU)
-					hardware = "cpu";
-				
-				WHISPER.PathToWHISPER = transcriberApp.getParent()+ "/Library/" + hardware + "/whisper-cli.exe";		
+			{						
+				whisper = new File(whisperFolder + "/bin/whisper-ctranslate2.exe");
 			}
 			else
 				transcriberApp = null;
@@ -201,7 +195,7 @@ public class WHISPER {
 			transcriberApp = new File("/Applications/Shutter Transcriber.app");
 			if (transcriberApp.exists())
 			{
-				WHISPER.PathToWHISPER = transcriberApp.toString() +  "/Contents/Resources/Library/whisper-cli";
+				whisper = new File(whisperFolder + "/bin/whisper-ctranslate2");
 			}
 			else
 				transcriberApp = null;
@@ -209,12 +203,12 @@ public class WHISPER {
 		else //Linux
 		{
 			transcriberApp = new File(FFMPEG.PathToFFMPEG);			
-			WHISPER.PathToWHISPER = transcriberApp.getParent().replace("\\", "") +  "/whisper-cli";			
+			whisper = new File(whisperFolder + "/bin/whisper-ctranslate2");		
 		}
 		
 		if (transcriberApp != null)
 		{
-			WHISPER.downloadModel();
+			WHISPER.selectModel();
 		}
 		else
 		{							
@@ -237,7 +231,7 @@ public class WHISPER {
 	        background.add(text, BorderLayout.CENTER);
 
 			int q = JOptionPane.showConfirmDialog(Shutter.frame, background,
-			Shutter.language.getProperty("functionTranscribe"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+					Shutter.language.getProperty("functionTranscribe"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 			if (q == JOptionPane.YES_OPTION)
 			{
@@ -284,77 +278,168 @@ public class WHISPER {
 				Shutter.comboFonctions.setSelectedItem("");
 		}
 	}
-
-	public static void getWhisperModel() {
+	
+	public static String getWhisperModel() {
 		
 		if (System.getProperty("os.name").contains("Windows"))
 		{			
-			whisperModel = new File(PathToWHISPER).getParentFile().getParentFile() + "/models/" + modelName;
+			return transcriberApp + "\\Library\\models";
 		}
 		else
-			whisperModel = PathToWHISPER.replace("whisper-cli", "models/" + modelName);
+			return transcriberApp + "/Contents/Resources/Library/models";
 	}
 	
-	public static void detectVulkanVersion() {
+	public static void selectModel() {
+		
+        JSlider slider = new JSlider(0, 2, 1);
+        slider.setMajorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPreferredSize(new Dimension(300, 50));
 
-		try {
-			
-			Process process = new ProcessBuilder("cmd.exe", "/c", "vulkaninfo | findstr " + '"' + "Vulkan Instance Version" + '"')
-                    .redirectErrorStream(true)
-                    .start();
-
-            String version = null;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
-            {
-                String line;
-                while ((line = reader.readLine()) != null)
-                {
-                    if (line.contains("Vulkan Instance Version"))
-                    {
-                        String[] parts = line.split(":");
-                        if (parts.length > 1)
-                        {
-                            version = parts[1].trim();
-                            break;
-                        }
-                    }
-                }
-            }
-
-            process.waitFor();
-
-            if (version == null)
-            {
-            	useCPU = true;
-            }
-            else
-            {
-            	String[] nums = version.split("\\.");
-                int major = nums.length > 0 ? Integer.parseInt(nums[0]) : 0;
-                int minor = nums.length > 1 ? Integer.parseInt(nums[1]) : 0;
-                
-                // Vulkan version min = 1.2.0
-                if (major > 1 || (major == 1 && minor >= 2))
-                {
-                	useCPU = false;
-                }
-                else
-                {
-                	useCPU = true;
-                }
-            }
+        Hashtable<Integer, JLabel> labels = new Hashtable<>();
+        labels.put(0, new JLabel("Fast"));
+        labels.put(1, new JLabel("Balanced"));
+        labels.put(2, new JLabel("Accurate"));
+        slider.setLabelTable(labels);
+        slider.setPaintLabels(true);
+        
+		DefaultComboBoxModel<String> languages = new DefaultComboBoxModel<>();
+		languages.addElement("auto");
+        for (String[] lang : WHISPER.WHISPER_LANGUAGES) {
+        	languages.addElement(lang[1].toLowerCase());
         }
-		catch (Exception e)
+		
+        JLabel lblLanguage = new JLabel("Language:");
+        lblLanguage.setForeground(Utils.c225);
+        lblLanguage.setSize(lblLanguage.getPreferredSize().width, 16);
+		
+		comboLanguage = new JComboBox<String>(languages);
+		comboLanguage.setSelectedIndex(0);
+		comboLanguage.setSize(120,26);
+		
+		boxVAD = new JCheckBox("Voice Activation Detection");
+		boxVAD.setForeground(Utils.c225);
+		boxVAD.setSelected(true);
+		boxVAD.setSize(boxVAD.getPreferredSize().width, 16);
+		
+		boxContext = new JCheckBox("Preserve context");
+		boxContext.setForeground(Utils.c225);
+		boxContext.setSelected(true);
+		boxContext.setSize(boxContext.getPreferredSize().width, 16);
+		
+		JLabel lblMaxChars = new JLabel("Max. chars:");
+		lblMaxChars.setForeground(Utils.c225);
+		lblMaxChars.setSize(lblMaxChars.getPreferredSize().width, 16);
+		
+		textChars = new JTextField("37");
+		textChars.setForeground(Utils.c225);
+		textChars.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		textChars.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char caracter = e.getKeyChar();
+				
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume();
+				else if (textChars.getText().length() >= 3)
+					textChars.setText("");
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+		});
+		
+		JLabel lblMaxLines = new JLabel("Max. lines:");
+		lblMaxLines.setForeground(Utils.c225);
+		
+		textLines = new JTextField("2");
+		textLines.setForeground(Utils.c225);
+		textLines.setHorizontalAlignment(SwingConstants.CENTER);
+		textLines.setSize(textChars.getSize());
+				
+		textLines.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				char caracter = e.getKeyChar();
+				
+				if (String.valueOf(caracter).matches("[0-9]+") == false && caracter != '￿' || String.valueOf(caracter).matches("[éèçàù]"))
+					e.consume();
+				else if (textLines.getText().length() >= 1)
+					textLines.setText("");
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+		});
+		
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(slider);
+		
+		JPanel rightPanel = new JPanel(new FlowLayout());
+		rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		rightPanel.add(lblLanguage);
+		rightPanel.add(comboLanguage);
+		panel.add(rightPanel, BorderLayout.EAST);
+
+		JPanel bottomPanel = new JPanel(new FlowLayout());
+		bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		bottomPanel.add(boxVAD);
+		bottomPanel.add(boxContext);
+		bottomPanel.add(lblMaxChars);
+		bottomPanel.add(textChars);
+		bottomPanel.add(lblMaxLines);
+		bottomPanel.add(textLines);
+		panel.add(bottomPanel, BorderLayout.SOUTH);
+        
+        Object[] options = { Shutter.language.getProperty("btnApply") };
+        JOptionPane.showOptionDialog(Shutter.frame, panel, Shutter.language.getProperty("functionTranscribe"), 
+        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+        whisperModel = labels.get(slider.getValue()).getText();	
+	}
+	
+	public static void patchFFmpeg() {
+		
+		if (System.getProperty("os.name").contains("Windows"))
 		{
-        	useCPU = true;
-        }
+			try {
+
+				File run = new File(whisperFolder.toString() + "/whisper/audio.py");
+				if (run.exists())
+				{					
+					//Edit the _run.py to add current FFmpeg path
+			        String content = Files.readString(run.toPath(), StandardCharsets.UTF_8);		
+			        content = content.replace('"' + "ffmpeg" + '"', "r" + '"' + FFMPEG.PathToFFMPEG.replace("/", "\\") + '"');		
+			        Files.writeString(run.toPath(), content, StandardCharsets.UTF_8);
+			    }
+				
+			} catch (Exception e) {}
+		}
 	}
 	
-	public static void run(final String cmd) {
+	public static void run(String wavFile, String fileName) {
 		
 		error = false;
 		Shutter.progressBar1.setValue(0);		
 		Shutter.btnStart.setEnabled(false);
+		
+		getWhisperModel();
+		patchFFmpeg();
 		
 		runProcess = new Thread(new Runnable()  {
 			
@@ -363,25 +448,110 @@ public class WHISPER {
 								
 				try {
 					
-					ProcessBuilder processWHISPER;
+					ProcessBuilder processWHISPER = new ProcessBuilder();
+					
 					if (System.getProperty("os.name").contains("Windows"))
-					{		
-						String threads = "";
-						if (useCPU)
-						{
-							threads = " -t " + Runtime.getRuntime().availableProcessors();
-						}
-						
-						processWHISPER = new ProcessBuilder('"' + PathToWHISPER + '"' + " -m " + '"' + whisperModel + '"' + threads + cmd);
-					}
-					else
 					{
-						processWHISPER = new ProcessBuilder("/bin/bash", "-c" , PathToWHISPER.replace(" ", "\\ ") + " -m " + '"' + whisperModel + '"' + cmd);
+						processWHISPER.command().add(whisperFolder.toString() + "/python.exe");						
+					}
+					else				
+						processWHISPER.command().add(whisperFolder.toString() + "/bin/python3");
+										
+					//Run Whisper module				
+					processWHISPER.command().add("-u");
+					processWHISPER.command().add(whisper.toString());
+					
+					//Model				
+					processWHISPER.command().add("--model_dir");
+					processWHISPER.command().add(getWhisperModel());				
+					
+					processWHISPER.command().add("--model");
+					if (whisperModel.equals("Fast"))
+					{	
+						processWHISPER.command().add("small");
+						processWHISPER.command().add("--beam_size");
+						processWHISPER.command().add("5");
+						processWHISPER.command().add("--best_of");
+						processWHISPER.command().add("5");
+					}
+					else if (whisperModel.equals("Balanced"))
+					{	
+						processWHISPER.command().add("turbo");
+						processWHISPER.command().add("--beam_size");
+						processWHISPER.command().add("3");
+						processWHISPER.command().add("--best_of");
+						processWHISPER.command().add("3");
+					}
+					else if (whisperModel.equals("Accurate"))
+					{	
+						processWHISPER.command().add("large-v3");
+						processWHISPER.command().add("--beam_size");
+						processWHISPER.command().add("1");
+						processWHISPER.command().add("--best_of");
+						processWHISPER.command().add("1");
 					}
 					
+					//Language
+					if (comboLanguage.getSelectedIndex() > 0)
+					{
+						processWHISPER.command().add("--language");
+						processWHISPER.command().add(WHISPER.WHISPER_LANGUAGES[comboLanguage.getSelectedIndex() - 1][0]);
+					}
+					
+					//VAD
+					if (boxVAD.isSelected())
+					{
+						processWHISPER.command().add("--vad_filter");
+						processWHISPER.command().add("True");
+					}
+									
+					//Preserve context
+					if (boxContext.isSelected() == false)
+					{
+						processWHISPER.command().add("--condition_on_previous_text");
+						processWHISPER.command().add("False");
+					}
+						
+					//Output format
+					if (Shutter.comboFilter.getSelectedItem().toString().equals(".srt"))
+					{
+						processWHISPER.command().add("--output_format");
+						processWHISPER.command().add("srt");
+						processWHISPER.command().add("--word_timestamps");
+						processWHISPER.command().add("True");
+						
+					}							
+					else if (Shutter.comboFilter.getSelectedItem().toString().equals(".vtt"))
+					{
+						processWHISPER.command().add("--output_format");
+						processWHISPER.command().add("vtt");
+						processWHISPER.command().add("--word_timestamps");
+						processWHISPER.command().add("True");
+					}
+					else if (Shutter.comboFilter.getSelectedItem().toString().equals(".txt"))
+					{
+						processWHISPER.command().add("--output_format");
+						processWHISPER.command().add("txt");
+					}
+					
+					//Input file
+					processWHISPER.command().add(wavFile);
+					
+					//Output folder
+					processWHISPER.command().add("--output_dir");
+					processWHISPER.command().add(new File(wavFile).getParent());
+
+					//Adding ffmpeg the the PATH environment						        			        
+			        if (System.getProperty("os.name").contains("Mac"))
+			        {
+			        	Map<String, String> env = processWHISPER.environment();			        	
+			        	env.put("PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", "") + ":" + System.getenv("PATH"));
+			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
+			        }
+			        
 					processWHISPER.redirectErrorStream(true);
 					
-					Console.consoleWHISPER.append(Shutter.language.getProperty("command") + " " + " -m " + '"' + whisperModel + '"' + cmd);	
+					Console.consoleWHISPER.append(Shutter.language.getProperty("command") + " " + String.join(" ", processWHISPER.command()));	
 						
 					isRunning = true;	
 					process = processWHISPER.start();
@@ -392,7 +562,7 @@ public class WHISPER {
 			        
 			        Console.consoleWHISPER.append(System.lineSeparator());
 			        
-					Shutter.progressBar1.setMaximum(Math.round(FFPROBE.totalLength / 1000));
+			        Shutter.progressBar1.setMaximum(Math.round(FFPROBE.totalLength / 1000));
 					
 					do {
 						
@@ -401,17 +571,34 @@ public class WHISPER {
 						
 						line = br.readLine();					
 						
-						if (line != null && line.contains(" --> "))
+						if (line != null)							
 						{
 							Console.consoleWHISPER.append(line + System.lineSeparator());
 							
-							String s[] = line.split("]");
-							String s2[] = s[0].split(" ");
-							String s3[] = s2[2].split("\\.");
-							String s4[] = s3[0].split(":");
-							
-							int value = Integer.parseInt(s4[0]) * 3600 + Integer.parseInt(s4[1]) * 60 + Integer.parseInt(s4[2]);
-							Shutter.progressBar1.setValue(value);
+							if (line.contains(" --> "))
+							{
+								String s[] = line.split("]");
+								String s2[] = s[0].split(" ");
+								String s3[] = s2[2].split("\\.");
+								String s4[] = s3[0].split(":");
+								
+								int value = Integer.parseInt(s4[0]) * 60 + Integer.parseInt(s4[1]);
+								if (s4.length > 2)
+									value = Integer.parseInt(s4[0]) * 3600 + Integer.parseInt(s4[1]) * 60 + Integer.parseInt(s4[2]);
+								
+								Shutter.lblCurrentEncoding.setText(fileName);
+								Shutter.progressBar1.setMaximum(FFMPEG.fileLength);
+								Shutter.progressBar1.setValue(value);
+							}
+			            	else if (line.contains("%"))
+			            	{
+			            		Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("downloadingAIModel"));
+			            		Shutter.progressBar1.setMaximum(100);
+			            		String s[] = line.split("%");
+			            		Shutter.progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
+			            	} 
+			            	else
+			            		Shutter.lblCurrentEncoding.setText(fileName);
 						}
 						
 					} while (line != null);		
@@ -430,178 +617,6 @@ public class WHISPER {
 		});		
 		runProcess.start();
 	}
-
-	public static void downloadModel() {
-		
-        JSlider slider = new JSlider(0, 3, 1);
-        slider.setMajorTickSpacing(1);
-        slider.setPaintTicks(true);
-        slider.setPreferredSize(new Dimension(300, 50));
-
-        Hashtable<Integer, JLabel> labels = new Hashtable<>();
-        labels.put(0, new JLabel("Fast"));
-        labels.put(1, new JLabel("Balanced"));
-        labels.put(2, new JLabel("Accurate"));
-        labels.put(3, new JLabel("Custom..."));
-        slider.setLabelTable(labels);
-        slider.setPaintLabels(true);
-        
-        slider.addMouseListener(new MouseAdapter() {
-
-        	String defaultFolder = "";
-        	
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				
-				if (slider.getValue() == 3)
-				{
-					FileDialog dialog = new FileDialog(Shutter.frame, "Choose model", FileDialog.LOAD);
-					if (defaultFolder == "") {
-						if (System.getProperty("os.name").contains("Mac")
-								|| System.getProperty("os.name").contains("Linux"))
-							dialog.setDirectory(System.getProperty("user.home") + "/Desktop");
-						else
-							dialog.setDirectory(System.getProperty("user.home") + "\\Desktop");
-					}
-					dialog.setLocation(Shutter.frame.getLocation().x - 50, Shutter.frame.getLocation().y + 50);
-					dialog.setAlwaysOnTop(true);
-					dialog.setMultipleMode(false);
-					dialog.setVisible(true);
-
-					if (dialog.getFile() != null)
-					{
-						if (dialog.getFile().substring(dialog.getFile().lastIndexOf('.')).equals(".bin") == false)
-						{
-							JOptionPane.showConfirmDialog(Shutter.frame,
-							"Only .bin files accepted",
-							"Custom model", JOptionPane.PLAIN_MESSAGE, JOptionPane.ERROR_MESSAGE);
-							
-							if (WHISPER.useCPU)
-							{
-								slider.setValue(0);
-							}
-							else
-								slider.setValue(1);
-						}
-						else
-						{
-							WHISPER.whisperModel = dialog.getDirectory() + dialog.getFile();
-						}
-						
-						defaultFolder = dialog.getParent().toString();
-					}
-					else
-					{
-						slider.setValue(1);
-					}
-				}
-				
-			}
-        	
-        });
-        
-		DefaultComboBoxModel<String> languages = new DefaultComboBoxModel<>();
-		languages.addElement("auto");
-        for (String[] lang : WHISPER.WHISPER_LANGUAGES) {
-        	languages.addElement(lang[1].toLowerCase());
-        }
-		
-		comboLanguage = new JComboBox<String>(languages);
-		comboLanguage.setSelectedIndex(0);
-		comboLanguage.setSize(120,26);
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(slider);
-
-		JPanel bottomPanel = new JPanel(new FlowLayout());
-		bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-		bottomPanel.add(comboLanguage);
-		panel.add(bottomPanel, BorderLayout.SOUTH);
-        
-        Object[] options = { Shutter.language.getProperty("btnApply") };
-        JOptionPane.showOptionDialog(Shutter.frame, panel, Shutter.language.getProperty("functionTranscribe"), 
-        JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-
-        if (slider.getValue() != 3)
-        {	        
-			switch (slider.getValue())
-			{	
-				case 0: //Fast
-					
-					modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin?download=true";
-					modelName = "ggml-small.bin";
-					modelSize = 487601967L;	
-					break;
-				
-				case 1: //Balanced
-					
-					modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q8_0.bin?download=true";
-					modelName = "ggml-large-v3-turbo-q8_0.bin";
-					modelSize = 874188075L;			
-					break;
-					
-				case 2: //Accurate
-					
-					modelLink = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-q5_0.bin?download=true";
-					modelName = "ggml-large-v3-q5_0.bin";
-					modelSize = 1081140203L;
-					break;
-				
-			}
-			
-			getWhisperModel();        
-					
-			File model = new File(whisperModel);
-			File modelPath = new File(model.getParent());
-			
-			if (modelPath.exists() == false)
-			{
-				modelPath.mkdir();
-			}
-			
-			try {
-				if (model.exists() && Files.size(model.toPath()) != modelSize)				
-				{
-					model.delete();
-				}
-			} catch (IOException e1) {}
-			
-			if (model.exists() == false)
-			{
-				new Update();
-				
-				if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
-				{
-					Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel"));
-				}
-				else
-					Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + "...");
-				
-				//Download
-				Thread download = new Thread(new Runnable() {
-					
-					public void run() {		
-				
-						Utils.changeFrameVisibility(Shutter.frame, true);
-						
-						Update.HTTPDownload(modelLink, whisperModel);	
-	
-						Utils.changeFrameVisibility(Shutter.frame, false);
-						Shutter.frame.toFront();
-						
-						Update.frame.dispose();
-						
-						if (model.exists() == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
-						{
-							Shutter.comboFonctions.setSelectedItem("");;
-						}
-					}
-				});
-				download.start();
-			}
-        }
-		
-	}   
 
 	public static String checkBrowser() throws Exception {
         // Registry key for default HTTP handler

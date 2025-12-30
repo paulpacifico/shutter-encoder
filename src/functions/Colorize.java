@@ -56,6 +56,7 @@ public class Colorize extends Shutter {
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
 				DEOLDIFY.patchDeoldify();
+				DEOLDIFY.patchFFmpeg();
 				DEOLDIFY.downloadModel();
 						
 				if (new File(DEOLDIFY.deoldifyModel).exists())
@@ -157,11 +158,17 @@ public class Colorize extends Shutter {
 							                        BWFrame.delete();
 							                    }
 							                }
-							            }
+							            } catch (Exception e) {}
 									}
 									
 								} while (DEOLDIFY.runProcess.isAlive());	
-							}							
+							}		
+							else
+							{
+								do {								
+									Thread.sleep(100);	
+								} while (DEOLDIFY.runProcess.isAlive());	
+							}
 
 							if (comboFilter.getSelectedItem().equals("video"))		
 							{

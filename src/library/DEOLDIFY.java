@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,6 +60,12 @@ public class DEOLDIFY extends Shutter {
 		else
 			deoldify = new File(deoldifyFolder.toString() + "/lib/python3.10/site-packages/deoldify");	
 			
+		//Download ffmpeg for Linux because it need shared libs
+		if (System.getProperty("os.name").contains("Linux"))
+		{
+			PYTHON.checkFFmpegForLinux();			
+		}
+		
 		if (deoldify.exists() == false)
 		{		
 			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
@@ -121,31 +128,44 @@ public class DEOLDIFY extends Shutter {
 		
 	}
 	
+	public static void patchFFmpeg() {
+		
+		if (System.getProperty("os.name").contains("Windows"))
+		{
+			try {
+				
+				File run = new File(deoldify.getParent() + "/ffmpeg/_run.py");
+				if (run.exists())
+				{					
+					//Edit the _run.py to add current FFmpeg path
+			        String content = Files.readString(run.toPath(), StandardCharsets.UTF_8);		
+			        content = content.replace("cmd='ffmpeg'", "cmd=r'" + FFMPEG.PathToFFMPEG.replace("/", "\\") + "'");		
+			        Files.writeString(run.toPath(), content, StandardCharsets.UTF_8);
+			    }
+				
+			} catch (Exception e) {}
+		}
+	}
+	
     public static void downloadModel() {
 		        
-    	switch (comboFilter.getSelectedIndex())
-		{	
-			case 0: //Artistic
-				
-				modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeArtistic_gen.pth?download=true";
-				modelName = "ColorizeArtistic_gen.pth";
-				modelSize = 255144681L;	
-				break;
-			
-			case 1: //Stable
-				
-				modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeStable_gen.pth?download=true";
-				modelName = "ColorizeStable_gen.pth";
-				modelSize = 874066230L;			
-				break;
-				
-			case 2: //Video
-				
-				modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeVideo_gen.pth?download=true";
-				modelName = "ColorizeVideo_gen.pth";
-				modelSize = 874066230L;
-				break;
-			
+    	if (comboFilter.getSelectedItem().equals("artistic"))
+    	{
+    		modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeArtistic_gen.pth?download=true";
+			modelName = "ColorizeArtistic_gen.pth";
+			modelSize = 255144681L;	
+    	}
+    	else if (comboFilter.getSelectedItem().equals("stable"))
+    	{
+			modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeStable_gen.pth?download=true";
+			modelName = "ColorizeStable_gen.pth";
+			modelSize = 874066230L;			
+    	}
+    	else //Video
+    	{				
+    		modelLink = "https://huggingface.co/spensercai/DeOldify/resolve/main/ColorizeVideo_gen.pth?download=true";
+			modelName = "ColorizeVideo_gen.pth";
+			modelSize = 874066230L;
 		}      
     	
     	deoldifyModel = deoldifyFolder.toString() + "/models/" + modelName;
@@ -211,10 +231,7 @@ public class DEOLDIFY extends Shutter {
 					//Copy colorize.py to allow writing into models folder
 					File colorizeSource = new File(new File(FFMPEG.PathToFFMPEG.replace("\\ ", " ")).getParent() + "/colorize.py");
 					File colorizePath = new File(deoldifyFolder.toString() + "/colorize.py");
-					if (colorizePath.exists() == false)
-					{
-						Files.copy(colorizeSource.toPath(), colorizePath.toPath());
-					}
+					Files.copy(colorizeSource.toPath(), colorizePath.toPath(), StandardCopyOption.REPLACE_EXISTING);					
 					
 					String quality = "35";
 					if (comboFilter.getSelectedItem().equals("video"))
@@ -241,7 +258,7 @@ public class DEOLDIFY extends Shutter {
 					processBuilder.directory(deoldifyFolder);
 					processBuilder.redirectErrorStream(true);
 					 
-					Console.consolePYTHON.append(language.getProperty("command") + " python3 " + colorizePath + " " + file + " --model " + model + " --render-factor " + quality + " --no-watermark");	
+					Console.consolePYTHON.append(language.getProperty("command") + String.join(" ", processBuilder.command()));	
 					
 					isRunning = true;	
 					process = processBuilder.start();
@@ -273,17 +290,17 @@ public class DEOLDIFY extends Shutter {
 		            	}
 		            	
 		            	//Retrieve current progress output
-		            	if ((downloadModel || comboFilter.getSelectedItem().equals("video")) && line.contains("%"))
+		            	if (downloadModel && line.contains("%"))
 		            	{
 		            		String s[] = line.split("\\.");
-		            		if (comboFilter.getSelectedItem().equals("video"))
-		            		{
-		            			String s2[] = s[0].split("\\|");
-		            			progressBar1.setValue(Integer.valueOf(s2[2].replace(" ","")));
-		            		}
-		            		else
-		            			progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
-		            	}		            	
+		            		progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
+		            	}		 
+		            	else if (comboFilter.getSelectedItem().equals("video") && line.contains("%"))
+	            		{
+		            		String s[] = line.split("\\.");
+	            			String s2[] = s[0].split("\\|");
+	            			progressBar1.setValue(Integer.valueOf(s2[2].replace(" ","")));
+	            		}
 		            	else if (line.contains("Done!"))
 		            	{
 		            		progressBar1.setValue(100);
