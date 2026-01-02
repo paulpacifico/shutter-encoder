@@ -41,10 +41,10 @@ public class BACKGROUNDREMOVER extends Shutter {
 
 		if (System.getProperty("os.name").contains("Windows"))
 		{
-			backgroundRemover = new File(backgroundRemoverFolder + "/backgroundRemover/backgroundRemover.py");
+			backgroundRemover = new File(backgroundRemoverFolder + "/Scripts/backgroundremover.exe");
 		}
 		else
-			backgroundRemover = new File(backgroundRemoverFolder + "/bin/backgroundRemover");
+			backgroundRemover = new File(backgroundRemoverFolder + "/bin/backgroundremover");
 								
 		if (backgroundRemover.exists() == false)
 		{		
@@ -54,8 +54,7 @@ public class BACKGROUNDREMOVER extends Shutter {
 				String[] cmd = { backgroundRemoverFolder.toString() + "/bin/python3", "-m", "pip", "install", "backgroundremover", "--no-warn-script-location" };
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					cmd = new String[] { backgroundRemoverFolder.toString() + "/python.exe", "-m", "pip", "install", "backgroundremover", "--no-warn-script-location" };
-											 	
+					cmd = new String[] { backgroundRemoverFolder.toString() + "/python.exe", "-m", "pip", "install", "backgroundremover", "--no-warn-script-location" };											 	
 				}
 				
 				PYTHON.installModule(backgroundRemoverFolder, cmd, backgroundRemover);
@@ -82,7 +81,7 @@ public class BACKGROUNDREMOVER extends Shutter {
 					ProcessBuilder processBuilder;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						processBuilder = new ProcessBuilder(backgroundRemoverFolder.toString() + "/python.exe", "-m", "backgroundremover", "-i", file, "-o", output);
+						processBuilder = new ProcessBuilder(backgroundRemoverFolder.toString() + "/Scripts/backgroundremover.exe", "-i", file, "-o", output);
 					}
 					else
 						processBuilder = new ProcessBuilder(backgroundRemoverFolder.toString() + "/bin/backgroundremover", "-i", file, "-o", output);

@@ -1781,6 +1781,13 @@ public class Shutter {
 						Transcribe.transcriptionFolder.delete();
 					}
 					
+					if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")) && WHISPER.checkIfModelExists() != null)
+					{
+						try {
+							FileUtils.deleteDirectory(WHISPER.checkIfModelExists());
+						} catch (IOException e1) {}	
+					}
+					
 					//Delete Colorize video folder
 					try {
 						FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
@@ -2250,7 +2257,13 @@ public class Shutter {
 					}
 					VideoPlayer.playerStop();
 					VideoPlayer.setPlayerButtons(false);
-					VideoPlayer.playerRepaint();
+					VideoPlayer.player.remove(selection);
+					VideoPlayer.player.remove(overImage);
+					VideoPlayer.player.remove(timecode);
+					VideoPlayer.player.remove(fileName);
+					VideoPlayer.player.remove(subsCanvas);
+					VideoPlayer.player.remove(logo);
+					VideoPlayer.player.repaint();
 
 					changeFilters();
 
@@ -4003,7 +4016,7 @@ public class Shutter {
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
 
-		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
+		if ((System.getProperty("os.name").contains("Mac") && arch.equals("x86_64")) || System.getProperty("os.name").contains("Linux"))
 		{
 			comboFonctions.removeItem("H.266");
 			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
@@ -9094,8 +9107,10 @@ public class Shutter {
 				
 				FFMPEG.checkGPUDeinterlacing();
 
-				if (VideoPlayer.frameVideo != null) {
-					VideoPlayer.player.repaint();
+				VideoPlayer.player.repaint();
+				
+				if (VideoPlayer.frameVideo != null)
+				{
 					FFPROBE.setFilesize();
 				}
 			}
@@ -25529,31 +25544,6 @@ public class Shutter {
 		if (comboAccel.getItemCount() > 1)
 			comboAccel.setEnabled(true);
 
-		// Enable buttons
-		VideoPlayer.setPlayerButtons(true);
-
-		if (caseAddWatermark.isSelected()) {
-			VideoPlayer.player.add(logo);
-		}
-
-		if (caseAddSubtitles.isSelected() && subtitlesBurn) {
-			VideoPlayer.player.add(subsCanvas);
-		}
-
-		if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) {
-			VideoPlayer.player.add(timecode);
-		}
-
-		if (caseShowFileName.isSelected() || caseAddText.isSelected()) {
-			VideoPlayer.player.add(fileName);
-		}
-
-		if (caseEnableCrop.isSelected()) {
-			// Shutter.overImage need to be the last component added
-			VideoPlayer.player.add(selection);
-			VideoPlayer.player.add(overImage);
-		}
-
 		if (FFPROBE.audioOnly) {
 			caseVideoFadeIn.setEnabled(false);
 			caseVideoFadeOut.setEnabled(false);
@@ -25796,11 +25786,12 @@ public class Shutter {
 		}
 
 		// Unlock the file to be deletable
-		if (scanIsRunning == false && screenshotIsRunning == false) {
+		if (scanIsRunning == false && screenshotIsRunning == false)
+		{
 			VideoPlayer.videoPath = null;
 			fileList.clearSelection();
-			VideoPlayer.frameVideo = null;
-			VideoPlayer.playerRepaint();
+			VideoPlayer.frameVideo = null;			
+			VideoPlayer.player.repaint();
 
 			// Lecteur
 			if (VideoPlayer.waveform != null) {

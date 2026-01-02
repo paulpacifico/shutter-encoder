@@ -83,7 +83,9 @@ import library.DCRAW;
 import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.FFPROBE;
+import library.PYTHON;
 import library.TSMUXER;
+import library.WHISPER;
 import library.YOUTUBEDL;
 import settings.Colorimetry;
 import settings.FunctionUtils;
@@ -2657,6 +2659,12 @@ public class Utils extends Shutter {
 					YOUTUBEDL.process.destroy();
 				}
 			}
+			
+			if (PYTHON.runProcess != null && PYTHON.runProcess.isAlive())
+				PYTHON.process.destroy();
+			
+			if (WHISPER.runProcess != null && WHISPER.runProcess.isAlive())
+				WHISPER.process.destroy();
 			
 		} catch (Exception er) {}
 

@@ -1677,6 +1677,29 @@ public class VideoPlayer {
 							cursorCurrentFrame.setBounds(0, 0, 1, waveformContainer.getHeight());
 							setPlayerButtons(true);	
 							
+							//Add layers
+							if (Shutter.caseAddWatermark.isSelected()) {
+								player.add(Shutter.logo);
+							}
+
+							if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn) {
+								player.add(Shutter.subsCanvas);
+							}
+
+							if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected()) {
+								player.add(Shutter.timecode);
+							}
+
+							if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected()) {
+								player.add(Shutter.fileName);
+							}
+
+							if (Shutter.caseEnableCrop.isSelected()) {
+								// Shutter.overImage need to be the last component added
+								player.add(Shutter.selection);
+								player.add(Shutter.overImage);
+							}
+							
 							seekOnKeyFrames = false;
 							
 							if (FFPROBE.audioOnly == false

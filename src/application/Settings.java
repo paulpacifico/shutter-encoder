@@ -1890,7 +1890,7 @@ public class Settings {
 			}		
 		}							
 	} catch (Exception e) {}		
-}
+	}
 	
 	@SuppressWarnings({ "rawtypes" })
 	public static void saveSettings() {	

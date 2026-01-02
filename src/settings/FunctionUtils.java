@@ -2016,8 +2016,9 @@ public class FunctionUtils extends Shutter {
 			// IMPORTANT Enable caseDisplay
 			Shutter.subtitlesBurn = true;
 			changeSections(false);
-
+			
 			VideoPlayer.player.remove(subsCanvas);
+			VideoPlayer.player.repaint();
 
 			if (autoBurn == false && autoEmbed == false) {
 				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and

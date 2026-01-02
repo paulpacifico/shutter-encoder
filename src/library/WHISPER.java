@@ -39,7 +39,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.swing.BorderFactory;
@@ -53,8 +52,10 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileSystemView;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import application.Console;
@@ -68,7 +69,7 @@ public class WHISPER {
 	public static Thread runProcess;
 	public static Process process;
 	private static File transcriberApp = null;
-	private static File whisperFolder = new File(System.getProperty("user.home") + "/Shutter Transcriber/Library/whisper");
+	public static File whisperFolder = new File(System.getProperty("user.home") + "/Shutter Transcriber/Library/whisper");
 	public static String whisperModel;
 	public static File whisper;
 	public static JComboBox<String> comboLanguage;
@@ -176,6 +177,28 @@ public class WHISPER {
 	    {"yi", "Yiddish"},
 	    {"yo", "Yoruba"},
 	    {"zh", "Chinese"}
+	};
+
+	public static String[][] WHISPER_MODELS = {
+		{"tiny.en", "models--Systran--faster-whisper-tiny.en"},
+	    {"tiny", "models--Systran--faster-whisper-tiny"},
+	    {"base.en", "models--Systran--faster-whisper-base.en"},
+	    {"base", "models--Systran--faster-whisper-base"},
+	    {"small.en", "models--Systran--faster-whisper-small.en"},
+	    {"small", "models--Systran--faster-whisper-small"},
+	    {"medium.en", "models--Systran--faster-whisper-medium.en"},
+	    {"medium", "models--Systran--faster-whisper-medium"},
+	    {"large-v1", "models--Systran--faster-whisper-large-v1"},
+	    {"large-v2", "models--Systran--faster-whisper-large-v2"},
+	    {"large-v3", "models--Systran--faster-whisper-large-v3"},
+	    {"large", "models--Systran--faster-whisper-large-v3"},
+	    {"distil-large-v2", "models--Systran--faster-distil-whisper-large-v2"},
+	    {"distil-medium.en", "models--Systran--faster-distil-whisper-medium.en"},
+	    {"distil-small.en", "models--Systran--faster-distil-whisper-small.en"},
+	    {"distil-large-v3", "models--Systran--faster-distil-whisper-large-v3"},
+	    {"distil-large-v3.5", "models--distil-whisper--distil-large-v3.5-ct2"},
+	    {"large-v3-turbo", "models--mobiuslabsgmbh--faster-whisper-large-v3-turbo"},
+	    {"turbo", "models--mobiuslabsgmbh--faster-whisper-large-v3-turbo"}
 	};
 	
 	public WHISPER() {
@@ -317,7 +340,7 @@ public class WHISPER {
 		comboLanguage.setSelectedIndex(0);
 		comboLanguage.setSize(120,26);
 		
-		boxVAD = new JCheckBox("Voice Activation Detection");
+		boxVAD = new JCheckBox("Transcribe speech only");
 		boxVAD.setForeground(Utils.c225);
 		boxVAD.setSelected(true);
 		boxVAD.setSize(boxVAD.getPreferredSize().width, 16);
@@ -410,26 +433,57 @@ public class WHISPER {
         JOptionPane.showOptionDialog(Shutter.frame, panel, Shutter.language.getProperty("functionTranscribe"), 
         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
-        whisperModel = labels.get(slider.getValue()).getText();	
+        if (labels.get(slider.getValue()).getText().equals("Fast"))
+		{	
+			whisperModel = "small";
+		}
+		else if (labels.get(slider.getValue()).getText().equals("Balanced"))
+		{	
+			whisperModel = "turbo";
+		}
+		else if (labels.get(slider.getValue()).getText().equals("Accurate"))
+		{	
+			whisperModel = "large-v3";
+		}
 	}
 	
-	public static void patchFFmpeg() {
+	public static File checkIfModelExists() {
 		
-		if (System.getProperty("os.name").contains("Windows"))
+        for (String[] model : WHISPER_MODELS) 
 		{
-			try {
-
-				File run = new File(whisperFolder.toString() + "/whisper/audio.py");
-				if (run.exists())
-				{					
-					//Edit the _run.py to add current FFmpeg path
-			        String content = Files.readString(run.toPath(), StandardCharsets.UTF_8);		
-			        content = content.replace('"' + "ffmpeg" + '"', "r" + '"' + FFMPEG.PathToFFMPEG.replace("/", "\\") + '"');		
-			        Files.writeString(run.toPath(), content, StandardCharsets.UTF_8);
-			    }
+			if (whisperModel.equals(model[0]))
+			{
+				File file = new File(getWhisperModel() + File.separator + model[1]);
 				
-			} catch (Exception e) {}
+				if (file.exists())
+					return file;				
+			}							    
 		}
+        
+		return null;
+	}   
+	
+	public static void deleteIncompleteModel() {
+		
+		//AI model incomplete
+		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")))
+		{
+			SwingUtilities.invokeLater(new Runnable()
+			{
+	           @Override
+	           public void run() {
+	        	   
+	        	   try {
+	   					if (checkIfModelExists() != null)			
+	   						FileUtils.deleteDirectory(checkIfModelExists());		
+	   				} catch (Exception e) {}
+	        	   
+	        	   Shutter.progressBar1.setIndeterminate(false);
+	        	   Shutter.progressBar1.setStringPainted(true);			        	   
+	           }
+			});
+		}
+	
 	}
 	
 	public static void run(String wavFile, String fileName) {
@@ -437,183 +491,188 @@ public class WHISPER {
 		error = false;
 		Shutter.progressBar1.setValue(0);		
 		Shutter.btnStart.setEnabled(false);
-		
-		getWhisperModel();
-		patchFFmpeg();
-		
+				
 		runProcess = new Thread(new Runnable()  {
-			
-			@Override
-			public void run() {
-								
-				try {
-					
-					ProcessBuilder processWHISPER = new ProcessBuilder();
-					
-					if (System.getProperty("os.name").contains("Windows"))
-					{
-						processWHISPER.command().add(whisperFolder.toString() + "/python.exe");						
-					}
-					else				
-						processWHISPER.command().add(whisperFolder.toString() + "/bin/python3");
-										
-					//Run Whisper module				
-					processWHISPER.command().add("-u");
-					processWHISPER.command().add(whisper.toString());
-					
-					//Model				
-					processWHISPER.command().add("--model_dir");
-					processWHISPER.command().add(getWhisperModel());				
-					
-					processWHISPER.command().add("--model");
-					if (whisperModel.equals("Fast"))
-					{	
-						processWHISPER.command().add("small");
-						processWHISPER.command().add("--beam_size");
-						processWHISPER.command().add("5");
-						processWHISPER.command().add("--best_of");
-						processWHISPER.command().add("5");
-					}
-					else if (whisperModel.equals("Balanced"))
-					{	
-						processWHISPER.command().add("turbo");
-						processWHISPER.command().add("--beam_size");
-						processWHISPER.command().add("3");
-						processWHISPER.command().add("--best_of");
-						processWHISPER.command().add("3");
-					}
-					else if (whisperModel.equals("Accurate"))
-					{	
-						processWHISPER.command().add("large-v3");
-						processWHISPER.command().add("--beam_size");
-						processWHISPER.command().add("1");
-						processWHISPER.command().add("--best_of");
-						processWHISPER.command().add("1");
-					}
-					
-					//Language
-					if (comboLanguage.getSelectedIndex() > 0)
-					{
-						processWHISPER.command().add("--language");
-						processWHISPER.command().add(WHISPER.WHISPER_LANGUAGES[comboLanguage.getSelectedIndex() - 1][0]);
-					}
-					
-					//VAD
-					if (boxVAD.isSelected())
-					{
-						processWHISPER.command().add("--vad_filter");
-						processWHISPER.command().add("True");
-					}
-									
-					//Preserve context
-					if (boxContext.isSelected() == false)
-					{
-						processWHISPER.command().add("--condition_on_previous_text");
-						processWHISPER.command().add("False");
-					}
-						
-					//Output format
-					if (Shutter.comboFilter.getSelectedItem().toString().equals(".srt"))
-					{
-						processWHISPER.command().add("--output_format");
-						processWHISPER.command().add("srt");
-						processWHISPER.command().add("--word_timestamps");
-						processWHISPER.command().add("True");
-						
-					}							
-					else if (Shutter.comboFilter.getSelectedItem().toString().equals(".vtt"))
-					{
-						processWHISPER.command().add("--output_format");
-						processWHISPER.command().add("vtt");
-						processWHISPER.command().add("--word_timestamps");
-						processWHISPER.command().add("True");
-					}
-					else if (Shutter.comboFilter.getSelectedItem().toString().equals(".txt"))
-					{
-						processWHISPER.command().add("--output_format");
-						processWHISPER.command().add("txt");
-					}
-					
-					//Input file
-					processWHISPER.command().add(wavFile);
-					
-					//Output folder
-					processWHISPER.command().add("--output_dir");
-					processWHISPER.command().add(new File(wavFile).getParent());
 
-					//Adding ffmpeg the the PATH environment						        			        
-			        if (System.getProperty("os.name").contains("Mac"))
-			        {
-			        	Map<String, String> env = processWHISPER.environment();			        	
-			        	env.put("PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", "") + ":" + System.getenv("PATH"));
-			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
-			        }
-			        
-					processWHISPER.redirectErrorStream(true);
+		@Override
+		public void run() {
+				
+			try {
+
+				ProcessBuilder processBuilder = new ProcessBuilder();
+				
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					processBuilder.command().add(whisperFolder.toString() + "/python.exe");
+				}
+				else
+					processBuilder.command().add(whisperFolder.toString() + "/bin/python3");				
+				
+				//Run Whisper module
+				processBuilder.command().add("-u");
+				processBuilder.command().add(whisper.toString());
+
+				//Verbose
+				processBuilder.command().add("--verbose");
+				processBuilder.command().add("True");
+				
+				//Check is GPU is available
+				if (System.getProperty("os.name").contains("Windows") && PYTHON.isCudaInstalled() && PYTHON.isTorchCudaInstalled() == false)
+				{
+		        	processBuilder.command().add("--device");
+		        	processBuilder.command().add("cpu");			        
+				}
+				
+				//Model				
+				processBuilder.command().add("--model_dir");
+				processBuilder.command().add(getWhisperModel());				
+				
+				processBuilder.command().add("--model");
+				processBuilder.command().add(whisperModel);
+				if (whisperModel.equals("small"))
+				{	
+					processBuilder.command().add("--beam_size");
+					processBuilder.command().add("5");
+					processBuilder.command().add("--best_of");
+					processBuilder.command().add("5");
+				}
+				else if (whisperModel.equals("turbo"))
+				{	
+					processBuilder.command().add("--beam_size");
+					processBuilder.command().add("3");
+					processBuilder.command().add("--best_of");
+					processBuilder.command().add("3");
+				}
+				else if (whisperModel.equals("large-v3"))
+				{	
+					processBuilder.command().add("--beam_size");
+					processBuilder.command().add("1");
+					processBuilder.command().add("--best_of");
+					processBuilder.command().add("1");
+				}
+				
+				//Language
+				if (comboLanguage.getSelectedIndex() > 0)
+				{
+					processBuilder.command().add("--language");
+					processBuilder.command().add(WHISPER_LANGUAGES[comboLanguage.getSelectedIndex() - 1][0]);
+				}
+				
+				//VAD
+				if (boxVAD.isSelected())
+				{
+					processBuilder.command().add("--vad_filter");
+					processBuilder.command().add("True");
+				}
+								
+				//Preserve context
+				if (boxContext.isSelected() == false)
+				{
+					processBuilder.command().add("--condition_on_previous_text");
+					processBuilder.command().add("False");
+				}
 					
-					Console.consoleWHISPER.append(Shutter.language.getProperty("command") + " " + String.join(" ", processWHISPER.command()));	
-						
-					isRunning = true;	
-					process = processWHISPER.start();
-		
-			        InputStreamReader isr = new InputStreamReader(process.getInputStream());
-			        BufferedReader br = new BufferedReader(isr);
-			        String line;
-			        
-			        Console.consoleWHISPER.append(System.lineSeparator());
-			        
-			        Shutter.progressBar1.setMaximum(Math.round(FFPROBE.totalLength / 1000));
+				//Output format
+				if (Shutter.comboFilter.getSelectedItem().toString().equals(".srt"))
+				{
+					processBuilder.command().add("--output_format");
+					processBuilder.command().add("srt");
+					processBuilder.command().add("--word_timestamps");
+					processBuilder.command().add("True");
 					
-					do {
-						
-						if (Shutter.cancelled)
-							break;
-						
-						line = br.readLine();					
-						
-						if (line != null)							
+				}							
+				else if (Shutter.comboFilter.getSelectedItem().toString().equals(".vtt"))
+				{
+					processBuilder.command().add("--output_format");
+					processBuilder.command().add("vtt");
+					processBuilder.command().add("--word_timestamps");
+					processBuilder.command().add("True");
+				}
+				else if (Shutter.comboFilter.getSelectedItem().toString().equals(".txt"))
+				{
+					processBuilder.command().add("--output_format");
+					processBuilder.command().add("txt");
+				}
+				
+				//Input file
+				processBuilder.command().add(wavFile);
+				
+				//Output folder
+				processBuilder.command().add("--output_dir");
+				processBuilder.command().add(new File(wavFile).getParent());
+		        
+				processBuilder.redirectErrorStream(true);
+
+				Console.consolePYTHON.append(Shutter.language.getProperty("command") + String.join(" ", processBuilder.command()));	
+				
+				isRunning = true;	
+				process = processBuilder.start();
+	            
+	            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));	            	    
+	            
+	            File model = checkIfModelExists();
+	            if (model == null)
+            	{
+            		Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("downloadingAIModel"));
+            		Shutter.progressBar1.setIndeterminate(true);
+            		Shutter.progressBar1.setStringPainted(false);
+            	}
+	            
+	            Console.consolePYTHON.append(System.lineSeparator());
+	            
+	            String line;	           
+	            while ((line = reader.readLine()) != null)
+	            {
+	            	if (line != null)
+	            	{
+	            		Console.consolePYTHON.append(line + System.lineSeparator());
+
+		            	if (line.contains(" --> "))
 						{
-							Console.consoleWHISPER.append(line + System.lineSeparator());
+		            		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")))
+		            		{
+		            			SwingUtilities.invokeLater(new Runnable()
+		    					{
+		    			           @Override
+		    			           public void run() {
+		    			        	   Shutter.progressBar1.setIndeterminate(false);
+		    			        	   Shutter.progressBar1.setStringPainted(true);		
+		    			        	   Shutter.lblCurrentEncoding.setText("Transcribing " + fileName);	
+		    			           }
+		    					});
+		            		}
+		            		
+							String s[] = line.split("]");
+							String s2[] = s[0].split(" ");
+							String s3[] = s2[2].split("\\.");
+							String s4[] = s3[0].split(":");
 							
-							if (line.contains(" --> "))
-							{
-								String s[] = line.split("]");
-								String s2[] = s[0].split(" ");
-								String s3[] = s2[2].split("\\.");
-								String s4[] = s3[0].split(":");
-								
-								int value = Integer.parseInt(s4[0]) * 60 + Integer.parseInt(s4[1]);
-								if (s4.length > 2)
-									value = Integer.parseInt(s4[0]) * 3600 + Integer.parseInt(s4[1]) * 60 + Integer.parseInt(s4[2]);
-								
-								Shutter.lblCurrentEncoding.setText(fileName);
-								Shutter.progressBar1.setMaximum(FFMPEG.fileLength);
-								Shutter.progressBar1.setValue(value);
-							}
-			            	else if (line.contains("%"))
-			            	{
-			            		Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("downloadingAIModel"));
-			            		Shutter.progressBar1.setMaximum(100);
-			            		String s[] = line.split("%");
-			            		Shutter.progressBar1.setValue(Integer.valueOf(s[0].replace(" ","")));
-			            	} 
-			            	else
-			            		Shutter.lblCurrentEncoding.setText(fileName);
-						}
-						
-					} while (line != null);		
-						
-					process.waitFor();		
-					
-					Console.consoleWHISPER.append(System.lineSeparator());
-					
-					isRunning = false;	        
-					
-					} catch (IOException | InterruptedException e) {
-						error = true;
-					}
-									 
-				}				
+							int value = Integer.parseInt(s4[0]) * 60 + Integer.parseInt(s4[1]);
+							if (s4.length > 2)
+								value = Integer.parseInt(s4[0]) * 3600 + Integer.parseInt(s4[1]) * 60 + Integer.parseInt(s4[2]);
+																				
+							Shutter.progressBar1.setValue(value);
+						}		            	
+	            	}
+	            	
+	            	if (Shutter.cancelled)
+	            		break;	 
+	            }
+	            
+	            process.waitFor();
+	            
+	            Console.consolePYTHON.append(System.lineSeparator());	
+
+				isRunning = false;	        
+				
+				} catch (IOException | InterruptedException e) {
+					error = true;
+				}
+				finally {					
+					deleteIncompleteModel();
+				}
+								 
+			}				
 		});		
 		runProcess.start();
 	}

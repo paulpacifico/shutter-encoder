@@ -143,6 +143,8 @@ public class DEMUCS extends Shutter {
 			        	env.put("DYLD_LIBRARY_PATH", new File(FFMPEG.PathToFFMPEG).getParent().replace("\\", ""));
 			        }
 			        
+			        processBuilder.environment().put("PYTHONUNBUFFERED", "1");
+			        processBuilder.environment().put("TERM", "xterm"); // Tricks tqdm into thinking it's a real terminal
 					processBuilder.redirectErrorStream(true);
 
 					isRunning = true;	
@@ -153,7 +155,7 @@ public class DEMUCS extends Shutter {
 		            Console.consolePYTHON.append(System.lineSeparator());
 			        
 					progressBar1.setMaximum(100);
-		            		            
+							            		            
 		            String line;		
 		            boolean downloadModel = false;
 		            while ((line = reader.readLine()) != null)
