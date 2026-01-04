@@ -193,7 +193,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "19.7";
+	public static String actualVersion = "19.8";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -836,10 +836,10 @@ public class Shutter {
 		// Documents Shutter Encoder
 		if (documents.exists() == false) {
 			// Do not create it if the location is different
-			if (new File("settings.xml").exists() == false)
+			if (settingsXML.exists() == false)
 				documents.mkdirs();
 
-			if (new File("Functions").exists() == false)
+			if (Functions.functionsFolder.exists() == false)
 				documents.mkdirs();
 		}
 

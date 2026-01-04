@@ -306,7 +306,7 @@ public class WHISPER {
 		
 		if (System.getProperty("os.name").contains("Windows"))
 		{			
-			return transcriberApp + "\\Library\\models";
+			return transcriberApp.getParent() + "\\Library\\models";
 		}
 		else
 			return transcriberApp + "/Contents/Resources/Library/models";
@@ -345,12 +345,12 @@ public class WHISPER {
 		boxVAD.setSelected(true);
 		boxVAD.setSize(boxVAD.getPreferredSize().width, 16);
 		
-		boxContext = new JCheckBox("Preserve context");
+		boxContext = new JCheckBox("Keep context");
 		boxContext.setForeground(Utils.c225);
 		boxContext.setSelected(true);
 		boxContext.setSize(boxContext.getPreferredSize().width, 16);
 		
-		JLabel lblMaxChars = new JLabel("Max. chars:");
+		JLabel lblMaxChars = new JLabel("Max. characters:");
 		lblMaxChars.setForeground(Utils.c225);
 		lblMaxChars.setSize(lblMaxChars.getPreferredSize().width, 16);
 		
@@ -603,7 +603,7 @@ public class WHISPER {
 		        
 				processBuilder.redirectErrorStream(true);
 
-				Console.consolePYTHON.append(Shutter.language.getProperty("command") + String.join(" ", processBuilder.command()));	
+				Console.consolePYTHON.append(Shutter.language.getProperty("command") + " " + String.join(" ", processBuilder.command()));	
 				
 				isRunning = true;	
 				process = processBuilder.start();
@@ -627,8 +627,8 @@ public class WHISPER {
 	            	{
 	            		Console.consolePYTHON.append(line + System.lineSeparator());
 
-		            	if (line.contains(" --> "))
-						{
+	            		if (line.contains("Detected language") && line.contains("with probability"))
+		            	{
 		            		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")))
 		            		{
 		            			SwingUtilities.invokeLater(new Runnable()
@@ -641,8 +641,10 @@ public class WHISPER {
 		    			           }
 		    					});
 		            		}
-		            		
-							String s[] = line.split("]");
+		            	}
+	            		else if (line.contains(" --> "))
+						{
+	            			String s[] = line.split("]");
 							String s2[] = s[0].split(" ");
 							String s3[] = s2[2].split("\\.");
 							String s4[] = s3[0].split(":");
