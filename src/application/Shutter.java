@@ -4016,11 +4016,15 @@ public class Shutter {
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
 
-		if ((System.getProperty("os.name").contains("Mac") && arch.equals("x86_64")) || System.getProperty("os.name").contains("Linux"))
+		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
 		{
 			comboFonctions.removeItem("H.266");
 			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
-		}		
+		}
+		else if (System.getProperty("os.name").contains("Linux"))
+		{
+			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
+		}	
 
 		comboFonctions.addActionListener(new ActionListener() {
 
