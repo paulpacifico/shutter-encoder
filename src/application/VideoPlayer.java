@@ -4593,6 +4593,14 @@ public class VideoPlayer {
 		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.accurateFPS) % 60));    		
 		caseInF.setText(Shutter.formatter.format(Math.floor(timeIn % FFPROBE.accurateFPS)));
 		
+		if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false)
+		{
+			Shutter.TCset1.setText(VideoPlayer.caseInH.getText());
+			Shutter.TCset2.setText(VideoPlayer.caseInM.getText());
+			Shutter.TCset3.setText(VideoPlayer.caseInS.getText());
+			Shutter.TCset4.setText(VideoPlayer.caseInF.getText());
+		}
+		
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
 		{
 			Shutter.txtAudioOffset.setText(String.valueOf((int) timeIn));
@@ -6402,6 +6410,14 @@ public class VideoPlayer {
 						caseInM.setText(in[1]);
 						caseInS.setText(in[2]);
 						caseInF.setText(in[3]);
+						
+						if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false)
+						{
+							Shutter.TCset1.setText(VideoPlayer.caseInH.getText());
+							Shutter.TCset2.setText(VideoPlayer.caseInM.getText());
+							Shutter.TCset3.setText(VideoPlayer.caseInS.getText());
+							Shutter.TCset4.setText(VideoPlayer.caseInF.getText());
+						}
 						
 						caseOutH.setText(out[0]);
 						caseOutM.setText(out[1]);
