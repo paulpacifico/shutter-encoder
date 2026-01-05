@@ -538,6 +538,7 @@ public class Shutter {
 	protected static JTextField textStream;
 	protected static JCheckBox caseStream;
 	protected static JCheckBox caseLoop;
+	public static boolean setTimecodeEdited = false;
 
 	/*
 	 * Group Boxes
@@ -6568,6 +6569,8 @@ public class Shutter {
 				
 				if (caseSetTimecode.isSelected())
 				{
+					setTimecodeEdited = false;
+					
 					TCset1.setEnabled(true);
 					TCset2.setEnabled(true);
 					TCset3.setEnabled(true);
@@ -6654,6 +6657,7 @@ public class Shutter {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				setTimecodeEdited = true;
 			}
 		});
 
@@ -6674,6 +6678,7 @@ public class Shutter {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				setTimecodeEdited = true;
 			}
 		});
 
@@ -6694,6 +6699,7 @@ public class Shutter {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				setTimecodeEdited = true;
 			}
 		});
 
@@ -6714,6 +6720,7 @@ public class Shutter {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				setTimecodeEdited = true;
 			}
 		});
 
