@@ -265,8 +265,10 @@ public class VideoEncoders extends Shutter {
 						}			
 						
 						//Split video
+						String forceKeyFrames = "";
 						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 						{
+							forceKeyFrames = " -force_key_frames " + '"' + "expr:gte(t,n_forced*" + VideoPlayer.splitValue.getText() + ")" + '"';
 							container = "_%03d" + container;
 						}
 						
@@ -905,7 +907,7 @@ public class VideoEncoders extends Shutter {
 			        	}
 			        	
 						//Command
-						String cmd = audioFromColorizedVideo + FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
+						String cmd = audioFromColorizedVideo + FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + forceKeyFrames + filterComplex + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 										
 						//Screen capture
 						if (inputDeviceIsRunning)
@@ -1009,7 +1011,7 @@ public class VideoEncoders extends Shutter {
 								writer.close();
 							}
 
-							cmd = audioFromColorizedVideo + FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + filterComplex.replace("0:a", "1:a").replace("-map a", "-map 1:a") + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
+							cmd = audioFromColorizedVideo + FunctionUtils.silentTrack + opatom + frameRate + resolution + pass + codec + bitrate + preset + profile + tune + gop + cabac + forceKeyFrames + filterComplex.replace("0:a", "1:a").replace("-map a", "-map 1:a") + interlace + pixelFormat + colorspace + options + timecode + flags + metadatas + " -y ";
 							
 							if (cancelled == false)
 							{
@@ -1359,7 +1361,7 @@ public class VideoEncoders extends Shutter {
 						maxrate = maximumBitrate.getSelectedItem().toString();
 					}
 					
-					return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264opts bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=" + maxrate + ":vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=" + gop + ":b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";		
+					return " -c:v libx264 -pix_fmt yuv420p -tune film -level 4.1 -x264-params bluray-compat=1:force-cfr=1:weightp=0:bframes=3:ref=3:nal-hrd=vbr:vbv-maxrate=" + maxrate + ":vbv-bufsize=30000:bitrate=" + FunctionUtils.setVideoBitrate() + ":keyint=" + gop + ":b-pyramid=strict:slices=4" + interlace + ":aud=1:colorprim=bt709:transfer=bt709:colormatrix=bt709";		
 				}
 				else //H.265
 				{
@@ -1631,13 +1633,13 @@ public class VideoEncoders extends Shutter {
 					gop = gopSize.getText();
 				}
 				
-				String colorspace = " -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709";
+				String colorspace = " -x264-params colorprim=bt709 -x264-params transfer=bt709 -x264-params colormatrix=bt709";
 				if (caseColorspace.isSelected())
 				{
 					colorspace = ""; //Managed via filter_complex
 				}
 				
-				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g " + gop + " -keyint_min 0 -x264opts filler" + colorspace + " -x264opts force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
+				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g " + gop + " -keyint_min 0 -x264-params filler" + colorspace + " -x264-params force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
 			
 			case "XAVC Long GOP":
 				
@@ -1651,7 +1653,7 @@ public class VideoEncoders extends Shutter {
 				if (caseForcePreset.isSelected())
 					preset = comboForcePreset.getSelectedItem().toString();
 					
-				colorspace = " -x264opts colorprim=bt709 -x264opts transfer=bt709 -x264opts colormatrix=bt709";
+				colorspace = " -x264-params colorprim=bt709 -x264-params transfer=bt709 -x264-params colormatrix=bt709";
 				String profile = "high";
 				String bitDepth = " -pix_fmt yuv420p";
 				if (caseColorspace.isSelected())
@@ -1665,7 +1667,7 @@ public class VideoEncoders extends Shutter {
 					}
 				}
 				
-				return " -shortest -c:v libx264 -preset " + preset + " -profile:v " + profile + " -level 4.2 -b:v " + comboFilter.getSelectedItem().toString() + "M -maxrate " + comboFilter.getSelectedItem().toString() + "M -bufsize " + (float) Integer.parseInt(comboFilter.getSelectedItem().toString()) / 2 + "M -g " + gop + " -bf 2 -x264opts filler" + colorspace + " -x264opts force-cfr -movflags +faststart" + bitDepth;
+				return " -shortest -c:v libx264 -preset " + preset + " -profile:v " + profile + " -level 4.2 -b:v " + comboFilter.getSelectedItem().toString() + "M -maxrate " + comboFilter.getSelectedItem().toString() + "M -bufsize " + (float) Integer.parseInt(comboFilter.getSelectedItem().toString()) / 2 + "M -g " + gop + " -bf 2 -x264-params filler" + colorspace + " -x264-params force-cfr -movflags +faststart" + bitDepth;
 		}
 		
 		return "";		
@@ -1810,12 +1812,10 @@ public class VideoEncoders extends Shutter {
 															
 				if (lblVBR.getText().equals("CQ"))
 		        {
-					String limitedBitrate = "";
-					
-					int maxrate = FunctionUtils.setVideoBitrate();		
+					String limitedBitrate = "";	
 					if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
 					{
-						maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
+						int maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
 						limitedBitrate = " -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 					}
 					
@@ -1874,16 +1874,13 @@ public class VideoEncoders extends Shutter {
 				if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
 				{
 					maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
+					limitedBitrate = " -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
 				}
 				
 				if (lblVBR.getText().equals("CBR"))
 		        {					
 					limitedBitrate = " -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
-		        }	
-				else if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
-				{
-					limitedBitrate = " -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
-				}
+		        }
 				
 				if (lblVBR.getText().equals("CQ"))
 		        {

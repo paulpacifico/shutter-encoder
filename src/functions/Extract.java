@@ -167,7 +167,20 @@ public class Extract extends Shutter {
 						}						
 						else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("subtitles")))
 						{
-							container = ".srt";						
+							container = ".srt";		
+							
+							if (FFPROBE.subtitlesCodec.equals("dvd_subtitle"))
+							{
+								container = ".sup";
+							}
+							else if (FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle"))
+							{
+								container = ".sup";
+							}
+							else if (FFPROBE.subtitlesCodec.equals("ass"))
+							{
+								container = ".ass";
+							}
 						}
 
 						//Output name

@@ -1041,7 +1041,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			error = true;
 		}								
 	}
-	
+		
 	public static void hwaccel(final String cmd) {
 		
 		error = false;	

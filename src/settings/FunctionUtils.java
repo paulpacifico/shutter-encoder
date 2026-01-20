@@ -69,6 +69,7 @@ import functions.Transcribe;
 import library.EXIFTOOL;
 import library.FFMPEG;
 import library.FFPROBE;
+import library.LTCDUMP;
 import library.MEDIAINFO;
 import library.PDF;
 import library.WHISPER;
@@ -97,11 +98,9 @@ public class FunctionUtils extends Shutter {
 		if (isRaw || caseGenerateFromDate.isSelected())
 		{
 			EXIFTOOL.run('"' + file.toString() + '"');	
-			do
-			{
+			do {
 				Thread.sleep(100);
-			}						 
-			while (EXIFTOOL.isRunning);
+			} while (EXIFTOOL.isRunning);
 			
 			if (caseGenerateFromDate.isSelected())
 				FFPROBE.analyzedMedia = null; //Allow to load data with FFPROBE
@@ -111,11 +110,9 @@ public class FunctionUtils extends Shutter {
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
 			 FFPROBE.FrameData(file.toString());	
-			 do
-			 {
+			 do {
 			 	Thread.sleep(100);
-			 }
-			 while (FFPROBE.isRunning);
+			 } while (FFPROBE.isRunning);
 			 			 					
 			if (analyzeError(file.toString()))
 				return false;
@@ -127,8 +124,7 @@ public class FunctionUtils extends Shutter {
 			 do
 			 {
 				 Thread.sleep(100);						 
-			 }
-			 while (PDF.isRunning);
+			 } while (PDF.isRunning);
 			 			 
 			 if (analyzeError(file.toString()))
 				 return false;
@@ -138,11 +134,9 @@ public class FunctionUtils extends Shutter {
 		{
 			FFPROBE.Data(file.toString());
 			
-			do
-			{
+			do {
 				Thread.sleep(100);
-			}
-			while (FFPROBE.isRunning);
+			} while (FFPROBE.isRunning);
 			 			
 			
 			if (analyzeError(file.toString()))
@@ -151,21 +145,29 @@ public class FunctionUtils extends Shutter {
 			//Check GPU
 			FFMPEG.checkGPUCapabilities(file.toString());
 					
+			//Check with MEDIAINFO
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
 			{
 				MEDIAINFO.run(file.toString(), false);
 				
-				do
-				{
+				do {
 					Thread.sleep(100);
-				}
-				while (MEDIAINFO.isRunning);
+				} while (MEDIAINFO.isRunning);
 				
 				if (FFPROBE.interlaced == null)
 				{
 					FFPROBE.interlaced = "0";
 					FFPROBE.fieldOrder = "0";
 				}
+			}
+			
+			//Get timecode from audio
+			if (caseReadAudioTimecode.isSelected())
+			{
+				LTCDUMP.run(file.toString());
+				do {
+					Thread.sleep(100);
+				} while (LTCDUMP.isRunning);
 			}
 		}
 		else

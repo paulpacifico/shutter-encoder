@@ -342,6 +342,8 @@ public class Shutter {
 	protected static JCheckBox caseSetTimecode;
 	protected static JCheckBox caseIncrementTimecode;
 	protected static JCheckBox caseGenerateFromDate;
+	protected static JCheckBox caseReadAudioTimecode;
+	protected static JComboBox<String> comboReadAudioTimecode;
 	protected static JTextField TCset1;
 	protected static JTextField TCset2;
 	protected static JTextField TCset3;
@@ -385,6 +387,7 @@ public class Shutter {
 	protected static JCheckBox caseForceTune;
 	protected static JCheckBox caseForceQuality;
 	protected static JCheckBox caseForceSpeed;
+	protected static JCheckBox caseEncoderParams;
 	protected static JLabel lblHWaccel;
 	protected static JComboBox<String> comboAccel;
 	protected static JComboBox<String> comboSelectedGPU;
@@ -394,6 +397,7 @@ public class Shutter {
 	protected static JComboBox<String> comboForceTune;
 	protected static JComboBox<String> comboForceQuality;
 	protected static JComboBox<String> comboForceSpeed;
+	protected static JTextField textEncoderParams;
 	protected static JCheckBox caseForcerDAR;
 	protected static JCheckBox caseDecimate;
 	protected static JCheckBox caseConform;
@@ -894,7 +898,7 @@ public class Shutter {
 		frame.setUndecorated(true);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45, 45, 45)));
 		Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-		Area shape2 = new Area(new Rectangle(0, frame.getHeight() - 15, frame.getWidth(), 15));
+		Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 		shape1.add(shape2);
 		frame.setShape(shape1);
 
@@ -1425,10 +1429,8 @@ public class Shutter {
 
 								VideoPlayer.resizeAll();
 
-								Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(),
-										Shutter.frame.getHeight(), 15, 15));
-								Area shape2 = new Area(
-										new Rectangle(0, Shutter.frame.getHeight() - 15, Shutter.frame.getWidth(), 15));
+								Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
+								Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 								shape1.add(shape2);
 								frame.setShape(shape1);
 
@@ -2128,9 +2130,8 @@ public class Shutter {
 						 * changeFunction(false); }
 						 */
 
-						Area shape1 = new Area(
-								new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-						Area shape2 = new Area(new Rectangle(0, frame.getHeight() - 15, frame.getWidth(), 15));
+						Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
+						Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 						shape1.add(shape2);
 						frame.setShape(shape1);
 
@@ -6228,10 +6229,7 @@ public class Shutter {
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-				if (FFPROBE.totalLength <= 40 || Shutter.inputDeviceIsRunning) {
-					Picture.main(true, true);
-				} else
-					Picture.main(true, true);
+				Picture.main(true, true);
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
@@ -6557,7 +6555,7 @@ public class Shutter {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				extendSections(grpSetTimecode, 93);
+				extendSections(grpSetTimecode, 117);
 			}
 
 		});
@@ -6584,7 +6582,9 @@ public class Shutter {
 					caseIncrementTimecode.setEnabled(true);
 					caseGenerateFromDate.setSelected(false);
 					caseGenerateFromDate.setEnabled(false);
-
+					caseReadAudioTimecode.setEnabled(false);
+					comboReadAudioTimecode.setEnabled(false);
+					
 				} else {
 					TCset1.setEnabled(false);
 					TCset2.setEnabled(false);
@@ -6593,6 +6593,7 @@ public class Shutter {
 					caseIncrementTimecode.setEnabled(false);
 					caseIncrementTimecode.setSelected(false);
 					caseGenerateFromDate.setEnabled(true);
+					caseReadAudioTimecode.setEnabled(true);
 				}
 
 			}
@@ -6748,12 +6749,62 @@ public class Shutter {
 					caseSetTimecode.setEnabled(false);
 					caseIncrementTimecode.setSelected(false);
 					caseIncrementTimecode.setEnabled(false);
+					caseReadAudioTimecode.setSelected(false);
+					comboReadAudioTimecode.setEnabled(false);
 				} else {
 					caseSetTimecode.setEnabled(true);
 				}
 			}
 
 		});
+		
+		caseReadAudioTimecode = new JCheckBox(language.getProperty("caseReadAudioTimecode") + language.getProperty("colon"));
+		caseReadAudioTimecode.setName("caseReadAudioTimecode");
+		caseReadAudioTimecode.setFont(new Font(mainFont, Font.PLAIN, 12));
+		caseReadAudioTimecode.setBounds(7, caseGenerateFromDate.getY() + caseGenerateFromDate.getHeight(), caseReadAudioTimecode.getPreferredSize().width + 4, 23);
+		grpSetTimecode.add(caseReadAudioTimecode);
+		
+		caseReadAudioTimecode.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (caseReadAudioTimecode.isSelected())
+				{
+					caseSetTimecode.setSelected(false);
+					caseSetTimecode.setEnabled(false);
+					caseIncrementTimecode.setSelected(false);
+					caseIncrementTimecode.setEnabled(false);
+					caseGenerateFromDate.setSelected(false);
+					
+					comboReadAudioTimecode.setEnabled(true);
+				} else {
+					caseSetTimecode.setEnabled(true);
+					comboReadAudioTimecode.setEnabled(false);
+				}
+			}
+
+		});
+		
+		comboReadAudioTimecode = new JComboBox<String>();
+		comboReadAudioTimecode.setName("comboReadAudioTimecode");
+		comboReadAudioTimecode.setModel(new DefaultComboBoxModel<String>(new String[] {
+				language.getProperty("audio") + " 1",
+				language.getProperty("audio") + " 2", language.getProperty("audio") + " 3",
+				language.getProperty("audio") + " 4", language.getProperty("audio") + " 5",
+				language.getProperty("audio") + " 6", language.getProperty("audio") + " 7",
+				language.getProperty("audio") + " 8", language.getProperty("audio") + " 9",
+				language.getProperty("audio") + " 10", language.getProperty("audio") + " 11",
+				language.getProperty("audio") + " 12", language.getProperty("audio") + " 13",
+				language.getProperty("audio") + " 14", language.getProperty("audio") + " 15",
+				language.getProperty("audio") + " 16" }));
+		comboReadAudioTimecode.setSelectedIndex(0);
+		comboReadAudioTimecode.setMaximumRowCount(20);
+		comboReadAudioTimecode.setFont(new Font(mainFont, Font.PLAIN, 10));
+		comboReadAudioTimecode.setEditable(false);
+		comboReadAudioTimecode.setSize(65, 16);
+		comboReadAudioTimecode.setLocation(caseReadAudioTimecode.getX() + caseReadAudioTimecode.getWidth(), caseReadAudioTimecode.getLocation().y + 4);
+		grpSetTimecode.add(comboReadAudioTimecode);
 	}
 
 	private void grpSetAudio() {
@@ -17622,6 +17673,30 @@ public class Shutter {
 		comboForceSpeed.setEditable(false);
 		comboForceSpeed.setSize(40, 16);
 
+		caseEncoderParams = new JCheckBox(language.getProperty("btnAdd") + "x265-params" + language.getProperty("colon"));
+		caseEncoderParams.setName("caseEncoderParams");
+		caseEncoderParams.setFont(new Font(mainFont, Font.PLAIN, 12));
+		caseEncoderParams.setSize(caseEncoderParams.getPreferredSize().width, 23);
+		
+		caseEncoderParams.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (caseEncoderParams.isSelected())
+					textEncoderParams.setEnabled(true);
+				else
+					textEncoderParams.setEnabled(false);
+			}
+
+		});
+		
+		textEncoderParams = new JTextField();
+		textEncoderParams.setEnabled(false);
+		textEncoderParams.setName("textEncoderParams");
+		textEncoderParams.setHorizontalAlignment(SwingConstants.LEFT);
+		textEncoderParams.setFont(new Font(mainFont, Font.PLAIN, 11));
+		textEncoderParams.setSize(grpAdvanced.getWidth() - caseEncoderParams.getWidth() - 28, 16);
+		
 		caseAS10 = new JCheckBox(language.getProperty("caseAS10"));
 		caseAS10.setName("caseAS10");
 		caseAS10.setFont(new Font(mainFont, Font.PLAIN, 12));
@@ -18455,6 +18530,9 @@ public class Shutter {
 					caseIncrementTimecode.setSelected(false);
 					caseGenerateFromDate.setSelected(false);
 					caseGenerateFromDate.setEnabled(true);
+					caseReadAudioTimecode.setSelected(false);
+					caseReadAudioTimecode.setEnabled(true);
+					comboReadAudioTimecode.setEnabled(false);
 
 					// grpH264
 					lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
@@ -19053,6 +19131,8 @@ public class Shutter {
 					lblTFF.setText("TFF");
 					if (caseAS10.isSelected())
 						caseAS10.doClick();
+					if (caseEncoderParams.isSelected())
+						caseEncoderParams.doClick();
 
 					// grpSequenceImages
 					caseEnableSequence.setSelected(false);
@@ -19550,9 +19630,19 @@ public class Shutter {
 					caseAlpha.setEnabled(true);
 					caseForcerEntrelacement.setSelected(false);
 					caseForcerEntrelacement.setEnabled(false);
-					caseForceTune.setSelected(false);
-					caseForceTune.setEnabled(false);
-					comboForceTune.setEnabled(false);
+					
+					String function = comboFonctions.getSelectedItem().toString();
+					if (("H.264".equals(function) || "H.265".equals(function) || "AV1".equals(function)) && comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					{
+						caseForceTune.setEnabled(true);
+					}
+					else
+					{
+						caseForceTune.setSelected(false);
+						caseForceTune.setEnabled(false);
+						comboForceTune.setEnabled(false);
+					}
+					
 					case2pass.setSelected(false);
 					case2pass.setEnabled(false);
 				}
@@ -19571,17 +19661,14 @@ public class Shutter {
 						comboForceProfile.setSelectedIndex(0);
 					}
 
-					if (("H.264".equals(comboFonctions.getSelectedItem().toString())
-							|| "H.265".equals(comboFonctions.getSelectedItem().toString()))
-							&& comboForcePreset.getModel().getSize() != 10) {
-						comboForcePreset.setModel(
-								new DefaultComboBoxModel<String>(new String[] { "ultrafast", "superfast", "veryfast",
-										"faster", "fast", "medium", "slow", "slower", "veryslow", "placebo" }));
+					if (("H.264".equals(comboFonctions.getSelectedItem().toString()) || "H.265".equals(comboFonctions.getSelectedItem().toString())) && comboForcePreset.getModel().getSize() != 10)
+					{
+						comboForcePreset.setModel(new DefaultComboBoxModel<String>(new String[] { "ultrafast", "superfast", "veryfast", "faster", "fast", "medium", "slow", "slower", "veryslow", "placebo" }));
 						comboForcePreset.setSelectedIndex(5);
-					} else if ("H.266".equals(comboFonctions.getSelectedItem().toString())
-							&& comboForcePreset.getModel().getSize() != 5) {
-						comboForcePreset.setModel(new DefaultComboBoxModel<String>(
-								new String[] { "faster", "fast", "medium", "slow", "slower" }));
+					}
+					else if ("H.266".equals(comboFonctions.getSelectedItem().toString()) && comboForcePreset.getModel().getSize() != 5)
+					{
+						comboForcePreset.setModel(new DefaultComboBoxModel<String>(new String[] { "faster", "fast", "medium", "slow", "slower" }));
 						comboForcePreset.setSelectedIndex(2);
 					}
 					
@@ -20636,7 +20723,7 @@ public class Shutter {
 		else
 		{
 			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-			Area shape2 = new Area(new Rectangle(0, frame.getHeight() - 15, frame.getWidth(), 15));
+			Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 			shape1.add(shape2);
 			frame.setShape(shape1);
 		}
@@ -20866,9 +20953,9 @@ public class Shutter {
 									}
 									else if (action) 
 									{
-										changeWidth(true);
 										VideoPlayer.videoPath = null;
-										VideoPlayer.setMedia();
+										changeWidth(true);
+										VideoPlayer.setMedia();										
 									}
 									
 								} else
@@ -21783,7 +21870,7 @@ public class Shutter {
 								} else if (function.equals("XAVC")) {
 									caseGOP.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 
 									casePreserveMetadata.setLocation(7, caseGOP.getLocation().y + 17);
@@ -21796,7 +21883,7 @@ public class Shutter {
 									
 									caseGOP.setLocation(7, caseForcePreset.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 
 									casePreserveMetadata.setLocation(7, caseGOP.getLocation().y + 17);
@@ -22357,39 +22444,58 @@ public class Shutter {
 								} else {
 									caseForcerEntrelacement.setSelected(false);
 									caseForcerEntrelacement.setEnabled(false);
-									caseForceTune.setSelected(false);
-									caseForceTune.setEnabled(false);
-									comboForceTune.setEnabled(false);
+									
+									if (("H.264".equals(function) || "H.265".equals(function) || "AV1".equals(function)) && comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+									{
+										caseForceTune.setEnabled(true);
+									}
+									else
+									{
+										caseForceTune.setSelected(false);
+										caseForceTune.setEnabled(false);
+										comboForceTune.setEnabled(false);
+									}
+									
 									case2pass.setSelected(false);
 									case2pass.setEnabled(false);
 								}
 
 								if ("H.264".equals(function)) {
 
-									if (comboAccel.getSelectedItem()
-											.equals(language.getProperty("aucune").toLowerCase()) == false
-											&& comboForceProfile.getModel().getSize() != 3
-											|| comboForceProfile.getModel().getElementAt(0).toString()
-													.equals("base") == false) {
-										comboForceProfile.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "base", "main", "high" }));
+									//comboForceProfile
+									if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboForceProfile.getModel().getSize() != 3 || comboForceProfile.getModel().getElementAt(0).toString().equals("base") == false)
+									{
+										comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "base", "main", "high" }));
 										comboForceProfile.setSelectedIndex(2);
-									} else if (comboForceProfile.getModel().getSize() != 5) {
-										comboForceProfile.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "base", "main", "high", "high422", "high444" }));
+									}
+									else if (comboForceProfile.getModel().getSize() != 5)
+									{
+										comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "base", "main", "high", "high422", "high444" }));
 										comboForceProfile.setSelectedIndex(2);
 									}
 
-									if (comboForceTune.getModel().getSize() != 8) {
-										comboForceTune.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "film", "animation", "grain", "stillimage", "fastdecode",
-														"zerolatency", "psnr", "ssim" }));
-										comboForceTune.setSelectedIndex(0);
+									//comboForceTune								
+									if (comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+									{
+										if (comboForceTune.getModel().getSize() != 4)
+										{
+											comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "hq", "ll", "ull", "lossless" }));
+											comboForceTune.setSelectedIndex(0);
+										}
+									}
+									else
+									{
+										if (comboForceTune.getModel().getSize() != 8)
+										{
+											comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "film", "animation", "grain", "stillimage", "fastdecode","zerolatency", "psnr", "ssim" }));
+											comboForceTune.setSelectedIndex(0);
+										}
 									}
 								}
 								else if ("H.265".equals(function))
 								{
 									
+									//comboForceProfile
 									if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 									{
 										if (comboAccel.getSelectedItem().equals("OSX VideoToolbox") && comboForceProfile.getModel().getSize() != 2)
@@ -22401,7 +22507,7 @@ public class Shutter {
 										{
 											comboForceProfile.setModel(new DefaultComboBoxModel<String>(new String[] { "main" }));
 											comboForceProfile.setSelectedIndex(0);
-										}										
+										}
 									}
 									else if (comboForceProfile.getModel().getSize() != 3 || comboForceProfile.getModel().getElementAt(0).toString().equals("main") == false)
 									{
@@ -22409,10 +22515,22 @@ public class Shutter {
 										comboForceProfile.setSelectedIndex(0);
 									}
 
-									if (comboForceTune.getModel().getSize() != 6)
+									//comboForceTune					
+									if (comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 									{
-										comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "grain", "animation", "fastdecode", "zerolatency", "psnr", "ssim" }));
-										comboForceTune.setSelectedIndex(0);
+										if (comboForceTune.getModel().getSize() != 5)
+										{
+											comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "hq", "uhq", "ll", "ull", "lossless" }));
+											comboForceTune.setSelectedIndex(0);
+										}
+									}
+									else
+									{
+										if (comboForceTune.getModel().getSize() != 6)
+										{
+											comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "grain", "animation", "fastdecode", "zerolatency", "psnr", "ssim" }));
+											comboForceTune.setSelectedIndex(0);
+										}
 									}
 								}
 
@@ -22758,7 +22876,7 @@ public class Shutter {
 
 									caseGOP.setLocation(7, caseForceOutput.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 								} else {
 									caseForcerEntrelacement.setLocation(7,
@@ -22819,24 +22937,58 @@ public class Shutter {
 
 									caseGOP.setLocation(7, caseFastStart.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 								}
 
-								gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+								gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 								grpAdvanced.add(gopSize);
 
-								if ("H.264".equals(function)) {
+								if ("H.264".equals(function))
+								{
 									caseCABAC.setLocation(7, caseGOP.getLocation().y + 17);
 									grpAdvanced.add(caseCABAC);
-
-									caseDecimate.setLocation(7, caseCABAC.getLocation().y + 17);
-									grpAdvanced.add(caseDecimate);
-								} else {
-									caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
-									grpAdvanced.add(caseDecimate);
+									
+									caseEncoderParams.setText(language.getProperty("btnAdd") +  " x264-params" + language.getProperty("colon"));
+									caseEncoderParams.setSize(caseEncoderParams.getPreferredSize().width, 23);
+									caseEncoderParams.setLocation(7, caseCABAC.getLocation().y + 17);
+									grpAdvanced.add(caseEncoderParams);
+									textEncoderParams.setLocation(caseEncoderParams.getX() + caseEncoderParams.getWidth() + 3, caseEncoderParams.getY() + 3);
+									grpAdvanced.add(textEncoderParams);	
+								}
+								else if ("H.265".equals(function))
+								{									
+									caseEncoderParams.setText(language.getProperty("btnAdd") +  " x265-params" + language.getProperty("colon"));
+									caseEncoderParams.setSize(caseEncoderParams.getPreferredSize().width, 23);
+									caseEncoderParams.setLocation(7, caseGOP.getLocation().y + 17);
+									grpAdvanced.add(caseEncoderParams);
+									textEncoderParams.setLocation(caseEncoderParams.getX() + caseEncoderParams.getWidth() + 3, caseEncoderParams.getY() + 3);
+									grpAdvanced.add(textEncoderParams);	
+								}
+								else if ("H.266".equals(function))
+								{									
+									caseEncoderParams.setText(language.getProperty("btnAdd") +  " vvenc-params" + language.getProperty("colon"));
+									caseEncoderParams.setSize(caseEncoderParams.getPreferredSize().width, 23);
+									caseEncoderParams.setLocation(7, caseGOP.getLocation().y + 17);
+									grpAdvanced.add(caseEncoderParams);
+									textEncoderParams.setLocation(caseEncoderParams.getX() + caseEncoderParams.getWidth() + 3, caseEncoderParams.getY() + 3);
+									grpAdvanced.add(textEncoderParams);	
+								}
+								
+								
+								if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
+								{	
+									caseEncoderParams.setEnabled(true);		
+								}
+								else
+								{
+									caseEncoderParams.setSelected(false);
+									caseEncoderParams.setEnabled(false);
+									textEncoderParams.setEnabled(false);	
 								}
 
+								caseDecimate.setLocation(7, caseEncoderParams.getLocation().y + 17);
+								grpAdvanced.add(caseDecimate);								
 								caseConform.setLocation(7, caseDecimate.getLocation().y + 17);
 								grpAdvanced.add(caseConform);
 								comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4,
@@ -23439,9 +23591,12 @@ public class Shutter {
 									grpAdvanced.add(comboAlpha);
 									caseGOP.setLocation(7, caseAlpha.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 									caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
+									grpAdvanced.add(caseDecimate);
+									caseConform.setLocation(7, caseDecimate.getY() + 17);
+									grpAdvanced.add(caseConform);
 								}
 								else if ("AV1".equals(function))
 								{
@@ -23477,11 +23632,25 @@ public class Shutter {
 											caseForceTune.getLocation().x + caseForceTune.getWidth() + 4,
 											caseForceTune.getLocation().y + 4);
 									grpAdvanced.add(comboForceTune);
-									if (comboForceTune.getModel().getSize() != 3) {
-										comboForceTune.setModel(new DefaultComboBoxModel<String>(
-												new String[] { "visual quality", "psnr", "ssim" }));
-										comboForceTune.setSelectedIndex(0);
+									
+									//comboForceTune					
+									if (comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+									{
+										if (comboForceTune.getModel().getSize() != 5)
+										{
+											comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "hq", "uhq", "ll", "ull", "lossless" }));
+											comboForceTune.setSelectedIndex(0);
+										}
 									}
+									else
+									{
+										if (comboForceTune.getModel().getSize() != 3)
+										{
+											comboForceTune.setModel(new DefaultComboBoxModel<String>(new String[] { "visual quality", "psnr", "ssim" }));
+											comboForceTune.setSelectedIndex(0);
+										}
+									}
+									
 									caseFastStart.setLocation(7, caseForceTune.getLocation().y + 17);
 									grpAdvanced.add(caseFastStart);
 									caseFastDecode.setLocation(7, caseFastStart.getLocation().y + 17);
@@ -23494,35 +23663,60 @@ public class Shutter {
 									grpAdvanced.add(comboVarianceBoost);									
 									caseGOP.setLocation(7, caseVarianceBoost.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 									caseFilmGrain.setLocation(7, caseGOP.getLocation().y + 17);
 									grpAdvanced.add(caseFilmGrain);
-									comboFilmGrain.setLocation(caseFilmGrain.getX() + caseFilmGrain.getWidth() + 3,
-											caseFilmGrain.getY() + 3);
+									comboFilmGrain.setLocation(caseFilmGrain.getX() + caseFilmGrain.getWidth() + 3, caseFilmGrain.getY() + 3);
 									grpAdvanced.add(comboFilmGrain);
 									caseFilmGrainDenoise.setLocation(7, caseFilmGrain.getLocation().y + 17);
 									grpAdvanced.add(caseFilmGrainDenoise);
-									comboFilmGrainDenoise.setLocation(
-											caseFilmGrainDenoise.getX() + caseFilmGrainDenoise.getWidth() + 3,
-											caseFilmGrainDenoise.getY() + 3);
+									comboFilmGrainDenoise.setLocation(caseFilmGrainDenoise.getX() + caseFilmGrainDenoise.getWidth() + 3, caseFilmGrainDenoise.getY() + 3);
 									grpAdvanced.add(comboFilmGrainDenoise);
-									caseDecimate.setLocation(7, caseFilmGrainDenoise.getLocation().y + 17);
-								} else if ("MPEG-1".equals(function) || "MPEG-2".equals(function) || "Theora".equals(function)) {
+																		
+									caseEncoderParams.setText(language.getProperty("btnAdd") +  " svtav1-params" + language.getProperty("colon"));
+									caseEncoderParams.setSize(caseEncoderParams.getPreferredSize().width, 23);
+									caseEncoderParams.setLocation(7, caseFilmGrainDenoise.getLocation().y + 17);
+									grpAdvanced.add(caseEncoderParams);
+									textEncoderParams.setLocation(caseEncoderParams.getX() + caseEncoderParams.getWidth() + 3, caseEncoderParams.getY() + 3);
+									grpAdvanced.add(textEncoderParams);					
+									
+									caseDecimate.setLocation(7, caseEncoderParams.getLocation().y + 17);
+									grpAdvanced.add(caseDecimate);									
+									caseConform.setLocation(7, caseDecimate.getY() + 17);
+									grpAdvanced.add(caseConform);
+									
+									if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
+									{	
+										caseEncoderParams.setEnabled(true);		
+									}
+									else
+									{
+										caseEncoderParams.setSelected(false);
+										caseEncoderParams.setEnabled(false);
+										textEncoderParams.setEnabled(false);	
+									}									
+								}
+								else if ("MPEG-1".equals(function) || "MPEG-2".equals(function) || "Theora".equals(function))
+								{
 									caseGOP.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 									caseDecimate.setLocation(7, caseGOP.getLocation().y + 17);
-								} else {
-									caseDecimate.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
+									grpAdvanced.add(caseDecimate);
+									caseConform.setLocation(7, caseDecimate.getY() + 17);
+									grpAdvanced.add(caseConform);
 								}
-								grpAdvanced.add(caseDecimate);
-
-								caseConform.setLocation(7, caseDecimate.getY() + 17);
-								grpAdvanced.add(caseConform);
-								comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4,
-										caseConform.getLocation().y + 4);
+								else
+								{
+									caseDecimate.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
+									grpAdvanced.add(caseDecimate);
+									caseConform.setLocation(7, caseDecimate.getY() + 17);
+									grpAdvanced.add(caseConform);
+								}
+								
+								comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4, caseConform.getLocation().y + 4);
 								grpAdvanced.add(comboConform);
 								lblToConform.setLocation(comboConform.getX() + comboConform.getWidth() + 4,
 										comboConform.getLocation().y - 2);
@@ -23841,7 +24035,7 @@ public class Shutter {
 									grpAdvanced.add(caseForcerEntrelacement);
 									caseGOP.setLocation(7, caseForcerEntrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
-									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth() + 3, caseGOP.getY() + 3);
+									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
 									grpAdvanced.add(gopSize);
 								}
 
@@ -25430,16 +25624,26 @@ public class Shutter {
 		{
 			comboNormalizeAudio.setEnabled(false);
 		}
-
-		if (caseGenerateFromDate.isSelected()) {
+		
+		if (caseReadAudioTimecode.isSelected() == false) {
+			comboReadAudioTimecode.setEnabled(false);
+		}
+		
+		if (caseGenerateFromDate.isSelected() || caseReadAudioTimecode.isSelected()) {
 			caseSetTimecode.setSelected(false);
 			caseSetTimecode.setEnabled(false);
 		}
 
 		if (caseSetTimecode.isSelected() == false)
+		{
 			caseIncrementTimecode.setEnabled(false);
+		}
 		else
+		{
 			caseGenerateFromDate.setEnabled(false);
+			caseReadAudioTimecode.setEnabled(false);
+			comboReadAudioTimecode.setEnabled(false);
+		}
 
 		components = grpAdvanced.getComponents();
 		for (int i = 0; i < components.length; i++) {
@@ -25789,9 +25993,8 @@ public class Shutter {
 
 			VideoPlayer.resizeAll();
 
-			Area shape1 = new Area(
-					new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
-			Area shape2 = new Area(new Rectangle(0, Shutter.frame.getHeight() - 15, Shutter.frame.getWidth(), 15));
+			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
+			Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 			shape1.add(shape2);
 			frame.setShape(shape1);
 		}

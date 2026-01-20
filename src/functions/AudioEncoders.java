@@ -491,19 +491,50 @@ public class AudioEncoders extends Shutter {
 			
 		}		
 		else if (FFPROBE.stereo)
-		{
-			if (audioFiltering != "")     
-				audio = audioFiltering.replaceFirst(",", " -filter_complex ") + " ";
+		{			
+			String map = " ";
+			if (stereoOutput == false)
+			{
+				map = " -map a? ";
+			}
+			else
+			{
+				if (FFPROBE.audioOnly == false && VideoPlayer.comboAudioTrack.isVisible())
+				{
+					if (VideoPlayer.comboAudioTrack.getSelectedItem().equals("Mix"))
+					{
+						return "-filter_complex amerge=inputs=" + FFPROBE.channels + audioFiltering + " -ac 2 ";
+					}
+					else
+						map = " -map a:" + VideoPlayer.comboAudioTrack.getSelectedIndex() + "? ";
+				}
+			}
+			
+			audio = audioFiltering.replaceFirst(",", " -filter_complex ") + map;
 		}
 		else if (FFPROBE.channels > 1)
-		{
-			if (stereoOutput)
+		{			
+			if (stereoOutput && FFPROBE.audioOnly)
 			{
 				audio = "-filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " ";	
 			}
 			else
-			{
-				audio = audioFiltering.replaceFirst(",", " -filter_complex ") + " -map a? ";
+			{				
+				String map = " -map a? ";
+				if (stereoOutput)
+				{
+					if (FFPROBE.audioOnly == false && VideoPlayer.comboAudioTrack.isVisible())
+					{
+						if (VideoPlayer.comboAudioTrack.getSelectedItem().equals("Mix"))
+						{
+							return "-filter_complex amerge=inputs=" + FFPROBE.channels + audioFiltering + " -ac 2 ";
+						}
+						else
+							map = " -map a:" + VideoPlayer.comboAudioTrack.getSelectedIndex() + "? ";
+					}
+				}
+				
+				audio = audioFiltering.replaceFirst(",", " -filter_complex ") + map;
 			}
 		}
 		else //Fichier Mono

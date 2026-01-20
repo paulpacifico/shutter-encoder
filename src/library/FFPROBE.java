@@ -106,6 +106,7 @@ public static boolean hasAlpha = false;
 public static boolean isRotated = false;
 public static int gridRows = 0;
 public static int gridCols = 0;
+public static boolean hasDolbyVision = false;
 
 	public static void Data(final String file) {	
 
@@ -155,6 +156,7 @@ public static int gridCols = 0;
 			FFMPEG.error = false;
 			hasAudio = false; 		
 			attachedPic = false;
+			hasDolbyVision = false;
 			
 			imageRatio = 1.777777f;
 						
@@ -264,7 +266,7 @@ public static int gridCols = 0;
 							//Errors
 							FFMPEG.checkForErrors(line);
 							
-							if (line.contains("Input"))
+							if (line.contains("Input #"))
 							{
 								String s[] = line.split(",");
 								videoFormat = s[1].replace(" ", "");
@@ -336,7 +338,7 @@ public static int gridCols = 0;
 								 	String data = line;
 					                data = line.substring(data.indexOf("Video:"));
 								}
-								
+															
 				                // Image resolution
 				                Pattern resolutionPattern = Pattern.compile("(\\d{2,5})x(\\d{2,5})");
 				                Matcher matcher = resolutionPattern.matcher(line);
@@ -625,6 +627,11 @@ public static int gridCols = 0;
 			                	String s[] =  line.substring(line.indexOf(":") + 1).replace(" ", "").replace("T", " ").split("\\.");
 			                	
 			                	creationTime = s[0];
+			                }
+			                
+			                if (line.contains("DOVI configuration record"))
+			                {
+			                	hasDolbyVision = true;
 			                }
 				            
 					}		

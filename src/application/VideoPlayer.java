@@ -38,7 +38,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -77,14 +76,17 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -120,11 +122,13 @@ public class VideoPlayer {
     private static BufferedInputStream videoInputStream;
     private static InputStream audio = null;	
     private static AudioInputStream audioInputStream = null;
+    private static Mixer audioHardwareOutput;
     private static SourceDataLine line;
     private static FloatControl gainControl;
     private static double offsetVideo = 0f;
     private static double offsetAudio = 0f;
     private static Thread playerThread;
+    private static Thread playerAudiothread;
     public static Thread loadMedia;
     public static Thread setTime;
 	public static double playerCurrentFrame = 0;
@@ -775,15 +779,21 @@ public class VideoPlayer {
 					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setAudioCommand(inputTime, false));	
 					playerAudio = pba.start();					
 				}
-				
+
 				//Avoid a crashing issue
 				try {
+							
 					audio = playerAudio.getInputStream();	
 					audioInputStream = null;
 					audioInputStream = AudioSystem.getAudioInputStream(audio);		    
 				    AudioFormat audioFormat = audioInputStream.getFormat();
 			        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
+			        
 			        line = (SourceDataLine) AudioSystem.getLine(info);
+			        if (audioHardwareOutput != null)
+			        {
+			        	line = (SourceDataLine) audioHardwareOutput.getLine(info);
+			        }			        	
 			        
 		            line.open(audioFormat);
 		            gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
@@ -791,8 +801,9 @@ public class VideoPlayer {
 		            float gain = (float) sliderVolume.getValue() / 100;   
 		            float dB = (float) ((float) (Math.log(gain) / Math.log(10.0) * 20.0) + ((float) sliderVolume.getValue() / ((float) 100 / 6)));
 			        gainControl.setValue(dB);
-			        
+			        			        
 		            line.start();	
+					
 				} catch (Exception e) {}
 			}
 								
@@ -898,7 +909,7 @@ public class VideoPlayer {
 			playerThread.start();	
 						
 			//Audio thread
-			Thread playerAudiothread = new Thread(new Runnable() {
+			playerAudiothread = new Thread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -952,8 +963,10 @@ public class VideoPlayer {
 										try {
 											
 											bytesRead = audioInputStream.read(buffer, 0, buffer.length);
-							        		line.write(buffer, 0, bytesRead);
-							        									        		
+											
+											if (playerIsPlaying() || inputTime > 0)
+												line.write(buffer, 0, bytesRead);
+							        		
 											if (playerPlayVideo && FFPROBE.audioOnly == false)
 											{
 												if (audioSetTimeIsRunning)
@@ -1002,7 +1015,7 @@ public class VideoPlayer {
 							} while (playerLoop == false && playerVideo.isAlive());
 						}
 												
-					} while (playerThread.isAlive());					
+					} while (playerThread.isAlive());	
 				}
 				
 			});
@@ -1144,7 +1157,7 @@ public class VideoPlayer {
 	}
 	
 	private static void playerPlayAudioOnly(double inputTime) {
-		
+
 		if (casePlaySound.isSelected() && FFPROBE.hasAudio && mouseIsPressed == false)
 		{		
 			if (line != null)
@@ -1170,7 +1183,12 @@ public class VideoPlayer {
 				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audio);		    
 			    AudioFormat audioFormat = audioInputStream.getFormat();
 		        DataLine.Info info = new DataLine.Info(SourceDataLine.class,audioFormat);
+		        
 		        SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
+		        if (audioHardwareOutput != null)
+		        {
+		        	line = (SourceDataLine) audioHardwareOutput.getLine(info);
+		        }
 		        
 	            line.open(audioFormat);
 	            FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
@@ -1222,6 +1240,9 @@ public class VideoPlayer {
 		if (playerAudio != null)
 		{
 			playerAudio.destroy();	
+			try {
+				playerAudiothread.interrupt();
+			} catch(Exception e) {}
 		}
 	}
 
@@ -1659,13 +1680,11 @@ public class VideoPlayer {
 							}
 				
 							try {
-								
 								FunctionUtils.analyze(new File(videoPath), isRaw);
-
 							} catch (InterruptedException e) {}
-													
-							//IMPORTANT
-							btnStop.doClick();
+							
+							//IMPORTANT							
+							btnStop.doClick();							
 							Shutter.fileList.repaint();							
 							fileDuration = FFPROBE.totalLength; //Avoid a bug when totalLength is loader somewhere else
 
@@ -1997,7 +2016,7 @@ public class VideoPlayer {
 					}		
 						
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) && videoPath != null)
-					{				
+					{						
 						File video = new File(videoPath);
 						String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 						
@@ -2468,7 +2487,7 @@ public class VideoPlayer {
 				if (FFPROBE.videoFormat != null)
 					format = " -f " + FFPROBE.videoFormat;
 					
-				decodingOptions = format + " -nostdin -flags2 +fast -fflags +nobuffer+flush_packets";
+				decodingOptions = format + " -nostdin -flags2 +fast -fflags +nobuffer+flush_packets -err_detect ignore_err";
 				freezeFrame = " -analyzeduration 0 -probesize 32 -frames:v 1";	
 			}
 			else
@@ -2592,7 +2611,7 @@ public class VideoPlayer {
 		
 		if (FFPROBE.hasAudio == false && (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false || Shutter.list.getSize() == 1))
 		{
-			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + setAudioFilter() + duration +  " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -";				
+			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + setAudioFilter() + duration +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav -";				
 		}
 		else
 		{
@@ -2625,7 +2644,7 @@ public class VideoPlayer {
 					mapping = setAudioFilter();
 			}
 
-			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + input + duration + " -vn -c:a pcm_s16le -ar 48k -ac 1" + mapping + " -f wav -";
+			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + input + duration + " -vn -c:a pcm_s16le -ar 48k -ac 2" + mapping + " -f wav -";
 		}		
 		
 	}
@@ -3444,7 +3463,7 @@ public class VideoPlayer {
 						resizeAll();
 						
 						Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
-			            Area shape2 = new Area(new Rectangle(0, Shutter.frame.getHeight()-15, Shutter.frame.getWidth(), 15));
+			            Area shape2 = new Area(new AntiAliasedRoundRectangle(0, Shutter.frame.getHeight() - 15, Shutter.frame.getWidth(), 15, 15, 15));
 			            shape1.add(shape2);
 			    		Shutter.frame.setShape(shape1);
 			    		
@@ -4123,14 +4142,44 @@ public class VideoPlayer {
 		lblVolume.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void mouseClicked(MouseEvent e) {
 
-				if (sliderVolume.getValue() > 0)
+				if (e.getButton() == MouseEvent.BUTTON1)
 				{
-					sliderVolume.setValue(0);
+					if (sliderVolume.getValue() > 0)
+					{
+						sliderVolume.setValue(0);
+					}
+					else
+						sliderVolume.setValue(50);
 				}
-				else
-					sliderVolume.setValue(50);
+				else if (e.getButton() == MouseEvent.BUTTON3)
+				{
+					AudioFormat format = new AudioFormat(48000, 16, 2, true, false);
+			        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+
+			        JPopupMenu popupList = new JPopupMenu();
+			        			                
+			        Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+			        for (int i = 0; i < mixers.length; i++) {
+			            Mixer mixer = AudioSystem.getMixer(mixers[i]);
+			            if (mixer.isLineSupported(info)) {
+			            	
+			            	Mixer.Info currentMixerInfo = mixers[i];
+			                
+			                JMenuItem item = new JMenuItem(currentMixerInfo.getName());
+			                item.addActionListener(ev -> {
+			                    Mixer selected = AudioSystem.getMixer(currentMixerInfo);
+			                    audioHardwareOutput = selected;
+			                    playerSetTime(playerCurrentFrame);
+			                });
+			            	
+			            	popupList.add(item);
+			            }
+			        }
+			        
+			        popupList.show(lblVolume, e.getX() - 30, e.getY());
+				}
 				
 			}
 			
@@ -4593,7 +4642,7 @@ public class VideoPlayer {
 		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.accurateFPS) % 60));    		
 		caseInF.setText(Shutter.formatter.format(Math.floor(timeIn % FFPROBE.accurateFPS)));
 		
-		if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false)
+		if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false && Shutter.setTimecodeEdited == false)
 		{
 			Shutter.TCset1.setText(VideoPlayer.caseInH.getText());
 			Shutter.TCset2.setText(VideoPlayer.caseInM.getText());
@@ -6411,7 +6460,7 @@ public class VideoPlayer {
 						caseInS.setText(in[2]);
 						caseInF.setText(in[3]);
 						
-						if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false)
+						if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false && Shutter.setTimecodeEdited == false)
 						{
 							Shutter.TCset1.setText(VideoPlayer.caseInH.getText());
 							Shutter.TCset2.setText(VideoPlayer.caseInM.getText());

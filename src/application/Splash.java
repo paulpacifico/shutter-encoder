@@ -20,6 +20,8 @@
 package application;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -49,35 +51,78 @@ public class Splash extends JWindow {
       	
       	if (System.getProperty("os.name").contains("Windows"))
       		updateProgressBar();
-   }
+	}
 
 	public void paint(Graphics g) {
-      super.paint(g);
+		super.paint(g);
 
-	  RenderingHints qualityHints = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-	  qualityHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-	  ((Graphics2D) g).setRenderingHints(qualityHints);
+	    Graphics2D g2 = (Graphics2D) g.create();
+
+	    // High-quality rendering hints
+	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	                        RenderingHints.VALUE_ANTIALIAS_ON);
+	    g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+	                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	    g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+	                        RenderingHints.VALUE_RENDER_QUALITY);
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+	                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+	                        RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+	    g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+	                        RenderingHints.VALUE_STROKE_PURE);
       
-      g.drawImage(splashScreen, 0, 0, this);  
-      g.setColor(Color.WHITE);
-      g.drawRoundRect(26, 128, 200, 10, 10, 10);
-      g.fillRoundRect(26, 128, loading, 10, 10, 10);
+	    g2.drawImage(splashScreen, 0, 0, this);  
       
-      if (System.getProperty("os.name").contains("Windows") == false)
-      {
-    	  do {
-    		  g.fillRoundRect(26, 128, loading, 10, 10, 10); 
-    	  } while (Shutter.frame.isVisible() == false);
-    		  
-		  dispose();
-      }
-   }
+	    //Shutter Encoder
+	    String text = "Shutter Encoder";
+
+	    g2.setColor(Color.WHITE);
+	    g2.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 18));
+	    FontMetrics fm = g2.getFontMetrics();
+	    int textWidth = fm.stringWidth(text);
+	    int textHeight = fm.getHeight();
+	    int width = getWidth();
+	    int height = getHeight();
+	    int x = (width - textWidth) / 2;
+	    int y = (height - textHeight) / 2 + fm.getAscent();
+
+	    g2.drawString(text, x, y - 12);
+	    
+	    //Version
+	    text = "v" + Shutter.actualVersion;
+	    
+	    g2.setFont(new Font(Shutter.boldFont, Font.PLAIN, 16));
+	    fm = g2.getFontMetrics();
+	    textWidth = fm.stringWidth(text);
+	    textHeight = fm.getHeight();
+	    width = getWidth();
+	    height = getHeight();
+	    x = (width - textWidth) / 2;
+	    y = (height - textHeight) / 2 + fm.getAscent();
+	    
+	    g2.drawString(text, x, y + 25);
+      
+	    //Loading bar
+	    g2.drawRoundRect(26, 128, 200, 10, 10, 10);
+	    g2.fillRoundRect(26, 128, loading, 10, 10, 10);
+      
+	    //Progress
+	    if (System.getProperty("os.name").contains("Windows") == false)
+	    {
+	    	do {
+	    		g2.fillRoundRect(26, 128, loading, 10, 10, 10); 
+	    	} while (Shutter.frame.isVisible() == false);
+	    	
+	    	dispose();
+	    }
+	}
       
 	public static void increment() {   
     	loading += 7;  
 		if (loading > 200) 
-			loading = 200;	
-   }
+			loading = 200;
+	}
     
 	public void updateProgressBar() {
     	

@@ -105,7 +105,7 @@ public static String modelsPath;
 						
 						int progressValue = 0;
 						
-						if (isVideoPlayer == false)
+						if (isVideoPlayer == false && screenshotIsRunning == false)
 							btnStart.setText(language.getProperty("btnPauseFunction"));
 												
 						while ((line = input.readLine()) != null)

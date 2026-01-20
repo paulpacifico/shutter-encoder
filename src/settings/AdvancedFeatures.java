@@ -120,7 +120,7 @@ public class AdvancedFeatures extends Shutter {
 				 {
 					 if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        	 {
-			        	return " -preset p7 -tune uhq";
+			        	return " -preset p7";
 	        		 }
 					 else
 						return " -preset 0";
@@ -128,13 +128,6 @@ public class AdvancedFeatures extends Shutter {
 				 else if (caseForceSpeed.isSelected())
 				 {
 					 return " -preset " + Shutter.comboForceSpeed.getSelectedItem().toString();
-				 }
-				 else
-				 {
-					 if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
-					 {
-						 return " -preset 8";
-					 }
 				 }
 			
 			case "H.264":
@@ -406,9 +399,25 @@ public class AdvancedFeatures extends Shutter {
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "H.264":
+				
+				if (caseQMax.isSelected() && comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        {
+					return " -tune hq";
+		        }
+				else if (caseForceTune.isSelected())
+		        {
+		        	return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
+		        }
+		        
+		        break;	
+		        
 			case "H.265":
 				
-		        if (caseForceTune.isSelected())
+				if (caseQMax.isSelected() && comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        {
+					return " -tune uhq";
+		        }
+				else if (caseForceTune.isSelected())
 		        {
 		        	return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
 		        }
@@ -422,6 +431,21 @@ public class AdvancedFeatures extends Shutter {
 				{
 					return " -tune-content " + Shutter.comboForceTune.getSelectedItem().toString();
 				}
+				
+				break;
+				
+			case "AV1":
+				
+				if (comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        {
+					if (caseQMax.isSelected())
+					{
+						return " -tune uhq";
+					}
+					else
+						return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
+		        }
+				//CPU tuning is handled from setparams
 				
 				break;
 		}
@@ -816,92 +840,8 @@ public class AdvancedFeatures extends Shutter {
 		{	
 			case "H.265":	
 				
-				flags += " -tag:v hvc1";
-				
-				break;
-						
-			case "AV1":
-				
-				String av1Flags = "";
-				
-				if (lblVBR.getText().equals("CQ") == false)
-				{
-					av1Flags += "enable-force-key-frames=0";
-				}
-				
-				if (caseFastDecode.isSelected())
-				{
-					if (av1Flags != "")
-						av1Flags += ":";
-					
-					av1Flags += "fast-decode=" + comboFastDecode.getSelectedItem().toString();
-				}
-				
-				if (caseVarianceBoost.isSelected())
-				{
-					if (av1Flags != "")
-						av1Flags += ":";
-					
-					av1Flags += "enable-variance-boost=1:variance-boost-strength=" + comboVarianceBoost.getSelectedItem().toString();
-				}
-				
-				if (caseForceTune.isSelected())
-				{
-					if (av1Flags != "")
-						av1Flags += ":";
-						
-					av1Flags += "tune=" + comboForceTune.getSelectedIndex();
-				}
-				
-				if (caseFilmGrain.isSelected())
-				{
-					if (av1Flags != "")
-						av1Flags += ":";
-					
-					av1Flags += "film-grain=" + comboFilmGrain.getSelectedIndex();
-				}
-				
-				if (caseFilmGrainDenoise.isSelected())
-				{
-					if (av1Flags != "")
-						av1Flags += ":";
-					
-					av1Flags += "film-grain-denoise=" + comboFilmGrainDenoise.getSelectedIndex();
-				}
-				
-				//HDR
-				if (grpColorimetry.isVisible() && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
-				{
-					if (av1Flags != "") av1Flags += ":";
-					
-					String PQorHLG = "16";
-					if (comboColorspace.getSelectedItem().toString().contains("HLG"))
-						PQorHLG = "18";
-					
-					if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
-					{
-						FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
-					}
-					
-					if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
-					{
-						FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
-					}
-					
-					if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
-					{
-						FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
-					}
-					
-					av1Flags += "input-depth=10:color-primaries=9:transfer-characteristics=" + PQorHLG + ":matrix-coefficients=9:mastering-display=G(0.265,0.69)B(0.15,0.06)R(0.68,0.32)WP(0.3127,0.329)L(" + (int) FFPROBE.HDRmax + "," + FFPROBE.HDRmin + "):content-light=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL + ":enable-hdr=1";
-				}
-				
-				if (av1Flags != "")
-				{
-					flags += " -svtav1-params " + '"' + av1Flags + '"';
-				}
-				
-				break;
+				flags += " -tag:v hvc1";				
+				break;			
 				
 			case "H.264":
 			case "VP8":
@@ -962,27 +902,37 @@ public class AdvancedFeatures extends Shutter {
 		String options = "";
 		
 		if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
-		{
-			int maxrate = FunctionUtils.setVideoBitrate();		
-			if (maximumBitrate.getSelectedItem().toString().equals("auto") == false)
-			{
-				maxrate = Integer.parseInt(maximumBitrate.getSelectedItem().toString());
-			}
-			
+		{			
 			switch (comboFonctions.getSelectedItem().toString())
 			{
 				case "H.264":
 			
 			        if (caseForcerEntrelacement.isSelected())
 			        {
-			        	options = " -x264opts tff=1";
-			            if (lblVBR.getText().equals("CBR"))
-			            	options += ":nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+			        	options += "tff=1";
 			        }
-			        else if (lblVBR.getText().equals("CBR"))
+			        	
+		        	if (lblVBR.getText().equals("CBR"))
 			        {
-			        	options = " -x264opts nal-hrd=cbr:force-cfr=1 -minrate " + FunctionUtils.setVideoBitrate() + "k -maxrate " + maxrate + "k -bufsize " + Integer.valueOf((int) (maxrate * 2)) + "k";
+		        		if (options != "")
+							options += ":";
+		        		
+			        	options += "nal-hrd=cbr:force-cfr=1";
 			        }
+			        
+			        //Custom params
+					if (caseEncoderParams.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += textEncoderParams.getText();
+					}
+					
+					if (options != "")
+					{
+						options = " -x264-params " + '"' + options + '"';
+					}
 			        
 		        	break;
 		        
@@ -1008,7 +958,7 @@ public class AdvancedFeatures extends Shutter {
 			        {
 			        	if (options != "") options += ":";
 			        	
-			    		options += "keyint=" + Shutter.gopSize.getText();
+			    		options += "keyint=" + gopSize.getText();
 			    		
 			        }
 			        
@@ -1058,14 +1008,132 @@ public class AdvancedFeatures extends Shutter {
 			        {
 						if (options != "") options += ":";
 						
-						options += "level=" + Shutter.comboForceLevel.getSelectedItem().toString();
+						options += "level=" + comboForceLevel.getSelectedItem().toString();
 			        }
+					
+					//Custom params
+					if (caseEncoderParams.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += textEncoderParams.getText();
+					}
 					
 					if (options != "")
 					{
 						options = " -x265-params " + '"' + options + '"';
 					}
 									
+					break;
+					
+				case "H.266":
+
+					//Custom params
+					if (caseEncoderParams.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += textEncoderParams.getText();
+					}
+					
+					if (options != "")
+					{
+						options = " -vvenc-params " + '"' + options + '"';
+					}
+									
+					break;
+					
+				case "AV1":
+										
+					if (lblVBR.getText().equals("CQ") == false)
+					{
+						options += "enable-force-key-frames=0";
+					}
+					
+					if (caseFastDecode.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += "fast-decode=" + comboFastDecode.getSelectedItem().toString();
+					}
+					
+					if (caseVarianceBoost.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += "enable-variance-boost=1:variance-boost-strength=" + comboVarianceBoost.getSelectedItem().toString();
+					}
+					
+					if (caseForceTune.isSelected())
+					{
+						if (options != "")
+							options += ":";
+							
+						options += "tune=" + comboForceTune.getSelectedIndex();
+					}
+					
+					if (caseFilmGrain.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += "film-grain=" + comboFilmGrain.getSelectedIndex();
+					}
+					
+					if (caseFilmGrainDenoise.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += "film-grain-denoise=" + comboFilmGrainDenoise.getSelectedIndex();
+					}
+					
+					//HDR
+					if (grpColorimetry.isVisible() && caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("HDR"))
+					{
+						if (options != "")
+							options += ":";
+						
+						String PQorHLG = "16";
+						if (comboColorspace.getSelectedItem().toString().contains("HLG"))
+							PQorHLG = "18";
+						
+						if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
+						{
+							FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+						}
+						
+						if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
+						{
+							FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
+						}
+						
+						if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
+						{
+							FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
+						}
+						
+						options += "input-depth=10:color-primaries=9:transfer-characteristics=" + PQorHLG + ":matrix-coefficients=9:mastering-display=G(0.265,0.69)B(0.15,0.06)R(0.68,0.32)WP(0.3127,0.329)L(" + (int) FFPROBE.HDRmax + "," + FFPROBE.HDRmin + "):content-light=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL + ":enable-hdr=1";
+					}
+					
+					//Custom params
+					if (caseEncoderParams.isSelected())
+					{
+						if (options != "")
+							options += ":";
+						
+						options += textEncoderParams.getText();
+					}
+					
+					if (options != "")
+					{
+						options = " -svtav1-params " + '"' + options + '"';
+					}
+					
 					break;
 			}
 		}

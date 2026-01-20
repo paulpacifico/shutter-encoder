@@ -27,7 +27,6 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -113,7 +112,7 @@ import settings.FunctionUtils;
 		{
 			frame.setUndecorated(true);
 			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-	        Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	        Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 	        shape1.add(shape2);
 			frame.setShape(shape1);
 			frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
@@ -198,7 +197,7 @@ import settings.FunctionUtils;
 				else
 				{
 					Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-		            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+		            Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 		            shape1.add(shape2);
 		    		frame.setShape(shape1);
 				}
@@ -229,7 +228,7 @@ import settings.FunctionUtils;
 				drag = false;
 				
 				Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
-	            Area shape2 = new Area(new Rectangle(0, frame.getHeight()-15, frame.getWidth(), 15));
+	            Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 	            shape1.add(shape2);
 	    		frame.setShape(shape1);
 			}
@@ -965,7 +964,10 @@ import settings.FunctionUtils;
 	public static void lastActions(int item, String fileName, File fileInput, File fileOut) {
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
-				
+			
+		if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("splitMode")))
+			fileOut = new File(fileOut.toString().replace("%03d", "000"));
+		
 		//Erreurs
 		if (FFMPEG.error || fileOut.length() == 0 && Shutter.caseCreateSequence.isSelected() == false)
 		{

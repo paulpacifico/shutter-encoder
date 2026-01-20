@@ -65,7 +65,6 @@ public class Console extends JFrame {
 	public static JTextArea consoleDCRAW =  new JTextArea();
 	public static JTextArea consoleEXIFTOOL =  new JTextArea();	
 	public static JTextArea consoleNCNN =  new JTextArea();
-	public static JTextArea consoleWHISPER =  new JTextArea();
 	public static JTextArea consolePYTHON =  new JTextArea();
 	public static JTabbedPane tabbedPane;
 	private JScrollPane scrollFFMPEG;
@@ -79,7 +78,6 @@ public class Console extends JFrame {
 	private JScrollPane scrollDCRAW;
 	private JScrollPane scrollEXIFTOOL;
 	private JScrollPane scrollNCNN;
-	private JScrollPane scrollWHISPER;
 	private JScrollPane scrollPYTHON;
 	
 	private JMenuBar menuBar;
@@ -161,9 +159,6 @@ public class Console extends JFrame {
 						consoleNCNN.setText("");
 						break;
 					case 11:
-						consoleWHISPER.setText("");
-						break;
-					case 12:
 						consolePYTHON.setText("");
 						break;						
 				}
@@ -217,9 +212,6 @@ public class Console extends JFrame {
 					case 10:
 						dialog.setFile("NCNN");
 						break;
-					case 11:
-						dialog.setFile("WHISPER");
-						break;
 					case 12:
 						dialog.setFile("PYTHON");
 						break;
@@ -269,9 +261,6 @@ public class Console extends JFrame {
 									writer.write(consoleNCNN.getText());
 									break;
 								case 11:
-									writer.write(consoleWHISPER.getText());
-									break;
-								case 12:
 									writer.write(consolePYTHON.getText());
 									break;
 							}
@@ -347,7 +336,6 @@ public class Console extends JFrame {
 				consoleDCRAW.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleWHISPER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consolePYTHON.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 			}
 			
@@ -408,11 +396,6 @@ public class Console extends JFrame {
 		consoleNCNN.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleNCNN.setWrapStyleWord(true);
 		consoleNCNN.addKeyListener(kl);
-		consoleWHISPER.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
-		consoleWHISPER.setBackground(Utils.c30);
-		consoleWHISPER.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
-		consoleWHISPER.setWrapStyleWord(true);
-		consoleWHISPER.addKeyListener(kl);
 		consolePYTHON.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
 		consolePYTHON.setBackground(Utils.c30);
 		consolePYTHON.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
@@ -451,9 +434,6 @@ public class Console extends JFrame {
 		
 		scrollNCNN = new JScrollPane();	
 		scrollNCNN.getViewport().add(consoleNCNN); 
-		
-		scrollWHISPER = new JScrollPane();	
-		scrollWHISPER.getViewport().add(consoleWHISPER); 
 		
 		scrollPYTHON = new JScrollPane();	
 		scrollPYTHON.getViewport().add(consolePYTHON); 
@@ -535,13 +515,6 @@ public class Console extends JFrame {
 	        }
 	    });
 		
-		scrollWHISPER.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
 		scrollPYTHON.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
@@ -562,7 +535,6 @@ public class Console extends JFrame {
 		tabbedPane.add("DCRAW", scrollDCRAW);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
 		tabbedPane.add("NCNN", scrollNCNN);
-		tabbedPane.add("WHISPER", scrollWHISPER);
 		tabbedPane.add("PYTHON", scrollPYTHON);
 		frmConsole.getContentPane().add(tabbedPane);		
 	}

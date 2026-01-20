@@ -301,11 +301,11 @@ public class SubtitlesEdit {
 				{													        
 			        if (e.getKeyCode() == KeyEvent.VK_Z && shift == false) 
 			        {
-			        	SubtitlesTimeline.loadBackupSubtitles();		
+			        	//SubtitlesTimeline.loadBackupSubtitles();		
 			        }
 			        else if (e.getKeyCode() == KeyEvent.VK_Z && shift || e.getKeyCode() == KeyEvent.VK_Y)
 			        {
-			        	SubtitlesTimeline.loadRestoreSubtitles();	
+			        	//SubtitlesTimeline.loadRestoreSubtitles();	
 			        }							
 				}	
 				
