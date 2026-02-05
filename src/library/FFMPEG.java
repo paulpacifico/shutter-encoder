@@ -832,7 +832,6 @@ public static StringBuilder errorLog = new StringBuilder();
 			int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();	
 			int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 
-			@SuppressWarnings("serial")
 			JPanel display = new JPanel() {
 				
 	            @Override
@@ -1829,22 +1828,14 @@ public static StringBuilder errorLog = new StringBuilder();
 						{							
 							if (line.contains("audio") && line.contains("\"") && line.contains("Alternative name") == false)
 							{
-								String s[] = line.split("\"");
-								
-								byte[] bytes = s[1].getBytes(StandardCharsets.ISO_8859_1);
-								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
-								
-								audioDevices.append(":" + utf8EncodedString);
+								String s[] = line.split("\"");								
+								audioDevices.append(":" + s[1]);
 							}
 							
 							if (line.contains("video") && line.contains("\"") && line.contains("Alternative name") == false && isAudioDevices == false)
 							{
 								String s[] = line.split("\"");
-								
-								byte[] bytes = s[1].getBytes(StandardCharsets.ISO_8859_1);
-								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
-								
-								videoDevices.append(":" + utf8EncodedString);
+								videoDevices.append(":" + s[1]);
 							}
 						}
 

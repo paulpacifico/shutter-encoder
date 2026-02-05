@@ -2788,7 +2788,6 @@ public class VideoPlayer {
 		}
 	}
 	
-	@SuppressWarnings("serial")
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
@@ -3233,7 +3232,6 @@ public class VideoPlayer {
 		});		
 	}
 	
-    @SuppressWarnings("serial")
 	private void player() {		
 
     	player = new JPanel() {
@@ -3641,7 +3639,6 @@ public class VideoPlayer {
 		Shutter.frame.getContentPane().add(player);		
 	}
     	    
-	@SuppressWarnings("serial")
 	private void sliders() {
 		
 		slider = new JSlider();
@@ -5612,6 +5609,8 @@ public class VideoPlayer {
 					do {
 						Thread.sleep(10);
 					} while (FFMPEG.process.isAlive() == false);
+					
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					
 					InputStream videoInput = FFMPEG.process.getInputStream(); 
 					InputStream is = new BufferedInputStream(videoInput);		

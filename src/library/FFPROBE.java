@@ -403,10 +403,7 @@ public static boolean hasDolbyVision = false;
 				                //FPS
 				                if (inputDeviceIsRunning)
 				            	{
-				            		if (file.equals("Capture.current.screen"))
-				            			currentFPS = Float.parseFloat(RecordInputDevice.txtScreenRecord.getText());
-				            		else
-				            			currentFPS = Float.parseFloat(RecordInputDevice.txtInputDevice.getText());
+				            		currentFPS = Float.parseFloat(RecordInputDevice.txtScreenRecord.getText());
 				            	}
 				                else
 				                {
@@ -740,10 +737,9 @@ public static boolean hasDolbyVision = false;
 																		 						                
 						            //Retrieve the tiles number for Video: stream
 									if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
-									{							  
-										  
-										if (line.contains("grid_rows"))
-							            {	
+									{	
+										if (line.contains("grid_rows") && gridCols == 00)
+							            {												
 							            	String s[] = line.split("grid_rows");
 							            	String s2[] = s[1].split(" ");
 					            			gridCols = Integer.valueOf(s2[1]);		

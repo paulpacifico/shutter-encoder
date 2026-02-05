@@ -35,13 +35,19 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Hashtable;
 import java.util.Optional;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
@@ -77,6 +83,11 @@ public class WHISPER {
 	public static JCheckBox boxContext;
 	public static JTextField textChars;
 	public static JTextField textLines;
+	public static JCheckBox boxMultilingual;
+	public static JLabel lblPrompt;
+	public static JTextField textPrompt;
+	public static JLabel lblHotwords;
+	public static JTextField textHotwords;	
 	
 	public static String[][] WHISPER_LANGUAGES = {
 	    {"af", "Afrikaans"},
@@ -231,7 +242,20 @@ public class WHISPER {
 		
 		if (transcriberApp != null)
 		{
-			WHISPER.selectModel();
+			String version = getAppVersion(); // Uses the 'run' method from previous example
+	        
+	        if (isVersionAtLeast(version, "1.4") == false)
+	        {
+	        	JOptionPane.showMessageDialog(Shutter.frame, "Shutter Transcriber >=1.4 is required." + System.lineSeparator() + "Please update your app!",
+	        	"Shutter Transcriber", JOptionPane.ERROR_MESSAGE);
+	        	
+	        	if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
+					Shutter.comboFonctions.setSelectedItem("");
+	        	
+	        	Shutter.changeWidth(false);
+	        }
+	        else
+	        	WHISPER.selectModel();
 		}
 		else
 		{							
@@ -302,15 +326,107 @@ public class WHISPER {
 		}
 	}
 	
+	private String getAppVersion() {
+		
+		try {	        	
+             	
+        	if (System.getProperty("os.name").contains("Windows"))
+        	{
+                return checkCurrentVersion("powershell", "-command", "(Get-Item '" + transcriberApp + "').VersionInfo.ProductVersion");
+            }
+        	else if (System.getProperty("os.name").contains("Mac"))
+        	{
+                return checkCurrentVersion("defaults", "read", transcriberApp + "/Contents/Info.plist", "CFBundleShortVersionString");
+            }
+        	
+        } catch (Exception e) {}
+		
+		return "Unknown";		
+	}
+	
+	private static String checkCurrentVersion(String... cmd) throws Exception {
+        Process p = new ProcessBuilder(cmd).start();
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+            String line = r.readLine();
+            return (line != null) ? line.trim() : "Unknown";
+        }
+    }
+	
+	public static boolean isVersionAtLeast(String current, String required) {
+        if (current == null || current.equals("Unknown")) return false;
+
+        String[] curParts = current.split("\\.");
+        String[] reqParts = required.split("\\.");
+        int length = Math.max(curParts.length, reqParts.length);
+
+        for (int i = 0; i < length; i++) {
+            int cur = i < curParts.length ? Integer.parseInt(curParts[i].replaceAll("[^0-9]", "")) : 0;
+            int req = i < reqParts.length ? Integer.parseInt(reqParts[i].replaceAll("[^0-9]", "")) : 0;
+
+            if (cur < req) return false;
+            if (cur > req) return true;
+        }
+        return true; // They are equal
+    }
+
 	public static String getWhisperModel() {
+		
+		File modelFolder = new File(whisperFolder + "/models");
+		if (modelFolder.exists() == false)
+		{
+			modelFolder.mkdir();
+		}
 		
 		if (System.getProperty("os.name").contains("Windows"))
 		{			
-			return transcriberApp.getParent() + "\\Library\\models";
+			//Moving old models path
+			try {
+				moveModels(Paths.get("Library/models"), Paths.get(modelFolder.toString()));
+			} catch (IOException e) {}
+			
+			return modelFolder.toString().replace("/", "\\");
 		}
 		else
-			return transcriberApp + "/Contents/Resources/Library/models";
+			return modelFolder.toString();
 	}
+	
+	public static void moveModels(Path src, Path dst) throws IOException {
+
+        if (Files.exists(src) == false)
+        	return;
+        
+        Files.createDirectories(dst);
+
+        Files.walkFileTree(src, new SimpleFileVisitor<>() {
+
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes a)
+                    throws IOException {
+                Files.createDirectories(dst.resolve(src.relativize(dir)));
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes a)
+                    throws IOException {
+                Path t = dst.resolve(src.relativize(file));
+                try {
+                    Files.move(file, t, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.copy(file, t, StandardCopyOption.REPLACE_EXISTING);
+                    Files.delete(file);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException e)
+                    throws IOException {
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
 	
 	public static void selectModel() {
 		
@@ -357,6 +473,7 @@ public class WHISPER {
 		textChars = new JTextField("37");
 		textChars.setForeground(Utils.c225);
 		textChars.setHorizontalAlignment(SwingConstants.CENTER);
+		textChars.setPreferredSize(new Dimension(40, 16));
 		
 		textChars.addKeyListener(new KeyListener() {
 
@@ -386,7 +503,7 @@ public class WHISPER {
 		textLines = new JTextField("2");
 		textLines.setForeground(Utils.c225);
 		textLines.setHorizontalAlignment(SwingConstants.CENTER);
-		textLines.setSize(textChars.getSize());
+		textLines.setPreferredSize(new Dimension(40, 16));
 				
 		textLines.addKeyListener(new KeyListener() {
 
@@ -410,6 +527,28 @@ public class WHISPER {
 			}
 		});
 		
+		boxMultilingual = new JCheckBox("Multilingual");
+		boxMultilingual.setForeground(Utils.c225);
+		boxMultilingual.setSelected(false);
+		boxMultilingual.setSize(boxMultilingual.getPreferredSize().width + 7, 16);
+
+		JLabel lblPrompt = new JLabel("Transcription context:");
+		lblPrompt.setForeground(Utils.c225);
+		
+		textPrompt = new JTextField("");
+		textPrompt.setForeground(Utils.c225);
+		textPrompt.setHorizontalAlignment(SwingConstants.CENTER);	
+		textPrompt.setPreferredSize(new Dimension(100, 16));		
+				
+		JLabel lblHotwords = new JLabel("Keywords / Names:");
+		lblHotwords.setForeground(Utils.c225);
+		
+		textHotwords = new JTextField("");
+		textHotwords.setName("textHotwords");
+		textHotwords.setForeground(Utils.c225);
+		textHotwords.setHorizontalAlignment(SwingConstants.CENTER);
+		textHotwords.setPreferredSize(new Dimension(100, 16));		
+		
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(slider);
 		
@@ -419,15 +558,28 @@ public class WHISPER {
 		rightPanel.add(comboLanguage);
 		panel.add(rightPanel, BorderLayout.EAST);
 
-		JPanel bottomPanel = new JPanel(new FlowLayout());
-		bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-		bottomPanel.add(boxVAD);
-		bottomPanel.add(boxContext);
-		bottomPanel.add(lblMaxChars);
-		bottomPanel.add(textChars);
-		bottomPanel.add(lblMaxLines);
-		bottomPanel.add(textLines);
-		panel.add(bottomPanel, BorderLayout.SOUTH);
+		JPanel optionsFirstLine = new JPanel(new FlowLayout());
+		optionsFirstLine.add(boxVAD);
+		optionsFirstLine.add(boxContext);
+		optionsFirstLine.add(lblMaxChars);
+		optionsFirstLine.add(textChars);
+		optionsFirstLine.add(lblMaxLines);
+		optionsFirstLine.add(textLines);
+
+		JPanel optionsSecondLine = new JPanel(new FlowLayout());
+		optionsSecondLine.add(boxMultilingual);
+		optionsSecondLine.add(lblPrompt);
+		optionsSecondLine.add(textPrompt);
+		optionsSecondLine.add(lblHotwords);
+		optionsSecondLine.add(textHotwords);
+
+		JPanel optionsContainer = new JPanel();
+		optionsContainer.setLayout(new BoxLayout(optionsContainer, BoxLayout.Y_AXIS));
+		optionsContainer.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		optionsContainer.add(optionsFirstLine);
+		optionsContainer.add(optionsSecondLine);
+
+		panel.add(optionsContainer, BorderLayout.SOUTH);
         
         Object[] options = { Shutter.language.getProperty("btnApply") };
         JOptionPane.showOptionDialog(Shutter.frame, panel, Shutter.language.getProperty("functionTranscribe"), 
@@ -563,6 +715,12 @@ public class WHISPER {
 				{
 					processBuilder.command().add("--vad_filter");
 					processBuilder.command().add("True");
+					
+					if (boxMultilingual.isSelected())
+					{
+						processBuilder.command().add("--vad_max_speech_duration_s");
+						processBuilder.command().add("7");
+					}
 				}
 								
 				//Preserve context
@@ -570,6 +728,27 @@ public class WHISPER {
 				{
 					processBuilder.command().add("--condition_on_previous_text");
 					processBuilder.command().add("False");
+				}
+				
+				//Enable multilingual
+				if (boxMultilingual.isSelected())
+				{
+					processBuilder.command().add("--multilingual");
+					processBuilder.command().add("True");
+				}
+				
+				//Initial prompt
+				if (textPrompt.getText().trim().isEmpty() == false)
+				{
+					processBuilder.command().add("--initial_prompt");
+					processBuilder.command().add('"' + textPrompt.getText() + '"');
+				}
+				
+				//Hotwords
+				if (textHotwords.getText().trim().isEmpty() == false)
+				{
+					processBuilder.command().add("--hotwords");
+					processBuilder.command().add('"' + textHotwords.getText() + '"');
 				}
 					
 				//Output format
@@ -830,7 +1009,7 @@ public class WHISPER {
         }
     }
 
-    private static File findMatch(Path folder, String keyword) {
+	private static File findMatch(Path folder, String keyword) {
         File dir = folder.toFile();
         if (dir.exists() && dir.isDirectory()) {
             File[] matches = dir.listFiles((d, name) -> 

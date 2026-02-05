@@ -1782,7 +1782,11 @@ public class Utils extends Shutter {
 														hwaccel = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
 													}
 													
-													if (p.getName().equals("comboLUTs"))
+													if (p.getName().equals("comboColorspace"))
+													{
+														colorspacePreset = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
+													}
+													else if (p.getName().equals("comboLUTs"))
 													{
 														comboLUTs.setSelectedIndex(10);
 	

@@ -20,16 +20,19 @@
 package library;
 
 import java.awt.Color;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
-import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +44,8 @@ import application.VideoWeb;
 
 public class YOUTUBEDL extends Shutter {
 	
+public static File ytdlp;
+private static String PathToYOUTUBEDL;
 public static boolean error = false;
 static int dureeTotale = 0; 
 public static boolean isRunning = false;
@@ -49,6 +54,89 @@ public static	Process process;
 public static File outputFile;
 public static StringBuilder formatsOutput;
 public static String format = "";
+
+	public static boolean checkYOUTUBEDL() {
+
+		if (System.getProperty("os.name").contains("Windows"))
+		{
+			ytdlp = new File(Shutter.documents + "/Library/yt-dlp.exe");
+		}
+		else
+		{
+			String youtubedl;						
+			if (System.getProperty("os.name").contains("Mac"))
+			{							
+				youtubedl = "yt-dlp_macos";	
+			}
+			else
+				youtubedl = "yt-dlp_linux";
+			
+			ytdlp = new File(Shutter.documents + "/Library/" + youtubedl);
+		}
+		
+		PathToYOUTUBEDL = '"' + ytdlp.toString() + '"';
+		
+		if (ytdlp.exists() == false)
+		{		
+			installYOUTUBEDL();			
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private static void installYOUTUBEDL() {
+		
+		Thread download = new Thread(new Runnable() {
+
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+
+				try {
+					
+					isRunning = true;					
+										
+					String base = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/";
+			        String url, dest;
+			        
+			        if (System.getProperty("os.name").contains("Windows"))
+			        {
+			            url = base + "yt-dlp.exe";
+			        }
+			        else if (System.getProperty("os.name").contains("Mac"))
+			        {
+			            url = base + "yt-dlp_macos";
+			        }         
+			        else //Linux
+			        {
+			            url = base + "yt-dlp_linux";
+			        }
+			        
+			        dest = ytdlp.toString();
+			        
+			        Path p = Paths.get(dest);
+			        Path temp = Paths.get(dest + ".tmp");
+			        Files.createDirectories(p.getParent());
+			        
+			        try (FileOutputStream fos = new FileOutputStream(temp.toFile()))
+			        {
+			            fos.getChannel().transferFrom(Channels.newChannel(new URL(url).openStream()), 0, Long.MAX_VALUE);
+			        }
+			        
+			        Files.move(temp, p, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+			        if (System.getProperty("os.name").contains("Windows") == false)
+			            Files.setPosixFilePermissions(p, PosixFilePermissions.fromString("rwxr-xr-x"));
+					
+				} catch (Exception e) {}
+				finally {
+					isRunning = false;					
+				}
+			}
+			
+		});
+		download.start();
+    }
 
 	public static void run(final String cmd, final String options) {
 		
@@ -78,13 +166,9 @@ public static String format = "";
 			public void run() {
 				
 				try {					
-					String PathToYOUTUBEDL;
 					ProcessBuilder processYOUTUBEDL;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(1,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp.exe" + '"';
 						if (options != "")
 						{
 							String opts[] = options.split(" ");
@@ -100,9 +184,6 @@ public static String format = "";
 					}
 					else
 					{
-						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
-						
 						String youtubedl;						
 						if (System.getProperty("os.name").contains("Mac"))
 						{							
@@ -110,10 +191,8 @@ public static String format = "";
 						}
 						else
 							youtubedl = "yt-dlp_linux";
-
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
-						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --restrict-filenames --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace(youtubedl, "ffmpeg") + " --no-part -o " + '"' + outputFile + '"');	
 						
+						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c", PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --restrict-filenames --no-continue --ffmpeg-location " + PathToYOUTUBEDL.replace(youtubedl, "ffmpeg") + " --no-part -o " + '"' + outputFile + '"');
 					}
 									
 					isRunning = true;	
@@ -237,78 +316,11 @@ public static String format = "";
 		runProcess.start();
 	}
 
-	@SuppressWarnings("deprecation")
-	public static void HTTPDownload(String fileURL, String yt_dlp) {
-
-		try {
-			
-			URL url = new URL(fileURL);
-	        URLConnection connection = url.openConnection();
-	        
-	        InputStream inputStream = new BufferedInputStream(connection.getInputStream());
-            FileOutputStream outputStream = new FileOutputStream(yt_dlp);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inputStream.read(buffer, 0, 1024)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);;
-            }
-            
-            if (outputStream != null)
-            	outputStream.close();
-            
-            String[] cmd = {
-                    "osascript",
-                    "-e",
-                    "try",
-                    "-e",
-                    "set thePassword to text returned of (display dialog \"Enter your password to enable this function:\" with hidden answer default answer \"\" with icon caution buttons {\"OK\", \"Cancel\"} default button \"OK\")",
-                    "-e",
-                    "on error number -128",
-                    "-e",
-                    "return \"CANCEL\"",
-                    "-e",
-                    "end try"
-                };
-                
-            String password = null;            
-            Process process = Runtime.getRuntime().exec(cmd);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            password = reader.readLine();  // Read the password entered by the user
-            process.waitFor();
-            
-            ProcessBuilder processBuilder = new ProcessBuilder("sudo", "-S", "chmod", "+x", yt_dlp);
-            processBuilder.redirectErrorStream(true);
-
-            process = processBuilder.start();
-
-            // Write the password to the sudo prompt
-            try (java.io.OutputStream os = process.getOutputStream()) {
-                os.write((password + "\n").getBytes());
-                os.flush();
-            }
-
-            process.waitFor();     
-            
-           if (new File(yt_dlp).canExecute() == false)
-           {
-        	   try {
-   					File toDelete = new File(yt_dlp);
-   					toDelete.delete();
-   				} catch (Exception er) {}	
-           }
-
-		} catch (Exception e) {
-			
-			try {
-				File toDelete = new File(yt_dlp);
-				toDelete.delete();
-			} catch (Exception er) {}	
-		}
-	}
-	
 	public static void update() {
+			
+		if (checkYOUTUBEDL() == false)
+			return;
+		
 		error = false;
 		cancelled  = false;
 		
@@ -321,30 +333,13 @@ public static String format = "";
 				
 				try {			
 					
-					String PathToYOUTUBEDL;
-					ProcessBuilder processYOUTUBEDL;
-					
+					ProcessBuilder processYOUTUBEDL;					
 					if (System.getProperty("os.name").contains("Windows"))
-					{
-						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(1,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp.exe" + '"';
-						processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, "-U");
+					{											
+						processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, "-U");						
 					}
 					else
-					{
-						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
-						
-						String youtubedl;						
-						if (System.getProperty("os.name").contains("Mac"))
-						{							
-							youtubedl = "yt-dlp_macos";	
-						}
-						else
-							youtubedl = "yt-dlp_linux";
-															
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
+					{													
 						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c", PathToYOUTUBEDL + " -U");
 					}
 									
@@ -393,14 +388,12 @@ public static String format = "";
 			
 			@Override
 			public void run() {
+				
 				try {
-					String PathToYOUTUBEDL;
+
 					ProcessBuilder processYOUTUBEDL;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(1,PathToYOUTUBEDL.length()-1);
-						PathToYOUTUBEDL = '"' + PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp.exe" + '"';	
 						if (options != "")
 						{
 							String opts[] = options.split(" ");
@@ -416,19 +409,7 @@ public static String format = "";
 					}
 					else
 					{
-						PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
-						
-						String youtubedl;						
-						if (System.getProperty("os.name").contains("Mac"))
-						{							
-							youtubedl = "yt-dlp_macos";	
-						}
-						else
-							youtubedl = "yt-dlp_linux";
-
-						PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/" + youtubedl;
-						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c" , PathToYOUTUBEDL + options + " -F " + cmd);
+						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c", PathToYOUTUBEDL + options + " -F " + cmd);
 					}					
 					
 					isRunning = true;	

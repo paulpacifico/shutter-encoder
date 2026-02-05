@@ -40,7 +40,7 @@ import settings.FunctionUtils;
 
 public class Translate extends Shutter {
 	
-    private static final int CHUNK_SIZE = 5000;
+    private static final int CHUNK_SIZE = 1500;
 
     public static void main() {
 

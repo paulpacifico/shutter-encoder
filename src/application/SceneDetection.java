@@ -601,7 +601,6 @@ import javax.swing.JScrollPane;
 									
 	}
 	
-	@SuppressWarnings("serial")
 	private static void newTable() {
 		
 		ImageIcon imageIcon = new ImageIcon(SceneDetection.outputFolder.toString() + "/0.png");

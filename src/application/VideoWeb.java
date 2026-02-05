@@ -143,35 +143,7 @@ public class VideoWeb {
 			
 			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
 		}
-				
-		if (System.getProperty("os.name").contains("Mac"))
-		{
-			Thread download = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					
-					String PathToYOUTUBEDL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-					PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,PathToYOUTUBEDL.length()-1);
-					PathToYOUTUBEDL = PathToYOUTUBEDL.substring(0,(int) (PathToYOUTUBEDL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/yt-dlp_macos";
-					
-					if (new File(PathToYOUTUBEDL).exists() == false)
-					{							
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));						
-						YOUTUBEDL.HTTPDownload("https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos", PathToYOUTUBEDL);
-						
-						if (new File(PathToYOUTUBEDL).exists() == false)
-						{
-							Utils.changeDialogVisibility(frame, true);
-						}
-						
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					}					
-				}  
-			});
-			download.start();
-		}
-						
+							
 		topPanel();
 		grpURL();
 					
@@ -193,9 +165,8 @@ public class VideoWeb {
 				}
 			}		
 		}
-		
-		Utils.changeDialogVisibility(frame, false);	
-		
+
+		Utils.changeDialogVisibility(frame, false);		
 	}
 			
 	private void topPanel() {	
@@ -369,7 +340,6 @@ public class VideoWeb {
 		
 	}
 
-	@SuppressWarnings("serial")
 	private void grpURL() {
 		
 		grpURL = new JPanel() {
@@ -952,17 +922,18 @@ public class VideoWeb {
 		
 			Thread downloadProcess = new Thread(new Runnable() {
 				
-				public void run(){ 
+				public void run() { 
 						
 				complete = 0;
 				Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 						
 		        try {
 		        	
-	        		if (textURL.getText().toLowerCase().equals("update"))
+	        		if (textURL.getText().toLowerCase().equals("update") || YOUTUBEDL.isRunning) //isRunning is used for install
 	        		{
 	        			FFMPEG.disableAll();
 	        			Shutter.btnStart.setEnabled(false);
+	        			Shutter.btnCancel.setEnabled(false);
 	        			Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("update"));
 	        			YOUTUBEDL.update();
 	        			Shutter.progressBar1.setIndeterminate(true);
@@ -979,126 +950,127 @@ public class VideoWeb {
 	        	           }
 	        			});
 	        			FFMPEG.enableAll();	 
-	        			FFMPEG.endOfFunction();	     
+	        			FFMPEG.endOfFunction();	   
+	        			
+	        			if (textURL.getText().toLowerCase().equals("update"))
+	        				return;
 	        		}
-	        		else 
-	        		{	
-	        			//Loop each line
-	        			for (String line : textURL.getText().split("\n"))
-	        			{	  
-			        		//Format checking
-							if (caseAuto.isSelected()) 
-							{				
-								if (comboFormats.getSelectedItem().toString().equals("default"))
-								{
-									YOUTUBEDL.format = "";
-								}
-								else if (comboFormats.getSelectedItem().toString().contains("up to "))
-								{
-									switch (comboFormats.getSelectedItem().toString().replace("up to ", ""))
-									{
-										case "4K": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?4096][height<=?2160]+bestaudio/best[width<=?4096][height<=?2160]" + '"'; break;
-										case "1440p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?2560][height<=?1440]+bestaudio/best[width<=?2560][height<=?1440]" + '"'; break;
-										case "1080p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1920][height<=?1080]+bestaudio/best[width<=?1920][height<=?1080]" + '"'; break;
-										case "720p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1280][height<=?720]+bestaudio/best[width<=?1280][height<=?720]" + '"'; break;
-										case "480p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?854][height<=?480]+bestaudio/best[width<=?854][height<=?480]" + '"'; break;
-										case "360p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?640][height<=?360]+bestaudio/best[width<=?640][height<=?360]" + '"'; break;
-										case "240p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?426][height<=?240]+bestaudio/best[width<=?426][height<=?240]" + '"'; break;
-									}
-								}	
-								else
-									YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
-								
-							}							
-							else
+	        		
+	        		//Loop each line
+        			for (String line : textURL.getText().split("\n"))
+        			{	  
+		        		//Format checking
+						if (caseAuto.isSelected()) 
+						{				
+							if (comboFormats.getSelectedItem().toString().equals("default"))
 							{
-								String[] f = comboFormats.getSelectedItem().toString().split(" ");		
-								
-								YOUTUBEDL.format = "-f " + f[0];								
+								YOUTUBEDL.format = "";
 							}
-	
-							FFMPEG.disableAll();
-							Shutter.btnStart.setEnabled(false);
-						
-						    //Download	    
-							YOUTUBEDL.run('"' + line + '"', options());
+							else if (comboFormats.getSelectedItem().toString().contains("up to "))
+							{
+								switch (comboFormats.getSelectedItem().toString().replace("up to ", ""))
+								{
+									case "4K": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?4096][height<=?2160]+bestaudio/best[width<=?4096][height<=?2160]" + '"'; break;
+									case "1440p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?2560][height<=?1440]+bestaudio/best[width<=?2560][height<=?1440]" + '"'; break;
+									case "1080p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1920][height<=?1080]+bestaudio/best[width<=?1920][height<=?1080]" + '"'; break;
+									case "720p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1280][height<=?720]+bestaudio/best[width<=?1280][height<=?720]" + '"'; break;
+									case "480p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?854][height<=?480]+bestaudio/best[width<=?854][height<=?480]" + '"'; break;
+									case "360p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?640][height<=?360]+bestaudio/best[width<=?640][height<=?360]" + '"'; break;
+									case "240p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?426][height<=?240]+bestaudio/best[width<=?426][height<=?240]" + '"'; break;
+								}
+							}	
+							else
+								YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
 							
-						       do { 
-						    	   Thread.sleep(100);		
-						       }while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
-						       
+						}							
+						else
+						{
+							String[] f = comboFormats.getSelectedItem().toString().split(" ");		
+							
+							YOUTUBEDL.format = "-f " + f[0];								
+						}
+
+						FFMPEG.disableAll();
+						Shutter.btnStart.setEnabled(false);
+					
+					    //Download	    
+						YOUTUBEDL.run('"' + line + '"', options());
+						
+				       do { 
+				    	   Thread.sleep(100);		
+				       }while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
+				       
+				       if (Shutter.cancelled)
+				       {
+					    	 if (YOUTUBEDL.outputFile.exists()) 
+					    		 YOUTUBEDL.outputFile.delete();
+				       }
+				       else //Audio conversion
+				       {
+				    	   Shutter.tempsRestant.setVisible(false);
+				    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
+				    	   if (caseWAV.isSelected())
+				    	   {		
+				    		   	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToWAV")); 
+								String cmd = " -vn -y ";
+								FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
+							
+							       do { 
+										Thread.sleep(100);		
+						       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+								
+						       //Suppression du fichier audio si processus annulé
 						       if (Shutter.cancelled)
 						       {
-							    	 if (YOUTUBEDL.outputFile.exists()) 
-							    		 YOUTUBEDL.outputFile.delete();
+						    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".wav"));
+						    	   audioFile.delete();
 						       }
-						       else //Audio conversion
+				    	   }
+				    	   else if (caseMP3.isSelected())
+				    	   {
+				    		   Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToMP3"));  
+				    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
+				    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
+							
+						       do { 
+										Thread.sleep(100);		
+						       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+						       
+						       //Suppression du fichier audio si processus annulé
+						       if (Shutter.cancelled)
 						       {
-						    	   Shutter.tempsRestant.setVisible(false);
-						    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
-						    	   if (caseWAV.isSelected())
-						    	   {		
-						    		   	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToWAV")); 
-										String cmd = " -vn -y ";
-										FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
-									
-									       do { 
-												Thread.sleep(100);		
-								       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
-										
-								       //Suppression du fichier audio si processus annulé
-								       if (Shutter.cancelled)
-								       {
-								    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".wav"));
-								    	   audioFile.delete();
-								       }
-						    	   }
-						    	   else if (caseMP3.isSelected())
-						    	   {
-						    		   Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToMP3"));  
-						    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
-						    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
-									
-								       do { 
-												Thread.sleep(100);		
-								       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
-								       
-								       //Suppression du fichier audio si processus annulé
-								       if (Shutter.cancelled)
-								       {
-								    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".mp3"));
-								    	   audioFile.delete();
-								       }
-						    	   }		    	   			       
+						    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".mp3"));
+						    	   audioFile.delete();
 						       }
-						       					       
-						       if (Shutter.cancelled == false)
-						       {
-									complete++;
-									Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
-									
-									//Ouverture du dossier
-									if (Shutter.caseOpenFolderAtEnd1.isSelected())
-									{
-										try {
-											Desktop.getDesktop().open(new File(Shutter.lblDestination1.getText()));
-										} catch (IOException e) {
-											e.printStackTrace();
-										}
-									}
-						       }
-								FFMPEG.enableAll();
-								FFMPEG.endOfFunction();							
-			        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
-	        				}
-	        			}
+				    	   }		    	   			       
+				       }
+				       					       
+				       if (Shutter.cancelled == false)
+				       {
+							complete++;
+							Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
+							
+							//Ouverture du dossier
+							if (Shutter.caseOpenFolderAtEnd1.isSelected())
+							{
+								try {
+									Desktop.getDesktop().open(new File(Shutter.lblDestination1.getText()));
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+				       }
+						FFMPEG.enableAll();
+						FFMPEG.endOfFunction();							
+	        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
+    				}
 					       				        
-					} catch (InterruptedException e1) {}
-		        }
-			});
-			downloadProcess.start();
-					
-			Utils.changeDialogVisibility(frame, true);				
+				} catch (InterruptedException e1) {}
+	        }
+		});
+		downloadProcess.start();
+				
+		Utils.changeDialogVisibility(frame, true);				
 	}
 
 	private void PasteFromClipBoard(boolean mouse){

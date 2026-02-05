@@ -187,7 +187,6 @@ import settings.Colorimetry;
 import settings.FunctionUtils;
 import settings.Timecode;
 
-@SuppressWarnings("serial")
 public class Shutter {
 
 	/*
@@ -285,6 +284,7 @@ public class Shutter {
 	protected static JComboBox<Object> comboInColormatrix;
 	protected static JComboBox<Object> comboOutColormatrix;
 	protected static JComboBox<Object> comboColorspace;
+	public static String colorspacePreset = null;
 	protected static JLabel lblHDR;
 	protected static JComboBox<String> comboHDRvalue;
 	protected static JComboBox<String> comboCLLvalue;
@@ -3902,16 +3902,18 @@ public class Shutter {
 							}
 						}
 					}
-				} else // Fonctions n'ayant pas de fichiers dans la liste
+				}
+				else // Fonctions n'ayant pas de fichiers dans la liste
 				{
 					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) {
+						
 						try {
 							frame.setOpacity(0.5f);
-						} catch (Exception er) {
-						}
+						} catch (Exception er) {}
 
 						new VideoWeb();
-						frame.setOpacity(1.0f);
+						frame.setOpacity(1.0f);										
+						
 					} else if (comboFonctions.getSelectedItem().equals("DVD Rip")
 							&& btnStart.getText().equals(language.getProperty("btnStartFunction"))) {
 						if (inputDeviceIsRunning)
@@ -4060,8 +4062,7 @@ public class Shutter {
 					if (scanIsRunning == false) {
 						try {
 							frame.setOpacity(0.5f);
-						} catch (Exception er) {
-						}
+						} catch (Exception er) {}
 
 						new VideoWeb();
 						frame.setOpacity(1.0f);
@@ -13416,8 +13417,7 @@ public class Shutter {
 					}
 
 					boolean addDevice = false;
-					if (RecordInputDevice.comboInputVideo != null
-							&& RecordInputDevice.comboInputVideo.getSelectedIndex() > 0)
+					if (RecordInputDevice.comboInputVideo != null && RecordInputDevice.comboInputVideo.getSelectedIndex() > 0)
 						addDevice = true;
 
 					if (Shutter.inputDeviceIsRunning && Shutter.list.getElementAt(0).equals("Capture.current.screen")
@@ -21768,6 +21768,14 @@ public class Shutter {
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
 									}
+									else
+									{
+										if (colorspacePreset != null && action == false)
+										{
+											comboColorspace.setSelectedItem(colorspacePreset);
+											colorspacePreset = null;
+										}
+									}
 								}
 								else 
 								{
@@ -21778,6 +21786,14 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
+									}
+									else
+									{
+										if (colorspacePreset != null && action == false)
+										{
+											comboColorspace.setSelectedItem(colorspacePreset);
+											colorspacePreset = null;
+										}
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -22079,6 +22095,14 @@ public class Shutter {
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
 									}
+									else
+									{
+										if (colorspacePreset != null && action == false)
+										{
+											comboColorspace.setSelectedItem(colorspacePreset);
+											colorspacePreset = null;
+										}
+									}
 								} else {
 									if (comboColorspace.getItemCount() != 3) {
 										comboColorspace.setModel(new DefaultComboBoxModel<Object>(
@@ -22086,6 +22110,14 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
+									}
+									else
+									{
+										if (colorspacePreset != null && action == false)
+										{
+											comboColorspace.setSelectedItem(colorspacePreset);
+											colorspacePreset = null;
+										}
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -22796,9 +22828,17 @@ public class Shutter {
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
 									}
+									else
+									{
+										if (colorspacePreset != null && action == false)
+										{
+											comboColorspace.setSelectedItem(colorspacePreset);
+											colorspacePreset = null;
+										}
+									}
 								} else if ("H.265".equals(function)) {
-									if (comboAccel.getSelectedItem()
-											.equals(language.getProperty("aucune").toLowerCase()) == false) {
+									if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
+									{
 										if (comboColorspace.getItemCount() != 6) {
 											comboColorspace.setModel(new DefaultComboBoxModel<Object>(
 													new String[] { "Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits",
@@ -22808,7 +22848,17 @@ public class Shutter {
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
 										}
-									} else {
+										else
+										{
+											if (colorspacePreset != null && action == false)
+											{
+												comboColorspace.setSelectedItem(colorspacePreset);
+												colorspacePreset = null;
+											}
+										}
+									}
+									else
+									{
 										if (comboColorspace.getItemCount() != 8) {
 											comboColorspace.setModel(new DefaultComboBoxModel<Object>(
 													new String[] { "Rec. 709", "Rec. 709 10bits", "Rec. 2020 PQ 10bits",
@@ -22818,6 +22868,14 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
+										}
+										else
+										{
+											if (colorspacePreset != null && action == false)
+											{
+												comboColorspace.setSelectedItem(colorspacePreset);
+												colorspacePreset = null;
+											}
 										}
 									}
 								} else if ("H.266".equals(function)) {
@@ -23470,6 +23528,14 @@ public class Shutter {
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
 										}
+										else
+										{
+											if (colorspacePreset != null && action == false)
+											{
+												comboColorspace.setSelectedItem(colorspacePreset);
+												colorspacePreset = null;
+											}
+										}
 									} else {
 										if (comboColorspace.getItemCount() != 8) {
 											comboColorspace.setModel(new DefaultComboBoxModel<Object>(
@@ -23481,6 +23547,14 @@ public class Shutter {
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
 										}
+										else
+										{
+											if (colorspacePreset != null && action == false)
+											{
+												comboColorspace.setSelectedItem(colorspacePreset);
+												colorspacePreset = null;
+											}
+										}
 									}
 								} else if ("MPEG-2".equals(function)) {
 									if (comboColorspace.getItemCount() != 6) {
@@ -23491,6 +23565,14 @@ public class Shutter {
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
 									}
+									else
+									{
+										if (colorspacePreset != null && action == false)
+										{
+											comboColorspace.setSelectedItem(colorspacePreset);
+											colorspacePreset = null;
+										}
+									}
 								} else {
 									if (comboColorspace.getItemCount() != 3) {
 										comboColorspace.setModel(new DefaultComboBoxModel<Object>(
@@ -23498,6 +23580,14 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
+									}
+									else
+									{
+										if (colorspacePreset != null && action == false)
+										{
+											comboColorspace.setSelectedItem(colorspacePreset);
+											colorspacePreset = null;
+										}
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -24120,6 +24210,14 @@ public class Shutter {
 
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
+								}
+								else
+								{
+									if (colorspacePreset != null && action == false)
+									{
+										comboColorspace.setSelectedItem(colorspacePreset);
+										colorspacePreset = null;
+									}
 								}
 
 								grpSetAudio.setVisible(false);
