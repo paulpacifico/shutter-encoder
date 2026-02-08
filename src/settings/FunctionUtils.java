@@ -1152,7 +1152,7 @@ public class FunctionUtils extends Shutter {
 		{		
 			if (FFPROBE.audioOnly == false)
 			{
-				metadata = " -map_metadata 0";
+				metadata = " -map_metadata 0 -map_chapters 0";
 				
 				if (casePreserveSubs.isSelected() == false)
 				{

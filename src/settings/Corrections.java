@@ -71,8 +71,14 @@ public class Corrections extends Shutter {
 		if (Shutter.caseDeflicker.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
+		
+			float framerate = FFPROBE.currentFPS;
+			if (caseEnableSequence.isSelected())
+			{
+				framerate = Float.parseFloat(caseSequenceFPS.getSelectedItem().toString());
+			}
 			
-			filterComplex += "split[a][b];[b]setpts=PTS-STARTPTS+" + (1 / FFPROBE.currentFPS) + "/TB,format=rgba,colorchannelmixer=aa=0.5[deflicker];[a][deflicker]overlay=shortest=1";		
+			filterComplex += "split[a][b];[b]setpts=PTS-STARTPTS+" + (1 / framerate) + "/TB,format=rgba,colorchannelmixer=aa=0.5[deflicker];[a][deflicker]overlay=shortest=1";		
 		}
 		
 		return filterComplex;

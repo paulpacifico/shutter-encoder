@@ -324,7 +324,7 @@ public static String format = "";
 		error = false;
 		cancelled  = false;
 		
-	    Console.consoleYOUTUBEDL.append(System.lineSeparator() + language.getProperty("command") + " -U " + System.lineSeparator());
+	    Console.consoleYOUTUBEDL.append(language.getProperty("command") + " -U " + System.lineSeparator());
 
 		runProcess = new Thread(new Runnable()  {
 			

@@ -192,7 +192,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "19.8";
+	public static String actualVersion = "19.9";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -6803,6 +6803,7 @@ public class Shutter {
 		comboReadAudioTimecode.setMaximumRowCount(20);
 		comboReadAudioTimecode.setFont(new Font(mainFont, Font.PLAIN, 10));
 		comboReadAudioTimecode.setEditable(false);
+		comboReadAudioTimecode.setEnabled(false);
 		comboReadAudioTimecode.setSize(65, 16);
 		comboReadAudioTimecode.setLocation(caseReadAudioTimecode.getX() + caseReadAudioTimecode.getWidth(), caseReadAudioTimecode.getLocation().y + 4);
 		grpSetTimecode.add(comboReadAudioTimecode);
