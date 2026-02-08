@@ -332,7 +332,7 @@ public class WHISPER {
              	
         	if (System.getProperty("os.name").contains("Windows"))
         	{
-                return checkCurrentVersion("powershell", "-command", "(Get-Item '" + transcriberApp + "').VersionInfo.ProductVersion");
+        		return checkCurrentVersion("powershell", "-command", "$v = (Get-Item '" + transcriberApp + "').VersionInfo; " + "'{0}.{1}' -f $v.FileMajorPart, $v.FileMinorPart");
             }
         	else if (System.getProperty("os.name").contains("Mac"))
         	{
