@@ -4,15 +4,12 @@
 [![GitHub license](https://img.shields.io/github/license/paulpacifico/shutter-encoder?style=flat-square)](LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/paulpacifico/shutter-encoder?style=flat-square)](https://github.com/paulpacifico/shutter-encoder/commits)
 
-Shutter Encoder is a free and open-source media transcoding, conversion, and processing application built on top of **FFmpeg**.  
-It is designed for video editors, post-production professionals, and advanced users who require reliable, reproducible, and transparent media workflows through a graphical interface.
-
 <img src="https://www.shutterencoder.com/images/SocialBanner_2025.jpg">
 
 ## Overview
 
-Shutter Encoder provides a comprehensive set of tools for processing video, audio, and image files.  
-While offering a simple and accessible user interface, it exposes advanced FFmpeg features typically reserved for command-line workflows.
+Shutter Encoder is a free and open-source media transcoding, conversion, and processing application built on top of **FFmpeg**.  
+It is designed for video editors, post-production professionals, and advanced users who require reliable, reproducible, and transparent media workflows through a graphical interface.
 
 The application supports batch processing, presets, and lossless operations, making it suitable for both quick conversions and complex production pipelines.
 
