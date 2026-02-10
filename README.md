@@ -75,4 +75,13 @@ Shutter Encoder uses a custom Java runtime built with **jlink**, based on **Java
 
 <code>--compress 0 --strip-debug --no-header-files --no-man-pages --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.security.sasl,java.xml,jdk.crypto.ec --output JRE</code>
 
+### Open-Source Code Used
+
+- [https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) for upscaling
+- [https://github.com/facebookresearch/demucs](https://github.com/facebookresearch/demucs) for Audio separation
+- [https://github.com/Softcatala/whisper-ctranslate2](https://github.com/Softcatala/whisper-ctranslate2) for Audio transcription
+- [https://github.com/jantic/DeOldify](https://github.com/jantic/DeOldify) for Colorize
+- [https://github.com/nadermx/backgroundremover](https://github.com/nadermx/backgroundremover) for Background remover
+- [https://github.com/yt-dlp/yt-dlp](https://github.com/yt-dlp/yt-dlp) for Web video
+
 ---
