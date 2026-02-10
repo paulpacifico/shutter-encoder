@@ -1,4 +1,4 @@
-# Shutter Encoder
+# 🎬 Shutter Encoder
 
 [![GitHub stars](https://img.shields.io/github/stars/paulpacifico/shutter-encoder?style=flat-square)](https://github.com/paulpacifico/shutter-encoder/stargazers)
 [![GitHub license](https://img.shields.io/github/license/paulpacifico/shutter-encoder?style=flat-square)](LICENSE)
@@ -6,32 +6,32 @@
 
 <img src="https://www.shutterencoder.com/images/SocialBanner_2025.jpg">
 
-## Overview
+## 📌 Overview
 
-Shutter Encoder is a free and open-source media transcoding, conversion, and processing application built on top of **FFmpeg**.  
+Shutter Encoder is a **free and open-source** media transcoding, conversion, and processing application built on top of **FFmpeg**.  
 It is designed for video editors, post-production professionals, and advanced users who require reliable, reproducible, and transparent media workflows through a graphical interface.
 
-The application supports batch processing, presets, and lossless operations, making it suitable for both quick conversions and complex production pipelines.
+The application supports **batch processing**, **presets**, and **lossless operations**, making it suitable for both quick conversions and complex production pipelines.
 
 ---
 
-## Features
+## ✨ Features
 
-### Media Encoding and Conversion
+### 🎞️ Media Encoding and Conversion
 
 - Video, audio, and image transcoding using FFmpeg
 - Support for common and professional codecs (H.264, H.265, ProRes, DNxHR, AV1, VP9, etc.)
 - Container remuxing without re-encoding
 - Image sequence generation and conversion
 
-### Lossless Operations
+### ♾️ Lossless Operations
 
 - Lossless cut and trim
 - Audio track replacement and removal
 - Stream extraction and remuxing
 - Subtitle extraction and multiplexing
 
-### Editing and Processing Tools
+### 🛠️ Editing and Processing Tools
 
 - Subtitle embedding, burn-in, and editing (.srt, .vtt, .ass)
 - Loudness analysis and normalization
@@ -40,7 +40,7 @@ The application supports batch processing, presets, and lossless operations, mak
 - LUT support and color adjustments
 - Watermark and overlay insertion
 
-### Workflow and Automation
+### 🔄 Workflow and Automation
 
 - Batch queue processing
 - Preset creation and reuse
@@ -49,39 +49,47 @@ The application supports batch processing, presets, and lossless operations, mak
 - Optional FTP upload on completion
 - EDL export for detected cuts
 
-### Additional Utilities
+### 🧩 Additional Utilities
 
 - Web video download (via yt-dlp)
 - RAW image processing (LibRaw)
 - MediaInfo integration
 - EXIF metadata handling
 
-### Prebuilt Binaries
+---
 
-Installers and portable versions for Windows, macOS, and Linux are available from the official website:
+### 📦 Prebuilt Binaries
 
-https://www.shutterencoder.com/#downloads
+Installers and portable versions for **Windows**, **macOS**, and **Linux** are available from the official website:
 
-### Changelog
+🔗 https://www.shutterencoder.com/#downloads
 
-https://www.shutterencoder.com/changelog/
+---
 
-### Build from Source
+### 📝 Changelog
+
+🔗 https://www.shutterencoder.com/changelog/
+
+---
+
+### 🧱 Build from Source
 
 - Required third-party dependencies must be downloaded into the `Library` folder.
 - Fonts are bundled directly within the custom Java Runtime Environment (JRE).
 
-Shutter Encoder uses a custom Java runtime built with **jlink**, based on **Java 25**, using the following configuration:
+Shutter Encoder uses a **custom Java runtime** built with **jlink**, based on **Java 25**, using the following configuration:
 
 <code>--compress 0 --strip-debug --no-header-files --no-man-pages --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.security.sasl,java.xml,jdk.crypto.ec --output JRE</code>
 
-### Open-Source Code Used
+---
 
-- [https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) for upscaling
-- [https://github.com/facebookresearch/demucs](https://github.com/facebookresearch/demucs) for Audio separation
-- [https://github.com/Softcatala/whisper-ctranslate2](https://github.com/Softcatala/whisper-ctranslate2) for Audio transcription
-- [https://github.com/jantic/DeOldify](https://github.com/jantic/DeOldify) for Colorize
-- [https://github.com/nadermx/backgroundremover](https://github.com/nadermx/backgroundremover) for Background remover
-- [https://github.com/yt-dlp/yt-dlp](https://github.com/yt-dlp/yt-dlp) for Web video
+### 📚 Open-Source Code Used
+
+- [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) — Upscaling
+- [demucs](https://github.com/facebookresearch/demucs) — Audio separation
+- [whisper-ctranslate2](https://github.com/Softcatala/whisper-ctranslate2) — Audio transcription
+- [DeOldify](https://github.com/jantic/DeOldify) — Colorization
+- [backgroundremover](https://github.com/nadermx/backgroundremover) — Background removal
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) — Web video downloading
 
 ---
