@@ -87,7 +87,7 @@ Shutter Encoder uses a **custom Java runtime** built with **jlink**, based on **
 
 - [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) — High-performance neural network inference framework (used internally for AI-based upscaling)
 - [whisper-ctranslate2](https://github.com/Softcatala/whisper-ctranslate2) — High-Performance Speech-to-Text (used for audio transcription)
-- [backgroundremover](https://github.com/nadermx/backgroundremover) — AI-Powered Image/Video Matting (used for background removal)
+- [BackgroundRemover](https://github.com/nadermx/backgroundremover) — AI-Powered Image/Video Matting (used for background removal)
 - [Demucs](https://github.com/facebookresearch/demucs) — Music Source Separation (used for audio separation)
 - [DeOldify](https://github.com/jantic/DeOldify) — Image and Video Restoration (used of colorization)
 - [FFmpeg](https://ffmpeg.org/) — Audio/video encoding, decoding, filtering, muxing and transcoding (core processing engine of Shutter Encoder)
