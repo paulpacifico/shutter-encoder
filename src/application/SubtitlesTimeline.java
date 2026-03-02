@@ -147,6 +147,7 @@ public class SubtitlesTimeline {
 	private static int MouseTextWidth;
 	private static int MouseTextLocationX;
 	
+	@SuppressWarnings("serial")
 	public SubtitlesTimeline() {
 		
     	frame = new JFrame();

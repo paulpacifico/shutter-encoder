@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.swing.BorderFactory;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -1536,362 +1537,384 @@ public class Settings {
 		
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void loadSettings() {	
 		
-	try {
-		if (Shutter.settingsXML.exists())
-		{
-			File fXmlFile = Shutter.settingsXML;
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-			doc.getDocumentElement().normalize();
-		
-			NodeList nList = doc.getElementsByTagName("Component");
+		try {
+			if (Shutter.settingsXML.exists())
+			{
+				File fXmlFile = Shutter.settingsXML;
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(fXmlFile);
+				doc.getDocumentElement().normalize();
 			
-			for (int temp = 0; temp < nList.getLength(); temp++)
-			{								
-				Node nNode = nList.item(temp);
+				NodeList nList = doc.getElementsByTagName("Component");
 				
-				if (nNode.getNodeType() == Node.ELEMENT_NODE)
-				{
-					Element eElement = (Element) nNode;
-
-					for (Component p : frame.getContentPane().getComponents())
-					{		
-						if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-						{								
-							if (p instanceof JPanel && p.getName().equals("backgroundPanel") == false)
-							{						
-								//Value
-								String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
-								String s2[] = s[1].split(",");
-								((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
-								
-								if (p.getName().equals("accentColor"))
-									Utils.themeColor = accentColor.getBackground();
-							}
-							else if (p instanceof JCheckBox)
-							{
-								//Value
-								if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-								{
-									if (((JCheckBox) p).isSelected() == false)
-										((JCheckBox) p).doClick();
+				for (int temp = 0; temp < nList.getLength(); temp++)
+				{								
+					Node nNode = nList.item(temp);
+					
+					if (nNode.getNodeType() == Node.ELEMENT_NODE)
+					{
+						Element eElement = (Element) nNode;
+	
+						for (Component p : frame.getContentPane().getComponents())
+						{		
+							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
+							{								
+								if (p instanceof JPanel && p.getName().equals("backgroundPanel") == false)
+								{						
+									//Value
+									String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
+									String s2[] = s[1].split(",");
+									((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
+									
+									if (p.getName().equals("accentColor"))
+										Utils.themeColor = accentColor.getBackground();
 								}
-								else
-								{
-									if (((JCheckBox) p).isSelected())
-										((JCheckBox) p).doClick();
-								}
-																	
-								//State
-								((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-								
-								//Visible
-								((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-							}
-							else if (p instanceof JLabel 
-									&& p.getName().equals("backgroundPanel") == false
-									&& p.getName().equals("btnReset") == false
-									&& p.getName().equals("donate") == false
-									&& p.getName().equals("topPanel") == false)
-							{			
-								//Value
-								((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-																	
-								//State
-								((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-								
-								//Visible
-								((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));	
-								
-								if (p.getName().equals("lblDestination1")
-									&& eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(System.getProperty("user.home") + "/Desktop") == false
-									&& eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(System.getProperty("user.home") + "\\Desktop") == false)
-								{
-									Shutter.lblDestination1.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-									Shutter.caseChangeFolder1.setSelected(true);
-									Shutter.caseOpenFolderAtEnd1.setSelected(false);
-								}
-								
-							}
-							else if (p instanceof JComboBox)
-							{				
-								//Value
-								((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-								
-								//State
-								((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-								
-								//Visible
-								((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-							}
-							else if (p instanceof JTextField)
-							{
-								if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+								else if (p instanceof JCheckBox)
 								{
 									//Value
-									((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
+									{
+										if (((JCheckBox) p).isSelected() == false)
+											((JCheckBox) p).doClick();
+									}
+									else
+									{
+										if (((JCheckBox) p).isSelected())
+											((JCheckBox) p).doClick();
+									}
 																		
 									//State
-									((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 									
 									//Visible
-									((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+								}
+								else if (p instanceof JLabel 
+										&& p.getName().equals("backgroundPanel") == false
+										&& p.getName().equals("btnReset") == false
+										&& p.getName().equals("donate") == false
+										&& p.getName().equals("topPanel") == false)
+								{			
+									//Value
+									((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+																		
+									//State
+									((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									
+									//Visible
+									((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));	
+									
+									if (p.getName().equals("lblDestination1")
+										&& eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(System.getProperty("user.home") + "/Desktop") == false
+										&& eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(System.getProperty("user.home") + "\\Desktop") == false)
+									{
+										Shutter.lblDestination1.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										Shutter.caseChangeFolder1.setSelected(true);
+										Shutter.caseOpenFolderAtEnd1.setSelected(false);
+									}
+									
+								}
+								else if (p instanceof JComboBox)
+								{				
+									//Value
+									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									
+									//State
+									((JComboBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+									
+									//Visible
+									((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+								}
+								else if (p instanceof JTextField)
+								{
+									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									{
+										//Value
+										((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+																			
+										//State
+										((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+										
+										//Visible
+										((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									}
+								}
+							}
+						}
+						
+						for (Component p : Shutter.statusBar.getComponents())
+						{
+							if (p.getName() != "" && p.getName() != null && p.getName().equals("comboAccel") == false && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
+							{
+								if (p instanceof JComboBox)
+								{															
+									//Value
+									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+									
+									//Visible
+									((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+									
+								}
+							}
+						}
+						
+						//Open folder at end
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseOpenFolderAtEnd1"))
+						{
+							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+								Shutter.caseOpenFolderAtEnd1.setSelected(true);
+							else
+								Shutter.caseOpenFolderAtEnd1.setSelected(false);
+						}
+						
+						//Change folder
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseChangeFolder1"))
+						{
+							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == false
+								&& lblDestination1.getText().equals(System.getProperty("user.home") + "/Desktop") == false
+								&& lblDestination1.getText().equals(System.getProperty("user.home") + "\\Desktop") == false)
+							{
+								Shutter.caseChangeFolder1.doClick();
+							}
+						}
+						
+						//casePrefix
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePrefix"))
+						{
+							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+							{
+								Shutter.casePrefix.setSelected(true);
+								Shutter.txtPrefix.setEnabled(true);
+							}
+							else
+								Shutter.casePrefix.setSelected(false);
+						}
+						
+						//Prefix
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtPrefix"))
+						{
+							if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+							{
+								Shutter.txtPrefix.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							}
+							else
+								Shutter.txtPrefix.setText("");
+						}
+						
+						//btnExtension
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("btnExtension"))
+						{
+							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+							{
+								Shutter.btnExtension.setSelected(true);
+								Shutter.txtExtension.setEnabled(true);
+							}
+							else
+								Shutter.btnExtension.setSelected(false);
+						}
+							
+						//Suffix
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
+						{
+							if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+							{
+								Shutter.txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							}
+							else
+								Shutter.txtExtension.setText("");
+						}
+						
+						//caseSubFolder
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseSubFolder"))
+						{
+							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+							{
+								Shutter.caseSubFolder.setSelected(true);							
+								Shutter.txtSubFolder.setEnabled(true);
+							}
+							else
+								Shutter.caseSubFolder.setSelected(false);
+						}
+						
+						//SubFolder
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtSubFolder"))
+						{
+							if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+							{
+								Shutter.txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							}
+							else
+								Shutter.txtSubFolder.setText("");
+						}
+						
+						//Volume video player
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderVolume"))
+						{
+							VideoPlayer.sliderVolume.setValue(Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+						}
+						
+						//casePlaySound video player
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePlaySound"))
+						{
+							VideoPlayer.casePlaySound.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+						}
+						
+						//caseVuMeter video player
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseVuMeter"))
+						{
+							VideoPlayer.caseVuMeter.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+						}	
+						
+						//caseShowWaveform video player
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseShowWaveform"))
+						{
+							VideoPlayer.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+						}	
+											
+						//FTP
+						if (eElement.getParentNode().getNodeName().equals("Ftp"))
+						{		
+							if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textFtp"))
+							{
+								Ftp.textFtp.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							}
+							else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textUser"))
+							{
+								Ftp.textUser.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							}
+						}
+						
+						//CaseSendMail
+						if (eElement.getParentNode().getNodeName().equals("caseSendMail"))
+						{
+							//Value
+							Shutter.textMail.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						
+						//CaseStream
+						if (eElement.getParentNode().getNodeName().equals("caseStream"))
+						{
+							//Value
+							Shutter.textStream.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						
+						//caseMetadata
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseMetadata"))
+						{
+							videoWebCaseMetadata = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						
+						//customFFmpeg
+						if (btnCustomFFmpegPath.isSelected() && txtCustomFFmpegPath.getText().equals("") == false)
+						{
+							FFMPEG.PathToFFMPEG = txtCustomFFmpegPath.getText();
+						}
+						
+						//warning values						
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cutKeyframesIsDisplayed"))
+						{											
+							Shutter.cutKeyframesIsDisplayed = true;
+						}
+						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("rewrapKeyframesIsDisplayed"))
+						{											
+							Shutter.rewrapKeyframesIsDisplayed = true;
+						}
+						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("conformKeyframesIsDisplayed"))
+						{											
+							Shutter.conformKeyframesIsDisplayed = true;
+						}
+						
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("dayOfYear"))
+						{
+							savedDayOfYear = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("frameLocation"))
+						{
+							String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
+							int x = Integer.parseInt(s[0]);
+							int y = Integer.parseInt(s[1]);
+							int width = Integer.parseInt(s[2]);
+							int height = Integer.parseInt(s[3]);
+							
+							boolean canBeDisplayed = false;
+	
+					        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					        GraphicsDevice[] screens = ge.getScreenDevices();
+	
+					        for (GraphicsDevice screen : screens) {
+					            Rectangle bounds = screen.getDefaultConfiguration().getBounds();
+					            if (bounds.contains(x, y)) {
+					            	canBeDisplayed = true;
+					                break;
+					            }
+					        }
+	
+							if (canBeDisplayed && Shutter.minHeight == 731)
+							{
+								Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
+							}
+						}
+						
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("consoleLocation"))
+						{
+							String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
+							int x = Integer.parseInt(s[0]);
+							int y = Integer.parseInt(s[1]);
+							int width = Integer.parseInt(s[2]);
+							int height = Integer.parseInt(s[3]);
+							
+							boolean canBeDisplayed = false;
+	
+					        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+					        GraphicsDevice[] screens = ge.getScreenDevices();
+	
+					        for (GraphicsDevice screen : screens) {
+					            Rectangle bounds = screen.getDefaultConfiguration().getBounds();
+					            if (bounds.contains(x, y)) {
+					            	canBeDisplayed = true;
+					                break;
+					            }
+					        }
+					        
+							if (canBeDisplayed)
+							{
+								Console.savedBounds = new Rectangle(x, y, width, height);
+							}
+						}
+						
+						//Functions values						
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboFonctions"))
+						{											
+							String[] items = eElement.getElementsByTagName("Model").item(0).getFirstChild().getTextContent().split("\\|");
+							int savedItemCount = Integer.valueOf(eElement.getElementsByTagName("ItemsCount").item(0).getFirstChild().getTextContent());
+														
+							if (Shutter.functionsList.length == savedItemCount)
+							{
+								Shutter.comboFonctions.setModel(new DefaultComboBoxModel(items));
+								Shutter.comboFonctions.setSelectedItem("");
+								
+								ManageFunctions.selectedFunctions = items;
+								
+								if (Shutter.functionsList.length != items.length)
+								{						
+									ManageFunctions.selectAll.setSelected(false);
 								}
 							}
 						}
 					}
-					
-					for (Component p : Shutter.statusBar.getComponents())
-					{
-						if (p.getName() != "" && p.getName() != null && p.getName().equals("comboAccel") == false && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-						{
-							if (p instanceof JComboBox)
-							{															
-								//Value
-								((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-								
-								//Visible
-								((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-								
-							}
-						}
-					}
-					
-					//Open folder at end
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseOpenFolderAtEnd1"))
-					{
-						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
-							Shutter.caseOpenFolderAtEnd1.setSelected(true);
-						else
-							Shutter.caseOpenFolderAtEnd1.setSelected(false);
-					}
-					
-					//Change folder
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseChangeFolder1"))
-					{
-						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == false
-							&& lblDestination1.getText().equals(System.getProperty("user.home") + "/Desktop") == false
-							&& lblDestination1.getText().equals(System.getProperty("user.home") + "\\Desktop") == false)
-						{
-							Shutter.caseChangeFolder1.doClick();
-						}
-					}
-					
-					//casePrefix
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePrefix"))
-					{
-						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
-						{
-							Shutter.casePrefix.setSelected(true);
-							Shutter.txtPrefix.setEnabled(true);
-						}
-						else
-							Shutter.casePrefix.setSelected(false);
-					}
-					
-					//Prefix
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtPrefix"))
-					{
-						if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
-						{
-							Shutter.txtPrefix.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-						else
-							Shutter.txtPrefix.setText("");
-					}
-					
-					//btnExtension
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("btnExtension"))
-					{
-						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
-						{
-							Shutter.btnExtension.setSelected(true);
-							Shutter.txtExtension.setEnabled(true);
-						}
-						else
-							Shutter.btnExtension.setSelected(false);
-					}
-						
-					//Suffix
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
-					{
-						if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
-						{
-							Shutter.txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-						else
-							Shutter.txtExtension.setText("");
-					}
-					
-					//caseSubFolder
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseSubFolder"))
-					{
-						if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
-						{
-							Shutter.caseSubFolder.setSelected(true);							
-							Shutter.txtSubFolder.setEnabled(true);
-						}
-						else
-							Shutter.caseSubFolder.setSelected(false);
-					}
-					
-					//SubFolder
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtSubFolder"))
-					{
-						if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
-						{
-							Shutter.txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-						else
-							Shutter.txtSubFolder.setText("");
-					}
-					
-					//Volume video player
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderVolume"))
-					{
-						VideoPlayer.sliderVolume.setValue(Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-					}
-					
-					//casePlaySound video player
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePlaySound"))
-					{
-						VideoPlayer.casePlaySound.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-					}
-					
-					//caseVuMeter video player
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseVuMeter"))
-					{
-						VideoPlayer.caseVuMeter.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-					}	
-					
-					//caseShowWaveform video player
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseShowWaveform"))
-					{
-						VideoPlayer.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-					}	
-										
-					//FTP
-					if (eElement.getParentNode().getNodeName().equals("Ftp"))
-					{		
-						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textFtp"))
-						{
-							Ftp.textFtp.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textUser"))
-						{
-							Ftp.textUser.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-						}
-					}
-					
-					//CaseSendMail
-					if (eElement.getParentNode().getNodeName().equals("caseSendMail"))
-					{
-						//Value
-						Shutter.textMail.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-					}
-					
-					//CaseStream
-					if (eElement.getParentNode().getNodeName().equals("caseStream"))
-					{
-						//Value
-						Shutter.textStream.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-					}
-					
-					//caseMetadata
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseMetadata"))
-					{
-						videoWebCaseMetadata = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-					}
-					
-					//customFFmpeg
-					if (btnCustomFFmpegPath.isSelected() && txtCustomFFmpegPath.getText().equals("") == false)
-					{
-						FFMPEG.PathToFFMPEG = txtCustomFFmpegPath.getText();
-					}
-					
-					//warning values						
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cutKeyframesIsDisplayed"))
-					{											
-						Shutter.cutKeyframesIsDisplayed = true;
-					}
-					else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("rewrapKeyframesIsDisplayed"))
-					{											
-						Shutter.rewrapKeyframesIsDisplayed = true;
-					}
-					else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("conformKeyframesIsDisplayed"))
-					{											
-						Shutter.conformKeyframesIsDisplayed = true;
-					}
-					
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("dayOfYear"))
-					{
-						savedDayOfYear = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-					}
-					
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("frameLocation"))
-					{
-						String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
-						int x = Integer.parseInt(s[0]);
-						int y = Integer.parseInt(s[1]);
-						int width = Integer.parseInt(s[2]);
-						int height = Integer.parseInt(s[3]);
-						
-						boolean canBeDisplayed = false;
-
-				        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-				        GraphicsDevice[] screens = ge.getScreenDevices();
-
-				        for (GraphicsDevice screen : screens) {
-				            Rectangle bounds = screen.getDefaultConfiguration().getBounds();
-				            if (bounds.contains(x, y)) {
-				            	canBeDisplayed = true;
-				                break;
-				            }
-				        }
-
-						if (canBeDisplayed && Shutter.minHeight == 731)
-						{
-							Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
-						}
-					}
-					
-					if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("consoleLocation"))
-					{
-						String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
-						int x = Integer.parseInt(s[0]);
-						int y = Integer.parseInt(s[1]);
-						int width = Integer.parseInt(s[2]);
-						int height = Integer.parseInt(s[3]);
-						
-						boolean canBeDisplayed = false;
-
-				        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-				        GraphicsDevice[] screens = ge.getScreenDevices();
-
-				        for (GraphicsDevice screen : screens) {
-				            Rectangle bounds = screen.getDefaultConfiguration().getBounds();
-				            if (bounds.contains(x, y)) {
-				            	canBeDisplayed = true;
-				                break;
-				            }
-				        }
-				        
-						if (canBeDisplayed)
-						{
-							Console.savedBounds = new Rectangle(x, y, width, height);
-						}
-					}
-				}
-			}		
-		}							
-	} catch (Exception e) {}		
+				}		
+			}							
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 	
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void saveSettings() {	
 					
 		try {
@@ -2625,7 +2648,7 @@ public class Settings {
 
 				warning.appendChild(component);				
 			}
-		
+					
 			Calendar calendar = Calendar.getInstance();
 			int currentDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);  
 			
@@ -2663,6 +2686,52 @@ public class Settings {
 			warning.appendChild(component);
 			
 			root.appendChild(warning);
+			
+			//Set Model before saving
+			if (ManageFunctions.selectedFunctions != null)
+			{
+				Shutter.comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
+			}
+			else
+				Shutter.comboFonctions.setModel(new DefaultComboBoxModel(Shutter.functionsList));
+			
+			//Saving functions values			
+			Element functions = document.createElement("Functions");
+						
+			component = document.createElement("Component");
+			
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JComboBox"));
+			component.appendChild(cType);
+												
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode(Shutter.comboFonctions.getName()));
+			component.appendChild(cName);
+			
+			//Model
+			ComboBoxModel<?> model = Shutter.comboFonctions.getModel();
+			StringBuilder items = new StringBuilder();
+			for (int i = 0; i < model.getSize(); i++) {
+			    if (i > 0) items.append("|");
+			    items.append(model.getElementAt(i).toString());
+			}
+			cValue = document.createElement("Model");
+			cValue.appendChild(document.createTextNode(items.toString()));
+			component.appendChild(cValue);
+			
+			//Count
+			cValue = document.createElement("ItemsCount");
+			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.functionsList.length)));
+			component.appendChild(cValue);
+
+			functions.appendChild(component);
+					
+			root.appendChild(functions);
 			
 			// creation du fichier XML
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();

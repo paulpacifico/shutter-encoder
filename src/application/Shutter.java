@@ -1281,7 +1281,7 @@ public class Shutter {
 
 			public void eventDispatched(AWTEvent event) {
 
-				if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false) {
+				if (comboFonctions.getSelectedItem() != null && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false) {
 					
 					KeyEvent ke = (KeyEvent) event;
 
@@ -2159,7 +2159,7 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "serial" })
 	private void grpChooseFiles() {
 
 		grpChooseFiles = new JPanel() {
@@ -3270,7 +3270,7 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
 	private void grpChooseFunction() {
 
 		grpChooseFunction = new JPanel() {
@@ -3975,6 +3975,7 @@ public class Shutter {
 
 				language.getProperty("itemAITools"), language.getProperty("functionSeparation"), language.getProperty("functionTranscribe"),
 				language.getProperty("functionTranslate"), language.getProperty("functionColorize"), language.getProperty("functionBackgroundRemover"),
+				
 				language.getProperty("itemNoConversion"), language.getProperty("functionCut"),
 				language.getProperty("functionReplaceAudio"), language.getProperty("functionRewrap"),
 				language.getProperty("functionConform"), language.getProperty("functionMerge"),
@@ -4004,9 +4005,11 @@ public class Shutter {
 				language.getProperty("functionBlackDetection"), language.getProperty("functionOfflineDetection"),
 				"VMAF", "FrameMD5",
 
-				language.getProperty("itemDownload"), language.getProperty("functionWeb")
+				language.getProperty("itemDownload"), language.getProperty("functionWeb"),
+				
+				"- " + language.getProperty("btnManage").toUpperCase() + " -"
 
-		};
+		};    
 
 		comboFonctions = new JComboBox<String[]>();
 		comboFonctions.setName("comboFonctions");
@@ -4019,7 +4022,7 @@ public class Shutter {
 		comboFonctions.getModel().setSelectedItem("");
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
-
+		
 		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
 		{
 			comboFonctions.removeItem("H.266");
@@ -4045,7 +4048,7 @@ public class Shutter {
 					comboFonctions.setSelectedIndex(comboFonctions.getSelectedIndex() + 1);
 				}
 
-				if (newList.isEmpty() == false)
+				if (newList.isEmpty() == false && comboFonctions.getSelectedItem().toString().contains(language.getProperty("btnManage").toUpperCase()) == false)
 				{
 					comboFonctions.hidePopup();
 					comboFonctions.setModel(new DefaultComboBoxModel(newList.toArray()));
@@ -4068,8 +4071,23 @@ public class Shutter {
 						frame.setOpacity(1.0f);
 					}
 				}
+				
+				if (comboFonctions.getSelectedItem().toString().contains(language.getProperty("btnManage").toUpperCase()))
+				{		
+					changeWidth(false);
+					
+					try {
+						frame.setOpacity(0.5f);
+					} catch (Exception er) {}
+					
+					new ManageFunctions();	
+					frame.setOpacity(1.0f);
+					
+					comboFonctions.setSelectedItem(null);
+				}
 
-				if (frame.getWidth() > 654) {
+				if (frame.getWidth() > 654)
+				{
 					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload
 																				// the frame
 				}
@@ -4085,7 +4103,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 
 				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")
-					|| comboFonctions.getEditor().getItem().toString().contains("exiftool"))
+				|| comboFonctions.getEditor().getItem().toString().contains("exiftool"))
 				{
 					changeFilters();
 					changeWidth(false);
@@ -4110,8 +4128,10 @@ public class Shutter {
 					if (comboFonctions.getEditor().toString().length() <= 1)
 						text = String.valueOf(e.getKeyChar()).toLowerCase();
 
-					if (Character.isLetterOrDigit(e.getKeyChar())) {
+					if (Character.isLetterOrDigit(e.getKeyChar()))
+					{						
 						comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
+						
 						text += String.valueOf(e.getKeyChar()).toLowerCase();
 
 						ArrayList<String> newList = new ArrayList<String>();
@@ -4179,8 +4199,16 @@ public class Shutter {
 							changeFunction(true);
 						}
 
-					} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-						comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
+					}
+					else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE)
+					{
+						if (ManageFunctions.selectedFunctions != null)
+						{
+							comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
+						}
+						else
+							comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
+						
 						comboFonctions.getEditor().setItem("");
 						comboFonctions.hidePopup();
 						changeFilters();
@@ -4367,6 +4395,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpDestination() {
 
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -5612,6 +5641,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpProgress() {
 
 		grpProgression = new JPanel() {
@@ -5770,6 +5800,7 @@ public class Shutter {
 		});
 	}
 
+	@SuppressWarnings("serial")
 	private void grpResolution() {
 
 		grpResolution = new JPanel() {
@@ -5892,7 +5923,6 @@ public class Shutter {
 						&& comboFonctions.getSelectedItem().equals("VMAF") == false
 						&& comboFonctions.getSelectedItem().equals("FrameMD5") == false
 						&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
-						&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
 						&& (RenderQueue.frame == null
 								|| RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)
 						&& comboResolution.getSelectedItem().toString().contains("AI") == false) {
@@ -6283,6 +6313,7 @@ public class Shutter {
 		grpResolution.add(comboImageOption);
 	}
 
+	@SuppressWarnings("serial")
 	private void grpImageFilter() {
 
 		grpImageFilter = new JPanel() {
@@ -6521,6 +6552,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpSetTimecode() {
 
 		grpSetTimecode = new JPanel() {
@@ -6809,6 +6841,7 @@ public class Shutter {
 		grpSetTimecode.add(comboReadAudioTimecode);
 	}
 
+	@SuppressWarnings("serial")
 	private void grpSetAudio() {
 
 		grpSetAudio = new JPanel() {
@@ -8775,6 +8808,7 @@ public class Shutter {
 		}
 	}
 		
+	@SuppressWarnings("serial")
 	private void grpAudio() {
 
 		grpAudio = new JPanel() {
@@ -9059,6 +9093,7 @@ public class Shutter {
 			grpAudio.add(lblAudioIs);
 	}
 
+	@SuppressWarnings("serial")
 	private void grpCrop() {
 
 		grpCrop = new JPanel() {
@@ -10223,6 +10258,7 @@ public class Shutter {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private void grpOverlay() {
 
 		grpOverlay = new JPanel() {
@@ -12304,6 +12340,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpSubtitles() {
 
 		grpSubtitles = new JPanel() {
@@ -13113,6 +13150,7 @@ public class Shutter {
 			comboSubsSource.setEnabled(true);
 	}
 
+	@SuppressWarnings("serial")
 	private void grpWatermark() {
 
 		grpWatermark = new JPanel() {
@@ -14032,6 +14070,7 @@ public class Shutter {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private void grpColorimetry() {
 
 		grpColorimetry = new JPanel() {
@@ -14627,6 +14666,7 @@ public class Shutter {
 		});
 	}
 
+	@SuppressWarnings("serial")
 	private void grpImageAdjustement() {
 
 		grpImageAdjustement = new JPanel() {
@@ -15800,6 +15840,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpCorrections() {
 
 		grpCorrections = new JPanel() {
@@ -16089,6 +16130,7 @@ public class Shutter {
 		grpCorrections.add(sliderSmoothExposure);
 	}
 
+	@SuppressWarnings("serial")
 	private void grpTransitions() {
 
 		grpTransitions = new JPanel() {
@@ -16578,6 +16620,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpImageSequence() {
 
 		grpImageSequence = new JPanel() {
@@ -16751,6 +16794,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpAdvanced() {
 
 		grpAdvanced = new JPanel() {
@@ -17894,6 +17938,7 @@ public class Shutter {
 
 	}
 
+	@SuppressWarnings("serial")
 	private void grpBitrate() {
 
 		grpBitrate = new JPanel() {
@@ -19987,22 +20032,6 @@ public class Shutter {
 				|| language.getProperty("functionWeb").equals(function)) {
 			changeWidth(false);
 			changeSections(anim);
-
-		} else if (language.getProperty("itemMyFunctions").equals(function)) {
-			changeWidth(false);
-			changeSections(anim);
-
-			if (Functions.frame == null) {
-				new Functions();
-			} else {
-				if (Functions.listeDeFonctions.getModel().getSize() > 0) {
-					Functions.lblSave.setVisible(false);
-					Functions.lblDrop.setVisible(false);
-				}
-
-				Functions.frame.setVisible(true);
-			}
-			Utils.changeFrameVisibility(Functions.frame, false);
 		}
 
 		// Render queue
@@ -20024,7 +20053,6 @@ public class Shutter {
 		&& comboFonctions.getSelectedItem().equals("VMAF") == false
 		&& comboFonctions.getSelectedItem().equals("FrameMD5") == false
 		&& comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) == false
-		&& comboFonctions.getSelectedItem().equals(language.getProperty("itemMyFunctions")) == false
 		&& (RenderQueue.frame == null || RenderQueue.frame != null && RenderQueue.frame.isVisible() == false)
 		&& comboResolution.getSelectedItem().toString().contains("AI") == false) {
 			iconList.setVisible(true);
@@ -24284,8 +24312,7 @@ public class Shutter {
 								{
 									addToList.setText(language.getProperty("fileVideo"));
 								}
-								else if (language.getProperty("itemMyFunctions").equals(function)
-								|| language.getProperty("functionTranslate").equals(function)
+								else if (language.getProperty("functionTranslate").equals(function)
 								|| language.getProperty("functionColorize").equals(function)
 								|| language.getProperty("functionBackgroundRemover").equals(function))
 								{
@@ -26277,7 +26304,7 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 
 		if (isSelected)
 		{
-			if (value.toString().contains(":") || value.toString().equals(Shutter.language.getProperty("itemMyFunctions")))
+			if (value.toString().contains(":") || value.toString().contains(Shutter.language.getProperty("btnManage").toUpperCase()))
 			{
 				setBackground(Utils.c225);
 			}
@@ -26288,13 +26315,13 @@ class ComboBoxRenderer extends DefaultListCellRenderer {
 			setBackground(Utils.c42);
 		}
 
-		if (value.toString().contains(":") || value.toString().equals(Shutter.language.getProperty("itemMyFunctions")))
+		if (value.toString().contains(":") || value.toString().contains(Shutter.language.getProperty("btnManage").toUpperCase()))
 		{
 			setForeground(Utils.themeColor);
 			setFont(new Font(Shutter.boldFont, Font.BOLD, 12));
-		} else {
-			setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		}
+		else
+			setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));		
 
 		list.setFixedCellHeight(18);
 

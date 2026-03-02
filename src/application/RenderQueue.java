@@ -618,7 +618,7 @@ import settings.FunctionUtils;
 		
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
 	private void table() {
 		
 		JLabel columnFile = new JLabel(Shutter.language.getProperty("columnFile"));

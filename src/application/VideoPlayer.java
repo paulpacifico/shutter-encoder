@@ -2788,6 +2788,7 @@ public class VideoPlayer {
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
@@ -3232,6 +3233,7 @@ public class VideoPlayer {
 		});		
 	}
 	
+	@SuppressWarnings("serial")
 	private void player() {		
 
     	player = new JPanel() {
@@ -3639,6 +3641,7 @@ public class VideoPlayer {
 		Shutter.frame.getContentPane().add(player);		
 	}
     	    
+	@SuppressWarnings("serial")
 	private void sliders() {
 		
 		slider = new JSlider();
@@ -3718,7 +3721,12 @@ public class VideoPlayer {
            	
 		                } while (splitTime < playerOutMark);
 	                }
-	                	                
+	                	
+	                //Waveform
+	                if (waveformIcon.getIcon() != null) {
+	                    waveformIcon.getIcon().paintIcon(this, g2, 0, 0);
+	                }
+	                
 	                //Masks
 	                g2.setColor(new Color(35,35,40,120)); 
 	                if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
@@ -3798,7 +3806,6 @@ public class VideoPlayer {
 		waveformIcon.setOpaque(false);
 		waveformIcon.setLayout(null);
 		waveformIcon.setSize(waveformContainer.getSize());
-		waveformContainer.add(waveformIcon);
 
 		//Important
 		playerOutMark = waveformContainer.getWidth() - 2;

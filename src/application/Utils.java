@@ -2147,15 +2147,15 @@ public class Utils extends Shutter {
 							fileLocY = fileName.getLocation().y;
 							fileName.setSize(10,10); //Workaround to not reset the location
 							
-							VideoPlayer.player.add(fileName);
+							//VideoPlayer.player.add(fileName);
 							
 							//Overimage need to be the last component added
 							if (caseEnableCrop.isSelected())
-							{
+							{/*
 								VideoPlayer.player.remove(selection);
 								VideoPlayer.player.remove(overImage);
 								VideoPlayer.player.add(selection);
-								VideoPlayer.player.add(overImage);
+								VideoPlayer.player.add(overImage);*/
 							}		
 							
 							fileName.repaint();

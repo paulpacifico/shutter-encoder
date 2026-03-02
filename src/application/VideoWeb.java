@@ -340,6 +340,7 @@ public class VideoWeb {
 		
 	}
 
+	@SuppressWarnings("serial")
 	private void grpURL() {
 		
 		grpURL = new JPanel() {
