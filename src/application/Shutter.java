@@ -15104,8 +15104,8 @@ public class Shutter {
 
 		sliderHUE = new JSlider();
 		sliderHUE.setName("sliderHUE");
-		sliderHUE.setMaximum(100);
-		sliderHUE.setMinimum(-100);
+		sliderHUE.setMaximum(180);
+		sliderHUE.setMinimum(-180);
 		sliderHUE.setValue(0);
 		sliderHUE.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		sliderHUE.setBounds(sliderExposure.getX(), lblHUE.getY() + lblHUE.getHeight() - 2, sliderExposure.getWidth(),
@@ -26693,3 +26693,4 @@ class AntiAliasedRoundRectangle extends RoundRectangle2D.Double {
 		g2d.fill(this);
 	}
 }
+
