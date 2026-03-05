@@ -313,6 +313,9 @@ public class VideoEncoders extends Shutter {
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 						}
 						
+						//InputOptions
+						String inputOptions = FunctionUtils.setInputOptions();
+						
 						//Loop image					
 						String loop = FunctionUtils.setLoop(extension);	
 						
@@ -1035,7 +1038,7 @@ public class VideoEncoders extends Shutter {
 									FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd + output);
 								}
 								else
-									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);
+									FFMPEG.run(inputOptions + loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);
 								
 								do {
 									Thread.sleep(10);
@@ -1048,7 +1051,7 @@ public class VideoEncoders extends Shutter {
 										FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
 									}
 									else
-										FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
+										FFMPEG.run(inputOptions + loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									do {
 										Thread.sleep(10);
@@ -1069,11 +1072,11 @@ public class VideoEncoders extends Shutter {
 						else if (FFPROBE.audioOnly)
 						{
 							progressBar1.setMaximum(FFPROBE.totalLength / 1000);
-							FFMPEG.run(loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
+							FFMPEG.run(inputOptions + loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
 						}
 						else
 						{
-							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
+							FFMPEG.run(gpuDecoding + inputOptions + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
 						}
 
 						do {
@@ -1084,7 +1087,7 @@ public class VideoEncoders extends Shutter {
 						{						
 							if (FFMPEG.cancelled == false && comboResolution.getSelectedItem().toString().contains("AI") == false)
 							{
-								FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFMPEG.run(gpuDecoding + inputOptions + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 														
 								do {
 									Thread.sleep(100);

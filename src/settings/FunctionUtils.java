@@ -954,6 +954,16 @@ public class FunctionUtils extends Shutter {
         return sb.toString().substring(0, 10);
     }
 	
+	public static String setInputOptions() {	
+		
+		if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+		{
+			return " -copyts";
+		}
+		
+		return "";
+	}
+	
 	public static String setLoop(String extension) {	
 		
 		if (caseEnableSequence.isSelected() == false)

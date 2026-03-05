@@ -1403,39 +1403,9 @@ public class Shutter {
 							if (ke.getKeyCode() == 109 && VideoPlayer.sliderVolume.getValue() > 0) {
 								VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() - 10);
 							}
-							if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
-								VideoPlayer.fullscreenPlayer = false;
-
-								topPanel.setVisible(true);
-								grpChooseFiles.setVisible(true);
-								grpChooseFunction.setVisible(true);
-								grpDestination.setVisible(true);
-								grpProgression.setVisible(true);
-								statusBar.setVisible(true);
-
-								frame.getContentPane().setBackground(Utils.bg32);
-
-								changeSections(false);
-
-								if (VideoPlayer.isPiping == false) {
-									VideoPlayer.setPlayerButtons(true);
-
-									VideoPlayer.mouseIsPressed = false;
-
-									VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use
-																								// VideoPlayer.resizeAll
-																								// and reload the frame
-								}
-
-								VideoPlayer.resizeAll();
-
-								Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
-								Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
-								shape1.add(shape2);
-								frame.setShape(shape1);
-
-								if (VideoPlayer.isPiping == false)
-									VideoPlayer.btnPlay.requestFocus();
+							if (ke.getKeyCode() == KeyEvent.VK_ESCAPE)
+							{	
+								VideoPlayer.toggleFullscreen();
 							}
 						}
 
@@ -20534,6 +20504,10 @@ public class Shutter {
 
 	private static void toggleFullscreen() {
 
+		//Avoid glitch when resizing while playing
+		if (VideoPlayer.playerIsPlaying())
+			VideoPlayer.playerLoop = false;
+		
 		// IMPORTANT
 		if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
 		{
@@ -26720,4 +26694,3 @@ class AntiAliasedRoundRectangle extends RoundRectangle2D.Double {
 		g2d.fill(this);
 	}
 }
-

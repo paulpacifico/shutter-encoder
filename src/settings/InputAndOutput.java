@@ -72,7 +72,7 @@ public class InputAndOutput extends Shutter {
 			
 			if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 			{
-				outPoint += " -f segment -reset_timestamps 1 -segment_time " + VideoPlayer.splitValue.getText();
+				outPoint += " -f segment -segment_time " + VideoPlayer.splitValue.getText();
 			}
 		}
 		else

@@ -1172,6 +1172,11 @@ public static boolean hasDolbyVision = false;
 
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
+		if (processSetLength != null && processSetLength.isAlive())
+		{
+			return;
+		}
+		
 		processSetLength = new Thread(new Runnable()  {
 			
 			@Override
