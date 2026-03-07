@@ -188,6 +188,7 @@ public class Utils extends Shutter {
 	
 	public static Thread loadEncFile;
 	public static String currentPreset = "";
+	public static String colorspacePreset = "";
 	public static String hwaccel = "";
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
@@ -1876,20 +1877,15 @@ public class Utils extends Shutter {
 															advancedAudioSettings();
 														}
 													}
-													
-													long time = System.currentTimeMillis();
-													
+
 													if (p.getName().equals("comboFonctions"))
 													{																												
 														do {
 															try {
 																Thread.sleep(100);
 															} catch (InterruptedException er) {}
-															
-															if (System.currentTimeMillis() - time > 1000)
-																VideoPlayer.frameIsComplete = true;
-																						
-														} while (VideoPlayer.frameIsComplete == false);
+			
+														} while (changeGroupes);
 																	
 														doNotLoadImage = true;
 													}
@@ -2100,10 +2096,9 @@ public class Utils extends Shutter {
 							}
 						}
 						
-						changeFunction(false);	
-										
-					} catch (Exception e) {
-											
+						changeFunction(false);
+						
+					} catch (Exception e) {											
 						System.out.println(e);
 					}
 					finally {
@@ -2244,8 +2239,7 @@ public class Utils extends Shutter {
 						if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
 						{
 							Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
-						}
-						
+						}	
 					}
 									
 				}
@@ -2253,6 +2247,14 @@ public class Utils extends Shutter {
 			});
 			loadEncFile.start();			
 			
+			Thread wait = new Thread(() -> {
+				try {
+					loadEncFile.join();
+					VideoPlayer.playerProcess(0);
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				} catch (InterruptedException e) {}	
+			});
+			wait.start();
 		}
 	}
 

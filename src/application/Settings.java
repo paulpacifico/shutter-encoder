@@ -1774,6 +1774,12 @@ public class Settings {
 						{
 							VideoPlayer.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 						}	
+						
+						//comboPlayerQuality video player
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboPlayerQuality"))
+						{
+							VideoPlayer.comboPlayerQuality.setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}	
 											
 						//FTP
 						if (eElement.getParentNode().getNodeName().equals("Ftp"))
@@ -2424,6 +2430,32 @@ public class Settings {
 			cValue = document.createElement("Value");
 			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseShowWaveform.isSelected())));
 			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//comboQuality video player
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JComboBox"));
+			component.appendChild(cType);
+												
+			//Name
+			cName = document.createElement("Name");
+			cName.appendChild(document.createTextNode("comboPlayerQuality"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");						
+			cValue.appendChild(document.createTextNode(VideoPlayer.comboPlayerQuality.getSelectedItem().toString()));						
+			component.appendChild(cValue);
+			
+			//Visible
+			Element cVisible = document.createElement("Visible");
+			cVisible.appendChild(document.createTextNode(String.valueOf(VideoPlayer.comboPlayerQuality.isVisible())));
+			component.appendChild(cVisible);
 			
 			root.appendChild(component);
 			/*

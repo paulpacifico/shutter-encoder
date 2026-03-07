@@ -49,6 +49,8 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1041,8 +1043,179 @@ public static StringBuilder errorLog = new StringBuilder();
 			error = true;
 		}								
 	}
+	
+	public static void detectHardwareAcceleration(final String function) {
+	    
+		Thread hwaccel = new Thread(new Runnable() {
+	        @SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+	        public void run() {
+	            comboAccel.setEnabled(false);
+	            comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+	            try {
+	                List<String> graphicsAccel = new ArrayList<>();
+	                graphicsAccel.add(language.getProperty("aucune").toLowerCase());
+
+	                String os = System.getProperty("os.name");
+	                boolean isWindows = os.contains("Windows");
+	                boolean isMac     = os.contains("Mac");
+	                boolean isLinux   = os.contains("Linux");
+
+	                switch (function) {
+
+	                    case "H.264":
+	                    case "H.265":
+	                    case "H.266": {
+	                        String codec = "H.264".equals(function) ? "h264"
+	                                     : "H.265".equals(function) ? "hevc"
+	                                     : "vvc";
+
+	                        if (isWindows) {
+	                            if (arch.equals("arm64")) {
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                        + "_mf -b:v 5000k -s 640x360 -f null -\"");
+	                                if (!error) graphicsAccel.add("Media Foundation");
+	                            } else {
+	                                if (hasNvidiaGPU) {
+	                                    checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                            + "_nvenc -b:v 5000k -b_ref_mode 0 -s 640x360 -f null -\"");
+	                                    if (!error) graphicsAccel.add("Nvidia NVENC");
+	                                }
+	                                if (hasIntelGPU) {
+	                                    checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                            + "_qsv -b:v 5000k -s 640x360 -f null -\"");
+	                                    if (!error) graphicsAccel.add("Intel Quick Sync");
+	                                }
+	                                if (hasAMDGPU) {
+	                                    checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                            + "_amf -b:v 5000k -s 640x360 -f null -\"");
+	                                    if (!error) graphicsAccel.add("AMD AMF Encoder");
+	                                }
+	                                String gpuIndex = GPUCount > 1 ? "1" : "0";
+	                                checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
+	                                        + " -f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                        + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -\"");
+	                                if (!error) graphicsAccel.add("Vulkan Video");
+	                            }
+	                        } else if (isLinux) {
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                    + "_nvenc -b:v 5000k -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("Nvidia NVENC");
+
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                    + "_vaapi -b:v 5000k -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("VAAPI");
+
+	                            if ("H.264".equals(function)) {
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                        + "_v4l2m2m -b:v 5000k -s 640x360 -f null -");
+	                                if (!error) graphicsAccel.add("V4L2 M2M");
+
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                        + "_omx -b:v 5000k -s 640x360 -f null -");
+	                                if (!error) graphicsAccel.add("OpenMAX");
+	                            }
+	                        } else { // Mac
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                    + "_videotoolbox -b:v 5000k -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("OSX VideoToolbox");
+	                        }
+	                        break;
+	                    }
+
+	                    case "Apple ProRes": {
+	                        if (isMac && arch.equals("arm64")) {
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v prores_videotoolbox"
+	                                    + " -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("OSX VideoToolbox");
+	                        }
+	                        break;
+	                    }
+
+	                    case "FFV1": {
+	                        if (isWindows) {
+	                            String gpuIndex = GPUCount > 1 ? "1" : "0";
+	                            checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
+	                                    + " -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3"
+	                                    + " -vf format=nv12,hwupload -f null -\"");
+	                            if (!error) graphicsAccel.add("Vulkan Video");
+	                        }
+	                        break;
+	                    }
+
+	                    case "VP9": {
+	                        if (isWindows) {
+	                            if (hasIntelGPU) {
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_qsv"
+	                                        + " -b:v 5000k -s 640x360 -f null -\"");
+	                                if (!error) graphicsAccel.add("Intel Quick Sync");
+	                            }
+	                        } else if (isLinux) {
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_vaapi"
+	                                    + " -b:v 5000k -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("VAAPI");
+	                        }
+	                        break;
+	                    }
+
+	                    case "AV1": {
+	                        if (isWindows) {
+	                            if (arch.equals("arm64")) {
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_mf"
+	                                        + " -b:v 5000k -s 640x360 -f null -\"");
+	                                if (!error) graphicsAccel.add("Media Foundation");
+	                            } else {
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_nvenc"
+	                                        + " -b:v 5000k -s 640x360 -f null -\"");
+	                                if (!error) graphicsAccel.add("Nvidia NVENC");
+
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_qsv"
+	                                        + " -b:v 5000k -s 640x360 -f null -\"");
+	                                if (!error) graphicsAccel.add("Intel Quick Sync");
+
+	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_amf"
+	                                        + " -b:v 5000k -s 640x360 -f null -\"");
+	                                if (!error) graphicsAccel.add("AMD AMF Encoder");
+
+	                                String gpuIndex = GPUCount > 1 ? "1" : "0";
+	                                checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
+	                                        + " -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan"
+	                                        + " -b:v 5000k -vf format=nv12,hwupload -f null -\"");
+	                                if (!error) graphicsAccel.add("Vulkan Video");
+	                            }
+	                        } else if (isMac) {
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_videotoolbox"
+	                                    + " -b:v 5000k -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("OSX VideoToolbox");
+	                        }
+	                        break;
+	                    }
+	                }
+
+	                int previousIndex = comboAccel.getSelectedIndex();
+	                comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
+	                
+	                if (previousIndex <= comboAccel.getModel().getSize())
+	                    comboAccel.setSelectedIndex(previousIndex);
+
+	                if (Utils.loadEncFile != null && !Utils.hwaccel.isEmpty()) {
+	                    comboAccel.setSelectedItem(Utils.hwaccel);
+	                    Utils.hwaccel = "";
+	                }
+
+	            } catch (Exception e) {
+	            } finally {
+	                if (comboAccel.getItemCount() > 1)
+	                    comboAccel.setEnabled(true);
+	                comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	            }
+	        }
+	    });
+	    hwaccel.start();
+	}
 		
-	public static void hwaccel(final String cmd) {
+	public static void checkHWaccel(final String cmd) {
 		
 		error = false;	
 		isRunning = true;

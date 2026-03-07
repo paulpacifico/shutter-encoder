@@ -36,6 +36,7 @@ import application.GOP;
 import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
+import application.Utils;
 import application.VideoPlayer;
 import settings.FunctionUtils;
 
@@ -1172,10 +1173,8 @@ public static boolean hasDolbyVision = false;
 
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
-		if (processSetLength != null && processSetLength.isAlive())
-		{
+		if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive() || processSetLength != null && processSetLength.isAlive())
 			return;
-		}
 		
 		processSetLength = new Thread(new Runnable()  {
 			

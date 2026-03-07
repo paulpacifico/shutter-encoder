@@ -245,7 +245,7 @@ public class Shutter {
 	/*
 	 * Animations
 	 */
-	private static boolean changeGroupes = false;
+	public static boolean changeGroupes = false;
 
 	/*
 	 * Position ReducedWindow
@@ -284,7 +284,6 @@ public class Shutter {
 	protected static JComboBox<Object> comboInColormatrix;
 	protected static JComboBox<Object> comboOutColormatrix;
 	protected static JComboBox<Object> comboColorspace;
-	public static String colorspacePreset = null;
 	protected static JLabel lblHDR;
 	protected static JComboBox<String> comboHDRvalue;
 	protected static JComboBox<String> comboCLLvalue;
@@ -4229,87 +4228,13 @@ public class Shutter {
 					}
 
 					// Add quality selection
-					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))) {
+					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
+					{
 						setGPUOptions();
 
 						if (comboFilter.getSelectedItem().toString().equals(".avif"))
 						{
-							List<String> graphicsAccel = new ArrayList<String>();
-							graphicsAccel.add(language.getProperty("aucune").toLowerCase());
-
-							Thread hwaccel = new Thread(new Runnable() {
-
-								@Override
-								public void run() {
-
-									comboAccel.setEnabled(false);
-									comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-									try {
-
-										if (System.getProperty("os.name").contains("Windows"))										
-										{
-											if (FFMPEG.hasNvidiaGPU)											
-											{
-												FFMPEG.hwaccel(
-														"-f lavfi -i nullsrc -frames:v 1 -c:v av1_nvenc -b:v 5000k -s 640x360 -f null -"
-																+ '"');
-	
-												if (FFMPEG.error == false)
-													graphicsAccel.add("Nvidia NVENC");
-											}
-
-											if (FFMPEG.hasIntelGPU)
-											{
-												FFMPEG.hwaccel(
-														"-f lavfi -i nullsrc -frames:v 1 -c:v av1_qsv -b:v 5000k -s 640x360 -f null -" + '"');
-	
-												if (FFMPEG.error == false)
-													graphicsAccel.add("Intel Quick Sync");
-											}
-
-											if (FFMPEG.hasAMDGPU)
-											{
-												FFMPEG.hwaccel(
-														"-f lavfi -i nullsrc -frames:v 1 -c:v av1_amf -b:v 5000k -s 640x360 -f null -" + '"');
-	
-												if (FFMPEG.error == false)
-													graphicsAccel.add("AMD AMF Encoder");
-											}
-											
-										} else if (System.getProperty("os.name").contains("Mac"))
-										{
-											FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_videotoolbox -b:v 5000k -s 640x360 -f null -");
-
-											if (FFMPEG.error == false)
-												graphicsAccel.add("OSX VideoToolbox");
-										}
-
-										int index = comboAccel.getSelectedIndex();
-
-										comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
-
-										if (index <= comboAccel.getModel().getSize())
-											comboAccel.setSelectedIndex(index);
-
-										// load hwaccel value after checking gpu capabilities
-										if (Utils.loadEncFile != null && Utils.hwaccel != "")
-										{
-											comboAccel.setSelectedItem(Utils.hwaccel);
-											Utils.hwaccel = "";
-										}
-
-									} catch (Exception e) {
-									}
-
-									if (comboAccel.getItemCount() > 1)
-										comboAccel.setEnabled(true);
-
-									comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-								}
-
-							});
-							hwaccel.start();
+							FFMPEG.detectHardwareAcceleration("AV1");
 						}
 					}
 
@@ -18461,7 +18386,8 @@ public class Shutter {
 					FFPROBE.setLength();
 				}
 
-				if (comboFonctions.getSelectedItem().toString().equals("AV1")) {
+				if (comboFonctions.getSelectedItem().toString().equals("AV1"))
+				{
 					changeSections(false);
 				}
 				
@@ -19395,9 +19321,9 @@ public class Shutter {
 		
 		// GPU decoding
 		if (System.getProperty("os.name").contains("Windows"))
-			FFMPEG.hwaccel("-hwaccels" + '"');
+			FFMPEG.checkHWaccel("-hwaccels" + '"');
 		else
-			FFMPEG.hwaccel("-hwaccels");
+			FFMPEG.checkHWaccel("-hwaccels");
 
 		do {
 			try {
@@ -20817,7 +20743,7 @@ public class Shutter {
 		}
 	}
 	
-	public static void changeSections(final boolean action) {
+	public static void changeSections(final boolean anim) {
 		
 		if (frame.getWidth() > 332 //Other functions are for addToList text
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))
@@ -20830,7 +20756,6 @@ public class Shutter {
 		{		
 			Thread changeSize = new Thread(new Runnable() {
 
-				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override
 				public void run() {
 
@@ -20838,7 +20763,7 @@ public class Shutter {
 					{
 						try {
 														
-							if (frame.getSize().width >= 1130 && action)
+							if (frame.getSize().width >= 1130 && anim)
 							{
 								int i = frame.getWidth() - 312 - 12;
 
@@ -20889,7 +20814,7 @@ public class Shutter {
 							} else
 								settingsScrollBar.setVisible(false);
 
-							if (action)
+							if (anim)
 							{
 								grpSetTimecode.setSize(grpSetTimecode.getSize().width, 17);
 								grpSetAudio.setSize(grpSetAudio.getSize().width, 17);
@@ -20954,7 +20879,7 @@ public class Shutter {
 										JOptionPane.showMessageDialog(frame, language.getProperty("scanIncompatible"),
 												language.getProperty("scanActivated"), JOptionPane.ERROR_MESSAGE);
 									}
-									else if (action) 
+									else if (anim) 
 									{
 										VideoPlayer.videoPath = null;
 										changeWidth(true);
@@ -21019,7 +20944,7 @@ public class Shutter {
 								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7, caseNormalizeAudio.getLocation().y + 3);
 								caseEqualizer.setLocation(7,caseNormalizeAudio.getY() + caseNormalizeAudio.getHeight());
 								
-								if (action)
+								if (anim)
 									grpSetAudio.setSize(312, 17);
 								grpAudio.setVisible(false);
 
@@ -21100,7 +21025,7 @@ public class Shutter {
 									caseEqualizer.setSelected(false);
 								}
 
-								if ((comboAudioCodec.getItemCount() != 13 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 16Bits") == false) && action)
+								if ((comboAudioCodec.getItemCount() != 13 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 16Bits") == false) && anim)
 								{
 									if (lblAudioMapping.getItemCount() != 4) {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
@@ -21229,7 +21154,7 @@ public class Shutter {
 								grpSetAudio.removeAll();
 								grpSetAudio.add(caseChangeAudioCodec);
 
-								if ((comboAudioCodec.getItemCount() != 13 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 16Bits") == false) && action)
+								if ((comboAudioCodec.getItemCount() != 13 || comboAudioCodec.getModel().getElementAt(0).equals("PCM 16Bits") == false) && anim)
 								{
 									if (lblAudioMapping.getItemCount() != 4) {
 										lblAudioMapping.setModel(new DefaultComboBoxModel<String>(
@@ -21340,7 +21265,7 @@ public class Shutter {
 									|| "AC3".equals(function) || "Opus".equals(function) || "Vorbis".equals(function)
 									|| "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)) {
 
-								if (action) {
+								if (anim) {
 									if (comboFonctions.getSelectedItem().toString().equals("MP3")
 											|| comboFonctions.getSelectedItem().toString().equals("AAC")
 											|| comboFonctions.getSelectedItem().toString().equals("Vorbis")) {
@@ -21465,52 +21390,8 @@ public class Shutter {
 								}
 
 								// HWaccel								
-								if (action && System.getProperty("os.name").contains("Windows") && "FFV1".equals(function)) 
-								{
-									Thread hwaccel = new Thread(new Runnable()
-									{							  
-										@Override
-										public void run()
-										{								  
-										  comboAccel.setEnabled(false);
-										  comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-										  
-										  try {
-										  
-												if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-												{
-													FFMPEG.hwaccel("-init_hw_device vulkan=gpu:1 -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3 -vf format=nv12,hwupload -f null -" + '"');
-												}
-												else
-													FFMPEG.hwaccel("-init_hw_device vulkan=gpu:0 -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3 -vf format=nv12,hwupload -f null -" + '"');
-												
-												if (FFMPEG.error == false)
-													graphicsAccel.add("Vulkan Video");
-											  
-												int index = comboAccel.getSelectedIndex();
-												comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
-											  
-												if (index <= comboAccel.getModel().getSize())
-													comboAccel.setSelectedIndex(index);
-											  
-												//load hwaccel value after checking gpu capabilities
-												if (Utils.loadEncFile != null && Utils.hwaccel != "")
-												{
-													comboAccel.setSelectedItem(Utils.hwaccel);
-													Utils.hwaccel = "";
-												}
-									  
-										  } catch (Exception e) {}
-									  
-										  if (comboAccel.getItemCount() > 1)
-											  comboAccel.setEnabled(true);
-									  
-										  comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));										  
-								  		}
-								  
-							  		});
-									hwaccel.start();
-							  	}							 
+								if (anim)
+									FFMPEG.detectHardwareAcceleration(function);							 
 
 								// grpSetAudio
 								grpSetAudio.removeAll();
@@ -21722,7 +21603,7 @@ public class Shutter {
 										grpSetAudio.setSize(312, 169);
 									}
 								}
-								else if (action)
+								else if (anim)
 								{
 									grpSetAudio.setSize(312, 17);
 								}
@@ -21770,14 +21651,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-									}
-									else
-									{
-										if (colorspacePreset != null && action == false)
-										{
-											comboColorspace.setSelectedItem(colorspacePreset);
-											colorspacePreset = null;
-										}
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								}
 								else 
@@ -21789,14 +21667,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-									}
-									else
-									{
-										if (colorspacePreset != null && action == false)
-										{
-											comboColorspace.setSelectedItem(colorspacePreset);
-											colorspacePreset = null;
-										}
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -21919,48 +21794,8 @@ public class Shutter {
 								addToList.setText(language.getProperty("filesVideoOrAudioOrPicture"));
 
 								// HWaccel
-								if (action) {
-									Thread hwaccel = new Thread(new Runnable() {
-
-										@Override
-										public void run() {
-
-											comboAccel.setEnabled(false);
-											comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-											if ("Apple ProRes".equals(comboFonctions.getSelectedItem().toString())
-											&& System.getProperty("os.name").contains("Mac")
-											&& arch.equals("arm64"))
-											{
-												FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v prores_videotoolbox -s 640x360 -f null -");
-
-												if (FFMPEG.error == false)
-													graphicsAccel.add("OSX VideoToolbox");
-
-												int index = comboAccel.getSelectedIndex();
-
-												comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
-
-												if (index <= comboAccel.getModel().getSize())
-													comboAccel.setSelectedIndex(index);
-
-												// load hwaccel value after checking gpu capabilities
-												if (Utils.loadEncFile != null && Utils.hwaccel != "") {
-													comboAccel.setSelectedItem(Utils.hwaccel);
-													Utils.hwaccel = "";
-												}
-											}
-
-											if (comboAccel.getItemCount() > 1)
-												comboAccel.setEnabled(true);
-
-											comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-										}
-
-									});
-									hwaccel.start();
-
-								}
+								if (anim)
+									FFMPEG.detectHardwareAcceleration(function);
 
 								if (comboFonctions.getSelectedItem().equals("QT Animation") || subtitlesBurn == false) {
 									caseDisplay.setEnabled(false);
@@ -22051,7 +21886,7 @@ public class Shutter {
 								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7,caseNormalizeAudio.getLocation().y + 3);
 								caseEqualizer.setLocation(7,caseNormalizeAudio.getY() + caseNormalizeAudio.getHeight());
 								
-								if (action)
+								if (anim)
 									grpSetAudio.setSize(312, 17);
 								grpSetAudio.setLocation(grpSetAudio.getX(),
 										grpResolution.getSize().height + grpResolution.getLocation().y + 6);
@@ -22097,14 +21932,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-									}
-									else
-									{
-										if (colorspacePreset != null && action == false)
-										{
-											comboColorspace.setSelectedItem(colorspacePreset);
-											colorspacePreset = null;
-										}
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								} else {
 									if (comboColorspace.getItemCount() != 3) {
@@ -22113,14 +21945,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-									}
-									else
-									{
-										if (colorspacePreset != null && action == false)
-										{
-											comboColorspace.setSelectedItem(colorspacePreset);
-											colorspacePreset = null;
-										}
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -22315,144 +22144,8 @@ public class Shutter {
 								addToList.setText(language.getProperty("filesVideoOrAudioOrPicture"));
 
 								// HWaccel
-								if (action) {
-									Thread hwaccel = new Thread(new Runnable() {
-
-										@Override
-										public void run() {
-
-											comboAccel.setEnabled(false);
-											comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-											String codec = "h264";
-											if ("H.265".equals(comboFonctions.getSelectedItem().toString())) {
-												codec = "hevc";
-											} else if ("H.266".equals(comboFonctions.getSelectedItem().toString())) {
-												codec = "vvc";
-											}
-
-											try {
-
-												// Accélération graphique Windows
-												if (System.getProperty("os.name").contains("Windows")) {
-
-													if (arch.equals("arm64"))
-													{
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-																+ "_mf -b:v 5000k -s 640x360 -f null -" + '"');
-
-														if (FFMPEG.error == false)
-															graphicsAccel.add("Media Foundation");
-														
-													}
-													else
-													{
-														if (FFMPEG.hasNvidiaGPU)
-														{
-															FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-																	+ "_nvenc -b:v 5000k -b_ref_mode 0 -s 640x360 -f null -" + '"');
-	
-															if (FFMPEG.error == false)
-																graphicsAccel.add("Nvidia NVENC");
-														}
-
-														if (FFMPEG.hasIntelGPU)
-														{
-															FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-																	+ "_qsv -b:v 5000k -s 640x360 -f null -" + '"');
-	
-															if (FFMPEG.error == false)
-																graphicsAccel.add("Intel Quick Sync");
-														}
-
-														if (FFMPEG.hasAMDGPU)
-														{
-															FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-																	+ "_amf -b:v 5000k -s 640x360 -f null -" + '"');
-	
-															if (FFMPEG.error == false)
-																graphicsAccel.add("AMD AMF Encoder");
-														}
-
-														
-														if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-														{
-															FFMPEG.hwaccel("-init_hw_device vulkan=gpu:1 -f lavfi -i nullsrc -frames:v 1 -c:v " + codec + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
-														}
-														else
-															FFMPEG.hwaccel("-init_hw_device vulkan=gpu:0 -f lavfi -i nullsrc -frames:v 1 -c:v " + codec + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
-														
-														if (FFMPEG.error == false)
-															graphicsAccel.add("Vulkan Video");
-
-														/*
-														 * if (codec == "hevc") {
-														 * FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec +
-														 * "_d3d12va -b:v 5000k -s 640x360 -f null -" + '"');
-														 * 
-														 * if (FFMPEG.error == false) graphicsAccel.add("D3D12VA"); }
-														 */
-													}
-												} else if (System.getProperty("os.name").contains("Linux")) {
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-															+ "_nvenc -b:v 5000k -s 640x360 -f null -");
-
-													if (FFMPEG.error == false)
-														graphicsAccel.add("Nvidia NVENC");
-
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-															+ "_vaapi -b:v 5000k -s 640x360 -f null -");
-
-													if (FFMPEG.error == false)
-														graphicsAccel.add("VAAPI");
-
-													if (comboFonctions.getSelectedItem().toString().equals("H.264")) {
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-																+ "_v4l2m2m -b:v 5000k -s 640x360 -f null -");
-
-														if (FFMPEG.error == false)
-															graphicsAccel.add("V4L2 M2M");
-
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-																+ "_omx -b:v 5000k -s 640x360 -f null -");
-
-														if (FFMPEG.error == false)
-															graphicsAccel.add("OpenMAX");
-													}
-												} else // Accélération graphique Mac
-												{
-													FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-															+ "_videotoolbox -b:v 5000k -s 640x360 -f null -");
-
-													if (FFMPEG.error == false)
-														graphicsAccel.add("OSX VideoToolbox");
-												}
-
-												int index = comboAccel.getSelectedIndex();
-
-												comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
-
-												if (index <= comboAccel.getModel().getSize())
-													comboAccel.setSelectedIndex(index);
-
-												// load hwaccel value after checking gpu capabilities
-												if (Utils.loadEncFile != null && Utils.hwaccel != "") {
-													comboAccel.setSelectedItem(Utils.hwaccel);
-													Utils.hwaccel = "";
-												}
-
-											} catch (Exception e) {
-											}
-
-											if (comboAccel.getItemCount() > 1)
-												comboAccel.setEnabled(true);
-
-											comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-										}
-
-									});
-									hwaccel.start();
-								}
+								if (anim)
+									FFMPEG.detectHardwareAcceleration(function);
 
 								if (comboFonctions.getSelectedItem().equals("H.266") || subtitlesBurn == false) {
 									caseDisplay.setEnabled(false);
@@ -22672,7 +22365,7 @@ public class Shutter {
 								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7,caseNormalizeAudio.getLocation().y + 3);
 								caseEqualizer.setLocation(7,caseNormalizeAudio.getY() + caseNormalizeAudio.getHeight());
 								
-								if (action)
+								if (anim)
 									grpSetAudio.setSize(312, 17);
 								grpSetAudio.setLocation(grpSetAudio.getX(),
 										grpBitrate.getSize().height + grpBitrate.getLocation().y + 6);
@@ -22830,14 +22523,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-									}
-									else
-									{
-										if (colorspacePreset != null && action == false)
-										{
-											comboColorspace.setSelectedItem(colorspacePreset);
-											colorspacePreset = null;
-										}
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								} else if ("H.265".equals(function)) {
 									if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
@@ -22850,14 +22540,19 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
+											
+											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+												comboColorspace.setSelectedItem(Utils.colorspacePreset);
+							                    Utils.colorspacePreset = "";
+							                }
 										}
 										else
-										{
+										{/*
 											if (colorspacePreset != null && action == false)
 											{
 												comboColorspace.setSelectedItem(colorspacePreset);
 												colorspacePreset = null;
-											}
+											}*/
 										}
 									}
 									else
@@ -22871,14 +22566,11 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
-										}
-										else
-										{
-											if (colorspacePreset != null && action == false)
-											{
-												comboColorspace.setSelectedItem(colorspacePreset);
-												colorspacePreset = null;
-											}
+											
+											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+												comboColorspace.setSelectedItem(Utils.colorspacePreset);
+							                    Utils.colorspacePreset = "";
+							                }
 										}
 									}
 								} else if ("H.266".equals(function)) {
@@ -22888,6 +22580,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								}
 
@@ -23082,122 +22779,8 @@ public class Shutter {
 								addToList.setText(language.getProperty("filesVideoOrAudioOrPicture"));
 
 								// HWaccel
-								if (action) {
-									Thread hwaccel = new Thread(new Runnable() {
-
-										@Override
-										public void run() {
-
-											comboAccel.setEnabled(false);
-											comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-											try {
-
-												if ("VP9".equals(comboFonctions.getSelectedItem().toString()))
-												{
-													if (System.getProperty("os.name").contains("Windows"))
-													{
-														if (FFMPEG.hasIntelGPU)
-														{
-															FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_qsv -b:v 5000k -s 640x360 -f null -" + '"');
-	
-															if (FFMPEG.error == false)
-																graphicsAccel.add("Intel Quick Sync");
-														}
-														
-													}
-													else if (System.getProperty("os.name").contains("Linux"))
-													{
-														FFMPEG.hwaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_vaapi -b:v 5000k -s 640x360 -f null -");
-
-														if (FFMPEG.error == false)
-															graphicsAccel.add("VAAPI");
-													}
-												}
-												else if ("AV1".equals(comboFonctions.getSelectedItem().toString()))
-												{
-													if (System.getProperty("os.name").contains("Windows"))
-													{
-														if (arch.equals("arm64"))
-														{
-															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -frames:v 1 -c:v av1_mf -b:v 5000k -s 640x360 -f null -"
-																			+ '"');
-
-															if (FFMPEG.error == false)
-																graphicsAccel.add("Media Foundation");
-														}
-														else
-														{
-															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -frames:v 1 -c:v av1_nvenc -b:v 5000k -s 640x360 -f null -"
-																			+ '"');
-
-															if (FFMPEG.error == false)
-																graphicsAccel.add("Nvidia NVENC");
-
-															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -frames:v 1 -c:v av1_qsv -b:v 5000k -s 640x360 -f null -"
-																			+ '"');
-
-															if (FFMPEG.error == false)
-																graphicsAccel.add("Intel Quick Sync");
-
-															FFMPEG.hwaccel(
-																	"-f lavfi -i nullsrc -frames:v 1 -c:v av1_amf -b:v 5000k -s 640x360 -f null -"
-																			+ '"');
-
-															if (FFMPEG.error == false)
-																graphicsAccel.add("AMD AMF Encoder");
-															
-															
-															if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-															{
-																FFMPEG.hwaccel("-init_hw_device vulkan=gpu:1 -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
-															}
-															else
-																FFMPEG.hwaccel("-init_hw_device vulkan=gpu:0 -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -" + '"');
-															
-															if (FFMPEG.error == false)
-																graphicsAccel.add("Vulkan Video");
-														}
-													}
-													else if (System.getProperty("os.name").contains("Mac"))
-													{
-														FFMPEG.hwaccel(
-																"-f lavfi -i nullsrc -frames:v 1 -c:v av1_videotoolbox -b:v 5000k -s 640x360 -f null -");
-
-														if (FFMPEG.error == false)
-															graphicsAccel.add("OSX VideoToolbox");
-													}
-												}
-
-												int index = comboAccel.getSelectedIndex();
-
-												comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
-
-												if (index <= comboAccel.getModel().getSize())
-													comboAccel.setSelectedIndex(index);
-
-												// load hwaccel value after checking gpu capabilities
-												if (Utils.loadEncFile != null && Utils.hwaccel != "") {
-													comboAccel.setSelectedItem(Utils.hwaccel);
-													Utils.hwaccel = "";
-												}
-
-											} catch (Exception e) {
-											}
-
-											if (comboAccel.getItemCount() > 1)
-												comboAccel.setEnabled(true);
-
-											comboAccel.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-										}
-
-									});
-									hwaccel.start();
-
-								}
+								if (anim)
+									FFMPEG.detectHardwareAcceleration(function);
 
 								if (subtitlesBurn) {
 									caseDisplay.setEnabled(true);
@@ -23331,7 +22914,7 @@ public class Shutter {
 								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7,caseNormalizeAudio.getLocation().y + 3);
 								caseEqualizer.setLocation(7,caseNormalizeAudio.getY() + caseNormalizeAudio.getHeight());
 								
-								if (action)
+								if (anim)
 									grpSetAudio.setSize(312, 17);
 								grpSetAudio.setLocation(grpSetAudio.getX(),
 										grpBitrate.getSize().height + grpBitrate.getLocation().y + 6);
@@ -23530,14 +23113,11 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
-										}
-										else
-										{
-											if (colorspacePreset != null && action == false)
-											{
-												comboColorspace.setSelectedItem(colorspacePreset);
-												colorspacePreset = null;
-											}
+											
+											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+												comboColorspace.setSelectedItem(Utils.colorspacePreset);
+							                    Utils.colorspacePreset = "";
+							                }
 										}
 									} else {
 										if (comboColorspace.getItemCount() != 8) {
@@ -23549,14 +23129,11 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
-										}
-										else
-										{
-											if (colorspacePreset != null && action == false)
-											{
-												comboColorspace.setSelectedItem(colorspacePreset);
-												colorspacePreset = null;
-											}
+											
+											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+												comboColorspace.setSelectedItem(Utils.colorspacePreset);
+							                    Utils.colorspacePreset = "";
+							                }
 										}
 									}
 								} else if ("MPEG-2".equals(function)) {
@@ -23567,14 +23144,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-									}
-									else
-									{
-										if (colorspacePreset != null && action == false)
-										{
-											comboColorspace.setSelectedItem(colorspacePreset);
-											colorspacePreset = null;
-										}
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								} else {
 									if (comboColorspace.getItemCount() != 3) {
@@ -23583,14 +23157,11 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-									}
-									else
-									{
-										if (colorspacePreset != null && action == false)
-										{
-											comboColorspace.setSelectedItem(colorspacePreset);
-											colorspacePreset = null;
-										}
+										
+										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+											comboColorspace.setSelectedItem(Utils.colorspacePreset);
+						                    Utils.colorspacePreset = "";
+						                }
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -23869,7 +23440,7 @@ public class Shutter {
 								grpBitrate.setVisible(false);
 
 								if ("Blu-ray".equals(function)) {
-									if (action) {
+									if (anim) {
 										if (comboFilter.getSelectedIndex() == 0) // H.264
 										{
 											debitVideo.setSelectedItem(38000);
@@ -23948,7 +23519,7 @@ public class Shutter {
 								comboNormalizeAudio.setLocation(caseNormalizeAudio.getX() + caseNormalizeAudio.getWidth() + 7,caseNormalizeAudio.getLocation().y + 3);
 								caseEqualizer.setLocation(7,caseNormalizeAudio.getY() + caseNormalizeAudio.getHeight());
 								
-								if (action)
+								if (anim)
 									grpSetAudio.setSize(312, 17);
 
 								if ("Blu-ray".equals(function)) {
@@ -24213,14 +23784,11 @@ public class Shutter {
 
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
-								}
-								else
-								{
-									if (colorspacePreset != null && action == false)
-									{
-										comboColorspace.setSelectedItem(colorspacePreset);
-										colorspacePreset = null;
-									}
+									
+									if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
+										comboColorspace.setSelectedItem(Utils.colorspacePreset);
+					                    Utils.colorspacePreset = "";
+					                }
 								}
 
 								grpSetAudio.setVisible(false);
@@ -24312,7 +23880,7 @@ public class Shutter {
 							//Add language to grpSetAudio
 							advancedAudioSettings();
 
-							if (action && frame.getWidth() > 332)
+							if (anim && frame.getWidth() > 332)
 							{
 
 								int i2 = frame.getWidth();
@@ -24350,8 +23918,11 @@ public class Shutter {
 								} while (i2 > frame.getWidth() - 312 - 12);
 
 								changeGroupes = false;
-								changeSections(false); // une fois l'action terminé on vérifie que les groupes
-														// correspondent
+								
+								if (Utils.loadEncFile == null || Utils.loadEncFile.isAlive() == false)
+								{
+									changeSections(false); // une fois l'action terminé on vérifie que les groupes correspondent
+								}
 							}
 
 							// Right_to_left
@@ -24550,7 +24121,7 @@ public class Shutter {
 			}
 		}
 	}
-
+	
 	public static void changeFilters() {
 
 		if (comboFonctions.getEditor().getItem().toString().length() == 0) {
