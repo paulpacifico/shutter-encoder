@@ -676,11 +676,7 @@ public class VideoPlayer {
 				}
 				
 				if (playerVideo != null)
-				{
-					if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_LEFT) {
-			            System.out.println("Ctrl + Left pressed");
-			        }
-					
+				{					
 					if (e.getKeyCode() == KeyEvent.VK_LEFT)
 					{					
 						if (Shutter.shift)
@@ -838,16 +834,16 @@ public class VideoPlayer {
 								{		
 									if (Shutter.inputDeviceIsRunning)
 									{
-										readFrame(videoInputStream, FFPROBE.imageWidth, FFPROBE.imageHeight, false);	
+										readFrame(videoInputStream, FFPROBE.imageWidth, FFPROBE.imageHeight, false, false);	
 									}
 									else
 									{
 										if (Shutter.windowDrag && fullscreenPlayer == false)
 										{
-											readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight(), false);
+											readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight(), false, false);
 										}
 										else
-											readFrame(videoInputStream, player.getWidth(), player.getHeight(), false);															
+											readFrame(videoInputStream, player.getWidth(), player.getHeight(), false, false);															
 									}
 									
 									playerRepaint();
@@ -1039,7 +1035,7 @@ public class VideoPlayer {
 		
 	}
 	
-	private static Dimension getQuality(int width, int height, int value) {
+	private static Dimension getDimension(int width, int height, int value) {
 		
 		if (comboPlayerQuality.isVisible())
 		{
@@ -1058,7 +1054,7 @@ public class VideoPlayer {
 		            height = height - height % 4;
 		            break;
 		        case 3: // auto
-		        	if (mouseIsPressed && sliderChange)
+		        	if (sliderChange)
 		        	{
 		        		width = (width / 4);
 			            width = width - width % 4;
@@ -1072,7 +1068,7 @@ public class VideoPlayer {
 	    return new Dimension(width, height);
 	}
 	
-	public static void readFrame(BufferedInputStream is, int width, int height, boolean RGB) throws IOException {
+	public static void readFrame(BufferedInputStream is, int width, int height, boolean RGB, boolean isBuffering) throws IOException {
 				
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
 		&& Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
@@ -1085,12 +1081,15 @@ public class VideoPlayer {
 		}
 		
 		//Reduce quality
-		Dimension dim = getQuality(width, height, comboPlayerQuality.getSelectedIndex());
-		width  = dim.width;
-		height = dim.height;
-		
+		if (Shutter.windowDrag == false && isBuffering == false && RGB == false)
+		{
+			Dimension dim = getDimension(width, height, comboPlayerQuality.getSelectedIndex());
+			width = dim.width;
+			height = dim.height;
+		}
+
 		//MJPEG compression
-		if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && RGB == false)
+		if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && RGB == false && Settings.btnPreviewOutput.isSelected() == false)
 		{
 			// Find SOI (FF D8)
 		    while (true) {
@@ -1408,7 +1407,7 @@ public class VideoPlayer {
 								
 								i++;
 								
-								readFrame(videoInputStream, player.getWidth(), player.getHeight(), false);
+								readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight(), false, true);
 								updateCurrentFrame();				
 								
 								//Limit the buffer size into memory
@@ -2590,11 +2589,10 @@ public class VideoPlayer {
 			
 			//Output
 			String outputFormat = "rawvideo";
-			if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false)
+			if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && Settings.btnPreviewOutput.isSelected() == false)
 			{
 				outputFormat  = "mjpeg -q:v 3";
-			}
-			
+			}
 			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) +" -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner" + decodingOptions + " -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(false, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v " + outputFormat + " -pix_fmt " + colorFormat + " -an -sn -f rawvideo -";
 			
 			String codec = "";
@@ -6090,7 +6088,7 @@ public class VideoPlayer {
 	        InputStream is = process.getInputStream();				
 			BufferedInputStream inputStream = new BufferedInputStream(is);
 
-			readFrame(inputStream, player.getWidth(), player.getHeight(), true);
+			readFrame(inputStream, player.getWidth(), player.getHeight(), true, false);
 			
 			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 			{				
@@ -6232,9 +6230,12 @@ public class VideoPlayer {
 		}
 		
 		//Reduce quality
-		Dimension dim = getQuality(width, height, comboPlayerQuality.getSelectedIndex());
-		width  = dim.width;
-		height = dim.height;
+		if (preview == null)
+		{
+			Dimension dim = getDimension(width, height, comboPlayerQuality.getSelectedIndex());
+			width  = dim.width;
+			height = dim.height;
+		}
 		
 		if (Shutter.grpColorimetry.isVisible() && Shutter.caseColormatrix.isSelected() && Shutter.comboInColormatrix.getSelectedItem().equals("HDR") == false)
 		{
@@ -6267,7 +6268,7 @@ public class VideoPlayer {
 		{
 			if (filter != "") filter += ",";
 			{
-				if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && preview == null)
+				if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && preview == null && Settings.btnPreviewOutput.isSelected() == false)
 				{
 					filter += "scale=in_range=limited:out_range=full";
 				}
