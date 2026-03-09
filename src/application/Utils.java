@@ -54,6 +54,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.xml.parsers.DocumentBuilder;
@@ -188,7 +189,6 @@ public class Utils extends Shutter {
 	
 	public static Thread loadEncFile;
 	public static String currentPreset = "";
-	public static String colorspacePreset = "";
 	public static String hwaccel = "";
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
@@ -1649,161 +1649,161 @@ public class Utils extends Shutter {
 	@SuppressWarnings("rawtypes")
 	public static void loadSettings(File encFile) {
 	
-		currentPreset = encFile.getName();
-		
-		if (list.getSize() == 0)
+		SwingUtilities.invokeLater(() ->
 		{
-			JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),	language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
-			Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		}
-		else
-		{		
-			loadEncFile = new Thread(new Runnable() {
-	
-				@Override
-				public void run() {
-	
-					try {
-						
-						doNotLoadImage = true;					
-						
-						File fXmlFile = encFile;
-						DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-						DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-						Document doc = dBuilder.parse(fXmlFile);
-						doc.getDocumentElement().normalize();
-	
-						NodeList nList = doc.getElementsByTagName("Component");
-						
-						for (int temp = 0; temp < nList.getLength(); temp++)
-						{
-							Node nNode = nList.item(temp);
-							if (nNode.getNodeType() == Node.ELEMENT_NODE)
+			currentPreset = encFile.getName();
+			
+			if (list.getSize() == 0)
+			{
+				JOptionPane.showMessageDialog(frame, language.getProperty("addFileToList"),	language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
+				Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+			else
+			{		
+				loadEncFile = new Thread(new Runnable() {
+		
+					@Override
+					public void run() {
+		
+						try {
+							
+							doNotLoadImage = true;					
+							
+							File fXmlFile = encFile;
+							DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+							DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+							Document doc = dBuilder.parse(fXmlFile);
+							doc.getDocumentElement().normalize();
+		
+							NodeList nList = doc.getElementsByTagName("Component");
+							
+							for (int temp = 0; temp < nList.getLength(); temp++)
 							{
-								Element eElement = (Element) nNode;
-																
-								//Type						
-								for (Component c : frame.getContentPane().getComponents())
+								Node nNode = nList.item(temp);
+								if (nNode.getNodeType() == Node.ELEMENT_NODE)
 								{
-									if (c instanceof JPanel)
+									Element eElement = (Element) nNode;
+																	
+									//Type						
+									for (Component c : frame.getContentPane().getComponents())
 									{
-										for (Component p : ((JPanel) c).getComponents())
-										{				
-											if (p.getName() != "" && p.getName() != null && p.getName().equals("text"))
-											{
-												continue;
-											}
-											
-											//For lock icon only
-											if (p.getName() != "" && p.getName() != null)
-											{
-												if ((p.getName().equals("lock") || p.getName().equals("unlock")))
+										if (c instanceof JPanel)
+										{
+											for (Component p : ((JPanel) c).getComponents())
+											{				
+												if (p.getName() != "" && p.getName() != null && p.getName().equals("text"))
 												{
-													if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lock"))
-													{
-														lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
-														isLocked = true;
-														lock.setName("lock");
-													}
-													else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("unlock"))
-													{
-														lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
-														isLocked = false;
-														lock.setName("unlock");
-													}
+													continue;
 												}
 												
-												if ((p.getName().equals("cropLock") || p.getName().equals("cropUnlock")))
+												//For lock icon only
+												if (p.getName() != "" && p.getName() != null)
 												{
-													if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropLock"))
+													if ((p.getName().equals("lock") || p.getName().equals("unlock")))
 													{
-														cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
-														cropIsLocked = true;
-														cropLock.setName("cropLock");
+														if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lock"))
+														{
+															lock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+															isLocked = true;
+															lock.setName("lock");
+														}
+														else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("unlock"))
+														{
+															lock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+															isLocked = false;
+															lock.setName("unlock");
+														}
 													}
-													else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropUnlock"))
+													
+													if ((p.getName().equals("cropLock") || p.getName().equals("cropUnlock")))
 													{
-														cropLock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
-														cropIsLocked = false;
-														cropLock.setName("cropUnlock");
+														if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropLock"))
+														{
+															cropLock.setIcon(new FlatSVGIcon("contents/lock.svg", 16, 16));
+															cropIsLocked = true;
+															cropLock.setName("cropLock");
+														}
+														else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cropUnlock"))
+														{
+															cropLock.setIcon(new FlatSVGIcon("contents/unlock.svg", 16, 16));
+															cropIsLocked = false;
+															cropLock.setName("cropUnlock");
+														}
 													}
 												}
-											}
-																			
-											if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-											{									
-												if (p instanceof JLabel)
-												{										
-													//Value
-													if (p.getName().equals("lock") == false
-													&& p.getName().equals("unlock") == false
-													&& p.getName().equals("cropLock") == false
-													&& p.getName().equals("cropUnlock") == false)
-													{
-														((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-													}
-																						
-													//State
-													((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-													
-													//Visible
-													((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
-												}
-												else if (p instanceof JCheckBox)
-												{																
-													//State
-													((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-													
-													//Visible
-													((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-													
-													//Value
-													if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-													{
-														if (((JCheckBox) p).isSelected() == false)
-															((JCheckBox) p).doClick();
-													}
-													else
-													{
-														if (((JCheckBox) p).isSelected())
-															((JCheckBox) p).doClick();
-													}								
-																										
-												}
-												else if (p instanceof JComboBox)
-												{			
-													if (p.getName().equals("comboFonctions"))
-													{														
-														VideoPlayer.frameIsComplete = false;														
-														doNotLoadImage = false;
-													}
-													
-													if (p.getName().equals("comboAccel"))
-													{																											
-														hwaccel = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
-													}
-													
-													if (p.getName().equals("comboColorspace"))
-													{
-														colorspacePreset = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
-													}
-													else if (p.getName().equals("comboLUTs"))
-													{
-														comboLUTs.setSelectedIndex(10);
-	
-												        for (int i = 0 ; i < comboLUTs.getModel().getSize() ; i++) 
-												        { 
-												        	if (comboLUTs.getModel().getElementAt(i).toString().equals(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
-												        	{
-												        		comboLUTs.setSelectedIndex(i);
-												        		break;
-												        	}
-												        }
-													}
-													else
-													{
+																				
+												if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
+												{									
+													if (p instanceof JLabel)
+													{										
 														//Value
-														((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+														if (p.getName().equals("lock") == false
+														&& p.getName().equals("unlock") == false
+														&& p.getName().equals("cropLock") == false
+														&& p.getName().equals("cropUnlock") == false)
+														{
+															((JLabel) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+														}
+																							
+														//State
+														((JLabel) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+														
+														//Visible
+														((JLabel) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));									
+													}
+													else if (p instanceof JCheckBox)
+													{																
+														//State
+														((JCheckBox) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+														
+														//Visible
+														((JCheckBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+														
+														//Value
+														if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()))
+														{
+															if (((JCheckBox) p).isSelected() == false)
+																((JCheckBox) p).doClick();
+														}
+														else
+														{
+															if (((JCheckBox) p).isSelected())
+																((JCheckBox) p).doClick();
+														}								
+																											
+													}
+													else if (p instanceof JComboBox)
+													{			
+														if (p.getName().equals("comboAccel"))
+														{																											
+															hwaccel = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
+														}
+
+														//Value
+														if (p.getName().equals("comboFonctions"))
+														{														
+															VideoPlayer.frameIsComplete = false;														
+															doNotLoadImage = false;
+															
+															((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+															
+															try {
+																do {
+																	Thread.sleep(100);
+																} while (changeGroupes);
+																
+																if (hwaccel != "")
+																{
+																	do {
+																		Thread.sleep(100);
+																	} while (FFMPEG.isRunning);
+																}
+															} catch (InterruptedException er) {}
+																		
+															doNotLoadImage = true;
+														}
+														else
+															((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 																													
 														if (p.getName().equals("comboAccel") == false && p.getName().equals("comboGPUDecoding") == false && p.getName().equals("comboGPUFilter") == false)
 														{
@@ -1877,385 +1877,369 @@ public class Utils extends Shutter {
 															advancedAudioSettings();
 														}
 													}
-
-													if (p.getName().equals("comboFonctions"))
-													{																												
-														do {
-															try {
-																Thread.sleep(100);
-															} catch (InterruptedException er) {}
-			
-														} while (changeGroupes);
-																	
-														doNotLoadImage = true;
-													}
-												}
-												else if (p instanceof JTextField)
-												{
-													
-													if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+													else if (p instanceof JTextField)
+													{
+														
+														if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+														{
+															//Value
+															((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+																								
+															//State
+															((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+															
+															//Visible
+															((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+														
+															//Elements position
+															if (p.getName().equals("textNamePosX"))
+																fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), fileName.getLocation().y);	
+															
+															if (p.getName().equals("textNamePosY"))
+																fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
+																								
+															if (p.getName().equals("textTcPosY"))
+																timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
+															
+															if (p.getName().equals("textTcPosX"))
+																timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);												
+															}
+														}
+													else if (p instanceof JSlider)
 													{
 														//Value
-														((JTextField) p).setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+														((JSlider) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 																							
 														//State
-														((JTextField) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
+														((JSlider) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 														
 														//Visible
-														((JTextField) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-													
-														//Elements position
-														if (p.getName().equals("textNamePosX"))
-															fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), fileName.getLocation().y);	
-														
-														if (p.getName().equals("textNamePosY"))
-															fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
+														((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+													}
+													else if (p instanceof JSpinner)
+													{							
+														//Value
+														((JSpinner) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 																							
-														if (p.getName().equals("textTcPosY"))
-															timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
+														//State
+														((JSpinner) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
 														
-														if (p.getName().equals("textTcPosX"))
-															timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);												
+														//Visible
+														((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
+													}
+													else if (p instanceof JPanel)
+													{
+														//Value
+														String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
+														String s2[] = s[1].split(",");
+														((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
+														
+														if (p.getName().equals("panelTcColor"))
+														{
+															foregroundColor = panelTcColor.getBackground();
 														}
-													}
-												else if (p instanceof JSlider)
-												{
-													//Value
-													((JSlider) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-																						
-													//State
-													((JSlider) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-													
-													//Visible
-													((JSlider) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-												}
-												else if (p instanceof JSpinner)
-												{							
-													//Value
-													((JSpinner) p).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-																						
-													//State
-													((JSpinner) p).setEnabled(Boolean.valueOf(eElement.getElementsByTagName("Enable").item(0).getFirstChild().getTextContent()));
-													
-													//Visible
-													((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-												}
-												else if (p instanceof JPanel)
-												{
-													//Value
-													String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
-													String s2[] = s[1].split(",");
-													((JPanel) p).setBackground(new Color(Integer.valueOf(s2[0]), Integer.valueOf(s2[1]), Integer.valueOf(s2[2])));
-													
-													if (p.getName().equals("panelTcColor"))
-													{
-														foregroundColor = panelTcColor.getBackground();
-													}
-													else if (p.getName().equals("panelTcColor2"))
-													{
-														backgroundColor = panelTcColor2.getBackground();
-													}
-													
-													if (p.getName().equals("panelSubsColor"))
-													{
-														fontSubsColor = panelSubsColor.getBackground();
-													}
-													else if (p.getName().equals("panelSubsColor2"))
-													{
-														backgroundSubsColor = panelSubsColor2.getBackground();
+														else if (p.getName().equals("panelTcColor2"))
+														{
+															backgroundColor = panelTcColor2.getBackground();
+														}
+														
+														if (p.getName().equals("panelSubsColor"))
+														{
+															fontSubsColor = panelSubsColor.getBackground();
+														}
+														else if (p.getName().equals("panelSubsColor2"))
+														{
+															backgroundSubsColor = panelSubsColor2.getBackground();
+														}
 													}
 												}
 											}
 										}
 									}
-								}
-								
-								//Equalizer
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().contains("sliderEQ")
-								|| eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderGain"))
-								{
-									for (Component c : Equalizer.frame.getContentPane().getComponents())
-									{
-										if (c instanceof JSlider)
-										{		
-											if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals(((JSlider) c).getName()))
-											{
-												//Value
-												((JSlider) c).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
-											}																						
-										}
-									}
-								}								
-																
-								//grpWatermak
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkFile"))
-								{
-									File logo = new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 									
-									if (logo.exists())
+									//Equalizer
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().contains("sliderEQ")
+									|| eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderGain"))
 									{
-										logoFile = logo.toString();
-									}
-								}
-								
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkPreset"))
-								{
-									watermarkPreset = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
-								}
-								
-								//btnExtension
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("btnExtension"))
-								{
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+										for (Component c : Equalizer.frame.getContentPane().getComponents())
+										{
+											if (c instanceof JSlider)
+											{		
+												if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals(((JSlider) c).getName()))
+												{
+													//Value
+													((JSlider) c).setValue(Integer.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+												}																						
+											}
+										}
+									}								
+																	
+									//grpWatermak
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkFile"))
 									{
-										btnExtension.setSelected(true);
-										txtExtension.setEnabled(true);
+										File logo = new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										
+										if (logo.exists())
+										{
+											logoFile = logo.toString();
+										}
 									}
-									else
-									{
-										btnExtension.setSelected(false);
-										txtExtension.setEnabled(false);
-									}
-								}
 									
-								//Suffix
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
-								{									
-									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("watermarkPreset"))
 									{
-										txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										watermarkPreset = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent();
 									}
-									else
-										txtExtension.setText("");
-								}
-								
-								//caseSubFolder
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseSubFolder"))
-								{
-									if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+									
+									//btnExtension
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("btnExtension"))
 									{
-										caseSubFolder.setSelected(true);							
-										txtSubFolder.setEnabled(true);
-									}
-									else
-									{
-										caseSubFolder.setSelected(false);
-										txtSubFolder.setEnabled(false);
-									}
-								}
-								
-								//SubFolder
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtSubFolder"))
-								{
-									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
-									{
-										txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-									}
-									else
-										txtSubFolder.setText("");
-								}
-								
-								//Destination 1
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination1"))
-								{
-									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
-									{
-										if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
-										{	
-											caseChangeFolder1.setSelected(true);
-											lblDestination1.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+										{
+											btnExtension.setSelected(true);
+											txtExtension.setEnabled(true);
+										}
+										else
+										{
+											btnExtension.setSelected(false);
+											txtExtension.setEnabled(false);
 										}
 									}
-								}
-								
-								//Destination 2
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination2"))
-								{
-									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+										
+									//Suffix
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtExtension"))
+									{									
+										if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+										{
+											txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										}
+										else
+											txtExtension.setText("");
+									}
+									
+									//caseSubFolder
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseSubFolder"))
 									{
-										if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
-										{	
-											caseChangeFolder2.setSelected(true);
-											lblDestination2.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
+										{
+											caseSubFolder.setSelected(true);							
+											txtSubFolder.setEnabled(true);
+										}
+										else
+										{
+											caseSubFolder.setSelected(false);
+											txtSubFolder.setEnabled(false);
 										}
 									}
-								}
-								
-								//Destination 3
-								if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination3"))
-								{
-									if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+									
+									//SubFolder
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("txtSubFolder"))
 									{
-										if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
-										{	
-											caseChangeFolder3.setSelected(true);
-											lblDestination3.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+										{
+											txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										}
+										else
+											txtSubFolder.setText("");
+									}
+									
+									//Destination 1
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination1"))
+									{
+										if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+										{
+											if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
+											{	
+												caseChangeFolder1.setSelected(true);
+												lblDestination1.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+											}
+										}
+									}
+									
+									//Destination 2
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination2"))
+									{
+										if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+										{
+											if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
+											{	
+												caseChangeFolder2.setSelected(true);
+												lblDestination2.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+											}
+										}
+									}
+									
+									//Destination 3
+									if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("lblDestination3"))
+									{
+										if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
+										{
+											if (new File(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()).exists())
+											{	
+												caseChangeFolder3.setSelected(true);
+												lblDestination3.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+											}
 										}
 									}
 								}
 							}
+							
+						} catch (Exception e) {											
+							System.out.println(e);
 						}
-						
-						changeFunction(false);
-						
-					} catch (Exception e) {											
-						System.out.println(e);
-					}
-					finally {
-						
-						doNotLoadImage = false;
-												
-						//grpCrop
-						if (caseEnableCrop.isSelected())
-						{
-							selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / Shutter.playerRatio));
-							int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
-							int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+						finally {
 							
-							if (w > VideoPlayer.player.getWidth())
-								w = VideoPlayer.player.getWidth();
-							
-							if (h > VideoPlayer.player.getHeight())
-								h = VideoPlayer.player.getHeight();
-							
-							selection.setSize(w , h);	
-							
-							frameCropX = VideoPlayer.player.getLocation().x;
-							frameCropY = VideoPlayer.player.getLocation().y;
-							
-							anchorRight = selection.getLocation().x + selection.getWidth();
-							anchorBottom = selection.getLocation().y + selection.getHeight();
-						}
-						
-						//grpOverlay
-						if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
-						{
-							timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
-							tcLocX = timecode.getLocation().x;
-							tcLocY = timecode.getLocation().y;	
-							timecode.setSize(10,10); //Workaround to not reset the location
-						}
-						if (caseAddText.isSelected() || caseShowFileName.isSelected())
-						{
-							fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
-							fileLocX = fileName.getLocation().x;
-							fileLocY = fileName.getLocation().y;
-							fileName.setSize(10,10); //Workaround to not reset the location
-							
-							//VideoPlayer.player.add(fileName);
-							
-							//Overimage need to be the last component added
+							doNotLoadImage = false;
+													
+							//grpCrop
 							if (caseEnableCrop.isSelected())
-							{/*
-								VideoPlayer.player.remove(selection);
-								VideoPlayer.player.remove(overImage);
-								VideoPlayer.player.add(selection);
-								VideoPlayer.player.add(overImage);*/
-							}		
-							
-							fileName.repaint();
-						}
-						
-						//grpSubtitles
-						if (caseAddSubtitles.isSelected())
-						{						    		
-							if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth)
 							{
-								subsCanvas.setBounds(0, 0, VideoPlayer.player.getWidth(), (int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));
-							}
-							else
-							{
-								subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
-							    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
+								selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / Shutter.playerRatio));
+								int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+								int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
 								
-								subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
-							}			
-						}
-						
-						String watermarkPosX = textWatermarkPosX.getText();
-						String watermarkPosY = textWatermarkPosY.getText();
-												
-						if (lblVBR.getText().equals("CQ"))
-						{
-							String index = debitVideo.getSelectedItem().toString();
-							
-							String[] values = new String[53];
-							values[0] = language.getProperty("lblBest");
-							for (int i = 1 ; i < 52 ; i++)
-							{
-								values[i] = String.valueOf(i);
-							}			
-							values[52] = language.getProperty("lblWorst");
-							debitVideo.setModel(new DefaultComboBoxModel<String>(values));
-							debitVideo.setSelectedItem(index);
-						}
-						
-						if (Functions.frame != null)
-						{
-							Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-							iconPresets.setVisible(true);
-							if (iconList.isVisible())
-							{
-								iconPresets.setLocation(iconList.getX() + iconList.getWidth() + 2, 45);
-								btnCancel.setBounds(207 + iconList.getWidth(), 46, 101 - iconList.getWidth() -  4, 21);
-							}
-							else
-							{
-								iconPresets.setBounds(180, 45, 21, 21);
-								btnCancel.setBounds(207, 46, 97, 21);
-							}
-							
-							Utils.changeFrameVisibility(Functions.frame, true);
-						}
-						
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-						
-						//IMPORTANT
-						Shutter.resizeAll(Shutter.frame.getWidth(), 0); 
-						Shutter.frame.repaint();		
-						
-						//grpWatermark
-						if (caseAddWatermark.isSelected())
-						{
-							if (watermarkPreset != null)
-							{
-								VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-							}
-							else
-							{
-								textWatermarkPosX.setText(watermarkPosX);
-								textWatermarkPosY.setText(watermarkPosY);
+								if (w > VideoPlayer.player.getWidth())
+									w = VideoPlayer.player.getWidth();
 								
-								logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / Shutter.playerRatio));
-							}							
+								if (h > VideoPlayer.player.getHeight())
+									h = VideoPlayer.player.getHeight();
+								
+								selection.setSize(w , h);	
+								
+								frameCropX = VideoPlayer.player.getLocation().x;
+								frameCropY = VideoPlayer.player.getLocation().y;
+								
+								anchorRight = selection.getLocation().x + selection.getWidth();
+								anchorBottom = selection.getLocation().y + selection.getHeight();
+							}
 							
-							//Saving location
-							logoLocX = logo.getLocation().x;
-							logoLocY = logo.getLocation().y;
-						}
-						
-						//Reload comboPreset value
-						if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
-						{
-							Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
-						}	
-					}
+							//grpOverlay
+							if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
+							{
+								timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
+								tcLocX = timecode.getLocation().x;
+								tcLocY = timecode.getLocation().y;	
+								timecode.setSize(10,10); //Workaround to not reset the location
+							}
+							if (caseAddText.isSelected() || caseShowFileName.isSelected())
+							{
+								fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
+								fileLocX = fileName.getLocation().x;
+								fileLocY = fileName.getLocation().y;
+								fileName.setSize(10,10); //Workaround to not reset the location
+								
+								//VideoPlayer.player.add(fileName);
+								
+								//Overimage need to be the last component added
+								if (caseEnableCrop.isSelected())
+								{/*
+									VideoPlayer.player.remove(selection);
+									VideoPlayer.player.remove(overImage);
+									VideoPlayer.player.add(selection);
+									VideoPlayer.player.add(overImage);*/
+								}		
+								
+								fileName.repaint();
+							}
+							
+							//grpSubtitles
+							if (caseAddSubtitles.isSelected())
+							{						    		
+								if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth)
+								{
+									subsCanvas.setBounds(0, 0, VideoPlayer.player.getWidth(), (int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));
+								}
+								else
+								{
+									subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
+								    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
 									
-				}
-				
-			});
-			loadEncFile.start();			
-			
-			Thread wait = new Thread(() -> {
-				try {
-					loadEncFile.join();
-					VideoPlayer.playerProcess(0);
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				} catch (InterruptedException e) {}	
-			});
-			wait.start();
-		}
+									subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
+								}			
+							}
+							
+							String watermarkPosX = textWatermarkPosX.getText();
+							String watermarkPosY = textWatermarkPosY.getText();
+													
+							if (lblVBR.getText().equals("CQ"))
+							{
+								String index = debitVideo.getSelectedItem().toString();
+								
+								String[] values = new String[53];
+								values[0] = language.getProperty("lblBest");
+								for (int i = 1 ; i < 52 ; i++)
+								{
+									values[i] = String.valueOf(i);
+								}			
+								values[52] = language.getProperty("lblWorst");
+								debitVideo.setModel(new DefaultComboBoxModel<String>(values));
+								debitVideo.setSelectedItem(index);
+							}
+							
+							if (Functions.frame != null)
+							{
+								Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+								iconPresets.setVisible(true);
+								if (iconList.isVisible())
+								{
+									iconPresets.setLocation(iconList.getX() + iconList.getWidth() + 2, 45);
+									btnCancel.setBounds(207 + iconList.getWidth(), 46, 101 - iconList.getWidth() -  4, 21);
+								}
+								else
+								{
+									iconPresets.setBounds(180, 45, 21, 21);
+									btnCancel.setBounds(207, 46, 97, 21);
+								}
+								
+								Utils.changeFrameVisibility(Functions.frame, true);
+							}
+							
+							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+							
+							//IMPORTANT
+							Shutter.resizeAll(Shutter.frame.getWidth(), 0); 
+							Shutter.frame.repaint();		
+							
+							//grpWatermark
+							if (caseAddWatermark.isSelected())
+							{
+								if (watermarkPreset != null)
+								{
+									VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
+								}
+								else
+								{
+									textWatermarkPosX.setText(watermarkPosX);
+									textWatermarkPosY.setText(watermarkPosY);
+									
+									logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / Shutter.playerRatio));
+								}							
+								
+								//Saving location
+								logoLocX = logo.getLocation().x;
+								logoLocY = logo.getLocation().y;
+							}
+							
+							//Reload comboPreset value
+							if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
+							{
+								Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
+							}	
+						}				
+					}
+				});
+				loadEncFile.start();		
+
+				Thread wait = new Thread(() -> {
+					try {
+						loadEncFile.join();
+						VideoPlayer.playerProcess(0);
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					} catch (InterruptedException e) {}	
+				});
+				wait.start();
+			}
+		});
 	}
 
 	public static void loadThemes() {

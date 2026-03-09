@@ -242,7 +242,6 @@ import library.MEDIAINFO;
 	public static void addTabControl() {	
 		
 		tabPanel = new JPanel();			
-		tabPanel.setBackground(new Color(35,255,35));
 		tabPanel.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		tabPanel.setLayout(null);
 		tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);				

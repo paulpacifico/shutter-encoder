@@ -1866,6 +1866,7 @@ public class Settings {
 							}
 						}
 						
+						//Console
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("consoleLocation"))
 						{
 							String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
@@ -1892,21 +1893,21 @@ public class Settings {
 								Console.savedBounds = new Rectangle(x, y, width, height);
 							}
 						}
-						
-						//Functions values						
+
+						//Manage functions values					
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboFonctions"))
 						{											
 							String[] items = eElement.getElementsByTagName("Model").item(0).getFirstChild().getTextContent().split("\\|");
 							int savedItemCount = Integer.valueOf(eElement.getElementsByTagName("ItemsCount").item(0).getFirstChild().getTextContent());
 														
-							if (Shutter.functionsList.length == savedItemCount)
+							if (Shutter.functionsList.size() == savedItemCount)
 							{
 								Shutter.comboFonctions.setModel(new DefaultComboBoxModel(items));
 								Shutter.comboFonctions.setSelectedItem("");
 								
 								ManageFunctions.selectedFunctions = items;
 								
-								if (Shutter.functionsList.length != items.length)
+								if (Shutter.functionsList.size() != items.length)
 								{						
 									ManageFunctions.selectAll.setSelected(false);
 								}
@@ -2719,51 +2720,54 @@ public class Settings {
 			
 			root.appendChild(warning);
 			
-			//Set Model before saving
-			if (ManageFunctions.selectedFunctions != null)
-			{
-				Shutter.comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
-			}
-			else
-				Shutter.comboFonctions.setModel(new DefaultComboBoxModel(Shutter.functionsList));
-			
-			//Saving functions values			
-			Element functions = document.createElement("Functions");
+			if (Utils.getLanguage.equals(comboLanguage.getSelectedItem().toString()))
+			{			
+				//Set Model before saving
+				if (ManageFunctions.selectedFunctions != null)
+				{
+					Shutter.comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
+				}
+				else
+					Shutter.comboFonctions.setModel(new DefaultComboBoxModel(Shutter.functionsList.toArray(new String[0])));
+				
+				//Saving functions values			
+				Element functions = document.createElement("Functions");
+							
+				component = document.createElement("Component");
+				
+				//Component
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JComboBox"));
+				component.appendChild(cType);
+													
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode(Shutter.comboFonctions.getName()));
+				component.appendChild(cName);
+				
+				//Model
+				ComboBoxModel<?> model = Shutter.comboFonctions.getModel();
+				StringBuilder items = new StringBuilder();
+				for (int i = 0; i < model.getSize(); i++) {
+				    if (i > 0) items.append("|");
+				    items.append(model.getElementAt(i).toString());
+				}
+				cValue = document.createElement("Model");
+				cValue.appendChild(document.createTextNode(items.toString()));
+				component.appendChild(cValue);
+				
+				//Count
+				cValue = document.createElement("ItemsCount");
+				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.functionsList.size())));
+				component.appendChild(cValue);
+	
+				functions.appendChild(component);
 						
-			component = document.createElement("Component");
-			
-			//Component
-			component = document.createElement("Component");
-			
-			//Type
-			cType = document.createElement("Type");
-			cType.appendChild(document.createTextNode("JComboBox"));
-			component.appendChild(cType);
-												
-			//Name
-			cName = document.createElement("Name");
-			cName.appendChild(document.createTextNode(Shutter.comboFonctions.getName()));
-			component.appendChild(cName);
-			
-			//Model
-			ComboBoxModel<?> model = Shutter.comboFonctions.getModel();
-			StringBuilder items = new StringBuilder();
-			for (int i = 0; i < model.getSize(); i++) {
-			    if (i > 0) items.append("|");
-			    items.append(model.getElementAt(i).toString());
+				root.appendChild(functions);
 			}
-			cValue = document.createElement("Model");
-			cValue.appendChild(document.createTextNode(items.toString()));
-			component.appendChild(cValue);
-			
-			//Count
-			cValue = document.createElement("ItemsCount");
-			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.functionsList.length)));
-			component.appendChild(cValue);
-
-			functions.appendChild(component);
-					
-			root.appendChild(functions);
 			
 			// creation du fichier XML
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();

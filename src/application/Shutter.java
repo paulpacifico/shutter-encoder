@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+w* Copyright (C) 2026 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -271,8 +271,9 @@ public class Shutter {
 	protected static PopupMenu dropFiles;
 	public static JList<String> fileList;
 	public static JLabel addToList = new JLabel();
+	public static String loadedFunction = null;
 	public static JComboBox<String[]> comboFonctions;
-	public static String[] functionsList;
+	public static List<String> functionsList;
 
 	protected static JButton btnBrowse;
 	protected static JButton btnEmptyList;
@@ -2181,8 +2182,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (list.getSize() > 0 && comboFonctions.getSelectedItem().toString()
-						.equals(Shutter.language.getProperty("functionSubtitles")) == false) {
+				if (list.getSize() > 0 && comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionSubtitles")) == false) {
 					// Screen record
 					if (inputDeviceIsRunning)
 						caseDisplay.setSelected(false);
@@ -2226,6 +2226,10 @@ public class Shutter {
 						VideoPlayer.waveformIcon.setIcon(null);
 						VideoPlayer.waveformIcon.repaint();
 					}
+					
+					if (VideoPlayer.playerIsPlaying())
+						VideoPlayer.btnPlay.doClick();
+					
 					VideoPlayer.playerStop();
 					VideoPlayer.setPlayerButtons(false);
 					VideoPlayer.player.remove(selection);
@@ -3940,49 +3944,58 @@ public class Shutter {
 			}
 		});
 
-		functionsList = new String[] {
-
-				language.getProperty("itemAITools"), language.getProperty("functionSeparation"), language.getProperty("functionTranscribe"),
-				language.getProperty("functionTranslate"), language.getProperty("functionColorize"), language.getProperty("functionBackgroundRemover"),
+		functionsList = new ArrayList<>(Arrays.asList(
 				
-				language.getProperty("itemNoConversion"), language.getProperty("functionCut"),
-				language.getProperty("functionReplaceAudio"), language.getProperty("functionRewrap"),
-				language.getProperty("functionConform"), language.getProperty("functionMerge"),
-				language.getProperty("functionExtract"), language.getProperty("functionSubtitles"),
-				language.getProperty("functionInsert"),
+			    language.getProperty("itemAITools"), language.getProperty("functionSeparation"), language.getProperty("functionTranscribe"),
+			    language.getProperty("functionTranslate"), language.getProperty("functionColorize"), language.getProperty("functionBackgroundRemover"),
 
-				language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "ALAC", "MP3", "AAC", "AC3", "Opus",
-				"Vorbis", "Dolby Digital Plus", "Dolby TrueHD",
+			    language.getProperty("itemNoConversion"), language.getProperty("functionCut"),
+			    language.getProperty("functionReplaceAudio"), language.getProperty("functionRewrap"),
+			    language.getProperty("functionConform"), language.getProperty("functionMerge"),
+			    language.getProperty("functionExtract"), language.getProperty("functionSubtitles"),
+			    language.getProperty("functionInsert"),
 
-				language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation",
-				"GoPro CineForm", "Uncompressed",
+			    language.getProperty("itemAudioConversion"), "WAV", "AIFF", "FLAC", "ALAC", "MP3", "AAC", "AC3", "Opus",
+			    "Vorbis", "Dolby Digital Plus", "Dolby TrueHD",
 
-				language.getProperty("itemOuputCodecs"), "H.264", "H.265", "H.266", "VP8", "VP9", "AV1",
+			    language.getProperty("itemEditingCodecs"), "DNxHD", "DNxHR", "Apple ProRes", "QT Animation",
+			    "GoPro CineForm", "Uncompressed",
 
-				language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC", "XAVC Long GOP", "HAP",
+			    language.getProperty("itemOuputCodecs"), "H.264", "H.265", "H.266", "VP8", "VP9", "AV1",
 
-				language.getProperty("itemOldCodecs"), "Theora", "MPEG-2", "MJPEG", "Xvid", "DV", "WMV", "MPEG-1",
+			    language.getProperty("itemBroadcastCodecs"), "XDCAM HD422", "XDCAM HD 35", "AVC-Intra 100", "XAVC", "XAVC Long GOP", "HAP",
 
-				language.getProperty("itemArchiveCodecs"), "FFV1",
+			    language.getProperty("itemOldCodecs"), "Theora", "MPEG-2", "MJPEG", "Xvid", "DV", "WMV", "MPEG-1",
 
-				language.getProperty("itemImage"), "JPEG", "JPEG XL", language.getProperty("functionPicture"),
+			    language.getProperty("itemArchiveCodecs"), "FFV1",
 
-				language.getProperty("itemBurnRip"), "DVD", "Blu-ray", "DVD Rip",
+			    language.getProperty("itemImage"), "JPEG", "JPEG XL", language.getProperty("functionPicture"),
 
-				language.getProperty("itemAnalyze"), "Loudness & True Peak",
-				language.getProperty("functionNormalization"), language.getProperty("functionSceneDetection"),
-				language.getProperty("functionBlackDetection"), language.getProperty("functionOfflineDetection"),
-				"VMAF", "FrameMD5",
+			    language.getProperty("itemBurnRip"), "DVD", "Blu-ray", "DVD Rip",
 
-				language.getProperty("itemDownload"), language.getProperty("functionWeb"),
-				
-				"- " + language.getProperty("btnManage").toUpperCase() + " -"
+			    language.getProperty("itemAnalyze"), "Loudness & True Peak",
+			    language.getProperty("functionNormalization"), language.getProperty("functionSceneDetection"),
+			    language.getProperty("functionBlackDetection"), language.getProperty("functionOfflineDetection"),
+			    "VMAF", "FrameMD5",
 
-		};    
+			    language.getProperty("itemDownload"), language.getProperty("functionWeb")
+			));  
+		
+		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
+		{
+			functionsList.remove("H.266");
+		    functionsList.remove(language.getProperty("functionTranscribe"));
+		}
+		else if (System.getProperty("os.name").contains("Linux"))
+		{
+			functionsList.remove(language.getProperty("functionTranscribe"));
+		}
+		
+		functionsList.add("- " + language.getProperty("btnManage").toUpperCase() + " -");
 
 		comboFonctions = new JComboBox<String[]>();
 		comboFonctions.setName("comboFonctions");
-		comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
+		comboFonctions.setModel(new DefaultComboBoxModel(functionsList.toArray(new String[0])));
 		comboFonctions.setSelectedItem(null);
 		comboFonctions.setFont(new Font(mainFont, Font.PLAIN, 11));
 		comboFonctions.setEditable(true);
@@ -3992,16 +4005,6 @@ public class Shutter {
 		comboFonctions.setRenderer(new ComboBoxRenderer());
 		grpChooseFunction.add(comboFonctions);
 		
-		if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
-		{
-			comboFonctions.removeItem("H.266");
-			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
-		}
-		else if (System.getProperty("os.name").contains("Linux"))
-		{
-			comboFonctions.removeItem(language.getProperty("functionTranscribe"));
-		}	
-
 		comboFonctions.addActionListener(new ActionListener() {
 
 			ArrayList<String> newList = new ArrayList<String>();
@@ -4099,7 +4102,7 @@ public class Shutter {
 
 					if (Character.isLetterOrDigit(e.getKeyChar()))
 					{						
-						comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
+						comboFonctions.setModel(new DefaultComboBoxModel(functionsList.toArray(new String[0])));
 						
 						text += String.valueOf(e.getKeyChar()).toLowerCase();
 
@@ -4111,30 +4114,30 @@ public class Shutter {
 						boolean addBackgroundRemover = false;
 						for (int i = 0; i < comboFonctions.getItemCount(); i++)
 						{
-							if (functionsList[i].toString().length() >= text.length())
+							if (functionsList.get(i).toString().length() >= text.length())
 							{
-								if (functionsList[i].toString().toLowerCase().substring(0, text.length()).contains(text)
-								&& functionsList[i].toString().contains(":") == false)
-								{
-									if (functionsList[i].toString().equals(language.getProperty("functionTranscribe")))
-									{
-										addTranscribeFunction = true;										
-									}
-									else if (functionsList[i].toString().equals(language.getProperty("functionSeparation")))
-									{
-										addSeparationFunction = true;
-									}
-									else if (functionsList[i].toString().equals(language.getProperty("functionColorize")))
-									{
-										addColorizeFunction = true;
-									}
-									else if (functionsList[i].toString().equals(language.getProperty("functionBackgroundRemover")))
-									{
-										addBackgroundRemover = true;
-									}
-									else
-										newList.add(functionsList[i].toString());
-								}
+							    if (functionsList.get(i).toString().toLowerCase().substring(0, text.length()).contains(text)
+							    && functionsList.get(i).toString().contains(":") == false)
+							    {
+							        if (functionsList.get(i).toString().equals(language.getProperty("functionTranscribe")))
+							        {
+							            addTranscribeFunction = true;
+							        }
+							        else if (functionsList.get(i).toString().equals(language.getProperty("functionSeparation")))
+							        {
+							            addSeparationFunction = true;
+							        }
+							        else if (functionsList.get(i).toString().equals(language.getProperty("functionColorize")))
+							        {
+							            addColorizeFunction = true;
+							        }
+							        else if (functionsList.get(i).toString().equals(language.getProperty("functionBackgroundRemover")))
+							        {
+							            addBackgroundRemover = true;
+							        }
+							        else
+							            newList.add(functionsList.get(i).toString());
+							    }
 							}
 						}
 						
@@ -4176,7 +4179,7 @@ public class Shutter {
 							comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
 						}
 						else
-							comboFonctions.setModel(new DefaultComboBoxModel(functionsList));
+							comboFonctions.setModel(new DefaultComboBoxModel(functionsList.toArray(new String[0])));
 						
 						comboFonctions.getEditor().setItem("");
 						comboFonctions.hidePopup();
@@ -20745,6 +20748,19 @@ public class Shutter {
 	
 	public static void changeSections(final boolean anim) {
 		
+		String function = comboFonctions.getSelectedItem().toString();
+		
+		//Allows to load this method only once
+		if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive())
+		{
+			if (function.equals(loadedFunction))
+			{
+				return;		
+			}
+			else
+				loadedFunction = function;
+		}
+		
 		if (frame.getWidth() > 332 //Other functions are for addToList text
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))
 		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionExtract"))		
@@ -20768,10 +20784,11 @@ public class Shutter {
 								int i = frame.getWidth() - 312 - 12;
 
 								do {
+									
+									changeGroupes = true;
 
 									long startTime = System.nanoTime();
-
-									changeGroupes = true;
+									
 									if (Settings.btnDisableAnimations.isSelected())
 										i = frame.getWidth();
 									else
@@ -20802,8 +20819,6 @@ public class Shutter {
 							}
 
 							VideoPlayer.seekOnKeyFrames = false;
-
-							String function = comboFonctions.getSelectedItem().toString();
 
 							List<String> graphicsAccel = new ArrayList<String>();
 							graphicsAccel.add(language.getProperty("aucune").toLowerCase());
@@ -21651,11 +21666,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								}
 								else 
@@ -21667,11 +21677,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -21932,11 +21937,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								} else {
 									if (comboColorspace.getItemCount() != 3) {
@@ -21945,11 +21945,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -22288,10 +22283,12 @@ public class Shutter {
 												new String[] { "ultrafast", "superfast", "veryfast", "faster", "fast",
 														"medium", "slow", "slower", "veryslow", "placebo" }));
 										comboForcePreset.setSelectedIndex(5);
+										
 									} else if ("H.266".equals(function) && comboForcePreset.getModel().getSize() != 5) {
 										comboForcePreset.setModel(new DefaultComboBoxModel<String>(
 												new String[] { "faster", "fast", "medium", "slow", "slower" }));
 										comboForcePreset.setSelectedIndex(2);
+
 									}
 								}
 
@@ -22523,11 +22520,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								} else if ("H.265".equals(function)) {
 									if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
@@ -22540,11 +22532,6 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
-											
-											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-												comboColorspace.setSelectedItem(Utils.colorspacePreset);
-							                    Utils.colorspacePreset = "";
-							                }
 										}
 										else
 										{/*
@@ -22566,11 +22553,6 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
-											
-											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-												comboColorspace.setSelectedItem(Utils.colorspacePreset);
-							                    Utils.colorspacePreset = "";
-							                }
 										}
 									}
 								} else if ("H.266".equals(function)) {
@@ -22580,11 +22562,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								}
 
@@ -23113,11 +23090,6 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
-											
-											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-												comboColorspace.setSelectedItem(Utils.colorspacePreset);
-							                    Utils.colorspacePreset = "";
-							                }
 										}
 									} else {
 										if (comboColorspace.getItemCount() != 8) {
@@ -23129,11 +23101,6 @@ public class Shutter {
 
 											comboHDRvalue.setVisible(false);
 											lblHDR.setVisible(false);
-											
-											if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-												comboColorspace.setSelectedItem(Utils.colorspacePreset);
-							                    Utils.colorspacePreset = "";
-							                }
 										}
 									}
 								} else if ("MPEG-2".equals(function)) {
@@ -23144,11 +23111,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								} else {
 									if (comboColorspace.getItemCount() != 3) {
@@ -23157,11 +23119,6 @@ public class Shutter {
 
 										comboHDRvalue.setVisible(false);
 										lblHDR.setVisible(false);
-										
-										if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-											comboColorspace.setSelectedItem(Utils.colorspacePreset);
-						                    Utils.colorspacePreset = "";
-						                }
 									}
 								}
 								grpAdvanced.setVisible(true);
@@ -23784,11 +23741,6 @@ public class Shutter {
 
 									comboHDRvalue.setVisible(false);
 									lblHDR.setVisible(false);
-									
-									if (Utils.loadEncFile != null && !Utils.colorspacePreset.isEmpty()) {
-										comboColorspace.setSelectedItem(Utils.colorspacePreset);
-					                    Utils.colorspacePreset = "";
-					                }
 								}
 
 								grpSetAudio.setVisible(false);
@@ -23886,9 +23838,11 @@ public class Shutter {
 								int i2 = frame.getWidth();
 
 								do {
+									
+									changeGroupes = true;
+									
 									long startTime = System.nanoTime();
 
-									changeGroupes = true;
 									if (Settings.btnDisableAnimations.isSelected())
 										i2 = frame.getWidth() - 312 - 12;
 									else
@@ -23919,10 +23873,7 @@ public class Shutter {
 
 								changeGroupes = false;
 								
-								if (Utils.loadEncFile == null || Utils.loadEncFile.isAlive() == false)
-								{
-									changeSections(false); // une fois l'action terminé on vérifie que les groupes correspondent
-								}
+								changeSections(false); // une fois l'action terminé on vérifie que les groupes correspondent
 							}
 
 							// Right_to_left

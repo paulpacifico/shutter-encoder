@@ -1089,7 +1089,7 @@ public class VideoPlayer {
 		}
 
 		//MJPEG compression
-		if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && RGB == false && Settings.btnPreviewOutput.isSelected() == false)
+		if (comboPlayerQuality.isVisible() && comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && RGB == false && Settings.btnPreviewOutput.isSelected() == false)
 		{
 			// Find SOI (FF D8)
 		    while (true) {
@@ -2589,7 +2589,7 @@ public class VideoPlayer {
 			
 			//Output
 			String outputFormat = "rawvideo";
-			if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && Settings.btnPreviewOutput.isSelected() == false)
+			if (comboPlayerQuality.isVisible() && comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && Settings.btnPreviewOutput.isSelected() == false)
 			{
 				outputFormat  = "mjpeg -q:v 3";
 			}
@@ -6268,7 +6268,7 @@ public class VideoPlayer {
 		{
 			if (filter != "") filter += ",";
 			{
-				if (comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && preview == null && Settings.btnPreviewOutput.isSelected() == false)
+				if (comboPlayerQuality.isVisible() && comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && preview == null && Settings.btnPreviewOutput.isSelected() == false)
 				{
 					filter += "scale=in_range=limited:out_range=full";
 				}

@@ -42,9 +42,9 @@ public class ManageFunctions {
 
     public ManageFunctions() {
     	
-        boolean[] markers = new boolean[Shutter.functionsList.length];
-        for (int i = 0; i < Shutter.functionsList.length; i++) {
-        	markers[i] = Shutter.functionsList[i].contains(":");
+        boolean[] markers = new boolean[Shutter.functionsList.size()];
+        for (int i = 0; i < Shutter.functionsList.size(); i++) {
+        	markers[i] = Shutter.functionsList.get(i).contains(":");
         }
         
         sectionMarkers = markers;
@@ -143,9 +143,9 @@ public class ManageFunctions {
         sectionCheckboxes.put(currentSection, currentGroup);
         sectionStates.putIfAbsent(currentSection, false);
 
-        for (int i = 0; i < Shutter.functionsList.length; i++)
+        for (int i = 0; i < Shutter.functionsList.size(); i++)
         {
-            String item = Shutter.functionsList[i];
+            String item = Shutter.functionsList.get(i);
             boolean isSection = sectionMarkers != null && i < sectionMarkers.length && sectionMarkers[i];
 
             if (isSection)

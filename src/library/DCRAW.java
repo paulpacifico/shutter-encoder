@@ -107,7 +107,7 @@ public static Process process;
 							InputStream is = process.getInputStream();				
 							BufferedInputStream inputStream = new BufferedInputStream(is);
 							
-							VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), true);
+							VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), true, false);
 							VideoPlayer.preview = VideoPlayer.cloneBufferedImage(VideoPlayer.frameVideo);
 							
 							inputStream.close();

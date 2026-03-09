@@ -1615,7 +1615,7 @@ public class FunctionUtils extends Shutter {
 
 				if (sub == 0) // Burn
 				{
-					Shutter.comboFonctions.setModel(new DefaultComboBoxModel(Shutter.functionsList));
+					Shutter.comboFonctions.setModel(new DefaultComboBoxModel(Shutter.functionsList.toArray(new String[0])));
 					Shutter.comboFonctions.setSelectedItem("H.264");
 					VideoPlayer.setMedia();
 
