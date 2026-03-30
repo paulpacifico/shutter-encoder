@@ -46,7 +46,8 @@ public class AudioSettings extends Shutter {
 			
 			if (audioName.toString().contains(videoName.toString()) && audioName.toString().equals(videoName.toString()) == false) //L'audio contient le nom du fichier vidéo
 				{
-					audioFiles += " -i " + '"' + list.getElementAt(i2) + '"' + " ";
+					String audioPath = list.getElementAt(i2).replace("\\", "\\\\").replace("\"", "\\\"");
+					audioFiles += " -i " + '"' + audioPath + '"' + " ";
 					channels ++;
 				}
 		}
