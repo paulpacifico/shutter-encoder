@@ -82,7 +82,7 @@ public class RecordInputDevice {
 		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
 		
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());

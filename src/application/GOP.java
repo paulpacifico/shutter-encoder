@@ -49,7 +49,7 @@ public class GOP {
 		frame.setModal(false);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		if (System.getProperty("os.name").contains("Mac") == false)

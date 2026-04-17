@@ -100,7 +100,7 @@ import settings.FunctionUtils;
 	public RenderQueue() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameFileDeRendus"));
 		frame.setForeground(Color.WHITE);
@@ -284,7 +284,7 @@ import settings.FunctionUtils;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(Utils.bg32);
+		topPanel.setBackground(Utils.background);
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -382,7 +382,7 @@ import settings.FunctionUtils;
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(35,35,40));
+		topImage.setBackground(Utils.c42);
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
@@ -618,7 +618,7 @@ import settings.FunctionUtils;
 		
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked", "serial" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void table() {
 		
 		JLabel columnFile = new JLabel(Shutter.language.getProperty("columnFile"));

@@ -35,7 +35,7 @@ public class SubtitlesHelp {
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
 		frame.setTitle(Shutter.language.getProperty("frameSubtitles"));
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());

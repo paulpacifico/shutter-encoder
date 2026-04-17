@@ -71,7 +71,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.io.BufferedReader;
@@ -870,10 +870,10 @@ public class Shutter {
 		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 		taskBarHeight = (int) (dim.getHeight() - winSize.height);
 
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Shutter Encoder");
-		frame.setBackground(Utils.bg32);
+		frame.setBackground(Utils.background);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		
@@ -1014,7 +1014,7 @@ public class Shutter {
 		settingsScrollBar.setVisible(false);
 		settingsScrollBar.setValue(45);
 		settingsScrollBar.setMaximum(100);
-		settingsScrollBar.setBackground(Utils.bg32);
+		settingsScrollBar.setBackground(Utils.background);
 		settingsScrollBar.setOrientation(JScrollBar.VERTICAL);
 		settingsScrollBar.setBounds(extendedWidth - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11, frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
 		frame.getContentPane().add(settingsScrollBar);
@@ -1670,7 +1670,7 @@ public class Shutter {
 
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(Utils.bg32);
+		topPanel.setBackground(Utils.background);
 		topPanel.setBounds(0, 0, extendedWidth, 28);
 
 		settings = new JLabel(new FlatSVGIcon("contents/settings.svg", 13, 13));
@@ -2135,28 +2135,14 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "serial" })
+	@SuppressWarnings({ "unchecked" })
 	private void grpChooseFiles() {
 
-		grpChooseFiles = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpChooseFiles = new CollapsiblePanel(language.getProperty("grpChooseFiles"), false);
 		grpChooseFiles.setLayout(null);
 		grpChooseFiles.setOpaque(false);
 		grpChooseFiles.setBounds(10, 30, 312, frame.getHeight() - 423);
 		grpChooseFiles.setBackground(Utils.c30);
-		grpChooseFiles.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpChooseFiles") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		frame.getContentPane().add(grpChooseFiles);
 
 		fileList = new JList<String>(list);
@@ -3177,29 +3163,14 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes", "serial" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void grpChooseFunction() {
 
-		grpChooseFunction = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpChooseFunction = new CollapsiblePanel(language.getProperty("grpChooseFunction"), false);
 		grpChooseFunction.setLayout(null);
 		grpChooseFunction.setOpaque(false);
-		grpChooseFunction.setBounds(10, grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4, 312, 76);
+		grpChooseFunction.setBounds(10, grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4, 312, 78);
 		grpChooseFunction.setBackground(Utils.c30);
-		grpChooseFunction.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpChooseFunction") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
-
 		frame.getContentPane().add(grpChooseFunction);
 
 		btnCancel = new JButton(language.getProperty("btnCancel"));
@@ -4254,11 +4225,10 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpDestination() {
 
 		grpDestination = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
-		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10, 308, 168);
+		grpDestination.setBounds(12, grpChooseFunction.getY() + grpChooseFunction.getHeight() + 6, 308, 168);
 		grpDestination.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(1, 1, 1, 1), Utils.c42, 1, 10) ));
 		grpDestination.setFont(new Font(boldFont, Font.PLAIN, 11));
 		frame.getContentPane().add(grpDestination);
@@ -5388,29 +5358,14 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpProgress() {
 
-		grpProgression = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpProgression = new CollapsiblePanel(language.getProperty("grpProgression"), false);
 		grpProgression.setLayout(null);
 		grpProgression.setOpaque(false);
 		grpProgression.setBounds(10, grpDestination.getY() + grpDestination.getHeight() + 6, 312, 94);
 		grpProgression.setBackground(Utils.c30);
 		grpProgression.setToolTipText(language.getProperty("rightClick"));
-		grpProgression.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpProgression") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		frame.getContentPane().add(grpProgression);
 
 		caseRunInBackground = new JCheckBox(language.getProperty("caseRunInBackground"));
@@ -5547,27 +5502,12 @@ public class Shutter {
 		});
 	}
 
-	@SuppressWarnings("serial")
 	private void grpResolution() {
 
-		grpResolution = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpResolution = new CollapsiblePanel(language.getProperty("grpResolution"), false);
 		grpResolution.setLayout(null);
 		grpResolution.setVisible(false);
 		grpResolution.setOpaque(false);
-		grpResolution.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpResolution") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpResolution.setBackground(Utils.c30);
 		grpResolution.setBounds(frame.getWidth(), 30, 312, 121);
 		frame.getContentPane().add(grpResolution);
@@ -6063,27 +6003,12 @@ public class Shutter {
 		grpResolution.add(comboImageOption);
 	}
 
-	@SuppressWarnings("serial")
 	private void grpImageFilter() {
 
-		grpImageFilter = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpImageFilter = new CollapsiblePanel(language.getProperty("grpFiltreImage"), true);
 		grpImageFilter.setLayout(null);
 		grpImageFilter.setVisible(false);
 		grpImageFilter.setOpaque(false);
-		grpImageFilter.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpFiltreImage") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpImageFilter.setBackground(Utils.c30);
 		grpImageFilter.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageFilter);
@@ -6302,27 +6227,12 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpSetTimecode() {
 
-		grpSetTimecode = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpSetTimecode = new CollapsiblePanel(language.getProperty("grpTimecode"), true);
 		grpSetTimecode.setLayout(null);
 		grpSetTimecode.setVisible(false);
 		grpSetTimecode.setOpaque(false);
-		grpSetTimecode.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpTimecode") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpSetTimecode.setBackground(Utils.c30);
 		grpSetTimecode.setBounds(frame.getWidth(), 258, 312, 17);
 		frame.getContentPane().add(grpSetTimecode);
@@ -6591,27 +6501,12 @@ public class Shutter {
 		grpSetTimecode.add(comboReadAudioTimecode);
 	}
 
-	@SuppressWarnings("serial")
 	private void grpSetAudio() {
 
-		grpSetAudio = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpSetAudio = new CollapsiblePanel(language.getProperty("grpAudio"), true);
 		grpSetAudio.setLayout(null);
 		grpSetAudio.setVisible(false);
 		grpSetAudio.setOpaque(false);
-		grpSetAudio.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpAudio") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpSetAudio.setBackground(Utils.c30);
 		grpSetAudio.setBounds(frame.getWidth(), 343, 312, 47);
 		frame.getContentPane().add(grpSetAudio);
@@ -8558,27 +8453,12 @@ public class Shutter {
 		}
 	}
 		
-	@SuppressWarnings("serial")
 	private void grpAudio() {
 
-		grpAudio = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpAudio = new CollapsiblePanel(language.getProperty("grpAudio"), false);
 		grpAudio.setLayout(null);
 		grpAudio.setVisible(false);
 		grpAudio.setOpaque(false);
-		grpAudio.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpAudio") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpAudio.setBackground(Utils.c30);
 		grpAudio.setBounds(frame.getWidth(), 343, 312, 162);
 		frame.getContentPane().add(grpAudio);
@@ -8847,27 +8727,12 @@ public class Shutter {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	private void grpCrop() {
 
-		grpCrop = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpCrop = new CollapsiblePanel(language.getProperty("frameCropImage"), true);
 		grpCrop.setLayout(null);
 		grpCrop.setVisible(false);
 		grpCrop.setOpaque(false);
-		grpCrop.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("frameCropImage") + " ", 0, 0,
-				new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235, 235, 240)));
 		grpCrop.setBackground(Utils.c30);
 		grpCrop.setSize(312, 17);
 		grpCrop.setLocation(frame.getWidth(), grpImageAdjustement.getY());
@@ -8988,7 +8853,7 @@ public class Shutter {
 		comboPreset.setEditable(true);
 		comboPreset.setSelectedIndex(0);
 		comboPreset.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
-		comboPreset.setBounds(lblPresets.getX() + lblPresets.getWidth() + 4, lblPresets.getY() - 2, 82, 22);
+		comboPreset.setBounds(lblPresets.getX() + lblPresets.getWidth() + 4, lblPresets.getY(), 82, 16);
 		grpCrop.add(comboPreset);
 
 		ActionListener comboListener = new ActionListener() {
@@ -10012,25 +9877,10 @@ public class Shutter {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	private void grpOverlay() {
 
-		grpOverlay = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpOverlay = new CollapsiblePanel(language.getProperty("caseAddOverlay"), true);
 		grpOverlay.setLayout(null);
-		grpOverlay.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("caseAddOverlay") + " ", 0, 0,
-				new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235, 235, 240)));
 		grpOverlay.setBackground(Utils.c30);
 		grpOverlay.setSize(312, 17);
 		grpOverlay.setLocation(frame.getWidth(), grpCrop.getY() + grpCrop.getHeight() + 6);
@@ -12094,25 +11944,10 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpSubtitles() {
 
-		grpSubtitles = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpSubtitles = new CollapsiblePanel(language.getProperty("subtitles"), true);
 		grpSubtitles.setLayout(null);
-		grpSubtitles.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("subtitles") + " ", 0, 0,
-				new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235, 235, 240)));
 		grpSubtitles.setBackground(Utils.c30);
 		grpSubtitles.setSize(312, 17);
 		grpSubtitles.setLocation(frame.getWidth(), grpOverlay.getY() + grpOverlay.getHeight() + 6);
@@ -12903,25 +12738,10 @@ public class Shutter {
 			comboSubsSource.setEnabled(true);
 	}
 
-	@SuppressWarnings("serial")
 	private void grpWatermark() {
 
-		grpWatermark = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpWatermark = new CollapsiblePanel(language.getProperty("caseLogo"), true);
 		grpWatermark.setLayout(null);
-		grpWatermark.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("caseLogo") + " ", 0, 0, new Font(Shutter.boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpWatermark.setBackground(Utils.c30);
 		grpWatermark.setSize(312, 17);
 		grpWatermark.setLocation(frame.getWidth(), grpSubtitles.getY() + grpSubtitles.getHeight() + 6);
@@ -13820,27 +13640,12 @@ public class Shutter {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	private void grpColorimetry() {
 
-		grpColorimetry = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpColorimetry = new CollapsiblePanel(language.getProperty("grpColorimetry"), true);
 		grpColorimetry.setLayout(null);
 		grpColorimetry.setVisible(false);
 		grpColorimetry.setOpaque(false);
-		grpColorimetry.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpColorimetry") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpColorimetry.setBackground(Utils.c30);
 		grpColorimetry.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpColorimetry);
@@ -14327,6 +14132,7 @@ public class Shutter {
 
 		btnLUTs = new JButton(language.getProperty("btnManage"));
 		btnLUTs.setFont(new Font(boldFont, Font.PLAIN, 12));
+		btnLUTs.setBackground(Utils.c42);
 		btnLUTs.setBounds(comboColorspace.getX(), caseLUTs.getY() + 1,
 				grpColorimetry.getWidth() - comboColorspace.getX() - 6, 21);
 		grpColorimetry.add(btnLUTs);
@@ -14416,27 +14222,12 @@ public class Shutter {
 		});
 	}
 
-	@SuppressWarnings("serial")
 	private void grpImageAdjustement() {
 
-		grpImageAdjustement = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpImageAdjustement = new CollapsiblePanel(language.getProperty("frameColorImage"), true);
 		grpImageAdjustement.setName("grpImageAdjustement");
 		grpImageAdjustement.setLayout(null);
 		grpImageAdjustement.setOpaque(false);
-		grpImageAdjustement.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("frameColorImage") + " ", 0, 0,
-				new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235, 235, 240)));
 		grpImageAdjustement.setBackground(Utils.c30);
 		grpImageAdjustement.setBounds(frame.getWidth(), 258, 312, 17);
 		grpImageAdjustement.setVisible(false);
@@ -15590,27 +15381,12 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpCorrections() {
 
-		grpCorrections = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpCorrections = new CollapsiblePanel(language.getProperty("grpCorrections"), true);
 		grpCorrections.setLayout(null);
 		grpCorrections.setVisible(false);
 		grpCorrections.setOpaque(false);
-		grpCorrections.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("grpCorrections") + " ", 0, 0,
-				new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235, 235, 240)));
 		grpCorrections.setBackground(Utils.c30);
 		grpCorrections.setBounds(frame.getWidth(), grpImageAdjustement.getY() + grpImageAdjustement.getHeight() + 6,
 				312, 17);
@@ -15880,27 +15656,12 @@ public class Shutter {
 		grpCorrections.add(sliderSmoothExposure);
 	}
 
-	@SuppressWarnings("serial")
 	private void grpTransitions() {
 
-		grpTransitions = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpTransitions = new CollapsiblePanel(language.getProperty("grpTransitions"), true);
 		grpTransitions.setLayout(null);
 		grpTransitions.setVisible(false);
 		grpTransitions.setOpaque(false);
-		grpTransitions.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				Shutter.language.getProperty("grpTransitions") + " ", 0, 0,
-				new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235, 235, 240)));
 		grpTransitions.setBackground(Utils.c30);
 		grpTransitions.setBounds(frame.getWidth(), grpCorrections.getY() + grpCorrections.getHeight() + 6, 312, 17);
 		frame.getContentPane().add(grpTransitions);
@@ -16370,27 +16131,12 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpImageSequence() {
 
-		grpImageSequence = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpImageSequence = new CollapsiblePanel(language.getProperty("grpSequenceImage"), true);
 		grpImageSequence.setLayout(null);
 		grpImageSequence.setVisible(false);
 		grpImageSequence.setOpaque(false);
-		grpImageSequence.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpSequenceImage") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpImageSequence.setBackground(Utils.c30);
 		grpImageSequence.setBounds(frame.getWidth(), 199, 312, 17);
 		frame.getContentPane().add(grpImageSequence);
@@ -16544,27 +16290,12 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpAdvanced() {
 
-		grpAdvanced = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
+		grpAdvanced = new CollapsiblePanel(language.getProperty("grpAdvanced"), true);
 		grpAdvanced.setLayout(null);
 		grpAdvanced.setOpaque(false);
 		grpAdvanced.setVisible(false);
-		grpAdvanced.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpAdvanced") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpAdvanced.setBackground(Utils.c30);
 		grpAdvanced.setBounds(frame.getWidth(), 396, 312, 17);
 		frame.getContentPane().add(grpAdvanced);
@@ -17684,27 +17415,11 @@ public class Shutter {
 
 	}
 
-	@SuppressWarnings("serial")
 	private void grpBitrate() {
 
-		grpBitrate = new JPanel() {
-			@Override
-			protected void paintComponent(Graphics g) {
-				Graphics2D g2 = (Graphics2D) g.create();
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(Utils.c25);
-				g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);
-				g2.dispose();
-				super.paintComponent(g);
-			}
-		};
-
+		grpBitrate = new CollapsiblePanel(language.getProperty("grpBitrate"), false);
 		grpBitrate.setLayout(null);
 		grpBitrate.setVisible(false);
-		grpBitrate.setBorder(BorderFactory.createTitledBorder(
-				new FlatLineBorder(new Insets(0, 0, 0, 0), Utils.c42, 1, 10) ,
-				language.getProperty("grpBitrate") + " ", 0, 0, new Font(boldFont, Font.PLAIN, 13),
-				new Color(235, 235, 240)));
 		grpBitrate.setBackground(Utils.c30);
 		grpBitrate.setBounds(658, 30, 312, 156);
 		grpBitrate.setOpaque(false);
@@ -18106,26 +17821,57 @@ public class Shutter {
 
 		// Links
 		h264lines = new JPanel() {
-			@Override
-			public void paintComponent(Graphics g) {
+		    @Override
+		    protected void paintComponent(Graphics g) {
+		        super.paintComponent(g);
 
-				super.paintComponent(g);
-				g.setColor(Color.LIGHT_GRAY);
-				Graphics2D g2 = (Graphics2D) g;
-				g2.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, null, 0.0f));
+		        Graphics2D g2 = (Graphics2D) g.create();
+		        g2.setColor(Color.LIGHT_GRAY);
 
-				if (comboFonctions.getSelectedItem().toString().contains("H.26")) {
-					g2.draw(new Line2D.Float(41, 15, 41, 95));// Grande ligne
-					g2.draw(new Line2D.Float(6, 15, 40, 15)); // 1
-					g2.draw(new Line2D.Float(6, 69, 40, 69)); // 2
-					g2.draw(new Line2D.Float(6, 95, 40, 95)); // 3
-				} else {
-					g2.draw(new Line2D.Float(41, 15, 41, 69));// Grande ligne
-					g2.draw(new Line2D.Float(6, 15, 40, 15)); // 1
-					g2.draw(new Line2D.Float(6, 42, 40, 42)); // 2
-					g2.draw(new Line2D.Float(6, 69, 40, 69)); // 3
-				}
-			}
+		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		        g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+		        Path2D path = new Path2D.Float();
+		        int r = 2; // radius
+
+		        if (comboFonctions.getSelectedItem().toString().contains("H.26"))
+		        {
+		            // Top horizontal → rounded corner → vertical
+		            path.moveTo(6, 15);
+		            path.lineTo(41 - r, 15);
+		            path.quadTo(41, 15, 41, 15 + r);
+		            path.lineTo(41, 95 - r);
+
+		            // Middle branch (rounded)
+		            path.moveTo(41, 69 - r);
+		            path.quadTo(41, 69, 41, 69);
+		            path.lineTo(6, 69);
+
+		            // Bottom branch (rounded)
+		            path.moveTo(41, 95 - r);
+		            path.quadTo(41, 95, 41 - r, 95);
+		            path.lineTo(6, 95);
+
+		        } else {
+
+		            path.moveTo(6, 15);
+		            path.lineTo(41 - r, 15);
+		            path.quadTo(41, 15, 41, 15 + r);
+		            path.lineTo(41, 69 - r);
+
+		            path.moveTo(41, 42 - r);
+		            path.quadTo(41, 42, 41, 42);
+		            path.lineTo(6, 42);
+
+		            path.moveTo(41, 69 - r);
+		            path.quadTo(41, 69, 41 - r, 69);
+		            path.lineTo(6, 69);
+		        }
+
+		        g2.draw(path);
+		        g2.dispose();
+		    }
 		};
 		h264lines.setOpaque(false);
 		h264lines.setBounds(212, lblKbsH264.getY() - 7, 53, 105);
@@ -18268,6 +18014,7 @@ public class Shutter {
 		btnReset.setVisible(false);
 		btnReset.setFont(new Font(boldFont, Font.PLAIN, 12));
 		btnReset.setBounds(frame.getWidth(), 569, 309, 21);
+		btnReset.setBackground(Utils.c42);
 		frame.getContentPane().add(btnReset);
 
 		btnReset.addMouseListener(new MouseListener() {
@@ -20443,8 +20190,7 @@ public class Shutter {
 		addToList.setSize(fileList.getSize());
 		scrollBar.setSize(292, fileList.getHeight());
 		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);
-		grpDestination.setLocation(grpDestination.getX(),
-				grpChooseFunction.getY() + grpChooseFunction.getHeight() + 10);
+		grpDestination.setLocation(grpDestination.getX(), grpChooseFunction.getY() + grpChooseFunction.getHeight() + 6);
 		grpProgression.setLocation(grpProgression.getX(), grpDestination.getY() + grpDestination.getHeight() + 6);
 
 		// On récupère le groupe qui est le plus haut
@@ -25474,7 +25220,7 @@ public class Shutter {
 			grpProgression.setVisible(true);
 			statusBar.setVisible(true);
 
-			frame.getContentPane().setBackground(Utils.bg32);
+			frame.getContentPane().setBackground(Utils.background);
 
 			changeSections(false);
 
@@ -25661,7 +25407,7 @@ class FilesCellRenderer extends JLabel implements ListCellRenderer {
 	}
 }
 
-// Editing functions list
+// Edit functions list
 @SuppressWarnings("serial")
 class ComboBoxRenderer extends DefaultListCellRenderer {
 	@Override
@@ -26001,6 +25747,88 @@ class DestinationFileTransferHandler extends TransferHandler {
 		}
 		return false;
 	}
+}
+
+// Edit panel UI
+@SuppressWarnings("serial")
+class CollapsiblePanel extends JPanel {
+
+    private final String title;
+    private final boolean displayIcon;
+    private final int CORNER_RADIUS = 12;
+
+    public CollapsiblePanel(String title, boolean displayIcon) {
+        this.title = title + " ";
+        this.displayIcon = displayIcon;
+        setOpaque(false);
+        setLayout(null);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+    	
+        super.paintComponent(g);
+
+        Graphics2D g2 = (Graphics2D) g.create();
+        
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+
+        int y = 12;
+        int height = 16;
+        int textY = 9;
+        int iconY = 7;
+        if (this.getHeight() <= 17)
+        {
+            y = 0;
+            height = 0;
+            textY = 13;
+            iconY = 10;
+        }
+        
+        // Background   
+    	if (this.getHeight() <= 17)
+    	{
+    		g2.setPaint(new GradientPaint(2, 0, Utils.c42,getWidth() - 4, 0, new Color(Utils.c42.getRed(), Utils.c42.getGreen(), Utils.c42.getBlue(), 80)));
+    	}
+    	else
+    		g2.setColor(Utils.c25);        
+
+        g2.fillRoundRect(2, y, getWidth() - 4, getHeight() - height, CORNER_RADIUS, CORNER_RADIUS);
+
+        // Border
+        if (this.getHeight() <= 17)
+    	{
+        	g2.setPaint(new GradientPaint(2, 0, Utils.c50,getWidth() - 4, 0, new Color(Utils.c50.getRed(), Utils.c50.getGreen(), Utils.c50.getBlue(), 120)));
+    	}
+    	else
+    		g2.setColor(Utils.c42);    
+                
+        g2.drawRoundRect(2, y, getWidth() - 4, getHeight() - height, CORNER_RADIUS, CORNER_RADIUS);
+
+        // Title
+        g2.setColor(new Color(235, 235, 240));
+        g2.setFont(new Font(Utils.boldFont, Font.PLAIN, 13));
+        g2.drawString(title, 7, textY);
+
+        // Chevron icon
+        if (displayIcon)
+        {
+           int iconX = getWidth() - 18;
+           
+           g2.setStroke(new BasicStroke(2.0f));
+           
+           if (this.getHeight() <= 17) {
+               g2.drawLine(iconX, iconY - 4, iconX + 4, iconY);
+               g2.drawLine(iconX + 4, iconY, iconX + 8, iconY - 4);
+           } else {
+               g2.drawLine(iconX, iconY, iconX + 4, iconY - 4);
+               g2.drawLine(iconX + 4, iconY - 4, iconX + 8, iconY);
+           }
+
+        }
+        g2.dispose();
+    }
 }
 
 // Overlay fonts

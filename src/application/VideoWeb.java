@@ -26,11 +26,7 @@ import java.awt.ComponentOrientation;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Insets;
 import java.awt.MouseInfo;
-import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -51,6 +47,9 @@ import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -60,6 +59,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
@@ -67,16 +67,10 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.formdev.flatlaf.ui.FlatLineBorder;
 
 import library.FFMPEG;
 import library.YOUTUBEDL;
 import settings.FunctionUtils;
-
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 
 /** ATTENTION pour windows les commandes sont sous forme de tableau ["a","b"], sous mac en forme de String... **/
 
@@ -119,7 +113,7 @@ public class VideoWeb {
 	public VideoWeb() {	
 		
 		frame = new JDialog();
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
@@ -173,7 +167,7 @@ public class VideoWeb {
 		
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(Utils.bg32);
+		topPanel.setBackground(Utils.background);
 		topPanel.setBounds(0, 0, 420, 28);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -290,7 +284,7 @@ public class VideoWeb {
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(35,35,40));
+		topImage.setBackground(Utils.c42);
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));	
 		topImage.setBounds(title.getBounds());
@@ -339,27 +333,15 @@ public class VideoWeb {
 		});
 		
 	}
-
-	@SuppressWarnings("serial")
+	
 	private void grpURL() {
 		
-		grpURL = new JPanel() {
-		    @Override
-		    protected void paintComponent(Graphics g) {
-		        Graphics2D g2 = (Graphics2D) g.create();
-		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		        g2.setColor(Utils.c25);
-		        g2.fillRoundRect(2, 9, getWidth() - 4, getHeight() - 11, 10, 10);      
-		        g2.dispose();
-		        super.paintComponent(g);
-		    }
-		};
+		grpURL = new CollapsiblePanel(Shutter.language.getProperty("videoUrl"), false);
 		grpURL.setLayout(null);
 		grpURL.setLocation(6, 28);
 		grpURL.setSize(408, frame.getHeight() - 34);
 		grpURL.setBackground(Utils.c30);
 		grpURL.setOpaque(false);
-		grpURL.setBorder(BorderFactory.createTitledBorder(new FlatLineBorder(new Insets(0,0,0,0), Utils.c42, 1, 10), Shutter.language.getProperty("videoUrl") + " ", 0, 0, new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235,235,240)));
 		
 		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);

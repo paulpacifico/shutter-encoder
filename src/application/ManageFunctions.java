@@ -51,7 +51,7 @@ public class ManageFunctions {
        
         frame = new JDialog(Shutter.frame, true);
         frame.setTitle(Shutter.language.getProperty("grpChooseFunction"));
-        frame.setBackground(Utils.bg32);
+        frame.setBackground(Utils.background);
         frame.setSize(420, 660);
         frame.setMinimumSize(new Dimension(420, 480));
         frame.setLocationRelativeTo(Shutter.frame);
@@ -74,7 +74,7 @@ public class ManageFunctions {
         listPanel = new JPanel();
         listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBorder(new EmptyBorder(4, 0, 4, 0));
-        listPanel.setBackground(Utils.bg32);
+        listPanel.setBackground(Utils.background);
         setList();
 
         JScrollPane scroll = new JScrollPane(listPanel,
@@ -125,7 +125,7 @@ public class ManageFunctions {
         });
         
         JPanel bar = new JPanel(new BorderLayout());
-        bar.setBackground(Utils.bg32);
+        bar.setBackground(Utils.background);
         bar.setBorder(new EmptyBorder(10, 10, 10, 10));
         bar.add(selectAll, BorderLayout.WEST);
         bar.add(apply, BorderLayout.CENTER);
@@ -207,7 +207,7 @@ public class ManageFunctions {
                 BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("Separator.foreground")),
                 new EmptyBorder(6, 12, 6, 12)));
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
-        row.setBackground(Utils.bg32);
+        row.setBackground(Utils.background);
         row.add(left, BorderLayout.WEST);
 
         MouseAdapter toggle = new MouseAdapter() {

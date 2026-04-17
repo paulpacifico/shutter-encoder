@@ -75,7 +75,7 @@ public class Update {
 		frame.setAlwaysOnTop(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setSize(346, 59);
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setTitle(Shutter.language.getProperty("frameUpdate"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
@@ -117,7 +117,7 @@ public class Update {
 	private void content() {
 		topPanel = new JPanel();		
 		topPanel.setLayout(null);
-		topPanel.setBackground(Utils.bg32);
+		topPanel.setBackground(Utils.background);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
 		quit.setHorizontalAlignment(SwingConstants.CENTER);

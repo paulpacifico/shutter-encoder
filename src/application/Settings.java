@@ -191,7 +191,7 @@ public class Settings {
 			frame.setSize(frame.getWidth() + 50, frame.getHeight());
 		}
 		
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		
 		if (System.getProperty("os.name").contains("Mac") == false)
@@ -214,7 +214,7 @@ public class Settings {
 		topPanel();
 		
 		JScrollBar scrollBar = new JScrollBar();		
-		scrollBar.setBackground(Utils.bg32);
+		scrollBar.setBackground(Utils.background);
 		scrollBar.setOrientation(JScrollBar.VERTICAL);
 		scrollBar.setSize(11, frame.getHeight() - topPanel.getHeight());
 		scrollBar.setLocation(frame.getWidth() - scrollBar.getWidth() - 2, topPanel.getHeight());
@@ -247,7 +247,7 @@ public class Settings {
 		JPanel backgroundPanel = new JPanel();
 		backgroundPanel.setName("backgroundPanel");
 		backgroundPanel.setLayout(null);
-		backgroundPanel.setBackground(Utils.bg32);
+		backgroundPanel.setBackground(Utils.background);
 		backgroundPanel.setOpaque(true);
 		backgroundPanel.setSize(frame.getWidth(), 50);
 		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
@@ -819,7 +819,7 @@ public class Settings {
 			lblDestination1.setForeground(Utils.themeColor);
 		lblDestination1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination1.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination1.setBackground(Utils.bg32);
+		lblDestination1.setBackground(Utils.background);
 		if (lblDestination1.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -912,7 +912,7 @@ public class Settings {
 			lblDestination2.setForeground(Utils.themeColor);
 		lblDestination2.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination2.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination2.setBackground(Utils.bg32);
+		lblDestination2.setBackground(Utils.background);
 		if (lblDestination2.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -997,7 +997,7 @@ public class Settings {
 			lblDestination3.setForeground(Utils.themeColor);
 		lblDestination3.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		lblDestination3.setFont(new Font("SansSerif", Font.PLAIN, 12));
-		lblDestination3.setBackground(Utils.bg32);
+		lblDestination3.setBackground(Utils.background);
 		if (lblDestination3.getText() == "")
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
@@ -1238,7 +1238,7 @@ public class Settings {
 		
 		topPanel = new JPanel();	
 		topPanel.setName("topPanel");
-		topPanel.setBackground(Utils.bg32);
+		topPanel.setBackground(Utils.background);
 		topPanel.setLayout(null);
 			
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -1382,7 +1382,7 @@ public class Settings {
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(35,35,40));
+		topImage.setBackground(Utils.c42);
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));
 		topImage.setBounds(title.getBounds());

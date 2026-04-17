@@ -833,7 +833,6 @@ public static StringBuilder errorLog = new StringBuilder();
 			int screenWidth = allScreens[screenIndex].getDisplayMode().getWidth();	
 			int screenHeight = allScreens[screenIndex].getDisplayMode().getHeight();	
 
-			@SuppressWarnings("serial")
 			JPanel display = new JPanel() {
 				
 	            @Override

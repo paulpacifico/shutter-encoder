@@ -50,10 +50,10 @@ public class Donate {
 	public Donate()  {
 		
 		JFrame frame = new JFrame();
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 		frame.setTitle("Thanks!");		
-		frame.setBackground(Utils.bg32);
+		frame.setBackground(Utils.background);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(280, 335);
@@ -74,7 +74,7 @@ public class Donate {
 				
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(Utils.bg32);
+		topPanel.setBackground(Utils.background);
 		topPanel.setBounds(0, 0, frame.getWidth(), 28);
 		
 		JLabel quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -126,7 +126,7 @@ public class Donate {
 		topPanel.add(title);
 		
 		JLabel topImage = new JLabel();
-		topImage.setBackground(new Color(35,35,40));
+		topImage.setBackground(Utils.c42);
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);		

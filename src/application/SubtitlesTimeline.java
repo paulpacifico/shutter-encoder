@@ -147,7 +147,6 @@ public class SubtitlesTimeline {
 	private static int MouseTextWidth;
 	private static int MouseTextLocationX;
 	
-	@SuppressWarnings("serial")
 	public SubtitlesTimeline() {
 		
     	frame = new JFrame();
@@ -157,7 +156,7 @@ public class SubtitlesTimeline {
     	if (System.getProperty("os.name").contains("Mac") == false)
     		frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());
     	
-    	frame.getContentPane().setBackground(Utils.bg32);
+    	frame.getContentPane().setBackground(Utils.background);
     	frame.getContentPane().setLayout(null);
     	frame.setAlwaysOnTop(true);
     	frame.setSize(1000, 270);

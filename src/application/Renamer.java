@@ -84,7 +84,7 @@ public class Renamer {
 			frame.setSize(551, 163);
 		frame.setTitle(Shutter.language.getProperty("frameRenommage"));
 		frame.setForeground(Color.WHITE);
-		frame.getContentPane().setBackground(Utils.bg32);	
+		frame.getContentPane().setBackground(Utils.background);	
 		
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("contents/icon.png")).getImage());

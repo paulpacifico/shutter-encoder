@@ -71,7 +71,7 @@ import library.MEDIAINFO;
 	public Informations() {
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
@@ -257,7 +257,7 @@ import library.MEDIAINFO;
 		
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
-		topPanel.setBackground(Utils.bg32);
+		topPanel.setBackground(Utils.background);
 		topPanel.setBounds(0, 0, frame.getSize().width, 28);
 		
 		quit = new JLabel(new FlatSVGIcon("contents/quit.svg", 15, 15));
@@ -305,7 +305,7 @@ import library.MEDIAINFO;
 		});
 				
 		bottomImage = new JLabel();
-		bottomImage.setBackground(new Color(35,35,40));
+		bottomImage.setBackground(Utils.c42);
 		bottomImage.setOpaque(true);
 		bottomImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
 		bottomImage.setBounds(0 , 1, frame.getSize().width, 24);
@@ -317,7 +317,7 @@ import library.MEDIAINFO;
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(35,35,40));
+		topImage.setBackground(Utils.c42);
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));		
 		topImage.setBounds(title.getBounds());

@@ -94,7 +94,7 @@ public class Equalizer {
 	public Equalizer() {	
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(Utils.bg32);
+		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.setTitle(Shutter.language.getProperty("frameEqualizer"));
 		frame.setForeground(Color.WHITE);
@@ -220,7 +220,7 @@ public class Equalizer {
 		topPanel.add(title);
 		
 		topImage = new JLabel();
-		topImage.setBackground(new Color(35,35,40));
+		topImage.setBackground(Utils.c42);
 		topImage.setOpaque(true);
 		topImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(45,45,45)));		
 		topImage.setBounds(title.getBounds());

@@ -1641,7 +1641,7 @@ public class VideoPlayer {
 	}
 		
     public static void setMedia() {
-    	
+    			
     	loadMedia = new Thread(new Runnable()
 		{
     		@Override
@@ -2818,16 +2818,16 @@ public class VideoPlayer {
 						{		
 							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 							{
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 							else
 							{
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 						}
 						else
 						{
-							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=green|green,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
+							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
 						}
 						
 						if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
@@ -2882,8 +2882,7 @@ public class VideoPlayer {
 			addWaveform.start();
 		}
 	}
-	
-	@SuppressWarnings("serial")
+
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
@@ -3280,14 +3279,21 @@ public class VideoPlayer {
 												
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			        
-					g2d.setColor(Utils.c42);
-					
+					g2d.setColor(Utils.c42);					
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 					{
 						g2d.fillRoundRect(0, 0, (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21, 15, 15);
+						
+						g2d.setColor(Utils.c50);
+						g2d.drawRoundRect(0, 0, (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21, 15, 15);
 					}
 					else
+					{
 						g2d.fillRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21, 15, 15);
+						
+						g2d.setColor(Utils.c50);
+						g2d.drawRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21, 15, 15);
+					}
 									
 					g2d.setColor(new Color(25,25,25));
 					g2d.drawLine(this.getWidth() / 2, 5, this.getWidth() / 2, this.getHeight() - 6);
@@ -3329,8 +3335,8 @@ public class VideoPlayer {
 		comboAudioTrack.setOpaque(false);
 		comboAudioTrack.setVisible(false);
 		comboAudioTrack.setEditable(false);
-		comboAudioTrack.setBorder(null);
-		comboAudioTrack.setBackground(new Color(comboAudioTrack.getBackground().getRed(),comboAudioTrack.getBackground().getGreen(),comboAudioTrack.getBackground().getBlue(), 0));	
+		comboAudioTrack.putClientProperty("FlatLaf.style", "borderWidth: 0; focusWidth: 0;");
+		comboAudioTrack.setBackground(new Color(comboAudioTrack.getBackground().getRed(),comboAudioTrack.getBackground().getGreen(),comboAudioTrack.getBackground().getBlue(), 120));	
 		comboAudioTrack.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		comboAudioTrack.setMaximumRowCount(16);		
 
@@ -3346,7 +3352,6 @@ public class VideoPlayer {
 		});		
 	}
 	
-	@SuppressWarnings("serial")
 	private void player() {		
 
     	player = new JPanel() {
@@ -3358,10 +3363,16 @@ public class VideoPlayer {
                 
                 Graphics2D g2 = (Graphics2D)g;
                 
+                BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+                Graphics2D bg = buffer.createGraphics();
+                
+                bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                bg.setClip(new java.awt.geom.RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 5, 5));
+                
                 if (FFPROBE.hasAlpha)
                 	drawCheckerboard((Graphics2D) g);
                                
-                g2.setColor(Color.BLACK);
+                bg.setColor(Color.BLACK);
                 
                 //Avoid black frame display
                 if (playerIsPlaying() && frameVideo == null)
@@ -3381,12 +3392,12 @@ public class VideoPlayer {
                 
                 if (frameVideo == null || Shutter.list.getSize() == 0 || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) && Shutter.caseDisplay.isSelected() == false)
                 {
-                	g2.fillRect(0, 0, player.getWidth(), player.getHeight()); 
+                	bg.fillRect(0, 0, player.getWidth(), player.getHeight()); 
                 }
                 else
                 {
-                	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                	g2.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this);
+                	bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                	bg.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this);
                 	
                 	cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
                 }
@@ -3427,40 +3438,40 @@ public class VideoPlayer {
                 
                 if (previewUpscale && frameVideo != null && preview != null && fileDuration > 40)
                 {
-                	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                	g2.setColor(Color.WHITE);
-                	g2.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
-                	FontMetrics metrics = g.getFontMetrics(g2.getFont());
+                	bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    bg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                	bg.setColor(Color.WHITE);
+                	bg.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
+                	FontMetrics metrics = g.getFontMetrics(bg.getFont());
                      
                     int x = (player.getWidth() - metrics.stringWidth(Shutter.language.getProperty("preview"))) / 2;                                	
                     int y = player.getHeight() - (int) (player.getHeight()/24);
                      
-                	g2.drawString(Shutter.language.getProperty("preview"), x, y);
+                	bg.drawString(Shutter.language.getProperty("preview"), x, y);
                 }
                                 
                 if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
                 {
                 	SubtitlesTimeline.refreshData();
 
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                    bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    bg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                         
                     //On sépare les lignes
                     String text[] = SubtitlesTimeline.txtSubtitles.getText().split("\\r?\\n");                   
                     
                     if (text[0].contains("i>") && text[0].contains("b>"))
-                    	g2.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
+                    	bg.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
                     else if (text[0].contains("i>"))
-                    	g2.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
+                    	bg.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
                     else if (text[0].contains("b>"))
-                    	g2.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
+                    	bg.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
                     else
-                    	g2.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(player.getHeight()/16))); 
+                    	bg.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(player.getHeight()/16))); 
                     
                     String firstLine = text[0].replace("<i>", "").replace("</i>", "").replace("<b>", "").replace("</b>", "");
                                     	
-                    FontMetrics metrics = g.getFontMetrics(g2.getFont());
+                    FontMetrics metrics = g.getFontMetrics(bg.getFont());
                     
                     int x = (player.getWidth() - metrics.stringWidth(firstLine)) / 2;                                	
                     int y = player.getHeight() - (int) (player.getHeight()/24);
@@ -3468,47 +3479,63 @@ public class VideoPlayer {
                     if (text.length > 1 && text[1].length() > 0)
                     {                                	                	
                     	y = player.getHeight() - (int) (player.getHeight()/9.5);                	
-                    	g2.setColor(Color.BLACK);
-                    	g2.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
-                    	g2.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
-                    	g2.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
-                    	g2.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
-                    	g2.setColor(Color.WHITE);
-                    	g2.drawString(firstLine, x, y);
+                    	bg.setColor(Color.BLACK);
+                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
+                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
+                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
+                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
+                    	bg.setColor(Color.WHITE);
+                    	bg.drawString(firstLine, x, y);
                     	
                     	if (text[1].contains("i>") && text[1].contains("b>"))
-                        	g2.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
+                        	bg.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
                         else if (text[1].contains("i>"))
-                        	g2.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
+                        	bg.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
                         else if (text[1].contains("b>"))
-                        	g2.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
+                        	bg.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
                         else
-                        	g2.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(player.getHeight()/16))); 
+                        	bg.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(player.getHeight()/16))); 
                     	
                         String secondLine = text[1].replace("<i>", "").replace("</i>", "").replace("<b>", "").replace("</b>", "");
     	 	            
     	 	            x = (player.getWidth() - metrics.stringWidth(secondLine)) / 2;
     	 	            y = player.getHeight() - (int) (player.getHeight()/24);
                     	
-                    	g2.setColor(Color.BLACK);
-                    	g2.drawString(secondLine, ShiftWest(x, 1), ShiftNorth(y, 1));
-                    	g2.drawString(secondLine, ShiftWest(x, 1), ShiftSouth(y, 1));
-                    	g2.drawString(secondLine, ShiftEast(x, 1), ShiftNorth(y, 1));
-                    	g2.drawString(secondLine, ShiftEast(x, 1), ShiftSouth(y, 1));
-                    	g2.setColor(Color.WHITE);
-                    	g2.drawString(secondLine, x, y);
+                    	bg.setColor(Color.BLACK);
+                    	bg.drawString(secondLine, ShiftWest(x, 1), ShiftNorth(y, 1));
+                    	bg.drawString(secondLine, ShiftWest(x, 1), ShiftSouth(y, 1));
+                    	bg.drawString(secondLine, ShiftEast(x, 1), ShiftNorth(y, 1));
+                    	bg.drawString(secondLine, ShiftEast(x, 1), ShiftSouth(y, 1));
+                    	bg.setColor(Color.WHITE);
+                    	bg.drawString(secondLine, x, y);
                     }
                     else if (firstLine.length() > 0)
                     {
-                    	g2.setColor(Color.BLACK);
-                    	g2.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
-                    	g2.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
-                    	g2.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
-                    	g2.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
-                    	g2.setColor(Color.WHITE);
-                    	g2.drawString(firstLine, x, y);
+                    	bg.setColor(Color.BLACK);
+                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
+                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
+                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
+                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
+                    	bg.setColor(Color.WHITE);
+                    	bg.drawString(firstLine, x, y);
                     }                           		     
                 }
+                
+                bg.dispose();
+                
+                int arc = 10;
+                BufferedImage rounded = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+                Graphics2D rg = rounded.createGraphics();
+                
+                rg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                rg.setColor(Color.WHITE);
+                rg.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
+                rg.setComposite(AlphaComposite.SrcIn);
+                rg.drawImage(buffer, 0, 0, null);
+                rg.dispose();
+
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.drawImage(rounded, 0, 0, null);
             }
             
             private void drawCheckerboard(Graphics2D g2d) {
@@ -3641,6 +3668,7 @@ public class VideoPlayer {
  			
  		});
  		
+ 		player.setOpaque(false);
 		player.setLayout(null);
 		player.setBackground(Color.BLACK);
 		Shutter.frame.getContentPane().add(player);		
@@ -3714,8 +3742,7 @@ public class VideoPlayer {
 		
 		Shutter.windowDrag = false;
 	}
-	
-	@SuppressWarnings("serial")
+
 	private void sliders() {
 		
 		slider = new JSlider();
@@ -3750,10 +3777,29 @@ public class VideoPlayer {
 			@Override
 		    protected void paintComponent(Graphics g)
 		    {		
-	        	Graphics2D g2 = (Graphics2D)g; 
+	        	Graphics2D g2 = (Graphics2D)g;
+	            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	        	
+	            //Background
+	            if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
+	            {
+	            	g2.setColor(Utils.darkenColor);
+	            	
+	            	//Mask in                               	
+	                g2.fillRoundRect(0, 0, playerInMark + 1, getHeight() - 1, 5, 5);
+	                
+	                //Mask out     
+	                g2.fillRoundRect(playerOutMark + 1, 0, getWidth() - playerOutMark - 1, getHeight() - 1, 5, 5);
+	            }
+	            else
+	            {
+	            	g2.setColor(new Color(25, 27, 30));
+	            	g2.fillRoundRect(0, 0, getWidth(), getHeight(), 5, 5);
+	            }
+
 	            //Borders
-                g2.setColor(new Color(55, 55, 55));
+                g2.setColor(Utils.c25);
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 5, 5);	
                                 
                 if (Shutter.list.getSize() > 0 && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
@@ -3764,20 +3810,23 @@ public class VideoPlayer {
                 		g2.setColor(Color.GRAY);          
 	                }
                 	else
-                		g2.setColor(Utils.themeColor);
+                		g2.setColor(Utils.darkenColor);
 	                	                
 	                if (playerOutMark > waveformContainer.getWidth() - 2)
 	                	playerOutMark = waveformContainer.getWidth() - 2;	 
 	                
-	               if (playerInMark < 0)
-	            	   playerInMark = 0;
+	                if (playerInMark < 0)
+	                	playerInMark = 0;
 	                
-	                g2.drawRoundRect(playerInMark + 1, 0, playerOutMark - playerInMark, getHeight() - 1, 5, 5);	
+	               	if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")) == false)
+	               	{
+	               		g2.fillRoundRect(playerInMark + 1, 0, playerOutMark - playerInMark - 1, getHeight() - 1, 5, 5);	
+	               	}
 	                
 	                //Splitters
 	                if (comboMode.isVisible() && comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
 	                {
-		                g2.setColor(Utils.themeColor);
+		                g2.setColor(new Color(25, 27, 30));
 		                int alpha = 255;
 		                int splitTime = (int) (playerInMark + Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames)));
 		                do {
@@ -3786,7 +3835,7 @@ public class VideoPlayer {
 		                	
 		                	splitTime += Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames));
 		                	
-		                	g2.setColor(new Color(Utils.themeColor.getRed(), Utils.themeColor.getGreen(), Utils.themeColor.getBlue(), alpha));
+		                	g2.setColor(new Color(25, 27, 30, alpha));
 		                	
 		                	alpha -= 10;
 		                	
@@ -3797,23 +3846,25 @@ public class VideoPlayer {
 	                }
 	                	
 	                //Waveform
-	                if (waveformIcon.getIcon() != null) {
+	                if (waveformIcon.getIcon() != null && waveformIcon.isVisible()) {
 	                    waveformIcon.getIcon().paintIcon(this, g2, 0, 0);
 	                }
 	                
-	                //Masks
-	                g2.setColor(new Color(35,35,40,120)); 
+	                //Masks 
 	                if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 	                {
-	                	g2.fillRoundRect(playerInMark + 2, 1, playerOutMark - playerInMark - 1, getHeight() - 2, 5, 5);
+	                	g2.setColor(new Color(24, 26, 29, 200));
+	                	g2.fillRoundRect(playerInMark + 1, 1, playerOutMark - playerInMark, getHeight() - 2, 5, 5);
 	                }
 	                else
-	                {
+	                {	     
+	                	g2.setColor(new Color(26, 27, 31, 200));
+	                	
 		                //Mask in                               	
 		                g2.fillRoundRect(0, 0, playerInMark + 1, getHeight() - 1, 5, 5);
 		                
 		                //Mask out     
-		                g2.fillRoundRect(playerOutMark + 2, 0, getWidth() - playerOutMark - 2, getHeight() - 1, 5, 5);
+		                g2.fillRoundRect(playerOutMark + 1, 0, getWidth() - playerOutMark - 1, getHeight() - 1, 5, 5);
 	                }
 	                
 	                /*
@@ -3836,28 +3887,32 @@ public class VideoPlayer {
 		};
 		waveformContainer.setSize(slider.getWidth() * waveformZoom, slider.getHeight());
 		waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));		
-		waveformContainer.setLayout(null);	
+		waveformContainer.setLayout(null);
 		Shutter.frame.getContentPane().add(waveformContainer);
 		
 		waveformContainer.add(comboAudioTrack);
 						
-		cursorHead = new JPanel()
-		{
-	        @Override
-	        protected void paintComponent(Graphics grphcs) {
-	            super.paintComponent(grphcs);
-	            Graphics2D g2d = (Graphics2D) grphcs;
-	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-	            
-	            g2d.setColor(new Color(230,75,60));
-	            
-	            g2d.fillPolygon(new int[] {0, 5, 10}, new int[] {0, 8, 0}, 3);	            
-	        }
+		cursorHead = new JPanel() {
+		    @Override
+		    protected void paintComponent(Graphics grphcs) {
+		        super.paintComponent(grphcs);
+		        Graphics2D g2d = (Graphics2D) grphcs;
+		        
+		        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		        
+		        int[] xPoints = {0, getWidth(), getWidth(), getWidth() / 2, 0};
+		        int[] yPoints = {0, 0, getHeight() - 6, getHeight(), getHeight() - 6}; 
+		        
+		        //Fill
+		        g2d.setColor(new Color(230,75,60));
+		        g2d.fillPolygon(xPoints, yPoints, 5);
+
+		    }
 		};
 
 		cursorHead.setOpaque(false);
-		cursorHead.setSize(10, 10);
+		cursorHead.setSize(10, 9); 
 		waveformContainer.add(cursorHead);
 		
 		cursorWaveform = new JPanel() {
@@ -3865,15 +3920,13 @@ public class VideoPlayer {
 	        protected void paintComponent(Graphics grphcs) {
 	            super.paintComponent(grphcs);
 	            Graphics2D g2d = (Graphics2D) grphcs;
-	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	            
 	            g2d.setColor(new Color(230,75,60));
-	            g2d.drawLine(0, 1, 0, waveformContainer.getHeight());	
+	            g2d.drawLine(0, getWidth(), 0, waveformContainer.getHeight());	
 	        }
 		};
 	
-		cursorWaveform.setBounds(0, 0, 1, waveformContainer.getSize().height);		
+		cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);		
 		waveformContainer.add(cursorWaveform);	
 			   
 		waveformIcon = new JLabel();
@@ -5120,6 +5173,7 @@ public class VideoPlayer {
 					}
 					
 					waveformIcon.setVisible(false);
+					waveformContainer.repaint();
 				}
 			}
 		});
@@ -6090,7 +6144,7 @@ public class VideoPlayer {
 
 			readFrame(inputStream, player.getWidth(), player.getHeight(), true, false);
 			
-			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
+			if (preview == null && frameVideo != null && Shutter.caseAddSubtitles.isSelected() == false)
 			{				
 				preview = cloneBufferedImage(frameVideo);
 			}
