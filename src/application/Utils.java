@@ -2307,7 +2307,7 @@ public class Utils extends Shutter {
 		UIManager.put("TabbedPane.tabSelectionArc", 10);
 				
 		UIManager.put("Component.borderColor", c50);
-		UIManager.put("Component.disabledBorderColor", c50);
+		UIManager.put("Component.disabledBorderColor", c42);
 
 		UIManager.put("Button.startBorderColor", c50);
 		UIManager.put("Button.endBorderColor", c50);
@@ -2345,8 +2345,8 @@ public class Utils extends Shutter {
 		
 		UIManager.put("CheckBox.icon.borderColor", c50);		
 		UIManager.put("CheckBox.icon.background", c42);
-		UIManager.put("CheckBox.icon.disabledBorderColor", c42);	
-		UIManager.put("CheckBox.icon.disabledBackground", c42);	
+		UIManager.put("CheckBox.icon.disabledBorderColor", c25);	
+		UIManager.put("CheckBox.icon.disabledBackground", c30);	
 		UIManager.put("CheckBox.icon.focusedBorderColor", c50);
 		UIManager.put("CheckBox.icon.focusedBackground", c42);
 		UIManager.put("CheckBox.icon.selectedBorderColor", c50);
@@ -2381,7 +2381,7 @@ public class Utils extends Shutter {
 		UIManager.put("ScrollBar.background", c30);
 		UIManager.put("ScrollBar.thumb", c42);
 		UIManager.put("ScrollBar.track", new Color(0,0,0,0));
-					
+						
 		UIManager.put("MenuBar.foreground", c225);
 
 		UIManager.put("PopupMenu.border", BorderFactory.createLineBorder(c50));	
@@ -2400,7 +2400,7 @@ public class Utils extends Shutter {
 		UIManager.put("ComboBox.selectionForeground", Color.WHITE);
 		UIManager.put("Menu.selectionForeground", Color.WHITE);
 										
-		UIManager.put("TabbedPane.focusColor", c50);
+		UIManager.put("TabbedPane.focusColor", c25);
 		UIManager.put("TabbedPane.tabHeight", 22);
 		UIManager.put("TabbedPane.tabInsets", new Insets(0,5,0,5));
 		UIManager.put("TabbedPane.background", c30);
@@ -2425,19 +2425,22 @@ public class Utils extends Shutter {
 		UIManager.put("CheckBox.icon.focusedBackground", "null");
 		UIManager.put("RadioButton.icon.centerDiameter", 9);
 		
-		UIManager.put("ProgressBar.background" , c30);
+		UIManager.put("ProgressBar.background" , c42);
 		UIManager.put("ProgressBar.foreground" , themeColor);	
 		UIManager.put("ProgressBar.selectionBackground", c225);
         UIManager.put("ProgressBar.selectionForeground", c225);
-        UIManager.put("ProgressBar.border", new FlatLineBorder(new Insets(0,0,0,0), c20, 1, 10));
+        UIManager.put("ProgressBar.border", new FlatLineBorder(new Insets(0,0,0,0), c50, 1, 99));
 		 
-		UIManager.put("Slider.thumbColor", themeColor);		
+		UIManager.put("Slider.thumbColor", new Color(225,225,225, 50));	
+		UIManager.put("Slider.hoverThumbColor", new Color(225,225,225, 100));	
+		UIManager.put("Slider.pressedThumbColor", new Color(225,225,225, 100));
 		UIManager.put("Slider.hoverColor", highlightColor);
 		UIManager.put("Slider.trackValueColor", themeColor);
 		UIManager.put("Slider.trackColor", new Color(15,15,15));
-		UIManager.put("Slider.thumbSize", new Dimension(10,10));
-		UIManager.put("Slider.trackWidth", 4);
-		UIManager.put("Slider.focusWidth", 0);	
+		UIManager.put("Slider.thumbSize", new Dimension(12,12));
+		UIManager.put("Slider.trackWidth", 7);
+		UIManager.put("Slider.focusWidth", 0);
+		UIManager.put("Slider.thumbBorderWidth", 0);
 		
 		UIManager.put("ColorChooser.background", c30);
 		UIManager.put("ColorChooser.foreground", c225);

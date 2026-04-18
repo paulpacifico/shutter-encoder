@@ -776,9 +776,6 @@ public class Shutter {
 		//JVM args
 		Utils.loadConfig();
 		
-		// Splashscreen
-		new Splash();
-		
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("apple.awt.textAntialiasing", "on");
 		System.setProperty("swing.aatext", "true");		
@@ -834,7 +831,6 @@ public class Shutter {
 
 		Utils.setLanguage();
 		Utils.loadThemes();
-		Splash.increment();
 
 		// Documents Shutter Encoder
 		if (documents.exists() == false) {
@@ -916,11 +912,13 @@ public class Shutter {
 
 			public void componentResized(ComponentEvent e) {
 
-				if (windowDrag == false) {
-					VideoPlayer.resizeAll();
-				} else {
-					resizeAll(frame.getWidth(), 0);
+				if (windowDrag == false)
+				{
+					if (VideoPlayer.player != null)
+						VideoPlayer.resizeAll();
 				}
+				else
+					resizeAll(frame.getWidth(), 0);
 			}
 		});
 
@@ -960,55 +958,37 @@ public class Shutter {
 		//Check GPUs
 		FFMPEG.checkGPUAvailable();
 		
-		Splash.increment();
+		//Load visible panels
 		topPanel();
-		Splash.increment();
 		StatusBar();
-		Splash.increment();
 		grpChooseFiles();
-		Splash.increment();
 		grpChooseFunction();
-		Splash.increment();
 		grpDestination();
-		Splash.increment();
 		grpProgress();
-		Splash.increment();
+		
+		Utils.changeFrameVisibility(frame, false);
+		
+		//Then load other panels
 		grpResolution();
-		Splash.increment();
 		grpImageFilter();
-		Splash.increment();
 		grpSetAudio();
-		Splash.increment();
 		grpAudio();
-		Splash.increment();
 		grpAdvanced();
-		Splash.increment();
 		grpImageAdjustement();
-		Splash.increment();
 		grpCrop();
-		Splash.increment();
 		grpSetTimecode();
-		Splash.increment();
 		grpOverlay();
-		Splash.increment();
 		grpSubtitles();
-		Splash.increment();
 		grpWatermark();
-		Splash.increment();
 		grpColorimetry();
-		Splash.increment();
 		grpCorrections();
-		Splash.increment();
 		grpTransitions();
-		Splash.increment();
 		grpImageSequence();
-		Splash.increment();
 		grpBitrate();
-		Splash.increment();
 		Reset();
-		Splash.increment();
+		
+		//Load the video player finally
 		new VideoPlayer();
-		Splash.increment();
 		
 		settingsScrollBar = new JScrollBar();
 		settingsScrollBar.setVisible(false);
@@ -1040,7 +1020,8 @@ public class Shutter {
 
 			public void adjustmentValueChanged(AdjustmentEvent ae) {
 
-				if (scrollThread == null || scrollThread.isAlive() == false) {
+				if (scrollThread == null || scrollThread.isAlive() == false)
+				{
 					scrollThread = new Thread(new Runnable() {
 
 						@Override
@@ -1236,8 +1217,6 @@ public class Shutter {
 				}
 			}
 		});
-
-		Splash.increment();
 
 		frame.addMouseListener(new MouseListener() {
 
@@ -1587,12 +1566,11 @@ public class Shutter {
 			lblFiles.setText(Utils.filesNumber());
 		}
 
+		//Load settings
 		new Settings();
-		Splash.increment();
 
 		YOUTUBEDL.update();
 		EXIFTOOL.run('"' + "" + '"'); // Preload the binary
-		Splash.increment();
 
 		// Right_to_left
 		if (getLanguage.contains(Locale.of("ar").getDisplayLanguage())) {
@@ -1627,8 +1605,7 @@ public class Shutter {
 				}
 			}
 		}
-
-		Utils.changeFrameVisibility(frame, false);
+		
 		btnStart.requestFocus();
 
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)
@@ -2926,9 +2903,7 @@ public class Shutter {
 				}
 
 				if (e.getButton() == MouseEvent.BUTTON3 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1)
-				{
-					System.out.println(comboFonctions.getSelectedItem());
-					
+				{					
 					if (inputDeviceIsRunning)
 					{						
 						popupList.removeAll();
@@ -6300,7 +6275,7 @@ public class Shutter {
 		TCset1.setHorizontalAlignment(SwingConstants.CENTER);
 		TCset1.setFont(new Font(mainFont, Font.PLAIN, 13));
 		TCset1.setColumns(10);
-		TCset1.setBounds(156, 17, 32, 21);
+		TCset1.setBounds(156, 18, 32, 21);
 		grpSetTimecode.add(TCset1);
 
 		TCset2 = new JTextField();
@@ -6310,7 +6285,7 @@ public class Shutter {
 		TCset2.setHorizontalAlignment(SwingConstants.CENTER);
 		TCset2.setFont(new Font(mainFont, Font.PLAIN, 13));
 		TCset2.setColumns(10);
-		TCset2.setBounds(192, 17, 32, 21);
+		TCset2.setBounds(192, TCset1.getY(), 32, 21);
 		grpSetTimecode.add(TCset2);
 
 		TCset3 = new JTextField();
@@ -6320,7 +6295,7 @@ public class Shutter {
 		TCset3.setHorizontalAlignment(SwingConstants.CENTER);
 		TCset3.setFont(new Font(mainFont, Font.PLAIN, 13));
 		TCset3.setColumns(10);
-		TCset3.setBounds(228, 17, 32, 21);
+		TCset3.setBounds(228, TCset1.getY(), 32, 21);
 		grpSetTimecode.add(TCset3);
 
 		TCset4 = new JTextField();
@@ -6330,7 +6305,7 @@ public class Shutter {
 		TCset4.setHorizontalAlignment(SwingConstants.CENTER);
 		TCset4.setFont(new Font(mainFont, Font.PLAIN, 13));
 		TCset4.setColumns(10);
-		TCset4.setBounds(264, 17, 32, 21);
+		TCset4.setBounds(264, TCset1.getY(), 32, 21);
 		grpSetTimecode.add(TCset4);
 
 		TCset1.addKeyListener(new KeyListener() {
@@ -12101,7 +12076,6 @@ public class Shutter {
 
 		btnG = new JButton(Shutter.language.getProperty("btnG"));
 		btnG.setFont(new Font(Shutter.boldFont, Font.PLAIN, 13));
-		btnG.setForeground(Color.BLACK);
 		btnG.setName("btnG");
 		btnG.setBounds(comboSubsFont.getLocation().x + comboSubsFont.getWidth() + 4, comboSubsFont.getY(), 22, 22);
 		grpSubtitles.add(btnG);
@@ -12123,7 +12097,6 @@ public class Shutter {
 
 		btnI = new JButton("I");
 		btnI.setFont(new Font("Courier New", Font.ITALIC, 13));
-		btnI.setForeground(Color.BLACK);
 		btnI.setName("btnI");
 		btnI.setBounds(btnG.getLocation().x + btnG.getWidth() + 2, comboSubsFont.getY(), 22, 22);
 		grpSubtitles.add(btnI);
@@ -14133,8 +14106,7 @@ public class Shutter {
 		btnLUTs = new JButton(language.getProperty("btnManage"));
 		btnLUTs.setFont(new Font(boldFont, Font.PLAIN, 12));
 		btnLUTs.setBackground(Utils.c42);
-		btnLUTs.setBounds(comboColorspace.getX(), caseLUTs.getY() + 1,
-				grpColorimetry.getWidth() - comboColorspace.getX() - 6, 21);
+		btnLUTs.setBounds(comboColorspace.getX(), caseLUTs.getY() + 3, grpColorimetry.getWidth() - comboColorspace.getX() - 6, 21);
 		grpColorimetry.add(btnLUTs);
 
 		btnLUTs.addActionListener(new ActionListener() {
@@ -20576,7 +20548,7 @@ public class Shutter {
 									caseCreateTree.setLocation(7, casePreserveSubs.getLocation().y + 17);
 									grpAdvanced.add(caseCreateTree);
 									comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4,
-											caseCreateTree.getY() + 3);
+											caseCreateTree.getY() + 4);
 									grpAdvanced.add(comboCreateTree);
 									casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 									grpAdvanced.add(casePreserveMetadata);
@@ -20837,7 +20809,7 @@ public class Shutter {
 									caseCreateTree.setLocation(7, caseLRA.getLocation().y + 17);
 									grpAdvanced.add(caseCreateTree);
 									comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4,
-											caseCreateTree.getY() + 3);
+											caseCreateTree.getY() + 4);
 									grpAdvanced.add(comboCreateTree);
 									btnReset.setLocation(btnReset.getX(),
 											grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
@@ -20938,7 +20910,7 @@ public class Shutter {
 								grpAdvanced.setVisible(true);
 								caseCreateTree.setLocation(7, 14);
 								grpAdvanced.add(caseCreateTree);
-								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 3);
+								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4, caseCreateTree.getY() + 4);
 								grpAdvanced.add(comboCreateTree);
 								caseDRC.setLocation(7, caseCreateTree.getLocation().y + 17);
 								grpAdvanced.add(caseDRC);
@@ -21715,7 +21687,7 @@ public class Shutter {
 								}
 								grpAdvanced.add(caseCreateTree);
 								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4,
-										caseCreateTree.getY() + 3);
+										caseCreateTree.getY() + 4);
 								grpAdvanced.add(comboCreateTree);
 
 								casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
@@ -22349,7 +22321,7 @@ public class Shutter {
 								caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 								grpAdvanced.add(caseCreateTree);
 								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4,
-										caseCreateTree.getY() + 3);
+										caseCreateTree.getY() + 4);
 								grpAdvanced.add(comboCreateTree);
 								casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 								grpAdvanced.add(casePreserveMetadata);
@@ -22966,7 +22938,7 @@ public class Shutter {
 								caseCreateTree.setLocation(7, caseConform.getLocation().y + 17);
 								grpAdvanced.add(caseCreateTree);
 								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4,
-										caseCreateTree.getY() + 3);
+										caseCreateTree.getY() + 4);
 								grpAdvanced.add(comboCreateTree);
 								casePreserveMetadata.setLocation(7, caseCreateTree.getLocation().y + 17);
 								grpAdvanced.add(casePreserveMetadata);
@@ -23395,7 +23367,7 @@ public class Shutter {
 								caseCreateTree.setLocation(7, 14);
 								grpAdvanced.add(caseCreateTree);
 								comboCreateTree.setLocation(caseCreateTree.getX() + caseCreateTree.getWidth() + 4,
-										caseCreateTree.getY() + 3);
+										caseCreateTree.getY() + 4);
 								grpAdvanced.add(comboCreateTree);
 								grpAdvanced.setLocation(grpAdvanced.getX(),
 										grpImageFilter.getSize().height + grpImageFilter.getLocation().y + 6);
@@ -25374,37 +25346,56 @@ public class Shutter {
 @SuppressWarnings({ "serial", "rawtypes" })
 class FilesCellRenderer extends JLabel implements ListCellRenderer {
 
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-			boolean cellHasFocus) {
+    public FilesCellRenderer() {
+        setOpaque(false);
+    }
 
-		// Show only file name
-		if (Settings.btnHidePath.isSelected() && Shutter.scanIsRunning == false) {
-			setText(new File(value.toString()).getName());
-		} else
-			setText(value.toString());
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+            boolean cellHasFocus) {
 
-		setIcon(new FlatSVGIcon("contents/item.svg", 10, 10));
+        if (Settings.btnHidePath.isSelected() && Shutter.scanIsRunning == false)
+        {
+            setText(new File(value.toString()).getName());
+        } else {
+            setText(value.toString());
+        }
 
-		setToolTipText(value.toString());
+        setIcon(new FlatSVGIcon("contents/item.svg", 10, 10));
+        setToolTipText(value.toString());
+        setFont(new Font("SansSerif", Font.PLAIN, 12));
+        
+        if (isSelected)
+        {
+            setBackground(new Color(75, 75, 80));
+            setForeground(Utils.themeColor);
+        }
+        else
+        {
+            if (index % 2 == 1)
+            {
+                setBackground(Utils.c35);
+            }
+            else
+                setBackground(new Color(Utils.c35.getRed() + 9, Utils.c35.getGreen() + 9, Utils.c35.getBlue() + 9));
+            
+            setForeground(Color.LIGHT_GRAY);
+        }
+        
+        return this;
+    }
 
-		setFont(new Font("SansSerif", Font.PLAIN, 12));
-		setForeground(Color.LIGHT_GRAY);
-		setOpaque(true);
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        g2.setColor(getBackground());
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+        
+        g2.dispose();
 
-		if (isSelected)
-		{
-			setBackground(new Color(75, 75, 80));
-			setForeground(Utils.themeColor);
-		}
-		else
-		{
-			if (index % 2 == 1)
-				setBackground(Utils.c35);
-			else
-				setBackground(new Color(Utils.c35.getRed() + 9, Utils.c35.getGreen() + 9, Utils.c35.getBlue() + 9));
-		}
-		return this;
-	}
+        super.paintComponent(g);
+    }
 }
 
 // Edit functions list

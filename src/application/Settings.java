@@ -1736,29 +1736,33 @@ public class Settings {
 						
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("frameLocation"))
 						{
-							String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
-							int x = Integer.parseInt(s[0]);
-							int y = Integer.parseInt(s[1]);
-							int width = Integer.parseInt(s[2]);
-							int height = Integer.parseInt(s[3]);
-							
-							boolean canBeDisplayed = false;
-	
-					        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-					        GraphicsDevice[] screens = ge.getScreenDevices();
-	
-					        for (GraphicsDevice screen : screens) {
-					            Rectangle bounds = screen.getDefaultConfiguration().getBounds();
-					            if (bounds.contains(x, y)) {
-					            	canBeDisplayed = true;
-					                break;
-					            }
-					        }
-	
-							if (canBeDisplayed && Shutter.minHeight == 731)
-							{
-								Shutter.frame.setLocation(x + (width - 332) / 2, y + (height - 731) / 2);
-							}
+						    String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().split(",");
+						    int x = Integer.parseInt(s[0]);
+						    int y = Integer.parseInt(s[1]);
+
+						    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+						    GraphicsDevice[] screens = ge.getScreenDevices();
+
+						    for (GraphicsDevice screen : screens)
+						    {
+						        Rectangle bounds = screen.getDefaultConfiguration().getBounds();
+						        
+						        // Check if the saved coordinates fall within this specific monitor
+						        if (bounds.contains(x, y))
+						        {
+						            if (Shutter.minHeight == 731)
+						            {
+						                int frameWidth = 332;
+						                int frameHeight = 731;
+
+						                int centeredX = bounds.x + (bounds.width - frameWidth) / 2;
+						                int centeredY = bounds.y + (bounds.height - frameHeight) / 2;
+
+						                Shutter.frame.setLocation(centeredX, centeredY);
+						            }
+						            break;
+						        }
+						    }
 						}
 						
 						//Console

@@ -1777,7 +1777,7 @@ public class VideoPlayer {
 								Shutter.btnStart.setEnabled(true);
 							}
 																					
-							cursorCurrentFrame.setBounds(0, 0, 1, waveformContainer.getHeight());
+							cursorCurrentFrame.setBounds(0, 0, 1, waveformContainer.getHeight() - 1);
 							setPlayerButtons(true);	
 							
 							//Add layers
@@ -3336,7 +3336,7 @@ public class VideoPlayer {
 		comboAudioTrack.setVisible(false);
 		comboAudioTrack.setEditable(false);
 		comboAudioTrack.putClientProperty("FlatLaf.style", "borderWidth: 0; focusWidth: 0;");
-		comboAudioTrack.setBackground(new Color(comboAudioTrack.getBackground().getRed(),comboAudioTrack.getBackground().getGreen(),comboAudioTrack.getBackground().getBlue(), 120));	
+		comboAudioTrack.setBackground(new Color(comboAudioTrack.getBackground().getRed(),comboAudioTrack.getBackground().getGreen(),comboAudioTrack.getBackground().getBlue(), 100));	
 		comboAudioTrack.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		comboAudioTrack.setMaximumRowCount(16);		
 
@@ -3399,7 +3399,7 @@ public class VideoPlayer {
                 	bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
                 	bg.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this);
                 	
-                	cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
+                	cursorCurrentFrame.setLocation((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0);
                 }
                 
                 //Get the current fps
@@ -3922,11 +3922,11 @@ public class VideoPlayer {
 	            Graphics2D g2d = (Graphics2D) grphcs;
 	            
 	            g2d.setColor(new Color(230,75,60));
-	            g2d.drawLine(0, getWidth(), 0, waveformContainer.getHeight());	
+	            g2d.drawLine(0, getWidth(), 0, getHeight());	
 	        }
 		};
 	
-		cursorWaveform.setBounds(0, 0, 2, waveformContainer.getSize().height);		
+		cursorWaveform.setBounds(0, 0, 1, waveformContainer.getSize().height - 1);		
 		waveformContainer.add(cursorWaveform);	
 			   
 		waveformIcon = new JLabel();
@@ -4196,10 +4196,10 @@ public class VideoPlayer {
 				
 				waveformContainer.repaint();
 				
-				cursorWaveform.setBounds((int) Math.floor((double) (waveformContainer.getSize().width * Timecode.setNTSCtimecode(slider.getValue())) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
+				cursorWaveform.setLocation((int) Math.floor((double) (waveformContainer.getSize().width * Timecode.setNTSCtimecode(slider.getValue())) / slider.getMaximum()), 0);
 				cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 				
-				cursorCurrentFrame.setBounds((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0, 1, waveformContainer.getHeight());
+				cursorCurrentFrame.setLocation((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0);
 			
 				if (waveformIcon.isVisible() && waveformIcon.getIcon() != null)
 				{
@@ -4245,7 +4245,7 @@ public class VideoPlayer {
 		
 		sliderVolume.setName("sliderVolume");	
 		sliderVolume.setVisible(false);
-		sliderVolume.setValue(50);			
+		sliderVolume.setValue(50);
 		Shutter.frame.getContentPane().add(sliderVolume);
 				
 		sliderVolume.addChangeListener(new ChangeListener() {
@@ -6867,7 +6867,7 @@ public class VideoPlayer {
 			
 			if (playerCurrentFrame <= 1)
 			{
-				cursorWaveform.setBounds(0, 0, 1, waveformContainer.getSize().height);
+				cursorWaveform.setLocation(0, 0);
 				cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 			}
 			else
@@ -6879,7 +6879,7 @@ public class VideoPlayer {
 				}
 				else
 				{
-					cursorWaveform.setBounds((int) Math.floor((double) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0, 1, waveformContainer.getSize().height);
+					cursorWaveform.setLocation((int) Math.floor((double) (waveformContainer.getSize().width * slider.getValue()) / slider.getMaximum()), 0);
 					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 				}
 			}
