@@ -6491,32 +6491,38 @@ public class Shutter {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false
-				&& language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
+				int size;	
+				if (caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
-					int size;
-					if (caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
-					{
-						size = 241;
-					}
-					else if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())
-					|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
-					|| language.getProperty("functionMerge").equals(comboFonctions.getSelectedItem().toString()))
-					{
-						size = 169;
-					}					 
-					else // Codecs de sortie
-					{
-						if (lblAudioMapping.getSelectedItem().toString().equals("Multi")) {
-							size = 169;
-						} else if (lblAudioMapping.getSelectedItem().toString().equals("Mix")) {
-							size = 91;
-						} else
-							size = 115;
-					}
-
-					extendSections(grpSetAudio, size);
+					size = 241;
+					if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+						size = 218;					
 				}
+				else if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()))			
+				{
+					size = 93;
+				}
+				else if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+				{
+					size = 70;
+				}				
+				else if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())
+				|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
+				|| language.getProperty("functionMerge").equals(comboFonctions.getSelectedItem().toString()))
+				{
+					size = 169;
+				}					 
+				else // Codecs de sortie
+				{
+					if (lblAudioMapping.getSelectedItem().toString().equals("Multi")) {
+						size = 169;
+					} else if (lblAudioMapping.getSelectedItem().toString().equals("Mix")) {
+						size = 91;
+					} else
+						size = 115;
+				}
+
+				extendSections(grpSetAudio, size);
 			}
 
 		});
@@ -6541,6 +6547,9 @@ public class Shutter {
 						if (grpSetAudio.getSize().getHeight() != 241)
 						{
 							int size = 241;
+							if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+								size = 218;
+								
 							extendSections(grpSetAudio, size);
 						}
 					}
@@ -6567,30 +6576,35 @@ public class Shutter {
 					caseEqualizer.setEnabled(false);
 					caseEqualizer.setSelected(false);
 					
-					if (grpSetAudio.getSize().getHeight() == 241)
-					{
-						if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false
-						&& language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
+					if (grpSetAudio.getSize().getHeight() == 241
+					|| (grpSetAudio.getSize().getHeight() == 218 && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString())))
+					{						
+						int size;
+						if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()))			
 						{
-							int size;
-							if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())
-							|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
-							|| language.getProperty("functionMerge")
-											.equals(comboFonctions.getSelectedItem().toString())) {
-								size = 169;
-							}
-							else // Codecs de sortie
-							{
-								if (lblAudioMapping.getSelectedItem().toString().equals("Multi")) {
-									size = 169;
-								} else if (lblAudioMapping.getSelectedItem().toString().equals("Mix")) {
-									size = 91;
-								} else
-									size = 115;
-							}
-							
-							extendSections(grpSetAudio, size);
+							size = 93;
 						}
+						else if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+						{
+							size = 70;
+						}
+						else if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())
+						|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
+						|| language.getProperty("functionMerge")
+										.equals(comboFonctions.getSelectedItem().toString())) {
+							size = 169;
+						}
+						else // Codecs de sortie
+						{
+							if (lblAudioMapping.getSelectedItem().toString().equals("Multi")) {
+								size = 169;
+							} else if (lblAudioMapping.getSelectedItem().toString().equals("Mix")) {
+								size = 91;
+							} else
+								size = 115;
+						}
+						
+						extendSections(grpSetAudio, size);						
 					}
 				}
 
@@ -6648,6 +6662,9 @@ public class Shutter {
 					if (grpSetAudio.getSize().getHeight() != 241)
 					{
 						int size = 241;
+						if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+							size = 218;
+						
 						extendSections(grpSetAudio, size);
 					}
 				}
@@ -6667,30 +6684,35 @@ public class Shutter {
 					else
 						lblKbs.setVisible(true);
 					
-					if (grpSetAudio.getSize().getHeight() == 241)
-					{
-						if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()) == false
-						&& language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) == false)
+					if (grpSetAudio.getSize().getHeight() == 241
+					|| (grpSetAudio.getSize().getHeight() == 218 && language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString())))
+					{						
+						int size;
+						if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()))			
 						{
-							int size;
-							if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())
-							|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
-							|| language.getProperty("functionMerge")
-											.equals(comboFonctions.getSelectedItem().toString())) {
-								size = 169;
-							}
-							else // Codecs de sortie
-							{
-								if (lblAudioMapping.getSelectedItem().toString().equals("Multi")) {
-									size = 169;
-								} else if (lblAudioMapping.getSelectedItem().toString().equals("Mix")) {
-									size = 91;
-								} else
-									size = 115;
-							}
-							
-							extendSections(grpSetAudio, size);
+							size = 93;
 						}
+						else if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+						{
+							size = 70;
+						}
+						else if (language.getProperty("functionRewrap").equals(comboFonctions.getSelectedItem().toString())
+						|| language.getProperty("functionCut").equals(comboFonctions.getSelectedItem().toString())
+						|| language.getProperty("functionMerge")
+										.equals(comboFonctions.getSelectedItem().toString())) {
+							size = 169;
+						}
+						else // Codecs de sortie
+						{
+							if (lblAudioMapping.getSelectedItem().toString().equals("Multi")) {
+								size = 169;
+							} else if (lblAudioMapping.getSelectedItem().toString().equals("Mix")) {
+								size = 91;
+							} else
+								size = 115;
+						}
+						
+						extendSections(grpSetAudio, size);						
 					}
 				}
 				
@@ -6800,7 +6822,10 @@ public class Shutter {
 
 						if (grpSetAudio.getHeight() != 169)
 							extendSections(grpSetAudio, 169);
-					} else if (lblAudioMapping.getSelectedItem().toString().equals("Mix")) {
+						
+					}
+					else if (lblAudioMapping.getSelectedItem().toString().equals("Mix"))
+					{
 						if (grpSetAudio.getHeight() != 91)
 							extendSections(grpSetAudio, 91);
 
@@ -6820,7 +6845,9 @@ public class Shutter {
 						grpSetAudio.remove(comboAudio7);
 						grpSetAudio.remove(lblAudio8);
 						grpSetAudio.remove(comboAudio8);
-					} else {
+					}
+					else
+					{
 						if (grpSetAudio.getHeight() != 115)
 							extendSections(grpSetAudio, 115);
 
@@ -6846,8 +6873,7 @@ public class Shutter {
 
 					try {
 						FFPROBE.setFilesize();
-					} catch (Exception e1) {
-					}
+					} catch (Exception e1) {}
 				}
 			}
 
@@ -8125,7 +8151,18 @@ public class Shutter {
 				}
 			}
 			
-			comboAudio1.setLocation(lblAudio1.getX() + lblAudio1.getWidth() + 2, comboAudio1.getLocation().y);
+			if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString()))
+			{
+				lblAudio1.setLocation(12, caseKeepSourceTracks.getY() + caseKeepSourceTracks.getHeight() + 2);
+			}
+			else if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+			{
+				lblAudio1.setLocation(12, caseAudioOffset.getY() + caseAudioOffset.getHeight() + 2);
+			}	
+			else
+				lblAudio1.setLocation(12, caseEqualizer.getY() + caseEqualizer.getHeight() + 2);
+			
+			comboAudio1.setLocation(lblAudio1.getX() + lblAudio1.getWidth() + 2, lblAudio1.getLocation().y + 1);			
 			comboAudioCodec1.setLocation(comboAudio1.getX() + comboAudio1.getWidth(), comboAudio1.getLocation().y);
 			grpSetAudio.add(comboAudioCodec1);
 			comboAudioBitrate1.setLocation(comboAudioCodec1.getX() + comboAudioCodec1.getWidth(), comboAudioCodec1.getLocation().y);
@@ -8314,7 +8351,7 @@ public class Shutter {
 		}
 		else
 		{		
-			if (caseChangeAudioCodec.isEnabled() == false)
+			if (caseChangeAudioCodec.isEnabled() == false)			
 			{				
 				if (lblAudioMapping.getSelectedItem().toString().equals("Mix"))
 				{
@@ -8350,6 +8387,15 @@ public class Shutter {
 					grpSetAudio.remove(lblAudio8);
 					grpSetAudio.remove(comboAudio8);
 				}
+			}
+			
+			if (language.getProperty("functionReplaceAudio").equals(comboFonctions.getSelectedItem().toString())
+			|| language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+			{
+				grpSetAudio.remove(lblAudio1);
+				grpSetAudio.remove(comboAudio1);
+				grpSetAudio.remove(lblAudio2);
+				grpSetAudio.remove(comboAudio2);
 			}
 			
 			lblAudio1.setText(language.getProperty("audio") + " 1" + language.getProperty("colon"));
@@ -20707,7 +20753,7 @@ public class Shutter {
 								}
 
 							} else if (language.getProperty("functionReplaceAudio").equals(function)
-									|| language.getProperty("functionNormalization").equals(function))
+							|| language.getProperty("functionNormalization").equals(function))
 							{
 
 								if (language.getProperty("functionReplaceAudio").equals(function))
@@ -20726,7 +20772,16 @@ public class Shutter {
 								grpSetAudio.add(comboNormalizeAudio);
 								grpSetAudio.add(caseEqualizer);
 								grpSetAudio.setLocation(grpSetAudio.getX(), 30);
-								if (language.getProperty("functionReplaceAudio").equals(function))
+								
+								if (caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
+								{
+									grpSetAudio.setSize(312, 241);
+									if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+									{
+										grpSetAudio.setSize(312, 218);					
+									}
+								}
+								else if (language.getProperty("functionReplaceAudio").equals(function))
 								{
 									grpSetAudio.setSize(312, 93);
 								}
@@ -23537,7 +23592,8 @@ public class Shutter {
 	    int minSize = 17;
 	    
 	    // Handle special case for grpAudio
-	    if (grpPanel.getHeight() > maxSize) {
+	    if (grpPanel.getHeight() > maxSize)
+	    {
 	        minSize = maxSize;
 	        startSize = grpPanel.getHeight();
 	    }
@@ -25801,7 +25857,7 @@ class CollapsiblePanel extends JPanel {
         g2.setColor(new Color(235, 235, 240));
         g2.setFont(new Font(Utils.boldFont, Font.PLAIN, 13));
         g2.drawString(title, 7, textY);
-
+        
         // Chevron icon
         if (displayIcon)
         {
