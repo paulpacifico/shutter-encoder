@@ -3278,6 +3278,7 @@ public class VideoPlayer {
 					Graphics2D g2d = (Graphics2D) g;
 												
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			        
 					g2d.setColor(Utils.c42);					
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -3285,14 +3286,14 @@ public class VideoPlayer {
 						g2d.fillRoundRect(0, 0, (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21, 15, 15);
 						
 						g2d.setColor(Utils.c50);
-						g2d.drawRoundRect(0, 0, (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21, 15, 15);
+						g2d.drawRoundRect(0, 0, (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 5, 20, 15, 15);
 					}
 					else
 					{
 						g2d.fillRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21, 15, 15);
 						
 						g2d.setColor(Utils.c50);
-						g2d.drawRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21, 15, 15);
+						g2d.drawRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 5, 20, 15, 15);
 					}
 									
 					g2d.setColor(new Color(25,25,25));
@@ -3354,216 +3355,233 @@ public class VideoPlayer {
 	
 	private void player() {		
 
-    	player = new JPanel() {
-			
-            @Override
-            protected void paintComponent(Graphics g) {
-            	
-                super.paintComponent(g);
-                
-                Graphics2D g2 = (Graphics2D)g;
-                
-                BufferedImage buffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D bg = buffer.createGraphics();
-                
-                bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                bg.setClip(new java.awt.geom.RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 5, 5));
-                
-                if (FFPROBE.hasAlpha)
-                	drawCheckerboard((Graphics2D) g);
-                               
-                bg.setColor(Color.BLACK);
-                
-                //Avoid black frame display
-                if (playerIsPlaying() && frameVideo == null)
-                {
-                	long time = System.currentTimeMillis();
-                	do {
+		player = new JPanel() {
 
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e) {}
-						
-						if (System.currentTimeMillis() - time > 5000)
-							break;
-						
-					} while (frameVideo == null && playerIsPlaying());
-                }
-                
-                if (frameVideo == null || Shutter.list.getSize() == 0 || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) && Shutter.caseDisplay.isSelected() == false)
-                {
-                	bg.fillRect(0, 0, player.getWidth(), player.getHeight()); 
-                }
-                else
-                {
-                	bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                	bg.drawImage(frameVideo, 0, 0, player.getWidth(), player.getHeight(), this);
-                	
-                	cursorCurrentFrame.setLocation((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0);
-                }
-                
-                //Get the current fps
-                if (FFPROBE.audioOnly == false && fileDuration > 40)
-                {
-	                if (System.nanoTime() - fpsTime >= 1000000000)
-					{          	
-	                	displayCurrentFPS = fps;
-						fpsTime = System.nanoTime();
-						fps = 0;
-					}	              
-	                	                
-	                //Display current fps
-		            if (displayCurrentFPS > 0 && playerLoop && sliderSpeed.getValue() == 2 && fullscreenPlayer == false && mouseIsPressed == false && Shutter.inputDeviceIsRunning == false)
-		            {
-		            	showFPS.setVisible(true);		            	
-		            	if ((double) displayCurrentFPS >= FFPROBE.currentFPS)
-		            	{
-		            		showFPS.setForeground(Color.GREEN);
-		            		
-		            		String fps[] = String.valueOf(FFPROBE.currentFPS).split("\\.");
-		            		if (fps[1].equals("0"))
-		            			showFPS.setText(String.valueOf(FFPROBE.currentFPS).replace(".0", "") + " " + Shutter.language.getProperty("fps"));
-		            		else
-		            			showFPS.setText(String.valueOf(FFPROBE.currentFPS) + " " + Shutter.language.getProperty("fps"));
-		            	}
-		            	else
-		            	{
-		            		showFPS.setForeground(Color.RED);
-		            		showFPS.setText(String.valueOf(displayCurrentFPS) + " " + Shutter.language.getProperty("fps"));
-		            	}
+		    // Cached resources
+		    private BufferedImage buffer;
+		    private BufferedImage rounded;
+		    private int cachedWidth = -1;
+		    private int cachedHeight = -1;
+
+		    private Font cachedFontPlain;
+		    private Font cachedFontItalic;
+		    private Font cachedFontBold;
+		    private Font cachedFontItalicBold;
+		    private int cachedFontHeight = -1;
+
+		    @Override
+		    protected void paintComponent(Graphics g) {
+
+		        super.paintComponent(g);
+
+		        int w = getWidth();
+		        int h = getHeight();
+
+		        if (w <= 0 || h <= 0) return;
+
+		        Graphics2D g2 = (Graphics2D) g;
+
+		        // Recreate cached images only on resize
+		        if (w != cachedWidth || h != cachedHeight) {
+		            cachedWidth  = w;
+		            cachedHeight = h;
+		            buffer  = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		            rounded = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		        }
+
+		        // Draw into buffer
+		        Graphics2D bg = buffer.createGraphics();
+		        bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING,    RenderingHints.VALUE_ANTIALIAS_ON);
+		        bg.setRenderingHint(RenderingHints.KEY_RENDERING,       RenderingHints.VALUE_RENDER_QUALITY);
+		        bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION,   RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+		        // Clear buffer
+		        bg.setComposite(AlphaComposite.Clear);
+		        bg.fillRect(0, 0, w, h);
+		        bg.setComposite(AlphaComposite.SrcOver);
+		        bg.setClip(new java.awt.geom.RoundRectangle2D.Float(0, 0, w, h, 5, 5));
+
+		        // Checkerboard drawn into buffer, not directly to screen
+		        if (FFPROBE.hasAlpha)
+		            drawCheckerboard(bg);
+
+		        bg.setColor(Color.BLACK);
+
+		        // Frame display
+		        if (frameVideo == null
+		        || Shutter.list.getSize() == 0
+		        || (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
+		        && Shutter.caseDisplay.isSelected() == false))
+		        {
+		            bg.fillRect(0, 0, w, h);
+		        }
+		        else
+		        {
+		            bg.drawImage(frameVideo, 0, 0, w, h, this);
+
+		            cursorCurrentFrame.setLocation((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0);
+		        }
+
+		        // FPS display
+		        if (FFPROBE.audioOnly == false && fileDuration > 40) {
+		            if (System.nanoTime() - fpsTime >= 1_000_000_000L) {
+		                displayCurrentFPS = fps;
+		                fpsTime = System.nanoTime();
+		                fps = 0;
 		            }
-		            else
-		            	showFPS.setVisible(false);
-                }              
-                
-                if (previewUpscale && frameVideo != null && preview != null && fileDuration > 40)
-                {
-                	bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    bg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                	bg.setColor(Color.WHITE);
-                	bg.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
-                	FontMetrics metrics = g.getFontMetrics(bg.getFont());
-                     
-                    int x = (player.getWidth() - metrics.stringWidth(Shutter.language.getProperty("preview"))) / 2;                                	
-                    int y = player.getHeight() - (int) (player.getHeight()/24);
-                     
-                	bg.drawString(Shutter.language.getProperty("preview"), x, y);
-                }
-                                
-                if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-                {
-                	SubtitlesTimeline.refreshData();
 
-                    bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    bg.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                        
-                    //On sépare les lignes
-                    String text[] = SubtitlesTimeline.txtSubtitles.getText().split("\\r?\\n");                   
-                    
-                    if (text[0].contains("i>") && text[0].contains("b>"))
-                    	bg.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
-                    else if (text[0].contains("i>"))
-                    	bg.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
-                    else if (text[0].contains("b>"))
-                    	bg.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
-                    else
-                    	bg.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(player.getHeight()/16))); 
-                    
-                    String firstLine = text[0].replace("<i>", "").replace("</i>", "").replace("<b>", "").replace("</b>", "");
-                                    	
-                    FontMetrics metrics = g.getFontMetrics(bg.getFont());
-                    
-                    int x = (player.getWidth() - metrics.stringWidth(firstLine)) / 2;                                	
-                    int y = player.getHeight() - (int) (player.getHeight()/24);
-                    
-                    if (text.length > 1 && text[1].length() > 0)
-                    {                                	                	
-                    	y = player.getHeight() - (int) (player.getHeight()/9.5);                	
-                    	bg.setColor(Color.BLACK);
-                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
-                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
-                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
-                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
-                    	bg.setColor(Color.WHITE);
-                    	bg.drawString(firstLine, x, y);
-                    	
-                    	if (text[1].contains("i>") && text[1].contains("b>"))
-                        	bg.setFont(new Font("SansSerif", Font.ITALIC | Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
-                        else if (text[1].contains("i>"))
-                        	bg.setFont(new Font("SansSerif", Font.ITALIC, (int) Math.floor(player.getHeight()/16))); 
-                        else if (text[1].contains("b>"))
-                        	bg.setFont(new Font("SansSerif", Font.BOLD, (int) Math.floor(player.getHeight()/16))); 
-                        else
-                        	bg.setFont(new Font("SansSerif", Font.PLAIN, (int) Math.floor(player.getHeight()/16))); 
-                    	
-                        String secondLine = text[1].replace("<i>", "").replace("</i>", "").replace("<b>", "").replace("</b>", "");
-    	 	            
-    	 	            x = (player.getWidth() - metrics.stringWidth(secondLine)) / 2;
-    	 	            y = player.getHeight() - (int) (player.getHeight()/24);
-                    	
-                    	bg.setColor(Color.BLACK);
-                    	bg.drawString(secondLine, ShiftWest(x, 1), ShiftNorth(y, 1));
-                    	bg.drawString(secondLine, ShiftWest(x, 1), ShiftSouth(y, 1));
-                    	bg.drawString(secondLine, ShiftEast(x, 1), ShiftNorth(y, 1));
-                    	bg.drawString(secondLine, ShiftEast(x, 1), ShiftSouth(y, 1));
-                    	bg.setColor(Color.WHITE);
-                    	bg.drawString(secondLine, x, y);
-                    }
-                    else if (firstLine.length() > 0)
-                    {
-                    	bg.setColor(Color.BLACK);
-                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftNorth(y, 1));
-                    	bg.drawString(firstLine, ShiftWest(x, 1), ShiftSouth(y, 1));
-                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftNorth(y, 1));
-                    	bg.drawString(firstLine, ShiftEast(x, 1), ShiftSouth(y, 1));
-                    	bg.setColor(Color.WHITE);
-                    	bg.drawString(firstLine, x, y);
-                    }                           		     
-                }
-                
-                bg.dispose();
-                
-                int arc = 10;
-                BufferedImage rounded = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                Graphics2D rg = rounded.createGraphics();
-                
-                rg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                rg.setColor(Color.WHITE);
-                rg.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
-                rg.setComposite(AlphaComposite.SrcIn);
-                rg.drawImage(buffer, 0, 0, null);
-                rg.dispose();
+		            if (displayCurrentFPS > 0
+		                    && playerLoop
+		                    && sliderSpeed.getValue() == 2
+		                    && fullscreenPlayer == false
+		                    && mouseIsPressed == false
+		                    && Shutter.inputDeviceIsRunning == false) {
 
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.drawImage(rounded, 0, 0, null);
-            }
-            
-            private void drawCheckerboard(Graphics2D g2d) {
-                int tileSize = 8;
-                Color c1 = new Color(200, 200, 200);
-                Color c2 = new Color(255, 255, 255);
-                for (int y = 0; y < getHeight(); y += tileSize) {
-                    for (int x = 0; x < getWidth(); x += tileSize) {
-                        g2d.setColor(((x / tileSize + y / tileSize) % 2 == 0) ? c1 : c2);
-                        g2d.fillRect(x, y, tileSize, tileSize);
-                    }
-                }
-            }
-            
-            int ShiftNorth(int p, int distance) {
-         	   return (p - distance);
-         	   }
-         	int ShiftSouth(int p, int distance) {
-         	   return (p + distance);
-         	   }
-         	int ShiftEast(int p, int distance) {
-         	   return (p + distance);
-         	   }
-         	int ShiftWest(int p, int distance) {
-         	   return (p - distance);
-         }
-        };
-    	
+		                showFPS.setVisible(true);
+		                if ((double) displayCurrentFPS >= FFPROBE.currentFPS) {
+		                    showFPS.setForeground(Color.GREEN);
+		                    String[] fpsParts = String.valueOf(FFPROBE.currentFPS).split("\\.");
+		                    showFPS.setText(
+		                        (fpsParts[1].equals("0")
+		                            ? fpsParts[0]
+		                            : String.valueOf(FFPROBE.currentFPS))
+		                        + " " + Shutter.language.getProperty("fps")
+		                    );
+		                } else {
+		                    showFPS.setForeground(Color.RED);
+		                    showFPS.setText(displayCurrentFPS + " " + Shutter.language.getProperty("fps"));
+		                }
+		            } else {
+		                showFPS.setVisible(false);
+		            }
+		        }
+
+		        // Preview upscale label
+		        if (previewUpscale && frameVideo != null && preview != null && fileDuration > 40) {
+		            Font f = getCachedFont(Font.ITALIC, h);
+		            bg.setFont(f);
+		            FontMetrics metrics = bg.getFontMetrics(f);
+		            String label = Shutter.language.getProperty("preview");
+		            int x = (w - metrics.stringWidth(label)) / 2;
+		            int y = h - (h / 24);
+		            bg.setColor(Color.WHITE);
+		            bg.drawString(label, x, y);
+		        }
+
+		        // Subtitles
+		        if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) {
+		            SubtitlesTimeline.refreshData();
+		            String[] text = SubtitlesTimeline.txtSubtitles.getText().split("\\r?\\n");
+
+		            Font firstFont = getFontForLine(text[0], h);
+		            bg.setFont(firstFont);
+		            String firstLine = stripTags(text[0]);
+
+		            FontMetrics metrics = bg.getFontMetrics(firstFont);
+		            int x = (w - metrics.stringWidth(firstLine)) / 2;
+		            int y;
+
+		            if (text.length > 1 && text[1].length() > 0) {
+		                y = h - (int) (h / 9.5);
+		                drawSubtitleString(bg, firstLine, x, y);
+
+		                Font secondFont = getFontForLine(text[1], h);
+		                bg.setFont(secondFont);
+		                String secondLine = stripTags(text[1]);
+		                FontMetrics metrics2 = bg.getFontMetrics(secondFont);
+		                x = (w - metrics2.stringWidth(secondLine)) / 2;
+		                y = h - (h / 24);
+		                drawSubtitleString(bg, secondLine, x, y);
+		            } else if (firstLine.length() > 0) {
+		                y = h - (h / 24);
+		                drawSubtitleString(bg, firstLine, x, y);
+		            }
+		        }
+
+		        bg.dispose();
+
+		        // Rounded corner
+		        Graphics2D rg = rounded.createGraphics();
+		        rg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+		        // Clear rounded buffer
+		        rg.setComposite(AlphaComposite.Clear);
+		        rg.fillRect(0, 0, w, h);
+		        rg.setComposite(AlphaComposite.SrcOver);
+
+		        rg.setColor(Color.WHITE);
+		        rg.fillRoundRect(0, 0, w, h, 10, 10);
+		        rg.setComposite(AlphaComposite.SrcIn);
+		        rg.drawImage(buffer, 0, 0, null);
+		        rg.dispose();
+
+		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		        g2.drawImage(rounded, 0, 0, null);
+		    }
+
+		    // --- Helpers ---
+
+		    /** Draws a subtitle string with a 1px black outline then white fill. */
+		    private void drawSubtitleString(Graphics2D bg, String text, int x, int y) {
+		        bg.setColor(Color.BLACK);
+		        bg.drawString(text, x - 1, y - 1);
+		        bg.drawString(text, x - 1, y + 1);
+		        bg.drawString(text, x + 1, y - 1);
+		        bg.drawString(text, x + 1, y + 1);
+		        bg.setColor(Color.WHITE);
+		        bg.drawString(text, x, y);
+		    }
+
+		    /** Strips basic HTML italic/bold tags from a subtitle line. */
+		    private String stripTags(String line) {
+		        return line.replace("<i>", "").replace("</i>", "")
+		                   .replace("<b>", "").replace("</b>", "");
+		    }
+
+		    /** Returns the appropriate cached font for a subtitle line based on its tags. */
+		    private Font getFontForLine(String line, int panelHeight) {
+		        boolean italic = line.contains("i>");
+		        boolean bold   = line.contains("b>");
+		        if (italic && bold) return getCachedFont(Font.ITALIC | Font.BOLD, panelHeight);
+		        if (italic)         return getCachedFont(Font.ITALIC,             panelHeight);
+		        if (bold)           return getCachedFont(Font.BOLD,               panelHeight);
+		        return                     getCachedFont(Font.PLAIN,              panelHeight);
+		    }
+
+		    /** Returns a cached Font, rebuilding only when panel height changes. */
+		    private Font getCachedFont(int style, int panelHeight) {
+		        int size = (int) Math.floor(panelHeight / 16.0);
+		        if (size != cachedFontHeight) {
+		            cachedFontHeight  = size;
+		            cachedFontPlain    = new Font("SansSerif", Font.PLAIN,              size);
+		            cachedFontItalic   = new Font("SansSerif", Font.ITALIC,             size);
+		            cachedFontBold     = new Font("SansSerif", Font.BOLD,               size);
+		            cachedFontItalicBold = new Font("SansSerif", Font.ITALIC | Font.BOLD, size);
+		        }
+		        switch (style) {
+		            case Font.ITALIC:             return cachedFontItalic;
+		            case Font.BOLD:               return cachedFontBold;
+		            case Font.ITALIC | Font.BOLD: return cachedFontItalicBold;
+		            default:                      return cachedFontPlain;
+		        }
+		    }
+
+		    /** Draws a grey/white checkerboard pattern to indicate transparency. */
+		    private void drawCheckerboard(Graphics2D g2d) {
+		        int tileSize = 8;
+		        Color c1 = new Color(200, 200, 200);
+		        Color c2 = new Color(255, 255, 255);
+		        int w = getWidth();
+		        int h = getHeight();
+		        for (int y = 0; y < h; y += tileSize) {
+		            for (int x = 0; x < w; x += tileSize) {
+		                g2d.setColor(((x / tileSize + y / tileSize) % 2 == 0) ? c1 : c2);
+		                g2d.fillRect(x, y, tileSize, tileSize);
+		            }
+		        }
+		    }
+		};
+
         // Drag & Drop
  		player.setTransferHandler(new ListFileTransferHandler());
         
