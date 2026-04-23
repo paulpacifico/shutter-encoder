@@ -23,6 +23,7 @@ import java.io.File;
 
 import application.Ftp;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import library.BACKGROUNDREMOVER;
 import library.FFMPEG;
@@ -119,7 +120,7 @@ public class BackgroundRemover extends Shutter {
 					}
 				}
 
-				endOfFunction();				
+				UIController.endOfFunction();				
 			}
 			
 		});

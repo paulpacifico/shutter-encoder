@@ -78,6 +78,7 @@ import org.w3c.dom.NodeList;
 
 import application.Console;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 
 public class ANONYMIZER {
@@ -487,7 +488,7 @@ public class ANONYMIZER {
 		error = false;
 		Shutter.progressBar1.setValue(0);	
 		Shutter.progressBar1.setMaximum(100);
-		Shutter.disableAll();
+		UIController.disableAll();
 		Shutter.btnStart.setEnabled(false);
 				
 		runProcess = new Thread(new Runnable()  {

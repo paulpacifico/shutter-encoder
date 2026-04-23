@@ -32,6 +32,7 @@ import application.Ftp;
 import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import library.FFMPEG;
@@ -329,7 +330,7 @@ public class VideoInserts extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

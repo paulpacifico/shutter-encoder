@@ -2198,7 +2198,7 @@ public class Utils extends Shutter {
 							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 							
 							//IMPORTANT
-							Shutter.resizeAll(Shutter.frame.getWidth(), 0); 
+							UIController.resizeAll(Shutter.frame.getWidth(), 0); 
 							Shutter.frame.repaint();		
 							
 							//grpWatermark
@@ -2328,7 +2328,7 @@ public class Utils extends Shutter {
 		UIManager.put("ComboBox.buttonBackground", new Color(42,42,47,0));	
 		UIManager.put("ComboBox.buttonEditableBackground", c42);	
 		UIManager.put("ComboBox.selectionBackground", themeColor);
-		UIManager.put("ComboBox.popupBackground", c42);
+		UIManager.put("ComboBox.popupBackground", new Color(c42.getRed(), c42.getGreen(), c42.getBlue(), 150));
 		UIManager.put("ComboBox.buttonSeparatorColor", c30);	
 		UIManager.put("ComboBox.buttonDisabledSeparatorColor", c30);	
 		UIManager.put("ComboBox.buttonArrowColor", themeColor);		

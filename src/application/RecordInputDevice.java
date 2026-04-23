@@ -228,7 +228,7 @@ public class RecordInputDevice {
 					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
 														
 					Shutter.list.removeAllElements();					
-					Shutter.enableAll();
+					UIController.enableAll();
 					Shutter.progressBar1.setValue(0);
 			}
 
@@ -323,7 +323,7 @@ public class RecordInputDevice {
 						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
 					
 					Shutter.list.removeAllElements();					
-					Shutter.enableAll();
+					UIController.enableAll();
 					Shutter.progressBar1.setValue(0);
 				}
 			}
@@ -509,7 +509,7 @@ public class RecordInputDevice {
 				
 				Shutter.caseChangeFolder1.setSelected(true);
 				
-				Shutter.changeFilters();
+				UIController.changeFilters();
 				
 				frame.dispose();
 				

@@ -66,6 +66,7 @@ import org.json.JSONObject;
 
 import application.Console;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 
 public class WHISPER {
@@ -252,7 +253,7 @@ public class WHISPER {
 	        	if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
 					Shutter.comboFonctions.setSelectedItem("");
 	        	
-	        	Shutter.changeWidth(false);
+	        	UIController.changeWidth(false);
 	        }
 	        else
 	        	WHISPER.selectModel();

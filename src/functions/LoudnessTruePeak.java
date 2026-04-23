@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 
 import application.RenderQueue;
 import application.Shutter;
+import application.UIController;
 import application.VideoPlayer;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -123,7 +124,7 @@ public class LoudnessTruePeak extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

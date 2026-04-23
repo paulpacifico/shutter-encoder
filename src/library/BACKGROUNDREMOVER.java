@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 
 import application.Console;
 import application.Shutter;
+import application.UIController;
 
 public class BACKGROUNDREMOVER extends Shutter {
 	
@@ -66,7 +67,7 @@ public class BACKGROUNDREMOVER extends Shutter {
 
 	public static void run(String file, String output) {
 		
-		disableAll();
+		UIController.disableAll();
 		error = false;
 		progressBar1.setValue(0);		
 		btnStart.setEnabled(false);
@@ -150,7 +151,7 @@ public class BACKGROUNDREMOVER extends Shutter {
 					e.printStackTrace();
 				}
 				finally {
-					enableAll();
+					UIController.enableAll();
 				}
 			}
 			

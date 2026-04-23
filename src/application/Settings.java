@@ -93,6 +93,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
 import library.FFMPEG;
+import renderers.AntiAliasedRoundRectangle;
 
 public class Settings {
 
@@ -409,7 +410,7 @@ public class Settings {
 					
 					if (Shutter.comboFonctions.getSelectedItem() != "")
 					{					
-						Shutter.changeFunction(true);
+						UIController.changeFunction(true);
 					}
 				}
 				else
@@ -418,7 +419,7 @@ public class Settings {
 					
 					if (Shutter.comboFonctions.getSelectedItem() != "")
 					{
-						Shutter.changeFunction(true);
+						UIController.changeFunction(true);
 						
 						if (VideoPlayer.setTime != null && VideoPlayer.setTime.isAlive())
 						{

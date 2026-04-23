@@ -99,6 +99,7 @@ import javax.swing.event.ChangeListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import functions.VideoEncoders;
+import handlers.ListFileTransferHandler;
 import library.DCRAW;
 import library.FFMPEG;
 import library.FFPROBE;
@@ -3798,7 +3799,7 @@ public class VideoPlayer {
 	        	Graphics2D g2 = (Graphics2D)g;
 	            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-	        	
+	            
 	            //Background
 	            if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 	            {
@@ -4043,6 +4044,7 @@ public class VideoPlayer {
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 										
 					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());
+					
 					if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 					{
 						playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());

@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 
 import application.Console;
 import application.Shutter;
+import application.UIController;
 
 public class PYTHON extends Shutter {
 	
@@ -173,7 +174,7 @@ public class PYTHON extends Shutter {
 	
 	public static void installModule(File modulePath, String[] cmd, File module) {
 		
-		disableAll();
+		UIController.disableAll();
 		btnStart.setEnabled(false);
 		progressBar1.setIndeterminate(true);
 		progressBar1.setStringPainted(false);
@@ -263,7 +264,7 @@ public class PYTHON extends Shutter {
 			           }
 					});
 					 
-					enableAll();
+					UIController.enableAll();
 				}
 			}			
 		});

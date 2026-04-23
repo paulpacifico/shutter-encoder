@@ -57,6 +57,7 @@ import javax.swing.border.MatteBorder;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.SEVENZIP;
+import renderers.AntiAliasedRoundRectangle;
 
 import java.awt.Color;
 import java.awt.Component;

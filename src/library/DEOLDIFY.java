@@ -34,6 +34,7 @@ import javax.swing.JOptionPane;
 
 import application.Console;
 import application.Shutter;
+import application.UIController;
 import application.Update;
 import application.Utils;
 
@@ -215,7 +216,7 @@ public class DEOLDIFY extends Shutter {
 	
 	public static void run(String file, String model) {
 		
-		disableAll();
+		UIController.disableAll();
 		error = false;
 		progressBar1.setValue(0);
 		progressBar1.setMaximum(100);
@@ -323,7 +324,7 @@ public class DEOLDIFY extends Shutter {
 					e.printStackTrace();
 				}
 				finally {
-					enableAll();
+					UIController.enableAll();
 				}
 			}
 			

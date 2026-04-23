@@ -58,6 +58,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.FFMPEG;
 import library.FFPROBE;
+import renderers.AntiAliasedRoundRectangle;
 import settings.FunctionUtils;
 
 import javax.swing.ListSelectionModel;
@@ -795,7 +796,7 @@ import javax.swing.JScrollPane;
 				
 				errorList.setLength(0);
 				
-				FFMPEG.endOfFunction();
+				UIController.endOfFunction();
 			}
 			
 		});

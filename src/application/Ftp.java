@@ -62,6 +62,7 @@ import org.apache.commons.net.io.CopyStreamAdapter;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.FFMPEG;
+import renderers.AntiAliasedRoundRectangle;
 
 public class Ftp {
 	public static JDialog frame;
@@ -341,7 +342,7 @@ public class Ftp {
 	{
 		if (btnOK.isEnabled() == false && Shutter.cancelled == false)
 		{			
-				FFMPEG.disableAll();
+				UIController.disableAll();
 				FFMPEG.btnStart.setEnabled(false);
 				FFMPEG.btnCancel.setEnabled(true);
 			
@@ -405,7 +406,7 @@ public class Ftp {
 					    }
 					  
 					    isRunning = false;
-						FFMPEG.enableAll();
+					    UIController.enableAll();
 						
 				    	  if (Shutter.cancelled)
 				    	  {

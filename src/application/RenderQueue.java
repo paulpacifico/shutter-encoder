@@ -70,6 +70,7 @@ import library.DVDAUTHOR;
 import library.FFMPEG;
 import library.PDF;
 import library.TSMUXER;
+import renderers.AntiAliasedRoundRectangle;
 import settings.FunctionUtils;
 
 	public class RenderQueue {
@@ -810,7 +811,7 @@ import settings.FunctionUtils;
 							
 							currentProcessedFiles += 1;
 							sendCommands += 1;
-							Shutter.disableAll();
+							UIController.disableAll();
 							
 							if (caseRunParallel.isSelected())
 							{
@@ -930,7 +931,7 @@ import settings.FunctionUtils;
 								parallelValue.setEnabled(true);
 							}
 						}
-						Shutter.endOfFunction();
+						UIController.endOfFunction();
 						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 						
 						if (tableRow.getRowCount() > 0)

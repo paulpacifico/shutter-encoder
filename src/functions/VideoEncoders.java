@@ -41,6 +41,7 @@ import application.RecordInputDevice;
 import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
+import application.UIController;
 import application.VideoPlayer;
 import library.BMXTRANSWRAP;
 import library.DVDAUTHOR;
@@ -741,7 +742,7 @@ public class VideoEncoders extends Shutter {
 				        		//Allows to add the file to the queue
 				        		if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				        		{
-				        			enableAll();
+				        			UIController.enableAll();
 				        		}
 				        		
 				        		lblCurrentEncoding.setText(file.getName());										
@@ -1228,7 +1229,7 @@ public class VideoEncoders extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import application.Ftp;
 import application.RenderQueue;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import library.FFMPEG;
@@ -248,7 +249,7 @@ public class AudioNormalization extends Shutter {
 				}
 				else if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

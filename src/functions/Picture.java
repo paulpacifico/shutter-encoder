@@ -31,6 +31,7 @@ import application.RecordInputDevice;
 import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import library.DCRAW;
@@ -88,7 +89,7 @@ public class Picture extends Shutter {
 		            
 					if (videoPlayerCapture)
 					{
-						settings.FunctionUtils.yesToAll = false;
+						FunctionUtils.yesToAll = false;
 						screenshotIsRunning = true;
 						file =  new File(VideoPlayer.videoPath);
 					}
@@ -302,7 +303,7 @@ public class Picture extends Shutter {
 								if (cancelled)
 									break;
 								
-								disableAll();
+								UIController.disableAll();
 								PDF.run(file, page);
 								
 								do {
@@ -339,7 +340,7 @@ public class Picture extends Shutter {
 						else if (isRaw)
 						{
 							btnStart.setEnabled(false);	
-							disableAll();
+							UIController.disableAll();
 							DCRAW.run(" -v -w -q 3 -o 1 -6 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');							
 						}
 						else if (inputDeviceIsRunning)
@@ -436,7 +437,7 @@ public class Picture extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

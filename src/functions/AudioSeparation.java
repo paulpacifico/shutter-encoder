@@ -22,6 +22,7 @@ package functions;
 import java.io.File;
 
 import application.Shutter;
+import application.UIController;
 import application.VideoPlayer;
 import library.DEMUCS;
 import library.FFMPEG;
@@ -154,7 +155,7 @@ public class AudioSeparation extends Shutter {
 					}
 				}
 
-				endOfFunction();				
+				UIController.endOfFunction();				
 			}
 			
 		});

@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import application.Console;
 import application.RenderQueue;
 import application.Shutter;
+import application.UIController;
 
 public class BMXTRANSWRAP extends Shutter {
 	
@@ -55,7 +56,7 @@ public static Process process;
 		}
 		else
 		{
-			disableAll();
+			UIController.disableAll();
 			
 		    progressBar1.setValue(0);
 		    progressBar1.setMaximum(100);

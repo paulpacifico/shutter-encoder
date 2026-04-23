@@ -57,6 +57,8 @@ import javax.swing.border.MatteBorder;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
+import renderers.AntiAliasedRoundRectangle;
+
 public class SubtitlesEmbed {
 
 	public static JDialog frame;

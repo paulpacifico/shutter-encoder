@@ -25,6 +25,7 @@ import java.util.Set;
 
 import application.Ftp;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import library.ANONYMIZER;
 import library.FFMPEG;
@@ -128,7 +129,7 @@ public class BlurFaces extends Shutter {
 					}
 				}
 
-				endOfFunction();	
+				UIController.endOfFunction();	
 			}
 			
 		});

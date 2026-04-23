@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 
 import application.Console;
 import application.Shutter;
+import application.UIController;
 
 public class DEMUCS extends Shutter {
 	
@@ -82,7 +83,7 @@ public class DEMUCS extends Shutter {
 		
 	public static void run(String model, String output, String file, String selection) {
 		
-		disableAll();
+		UIController.disableAll();
 		error = false;
 		progressBar1.setValue(0);		
 		btnStart.setEnabled(false);
@@ -201,7 +202,7 @@ public class DEMUCS extends Shutter {
 					e.printStackTrace();
 				}
 				finally {
-					enableAll();
+					UIController.enableAll();
 				}
 			}
 			

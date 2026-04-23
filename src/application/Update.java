@@ -53,6 +53,8 @@ import org.jsoup.nodes.Element;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
+import renderers.AntiAliasedRoundRectangle;
+
 public class Update {
 
 	public static JDialog frame;

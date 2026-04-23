@@ -34,6 +34,7 @@ import java.util.List;
 import org.json.JSONArray;
 
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import library.FFMPEG;
 import settings.FunctionUtils;
@@ -121,7 +122,7 @@ public class Translate extends Shutter {
 					}
 				}	
 								
-				endOfFunction();			
+				UIController.endOfFunction();			
 			}
 			
 		});

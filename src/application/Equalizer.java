@@ -46,6 +46,8 @@ import javax.swing.event.ChangeListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
+import renderers.AntiAliasedRoundRectangle;
+
 public class Equalizer {
 
 	public static JFrame frame;

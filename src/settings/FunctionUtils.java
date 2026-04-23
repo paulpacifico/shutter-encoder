@@ -63,6 +63,7 @@ import application.Settings;
 import application.Shutter;
 import application.SubtitlesEmbed;
 import application.SubtitlesTimeline;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import application.fileOverwriteWindow;
@@ -269,7 +270,7 @@ public class FunctionUtils extends Shutter {
 		lblCurrentEncoding.setText(language.getProperty("waitingFiles"));
 		tempsRestant.setVisible(false);
 
-		disableAll();
+		UIController.disableAll();
 
 		File actualScanningFile = null;
 		
@@ -356,7 +357,7 @@ public class FunctionUtils extends Shutter {
         	   progressBar1.setIndeterminate(false);
            }
 		});
-		enableAll();
+		UIController.enableAll();
 		btnEmptyList.doClick();
 
 		return null;
@@ -1664,7 +1665,7 @@ public class FunctionUtils extends Shutter {
 
 							try {
 
-								Shutter.disableAll();
+								UIController.disableAll();
 
 								File fileIn = new File(VideoPlayer.videoPath);
 								String extension = VideoPlayer.videoPath.toString()
@@ -1726,7 +1727,7 @@ public class FunctionUtils extends Shutter {
 
 							} catch (Exception e) {
 							} finally {
-								Shutter.endOfFunction();
+								UIController.endOfFunction();
 							}
 
 						}
@@ -1881,7 +1882,7 @@ public class FunctionUtils extends Shutter {
 									Utils.changeDialogVisibility(SubtitlesEmbed.frame, false);
 
 								Shutter.subtitlesBurn = false;
-								Shutter.changeSections(false);
+								UIController.changeSections(false);
 								Shutter.caseDisplay.setSelected(false);
 
 								if (caseAddSubtitles.isSelected())
@@ -1956,7 +1957,7 @@ public class FunctionUtils extends Shutter {
 									Utils.changeDialogVisibility(SubtitlesEmbed.frame, false);
 
 								Shutter.subtitlesBurn = false;
-								Shutter.changeSections(false);
+								UIController.changeSections(false);
 								Shutter.caseDisplay.setSelected(false);
 							}
 
@@ -2015,7 +2016,7 @@ public class FunctionUtils extends Shutter {
 
 			// IMPORTANT Enable caseDisplay
 			Shutter.subtitlesBurn = true;
-			changeSections(false);
+			UIController.changeSections(false);
 			
 			VideoPlayer.player.remove(subsCanvas);
 			VideoPlayer.player.repaint();

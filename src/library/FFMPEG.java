@@ -83,6 +83,7 @@ import application.RenderQueue;
 import application.SceneDetection;
 import application.Settings;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import settings.BitratesAdjustement;
@@ -232,7 +233,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		{
 			isRunning = true;
 			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionSubtitles")) == false && cmd.contains("-f rawvideo") == false && cmd.contains("waveform.png") == false && cmd.contains("preview.bmp") == false  && cmd.contains("preview.png") == false && screenshotIsRunning == false)
-				disableAll();
+				UIController.disableAll();
 			
 			runProcess = new Thread(new Runnable()  {
 				

@@ -70,6 +70,8 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.FFMPEG;
 import library.YOUTUBEDL;
+import renderers.AntiAliasedRoundRectangle;
+import renderers.CollapsiblePanel;
 import settings.FunctionUtils;
 
 /** ATTENTION pour windows les commandes sont sous forme de tableau ["a","b"], sous mac en forme de String... **/
@@ -914,7 +916,7 @@ public class VideoWeb {
 		        	
 	        		if (textURL.getText().toLowerCase().equals("update") || YOUTUBEDL.isRunning) //isRunning is used for install
 	        		{
-	        			FFMPEG.disableAll();
+	        			UIController.disableAll();
 	        			Shutter.btnStart.setEnabled(false);
 	        			Shutter.btnCancel.setEnabled(false);
 	        			Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("update"));
@@ -932,8 +934,8 @@ public class VideoWeb {
 	        	        	   Shutter.progressBar1.setIndeterminate(false);
 	        	           }
 	        			});
-	        			FFMPEG.enableAll();	 
-	        			FFMPEG.endOfFunction();	   
+	        			UIController.enableAll();	 
+	        			UIController.endOfFunction();	   
 	        			
 	        			if (textURL.getText().toLowerCase().equals("update"))
 	        				return;
@@ -973,7 +975,7 @@ public class VideoWeb {
 							YOUTUBEDL.format = "-f " + f[0];								
 						}
 
-						FFMPEG.disableAll();
+						UIController.disableAll();
 						Shutter.btnStart.setEnabled(false);
 					
 					    //Download	    
@@ -1043,8 +1045,8 @@ public class VideoWeb {
 								}
 							}
 				       }
-						FFMPEG.enableAll();
-						FFMPEG.endOfFunction();							
+				       UIController.enableAll();
+						UIController.endOfFunction();							
 	        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
     				}
 					       				        

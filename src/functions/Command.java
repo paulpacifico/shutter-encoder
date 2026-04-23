@@ -24,6 +24,7 @@ import java.io.File;
 import application.Ftp;
 import application.RenderQueue;
 import application.Shutter;
+import application.UIController;
 import application.VideoPlayer;
 import library.EXIFTOOL;
 import library.FFMPEG;
@@ -185,7 +186,7 @@ public class Command extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

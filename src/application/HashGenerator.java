@@ -61,7 +61,7 @@ import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import library.FFMPEG;
+import renderers.AntiAliasedRoundRectangle;
 
 public class HashGenerator {
 	
@@ -306,8 +306,8 @@ public class HashGenerator {
 		                    	
 		                    	frame.setModal(true);
 		                        Shutter.progressBar1.setValue(100);
-		                		FFMPEG.enableAll();	 
-		                		FFMPEG.endOfFunction();	     
+		                        UIController.enableAll();	 
+		                        UIController.endOfFunction();	     
 		                		
 		                		try {
 		                			Shutter.frame.setOpacity(0.5f);
@@ -387,8 +387,8 @@ public class HashGenerator {
  		                    	
  		                    	frame.setModal(true);
  		                        Shutter.progressBar1.setValue(100);
- 		                		FFMPEG.enableAll();	 
- 		                		FFMPEG.endOfFunction();	     
+ 		                        UIController.enableAll();	 
+ 		                        UIController.endOfFunction();	     
  		                		
  		                		try {
  		                			Shutter.frame.setOpacity(0.5f);
@@ -529,7 +529,7 @@ public class HashGenerator {
     	
     	Utils.changeDialogVisibility(frame, true);
     	
-    	FFMPEG.disableAll();
+    	UIController.disableAll();
 		Shutter.btnStart.setEnabled(false);		
 		
     	Shutter.frame.setOpacity(1f);

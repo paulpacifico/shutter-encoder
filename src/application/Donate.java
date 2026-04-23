@@ -42,6 +42,8 @@ import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
+import renderers.AntiAliasedRoundRectangle;
+
 public class Donate {
 
 	private static int MousePositionX;

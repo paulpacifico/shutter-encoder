@@ -47,6 +47,7 @@ import javax.swing.border.MatteBorder;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import library.MEDIAINFO;
+import renderers.AntiAliasedRoundRectangle;
 
 	public class Informations {
 	public static JFrame frame;

@@ -36,6 +36,7 @@ import application.GOP;
 import application.RecordInputDevice;
 import application.Settings;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import settings.FunctionUtils;
@@ -645,7 +646,7 @@ public static boolean hasDolbyVision = false;
 					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionExtract"))
 					|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionColorize")))
 					{
-						changeFilters();
+						UIController.changeFilters();
 					}
 					
 					Console.consoleFFPROBE.append(System.lineSeparator());

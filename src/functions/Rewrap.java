@@ -29,6 +29,7 @@ import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
 import application.SubtitlesEmbed;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import library.BMXTRANSWRAP;
@@ -215,7 +216,7 @@ public class Rewrap extends Shutter {
 				        		//Allows to add the file to the queue
 				        		if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				        		{
-				        			enableAll();
+				        			UIController.enableAll();
 				        		}
 				        		
 				        		lblCurrentEncoding.setText(fileName);
@@ -332,7 +333,7 @@ public class Rewrap extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

@@ -28,6 +28,7 @@ import application.Console;
 import application.Ftp;
 import application.RenderQueue;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import library.FFMPEG;
@@ -170,7 +171,7 @@ public class DVDRIP extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			

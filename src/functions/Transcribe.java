@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 
 import application.Ftp;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import library.FFMPEG;
@@ -227,7 +228,7 @@ public class Transcribe extends Shutter {
 					}
 				}
 
-				endOfFunction();	
+				UIController.endOfFunction();	
 				
 				if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false && FFMPEG.error == false && cancelled == false)
 				{

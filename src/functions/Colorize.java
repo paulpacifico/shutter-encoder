@@ -30,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 
 import application.Ftp;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import library.DEOLDIFY;
 import library.FFMPEG;
@@ -242,7 +243,7 @@ public class Colorize extends Shutter {
 						}
 					}
 
-					endOfFunction();				
+					UIController.endOfFunction();				
 				}
 			}
 			

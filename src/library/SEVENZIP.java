@@ -30,6 +30,7 @@ import javax.swing.SwingUtilities;
 
 import application.Console;
 import application.Shutter;
+import application.UIController;
 
 public class SEVENZIP extends Shutter {
 	
@@ -114,8 +115,8 @@ public class SEVENZIP extends Shutter {
 				           }
 						});	
 										
-						FFMPEG.endOfFunction();
-						FFMPEG.enableAll();
+						UIController.endOfFunction();
+						UIController.enableAll();
 					 }
 					 
 				}				

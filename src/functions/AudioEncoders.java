@@ -27,6 +27,7 @@ import application.Ftp;
 import application.RenderQueue;
 import application.Settings;
 import application.Shutter;
+import application.UIController;
 import application.Utils;
 import application.VideoPlayer;
 import library.FFMPEG;
@@ -299,7 +300,7 @@ public class AudioEncoders extends Shutter {
 				        		//Allows to add the file to the queue
 				        		if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 				        		{
-				        			enableAll();
+				        			UIController.enableAll();
 				        		}
 				        		
 				        		lblCurrentEncoding.setText(file.getName());										
@@ -375,7 +376,7 @@ public class AudioEncoders extends Shutter {
 				}
 				else
 				{
-					endOfFunction();					
+					UIController.endOfFunction();					
 				}
 			}
 			
