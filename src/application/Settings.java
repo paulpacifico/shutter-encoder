@@ -1256,7 +1256,11 @@ public class Settings {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				accept = true;
 			}
 
@@ -1277,7 +1281,11 @@ public class Settings {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 			}
 
 			@Override
@@ -1288,7 +1296,7 @@ public class Settings {
 					
 		});
 		
-		reduce = new JLabel(new FlatSVGIcon("contents/reduce.svg", 15, 15));
+		reduce = new JLabel(new FlatSVGIcon("contents/minimize.svg", 15, 15));
 		reduce.setHorizontalAlignment(SwingConstants.CENTER);
 		reduce.setBounds(quit.getLocation().x - 20, 4, 15, 15);
 			
@@ -1302,7 +1310,11 @@ public class Settings {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				reduce.setIcon(new FlatSVGIcon("contents/reduce_pressed.svg", 15, 15));
+				reduce.setIcon(new FlatSVGIcon("contents/minimize.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				accept = true;
 			}
 
@@ -1317,12 +1329,16 @@ public class Settings {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				reduce.setIcon(new FlatSVGIcon("contents/reduce_hover.svg", 15, 15));
+				reduce.setIcon(new FlatSVGIcon("contents/minimize.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {		
-				reduce.setIcon(new FlatSVGIcon("contents/reduce.svg", 15, 15));
+				reduce.setIcon(new FlatSVGIcon("contents/minimize.svg", 15, 15));
 				accept = false;
 			}
 			
@@ -1344,7 +1360,11 @@ public class Settings {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				help.setIcon(new FlatSVGIcon("contents/help_pressed.svg", 15, 15));
+				help.setIcon(new FlatSVGIcon("contents/help.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				accept = true;
 			}
 
@@ -1360,7 +1380,11 @@ public class Settings {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				help.setIcon(new FlatSVGIcon("contents/help_hover.svg", 15, 15));
+				help.setIcon(new FlatSVGIcon("contents/help.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 			}
 
 			@Override

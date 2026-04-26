@@ -127,7 +127,7 @@ public class Picture extends Shutter {
 						}		
 						
 						//Data analyze
-						if (FunctionUtils.analyze(file, isRaw) == false)
+						if (FunctionUtils.analyze(file, isRaw, false) == false)
 							continue;
 				 
 						//Date filter

@@ -2605,50 +2605,50 @@ public class SubtitlesTimeline {
 	
 	private void PasteFromClipBoard() {			
 		
-    	   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-           Transferable clipTf = sysClip.getContents(null);
-           
-           if (clipTf != null)
+	   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+       Transferable clipTf = sysClip.getContents(null);
+       
+       if (clipTf != null)
+       {
+           if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor))
            {
-               if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor))
-               {
-                   try {
-                	   
-                	   boolean newSubtitle = true;
-                	   
-                	   if (txtSubtitles.getText().equals("Title"))
-                	   {
-                		   txtSubtitles.setText((String) clipTf.getTransferData(DataFlavor.stringFlavor));
-                	   }
-                	   else
-                	   {               		  
-        				   if (frame.hasFocus())
-        					   txtSubtitles.setText(txtSubtitles.getText() + (String) clipTf.getTransferData(DataFlavor.stringFlavor));
-                	   }
-                	   	
-    					for (Component c : timeline.getComponents())
-    					{
-    						if (c instanceof JTextPane)
-    						{
-    							if (cursor.getLocation().x >= c.getLocation().x && cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
-    							{
-    								((JTextPane) c).setText(txtSubtitles.getText());	
-    								repaintTimeline();
-    								newSubtitle = false;
-    								break;
-    							}
-    						}
-    					}
-    					
-    					if (newSubtitle)
-    						addSubtitles(false);	
-    					
-    					if (txtSubtitles.getText().length() > 0)
-    						saveSubtitles(true, false);
-    					
-                   } catch (Exception er) {}
-               }
-           }		
-		}
+               try {
+            	   
+            	   boolean newSubtitle = true;
+            	   
+            	   if (txtSubtitles.getText().equals("Title"))
+            	   {
+            		   txtSubtitles.setText((String) clipTf.getTransferData(DataFlavor.stringFlavor));
+            	   }
+            	   else
+            	   {               		  
+    				   if (frame.hasFocus())
+    					   txtSubtitles.setText(txtSubtitles.getText() + (String) clipTf.getTransferData(DataFlavor.stringFlavor));
+            	   }
+            	   	
+					for (Component c : timeline.getComponents())
+					{
+						if (c instanceof JTextPane)
+						{
+							if (cursor.getLocation().x >= c.getLocation().x && cursor.getLocation().x < (c.getLocation().x + c.getWidth()))
+							{
+								((JTextPane) c).setText(txtSubtitles.getText());	
+								repaintTimeline();
+								newSubtitle = false;
+								break;
+							}
+						}
+					}
+					
+					if (newSubtitle)
+						addSubtitles(false);	
+					
+					if (txtSubtitles.getText().length() > 0)
+						saveSubtitles(true, false);
+					
+               } catch (Exception er) {}
+           }
+       }		
+	}
 	
 }

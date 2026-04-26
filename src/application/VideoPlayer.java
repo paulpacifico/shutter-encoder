@@ -290,7 +290,7 @@ public class VideoPlayer {
 		lblPosition = new JLabel();
 		lblPosition.setHorizontalAlignment(SwingConstants.LEFT);
 		lblPosition.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
-		lblPosition.setForeground(new Color(230,75,60));
+		lblPosition.setForeground(Utils.red);
 		Shutter.frame.getContentPane().add(lblPosition);
 		
 		caseApplyCutToAll.setName("caseApplyCutToAll");	
@@ -1765,7 +1765,7 @@ public class VideoPlayer {
 							}
 				
 							try {
-								FunctionUtils.analyze(new File(videoPath), isRaw);
+								FunctionUtils.analyze(new File(videoPath), isRaw, true);
 							} catch (InterruptedException e) {}
 							
 							//IMPORTANT							
@@ -3924,7 +3924,7 @@ public class VideoPlayer {
 		        int[] yPoints = {0, 0, getHeight() - 6, getHeight(), getHeight() - 6}; 
 		        
 		        //Fill
-		        g2d.setColor(new Color(230,75,60));
+		        g2d.setColor(Utils.red);
 		        g2d.fillPolygon(xPoints, yPoints, 5);
 
 		    }
@@ -3940,7 +3940,7 @@ public class VideoPlayer {
 	            super.paintComponent(grphcs);
 	            Graphics2D g2d = (Graphics2D) grphcs;
 	            
-	            g2d.setColor(new Color(230,75,60));
+	            g2d.setColor(Utils.red);
 	            g2d.drawLine(0, getWidth(), 0, getHeight());	
 	        }
 		};
@@ -5247,7 +5247,11 @@ public class VideoPlayer {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				btnPreview.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
+				btnPreview.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
@@ -5730,7 +5734,7 @@ public class VideoPlayer {
 					Shutter.logoHeight = FFPROBE.imageHeight;
 					
 					//IMPORTANT keeps original source file data			
-					FunctionUtils.analyze(new File(videoPath), false);
+					FunctionUtils.analyze(new File(videoPath), false, true);
 				}
 										
 				int logoFinalSizeWidth = (int) Math.floor((double) Shutter.logoWidth / Shutter.playerRatio);		

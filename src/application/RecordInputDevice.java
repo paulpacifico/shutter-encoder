@@ -243,7 +243,11 @@ public class RecordInputDevice {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconScreenPreview.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
+				iconScreenPreview.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
@@ -339,7 +343,11 @@ public class RecordInputDevice {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				iconDevicePreview.setIcon(new FlatSVGIcon("contents/preview_hover.svg", 16, 16));
+				iconScreenPreview.setIcon(new FlatSVGIcon("contents/preview.svg", 16, 16).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 

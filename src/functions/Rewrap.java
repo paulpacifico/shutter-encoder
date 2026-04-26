@@ -85,7 +85,7 @@ public class Rewrap extends Shutter {
 						final String extension =  fileName.substring(fileName.lastIndexOf("."));
 					
 						//Data analyze
-						if (FunctionUtils.analyze(file, false) == false)
+						if (FunctionUtils.analyze(file, false, false) == false)
 							continue;
 						
 						lblCurrentEncoding.setText(fileName);

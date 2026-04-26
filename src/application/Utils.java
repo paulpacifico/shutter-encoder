@@ -109,6 +109,7 @@ public class Utils extends Shutter {
 	public static Color c60 = new Color(c50.getRed() + 10,c50.getGreen() + 10,c50.getBlue() + 10);
 	public static Color c120 = new Color(120,120,120);
 	public static Color c225 = new Color(225,225,225);
+	public static Color red = new Color(230,75,60);
 	public static Color background = new Color(c15.getRed() + 17,c15.getGreen() + 16,c15.getBlue() + 17);
 	public static boolean breakSleepMode = true;
 	public final static String username = "info@shutterencoder.com";

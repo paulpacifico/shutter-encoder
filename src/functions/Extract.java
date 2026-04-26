@@ -66,7 +66,7 @@ public class Extract extends Shutter {
 					try {		
 						
 						//Data analyze
-						if (FunctionUtils.analyze(file, false) == false)
+						if (FunctionUtils.analyze(file, false, false) == false)
 							continue;
 						
 						String fileName = file.getName();

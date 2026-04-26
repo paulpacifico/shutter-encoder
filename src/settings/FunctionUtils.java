@@ -93,7 +93,7 @@ public class FunctionUtils extends Shutter {
 	public static boolean deleteSRT = false;
 	private static StringBuilder mailFileList = new StringBuilder();
 	
-	public static boolean analyze(File file, boolean isRaw) throws InterruptedException {
+	public static boolean analyze(File file, boolean isRaw, boolean isVideoPlayer) throws InterruptedException {
 		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 						
@@ -144,8 +144,17 @@ public class FunctionUtils extends Shutter {
 			if (analyzeError(file.toString()))
 				return false;
 			
-			//Check GPU
-			FFMPEG.checkGPUCapabilities(file.toString());
+			/* Check GPU
+			 * Run it in parallel when using Video Player for a faster startup
+			 */
+			if (isVideoPlayer)
+			{
+				Thread gpu = new Thread(() -> FFMPEG.checkGPUCapabilities(file.toString()));
+				gpu.start();
+								
+			}
+			else
+				FFMPEG.checkGPUCapabilities(file.toString());
 					
 			//Check with MEDIAINFO
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
@@ -2098,7 +2107,7 @@ public class FunctionUtils extends Shutter {
 				
 				Console.consoleFFMPEG.append(System.lineSeparator() + e + System.lineSeparator());
 				
-				Shutter.lblCurrentEncoding.setForeground(Color.RED);
+				Shutter.lblCurrentEncoding.setForeground(Utils.red);
 	        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
 				Shutter.progressBar1.setValue(0);
 				

@@ -63,7 +63,7 @@ public class BlackDetection extends Shutter {
 						lblCurrentEncoding.setText(fileName);
 						
 						//Data analyze
-						if (FunctionUtils.analyze(file, false) == false)
+						if (FunctionUtils.analyze(file, false, false) == false)
 							continue;			         
 
 						//Write the in and out values before getInputAndOutput()

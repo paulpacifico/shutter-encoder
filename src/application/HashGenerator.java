@@ -372,7 +372,7 @@ public class HashGenerator {
 	                             	}
 	                                else
 	                                {
-	                                	txtCheck.setForeground(Color.RED);
+	                                	txtCheck.setForeground(Utils.red);
 	                                }
 		                        }
 								else
@@ -440,7 +440,11 @@ public class HashGenerator {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				accept = true;
 			}
 
@@ -456,7 +460,11 @@ public class HashGenerator {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 			}
 
 			@Override

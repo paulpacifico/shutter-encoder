@@ -71,7 +71,7 @@ public class AudioNormalization extends Shutter {
 						lblCurrentEncoding.setText(Shutter.language.getProperty("analyzing") + " " + fileName);	
 						
 						//Data analyze
-						if (FunctionUtils.analyze(file, false) == false)
+						if (FunctionUtils.analyze(file, false, false) == false)
 							continue;
 						
 		            	//filterComplex

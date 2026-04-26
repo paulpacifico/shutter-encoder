@@ -161,7 +161,7 @@ public class VideoEncoders extends Shutter {
 						lblCurrentEncoding.setText(fileName);
 						
 						//Data analyze
-						if (FunctionUtils.analyze(file, false) == false)
+						if (FunctionUtils.analyze(file, false, false) == false)
 							continue;	
 						
 						if (FFPROBE.audioOnly)

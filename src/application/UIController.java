@@ -5860,7 +5860,7 @@ public class UIController extends Shutter {
 		}
 
 		if (cancelled == true) {
-			lblCurrentEncoding.setForeground(Color.RED);
+			lblCurrentEncoding.setForeground(Utils.red);
 			lblCurrentEncoding.setText(language.getProperty("processCancelled"));
 			progressBar1.setValue(0);
 		} else {

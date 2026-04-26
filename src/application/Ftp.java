@@ -145,7 +145,11 @@ public class Ftp {
 
 			@Override
 			public void mousePressed(MouseEvent e) {		
-				quit.setIcon(new FlatSVGIcon("contents/quit_pressed.svg", 15, 15));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 				accept = true;
 			}
 
@@ -160,7 +164,11 @@ public class Ftp {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {			
-				quit.setIcon(new FlatSVGIcon("contents/quit_hover.svg", 15, 15));
+				quit.setIcon(new FlatSVGIcon("contents/quit.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
+				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
+				})));
 			}
 
 			@Override
@@ -400,7 +408,7 @@ public class Ftp {
 					    }
 					    else
 					    {
-					    	Shutter.lblCurrentEncoding.setForeground(Color.RED);
+					    	Shutter.lblCurrentEncoding.setForeground(Utils.red);
 				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingFailed"));
 							Shutter.progressBar1.setValue(0);
 					    }
@@ -410,7 +418,7 @@ public class Ftp {
 						
 				    	  if (Shutter.cancelled)
 				    	  {
-						    	Shutter.lblCurrentEncoding.setForeground(Color.RED);
+						    	Shutter.lblCurrentEncoding.setForeground(Utils.red);
 					        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingCancelled"));
 								Shutter.progressBar1.setValue(0);
 				    	  }
@@ -468,7 +476,7 @@ public class Ftp {
 				        
 					} catch (MessagingException e) {
 						
-						Shutter.lblCurrentEncoding.setForeground(Color.RED);
+						Shutter.lblCurrentEncoding.setForeground(Utils.red);
 			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
 					}		
 				}
