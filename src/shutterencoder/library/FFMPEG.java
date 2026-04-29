@@ -466,6 +466,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		|| line.contains("cannot be smaller than input dimensions")
 		|| line.contains("Failed setup for format")
 		|| line.contains("Failed to get pixel format")
+		|| line.contains("hardware accelerator failed to decode picture")
 		|| line.contains("Your platform doesn't support hardware accelerated"))
 		{					
 			if (line.contains("error code") == false && line.contains("return code") == false)
@@ -1187,9 +1188,17 @@ public static StringBuilder errorLog = new StringBuilder();
 	                                        + " -b:v 5000k -vf format=nv12,hwupload -f null -\"");
 	                                if (!error) graphicsAccel.add("Vulkan Video");
 	                            }
+	                        } else if (isLinux) {
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_nvenc"
+	                            			+ " -b:v 5000k -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("Nvidia NVENC");
+
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_vaapi"
+	                            			+ " -b:v 5000k -s 640x360 -f null -");
+	                            if (!error) graphicsAccel.add("VAAPI");                        
 	                        } else if (isMac) {
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_videotoolbox"
-	                                    + " -b:v 5000k -s 640x360 -f null -");
+	                                    	+ " -b:v 5000k -s 640x360 -f null -");
 	                            if (!error) graphicsAccel.add("OSX VideoToolbox");
 	                        }
 	                        break;

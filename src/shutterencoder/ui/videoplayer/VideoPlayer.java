@@ -38,7 +38,9 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.TexturePaint;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
@@ -1461,6 +1463,7 @@ public class VideoPlayer {
 						{		
 							//System.out.println("CLEARED");
 							bufferedFrames.clear();
+							waveformContainer.repaint();
 							
 							//IMPORTANT
 							t += 1;
@@ -1701,6 +1704,7 @@ public class VideoPlayer {
 							if (bufferedFrames.size() > 0)
 							{			
 								bufferedFrames.clear();
+								waveformContainer.repaint();
 							}
 															
 							//IMPORTANT
@@ -3092,7 +3096,8 @@ public class VideoPlayer {
 						if (bufferedFrames.size() > 0 || preview != null)
 						{	
 							//Clear the buffer
-							bufferedFrames.clear();			
+							bufferedFrames.clear();		
+							waveformContainer.repaint();
 						}
 						
 						if (previousFrame)
@@ -3367,8 +3372,6 @@ public class VideoPlayer {
 		player = new JPanel() {
 
 		    // Cached resources
-		    private BufferedImage buffer;
-		    private BufferedImage rounded;
 		    private int cachedWidth = -1;
 		    private int cachedHeight = -1;
 
@@ -3377,6 +3380,13 @@ public class VideoPlayer {
 		    private Font cachedFontBold;
 		    private Font cachedFontItalicBold;
 		    private int cachedFontHeight = -1;
+		    
+		    private final Color colorC1 = new Color(200, 200, 200);
+		    private final Color colorC2 = new Color(255, 255, 255);
+		    private TexturePaint checkerPaint;
+		    
+		    private BufferedImage mask;
+		    private int lastW, lastH;
 
 		    @Override
 		    protected void paintComponent(Graphics g) {
@@ -3385,6 +3395,13 @@ public class VideoPlayer {
 
 		        int w = getWidth();
 		        int h = getHeight();
+		        
+		        // Values for rounded mask
+		        if (w != lastW || h != lastH) {
+		            roundedMask(w, h);
+		            lastW = w;
+		            lastH = h;
+		        }
 
 		        if (w <= 0 || h <= 0) return;
 
@@ -3394,27 +3411,18 @@ public class VideoPlayer {
 		        if (w != cachedWidth || h != cachedHeight) {
 		            cachedWidth  = w;
 		            cachedHeight = h;
-		            buffer  = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		            rounded = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		        }
 
 		        // Draw into buffer
-		        Graphics2D bg = buffer.createGraphics();
-		        bg.setRenderingHint(RenderingHints.KEY_ANTIALIASING,    RenderingHints.VALUE_ANTIALIAS_ON);
-		        bg.setRenderingHint(RenderingHints.KEY_RENDERING,       RenderingHints.VALUE_RENDER_QUALITY);
-		        bg.setRenderingHint(RenderingHints.KEY_INTERPOLATION,   RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-		        // Clear buffer
-		        bg.setComposite(AlphaComposite.Clear);
-		        bg.fillRect(0, 0, w, h);
-		        bg.setComposite(AlphaComposite.SrcOver);
-		        bg.setClip(new java.awt.geom.RoundRectangle2D.Float(0, 0, w, h, 5, 5));
+		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,    RenderingHints.VALUE_ANTIALIAS_ON);
+		        g2.setRenderingHint(RenderingHints.KEY_RENDERING,       RenderingHints.VALUE_RENDER_SPEED);
+		        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,   RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 		        // Checkerboard drawn into buffer, not directly to screen
 		        if (FFPROBE.hasAlpha)
-		            drawCheckerboard(bg);
+		            drawCheckerboard(g2);
 
-		        bg.setColor(Color.BLACK);
+		        g2.setColor(Color.BLACK);
 
 		        // Frame display
 		        if (frameVideo == null
@@ -3422,17 +3430,23 @@ public class VideoPlayer {
 		        || (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
 		        && Shutter.caseDisplay.isSelected() == false))
 		        {
-		            bg.fillRect(0, 0, w, h);
+		            g2.fillRect(0, 0, w, h);
 		        }
 		        else
 		        {		
-		            bg.drawImage(frameVideo, 0, 0, w, h, this);
+		            g2.drawImage(frameVideo, 0, 0, w, h, this);
 
 		            cursorCurrentFrame.setLocation((int) Math.round((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / slider.getMaximum()), 0);
 		        }
+		        
+		        // Mask display
+		        if (!fullscreenPlayer) {
+		            g2.drawImage(mask, 0, 0, null);
+		        }
 
 		        // FPS display
-		        if (FFPROBE.audioOnly == false && fileDuration > 40) {
+		        if (FFPROBE.audioOnly == false && fileDuration > 40)
+		        {
 		            if (System.nanoTime() - fpsTime >= 1_000_000_000L) {
 		                displayCurrentFPS = fps;
 		                fpsTime = System.nanoTime();
@@ -3468,77 +3482,78 @@ public class VideoPlayer {
 		        // Preview upscale label
 		        if (previewUpscale && frameVideo != null && preview != null && fileDuration > 40) {
 		            Font f = getCachedFont(Font.ITALIC, h);
-		            bg.setFont(f);
-		            FontMetrics metrics = bg.getFontMetrics(f);
+		            g2.setFont(f);
+		            FontMetrics metrics = g2.getFontMetrics(f);
 		            String label = Shutter.language.getProperty("preview");
 		            int x = (w - metrics.stringWidth(label)) / 2;
 		            int y = h - (h / 24);
-		            bg.setColor(Color.WHITE);
-		            bg.drawString(label, x, y);
+		            g2.setColor(Color.WHITE);
+		            g2.drawString(label, x, y);
 		        }
 
 		        // Subtitles
-		        if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) {
-		            SubtitlesTimeline.refreshData();
-		            String[] text = SubtitlesTimeline.txtSubtitles.getText().split("\\r?\\n");
-
-		            Font firstFont = getFontForLine(text[0], h);
-		            bg.setFont(firstFont);
-		            String firstLine = stripTags(text[0]);
-
-		            FontMetrics metrics = bg.getFontMetrics(firstFont);
-		            int x = (w - metrics.stringWidth(firstLine)) / 2;
-		            int y;
-
-		            if (text.length > 1 && text[1].length() > 0) {
-		                y = h - (int) (h / 9.5);
-		                drawSubtitleString(bg, firstLine, x, y);
-
-		                Font secondFont = getFontForLine(text[1], h);
-		                bg.setFont(secondFont);
-		                String secondLine = stripTags(text[1]);
-		                FontMetrics metrics2 = bg.getFontMetrics(secondFont);
-		                x = (w - metrics2.stringWidth(secondLine)) / 2;
-		                y = h - (h / 24);
-		                drawSubtitleString(bg, secondLine, x, y);
-		            } else if (firstLine.length() > 0) {
-		                y = h - (h / 24);
-		                drawSubtitleString(bg, firstLine, x, y);
-		            }
+		        if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+		        {
+		            SubtitlesTimeline.refreshData();		            
+		            String rawSub = SubtitlesTimeline.txtSubtitles.getText();
+		            
+	                if (rawSub != null && !rawSub.isEmpty())
+	                {
+			            String[] text = SubtitlesTimeline.txtSubtitles.getText().split("\\r?\\n");
+	
+			            Font firstFont = getFontForLine(text[0], h);
+			            g2.setFont(firstFont);
+			            String firstLine = stripTags(text[0]);
+	
+			            FontMetrics metrics = g2.getFontMetrics(firstFont);
+			            int x = (w - metrics.stringWidth(firstLine)) / 2;
+			            int y;
+	
+			            if (text.length > 1 && text[1].length() > 0) {
+			                y = h - (int) (h / 9.5);
+			                drawSubtitleString(g2, firstLine, x, y);
+	
+			                Font secondFont = getFontForLine(text[1], h);
+			                g2.setFont(secondFont);
+			                String secondLine = stripTags(text[1]);
+			                FontMetrics metrics2 = g2.getFontMetrics(secondFont);
+			                x = (w - metrics2.stringWidth(secondLine)) / 2;
+			                y = h - (h / 24);
+			                drawSubtitleString(g2, secondLine, x, y);
+			            } else if (firstLine.length() > 0) {
+			                y = h - (h / 24);
+			                drawSubtitleString(g2, firstLine, x, y);
+			            }
+	                }
 		        }
+		    }
+		    
+		    /** Mask for rounded borders */
+		    private void roundedMask(int w, int h) {
+		        mask = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		        Graphics2D g2 = mask.createGraphics();
 
-		        bg.dispose();
-
-		        // Rounded corner
-		        Graphics2D rg = rounded.createGraphics();
-		        rg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-		        // Clear rounded buffer
-		        rg.setComposite(AlphaComposite.Clear);
-		        rg.fillRect(0, 0, w, h);
-		        rg.setComposite(AlphaComposite.SrcOver);
-
-		        rg.setColor(Color.WHITE);
-		        rg.fillRoundRect(0, 0, w, h, 10, 10);
-		        rg.setComposite(AlphaComposite.SrcIn);
-		        rg.drawImage(buffer, 0, 0, null);
-		        rg.dispose();
-
-		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		        g2.drawImage(rounded, 0, 0, null);
+		        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,    RenderingHints.VALUE_ANTIALIAS_ON);
+		        g2.setRenderingHint(RenderingHints.KEY_RENDERING,       RenderingHints.VALUE_RENDER_QUALITY);
+		        
+		        g2.setColor(Utils.background); 
+		        g2.fillRect(0, 0, w, h);
+		        
+		        g2.setComposite(AlphaComposite.Clear);
+		        g2.fillRoundRect(0, 0, w, h, 10, 10);
+		        
+		        g2.dispose();
 		    }
 
-		    // --- Helpers ---
-
 		    /** Draws a subtitle string with a 1px black outline then white fill. */
-		    private void drawSubtitleString(Graphics2D bg, String text, int x, int y) {
-		        bg.setColor(Color.BLACK);
-		        bg.drawString(text, x - 1, y - 1);
-		        bg.drawString(text, x - 1, y + 1);
-		        bg.drawString(text, x + 1, y - 1);
-		        bg.drawString(text, x + 1, y + 1);
-		        bg.setColor(Color.WHITE);
-		        bg.drawString(text, x, y);
+		    private void drawSubtitleString(Graphics2D g2, String text, int x, int y) {
+		        g2.setColor(Color.BLACK);
+		        g2.drawString(text, x - 1, y - 1);
+		        g2.drawString(text, x - 1, y + 1);
+		        g2.drawString(text, x + 1, y - 1);
+		        g2.drawString(text, x + 1, y + 1);
+		        g2.setColor(Color.WHITE);
+		        g2.drawString(text, x, y);
 		    }
 
 		    /** Strips basic HTML italic/bold tags from a subtitle line. */
@@ -3576,18 +3591,17 @@ public class VideoPlayer {
 		    }
 
 		    /** Draws a grey/white checkerboard pattern to indicate transparency. */
-		    private void drawCheckerboard(Graphics2D g2d) {
-		        int tileSize = 8;
-		        Color c1 = new Color(200, 200, 200);
-		        Color c2 = new Color(255, 255, 255);
-		        int w = getWidth();
-		        int h = getHeight();
-		        for (int y = 0; y < h; y += tileSize) {
-		            for (int x = 0; x < w; x += tileSize) {
-		                g2d.setColor(((x / tileSize + y / tileSize) % 2 == 0) ? c1 : c2);
-		                g2d.fillRect(x, y, tileSize, tileSize);
-		            }
-		        }
+		    private void drawCheckerboard(Graphics2D g2) {
+		    	if (checkerPaint == null) {
+	                BufferedImage anchor = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
+	                Graphics2D gr = anchor.createGraphics();
+	                gr.setColor(colorC1); gr.fillRect(0, 0, 8, 8); gr.fillRect(8, 8, 8, 8);
+	                gr.setColor(colorC2); gr.fillRect(8, 0, 8, 8); gr.fillRect(0, 8, 8, 8);
+	                gr.dispose();
+	                checkerPaint = new TexturePaint(anchor, new Rectangle(0, 0, 16, 16));
+	            }
+	            g2.setPaint(checkerPaint);
+	            g2.fillRect(0, 0, getWidth(), getHeight());
 		    }
 		};
 
@@ -3710,7 +3724,7 @@ public class VideoPlayer {
 		Shutter.windowDrag = true;
 		
 		if (fullscreenPlayer == false)
-	    {
+	    {			
 			fullscreenPlayer = true;
 			
 			fullscreenFrame.getContentPane().setLayout(null);
@@ -3720,6 +3734,7 @@ public class VideoPlayer {
 	        fullscreenFrame.setUndecorated(true);
 	        fullscreenFrame.add(player);
 	        graphicsDevice.setFullScreenWindow(fullscreenFrame);
+	        	        
 	        fullscreenFrame.setVisible(true);
 	        		
 	        resizeAll();
@@ -3734,7 +3749,9 @@ public class VideoPlayer {
 					loadImage(true);
 				}
 				else						
+				{
 					playerSetTime(playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
+				}
 			}
 	    }
 	    else
@@ -3895,19 +3912,18 @@ public class VideoPlayer {
 		                g2.fillRoundRect(playerOutMark + 1, 0, getWidth() - playerOutMark - 1, getHeight() - 1, 5, 5);
 	                }
 	                
-	                /*
 	                //Buffer
 	                if (bufferedFrames.size() > 0)	                	
 	                {		                
 	                	g2.setColor(Color.GREEN);
-			            
+	                	
 			            double bufferPosition = (bufferCurrentFrame - bufferedFrames.size());       
 			            
 			            int x = (int) ((double) waveformContainer.getSize().width * bufferPosition) / slider.getMaximum();
 			            int width = (int) ((double) waveformContainer.getSize().width * bufferedFrames.size()) / slider.getMaximum();
 			            
 			            g2.drawLine(x, 1, x + width, 1);
-	                }*/
+	                }
 	                
 	                totalDuration();
                 }			
@@ -4799,7 +4815,7 @@ public class VideoPlayer {
 		//NTSC framerate
 		if (timeIn > 0)
 			timeIn = Timecode.setNTSCtimecode(timeIn);
-						
+		
 		caseInH.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.accurateFPS / 3600)));
 		caseInM.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.accurateFPS / 60) % 60));
 		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / FFPROBE.accurateFPS) % 60));    		
@@ -5223,7 +5239,8 @@ public class VideoPlayer {
 				if (bufferedFrames.size() > 0)
 				{				
 					//Clear the buffer
-					bufferedFrames.clear();						
+					bufferedFrames.clear();					
+					waveformContainer.repaint();
 				}
 				
 				frameIsComplete = false;
@@ -5922,6 +5939,7 @@ public class VideoPlayer {
 					if (bufferedFrames.size() > 0)
 					{				
 						bufferedFrames.clear();
+						waveformContainer.repaint();
 					}
 								
 					//Stop player
@@ -6773,6 +6791,7 @@ public class VideoPlayer {
 			if (bufferedFrames.size() > 0)
 			{			
 				bufferedFrames.clear();
+				waveformContainer.repaint();
 			}
 			
 			isPiping = false;
@@ -7190,12 +7209,12 @@ public class VideoPlayer {
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 			{
-				updateGrpIn(Timecode.getNTSCtimecode(time) - offset);
+				updateGrpIn(time - offset);
 			}			
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && mouseIsPressed)
 			{
-				updateGrpOut(Timecode.getNTSCtimecode(time) - offset + 1);
+				updateGrpOut(time - offset + 1);
 			}
 			
     		if (sliderChange == false && Shutter.windowDrag == false)

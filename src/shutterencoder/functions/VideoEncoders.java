@@ -314,9 +314,6 @@ public class VideoEncoders extends Shutter {
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 						}
 						
-						//InputOptions
-						String inputOptions = FunctionUtils.setInputOptions();
-						
 						//Loop image					
 						String loop = FunctionUtils.setLoop(extension);	
 						
@@ -1039,7 +1036,7 @@ public class VideoEncoders extends Shutter {
 									FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd + output);
 								}
 								else
-									FFMPEG.run(inputOptions + loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);
+									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);
 								
 								do {
 									Thread.sleep(10);
@@ -1052,7 +1049,7 @@ public class VideoEncoders extends Shutter {
 										FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
 									}
 									else
-										FFMPEG.run(inputOptions + loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
+										FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									do {
 										Thread.sleep(10);
@@ -1073,11 +1070,11 @@ public class VideoEncoders extends Shutter {
 						else if (FFPROBE.audioOnly)
 						{
 							progressBar.setMaximum(FFPROBE.totalLength / 1000);
-							FFMPEG.run(inputOptions + loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
+							FFMPEG.run(loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
 						}
 						else
 						{
-							FFMPEG.run(gpuDecoding + inputOptions + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
+							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
 						}
 
 						do {
@@ -1088,7 +1085,7 @@ public class VideoEncoders extends Shutter {
 						{						
 							if (FFMPEG.cancelled == false && comboResolution.getSelectedItem().toString().contains("AI") == false)
 							{
-								FFMPEG.run(gpuDecoding + inputOptions + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
 														
 								do {
 									Thread.sleep(100);
@@ -1313,29 +1310,19 @@ public class VideoEncoders extends Shutter {
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-					{
-						return " -c:v av1_nvenc" + selectedGPU;	
-					}
+						return " -c:v av1_nvenc" + selectedGPU;
 					else if (comboAccel.getSelectedItem().equals("Intel Quick Sync"))
-					{
-						return " -c:v av1_qsv";	
-					}	
+						return " -c:v av1_qsv";
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
-					{
 						return " -c:v av1_amf";
-					}
 					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
-					{
 						return " -c:v av1_vulkan";
-					}
 					else if (comboAccel.getSelectedItem().equals("Media Foundation"))
-					{
 						return " -c:v av1_mf";
-					}
 					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
-					{
-						return " -c:v av1_videotoolbox";
-					}
+						return " -c:v av1_videotoolbox";					
+					else if (comboAccel.getSelectedItem().equals("VAAPI"))
+						return " -c:v av1_vaapi";	
 				}
 		    	else
 		        	return " -c:v libsvtav1";

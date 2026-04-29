@@ -692,7 +692,7 @@ public class SubtitlesTimeline {
 				{
 					for (int index = 0 ; index < selectedSubs.size() ; index++)
 					{
-						((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.themeColor));
+						((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.darkenColor));
 						((JComponent) timeline.getComponent(selectedSubs.get(index))).setForeground(Color.WHITE);
 					}
 					
@@ -1049,8 +1049,8 @@ public class SubtitlesTimeline {
 									if (c instanceof JTextPane)
 									{
 										index ++;
-										((JComponent) c).setBorder(new RoundedBorder(5, Color.RED));		
-										c.setForeground(Color.RED);
+										((JComponent) c).setBorder(new RoundedBorder(5, Utils.red));		
+										c.setForeground(Utils.red);
 										selectedSubs.add(index);
 										repaintTimeline();
 									}
@@ -1354,7 +1354,7 @@ public class SubtitlesTimeline {
 				{
 					for (int index = 0 ; index < selectedSubs.size() ; index++)
 					{
-						((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.themeColor));
+						((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.darkenColor));
 						((JComponent) timeline.getComponent(selectedSubs.get(index))).setForeground(Color.WHITE);
 					}
 				}
@@ -1485,8 +1485,8 @@ public class SubtitlesTimeline {
 	        protected void paintComponent(Graphics grphcs) {
 	            super.paintComponent(grphcs);
 	            Graphics2D g2d = (Graphics2D) grphcs;
-	            GradientPaint gp = new GradientPaint(0, 0, new Color(140,0,0), 0, getHeight() / 2, Color.RED);
-	            GradientPaint gp2 = new GradientPaint(0, getHeight() / 2, Color.RED, 0, getHeight(), new Color(140,0,0));
+	            GradientPaint gp = new GradientPaint(0, 0, new Color(140,0,0), 0, getHeight() / 2, Utils.red);
+	            GradientPaint gp2 = new GradientPaint(0, getHeight() / 2, Utils.red, 0, getHeight(), new Color(140,0,0));
 	            g2d.setPaint(gp);
 	            g2d.fillRect(0, 0, getWidth(), getHeight() / 2);
 	            g2d.setPaint(gp2);
@@ -1694,7 +1694,7 @@ public class SubtitlesTimeline {
 		text.setBackground(new Color(30,30,35, 120));
 		text.setForeground(Color.WHITE);
 		text.setText(subContent);	
-		text.setBorder(new RoundedBorder(5, Utils.themeColor));		
+		text.setBorder(new RoundedBorder(5, Utils.darkenColor));		
 		text.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		text.setHighlighter(null);
 		text.setEditable(false);
@@ -1717,15 +1717,15 @@ public class SubtitlesTimeline {
 				
 				if (control)
 				{
-					if (text.getForeground() == Color.RED) //Si on veut déselectionner un sub
+					if (text.getForeground() == Utils.red) //Si on veut déselectionner un sub
 					{
-						text.setBorder(new RoundedBorder(5, Utils.themeColor));
+						text.setBorder(new RoundedBorder(5, Utils.darkenColor));
 						text.setForeground(Color.WHITE);
 					}
 					else
 					{
-						text.setBorder(new RoundedBorder(5, Color.RED));		
-						text.setForeground(Color.RED);
+						text.setBorder(new RoundedBorder(5, Utils.red));		
+						text.setForeground(Utils.red);
 						
 						if (shift)
 						{
@@ -1737,7 +1737,7 @@ public class SubtitlesTimeline {
 								if (c instanceof JTextPane)
 								{
 									index ++;
-									if (c.getForeground() == Color.RED)
+									if (c.getForeground() == Utils.red)
 									{
 										if (setColor == false)
 											setColor = true;
@@ -1747,8 +1747,8 @@ public class SubtitlesTimeline {
 									}
 									else if (setColor) //Si le sub est bleu
 									{
-										((JComponent) c).setBorder(new RoundedBorder(5, Color.RED));		
-										c.setForeground(Color.RED);
+										((JComponent) c).setBorder(new RoundedBorder(5, Utils.red));		
+										c.setForeground(Utils.red);
 										selectedSubs.add(index);
 									}
 								}
@@ -1764,7 +1764,7 @@ public class SubtitlesTimeline {
 					if (c instanceof JTextPane)
 					{
 						index ++;
-						if (c.getForeground() == Color.RED)
+						if (c.getForeground() == Utils.red)
 							selectedSubs.add(index);
 					}
 				}
@@ -1818,7 +1818,7 @@ public class SubtitlesTimeline {
 					{
 						for (int index = 0 ; index < selectedSubs.size() ; index++)
 						{
-							((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.themeColor));
+							((JComponent) timeline.getComponent(selectedSubs.get(index))).setBorder(new RoundedBorder(5, Utils.darkenColor));
 							((JComponent) timeline.getComponent(selectedSubs.get(index))).setForeground(Color.WHITE);
 						}
 					}
