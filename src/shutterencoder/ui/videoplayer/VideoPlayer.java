@@ -4273,14 +4273,13 @@ public class VideoPlayer {
 	        protected void paintComponent(Graphics grphcs) {
 	            super.paintComponent(grphcs);
 	            Graphics2D g2d = (Graphics2D) grphcs;
-	            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-	            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));	            
+	            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));	            
 	            
-	            g2d.setColor(Color.WHITE);
-	            g2d.drawLine(0, 1, 0, waveformContainer.getHeight());
+	            g2d.setColor(Utils.red);
+	            g2d.drawLine(0, 0, 0, waveformContainer.getHeight());
 	        }
 		};
+		cursorCurrentFrame.setOpaque(false);
 		waveformContainer.add(cursorCurrentFrame);
 				
 		waveformScrollPane = new JScrollPane();

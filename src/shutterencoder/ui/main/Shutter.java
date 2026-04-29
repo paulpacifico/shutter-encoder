@@ -200,11 +200,10 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "20.0";
+	public static String actualVersion = "20.1";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
-	public static String pathToFont = "JRE/lib/fonts/Montserrat.ttf";
 	public static String magnetoFont = "Magneto";
 	public static String boldFont = "Montserrat";
 	public static String mainFont = "FreeSans";
@@ -785,25 +784,12 @@ public class Shutter {
 		//JVM args
 		Utils.loadConfig();
 		
-		SplashRenderer.render("Version " + actualVersion);
-
+		new Thread(() -> SplashRenderer.render("v20.0")).start();
+		
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("apple.awt.textAntialiasing", "on");
 		System.setProperty("swing.aatext", "true");		
-
-		// Accès à la police Montserrat pour drawtext
-		if (System.getProperty("os.name").contains("Mac")) {
-			pathToFont = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			pathToFont = pathToFont.substring(0, pathToFont.length() - 1);
-			pathToFont = pathToFont.substring(0, (int) (pathToFont.lastIndexOf("/"))).replace("%20", " ");
-			pathToFont = "'" + pathToFont + "/JRE/lib/fonts/Montserrat.ttf" + "'";
-		} else if (System.getProperty("os.name").contains("Linux")) {
-			pathToFont = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-			pathToFont = pathToFont.substring(0, pathToFont.length() - 1);
-			pathToFont = pathToFont.substring(0, (int) (pathToFont.lastIndexOf("/"))).replace("%20", " ");
-			pathToFont = "'" + pathToFont + "fonts/Montserrat.ttf" + "'";
-		}
-
+		
 		// Path for AI models
 		NCNN.modelsPath = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows")) {
@@ -811,8 +797,7 @@ public class Shutter {
 		} else {
 			NCNN.modelsPath = NCNN.modelsPath.substring(0, NCNN.modelsPath.length() - 1);
 		}
-		NCNN.modelsPath = NCNN.modelsPath.substring(0, (int) (NCNN.modelsPath.lastIndexOf("/"))).replace("%20", " ")
-				+ "/Library/models";
+		NCNN.modelsPath = NCNN.modelsPath.substring(0, (int) (NCNN.modelsPath.lastIndexOf("/"))).replace("%20", " ") + "/Library/models";
 
 		// Checking java x86 or arm version
 		try {
@@ -841,7 +826,9 @@ public class Shutter {
 		}
 
 		Utils.setLanguage();
+		SplashRenderer.increaseProgress();
 		Utils.loadThemes();
+		SplashRenderer.increaseProgress();
 
 		// Documents Shutter Encoder
 		if (documents.exists() == false) {
@@ -969,37 +956,57 @@ public class Shutter {
 		//Check GPUs
 		FFMPEG.checkGPUAvailable();
 		
-		//Load visible panels
+		//Load panels
 		topBar();
+		SplashRenderer.increaseProgress();
 		StatusBar();
+		SplashRenderer.increaseProgress();
 		grpChooseFiles();
+		SplashRenderer.increaseProgress();
 		grpChooseFunction();
+		SplashRenderer.increaseProgress();
 		grpDestination();
+		SplashRenderer.increaseProgress();
 		grpProgress();
-		
-		Utils.changeFrameVisibility(frame, false);
-		
-		//Then load other panels
+		SplashRenderer.increaseProgress();
 		grpResolution();
+		SplashRenderer.increaseProgress();
 		grpImageFilter();
+		SplashRenderer.increaseProgress();
 		grpSetAudio();
+		SplashRenderer.increaseProgress();
 		grpAudio();
+		SplashRenderer.increaseProgress();
 		grpAdvanced();
+		SplashRenderer.increaseProgress();
 		grpImageAdjustement();
+		SplashRenderer.increaseProgress();
 		grpCrop();
+		SplashRenderer.increaseProgress();
 		grpSetTimecode();
+		SplashRenderer.increaseProgress();
 		grpOverlay();
+		SplashRenderer.increaseProgress();
 		grpSubtitles();
+		SplashRenderer.increaseProgress();
 		grpWatermark();
+		SplashRenderer.increaseProgress();
 		grpColorimetry();
+		SplashRenderer.increaseProgress();
 		grpCorrections();
+		SplashRenderer.increaseProgress();
 		grpTransitions();
+		SplashRenderer.increaseProgress();
 		grpImageSequence();
+		SplashRenderer.increaseProgress();
 		grpBitrate();
+		SplashRenderer.increaseProgress();
 		Reset();
+		SplashRenderer.increaseProgress();
 		
 		//Load the video player finally
 		new VideoPlayer();
+		SplashRenderer.increaseProgress();
 		
 		settingsScrollBar = new JScrollBar();
 		settingsScrollBar.setVisible(false);
@@ -1293,6 +1300,7 @@ public class Shutter {
 
 		//Load settings
 		new Settings();
+		SplashRenderer.increaseProgress();
 
 		YOUTUBEDL.update();
 		EXIFTOOL.run('"' + "" + '"'); // Preload the binary
@@ -1331,6 +1339,7 @@ public class Shutter {
 			}
 		}
 		
+		Utils.changeFrameVisibility(frame, false);
 		btnStart.requestFocus();
 
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)

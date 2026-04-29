@@ -140,8 +140,6 @@ public class AudioNormalization extends Shutter {
 							break;
 						}
 						
-						lblCurrentEncoding.setText(fileName);	
-						
 						if (cancelled == false)
 						{							
 							String normalization = "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB"; //Simple volume compensation
@@ -166,6 +164,8 @@ public class AudioNormalization extends Shutter {
 								normalization += ":print_format=summary";
 								twoPass = true;
 							}
+							else
+								lblCurrentEncoding.setText(fileName);
 							
 							//Command
 							if (FFPROBE.stereo)
@@ -189,7 +189,7 @@ public class AudioNormalization extends Shutter {
 							
 							String output = '"' + fileOut.toString() + '"';
 							if (twoPass) //Output to null in order to use 2pass method
-							{								
+							{					
 								if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 								{
 									output = " -f null -";					
@@ -206,6 +206,8 @@ public class AudioNormalization extends Shutter {
 							
 							if (cancelled == false && FFMPEG.error == false && twoPass)
 							{
+								lblCurrentEncoding.setText(fileName);
+								
 								//Replacing normalization string
 								String secondPassNormalization = normalization.replace(":print_format=summary", "") + ":measured_I=" + FFMPEG.integrated + ":measured_TP=" + FFMPEG.truePeak + ":measured_LRA="  + FFMPEG.LRA + ":measured_thresh=" + FFMPEG.Threshold + ":offset=0:linear=true";
 								

@@ -2667,15 +2667,18 @@ public static StringBuilder errorLog = new StringBuilder();
                               
                if (lblCurrentEncoding.getText().contains(language.getProperty("analyzing")))
                {
-                   String lufs[] = analyseLufs.split(":");
-                   String lufsFinal[] = lufs[2].split("L");
+                   String lufs = extractLoudnormValue(analyseLufs, "I:\\s*([-+]?[\\d.]+)\\s*LUFS");	
+                   
+                   if (caseTruePeak.isSelected() || caseLRA.isSelected())
+                	   lufs = extractLoudnormValue(getAll.toString(), "Input Integrated:\\s*([-+]?[\\d.]+)\\s*LUFS");
+                   
                    String db[] = comboFilter.getSelectedItem().toString().split(" ");
                    if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak")  == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")) == false)
                    {
                 	   db = comboNormalizeAudio.getSelectedItem().toString().split(" ");
                    }
-                   
-                   newVolume = Float.parseFloat(db[0]) - Float.parseFloat(lufsFinal[0].replace(" ", ""));
+
+                   newVolume = Float.parseFloat(db[0]) - Float.parseFloat(lufs);
                }
 	     }	
 	     	     

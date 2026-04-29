@@ -26,6 +26,8 @@ import shutterencoder.utils.Utils;
 
 public class SplashRenderer {
 
+	static float progress = 0.0f;
+	
 	public static void render(String version) {
 		
 	    SplashScreen splash = SplashScreen.getSplashScreen();
@@ -42,11 +44,23 @@ public class SplashRenderer {
 
 	    FontMetrics fm = g.getFontMetrics();
 
+	    // Info text
 	    String versionText = version;
 	    String years = "2013–2026";
-
 	    int xVersion = width - fm.stringWidth(versionText) - 15;
-	    int y = height - 15;
+	    int yVersion = height - 15;
+	    
+	    // Progress bar layout
+	    int barWidth = 200;
+	    int barHeight = 4;
+	    int barArc = 4;
+	    int xBar = (width - barWidth) / 2;
+	    int yBar = height - 55;
+	    
+	    // Initiliazing text
+	    String initText = "Initializing...";
+	    int xInit = (width - fm.stringWidth(initText)) / 2;
+	    int yInit = yBar - 10;
 
 	    // Fade over ~300ms
 	    int frames = 15;
@@ -63,21 +77,61 @@ public class SplashRenderer {
 	        // Restore normal drawing
 	        g.setComposite(AlphaComposite.SrcOver.derive(alpha));
 
+	        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
 	        g.setColor(Utils.c225);
 
 	        // Draw text
-	        g.drawString(versionText, xVersion, y);
-	        g.drawString(years, 15, y);
+	        g.drawString(versionText, xVersion, yVersion);
+	        g.drawString(years, 15, yVersion);
+	        
+	        g.setColor(Utils.c120);
 
+	        // Draw initializing
+	        g.drawString(initText, xInit, yInit);
+	        
+	        // Progressbar background
+	        g.setColor(Utils.c42);
+	        g.fillRoundRect(xBar, yBar, barWidth, barHeight, barArc, barArc);
+
+	        // Alpha
+	        g.setComposite(AlphaComposite.SrcOver.derive(alpha));
+	        
 	        splash.update();
 
 	        try {
 	            Thread.sleep(delay);
 	        } catch (InterruptedException ignored) {}
 	    }
+
+	    // Progression
+	    while (splash.isVisible())
+	    {
+	    	g.setComposite(AlphaComposite.Clear);
+            g.fillRect(xBar - 2, yBar - 2, barWidth + 4, barHeight + 4);
+
+            g.setComposite(AlphaComposite.SrcOver);
+            g.setColor(Utils.c42);
+            g.fillRoundRect(xBar, yBar, barWidth, barHeight, barArc, barArc);
+
+            int progressWidth = (int) (barWidth * progress);
+            g.setColor(Utils.themeColor);
+            g.fillRoundRect(xBar, yBar, progressWidth, barHeight, barArc, barArc);
+
+            splash.update();
+
+            //Slow down the loop
+            try {
+            	Thread.sleep(delay);
+            } catch (InterruptedException ignored) {}
+        }
 	    
-	    g.dispose();
+        g.dispose();
+	}
+
+	public static void increaseProgress() {
+		 progress = Math.min(1.0f, progress + 0.037f);
 	}
 }

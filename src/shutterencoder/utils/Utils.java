@@ -2336,7 +2336,7 @@ public class Utils extends Shutter {
 		UIManager.put("ComboBox.buttonBackground", new Color(42,42,47,0));	
 		UIManager.put("ComboBox.buttonEditableBackground", c42);	
 		UIManager.put("ComboBox.selectionBackground", themeColor);
-		UIManager.put("ComboBox.popupBackground", new Color(c42.getRed(), c42.getGreen(), c42.getBlue(), 150));
+		UIManager.put("ComboBox.popupBackground", new Color(c42.getRed(), c42.getGreen(), c42.getBlue()));
 		UIManager.put("ComboBox.buttonSeparatorColor", c30);	
 		UIManager.put("ComboBox.buttonDisabledSeparatorColor", c30);	
 		UIManager.put("ComboBox.buttonArrowColor", themeColor);		
