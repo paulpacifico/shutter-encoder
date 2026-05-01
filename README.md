@@ -1,9 +1,9 @@
 # 🎬 Shutter Encoder
 
-[![GitHub stars](https://img.shields.io/github/stars/paulpacifico/shutter-encoder?style=flat-square)](https://github.com/paulpacifico/shutter-encoder/stargazers)
+![Downloads](https://img.shields.io/badge/dynamic/json?url=https://www.shutterencoder.com/wp-json/shutter/v1/downloads&query=$.downloads&label=downloads&style=flat-square&color=1f6feb&labelColor=555)
+[![GitHub stars](https://img.shields.io/github/stars/paulpacifico/shutter-encoder?style=flat-square&color=f1c40f&labelColor=555)](https://github.com/paulpacifico/shutter-encoder/stargazers)
 [![GitHub license](https://img.shields.io/github/license/paulpacifico/shutter-encoder?style=flat-square)](LICENSE)
-[![GitHub last commit](https://img.shields.io/github/last-commit/paulpacifico/shutter-encoder?style=flat-square)](https://github.com/paulpacifico/shutter-encoder/commits)
-![Downloads](https://img.shields.io/badge/dynamic/json?url=https://www.shutterencoder.com/wp-json/shutter/v1/downloads&query=$.downloads&label=downloads&style=flat-square)
+[![GitHub last commit](https://img.shields.io/github/last-commit/paulpacifico/shutter-encoder?style=flat-square&color=2ea44f&labelColor=555)](https://github.com/paulpacifico/shutter-encoder/commits)
 
 <img src="https://www.shutterencoder.com/wp-content/uploads/2026/02/Shutter-Encoder-interface.webp">
 
