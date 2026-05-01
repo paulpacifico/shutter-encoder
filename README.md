@@ -3,6 +3,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/paulpacifico/shutter-encoder?style=flat-square)](https://github.com/paulpacifico/shutter-encoder/stargazers)
 [![GitHub license](https://img.shields.io/github/license/paulpacifico/shutter-encoder?style=flat-square)](LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/paulpacifico/shutter-encoder?style=flat-square)](https://github.com/paulpacifico/shutter-encoder/commits)
+![Downloads](https://img.shields.io/badge/dynamic/json?url=https://www.shutterencoder.com/wp-json/shutter/v1/downloads&query=$.downloads&label=downloads&style=flat-square)
 
 <img src="https://www.shutterencoder.com/wp-content/uploads/2026/02/Shutter-Encoder-interface.webp">
 
