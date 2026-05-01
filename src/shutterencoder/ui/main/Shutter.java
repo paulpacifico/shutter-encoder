@@ -784,7 +784,7 @@ public class Shutter {
 		//JVM args
 		Utils.loadConfig();
 		
-		new Thread(() -> SplashRenderer.render("v20.0")).start();
+		new Thread(() -> SplashRenderer.render("v" + actualVersion)).start();
 		
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("apple.awt.textAntialiasing", "on");
@@ -9176,7 +9176,6 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				;
 				startCropX = e.getPoint().x;
 				startCropY = e.getPoint().y;
 			}
