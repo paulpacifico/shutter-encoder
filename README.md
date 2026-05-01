@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/paulpacifico/shutter-encoder?style=flat-square)](LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/paulpacifico/shutter-encoder?style=flat-square&color=2ea44f&labelColor=555)](https://github.com/paulpacifico/shutter-encoder/commits)
 
-<img src="https://www.shutterencoder.com/wp-content/uploads/2026/02/Shutter-Encoder-interface.webp">
+<img src="https://www.shutterencoder.com/wp-content/uploads/2026/05/Shutter-Encoder-interface-2026.webp">
 
 ## 📌 Overview
 
