@@ -266,8 +266,8 @@ public class Shutter {
 	 */
 	protected static JLabel settingsIcon;
 	protected static JLabel quit;
-	protected static JLabel fullscreen;
-	protected static JLabel reduce;
+	protected static JLabel expand;
+	protected static JLabel minimize;
 	protected static JLabel help;
 	protected static JLabel newInstance;
 
@@ -784,8 +784,8 @@ public class Shutter {
 		//JVM args
 		Utils.loadConfig();
 		
-		new Thread(() -> SplashRenderer.render("v" + actualVersion)).start();
-		
+		new SplashRenderer();
+
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("apple.awt.textAntialiasing", "on");
 		System.setProperty("swing.aatext", "true");		
@@ -826,9 +826,9 @@ public class Shutter {
 		}
 
 		Utils.setLanguage();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		Utils.loadThemes();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 
 		// Documents Shutter Encoder
 		if (documents.exists() == false) {
@@ -958,55 +958,55 @@ public class Shutter {
 		
 		//Load panels
 		topBar();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		StatusBar();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpChooseFiles();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpChooseFunction();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpDestination();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpProgress();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpResolution();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpImageFilter();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpSetAudio();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpAudio();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpAdvanced();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpImageAdjustement();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpCrop();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpSetTimecode();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpOverlay();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpSubtitles();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpWatermark();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpColorimetry();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpCorrections();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpTransitions();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpImageSequence();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		grpBitrate();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		Reset();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		
 		//Load the video player finally
 		new VideoPlayer();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 		
 		settingsScrollBar = new JScrollBar();
 		settingsScrollBar.setVisible(false);
@@ -1300,7 +1300,7 @@ public class Shutter {
 
 		//Load settings
 		new Settings();
-		SplashRenderer.increaseProgress();
+		SplashRenderer.increment();
 
 		YOUTUBEDL.update();
 		EXIFTOOL.run('"' + "" + '"'); // Preload the binary
@@ -1339,6 +1339,7 @@ public class Shutter {
 			}
 		}
 		
+		SplashRenderer.instance.dispose();
 		Utils.changeFrameVisibility(frame, false);
 		btnStart.requestFocus();
 
@@ -1528,12 +1529,12 @@ public class Shutter {
 
 		});
 
-		fullscreen = new JLabel(new FlatSVGIcon("resources/expand.svg", 15, 15));
-		fullscreen.setHorizontalAlignment(SwingConstants.CENTER);
-		fullscreen.setBounds(quit.getLocation().x - 20, 4, 15, 15);
-		topPanel.add(fullscreen);
+		expand = new JLabel(new FlatSVGIcon("resources/expand.svg", 15, 15));
+		expand.setHorizontalAlignment(SwingConstants.CENTER);
+		expand.setBounds(quit.getLocation().x - 20, 4, 15, 15);
+		topPanel.add(expand);
 
-		fullscreen.addMouseListener(new MouseListener() {
+		expand.addMouseListener(new MouseListener() {
 
 			private boolean accept = false;
 
@@ -1543,7 +1544,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				fullscreen.setIcon(new FlatSVGIcon("resources/expand.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				expand.setIcon(new FlatSVGIcon("resources/expand.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
 				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    
 				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
@@ -1561,7 +1562,7 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				fullscreen.setIcon(new FlatSVGIcon("resources/expand.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				expand.setIcon(new FlatSVGIcon("resources/expand.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
 				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
 				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
@@ -1570,18 +1571,18 @@ public class Shutter {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				fullscreen.setIcon(new FlatSVGIcon("resources/expand.svg", 15, 15));
+				expand.setIcon(new FlatSVGIcon("resources/expand.svg", 15, 15));
 				accept = false;
 			}
 
 		});
 
-		reduce = new JLabel(new FlatSVGIcon("resources/minimize.svg", 15, 15));
-		reduce.setHorizontalAlignment(SwingConstants.CENTER);
-		reduce.setBounds(fullscreen.getLocation().x - 20, 4, 15, 15);
-		topPanel.add(reduce);
+		minimize = new JLabel(new FlatSVGIcon("resources/minimize.svg", 15, 15));
+		minimize.setHorizontalAlignment(SwingConstants.CENTER);
+		minimize.setBounds(expand.getLocation().x - 20, 4, 15, 15);
+		topPanel.add(minimize);
 
-		reduce.addMouseListener(new MouseListener() {
+		minimize.addMouseListener(new MouseListener() {
 
 			private boolean accept = false;
 
@@ -1591,7 +1592,7 @@ public class Shutter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				reduce.setIcon(new FlatSVGIcon("resources/minimize.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				minimize.setIcon(new FlatSVGIcon("resources/minimize.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
 				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    
 				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
@@ -1617,7 +1618,7 @@ public class Shutter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				reduce.setIcon(new FlatSVGIcon("resources/minimize.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+				minimize.setIcon(new FlatSVGIcon("resources/minimize.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
 				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
 				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
@@ -1626,7 +1627,7 @@ public class Shutter {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				reduce.setIcon(new FlatSVGIcon("resources/minimize.svg", 15, 15));
+				minimize.setIcon(new FlatSVGIcon("resources/minimize.svg", 15, 15));
 				accept = false;
 			}
 
@@ -1634,7 +1635,7 @@ public class Shutter {
 
 		help = new JLabel(new FlatSVGIcon("resources/help.svg", 15, 15));
 		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(reduce.getLocation().x - 20, 4, 15, 15);
+		help.setBounds(minimize.getLocation().x - 20, 4, 15, 15);
 		topPanel.add(help);
 
 		help.addMouseListener(new MouseListener() {
@@ -3777,9 +3778,9 @@ public class Shutter {
 					topPanel.setBounds(0, 0, frame.getWidth(), 28);
 					topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 					quit.setLocation(frame.getSize().width - 20, 4);
-					fullscreen.setLocation(quit.getLocation().x - 20, 4);
-					reduce.setLocation(fullscreen.getLocation().x - 20, 4);
-					help.setLocation(reduce.getLocation().x - 20, 4);
+					expand.setLocation(quit.getLocation().x - 20, 4);
+					minimize.setLocation(expand.getLocation().x - 20, 4);
+					help.setLocation(minimize.getLocation().x - 20, 4);
 					newInstance.setLocation(help.getLocation().x - 20, 4);
 
 					addToList.setText(language.getProperty("dropFilesHere"));

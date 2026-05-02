@@ -20,118 +20,114 @@
 package shutterencoder.ui.renderers;
 
 import java.awt.*;
-import java.awt.SplashScreen;
 
+import javax.swing.ImageIcon;
+import javax.swing.JWindow;
+import javax.swing.Timer;
+
+import shutterencoder.ui.main.Shutter;
 import shutterencoder.utils.Utils;
 
-public class SplashRenderer {
+@SuppressWarnings("serial")
+public class SplashRenderer extends JWindow {
 
-	static float progress = 0.0f;
+	public static SplashRenderer instance;
+	private Image bufferImage;
+	private Graphics2D bufferGraphics;
+	public static float progress = 0.0f;
+	private float textAlpha = 0.0f;
+	private Timer fadeTimer;
+	private static Image splashScreen;
+	private static Font font = new Font("Montserrat", Font.PLAIN, 12);
 	
-	public static void render(String version) {
-		
-	    SplashScreen splash = SplashScreen.getSplashScreen();
-	    if (splash == null) return;
-
-	    Graphics2D g = splash.createGraphics();
-	    if (g == null) return;
-
-	    int width = splash.getSize().width;
-	    int height = splash.getSize().height;
-
-	    Font font = new Font("Montserrat", Font.PLAIN, 12);
-	    g.setFont(font);
-
-	    FontMetrics fm = g.getFontMetrics();
-
-	    // Info text
-	    String versionText = version;
-	    String years = "2013–2026";
-	    int xVersion = width - fm.stringWidth(versionText) - 15;
-	    int yVersion = height - 15;
+	public SplashRenderer() {		
+	    instance = this;
+	    splashScreen = new ImageIcon(getClass().getClassLoader().getResource("resources/SplashScreen.png")).getImage();
 	    
-	    // Progress bar layout
-	    int barWidth = 200;
-	    int barHeight = 4;
-	    int barArc = 4;
-	    int xBar = (width - barWidth) / 2;
-	    int yBar = height - 55;
-	    
-	    // Initiliazing text
-	    String initText = "Initializing...";
-	    int xInit = (width - fm.stringWidth(initText)) / 2;
-	    int yInit = yBar - 10;
+	    setBackground(new Color(0,0,0,0));		
+	    setSize(640, 368);
+	    setLocationRelativeTo(null);
+	    setVisible(true);
 
-	    // Fade over ~300ms
-	    int frames = 15;
-	    int delay = 20; // ms
-
-	    for (int i = 0; i <= frames; i++) {
-
-	        float alpha = i / (float) frames;
-
-	        // Clear previous frame (IMPORTANT)
-	        g.setComposite(AlphaComposite.Clear);
-	        g.fillRect(0, 0, width, height);
-
-	        // Restore normal drawing
-	        g.setComposite(AlphaComposite.SrcOver.derive(alpha));
-
-	        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-	        g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-	        g.setColor(Utils.c225);
-
-	        // Draw text
-	        g.drawString(versionText, xVersion, yVersion);
-	        g.drawString(years, 15, yVersion);
-	        
-	        g.setColor(Utils.c120);
-
-	        // Draw initializing
-	        g.drawString(initText, xInit, yInit);
-	        
-	        // Progressbar background
-	        g.setColor(Utils.c42);
-	        g.fillRoundRect(xBar, yBar, barWidth, barHeight, barArc, barArc);
-
-	        // Alpha
-	        g.setComposite(AlphaComposite.SrcOver.derive(alpha));
-	        
-	        splash.update();
-
-	        try {
-	            Thread.sleep(delay);
-	        } catch (InterruptedException ignored) {}
-	    }
-
-	    // Progression
-	    while (splash.isVisible())
-	    {
-	    	g.setComposite(AlphaComposite.Clear);
-            g.fillRect(xBar - 2, yBar - 2, barWidth + 4, barHeight + 4);
-
-            g.setComposite(AlphaComposite.SrcOver);
-            g.setColor(Utils.c42);
-            g.fillRoundRect(xBar, yBar, barWidth, barHeight, barArc, barArc);
-
-            int progressWidth = (int) (barWidth * progress);
-            g.setColor(Utils.themeColor);
-            g.fillRoundRect(xBar, yBar, progressWidth, barHeight, barArc, barArc);
-
-            splash.update();
-
-            //Slow down the loop
-            try {
-            	Thread.sleep(delay);
-            } catch (InterruptedException ignored) {}
-        }
-	    
-        g.dispose();
+	    // Start the fade-in timer
+	    fadeTimer = new javax.swing.Timer(16, e -> {
+	        textAlpha += 0.05f;
+	        if (textAlpha >= 1.0f) {
+	            textAlpha = 1.0f;
+	            ((javax.swing.Timer)e.getSource()).stop();
+	        }
+	        repaint();
+	    });
+	    fadeTimer.start();
 	}
 
-	public static void increaseProgress() {
-		 progress = Math.min(1.0f, progress + 0.037f);
+	public void paint(Graphics g) {
+		
+		// Create a BufferedImage with Alpha support if it doesn't exist
+	    if (bufferImage == null || bufferImage.getWidth(this) != getWidth() || bufferImage.getHeight(this) != getHeight()) {
+	        bufferImage = new java.awt.image.BufferedImage(getWidth(), getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
+	        bufferGraphics = (Graphics2D) bufferImage.getGraphics();
+	    }
+	    
+	    // Set renderingHint
+	    bufferGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    bufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	    bufferGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+	    
+	    // Clear the buffer with transparency
+	    bufferGraphics.setComposite(AlphaComposite.Clear);
+	    bufferGraphics.fillRect(0, 0, getWidth(), getHeight());
+	    
+	    // Reset to SRC_OVER to start drawing
+	    bufferGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+	    bufferGraphics.drawImage(splashScreen, 0, 0, this);
+
+	    // Setup Text
+	    bufferGraphics.setFont(font);
+	    FontMetrics fm = bufferGraphics.getFontMetrics();
+	    String versionText = "v" + Shutter.actualVersion;
+	    String years = "2013–2026";
+	    int xVersion = getWidth() - fm.stringWidth(versionText) - 15;
+	    int yVersion = getHeight() - 15;
+
+	    // Apply the independent Fade to text only
+	    bufferGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, textAlpha));
+	    bufferGraphics.setColor(Utils.c225);
+	    bufferGraphics.drawString(versionText, xVersion, yVersion);
+	    bufferGraphics.drawString(years, 15, yVersion);
+
+	    // Reset Composite for Progress Bar
+	    bufferGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+	    	    
+	    int barWidth = 200;
+	    int barHeight = 4;
+	    int xBar = (getWidth() - barWidth) / 2;
+	    int yBar = getHeight() - 55;
+	    
+	    // Draw initializing text
+	    bufferGraphics.setColor(Utils.c120);
+	    String initText = "Initializing...";
+	    int xInit = (getWidth() - fm.stringWidth(initText)) / 2;
+	    int yInit = yBar - 10;
+	    bufferGraphics.drawString(initText, xInit, yInit);
+
+	    // Draw Bar Background
+	    bufferGraphics.setColor(Utils.c42);
+	    bufferGraphics.fillRoundRect(xBar, yBar, barWidth, barHeight, 4, 4);
+
+	    // Draw Progression
+	    int progressWidth = (int) (barWidth * progress);
+	    if (progressWidth > 0) {
+	        bufferGraphics.setColor(Utils.themeColor);
+	        bufferGraphics.fillRoundRect(xBar, yBar, progressWidth, barHeight, 4, 4);
+	    }
+
+	    // Draw the completed buffer to the screen in one go
+	    g.drawImage(bufferImage, 0, 0, this);
+	}
+      
+	public static void increment() {		
+		progress = Math.min(1.0f, progress + 0.037f);
+		instance.repaint();
 	}
 }

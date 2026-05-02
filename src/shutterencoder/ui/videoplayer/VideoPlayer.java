@@ -3716,7 +3716,7 @@ public class VideoPlayer {
 	}
 	
 	public static void toggleFullscreen() {
-		
+				
 		//Avoid glitch when resizing while playing
 		if (playerIsPlaying())
 			playerLoop = false;
@@ -3726,13 +3726,15 @@ public class VideoPlayer {
 		if (fullscreenPlayer == false)
 	    {			
 			fullscreenPlayer = true;
-			
+
 			fullscreenFrame.getContentPane().setLayout(null);
-	        fullscreenFrame.setFocusableWindowState(false);	   
+	        fullscreenFrame.setFocusableWindowState(true);	   
 	        fullscreenFrame.getContentPane().setBackground(Color.BLACK);
 	        fullscreenFrame.setTitle(new File(videoPath).getName());		
 	        fullscreenFrame.setUndecorated(true);
 	        fullscreenFrame.add(player);
+	        
+	        Shutter.frame.setVisible(false);
 	        graphicsDevice.setFullScreenWindow(fullscreenFrame);
 	        	        
 	        fullscreenFrame.setVisible(true);
@@ -3763,6 +3765,7 @@ public class VideoPlayer {
 	        fullscreenFrame.setVisible(false);
 	        Shutter.frame.getContentPane().add(player);
 	        Shutter.frame.getContentPane().revalidate();
+	        Shutter.frame.setVisible(true);
 	        
 	        if (isPiping == false)
 			{							
@@ -6885,7 +6888,7 @@ public class VideoPlayer {
 			}
 			else if (fullscreenPlayer)
 			{
-				player.setLocation(graphicsDevice.getFullScreenWindow().getWidth() / 2 - player.getWidth() / 2, graphicsDevice.getFullScreenWindow().getHeight() / 2 - player.getHeight() / 2);
+				player.setLocation(0, 0);
 			}
 			else
 			{
