@@ -6888,7 +6888,7 @@ public class VideoPlayer {
 			}
 			else if (fullscreenPlayer)
 			{
-				player.setLocation(0, 0);
+				player.setLocation(graphicsDevice.getFullScreenWindow().getWidth() / 2 - player.getWidth() / 2, graphicsDevice.getFullScreenWindow().getHeight() / 2 - player.getHeight() / 2);
 			}
 			else
 			{
