@@ -32,11 +32,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,13 +47,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JCheckBox;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -88,6 +90,7 @@ import shutterencoder.library.DCRAW;
 import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.PYTHON;
 import shutterencoder.library.TSMUXER;
 import shutterencoder.library.WHISPER;
@@ -98,7 +101,9 @@ import shutterencoder.ui.others.Equalizer;
 import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.SceneDetection;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 
 public class Utils extends Shutter {
 	
@@ -203,6 +208,49 @@ public class Utils extends Shutter {
 	public static Thread loadEncFile;
 	public static String currentPreset = "";
 	public static String hwaccel = "";
+	
+	public static Path getJavaPath() {
+		
+	    String os  = System.getProperty("os.name", "").toLowerCase();
+	    String bin = os.contains("win") ? "java.exe" : "java";
+
+	    // jpackage embedded JRE paths per platform
+	    String rel = os.contains("mac")
+	        ? "runtime/Contents/Home/bin/" + bin   // macOS
+	        : "runtime/bin/" + bin;                // Windows & Linux
+
+	    try {
+	        Path jar = Paths.get(Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+	        
+	        for (Path p = jar; p != null; p = p.getParent())
+	        {
+	            Path candidate = p.resolve(rel).normalize();
+	            if (Files.isExecutable(candidate))
+	            {
+	            	return candidate;
+	            }
+	        }
+	    } catch (Exception ignored) {}
+
+	    // Fallback: java.home (always set by the JVM)
+	    return Paths.get(System.getProperty("java.home"), "bin", bin).toAbsolutePath();
+	}
+	
+	public static void getJavaArch() {
+		
+		try {
+
+			ProcessBuilder processJAVA = new ProcessBuilder("file", getJavaPath().toString());
+			Process proc = processJAVA.start();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+			String s[] = reader.readLine().split(" ");
+
+			arch = s[s.length - 1];
+
+		} catch (Exception e) {}
+	}
 	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
@@ -1791,7 +1839,7 @@ public class Utils extends Shutter {
 														//Value
 														if (p.getName().equals("comboFonctions"))
 														{														
-															VideoPlayer.frameIsComplete = false;														
+															VideoPlayerUI.frameIsComplete = false;														
 															doNotLoadImage = false;
 															
 															((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
@@ -2103,19 +2151,19 @@ public class Utils extends Shutter {
 							if (caseEnableCrop.isSelected())
 							{
 								selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / Shutter.playerRatio));
-								int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
-								int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
+								int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
+								int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
 								
-								if (w > VideoPlayer.player.getWidth())
-									w = VideoPlayer.player.getWidth();
+								if (w > VideoPlayerUI.player.getWidth())
+									w = VideoPlayerUI.player.getWidth();
 								
-								if (h > VideoPlayer.player.getHeight())
-									h = VideoPlayer.player.getHeight();
+								if (h > VideoPlayerUI.player.getHeight())
+									h = VideoPlayerUI.player.getHeight();
 								
 								selection.setSize(w , h);	
 								
-								frameCropX = VideoPlayer.player.getLocation().x;
-								frameCropY = VideoPlayer.player.getLocation().y;
+								frameCropX = VideoPlayerUI.player.getLocation().x;
+								frameCropY = VideoPlayerUI.player.getLocation().y;
 								
 								anchorRight = selection.getLocation().x + selection.getWidth();
 								anchorBottom = selection.getLocation().y + selection.getHeight();
@@ -2155,14 +2203,14 @@ public class Utils extends Shutter {
 							{						    		
 								if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth)
 								{
-									subsCanvas.setBounds(0, 0, VideoPlayer.player.getWidth(), (int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));
+									subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(), (int) (VideoPlayerUI.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
 								}
 								else
 								{
-									subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
-								    		(int) (VideoPlayer.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));	
+									subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+								    		(int) (VideoPlayerUI.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));	
 									
-									subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
+									subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
 								}			
 							}
 							
@@ -2214,7 +2262,7 @@ public class Utils extends Shutter {
 							{
 								if (watermarkPreset != null)
 								{
-									VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
+									VideoPlayerOverlay.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
 								}
 								else
 								{
@@ -2242,7 +2290,7 @@ public class Utils extends Shutter {
 				Thread wait = new Thread(() -> {
 					try {
 						loadEncFile.join();
-						VideoPlayer.playerProcess(0);
+						VideoPlayerCore.playerProcess(0);
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					} catch (InterruptedException e) {}	
 				});
@@ -2488,89 +2536,7 @@ public class Utils extends Shutter {
 		
 		FlatInspector.install("ctrl shift alt X");	
 	}
-	
-	@SuppressWarnings("unused")
-	public static void loadConfig() {
 
-		if (System.getProperty("os.name").contains("Mac") == false)
-		{
-			try {
-
-				String javaPath = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();				
-				File configFile;
-				String appPath = "";
-				
-		        if (System.getProperty("os.name").contains("Windows"))
-		 		{							
-		        	javaPath = javaPath.substring(1,javaPath.length()-1);
-		        	configFile = new File(javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/config.properties");		        	
-		        	appPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/Shutter Encoder.exe";
-					javaPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/JRE/bin/java.exe";
-		 		}	
-		 		else
-		 		{
-		 			javaPath = javaPath.substring(0,javaPath.length()-1);
-		 			configFile = new File(javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/config.properties");
-		 			appPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/Shutter Encoder.jar";
-		 			javaPath = javaPath.substring(0,(int) (javaPath.lastIndexOf("/"))).replace("%20", " ") + "/JRE/bin/java";
-		 		}
-
-		        //Config file et inside documents folder
-	        	if (new File(Shutter.documents + "/config.properties").exists())
-	        		configFile = new File(Shutter.documents + "/config.properties");
-		        
-	        	//Stop infinte loop
-		        File restartFile = new File(configFile.toString().replace("config", "restart"));
-		        if (new File(Shutter.documents + "/restart.properties").exists())
-		        {
-		        	restartFile = new File(Shutter.documents + "/restart.properties");
-		        	configFile = new File(Shutter.documents + "/config.properties");
-		        }
-		        
-		        if (restartFile.exists())
-		        {
-		        	restartFile.renameTo(configFile);
-		        }
-		        else if (configFile.exists())
-		        {
-	        		BufferedReader reader = new BufferedReader(new FileReader(configFile));
-	        				
-					String line = "";
-					StringBuilder args = new StringBuilder();
-										   
-				 	boolean restart = false;
-				 	while ((line = reader.readLine()) != null)						
-				 	{
-						if (line.startsWith("#") == false)
-						{								
-							args.append(" " + line);
-							restart = true;
-						}
-					}				 			
-				 	reader.close();
-
-				 	if (restart)
-				 	{		
-				 		configFile.renameTo(restartFile);
-				 		
-				 		if (System.getProperty("os.name").contains("Windows"))
-				 		{
-				 			Process proc = new ProcessBuilder('"' + javaPath + '"' + args + " -Xmx4G -jar " + '"' + appPath + '"').start();
-				 		}
-				 		else
-				 		{
-				 			Process proc = new ProcessBuilder("/bin/bash", "-c", '"' + javaPath + '"' + args + " -Xmx4G -jar " + '"' + appPath + '"').start();
-				 		}
-				 			
-						System.exit(0);
-				 	}	            
-		        }
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-		}
-	}
-	
 	@SuppressWarnings("unused")
 	public static void restartApp() {
 		
@@ -2647,6 +2613,9 @@ public class Utils extends Shutter {
 
 			if (DCRAW.isRunning)
 				DCRAW.process.destroy();
+			
+			if (XPDFREADER.isRunning)
+				XPDFREADER.process.destroy();
 
 			if (DVDAUTHOR.isRunning)
 				DVDAUTHOR.process.destroy();
