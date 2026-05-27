@@ -48,7 +48,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.utils.Utils;
 
 public class Equalizer {
@@ -144,7 +144,7 @@ public class Equalizer {
 					}
 				}
 				
-				VideoPlayer.playerAudioSetTime(VideoPlayer.playerCurrentFrame);
+				VideoPlayerCore.playerAudioSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
 			
 		});
@@ -204,7 +204,7 @@ public class Equalizer {
 					Shutter.caseEqualizer.setSelected(false);
 		            
 		            Utils.changeFrameVisibility(frame, true);
-	            	VideoPlayer.playerAudioSetTime(VideoPlayer.playerCurrentFrame);
+	            	VideoPlayerCore.playerAudioSetTime(VideoPlayerCore.playerCurrentFrame);
 				}
 			}
 
@@ -381,7 +381,7 @@ public class Equalizer {
 					
 					@Override
 					public void mouseReleased(MouseEvent e) {
-						VideoPlayer.playerAudioSetTime(VideoPlayer.playerCurrentFrame);
+						VideoPlayerCore.playerAudioSetTime(VideoPlayerCore.playerCurrentFrame);
 					}
 				});
 				

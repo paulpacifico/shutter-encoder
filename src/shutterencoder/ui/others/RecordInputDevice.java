@@ -50,7 +50,7 @@ import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.utils.Utils;
 
 public class RecordInputDevice {
@@ -525,7 +525,7 @@ public class RecordInputDevice {
 				
 				frame.dispose();
 				
-				VideoPlayer.setMedia();
+				VideoPlayerCore.setMedia();
 			}
 			
 		});

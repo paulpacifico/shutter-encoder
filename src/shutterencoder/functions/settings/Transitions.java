@@ -22,13 +22,14 @@ package shutterencoder.functions.settings;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class Transitions extends Shutter {
 
 	public static String setVideoFade(String filterComplex, boolean isVideoPlayer) {
 		
-		if (grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer)
+		if (grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer)
 		{
 			//Fade-in
 	    	if (Shutter.caseVideoFadeIn.isSelected())
@@ -45,7 +46,7 @@ public class Transitions extends Shutter {
 	    		
 	    		if (isVideoPlayer)
 	    		{
-					if (VideoPlayer.cursorWaveform.getX() == VideoPlayer.playerInMark || VideoPlayer.playTransition)
+					if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerInMark || VideoPlayerUI.playTransition)
 					{
 						filterComplex += videoFade;
 					}
@@ -76,20 +77,20 @@ public class Transitions extends Shutter {
 	    		}
 	    		else
 	    		{
-	        		long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+	        		long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 	        		long totalOut = FFPROBE.totalLength;
 					 
-					if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+					if (VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
 			        {
-						totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+						totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 			        }
 					
 	        		if (isVideoPlayer)
 	        		{
-	        			totalIn = (long) Math.floor(VideoPlayer.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));	        			
+	        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));	        			
 	        		}
 	        			        		
-	        		if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+	        		if (VideoPlayerUI.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
 	        		{
 		        		videoStart = (totalOut - totalIn) - videoOutValue;
 	        		}
@@ -120,13 +121,13 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 		
 		//Fade-in
-		if ((grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer) && Shutter.caseAudioFadeIn.isSelected())
+		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Shutter.caseAudioFadeIn.isSelected())
     	{ 
     		long audioInValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 			
     		if (isVideoPlayer)
     		{
-				if (VideoPlayer.cursorWaveform.getX() == VideoPlayer.playerInMark || VideoPlayer.playTransition)
+				if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerInMark || VideoPlayerUI.playTransition)
 				{
 					audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
 				}
@@ -145,7 +146,7 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 
     	//Fade-out
-		if ((grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer) && Shutter.caseAudioFadeOut.isSelected())
+		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Shutter.caseAudioFadeOut.isSelected())
     	{
     		long audioOutValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
     		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
@@ -157,20 +158,20 @@ public class Transitions extends Shutter {
     		}
     		else
 			{
-				long totalIn = (long) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+				long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 				long totalOut = FFPROBE.totalLength;
 				 
-				if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+				if (VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
 		        {
-					totalOut = (long) (Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+					totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 		        }
 				
 				if (isVideoPlayer)
         		{
-        			totalIn = (long) Math.floor(VideoPlayer.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
+        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
         		}
 				
-				if (VideoPlayer.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+				if (VideoPlayerUI.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
 				{
 					audioStart = (totalOut - totalIn) - audioOutValue;
 				}
@@ -193,7 +194,7 @@ public class Transitions extends Shutter {
 		
 		String audioFilter = "";
 		
-		if (grpTransitions.isEnabled() || VideoPlayer.fullscreenPlayer || grpAudio.isVisible() || grpSetAudio.isVisible())
+		if (grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer || grpAudio.isVisible() || grpSetAudio.isVisible())
 		{
 	    	//Audio Speed				        
 			if (caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed"))

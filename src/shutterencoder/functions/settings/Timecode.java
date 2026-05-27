@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter;
 
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class Timecode extends Shutter {
 
@@ -106,15 +106,15 @@ public class Timecode extends Shutter {
 		{						
 			if (InputAndOutput.inPoint != "")
             {
-				double time = (Integer.valueOf(FFPROBE.timecode1) + Integer.valueOf(VideoPlayer.caseInH.getText())) * 3600000
-							+ (Integer.valueOf(FFPROBE.timecode2) + Integer.valueOf(VideoPlayer.caseInM.getText())) * 60000
-							+ (Integer.valueOf(FFPROBE.timecode3) + Integer.valueOf(VideoPlayer.caseInS.getText())) * 1000
-							+ (Integer.valueOf(FFPROBE.timecode4) + Integer.valueOf(VideoPlayer.caseInF.getText())) * VideoPlayer.inputFramerateMS;	
+				double time = (Integer.valueOf(FFPROBE.timecode1) + Integer.valueOf(VideoPlayerUI.caseInH.getText())) * 3600000
+							+ (Integer.valueOf(FFPROBE.timecode2) + Integer.valueOf(VideoPlayerUI.caseInM.getText())) * 60000
+							+ (Integer.valueOf(FFPROBE.timecode3) + Integer.valueOf(VideoPlayerUI.caseInS.getText())) * 1000
+							+ (Integer.valueOf(FFPROBE.timecode4) + Integer.valueOf(VideoPlayerUI.caseInF.getText())) * VideoPlayerUI.inputFramerateMS;	
 				
 				String h = Shutter.formatter.format(Math.floor(time / 1000) / 3600);
 				String m = Shutter.formatter.format((Math.floor(time / 1000) / 60) % 60);
 				String s = Shutter.formatter.format(Math.floor(time / 1000) % 60);    		
-				String f = Shutter.formatter.format((time % 1000) / VideoPlayer.inputFramerateMS);
+				String f = Shutter.formatter.format((time % 1000) / VideoPlayerUI.inputFramerateMS);
 				
             	return " -timecode " + '"' + h + ":" + m + ":" + s + dropFrame + f + '"';
             }
@@ -147,9 +147,11 @@ public class Timecode extends Shutter {
 	
 	public static double setNTSCtimecode(double currentFrame) {
 				
-		//NTSC framerates => remove a frame to reach round framerate
-		if (currentFrame > 0)
-		{							
+		if (currentFrame <= 0) return 0;
+		
+		//NTSC framerates => remove a frame to reach round framerate		
+		if (isNonDropFrame())
+		{
 			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
 			
 			if (FFPROBE.currentFPS == 23.98f)
@@ -163,31 +165,78 @@ public class Timecode extends Shutter {
 			else if (FFPROBE.currentFPS == 59.94f)
 			{					
 				currentFrame -= (currentTime * 0.06 / 1000) - 1;
-			}
-		}
+			}	
+		}		
 		
-		return (float) Math.floor(currentFrame);	
+		return (double) Math.floor(currentFrame);	
 	}
 	
 	public static double getNTSCtimecode(double currentFrame) {
-		
+
 		//Allows to set the current seeking values		
-		double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
-			
-		if (FFPROBE.currentFPS == 23.98f)
+		if (isNonDropFrame())
 		{
-			currentFrame += (currentTime * 0.024 / 1000);
-		}
-		else if (FFPROBE.currentFPS == 29.97f)
-		{
-			currentFrame += (currentTime * 0.03 / 1000);
-		}
-		else if (FFPROBE.currentFPS == 59.94f)
-		{
-			currentFrame += (currentTime * 0.06 / 1000);
+			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
+				
+			if (FFPROBE.currentFPS == 23.98f)
+			{
+				currentFrame += (currentTime * 0.024 / 1000);
+			}
+			else if (FFPROBE.currentFPS == 29.97f)
+			{
+				currentFrame += (currentTime * 0.03 / 1000);
+			}
+			else if (FFPROBE.currentFPS == 59.94f)
+			{
+				currentFrame += (currentTime * 0.06 / 1000);
+			}
 		}
 				
-		return (float) Math.floor(currentFrame);		
+		return (double) Math.floor(currentFrame);		
+	}
+	
+	public static double getDropFrameTimecode(double currentFrame) {
+		
+		if (isDropFrame())
+		{					
+			int step = (FFPROBE.currentFPS == 29.97) ? 2 : 4;		
+			int framesToAdd = 0;
+			if (currentFrame >= 3600) {
+			    double extraSteps = ((double) currentFrame - 3600) / 3596;
+			    framesToAdd = step + ((int) extraSteps * step);
+			}
+
+			currentFrame += framesToAdd;
+			
+			if (currentFrame >= 36000)
+			{
+				currentFrame -= Math.floor(currentFrame / 36000) * step;
+			}
+		}
+		
+		return (double) currentFrame;		
+	}
+	
+	public static double setDropFrameTimecode(double currentFrame) {
+
+		if (isDropFrame())
+		{			
+			int step = (FFPROBE.currentFPS == 29.97) ? 2 : 4;			
+			int framesToAdd = 0;
+			if (currentFrame >= 3600) {
+				double extraSteps = ((double) currentFrame - 3604) / 3600;
+			    framesToAdd = step + ((int) extraSteps * step);
+			}
+			
+			currentFrame -= framesToAdd;
+			
+			if (currentFrame >= 36000)
+			{
+				currentFrame += Math.floor(currentFrame / 36000) * step;
+			}
+		}
+		
+		return (double) currentFrame;		
 	}
 	
 }

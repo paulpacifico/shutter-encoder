@@ -62,7 +62,7 @@ import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LTCDUMP;
 import shutterencoder.library.MEDIAINFO;
-import shutterencoder.library.PDF;
+import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.WHISPER;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
@@ -73,7 +73,9 @@ import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesEmbed;
 import shutterencoder.ui.subtitling.SubtitlesTimeline;
 import shutterencoder.ui.others.FileOverwriteWindow;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 import shutterencoder.utils.Utils;
 
 public class FunctionUtils extends Shutter {
@@ -122,12 +124,19 @@ public class FunctionUtils extends Shutter {
 		}	 
 		else if (extension.toLowerCase().equals(".pdf"))
 		{
-			 PDF.info(file.toString());	
-			 do
-			 {
+			 XPDFREADER.getPagesCount(file.toString());	
+			 do {
 				 Thread.sleep(100);						 
-			 } while (PDF.isRunning);
-			 			 
+			 } while (XPDFREADER.isRunning);
+			 
+			 if (analyzeError(file.toString()))
+				 return false;
+			 
+			 XPDFREADER.toFFPROBE(file.toString());	
+			 do {
+				 Thread.sleep(100);						 
+			 } while (XPDFREADER.isRunning);
+			 
 			 if (analyzeError(file.toString()))
 				 return false;
 		}
@@ -144,9 +153,7 @@ public class FunctionUtils extends Shutter {
 			if (analyzeError(file.toString()))
 				return false;
 			
-			/* Check GPU
-			 * Run it in parallel when using Video Player for a faster startup
-			 */
+			// Check GPU - Run it in parallel when using Video Player for a faster startup
 			if (isVideoPlayer)
 			{
 				Thread gpu = new Thread(() -> FFMPEG.checkGPUCapabilities(file.toString()));
@@ -521,7 +528,7 @@ public class FunctionUtils extends Shutter {
 		
 		File concatFile = new File(output.replace("\\", "/") + "/" + file.getName().replace(extension, ".txt")); 
 		
-		if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+		if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 		{									
 			try {								
 				PrintWriter writer = new PrintWriter(concatFile.toString(), "UTF-8");
@@ -529,18 +536,18 @@ public class FunctionUtils extends Shutter {
 				NumberFormat formatter = new DecimalFormat("00");
 				NumberFormat formatFrame = new DecimalFormat("000");
 				
-				int h = Integer.parseInt(VideoPlayer.caseInH.getText());
-				int m = Integer.parseInt(VideoPlayer.caseInM.getText());
-				int s = Integer.parseInt(VideoPlayer.caseInS.getText());
-				int f = (int) Math.floor(Integer.parseInt(VideoPlayer.caseInF.getText()) * (1000 / FFPROBE.accurateFPS));	
+				int h = Integer.parseInt(VideoPlayerUI.caseInH.getText());
+				int m = Integer.parseInt(VideoPlayerUI.caseInM.getText());
+				int s = Integer.parseInt(VideoPlayerUI.caseInS.getText());
+				int f = (int) Math.floor(Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.accurateFPS));	
 				
 				writer.println("file " + "'" + file + "'");							
 				writer.println("outpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
 				
-				h = Integer.parseInt(VideoPlayer.caseOutH.getText());
-				m = Integer.parseInt(VideoPlayer.caseOutM.getText());
-				s = Integer.parseInt(VideoPlayer.caseOutS.getText());
-				f = (int) Math.floor(Integer.parseInt(VideoPlayer.caseOutF.getText()) * (1000 / FFPROBE.accurateFPS));	
+				h = Integer.parseInt(VideoPlayerUI.caseOutH.getText());
+				m = Integer.parseInt(VideoPlayerUI.caseOutM.getText());
+				s = Integer.parseInt(VideoPlayerUI.caseOutS.getText());
+				f = (int) Math.floor(Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.accurateFPS));	
 				
 				writer.println("file " + "'" + file + "'");	
 				writer.println("inpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
@@ -630,7 +637,7 @@ public class FunctionUtils extends Shutter {
 			progressBar.setMaximum((int) (mergeDuration / 1000));
 			
 			FFPROBE.totalLength = mergeDuration;
-			VideoPlayer.fileDuration = FunctionUtils.mergeDuration;			
+			VideoPlayerUI.fileDuration = FunctionUtils.mergeDuration;			
 			FFMPEG.fileLength = progressBar.getMaximum();
 						
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
@@ -903,11 +910,11 @@ public class FunctionUtils extends Shutter {
 						
 			if (text.contains("{duration}"))
 			{				
-				text = text.replace("{duration}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
+				text = text.replace("{duration}", Shutter.formatter.format(VideoPlayerUI.durationH) + "." + Shutter.formatter.format(VideoPlayerUI.durationM) + "."  + Shutter.formatter.format(VideoPlayerUI.durationS) + "."  + Shutter.formatter.format(VideoPlayerUI.durationF));
 			}	
 			else if (text.contains("{time}"))
 			{				
-				text = text.replace("{time}", Shutter.formatter.format(VideoPlayer.durationH) + "." + Shutter.formatter.format(VideoPlayer.durationM) + "."  + Shutter.formatter.format(VideoPlayer.durationS) + "."  + Shutter.formatter.format(VideoPlayer.durationF));
+				text = text.replace("{time}", Shutter.formatter.format(VideoPlayerUI.durationH) + "." + Shutter.formatter.format(VideoPlayerUI.durationM) + "."  + Shutter.formatter.format(VideoPlayerUI.durationS) + "."  + Shutter.formatter.format(VideoPlayerUI.durationF));
 			}
 			
 			if (text.contains("{framerate}"))
@@ -1595,7 +1602,7 @@ public class FunctionUtils extends Shutter {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void addSubtitles(boolean add) {
 		
-		if (VideoPlayer.videoPath != null && add)
+		if (VideoPlayerCore.videoPath != null && add)
 		{
 			deleteSRT = false;
 			
@@ -1618,23 +1625,23 @@ public class FunctionUtils extends Shutter {
 				{
 					Shutter.comboFonctions.setModel(new DefaultComboBoxModel(Shutter.functionsList.toArray(new String[0])));
 					Shutter.comboFonctions.setSelectedItem("H.264");
-					VideoPlayer.setMedia();
+					VideoPlayerCore.setMedia();
 
 					caseAddSubtitles.setSelected(true);
 
 					Shutter.subtitlesBurn = true;
 					subtitlesFilePath = SubtitlesTimeline.srt;
-					VideoPlayer.writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);
+					VideoPlayerOverlay.writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);
 
 					subsCanvas.setSize(
 							(int) ((float) Integer.parseInt(textSubsWidth.getText())
-									/ ((float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
-							(int) (VideoPlayer.player.getHeight()
+									/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+							(int) (VideoPlayerUI.player.getHeight()
 									+ (float) Integer.parseInt(textSubtitlesPosition.getText())
-											/ ((float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())));
+											/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
 
-					subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
-					VideoPlayer.player.add(subsCanvas);
+					subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
+					VideoPlayerUI.player.add(subsCanvas);
 
 					grpSubtitles.setSize(grpSubtitles.getWidth(), 131);
 					grpWatermark.setLocation(grpSubtitles.getLocation().x,
@@ -1666,8 +1673,8 @@ public class FunctionUtils extends Shutter {
 
 								UIController.disableAll();
 
-								File fileIn = new File(VideoPlayer.videoPath);
-								String extension = VideoPlayer.videoPath.toString()
+								File fileIn = new File(VideoPlayerCore.videoPath);
+								String extension = VideoPlayerCore.videoPath.toString()
 										.substring(fileIn.toString().lastIndexOf("."));
 								File fileOut = new File(
 										fileIn.toString().replace(extension, "_subs" + extension));
@@ -1754,7 +1761,7 @@ public class FunctionUtils extends Shutter {
 					} else if (new File(video.toString().replace(ext, ".scc")).exists()) {
 						fc.setSelectedFile(new File(video.toString().replace(ext, ".scc")));
 					} else {
-						fc.setCurrentDirectory(new File(VideoPlayer.videoPath).getParentFile());
+						fc.setCurrentDirectory(new File(VideoPlayerCore.videoPath).getParentFile());
 						fc.addChoosableFileFilter(new SystemFileChooser.FileNameExtensionFilter("Subtitles", "srt", "vtt", "ass", "ssa", "scc"));
 						fc.showOpenDialog(frame);
 					}							
@@ -1857,17 +1864,17 @@ public class FunctionUtils extends Shutter {
 								} else
 									subtitlesFilePath = new File(fc.getSelectedFile().toString());
 
-								VideoPlayer.writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);
+								VideoPlayerOverlay.writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);
 
 								subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText())
-										/ ((float) FFPROBE.imageHeight / VideoPlayer.player.getHeight())),
-										(int) (VideoPlayer.player.getHeight()
+										/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+										(int) (VideoPlayerUI.player.getHeight()
 												+ (float) Integer.parseInt(textSubtitlesPosition.getText())
 														/ ((float) FFPROBE.imageHeight
-																/ VideoPlayer.player.getHeight())));
+																/ VideoPlayerUI.player.getHeight())));
 
-								subsCanvas.setLocation((VideoPlayer.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
-								VideoPlayer.player.add(subsCanvas);
+								subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
+								VideoPlayerUI.player.add(subsCanvas);
 
 								for (Component c : grpSubtitles.getComponents()) {
 									c.setEnabled(true);
@@ -1908,11 +1915,11 @@ public class FunctionUtils extends Shutter {
 							}
 
 							// Important
-							VideoPlayer.sliderSpeed.setEnabled(false);
-							VideoPlayer.sliderSpeed.setValue(2);
-							VideoPlayer.lblSpeed.setText("x1");
-							VideoPlayer.lblSpeed.setBounds(
-							VideoPlayer.sliderSpeed.getX() - VideoPlayer.lblSpeed.getPreferredSize().width - 2, VideoPlayer.sliderSpeed.getY() + 2, VideoPlayer.lblSpeed.getPreferredSize().width, 16);
+							VideoPlayerUI.sliderSpeed.setEnabled(false);
+							VideoPlayerUI.sliderSpeed.setValue(2);
+							VideoPlayerUI.lblSpeed.setText("x1");
+							VideoPlayerUI.lblSpeed.setBounds(
+							VideoPlayerUI.sliderSpeed.getX() - VideoPlayerUI.lblSpeed.getPreferredSize().width - 2, VideoPlayerUI.sliderSpeed.getY() + 2, VideoPlayerUI.lblSpeed.getPreferredSize().width, 16);
 						}
 						else // SSA or ASS or SCC
 						{
@@ -1982,14 +1989,14 @@ public class FunctionUtils extends Shutter {
 						}
 
 						// Important
-						VideoPlayer.sliderSpeed.setEnabled(false);
-						VideoPlayer.sliderSpeed.setValue(2);
-						VideoPlayer.lblSpeed.setText("x1");
-						VideoPlayer.lblSpeed.setBounds(
-								VideoPlayer.sliderSpeed.getX() - VideoPlayer.lblSpeed.getPreferredSize().width
+						VideoPlayerUI.sliderSpeed.setEnabled(false);
+						VideoPlayerUI.sliderSpeed.setValue(2);
+						VideoPlayerUI.lblSpeed.setText("x1");
+						VideoPlayerUI.lblSpeed.setBounds(
+								VideoPlayerUI.sliderSpeed.getX() - VideoPlayerUI.lblSpeed.getPreferredSize().width
 										- 2,
-								VideoPlayer.sliderSpeed.getY() + 2,
-								VideoPlayer.lblSpeed.getPreferredSize().width, 16);
+								VideoPlayerUI.sliderSpeed.getY() + 2,
+								VideoPlayerUI.lblSpeed.getPreferredSize().width, 16);
 					} else {
 						JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("invalidSubtitles"),
 								Shutter.language.getProperty("subtitlesFileError"), JOptionPane.PLAIN_MESSAGE);
@@ -2017,11 +2024,11 @@ public class FunctionUtils extends Shutter {
 			Shutter.subtitlesBurn = true;
 			UIController.changeSections(false);
 			
-			VideoPlayer.player.remove(subsCanvas);
-			VideoPlayer.player.repaint();
+			VideoPlayerUI.player.remove(subsCanvas);
+			VideoPlayerUI.player.repaint();
 
 			if (autoBurn == false && autoEmbed == false) {
-				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and
+				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and
 																			// reload the frame
 			}
 
@@ -2033,7 +2040,7 @@ public class FunctionUtils extends Shutter {
 			if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) == false)
 				comboSubsSource.setEnabled(true);
 
-			VideoPlayer.sliderSpeed.setEnabled(true);
+			VideoPlayerUI.sliderSpeed.setEnabled(true);
 		}
 		
 	}
@@ -2246,7 +2253,7 @@ public class FunctionUtils extends Shutter {
 		}
 		
 		//Concat mode or Image sequence
-		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 		{
 			File concatList = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 			
 					
@@ -2278,8 +2285,8 @@ public class FunctionUtils extends Shutter {
 			int timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
 			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
-			if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
-				millisecondsToTc = timecodeToMs + VideoPlayer.durationH * 3600000 + VideoPlayer.durationM * 60000 + VideoPlayer.durationS * 1000 + VideoPlayer.durationF * (int) (1000 / FFPROBE.currentFPS);
+			if (VideoPlayerUI.playerInMark > 0 || VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
+				millisecondsToTc = timecodeToMs + VideoPlayerUI.durationH * 3600000 + VideoPlayerUI.durationM * 60000 + VideoPlayerUI.durationS * 1000 + VideoPlayerUI.durationF * (int) (1000 / FFPROBE.currentFPS);
 			
 			if (caseEnableSequence.isSelected())
 				millisecondsToTc = Shutter.list.getSize() * (int) (1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString()));

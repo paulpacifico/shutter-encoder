@@ -35,7 +35,8 @@ import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 /*
@@ -103,16 +104,16 @@ public class AudioEncoders extends Shutter {
 							continue;	
 						
 						//Write the in and out values before getInputAndOutput()
-						if (VideoPlayer.caseApplyCutToAll.isSelected())
+						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
-							VideoPlayer.videoPath = file.toString();							
-							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
-							VideoPlayer.setFileList();	
+							VideoPlayerCore.videoPath = file.toString();							
+							VideoPlayerUI.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerUI.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerCore.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -255,7 +256,7 @@ public class AudioEncoders extends Shutter {
 						}
 						
 						//Split video
-						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 						{
 							container = "_%03d" + container;
 						}
@@ -282,7 +283,7 @@ public class AudioEncoders extends Shutter {
 						
 						//Concat mode
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
-						if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						if (Settings.btnSetBab.isSelected() || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 																						
 						//Audio
@@ -351,7 +352,7 @@ public class AudioEncoders extends Shutter {
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
-						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						|| FFMPEG.saveCode == false && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -365,13 +366,13 @@ public class AudioEncoders extends Shutter {
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
+					VideoPlayerCore.videoPath = null;
+					VideoPlayerCore.setMedia();
 					do {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.loadMedia.isAlive());
+					} while (VideoPlayerCore.loadMedia.isAlive());
 					RenderQueue.frame.toFront();					
 				}
 				else
@@ -507,14 +508,14 @@ public class AudioEncoders extends Shutter {
 			}
 			else
 			{
-				if (FFPROBE.audioOnly == false && VideoPlayer.comboAudioTrack.isVisible())
+				if (FFPROBE.audioOnly == false && VideoPlayerUI.comboAudioTrack.isVisible())
 				{
-					if (VideoPlayer.comboAudioTrack.getSelectedItem().equals("Mix"))
+					if (VideoPlayerUI.comboAudioTrack.getSelectedItem().equals("Mix"))
 					{
 						return "-filter_complex amerge=inputs=" + FFPROBE.channels + audioFiltering + " -ac 2 ";
 					}
 					else
-						map = " -map a:" + VideoPlayer.comboAudioTrack.getSelectedIndex() + "? ";
+						map = " -map a:" + VideoPlayerUI.comboAudioTrack.getSelectedIndex() + "? ";
 				}
 			}
 			
@@ -531,14 +532,14 @@ public class AudioEncoders extends Shutter {
 				String map = " -map a? ";
 				if (stereoOutput)
 				{
-					if (FFPROBE.audioOnly == false && VideoPlayer.comboAudioTrack.isVisible())
+					if (FFPROBE.audioOnly == false && VideoPlayerUI.comboAudioTrack.isVisible())
 					{
-						if (VideoPlayer.comboAudioTrack.getSelectedItem().equals("Mix"))
+						if (VideoPlayerUI.comboAudioTrack.getSelectedItem().equals("Mix"))
 						{
 							return "-filter_complex amerge=inputs=" + FFPROBE.channels + audioFiltering + " -ac 2 ";
 						}
 						else
-							map = " -map a:" + VideoPlayer.comboAudioTrack.getSelectedIndex() + "? ";
+							map = " -map a:" + VideoPlayerUI.comboAudioTrack.getSelectedIndex() + "? ";
 					}
 				}
 				
@@ -608,12 +609,12 @@ public class AudioEncoders extends Shutter {
 			{								
 				String cmd = " -filter_complex " + '"' + audioFiltering + "channelsplit=channel_layout=5.1[FL][FR][FC][LFE][BL][BR]" + '"' + timecode + " -y ";
 				FFMPEG.run(InputAndOutput.inPoint + DRC + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd
-				+ " -map " + '"' + "[FL]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FL" + container) + '"'
-				+ " -map " + '"' + "[FR]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FR" + container) + '"'
-				+ " -map " + '"' + "[FC]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_FC" + container) + '"'
+				+ " -map " + '"' + "[FL]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_L" + container) + '"'
+				+ " -map " + '"' + "[FR]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_R" + container) + '"'
+				+ " -map " + '"' + "[FC]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_C" + container) + '"'
 				+ " -map " + '"' + "[LFE]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_LFE" + container) + '"'
-				+ " -map " + '"' + "[BL]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_BL" + container) + '"'
-				+ " -map " + '"' + "[BR]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_BR" + container) + '"');
+				+ " -map " + '"' + "[BL]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_Ls" + container) + '"'
+				+ " -map " + '"' + "[BR]" + '"' + " -c:a " + codec + sampleRate + " " + '"'  + fileOut.replace(container, "_Rs" + container) + '"');
 			}
 			else if (lblSplit.getText().equals(language.getProperty("stereo")))
 			{		

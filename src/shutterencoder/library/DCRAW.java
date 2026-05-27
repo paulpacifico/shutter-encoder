@@ -26,7 +26,8 @@ import java.io.InputStream;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class DCRAW extends Shutter {
 	
@@ -107,20 +108,20 @@ public static Process process;
 							InputStream is = process.getInputStream();				
 							BufferedInputStream inputStream = new BufferedInputStream(is);
 							
-							VideoPlayer.readFrame(inputStream, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), true, false);
-							VideoPlayer.preview = VideoPlayer.cloneBufferedImage(VideoPlayer.frameVideo);
+							VideoPlayerCore.readFrame(inputStream, VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight(), true, false);
+							VideoPlayerCore.preview = VideoPlayerCore.cloneBufferedImage(VideoPlayerCore.frameVideo);
 							
 							inputStream.close();
 
-							if (VideoPlayer.frameVideo != null)
+							if (VideoPlayerCore.frameVideo != null)
 							{
-								VideoPlayer.player.repaint();
+								VideoPlayerUI.player.repaint();
 							}
 						}						
 						process.waitFor();
 						
-						VideoPlayer.setInfo();
-						VideoPlayer.resizeAll();
+						VideoPlayerUI.setInfo();
+						VideoPlayerUI.resizeAll();
 						
 						Console.consoleDCRAW.append(System.lineSeparator());
 										

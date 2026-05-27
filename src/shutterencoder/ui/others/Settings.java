@@ -96,7 +96,8 @@ import shutterencoder.library.FFMPEG;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class Settings {
@@ -425,9 +426,9 @@ public class Settings {
 					{
 						UIController.changeFunction(true);
 						
-						if (VideoPlayer.setTime != null && VideoPlayer.setTime.isAlive())
+						if (VideoPlayerCore.setTime != null && VideoPlayerCore.setTime.isAlive())
 						{
-							while (VideoPlayer.setTime.isAlive())
+							while (VideoPlayerCore.setTime.isAlive())
 							{
 								try {
 									Thread.sleep(1);
@@ -435,7 +436,7 @@ public class Settings {
 							}
 						}
 						
-						VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
+						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
 					}
 				}
 			}
@@ -521,9 +522,9 @@ public class Settings {
 					}
 				}	
 				
-				if (VideoPlayer.videoPath != null)
+				if (VideoPlayerCore.videoPath != null)
 				{
-					VideoPlayer.btnStop.doClick();					
+					VideoPlayerUI.btnStop.doClick();					
 				}
 			}
 		});
@@ -579,9 +580,9 @@ public class Settings {
 						}
 					}	
 					
-					if (VideoPlayer.videoPath != null)
+					if (VideoPlayerCore.videoPath != null)
 					{
-						VideoPlayer.btnStop.doClick();					
+						VideoPlayerUI.btnStop.doClick();					
 					}
 				}
 				
@@ -602,8 +603,8 @@ public class Settings {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
-				VideoPlayer.resizeAll();				
+				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+				VideoPlayerUI.resizeAll();				
 			}
 			
 		});
@@ -1678,31 +1679,31 @@ public class Settings {
 						//Volume video player
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("sliderVolume"))
 						{
-							VideoPlayer.sliderVolume.setValue(Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+							VideoPlayerUI.sliderVolume.setValue(Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 						}
 						
 						//casePlaySound video player
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("casePlaySound"))
 						{
-							VideoPlayer.casePlaySound.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+							VideoPlayerUI.casePlaySound.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 						}
 						
 						//caseVuMeter video player
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseVuMeter"))
 						{
-							VideoPlayer.caseVuMeter.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+							VideoPlayerUI.caseVuMeter.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 						}	
 						
 						//caseShowWaveform video player
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseShowWaveform"))
 						{
-							VideoPlayer.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+							VideoPlayerUI.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 						}	
 						
 						//comboPlayerQuality video player
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboPlayerQuality"))
 						{
-							VideoPlayer.comboPlayerQuality.setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							VideoPlayerUI.comboPlayerQuality.setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 						}	
 											
 						//FTP
@@ -2294,7 +2295,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.sliderVolume.getValue())));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayerUI.sliderVolume.getValue())));
 			component.appendChild(cValue);	
 			
 			root.appendChild(component);
@@ -2315,7 +2316,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.casePlaySound.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayerUI.casePlaySound.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2336,7 +2337,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseVuMeter.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayerUI.caseVuMeter.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2357,7 +2358,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayer.caseShowWaveform.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayerUI.caseShowWaveform.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2378,12 +2379,12 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");						
-			cValue.appendChild(document.createTextNode(VideoPlayer.comboPlayerQuality.getSelectedItem().toString()));						
+			cValue.appendChild(document.createTextNode(VideoPlayerUI.comboPlayerQuality.getSelectedItem().toString()));						
 			component.appendChild(cValue);
 			
 			//Visible
 			Element cVisible = document.createElement("Visible");
-			cVisible.appendChild(document.createTextNode(String.valueOf(VideoPlayer.comboPlayerQuality.isVisible())));
+			cVisible.appendChild(document.createTextNode(String.valueOf(VideoPlayerUI.comboPlayerQuality.isVisible())));
 			component.appendChild(cVisible);
 			
 			root.appendChild(component);

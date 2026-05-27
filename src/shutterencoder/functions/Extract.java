@@ -28,7 +28,8 @@ import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class Extract extends Shutter {
@@ -215,7 +216,7 @@ public class Extract extends Shutter {
 						while(FFMPEG.runProcess.isAlive());
 																		
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
-						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						|| FFMPEG.saveCode && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -271,13 +272,13 @@ public class Extract extends Shutter {
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
+					VideoPlayerCore.videoPath = null;
+					VideoPlayerCore.setMedia();
 					do {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.loadMedia.isAlive());
+					} while (VideoPlayerCore.loadMedia.isAlive());
 					RenderQueue.frame.toFront();
 				}
 				else

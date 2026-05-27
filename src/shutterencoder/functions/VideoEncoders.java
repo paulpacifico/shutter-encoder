@@ -60,7 +60,8 @@ import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 /*
  * AV1
@@ -172,16 +173,16 @@ public class VideoEncoders extends Shutter {
 						}
 							
 						//Write the in and out values before getInputAndOutput()
-						if (VideoPlayer.caseApplyCutToAll.isSelected())
+						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
-							VideoPlayer.videoPath = file.toString();													
-							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
-							VideoPlayer.setFileList();	
+							VideoPlayerCore.videoPath = file.toString();													
+							VideoPlayerUI.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerUI.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
+							VideoPlayerCore.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -267,9 +268,9 @@ public class VideoEncoders extends Shutter {
 						
 						//Split video
 						String forceKeyFrames = "";
-						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 						{
-							forceKeyFrames = " -force_key_frames " + '"' + "expr:gte(t,n_forced*" + VideoPlayer.splitValue.getText() + ")" + '"';
+							forceKeyFrames = " -force_key_frames " + '"' + "expr:gte(t,n_forced*" + VideoPlayerUI.splitValue.getText() + ")" + '"';
 							container = "_%03d" + container;
 						}
 						
@@ -309,7 +310,7 @@ public class VideoEncoders extends Shutter {
 												
 						//Concat mode or Image sequence
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
-						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 						}
@@ -830,12 +831,12 @@ public class VideoEncoders extends Shutter {
 						{
 							output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=flv]" + textStream.getText();
 									
-							if (caseDisplay.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
+							if (caseDisplay.isSelected() && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
 								output += "|[f=matroska]pipe:1" + '"';
 							else
 								output += '"';
 						}
-						else if (caseDisplay.isSelected() && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
+						else if (caseDisplay.isSelected() && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
 						{
 							switch (comboFonctions.getSelectedItem().toString())
 							{
@@ -942,7 +943,7 @@ public class VideoEncoders extends Shutter {
 							if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 							{			
 								Shutter.btnStart.setText(Shutter.language.getProperty("btnPauseFunction"));
-								VideoPlayer.resizeAll();
+								VideoPlayerUI.resizeAll();
 								
 								upscale(new File(list.getElementAt(0)), fileOut);
 							}
@@ -977,8 +978,8 @@ public class VideoEncoders extends Shutter {
 									{
 										current = upscaleFolder.listFiles().length;
 										
-										VideoPlayer.frameVideo = ImageIO.read(new File(fileOut.toString().replace("%06d", String.format("%06d", upscaleFolder.listFiles().length))));
-										VideoPlayer.player.repaint();
+										VideoPlayerCore.frameVideo = ImageIO.read(new File(fileOut.toString().replace("%06d", String.format("%06d", upscaleFolder.listFiles().length))));
+										VideoPlayerUI.player.repaint();
 									}
 									else
 									{
@@ -1199,7 +1200,7 @@ public class VideoEncoders extends Shutter {
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
 						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
-						|| FFMPEG.saveCode == false && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						|| FFMPEG.saveCode == false && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -1215,13 +1216,13 @@ public class VideoEncoders extends Shutter {
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
+					VideoPlayerCore.videoPath = null;
+					VideoPlayerCore.setMedia();
 					do {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.loadMedia.isAlive());
+					} while (VideoPlayerCore.loadMedia.isAlive());
 					RenderQueue.frame.toFront();
 				}
 				else
@@ -1626,7 +1627,7 @@ public class VideoEncoders extends Shutter {
 					colorspace = ""; //Managed via filter_complex
 				}
 				
-				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g " + gop + " -keyint_min 0 -x264-params filler" + colorspace + " -x264-params force-cfr -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
+				return " -shortest -c:v libx264 -me_method tesa -subq 9 -partitions all -direct-pred auto -psy 0 -b:v " + comboFilter.getSelectedItem().toString() + "M -bufsize " + comboFilter.getSelectedItem().toString() + "M -level 5.1 -g " + gop + " -keyint_min 0 -x264-params filler" + colorspace + " -x264-params force-cfr=1 -preset superfast -tune fastdecode -pix_fmt yuv422p10le";
 			
 			case "XAVC Long GOP":
 				
@@ -1654,7 +1655,7 @@ public class VideoEncoders extends Shutter {
 					}
 				}
 				
-				return " -shortest -c:v libx264 -preset " + preset + " -profile:v " + profile + " -level 4.2 -b:v " + comboFilter.getSelectedItem().toString() + "M -maxrate " + comboFilter.getSelectedItem().toString() + "M -bufsize " + (float) Integer.parseInt(comboFilter.getSelectedItem().toString()) / 2 + "M -g " + gop + " -bf 2 -x264-params filler" + colorspace + " -x264-params force-cfr -movflags +faststart" + bitDepth;
+				return " -shortest -c:v libx264 -preset " + preset + " -profile:v " + profile + " -level 4.2 -b:v " + comboFilter.getSelectedItem().toString() + "M -maxrate " + comboFilter.getSelectedItem().toString() + "M -bufsize " + (float) Integer.parseInt(comboFilter.getSelectedItem().toString()) / 2 + "M -g " + gop + " -bf 2 -x264-params filler" + colorspace + " -x264-params force-cfr=1 -movflags +faststart" + bitDepth;
 		}
 		
 		return "";		
@@ -1828,10 +1829,10 @@ public class VideoEncoders extends Shutter {
 			case "DVD":
 				
 				float bitrate = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
-				if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+				if (VideoPlayerUI.playerInMark > 0 || VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
 				{
-					double totalIn =  Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseInF.getText()) * VideoPlayer.inputFramerateMS;
-					double totalOut = Integer.parseInt(VideoPlayer.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayer.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayer.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayer.caseOutF.getText()) * VideoPlayer.inputFramerateMS;
+					double totalIn =  Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * VideoPlayerUI.inputFramerateMS;
+					double totalOut = Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * VideoPlayerUI.inputFramerateMS;
 					
 					double sommeTotal = totalOut - totalIn;
 					

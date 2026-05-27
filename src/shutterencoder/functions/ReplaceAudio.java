@@ -30,7 +30,8 @@ import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class ReplaceAudio extends Shutter {
@@ -114,13 +115,13 @@ public class ReplaceAudio extends Shutter {
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 		{
 			//Reset data for the current selected file
-			VideoPlayer.videoPath = null;
-			VideoPlayer.setMedia();
+			VideoPlayerCore.videoPath = null;
+			VideoPlayerCore.setMedia();
 			do {
 				try {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {}
-			} while (VideoPlayer.loadMedia.isAlive());
+			} while (VideoPlayerCore.loadMedia.isAlive());
 			RenderQueue.frame.toFront();
 		}
 		else
@@ -273,7 +274,7 @@ public class ReplaceAudio extends Shutter {
 									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
 								}
 								else
-									offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+									offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 								
 								audioFiles = " -itsoffset " + offset + " -i " + '"' + list.getElementAt(0)  + '"' + " -map 0:v -map 1:a";
 							}
@@ -310,7 +311,7 @@ public class ReplaceAudio extends Shutter {
 									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
 								}
 								else
-									offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+									offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 								
 								audioFiles = " -itsoffset " + offset + audioFiles;
 							}
@@ -354,9 +355,9 @@ public class ReplaceAudio extends Shutter {
 				{
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';
 				}
-				else if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+				else if (VideoPlayerUI.playerInMark > 0 || VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
 				{
-					offset = (float) (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayer.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+					offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';
 				}
 				else

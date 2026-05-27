@@ -59,18 +59,19 @@ public class Console extends JFrame {
 
 	public static JFrame frmConsole;
 	public static Rectangle savedBounds;
-	public static JTextArea consoleFFMPEG =  new JTextArea();
-	public static JTextArea consoleFFPLAY =  new JTextArea();
-	public static JTextArea consoleFFPROBE =  new JTextArea();
-	public static JTextArea consoleBMXTRANSWRAP =  new JTextArea();	
-	public static JTextArea consoleDVDAUTHOR =  new JTextArea();
+	public static JTextArea consoleFFMPEG = new JTextArea();
+	public static JTextArea consoleFFPLAY = new JTextArea();
+	public static JTextArea consoleFFPROBE = new JTextArea();
+	public static JTextArea consoleBMXTRANSWRAP = new JTextArea();	
+	public static JTextArea consoleDVDAUTHOR = new JTextArea();
 	public static JTextArea consoleTSMUXER =  new JTextArea();
-	public static JTextArea consoleMEDIAINFO =  new JTextArea();
-	public static JTextArea consoleYOUTUBEDL =  new JTextArea();
-	public static JTextArea consoleDCRAW =  new JTextArea();
-	public static JTextArea consoleEXIFTOOL =  new JTextArea();	
-	public static JTextArea consoleNCNN =  new JTextArea();
-	public static JTextArea consolePYTHON =  new JTextArea();
+	public static JTextArea consoleMEDIAINFO = new JTextArea();
+	public static JTextArea consoleYOUTUBEDL = new JTextArea();
+	public static JTextArea consoleDCRAW = new JTextArea();
+	public static JTextArea consoleEXIFTOOL = new JTextArea();	
+	public static JTextArea consoleXPDFREADER = new JTextArea();
+	public static JTextArea consoleNCNN = new JTextArea();
+	public static JTextArea consolePYTHON = new JTextArea();
 	public static JTabbedPane tabbedPane;
 	private JScrollPane scrollFFMPEG;
 	private JScrollPane scrollFFPLAY;
@@ -82,6 +83,7 @@ public class Console extends JFrame {
 	private JScrollPane scrollYOUTUBEDL;
 	private JScrollPane scrollDCRAW;
 	private JScrollPane scrollEXIFTOOL;
+	private JScrollPane scrollXPDFREADER;
 	private JScrollPane scrollNCNN;
 	private JScrollPane scrollPYTHON;
 	
@@ -107,7 +109,7 @@ public class Console extends JFrame {
 		}
 		else
 		{
-			frmConsole.setSize(900, 800);
+			frmConsole.setSize(1200, 800);
 			frmConsole.getContentPane().setLayout(null);
 			frmConsole.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frmConsole.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frmConsole.getHeight()) / 2);
 		}
@@ -161,9 +163,12 @@ public class Console extends JFrame {
 						consoleEXIFTOOL.setText("");
 						break;
 					case 10:
-						consoleNCNN.setText("");
+						consoleXPDFREADER.setText("");
 						break;
 					case 11:
+						consoleNCNN.setText("");
+						break;
+					case 12:
 						consolePYTHON.setText("");
 						break;						
 				}
@@ -218,9 +223,12 @@ public class Console extends JFrame {
 									writer.write(consoleEXIFTOOL.getText());
 									break;
 								case 10:
-									writer.write(consoleNCNN.getText());
+									writer.write(consoleXPDFREADER.getText());
 									break;
 								case 11:
+									writer.write(consoleNCNN.getText());
+									break;
+								case 12:
 									writer.write(consolePYTHON.getText());
 									break;
 							}
@@ -295,6 +303,7 @@ public class Console extends JFrame {
 				consoleYOUTUBEDL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleDCRAW.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleXPDFREADER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consolePYTHON.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 			}
@@ -351,6 +360,11 @@ public class Console extends JFrame {
 		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleEXIFTOOL.setWrapStyleWord(true);
 		consoleEXIFTOOL.addKeyListener(kl);
+		consoleXPDFREADER.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleXPDFREADER.setBackground(Utils.c30);
+		consoleXPDFREADER.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
+		consoleXPDFREADER.setWrapStyleWord(true);
+		consoleXPDFREADER.addKeyListener(kl);
 		consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
 		consoleNCNN.setBackground(Utils.c30);
 		consoleNCNN.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
@@ -391,6 +405,9 @@ public class Console extends JFrame {
 		
 		scrollEXIFTOOL = new JScrollPane();	
 		scrollEXIFTOOL.getViewport().add(consoleEXIFTOOL); 
+
+		scrollXPDFREADER = new JScrollPane();	
+		scrollXPDFREADER.getViewport().add(consoleXPDFREADER); 
 		
 		scrollNCNN = new JScrollPane();	
 		scrollNCNN.getViewport().add(consoleNCNN); 
@@ -468,6 +485,13 @@ public class Console extends JFrame {
 	        }
 	    });
 		
+		scrollXPDFREADER.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
+	        public void adjustmentValueChanged(AdjustmentEvent e) {  
+	        	if (followLine.isSelected())
+	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
+	        }
+	    });
+		
 		scrollNCNN.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
 	        public void adjustmentValueChanged(AdjustmentEvent e) {  
 	        	if (followLine.isSelected())
@@ -494,6 +518,7 @@ public class Console extends JFrame {
 		tabbedPane.add("YT-DLP", scrollYOUTUBEDL);
 		tabbedPane.add("DCRAW", scrollDCRAW);
 		tabbedPane.add("EXIFTOOL", scrollEXIFTOOL);
+		tabbedPane.add("XPDFREADER", scrollXPDFREADER);
 		tabbedPane.add("NCNN", scrollNCNN);
 		tabbedPane.add("PYTHON", scrollPYTHON);
 		frmConsole.getContentPane().add(tabbedPane);		

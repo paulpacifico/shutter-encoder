@@ -95,7 +95,8 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class SubtitlesTimeline {
@@ -197,8 +198,8 @@ public class SubtitlesTimeline {
 			@Override
 			public void windowClosed(WindowEvent arg0) {				
 
-				if (VideoPlayer.playerVideo != null)
-					VideoPlayer.playerStop();
+				if (VideoPlayerCore.playerVideo != null)
+					VideoPlayerCore.playerStop();
 				
 				Utils.changeFrameVisibility(Shutter.frame, false);						
 				Utils.changeFrameVisibility(frame, true);
@@ -271,8 +272,8 @@ public class SubtitlesTimeline {
 					} catch (IOException e) {}
 				}
 				
-				if (VideoPlayer.waveform != null)
-					VideoPlayer.waveform = null;
+				if (VideoPlayerCore.waveform != null)
+					VideoPlayerCore.waveform = null;
 				
 				timeline.removeAll();
 			}
@@ -320,7 +321,7 @@ public class SubtitlesTimeline {
 				frame.setBounds(0, GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height - frame.getHeight(),Toolkit.getDefaultToolkit().getScreenSize().width, 270);		
 
 				//Waveform
-				VideoPlayer.addWaveform(true);
+				VideoPlayerCore.addWaveform(true);
 			}    		
     	});
     	    	
@@ -332,7 +333,7 @@ public class SubtitlesTimeline {
             	frame.setSize(Math.round(frame.getWidth() / 100) * 100, frame.getHeight());
             	
             	//Waveform
-        		VideoPlayer.addWaveform(true);
+        		VideoPlayerCore.addWaveform(true);
             }
         });
     	
@@ -1084,11 +1085,11 @@ public class SubtitlesTimeline {
 					
 					//Volume up
 					if (e.getKeyCode() == 107)
-						VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() + 2);
+						VideoPlayerUI.sliderVolume.setValue(VideoPlayerUI.sliderVolume.getValue() + 2);
 						
 					//Volume down
 					if (e.getKeyCode() == 109)
-						VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() - 2);
+						VideoPlayerUI.sliderVolume.setValue(VideoPlayerUI.sliderVolume.getValue() - 2);
 				}				
 								
 				if (frame.hasFocus())
@@ -1126,16 +1127,16 @@ public class SubtitlesTimeline {
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_K)
-						VideoPlayer.btnPlay.doClick();
+						VideoPlayerUI.btnPlay.doClick();
 	
 					if (e.getKeyCode() == KeyEvent.VK_J)
 					{
-						setVideoPosition((int) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS - ((1000 /FFPROBE.currentFPS) * 11)));
+						setVideoPosition((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS - ((1000 /FFPROBE.currentFPS) * 11)));
 	  				}
 						
 					if (e.getKeyCode() == KeyEvent.VK_L)
 					{
-						setVideoPosition((int) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS + ((1000 /FFPROBE.currentFPS) * 9)));
+						setVideoPosition((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS + ((1000 /FFPROBE.currentFPS) * 9)));
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -1156,10 +1157,10 @@ public class SubtitlesTimeline {
 					
 					if (e.getKeyCode() == KeyEvent.VK_LEFT)
 					{
-						VideoPlayer.btnPrevious.doClick();			
+						VideoPlayerUI.btnPrevious.doClick();			
 					}
 					else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-						VideoPlayer.btnNext.doClick();					
+						VideoPlayerUI.btnNext.doClick();					
 					}
 				}
 
@@ -1178,7 +1179,7 @@ public class SubtitlesTimeline {
 				if (e.getKeyCode() == KeyEvent.VK_ALT)
 					controlRight = false;		
 				
-				VideoPlayer.player.repaint();
+				VideoPlayerUI.player.repaint();
 			}
 
 			@Override
@@ -1206,7 +1207,7 @@ public class SubtitlesTimeline {
 						
 						if (caseShowWaveform.isEnabled() && caseShowWaveform.isSelected())
 						{
-							VideoPlayer.addWaveform(true);
+							VideoPlayerCore.addWaveform(true);
 							waveform.setVisible(true);
 						}
 					}
@@ -1225,15 +1226,15 @@ public class SubtitlesTimeline {
 					if (zoom < 0.1)
 						numberFormat = new DecimalFormat("0.00");
 					
-					if ((int) (VideoPlayer.slider.getMaximum() * VideoPlayer.inputFramerateMS - (float)frame.getWidth()/zoom) > 0)
+					if ((int) (VideoPlayerUI.slider.getMaximum() * VideoPlayerUI.inputFramerateMS - (float)frame.getWidth()/zoom) > 0)
 						zoom = Double.parseDouble(numberFormat.format(zoom).replace(",", "."));		
 					else
 						zoom = actualZoom;												
 
-					timeline.setSize((int) (((VideoPlayer.slider.getMaximum() - 2) * VideoPlayer.inputFramerateMS)*zoom), timeline.getHeight());
+					timeline.setSize((int) (((VideoPlayerUI.slider.getMaximum() - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 										
-					cursor.setLocation((int) (setTime((int) (VideoPlayer.slider.getValue() * VideoPlayer.inputFramerateMS))*zoom), cursor.getY());
+					cursor.setLocation((int) (setTime((int) (VideoPlayerUI.slider.getValue() * VideoPlayerUI.inputFramerateMS))*zoom), cursor.getY());
 					
 					enableAutoScroll = true;
 					
@@ -1244,7 +1245,7 @@ public class SubtitlesTimeline {
 				{					
 					mouseScrollTime = System.currentTimeMillis();
 					
-					if (VideoPlayer.frameVideo != null)
+					if (VideoPlayerCore.frameVideo != null)
 					{	
 						int newValue = timelineScrollBar.getValue() + e.getWheelRotation() * 100;
 						if (zoom < 0.1)
@@ -1268,7 +1269,7 @@ public class SubtitlesTimeline {
 									} while (System.currentTimeMillis() - mouseScrollTime < 300);
 									
 									//Waveform
-									VideoPlayer.addWaveform(true);
+									VideoPlayerCore.addWaveform(true);
 								}							
 								
 							});						
@@ -1320,7 +1321,7 @@ public class SubtitlesTimeline {
 		
 		timeline.setBackground(Utils.c30);
 		timeline.setLayout(null);
-		timeline.setBounds(0, 15, (int) (((VideoPlayer.slider.getMaximum() - 2) * VideoPlayer.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
+		timeline.setBounds(0, 15, (int) (((VideoPlayerUI.slider.getMaximum() - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
 		timelineBackround.add(timeline);
 				
 		timeline.addMouseListener(new MouseListener() {
@@ -1340,15 +1341,15 @@ public class SubtitlesTimeline {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				VideoPlayer.mouseIsPressed = true;
+				VideoPlayerUI.mouseIsPressed = true;
 				
 				frame.requestFocus();
 				
-				VideoPlayer.sliderChange = true;
+				VideoPlayerUI.sliderChange = true;
 				
 				cursor.setLocation(e.getX(), cursor.getLocation().y);
 				
-				VideoPlayer.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayer.inputFramerateMS));	
+				VideoPlayerUI.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayerUI.inputFramerateMS));	
 				
 				if (selectedSubs.size() != 0)
 				{
@@ -1366,28 +1367,28 @@ public class SubtitlesTimeline {
 			@Override
 			public void mouseReleased(MouseEvent e) {	
 				
-				VideoPlayer.mouseIsPressed = false;
+				VideoPlayerUI.mouseIsPressed = false;
 				
-				VideoPlayer.sliderChange = false;	
+				VideoPlayerUI.sliderChange = false;	
 				
 				//Reload the frame to apply bicubic filter					
 				do {					
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e1) {}
-				} while (VideoPlayer.setTime.isAlive());
+				} while (VideoPlayerCore.setTime.isAlive());
 
 				if (Timecode.isNonDropFrame())
 				{
-					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame - 1);		
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame - 1);		
 				}
 				else
-					VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame);		
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
 				
 				timeline.repaint();
 
 				//Then refresh the slider position
-				VideoPlayer.getTimePoint(VideoPlayer.playerCurrentFrame - 1);
+				VideoPlayerUI.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
 			}				
 			
 		});
@@ -1397,27 +1398,27 @@ public class SubtitlesTimeline {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 
-				VideoPlayer.sliderChange = true;	
+				VideoPlayerUI.sliderChange = true;	
 				
 				if (e.getX() >= 0 && e.getX() <= timeline.getWidth() - 12)
 				{				
 					cursor.setLocation(e.getX(), cursor.getLocation().y);		
-					VideoPlayer.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayer.inputFramerateMS));
-					VideoPlayer.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayer.waveformContainer.getSize().width * VideoPlayer.slider.getValue()) / VideoPlayer.slider.getMaximum()), VideoPlayer.cursorWaveform.getLocation().y);		
-					VideoPlayer.cursorHead.setLocation(VideoPlayer.cursorWaveform.getX() - 5, VideoPlayer.cursorWaveform.getY());	
+					VideoPlayerUI.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayerUI.inputFramerateMS));
+					VideoPlayerCore.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayerCore.waveformContainer.getSize().width * VideoPlayerUI.slider.getValue()) / VideoPlayerUI.slider.getMaximum()), VideoPlayerCore.cursorWaveform.getLocation().y);		
+					VideoPlayerUI.cursorHead.setLocation(VideoPlayerCore.cursorWaveform.getX() - 5, VideoPlayerCore.cursorWaveform.getY());	
 				}
 				else if (e.getX() < 0)
 				{				
 					cursor.setLocation(0, cursor.getLocation().y);
-					VideoPlayer.cursorWaveform.setLocation(0, VideoPlayer.cursorWaveform.getLocation().y);		
-					VideoPlayer.cursorHead.setLocation(VideoPlayer.cursorWaveform.getX() - 5, VideoPlayer.cursorWaveform.getY());
-					VideoPlayer.slider.setValue(0);
+					VideoPlayerCore.cursorWaveform.setLocation(0, VideoPlayerCore.cursorWaveform.getLocation().y);		
+					VideoPlayerUI.cursorHead.setLocation(VideoPlayerCore.cursorWaveform.getX() - 5, VideoPlayerCore.cursorWaveform.getY());
+					VideoPlayerUI.slider.setValue(0);
 				}
 				else if (e.getX() > timeline.getWidth() - 12)
 				{				
 					cursor.setLocation(timeline.getWidth() - 12, cursor.getLocation().y);
-					VideoPlayer.cursorWaveform.setLocation(timeline.getWidth() - 2, VideoPlayer.cursorWaveform.getLocation().y);	
-					VideoPlayer.cursorHead.setLocation(VideoPlayer.cursorWaveform.getX() - 5, VideoPlayer.cursorWaveform.getY());
+					VideoPlayerCore.cursorWaveform.setLocation(timeline.getWidth() - 2, VideoPlayerCore.cursorWaveform.getLocation().y);	
+					VideoPlayerUI.cursorHead.setLocation(VideoPlayerCore.cursorWaveform.getX() - 5, VideoPlayerCore.cursorWaveform.getY());
 				}
 
 			}
@@ -1466,7 +1467,7 @@ public class SubtitlesTimeline {
 				enableAutoScroll = true;
 				
 				//Waveform
-				VideoPlayer.addWaveform(true);
+				VideoPlayerCore.addWaveform(true);
 			}
 			
 		});
@@ -1506,7 +1507,7 @@ public class SubtitlesTimeline {
             		txtSubtitles.setBounds(10, 36, frame.getWidth() - 24, 36); 
             	
             	timelineBackround.setBounds(0, 80, frame.getWidth(), frame.getContentPane().getHeight() - 97);
-            	timeline.setBounds(0, 15, (int) (((VideoPlayer.slider.getMaximum()) * VideoPlayer.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
+            	timeline.setBounds(0, 15, (int) (((VideoPlayerUI.slider.getMaximum()) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
             	timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
             	        		            	
             	scrollBarPanel.setBounds(0, frame.getContentPane().getHeight() - 17, frame.getContentPane().getWidth(), 17);
@@ -1577,14 +1578,14 @@ public class SubtitlesTimeline {
 		{	
 			if (enableAutoScroll)
 			{	
-				int posX = (int) (VideoPlayer.slider.getValue() * VideoPlayer.inputFramerateMS);
+				int posX = (int) (VideoPlayerUI.slider.getValue() * VideoPlayerUI.inputFramerateMS);
 				cursor.setLocation((int) (setTime(posX)*zoom), cursor.getY());				
 			}
 			
 			//Permet d'afficher le sub en cours dès que timeIn change
 			if (txtSubtitles.hasFocus() == false)
 			{				
-				timeIn = (long) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS);
+				timeIn = (long) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS);
 				txtSubtitles.setText("");
 				btnDelete.setEnabled(false);
 				btnCut.setEnabled(false);
@@ -1602,7 +1603,7 @@ public class SubtitlesTimeline {
 							btnCut.setEnabled(true);
 							
 							//Updating SubtitleEdit frame	
-							if (VideoPlayer.frameControl == false && (frame.hasFocus() || txtSubtitles.hasFocus()))						
+							if (VideoPlayerUI.frameControl == false && (frame.hasFocus() || txtSubtitles.hasFocus()))						
 							{
 								SubtitlesEdit.refreshSubtitles();	
 							}
@@ -1641,10 +1642,10 @@ public class SubtitlesTimeline {
 									try {
 										Thread.sleep(100);
 									} catch (InterruptedException e) {}
-								} while (VideoPlayer.addWaveformIsRunning);
+								} while (VideoPlayerCore.addWaveformIsRunning);
 								
 								//Waveform
-								VideoPlayer.addWaveform(true);
+								VideoPlayerCore.addWaveform(true);
 							}
 							
 						});
@@ -1781,10 +1782,10 @@ public class SubtitlesTimeline {
 					
 					zoom = (double) 0.1;	
 					
-					timeline.setSize((int) (((VideoPlayer.slider.getMaximum() - 2) * VideoPlayer.inputFramerateMS)*zoom), timeline.getHeight());		
+					timeline.setSize((int) (((VideoPlayerUI.slider.getMaximum() - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());		
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 					
-					cursor.setLocation((int) (setTime(VideoPlayer.slider.getValue())*zoom), cursor.getY());
+					cursor.setLocation((int) (setTime(VideoPlayerUI.slider.getValue())*zoom), cursor.getY());
 					
 					enableAutoScroll = true;
 					
@@ -1793,7 +1794,7 @@ public class SubtitlesTimeline {
 					
 					if (caseShowWaveform.isEnabled() && caseShowWaveform.isSelected())
 					{
-						VideoPlayer.addWaveform(true);
+						VideoPlayerCore.addWaveform(true);
 						waveform.setVisible(true);
 					}
 				}
@@ -2123,9 +2124,9 @@ public class SubtitlesTimeline {
 						Thread addWaveform = new Thread(new Runnable() {
 							public void run() {	
 								
-								if (VideoPlayer.waveform != null == false)
+								if (VideoPlayerCore.waveform != null == false)
 								{
-									while (VideoPlayer.waveform != null == false)
+									while (VideoPlayerCore.waveform != null == false)
 									{										
 										try {
 											Thread.sleep(100);
@@ -2148,7 +2149,7 @@ public class SubtitlesTimeline {
 		}
 		else //Mise à jour du placement des subs
 		{
-			if (VideoPlayer.waveform != null && caseShowWaveform.isSelected() && waveform != null)
+			if (VideoPlayerCore.waveform != null && caseShowWaveform.isSelected() && waveform != null)
 				timeline.remove(waveform);
 						
 			for (int index = number; index > 1 ; index--)
@@ -2177,7 +2178,7 @@ public class SubtitlesTimeline {
 			}
 			
 			//On décale aussi la waveform
-			if (VideoPlayer.waveform != null && caseShowWaveform.isSelected() && waveform != null)
+			if (VideoPlayerCore.waveform != null && caseShowWaveform.isSelected() && waveform != null)
 			{
 				timeline.add(waveform);
 			}
@@ -2522,7 +2523,7 @@ public class SubtitlesTimeline {
 					subtitlesNumber();
 					setSubtitles(srt); //Permet de réarranger l'ordre des subs
 					isSaving = false;
-					VideoPlayer.player.repaint();
+					VideoPlayerUI.player.repaint();
 					
 					//Updating SubtitleEdit frame	
 					SubtitlesEdit.refreshSubtitles();	
@@ -2533,7 +2534,7 @@ public class SubtitlesTimeline {
 
 	private static void setVideoPosition(int time) {
 		
-		VideoPlayer.playerSetTime(time/VideoPlayer.inputFramerateMS);						
+		VideoPlayerCore.playerSetTime(time/VideoPlayerUI.inputFramerateMS);						
 	}
 	
 	public static int setTime(int rawTime) {

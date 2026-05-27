@@ -319,7 +319,7 @@ public class ReducedWindow extends JDialog {
 						
 						try {			
 							
-							frame.setOpacity(frame.getOpacity() + 0.01f);
+							frame.setOpacity(frame.getOpacity() + 0.05f);
 							
 							long startTime = System.nanoTime();
 							
@@ -341,7 +341,7 @@ public class ReducedWindow extends JDialog {
 						
 						try {		
 							
-							frame.setOpacity(frame.getOpacity() - 0.01f);
+							frame.setOpacity(frame.getOpacity() - 0.05f);
 							
 							long startTime = System.nanoTime();
 							
@@ -377,7 +377,7 @@ public class ReducedWindow extends JDialog {
 					
 					try {		
 						
-						frame.setOpacity(frame.getOpacity() - 0.01f);
+						frame.setOpacity(frame.getOpacity() - 0.05f);
 						
 						long startTime = System.nanoTime();
 						

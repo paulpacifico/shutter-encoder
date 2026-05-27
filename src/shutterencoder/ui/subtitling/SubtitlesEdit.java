@@ -57,7 +57,8 @@ import javax.swing.SwingConstants;
 import com.formdev.flatlaf.ui.FlatLineBorder;
 
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class SubtitlesEdit {
@@ -382,23 +383,23 @@ public class SubtitlesEdit {
 						if (currentSubtitle == selectedSub)
 						{		
 							SubtitlesTimeline.cursor.setLocation(c.getX(), SubtitlesTimeline.cursor.getY());
-							VideoPlayer.sliderChange = true;	
+							VideoPlayerUI.sliderChange = true;	
 
 							if (c.getX() <= 0)
 							{
 								SubtitlesTimeline.cursor.setLocation(0, SubtitlesTimeline.cursor.getLocation().y);
-								VideoPlayer.slider.setValue(0);	
+								VideoPlayerUI.slider.setValue(0);	
 							}
 							else
 							{
 								SubtitlesTimeline.cursor.setLocation(c.getX(), SubtitlesTimeline.cursor.getLocation().y);
-								VideoPlayer.slider.setValue((int) ((c.getX())/SubtitlesTimeline.zoom/VideoPlayer.inputFramerateMS));	
+								VideoPlayerUI.slider.setValue((int) ((c.getX())/SubtitlesTimeline.zoom/VideoPlayerUI.inputFramerateMS));	
 							}
 							
-							VideoPlayer.sliderChange = false;						
+							VideoPlayerUI.sliderChange = false;						
 
 							//Then refresh the slider position
-							VideoPlayer.getTimePoint(VideoPlayer.playerCurrentFrame - 1);
+							VideoPlayerUI.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
 							
 							break;
 						}
@@ -610,7 +611,7 @@ public class SubtitlesEdit {
 	
 	public static void refreshSubtitles() {
 				
-		if (SubtitlesEdit.frame != null && SubtitlesEdit.frame.isVisible() && VideoPlayer.playerIsPlaying() == false && VideoPlayer.sliderChange == false && refreshSubs == false)		
+		if (SubtitlesEdit.frame != null && SubtitlesEdit.frame.isVisible() && VideoPlayerCore.playerIsPlaying() == false && VideoPlayerUI.sliderChange == false && refreshSubs == false)		
 		{
 			refreshSubs = true;
 			

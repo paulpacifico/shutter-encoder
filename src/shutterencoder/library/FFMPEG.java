@@ -88,7 +88,8 @@ import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.SceneDetection;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class FFMPEG extends Shutter {
@@ -300,7 +301,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						if (cmd.contains("cropdetect") == false
 						&& btnStart.getText().equals(language.getProperty("btnPauseFunction"))|| btnStart.getText().equals(language.getProperty("btnStopRecording")))
 						{
-							VideoPlayer.resizeAll();
+							VideoPlayerUI.resizeAll();
 						}
 							
 						String line;
@@ -315,7 +316,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		        
 				        if (cmd.contains("pipe:1"))
 						{				  				        	
-				        	VideoPlayer.playerStop();
+				        	VideoPlayerCore.playerStop();
 					     
 				        	Thread playerThread = new Thread(new Runnable() {
 	
@@ -330,11 +331,11 @@ public static StringBuilder errorLog = new StringBuilder();
 											|| btnStart.getText().equals(language.getProperty("btnStopRecording"))
 											|| cancelled) //Empty the buffer
 											{	
-												VideoPlayer.frameVideo = ImageIO.read(videoInputStream);	
-												VideoPlayer.player.repaint();
+												VideoPlayerCore.frameVideo = ImageIO.read(videoInputStream);	
+												VideoPlayerUI.player.repaint();
 											}
 											
-										} while (VideoPlayer.frameVideo != null);
+										} while (VideoPlayerCore.frameVideo != null);
 										
 									} catch (Exception e) {}
 								}
@@ -546,7 +547,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			if (isVideoPlayer)
 			{
-				inputFile = new File(VideoPlayer.videoPath);
+				inputFile = new File(VideoPlayerCore.videoPath);
 				InputAndOutput.getInputAndOutput(true);
 			}
 			else if (inputDeviceIsRunning == false) //Already analyzed
@@ -667,7 +668,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			//Concat mode
 			String concat = "";
-			if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+			if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 			{
 				concat = FunctionUtils.setConcat(inputFile, output);			
 				inputFile = new File(output.replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
@@ -741,7 +742,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					//Concat mode
 					String concat = "";
-					if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+					if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 					{					
 						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
 						concat = FunctionUtils.setConcat(inputFile, inputFile.getParent());			
@@ -765,7 +766,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					//Concat mode
 					String concat = "";
-					if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+					if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 					{					
 						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
 						concat = FunctionUtils.setConcat(inputFile, inputFile.getParent());			
@@ -1027,9 +1028,9 @@ public static StringBuilder errorLog = new StringBuilder();
 					} finally {
 						
 						//Mode concat
-						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{		
-							File inputFile = new File(VideoPlayer.videoPath);
+							File inputFile = new File(VideoPlayerCore.videoPath);
 							String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
 							File listeBAB = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));			
 							listeBAB.delete();
@@ -1106,6 +1107,10 @@ public static StringBuilder errorLog = new StringBuilder();
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                    + "_nvenc -b:v 5000k -s 640x360 -f null -");
 	                            if (!error) graphicsAccel.add("Nvidia NVENC");
+	                            
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+                                        + "_qsv -b:v 5000k -s 640x360 -f null -");
+                                if (!error) graphicsAccel.add("Intel Quick Sync");
 
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                    + "_vaapi -b:v 5000k -s 640x360 -f null -");
@@ -1156,6 +1161,10 @@ public static StringBuilder errorLog = new StringBuilder();
 	                                if (!error) graphicsAccel.add("Intel Quick Sync");
 	                            }
 	                        } else if (isLinux) {
+	                        	checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_qsv"
+	                        			+ " -b:v 5000k -s 640x360 -f null -");
+                                if (!error) graphicsAccel.add("Intel Quick Sync");
+                                
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_vaapi"
 	                                    + " -b:v 5000k -s 640x360 -f null -");
 	                            if (!error) graphicsAccel.add("VAAPI");
@@ -1192,6 +1201,10 @@ public static StringBuilder errorLog = new StringBuilder();
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_nvenc"
 	                            			+ " -b:v 5000k -s 640x360 -f null -");
 	                            if (!error) graphicsAccel.add("Nvidia NVENC");
+	                            
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_qsv"
+	                            		+ " -b:v 5000k -s 640x360 -f null -");
+                                if (!error) graphicsAccel.add("Intel Quick Sync");
 
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_vaapi"
 	                            			+ " -b:v 5000k -s 640x360 -f null -");
@@ -1437,7 +1450,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			}
 
-			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2"))
+			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2") || vcodec.equals("MPEG-4"))
 			{
 				isGPUCompatible = true;
 			}
@@ -1825,7 +1838,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 				
 		//Input point
-		String inputPoint = " -ss " + (float) (VideoPlayer.playerCurrentFrame) * VideoPlayer.inputFramerateMS + "ms";
+		String inputPoint = " -ss " + (float) (VideoPlayerCore.playerCurrentFrame) * VideoPlayerUI.inputFramerateMS + "ms";
 		if (FFPROBE.totalLength <= 40 || caseEnableSequence.isSelected()) //Image
 			inputPoint = " -loop 1";
 		
@@ -1850,16 +1863,16 @@ public static StringBuilder errorLog = new StringBuilder();
 			textCropHeight.setText(c[1]);
 			textCropPosY.setText(c[3]);
 			
-			int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);	
-			int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
-			int width = (int) Math.ceil((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayer.player.getHeight()) / FFPROBE.imageHeight);
-			int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayer.player.getWidth()) / FFPROBE.imageWidth);
+			int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);	
+			int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayerUI.player.getWidth()) / FFPROBE.imageWidth);
+			int width = (int) Math.ceil((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
+			int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getWidth()) / FFPROBE.imageWidth);
 			
-			if (width > VideoPlayer.player.getWidth())
-				width = VideoPlayer.player.getWidth();
+			if (width > VideoPlayerUI.player.getWidth())
+				width = VideoPlayerUI.player.getWidth();
 			
-			if (height > VideoPlayer.player.getHeight())
-				height = VideoPlayer.player.getHeight();
+			if (height > VideoPlayerUI.player.getHeight())
+				height = VideoPlayerUI.player.getHeight();
 			
 			selection.setBounds(x, y, width, height);
 		}	
@@ -2068,7 +2081,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			InputStream is = waveformProcess.getInputStream();				
 			BufferedInputStream inputStream = new BufferedInputStream(is);
 
-			VideoPlayer.waveform = ImageIO.read(inputStream);
+			VideoPlayerCore.waveform = ImageIO.read(inputStream);
 			
 			inputStream.close();
 			
@@ -2291,9 +2304,9 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				fileLength = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
 			}
-			else if (VideoPlayer.playerInMark > 0 || VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2)
+			else if (VideoPlayerUI.playerInMark > 0 || VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
 			{
-				fileLength = VideoPlayer.durationH * 3600 + VideoPlayer.durationM * 60 + VideoPlayer.durationS;
+				fileLength = VideoPlayerUI.durationH * 3600 + VideoPlayerUI.durationM * 60 + VideoPlayerUI.durationS;
 			}
 			else
 				fileLength = (getTimeToSeconds(ffmpegTime));

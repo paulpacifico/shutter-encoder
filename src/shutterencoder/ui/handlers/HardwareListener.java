@@ -35,7 +35,8 @@ import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Renamer;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class HardwareListener extends Shutter {
@@ -57,21 +58,21 @@ public class HardwareListener extends Shutter {
 							frame.requestFocus();
 						}
 
-						if (VideoPlayer.fullscreenPlayer)
+						if (VideoPlayerUI.fullscreenPlayer)
 						{
 							if (ke.getKeyCode() == KeyEvent.VK_K || ke.getKeyCode() == KeyEvent.VK_SPACE) {
 								ke.consume();
-								VideoPlayer.btnPlay.doClick();
+								VideoPlayerUI.btnPlay.doClick();
 							}
 
 							if (ke.getKeyCode() == KeyEvent.VK_J) {
-								VideoPlayer.previousFrame = true;
-								VideoPlayer.playerSetTime((float) (VideoPlayer.playerCurrentFrame - 10));
+								VideoPlayerUI.previousFrame = true;
+								VideoPlayerCore.playerSetTime((float) (VideoPlayerCore.playerCurrentFrame - 10));
 							}
 
 							if (ke.getKeyCode() == KeyEvent.VK_L) {
-								VideoPlayer.previousFrame = true;
-								VideoPlayer.playerSetTime((float) (VideoPlayer.playerCurrentFrame + 10));
+								VideoPlayerUI.previousFrame = true;
+								VideoPlayerCore.playerSetTime((float) (VideoPlayerCore.playerCurrentFrame + 10));
 							}
 
 							if (ke.getID() == KeyEvent.KEY_PRESSED) {
@@ -81,57 +82,57 @@ public class HardwareListener extends Shutter {
 
 							if (ke.getKeyCode() == KeyEvent.VK_I) {
 								if (shift) {
-									VideoPlayer.btnGoToIn.doClick();
+									VideoPlayerUI.btnGoToIn.doClick();
 								} else {
-									VideoPlayer.btnMarkIn.doClick();
+									VideoPlayerUI.btnMarkIn.doClick();
 								}
 							}
 
 							if (ke.getKeyCode() == KeyEvent.VK_O) {
 								if (shift) {
-									VideoPlayer.btnGoToOut.doClick();
+									VideoPlayerUI.btnGoToOut.doClick();
 								} else {
-									VideoPlayer.btnMarkOut.doClick();
+									VideoPlayerUI.btnMarkOut.doClick();
 								}
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_HOME)
 							{
 								ke.consume();
-								VideoPlayer.playerSetTime(0);
+								VideoPlayerCore.playerSetTime(0);
 							}
 								
 							if (ke.getKeyCode() == KeyEvent.VK_END)
 							{
 								ke.consume();
-								VideoPlayer.playerSetTime((double) VideoPlayer.totalFrames - 2);
+								VideoPlayerCore.playerSetTime((double) VideoPlayerUI.totalFrames - 2);
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_PAGE_UP)
 							{								
-								VideoPlayer.btnGoToIn.doClick();
+								VideoPlayerUI.btnGoToIn.doClick();
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_PAGE_DOWN )
 							{
-								VideoPlayer.btnGoToOut.doClick();
+								VideoPlayerUI.btnGoToOut.doClick();
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_LEFT)
 							{					
 								if (Shutter.shift)
 								{
-									VideoPlayer.previousFrame = true;
-									VideoPlayer.playerSetTime((double) VideoPlayer.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS));
+									VideoPlayerUI.previousFrame = true;
+									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS));
 								}
 								else if (Shutter.alt)
 								{
-									VideoPlayer.previousFrame = true;
-									VideoPlayer.playerSetTime((double) (VideoPlayer.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS) * 10));
+									VideoPlayerUI.previousFrame = true;
+									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS) * 10));
 								}
 								else
 								{
-									VideoPlayer.btnPrevious.doClick();
+									VideoPlayerUI.btnPrevious.doClick();
 								}
 			  				}
 							
@@ -139,39 +140,39 @@ public class HardwareListener extends Shutter {
 							{						
 								if (Shutter.shift)
 								{
-									VideoPlayer.previousFrame = true;
-									VideoPlayer.playerSetTime((double) VideoPlayer.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS));
+									VideoPlayerUI.previousFrame = true;
+									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS));
 								}
 								else if (Shutter.alt)
 								{
-									VideoPlayer.previousFrame = true;
-									VideoPlayer.playerSetTime((double) (VideoPlayer.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS) * 10));
+									VideoPlayerUI.previousFrame = true;
+									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS) * 10));
 								}
 								else
 								{
-									VideoPlayer.btnNext.doClick();
+									VideoPlayerUI.btnNext.doClick();
 								}
 			  				}
 
 							if (ke.getKeyCode() == KeyEvent.VK_UP)
-								VideoPlayer.btnGoToOut.doClick();
+								VideoPlayerUI.btnGoToOut.doClick();
 
 							if (ke.getKeyCode() == KeyEvent.VK_DOWN)
-								VideoPlayer.btnGoToIn.doClick();
+								VideoPlayerUI.btnGoToIn.doClick();
 
 							// Volume up
 							if (ke.getKeyCode() == 107
-									&& VideoPlayer.sliderVolume.getValue() < VideoPlayer.sliderVolume.getMaximum()) {
-								VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() + 10);
+									&& VideoPlayerUI.sliderVolume.getValue() < VideoPlayerUI.sliderVolume.getMaximum()) {
+								VideoPlayerUI.sliderVolume.setValue(VideoPlayerUI.sliderVolume.getValue() + 10);
 							}
 
 							// Volume down
-							if (ke.getKeyCode() == 109 && VideoPlayer.sliderVolume.getValue() > 0) {
-								VideoPlayer.sliderVolume.setValue(VideoPlayer.sliderVolume.getValue() - 10);
+							if (ke.getKeyCode() == 109 && VideoPlayerUI.sliderVolume.getValue() > 0) {
+								VideoPlayerUI.sliderVolume.setValue(VideoPlayerUI.sliderVolume.getValue() - 10);
 							}
 							if (ke.getKeyCode() == KeyEvent.VK_ESCAPE)
 							{	
-								VideoPlayer.toggleFullscreen();
+								VideoPlayerUI.toggleFullscreen();
 							}
 						}
 
@@ -201,9 +202,9 @@ public class HardwareListener extends Shutter {
 										subtitlesFilePath.delete();
 									}
 									
-									if (VideoPlayer.waveform != null)
+									if (VideoPlayerCore.waveform != null)
 									{
-										VideoPlayer.waveform = null;
+										VideoPlayerCore.waveform = null;
 									}
 								}
 							});
@@ -273,7 +274,7 @@ public class HardwareListener extends Shutter {
 				}
 				
 				if (me.getX() < top.getX()
-				|| VideoPlayer.waveformContainerHasMouse 
+				|| VideoPlayerCore.waveformContainerHasMouse 
 				|| UIController.extendSectionsIsRunning)
 				{
 					return;

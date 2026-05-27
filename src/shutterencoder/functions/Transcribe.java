@@ -40,7 +40,8 @@ import shutterencoder.library.WHISPER;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class Transcribe extends Shutter {
@@ -67,7 +68,7 @@ public class Transcribe extends Shutter {
 				{	
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false)
 					{
-						if (list.getElementAt(i).equals(VideoPlayer.videoPath) == false)
+						if (list.getElementAt(i).equals(VideoPlayerCore.videoPath) == false)
 						{
 							continue;
 						}
@@ -88,16 +89,16 @@ public class Transcribe extends Shutter {
 						lblCurrentEncoding.setText(fileName);	
 						
 						//Write the in and out values before getInputAndOutput()
-						if (VideoPlayer.caseApplyCutToAll.isSelected())
+						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
-							VideoPlayer.videoPath = file.toString();							
-							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
-							VideoPlayer.setFileList();	
+							VideoPlayerCore.videoPath = file.toString();							
+							VideoPlayerUI.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerUI.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerCore.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));
+						InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));
 				
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -235,7 +236,7 @@ public class Transcribe extends Shutter {
 					fileList.setSelectedValue(currentFile, true);						
 					comboSubsSource.setSelectedIndex(0);
 					caseAddSubtitles.setSelected(true);
-					VideoPlayer.setMedia();					
+					VideoPlayerCore.setMedia();					
 					currentFile = "";
 				}
 			}

@@ -35,7 +35,7 @@ import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.utils.Utils;
 
 //Drag & Drop file list
@@ -188,7 +188,7 @@ public class ListFileTransferHandler extends TransferHandler {
 					// VideoPlayer.player
 					Shutter.fileList.setSelectedIndex(Shutter.list.getSize() - 1);
 
-					VideoPlayer.setMedia();
+					VideoPlayerCore.setMedia();
 					
 					// Filter
 					UIController.changeFilters();

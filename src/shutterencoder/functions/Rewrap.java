@@ -37,7 +37,8 @@ import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesEmbed;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class Rewrap extends Shutter {
@@ -140,16 +141,16 @@ public class Rewrap extends Shutter {
 						String mapSubtitles = "";
 
 						//Write the in and out values before getInputAndOutput()
-						if (VideoPlayer.caseApplyCutToAll.isSelected())
+						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
-							VideoPlayer.videoPath = file.toString();							
-							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
-							VideoPlayer.setFileList();	
+							VideoPlayerCore.videoPath = file.toString();							
+							VideoPlayerUI.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerUI.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerCore.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));					
+						InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));					
 						
 						//Framerate
 						String frameRate = "";						
@@ -190,7 +191,7 @@ public class Rewrap extends Shutter {
 							newExtension = comboFilter.getSelectedItem().toString();
 												
 						//Split video
-						if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 						{
 							extensionName = "_%03d" + extensionName;
 						}
@@ -276,7 +277,7 @@ public class Rewrap extends Shutter {
 						{
 							//Concat mode
 							String concat = FunctionUtils.setConcat(file, labelOutput);					
-							if (Settings.btnSetBab.isSelected() || VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+							if (Settings.btnSetBab.isSelected() || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 								file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 							else
 								concat = " -noaccurate_seek";
@@ -305,7 +306,7 @@ public class Rewrap extends Shutter {
 						}
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
-						|| FFMPEG.saveCode && VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						|| FFMPEG.saveCode && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -319,13 +320,13 @@ public class Rewrap extends Shutter {
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
+					VideoPlayerCore.videoPath = null;
+					VideoPlayerCore.setMedia();
 					do {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.loadMedia.isAlive());
+					} while (VideoPlayerCore.loadMedia.isAlive());
 					RenderQueue.frame.toFront();
 				}
 				else
@@ -516,13 +517,13 @@ public class Rewrap extends Shutter {
 			|| new File (file.replace(ext, ".scc")).exists())
 			{
 				FunctionUtils.addSubtitles(false);
-				if (VideoPlayer.runProcess != null)
+				if (VideoPlayerCore.runProcess != null)
 				{
 					do {
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.runProcess.isAlive());
+					} while (VideoPlayerCore.runProcess.isAlive());
 				}
 				FunctionUtils.addSubtitles(true);
 			}

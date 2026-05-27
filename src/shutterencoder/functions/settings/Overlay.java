@@ -32,7 +32,9 @@ import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.subtitling.SubtitlesEmbed;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 
 public class Overlay extends Shutter {
 
@@ -43,10 +45,10 @@ public class Overlay extends Shutter {
 			//IMPORTANT RESET SCALING
 			FFPROBE.analyzedMedia = null;
 			
-			if (VideoPlayer.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayer.videoPath).getName()) == false) //Do not process scaling if it's the first item
+			if (VideoPlayerCore.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayerCore.videoPath).getName()) == false) //Do not process scaling if it's the first item
 			{		
 				//IMPORTANT RESET SCALING
-				VideoPlayer.videoPath = null;
+				VideoPlayerCore.videoPath = null;
 				
 				float scale = 0.0f;
 				if (FFPROBE.previousImageWidth > 0)	
@@ -67,7 +69,7 @@ public class Overlay extends Shutter {
 							Shutter.textNameSize.setText(String.valueOf(Math.round(Integer.parseInt(Shutter.textNameSize.getText()) * scale)));
 						}
 
-						VideoPlayer.resizeAll();
+						VideoPlayerUI.resizeAll();
 					}
 				}
 			}
@@ -90,7 +92,7 @@ public class Overlay extends Shutter {
 				float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
 				float tcS = Integer.parseInt(tc3) * FFPROBE.currentFPS;
 				
-				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
+				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 				float offset = timeIn + tcH + tcM + tcS + Integer.parseInt(tc4);
 
@@ -121,7 +123,7 @@ public class Overlay extends Shutter {
 				float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
 				float tcS = Integer.parseInt(tc3) * FFPROBE.currentFPS;
 				
-				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
+				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 				//NTSC framerate
 				if (Shutter.caseShowTimecode.isSelected())
@@ -129,7 +131,7 @@ public class Overlay extends Shutter {
 					timeIn = 0;
 				}
 												
-				double currentTime = Timecode.setNTSCtimecode(VideoPlayer.playerCurrentFrame);
+				double currentTime = Timecode.setNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
 				double offset = (currentTime - timeIn) + tcH + tcM + tcS + Integer.parseInt(tc4);
 
 				if (offset < 0)
@@ -432,13 +434,13 @@ public class Overlay extends Shutter {
 			|| comboSubsSource.getSelectedIndex() != 0)
 			{
 				FunctionUtils.addSubtitles(false);
-				if (VideoPlayer.runProcess != null)
+				if (VideoPlayerCore.runProcess != null)
 				{
 					do {
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.runProcess.isAlive());
+					} while (VideoPlayerCore.runProcess.isAlive());
 				}
 				FunctionUtils.addSubtitles(true);
 			}
@@ -475,8 +477,8 @@ public class Overlay extends Shutter {
 				String i[] = FFPROBE.imageResolution.split("x"); 
 				
 				//Set the input seeking
-				float timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayer.caseInF.getText());			
-				VideoPlayer.writeCurrentSubs(timeIn, false);
+				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());			
+				VideoPlayerOverlay.writeCurrentSubs(timeIn, false);
 				
 	            //Delete created .srt file
 	            if (comboSubsSource.getSelectedIndex() != 0)
@@ -615,10 +617,10 @@ public class Overlay extends Shutter {
 			//IMPORTANT RESET SCALING
 			FFPROBE.analyzedMedia = null;
 			
-			if (VideoPlayer.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayer.videoPath).getName()) == false) //Do not process scaling if it's the first item
+			if (VideoPlayerCore.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayerCore.videoPath).getName()) == false) //Do not process scaling if it's the first item
 			{		
 				//IMPORTANT RESET SCALING
-				VideoPlayer.videoPath = null;
+				VideoPlayerCore.videoPath = null;
 								
 				float scale = 0.0f;
 				if (FFPROBE.previousImageWidth > 0)	
@@ -631,9 +633,9 @@ public class Overlay extends Shutter {
 					}
 				}
 				
-				VideoPlayer.resizeAll();
+				VideoPlayerUI.resizeAll();
 				
-				VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
+				VideoPlayerOverlay.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
 				if (Shutter.watermarkPreset != null)
 				{
 					Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));

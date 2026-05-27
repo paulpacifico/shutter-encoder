@@ -21,7 +21,7 @@ package shutterencoder.functions.settings;
 
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class Colorimetry extends Shutter {
 
@@ -63,7 +63,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setLevels(String filterComplex) {
 		
-		if ((grpColorimetry.isVisible() || VideoPlayer.fullscreenPlayer) && caseLevels.isSelected())
+		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseLevels.isSelected())
 		{			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -75,7 +75,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setColormatrix(String filterComplex) {
 		
-		if ((grpColorimetry.isVisible() || VideoPlayer.fullscreenPlayer) && caseColormatrix.isSelected())
+		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseColormatrix.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -168,7 +168,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setLUT(String filterComplex) {
 		
-		if ((grpColorimetry.isVisible() || VideoPlayer.fullscreenPlayer) && caseLUTs.isSelected())
+		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseLUTs.isSelected())
 		{			
 			String pathToLuts;
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))

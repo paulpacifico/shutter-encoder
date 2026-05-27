@@ -29,7 +29,8 @@ import javax.imageio.ImageIO;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class NCNN extends Shutter {
 	
@@ -138,8 +139,8 @@ public static String modelsPath;
 								{
 									try {
 										String s[] = line.split(" ");
-										VideoPlayer.frameVideo = ImageIO.read(new File(s[2].toString()));
-										VideoPlayer.player.repaint();																													
+										VideoPlayerCore.frameVideo = ImageIO.read(new File(s[2].toString()));
+										VideoPlayerUI.player.repaint();																													
 									} catch (Exception e) {}
 								}
 						    }

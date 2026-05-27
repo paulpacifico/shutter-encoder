@@ -20,11 +20,8 @@
 package shutterencoder.functions;
 
 import java.io.File;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
-import javax.imageio.ImageIO;
 
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
@@ -38,14 +35,15 @@ import shutterencoder.library.DCRAW;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.NCNN;
-import shutterencoder.library.PDF;
+import shutterencoder.library.XPDFREADER;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class Picture extends Shutter {
@@ -91,7 +89,7 @@ public class Picture extends Shutter {
 					{
 						FunctionUtils.yesToAll = false;
 						screenshotIsRunning = true;
-						file =  new File(VideoPlayer.videoPath);
+						file =  new File(VideoPlayerCore.videoPath);
 					}
 					
 					try {
@@ -222,20 +220,20 @@ public class Picture extends Shutter {
 						if (FFPROBE.totalLength > 40)
 						{
 							//Write the in and out values before getInputAndOutput()
-							if (VideoPlayer.caseApplyCutToAll.isSelected())
+							if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 							{							
-								VideoPlayer.videoPath = file.toString();							
-								VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-								VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
-								VideoPlayer.setFileList();	
+								VideoPlayerCore.videoPath = file.toString();							
+								VideoPlayerUI.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+								VideoPlayerUI.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+								VideoPlayerCore.setFileList();	
 							}
 							
 							//InOut	
-							InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));	
+							InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));	
 							
-							if (videoPlayerCapture && VideoPlayer.waveformContainer.isVisible())
+							if (videoPlayerCapture && VideoPlayerCore.waveformContainer.isVisible())
 							{
-								InputAndOutput.inPoint = " -ss " + (long) (VideoPlayer.playerCurrentFrame * VideoPlayer.inputFramerateMS) + "ms";
+								InputAndOutput.inPoint = " -ss " + (long) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS) + "ms";
 							}
 						}
 						
@@ -298,44 +296,26 @@ public class Picture extends Shutter {
 						
 						if (extension.toLowerCase().equals(".pdf"))
 						{
-							for (int page = 0; page < PDF.pagesCount ; ++page)
-							{ 	
-								if (cancelled)
-									break;
-								
-								UIController.disableAll();
-								PDF.run(file, page);
-								
-								do {
-									Thread.sleep(10);
-								} while(PDF.isRunning);
-								
+							btnStart.setEnabled(false);	
+							UIController.disableAll();
+														
+							for (int p = 1 ; p < XPDFREADER.pagesCount + 1; p++)
+							{
 								int n = 1;
 								do {
-									fileOut = new File(labelOutput + "/" + prefix + fileName.replace(extension, "_" + n + container));
+									fileOut = new File(labelOutput + "/" + fileName.replace(extension, "_" + n + container));
 									n++;
 								} while (fileOut.exists());
-
-								Process process;
-								if (System.getProperty("os.name").contains("Windows"))
-								{							
-									ProcessBuilder pbv = new ProcessBuilder('"' + FFMPEG.PathToFFMPEG + '"' + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
-									process = pbv.start();	
-								}	
-								else
-								{
-									ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + " -v quiet -hide_banner -i pipe:0" + logo + cmd + '"' + fileOut + '"');
-									process = pbv.start();	
-								}	
-																			
-								if (VideoPlayer.preview != null)
-								{
-							        OutputStream outputStream = process.getOutputStream();
-							        
-							        ImageIO.write(VideoPlayer.preview, "bmp", outputStream);		        
-							        outputStream.close();
-								}	
-							}							
+								
+								if (cancelled == false)
+									XPDFREADER.run(" -r 300 -f " + p + " -l " + p + " " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
+								
+								do {
+									Thread.sleep(100);
+								} while (XPDFREADER.runProcess.isAlive());								
+							}						
+							
+							btnStart.setEnabled(true);
 						}
 						else if (isRaw)
 						{
@@ -426,13 +406,13 @@ public class Picture extends Shutter {
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && encode)
 				{
 					//Reset data for the current selected file
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
+					VideoPlayerCore.videoPath = null;
+					VideoPlayerCore.setMedia();
 					do {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.loadMedia.isAlive());
+					} while (VideoPlayerCore.loadMedia.isAlive());
 					RenderQueue.frame.toFront();
 				}
 				else

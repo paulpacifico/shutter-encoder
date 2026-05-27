@@ -69,12 +69,12 @@ import shutterencoder.library.BMXTRANSWRAP;
 import shutterencoder.library.DCRAW;
 import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
-import shutterencoder.library.PDF;
+import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.TSMUXER;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 	public class RenderQueue {
@@ -140,7 +140,7 @@ import shutterencoder.utils.Utils;
 			
 			public void windowClosed(WindowEvent arg0) {
 				
-				if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+				if (FFMPEG.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
 					Shutter.btnCancel.doClick();
 				
 				if (Shutter.btnCancel.isEnabled() == false)		
@@ -479,7 +479,7 @@ import shutterencoder.utils.Utils;
 				
 				if (accept)		
 				{		  
-					if (FFMPEG.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+					if (FFMPEG.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
 						Shutter.btnCancel.doClick();
 					
 					if (Shutter.btnCancel.isEnabled() == false)		
@@ -835,6 +835,9 @@ import shutterencoder.utils.Utils;
 								case "dcraw" :
 									DCRAW.run(cmd.toString().replace("dcraw",""));
 									break;
+								case "pdftoppm" :
+									XPDFREADER.run(cmd.toString().replace("pdftoppm",""));
+									break;
 							}	
 							
 							currentProcessedFiles += 1;
@@ -861,14 +864,14 @@ import shutterencoder.utils.Utils;
 								{									
 									do {										
 										Thread.sleep(100);											
-									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
 																	
 									//Permet d'attendre si un autre processus se lance
 									Thread.sleep(1000);
 									
 									do {
 										Thread.sleep(100);										
-									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || PDF.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);	
+									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);	
 								}
 								else
 								{									
@@ -994,7 +997,7 @@ import shutterencoder.utils.Utils;
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
 			
-		if (VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("splitMode")))
+		if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("splitMode")))
 			fileOut = new File(fileOut.toString().replace("%03d", "000"));
 		
 		//Erreurs
@@ -1019,7 +1022,7 @@ import shutterencoder.utils.Utils;
 		}
 				
 		//Concat mode or Image sequence
-		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()) || VideoPlayer.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()) || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
 		{
 			String extension = fileName.substring(fileName.lastIndexOf("."));
 			

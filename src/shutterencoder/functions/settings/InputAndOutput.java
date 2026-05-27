@@ -21,7 +21,8 @@ package shutterencoder.functions.settings;
 
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class InputAndOutput extends Shutter {
 
@@ -34,21 +35,35 @@ public class InputAndOutput extends Shutter {
 					
 		if (setInputAndOutput && FFPROBE.totalLength > 40)
 		{
-			double timeIn = (Integer.parseInt(VideoPlayer.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayer.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayer.caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(VideoPlayer.caseInF.getText());
+			double fps = FFPROBE.accurateFPS;    		
+			if (Timecode.isDropFrame())
+			{		
+				if (FFPROBE.currentFPS == 29.97f)
+				{
+					fps = 30;
+				}
+				else if (FFPROBE.currentFPS == 59.94f)
+				{
+					fps = 60;
+				}
+			}
+			
+			double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * fps + Integer.parseInt(VideoPlayerUI.caseInF.getText());
 			
 			//NTSC timecode
 			timeIn = Timecode.getNTSCtimecode(timeIn);
+			timeIn = Timecode.setDropFrameTimecode(timeIn);
 					
 			if (timeIn > 0.0f)
 	        {		        
-				inPoint = " -ss " + (long) ((double) timeIn * VideoPlayer.inputFramerateMS) + "ms";
+				inPoint = " -ss " + (long) ((double) timeIn * VideoPlayerUI.inputFramerateMS) + "ms";
 		    }
 		    else
 		        inPoint = "";	
 			
-			if (VideoPlayer.playerOutMark < VideoPlayer.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
+			if (VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
 	        {				
-				String framesText[] = VideoPlayer.lblDuration.getText().split(" ");
+				String framesText[] = VideoPlayerUI.lblDuration.getText().split(" ");
 				Integer frames =  Integer.parseInt(framesText[framesText.length - 2]);
 
 	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
@@ -70,9 +85,9 @@ public class InputAndOutput extends Shutter {
 	        else
 	        	outPoint = "";
 			
-			if (VideoPlayer.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+			if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 			{
-				outPoint += " -f segment -segment_time " + VideoPlayer.splitValue.getText() + " -reset_timestamps 1";
+				outPoint += " -f segment -segment_time " + VideoPlayerUI.splitValue.getText() + " -reset_timestamps 1";
 			}
 		}
 		else

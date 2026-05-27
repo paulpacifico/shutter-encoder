@@ -69,7 +69,9 @@ import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 import shutterencoder.utils.Utils;
 
 public class UIController extends Shutter {
@@ -426,9 +428,9 @@ public class UIController extends Shutter {
 
 	public static void changeWidth(final boolean bigger) {
 
-		if (VideoPlayer.loadMedia != null && VideoPlayer.loadMedia.isAlive())
+		if (VideoPlayerCore.loadMedia != null && VideoPlayerCore.loadMedia.isAlive())
 		{
-			while (VideoPlayer.loadMedia.isAlive())
+			while (VideoPlayerCore.loadMedia.isAlive())
 			{
 				try {
 					Thread.sleep(10);
@@ -495,8 +497,8 @@ public class UIController extends Shutter {
 				}
 			}
 
-			VideoPlayer.setPlayerButtons(true);
-			VideoPlayer.player.setVisible(true);
+			VideoPlayerUI.setPlayerButtons(true);
+			VideoPlayerUI.player.setVisible(true);
 
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
@@ -522,8 +524,8 @@ public class UIController extends Shutter {
 				frame.setBounds(frame.getX() + (extendedWidth - 654) / 2, frame.getY(), 654, frame.getHeight());
 			}
 
-			VideoPlayer.setPlayerButtons(false);
-			VideoPlayer.player.setVisible(false);
+			VideoPlayerUI.setPlayerButtons(false);
+			VideoPlayerUI.player.setVisible(false);
 
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
@@ -547,8 +549,8 @@ public class UIController extends Shutter {
 						frame.getHeight());
 			}
 
-			VideoPlayer.setPlayerButtons(true);
-			VideoPlayer.player.setVisible(true);
+			VideoPlayerUI.setPlayerButtons(true);
+			VideoPlayerUI.player.setVisible(true);
 
 			lblArrows.setVisible(false);
 			lblGpuDecoding.setVisible(true);
@@ -627,13 +629,13 @@ public class UIController extends Shutter {
 	public static void toggleFullscreen() {
 
 		//Avoid glitch when resizing while playing
-		if (VideoPlayer.playerIsPlaying())
-			VideoPlayer.playerLoop = false;
+		if (VideoPlayerCore.playerIsPlaying())
+			VideoPlayerUI.playerLoop = false;
 		
 		// IMPORTANT
-		if (FFPROBE.totalLength <= 40 && VideoPlayer.preview != null)
+		if (FFPROBE.totalLength <= 40 && VideoPlayerCore.preview != null)
 		{
-			VideoPlayer.preview = null;
+			VideoPlayerCore.preview = null;
 		}
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -684,15 +686,15 @@ public class UIController extends Shutter {
 			frame.setLocation(frame.getX(), screenOffset);
 		}
 
-		if (frame.getWidth() > 332 && VideoPlayer.setTime != null && VideoPlayer.isPiping == false)
+		if (frame.getWidth() > 332 && VideoPlayerCore.setTime != null && VideoPlayerUI.isPiping == false)
 		{
-			VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
+			VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
 
 			// grpWatermark
 			if (caseAddWatermark.isSelected()
 					&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
 					&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false) {
-				VideoPlayer.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
+				VideoPlayerOverlay.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
 				Shutter.logo.setLocation(
 						(int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio),
 						(int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
@@ -713,26 +715,26 @@ public class UIController extends Shutter {
 		
 		if (frame.getWidth() < 1320 && noSettings == false)
 		{
-			VideoPlayer.lblSpeed.setVisible(false);
-			VideoPlayer.lblVolume.setVisible(false);
+			VideoPlayerUI.lblSpeed.setVisible(false);
+			VideoPlayerUI.lblVolume.setVisible(false);
 
 			if (frame.getWidth() < 1300)
 			{
-				VideoPlayer.sliderSpeed.setVisible(false);
-				VideoPlayer.sliderVolume.setVisible(false);
+				VideoPlayerUI.sliderSpeed.setVisible(false);
+				VideoPlayerUI.sliderVolume.setVisible(false);
 			}
-			else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false && inputDeviceIsRunning == false)
+			else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
 			{
-				VideoPlayer.sliderSpeed.setVisible(true);
-				VideoPlayer.sliderVolume.setVisible(true);
+				VideoPlayerUI.sliderSpeed.setVisible(true);
+				VideoPlayerUI.sliderVolume.setVisible(true);
 			}
 		}
-		else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayer.isPiping == false && inputDeviceIsRunning == false)
+		else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
 		{
-			VideoPlayer.lblSpeed.setVisible(true);
-			VideoPlayer.lblVolume.setVisible(true);
-			VideoPlayer.sliderSpeed.setVisible(true);
-			VideoPlayer.sliderVolume.setVisible(true);
+			VideoPlayerUI.lblSpeed.setVisible(true);
+			VideoPlayerUI.lblVolume.setVisible(true);
+			VideoPlayerUI.sliderSpeed.setVisible(true);
+			VideoPlayerUI.sliderVolume.setVisible(true);
 		}
 		
 		if (frame.getWidth() > 332)
@@ -858,12 +860,12 @@ public class UIController extends Shutter {
 		if (windowDrag == false && (caseAddTimecode.isSelected() || caseShowTimecode.isSelected() || caseAddText.isSelected() || caseShowFileName.isSelected()))
 		{
 			windowDrag = true;
-			VideoPlayer.resizeAll();
+			VideoPlayerUI.resizeAll();
 			windowDrag = false;
 		}
 		else if (frame.getWidth() > 332)
 		{
-			VideoPlayer.resizeAll();
+			VideoPlayerUI.resizeAll();
 		}
 		else if (frame.getWidth() == 332)
 		{
@@ -985,8 +987,13 @@ public class UIController extends Shutter {
 									if (Settings.btnDisableAnimations.isSelected())
 										i = frame.getWidth();
 									else
-										i += 4;
-
+									{
+										i += 20;
+										
+										if (i > frame.getWidth())
+											i = frame.getWidth();
+									}
+									
 									grpResolution.setLocation(i, grpResolution.getLocation().y);
 									grpBitrate.setLocation(i, grpBitrate.getLocation().y);
 									grpSetAudio.setLocation(i, grpSetAudio.getLocation().y);
@@ -1011,7 +1018,7 @@ public class UIController extends Shutter {
 								} while (i < frame.getWidth());
 							}
 
-							VideoPlayer.seekOnKeyFrames = false;
+							VideoPlayerUI.seekOnKeyFrames = false;
 
 							List<String> graphicsAccel = new ArrayList<String>();
 							graphicsAccel.add(language.getProperty("aucune").toLowerCase());
@@ -1089,18 +1096,18 @@ public class UIController extends Shutter {
 									}
 									else if (anim) 
 									{
-										VideoPlayer.videoPath = null;
+										VideoPlayerCore.videoPath = null;
 										changeWidth(true);
-										VideoPlayer.setMedia();										
+										VideoPlayerCore.setMedia();										
 									}
 									
 								} else
-									VideoPlayer.seekOnKeyFrames = true;
+									VideoPlayerUI.seekOnKeyFrames = true;
 
 							} else if (language.getProperty("functionRewrap").equals(function)
 							|| language.getProperty("functionCut").equals(function)
 							|| language.getProperty("functionMerge").equals(function)) {
-								VideoPlayer.seekOnKeyFrames = true;
+								VideoPlayerUI.seekOnKeyFrames = true;
 
 								if (language.getProperty("functionCut").equals(function)
 										|| language.getProperty("functionMerge").equals(function)) {
@@ -3920,10 +3927,10 @@ public class UIController extends Shutter {
 								changeComboOptions();
 
 								if (comboResolution.getSelectedItem().toString().contains("AI")) {
-									if (VideoPlayer.preview != null)
-										VideoPlayer.preview = null;
+									if (VideoPlayerCore.preview != null)
+										VideoPlayerCore.preview = null;
 
-									VideoPlayer.loadImage(true);
+									VideoPlayerCore.loadImage(true);
 								}
 
 								grpResolution.repaint();
@@ -4067,8 +4074,12 @@ public class UIController extends Shutter {
 									if (Settings.btnDisableAnimations.isSelected())
 										i2 = frame.getWidth() - 312 - 12;
 									else
-										i2 -= 4;
-
+									{
+										i2 -= 20;
+									
+										if (i2 < frame.getWidth() - 312 - 12)
+											i2 = frame.getWidth() - 312 - 12;
+									}
 									grpResolution.setLocation(i2, grpResolution.getLocation().y);
 									grpBitrate.setLocation(i2, grpBitrate.getLocation().y);
 									grpSetAudio.setLocation(i2, grpSetAudio.getLocation().y);
@@ -4289,7 +4300,7 @@ public class UIController extends Shutter {
 
 		while (System.nanoTime() - startTime < time) {
 			try {
-				Thread.sleep(1);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
 			}
 		}
@@ -5236,15 +5247,15 @@ public class UIController extends Shutter {
 		comboAccel.setEnabled(false);
 
 		// Disable buttons
-		VideoPlayer.setPlayerButtons(false);
-		VideoPlayer.player.remove(selection);
-		VideoPlayer.player.remove(overImage);
-		VideoPlayer.player.remove(timecode);
-		VideoPlayer.player.remove(fileName);
-		VideoPlayer.player.remove(subsCanvas);
-		VideoPlayer.player.remove(logo);
-		VideoPlayer.showScale.setVisible(false);
-		VideoPlayer.playerStop();
+		VideoPlayerUI.setPlayerButtons(false);
+		VideoPlayerUI.player.remove(selection);
+		VideoPlayerUI.player.remove(overImage);
+		VideoPlayerUI.player.remove(timecode);
+		VideoPlayerUI.player.remove(fileName);
+		VideoPlayerUI.player.remove(subsCanvas);
+		VideoPlayerUI.player.remove(logo);
+		VideoPlayerUI.showScale.setVisible(false);
+		VideoPlayerCore.playerStop();
 
 		lblFiles.setEnabled(true);
 		lblFilesEnded.setEnabled(true);
@@ -5644,8 +5655,8 @@ public class UIController extends Shutter {
 		if (caseChunks.isSelected() == false)
 			chunksSize.setEnabled(false);
 		
-		if (VideoPlayer.caseApplyCutToAll.isVisible() && VideoPlayer.comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
-			VideoPlayer.caseApplyCutToAll.setEnabled(false);
+		if (VideoPlayerUI.caseApplyCutToAll.isVisible() && VideoPlayerUI.comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
+			VideoPlayerUI.caseApplyCutToAll.setEnabled(false);
 
 		if ((comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false || lblVBR.getText().equals("CQ")))
 		{
@@ -5815,8 +5826,8 @@ public class UIController extends Shutter {
 			RenderQueue.tableRow.setRowCount(0);
 		}
 
-		if (VideoPlayer.fullscreenPlayer) {
-			VideoPlayer.fullscreenPlayer = false;
+		if (VideoPlayerUI.fullscreenPlayer) {
+			VideoPlayerUI.fullscreenPlayer = false;
 
 			topPanel.setVisible(true);
 			grpChooseFiles.setVisible(true);
@@ -5829,13 +5840,13 @@ public class UIController extends Shutter {
 
 			changeSections(false);
 
-			VideoPlayer.setPlayerButtons(true);
+			VideoPlayerUI.setPlayerButtons(true);
 
-			VideoPlayer.mouseIsPressed = false;
+			VideoPlayerUI.mouseIsPressed = false;
 
-			VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
+			VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
 
-			VideoPlayer.resizeAll();
+			VideoPlayerUI.resizeAll();
 
 			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
 			Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
@@ -5846,19 +5857,19 @@ public class UIController extends Shutter {
 		// Unlock the file to be deletable
 		if (scanIsRunning == false && screenshotIsRunning == false)
 		{
-			VideoPlayer.videoPath = null;
+			VideoPlayerCore.videoPath = null;
 			fileList.clearSelection();
-			VideoPlayer.frameVideo = null;			
-			VideoPlayer.player.repaint();
+			VideoPlayerCore.frameVideo = null;			
+			VideoPlayerUI.player.repaint();
 
 			// Lecteur
-			if (VideoPlayer.waveform != null) {
-				VideoPlayer.waveform = null;
-				VideoPlayer.waveformIcon.setIcon(null);
-				VideoPlayer.waveformIcon.repaint();
+			if (VideoPlayerCore.waveform != null) {
+				VideoPlayerCore.waveform = null;
+				VideoPlayerCore.waveformIcon.setIcon(null);
+				VideoPlayerCore.waveformIcon.repaint();
 			}
 		} else if (screenshotIsRunning) {
-			VideoPlayer.addWaveform(false);
+			VideoPlayerCore.addWaveform(false);
 		}
 
 		if (scanIsRunning == false) {

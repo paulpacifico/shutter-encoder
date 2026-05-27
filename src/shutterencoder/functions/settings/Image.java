@@ -25,7 +25,7 @@ import shutterencoder.functions.VideoEncoders;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class Image extends Shutter {
 	
@@ -112,7 +112,7 @@ public class Image extends Shutter {
 	
 	public static String setRotate(String filterComplex, boolean noGPU) {
 		
-		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) || VideoPlayer.fullscreenPlayer)
+		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionRewrap")) || VideoPlayerUI.fullscreenPlayer)
 		{
 			//Checking if last filter is GPU accelerated
 			boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);

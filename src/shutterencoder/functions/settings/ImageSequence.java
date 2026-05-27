@@ -20,13 +20,13 @@
 package shutterencoder.functions.settings;
 
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class ImageSequence extends Shutter {
 		
 	public static String setBlend(String filterComplex) {
 		
-		if ((grpImageSequence.isVisible() || VideoPlayer.fullscreenPlayer) && caseBlend.isSelected())
+		if ((grpImageSequence.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseBlend.isSelected())
 		{			
 			int value = sliderBlend.getValue();
 			StringBuilder blend = new StringBuilder();
@@ -47,7 +47,7 @@ public class ImageSequence extends Shutter {
 	
 	public static String setMotionBlur(String filterComplex) {
 		
-		if ((grpImageSequence.isVisible() || VideoPlayer.fullscreenPlayer) && caseMotionBlur.isSelected())
+		if ((grpImageSequence.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseMotionBlur.isSelected())
 		{			
 			float fps = Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) * 2;
 			

@@ -37,7 +37,7 @@ import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.utils.Utils;
 
 public class VideoInserts extends Shutter {
@@ -319,13 +319,13 @@ public class VideoInserts extends Shutter {
 				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
-					VideoPlayer.videoPath = null;
-					VideoPlayer.setMedia();
+					VideoPlayerCore.videoPath = null;
+					VideoPlayerCore.setMedia();
 					do {
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayer.loadMedia.isAlive());
+					} while (VideoPlayerCore.loadMedia.isAlive());
 					RenderQueue.frame.toFront();
 				}
 				else

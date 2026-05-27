@@ -38,7 +38,8 @@ import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.GOP;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class FFPROBE extends Shutter {
@@ -301,8 +302,8 @@ public static boolean hasDolbyVision = false;
 					    		    		
 					         	if (totalLength != 0)
 								{     				
-						      		if (VideoPlayer.playerVideo != null)	
-						     			VideoPlayer.totalDuration();
+						      		if (VideoPlayerCore.playerVideo != null)	
+						     			VideoPlayerUI.totalDuration();
 	
 						            setFilesize();
 								}
@@ -1082,7 +1083,7 @@ public static boolean hasDolbyVision = false;
 							{
 								if (keyPTS > inputTime)
 								{
-									keyFrame = keyPTS / VideoPlayer.inputFramerateMS;	
+									keyFrame = keyPTS / VideoPlayerUI.inputFramerateMS;	
 									process.destroy();
 									break;
 								}
@@ -1091,7 +1092,7 @@ public static boolean hasDolbyVision = false;
 							{				
 								if (keyPTS < inputTime && keyPTS > keyFrame)
 								{
-									keyFrame = keyPTS / VideoPlayer.inputFramerateMS;	
+									keyFrame = keyPTS / VideoPlayerUI.inputFramerateMS;	
 								}
 								else if (keyPTS >= inputTime)
 								{
@@ -1239,8 +1240,8 @@ public static boolean hasDolbyVision = false;
 									}
 			    		    	}	
 		             
-					            if (VideoPlayer.playerVideo != null)	
-						     		VideoPlayer.totalDuration();
+					            if (VideoPlayerCore.playerVideo != null)	
+						     		VideoPlayerUI.totalDuration();
 					             
 					            setFilesize();
 							}
@@ -1295,10 +1296,10 @@ public static boolean hasDolbyVision = false;
 			
 			if (Shutter.list.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
 			{
-				int h = VideoPlayer.durationH;
-				int min = VideoPlayer.durationM;
-				int sec = VideoPlayer.durationS;	
-				int frames = VideoPlayer.durationF;
+				int h = VideoPlayerUI.durationH;
+				int min = VideoPlayerUI.durationM;
+				int sec = VideoPlayerUI.durationS;	
+				int frames = VideoPlayerUI.durationF;
 								
 				int audio = 0;
 				if (comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()))

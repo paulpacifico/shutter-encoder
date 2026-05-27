@@ -29,7 +29,8 @@ import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class AudioSeparation extends Shutter {
 
@@ -67,16 +68,16 @@ public class AudioSeparation extends Shutter {
 							continue;	
 						
 						//Write the in and out values before getInputAndOutput()
-						if (VideoPlayer.caseApplyCutToAll.isSelected())
+						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
-							VideoPlayer.videoPath = file.toString();							
-							VideoPlayer.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayer.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
-							VideoPlayer.setFileList();	
+							VideoPlayerCore.videoPath = file.toString();							
+							VideoPlayerUI.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerUI.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerCore.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayer.getFileList(file.toString(), FFPROBE.totalLength));
+						InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));
 								
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -166,8 +167,8 @@ public class AudioSeparation extends Shutter {
 		
 		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, "");
 
-		VideoPlayer.videoPath = null;
-		VideoPlayer.playerRepaint();
+		VideoPlayerCore.videoPath = null;
+		VideoPlayerCore.playerRepaint();
 		
 		//Sending processes
 		FunctionUtils.addFileForMail(fileOut.toString());
