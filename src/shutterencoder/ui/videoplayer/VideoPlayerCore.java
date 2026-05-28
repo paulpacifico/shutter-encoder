@@ -2662,7 +2662,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					String in[] = s[1].split(":");
 					String out[] = s[2].split(":");
 					
-					totalFrames = ((double) fileDuration / 1000 * FFPROBE.accurateFPS);
+					totalFrames = Math.round((double) fileDuration / 1000 * FFPROBE.accurateFPS);
 					
 					if (s[0].equals(file))
 					{											

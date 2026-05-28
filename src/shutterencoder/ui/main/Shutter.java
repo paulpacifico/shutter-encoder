@@ -2144,10 +2144,10 @@ public class Shutter {
 						}
 					} while (FFPROBE.isRunning);
 
-					totalLength += FFPROBE.totalLength;
+					totalLength += Math.round((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS);					
 					FFPROBE.totalLength = 0;
 				}
-
+				
 				// IMPORTANT
 				if (VideoPlayerCore.videoPath != null)
 				{
@@ -2170,9 +2170,14 @@ public class Shutter {
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				
+				//NTSC framerate
+				totalLength = Timecode.setNTSCtimecode(totalLength);
+				
 				double fps = FFPROBE.accurateFPS;    		
 				if (Timecode.isDropFrame())
-				{		
+				{
+					totalLength = Timecode.getDropFrameTimecode(totalLength);
+									
 					if (FFPROBE.currentFPS == 29.97f)
 					{
 						fps = 30;
@@ -2182,11 +2187,6 @@ public class Shutter {
 						fps = 60;
 					}
 				}
-
-				totalLength = ((double) totalLength / 1000 * fps);
-				
-				//NTSC framerate
-				totalLength = Timecode.setNTSCtimecode(totalLength);
 				
 				// Formatage
 				int h = (int) Math.floor(totalLength / fps / 3600);
@@ -2214,19 +2214,6 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				double fps = FFPROBE.accurateFPS;    		
-				if (Timecode.isDropFrame())
-				{		
-					if (FFPROBE.currentFPS == 29.97f)
-					{
-						fps = 30;
-					}
-					else if (FFPROBE.currentFPS == 59.94f)
-					{
-						fps = 60;
-					}
-				}
 				
 				int totalLength = 0;
 				FFPROBE.totalLength = 0;
@@ -2267,25 +2254,25 @@ public class Shutter {
 					codec = "Apple ProRes " + comboFilter.getSelectedItem().toString();
 					switch (comboFilter.getSelectedItem().toString()) {
 					case "Proxy":
-						bitrate = (int) ((float) 1.52 * fps);
+						bitrate = (int) ((float) 1.52 * FFPROBE.accurateFPS);
 						break;
 					case "LT":
-						bitrate = (int) ((float) 3.4 * fps);
+						bitrate = (int) ((float) 3.4 * FFPROBE.accurateFPS);
 						break;
 					case "422":
-						bitrate = (int) ((float) 4.88 * fps);
+						bitrate = (int) ((float) 4.88 * FFPROBE.accurateFPS);
 						break;
 					case "422 HQ":
-						bitrate = (int) ((float) 7.4 * fps);
+						bitrate = (int) ((float) 7.4 * FFPROBE.accurateFPS);
 						break;
 					case "444":
-						bitrate = (int) ((float) 11 * fps);
+						bitrate = (int) ((float) 11 * FFPROBE.accurateFPS);
 						break;
 					case "4444":
-						bitrate = (int) ((float) 11 * fps);
+						bitrate = (int) ((float) 11 * FFPROBE.accurateFPS);
 						break;
 					case "4444 XQ":
-						bitrate = (int) ((float) 16.5 * fps);
+						bitrate = (int) ((float) 16.5 * FFPROBE.accurateFPS);
 						break;
 					}
 					break;
@@ -2312,32 +2299,32 @@ public class Shutter {
 					case "LB":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 0.7616 * 8 * fps);
+							bitrate = (int) ((float) 0.7616 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 0.7148 * 8 * fps);
+							bitrate = (int) ((float) 0.7148 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 0.1916 * 8 * fps);
+							bitrate = (int) ((float) 0.1916 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 0.1796 * 8 * fps);
+							bitrate = (int) ((float) 0.1796 * 8 * FFPROBE.accurateFPS);
 							break;
 						}
 						break;
 					case "SQ":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 2.4492 * 8 * fps);
+							bitrate = (int) ((float) 2.4492 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 2.2968 * 8 * fps);
+							bitrate = (int) ((float) 2.2968 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 0.6132 * 8 * fps);
+							bitrate = (int) ((float) 0.6132 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 0.5744 * 8 * fps);
+							bitrate = (int) ((float) 0.5744 * 8 * FFPROBE.accurateFPS);
 							break;
 						}
 						break;
@@ -2345,32 +2332,32 @@ public class Shutter {
 					case "HQX":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 3.7072 * 8 * fps);
+							bitrate = (int) ((float) 3.7072 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 3.4728 * 8 * fps);
+							bitrate = (int) ((float) 3.4728 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 0.9256 * 8 * fps);
+							bitrate = (int) ((float) 0.9256 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 0.8672 * 8 * fps);
+							bitrate = (int) ((float) 0.8672 * 8 * FFPROBE.accurateFPS);
 							break;
 						}
 						break;
 					case "444":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 7.41 * 8 * fps);
+							bitrate = (int) ((float) 7.41 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 6.9492 * 8 * fps);
+							bitrate = (int) ((float) 6.9492 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 1.8516 * 8 * fps);
+							bitrate = (int) ((float) 1.8516 * 8 * FFPROBE.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 1.7384 * 8 * fps);
+							bitrate = (int) ((float) 1.7384 * 8 * FFPROBE.accurateFPS);
 							break;
 						}
 						break;

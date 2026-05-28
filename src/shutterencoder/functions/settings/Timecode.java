@@ -127,7 +127,7 @@ public class Timecode extends Shutter {
 	
 	public static boolean isDropFrame() {
 		
-		if (FFPROBE.dropFrameTC.equals(":") == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		if (FFPROBE.dropFrameTC.equals(";") && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
      	{
 			return true;
      	}
@@ -137,7 +137,7 @@ public class Timecode extends Shutter {
 	
 	public static boolean isNonDropFrame() {
 		
-		if (FFPROBE.dropFrameTC.equals(":") && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || FFPROBE.currentFPS == 23.98f)
+		if (FFPROBE.dropFrameTC.equals(";") == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || FFPROBE.currentFPS == 23.98f)
      	{
 			return true;
      	}
@@ -146,7 +146,7 @@ public class Timecode extends Shutter {
 	}
 	
 	public static double setNTSCtimecode(double currentFrame) {
-				
+						
 		if (currentFrame <= 0) return 0;
 		
 		//NTSC framerates => remove a frame to reach round framerate		
@@ -166,9 +166,15 @@ public class Timecode extends Shutter {
 			{					
 				currentFrame -= (currentTime * 0.06 / 1000) - 1;
 			}	
-		}		
-		
-		return (double) Math.floor(currentFrame);	
+			
+			return Math.floor(currentFrame);
+		}	
+		else if (isDropFrame())
+		{
+			return Math.round(currentFrame);
+		}			
+				
+		return currentFrame;
 	}
 	
 	public static double getNTSCtimecode(double currentFrame) {
@@ -190,9 +196,15 @@ public class Timecode extends Shutter {
 			{
 				currentFrame += (currentTime * 0.06 / 1000);
 			}
+			
+			return Math.floor(currentFrame);
 		}
-				
-		return (double) Math.floor(currentFrame);		
+		else if (isDropFrame())
+		{
+			return Math.round(currentFrame);
+		}
+		
+		return currentFrame;
 	}
 	
 	public static double getDropFrameTimecode(double currentFrame) {
@@ -214,7 +226,7 @@ public class Timecode extends Shutter {
 			}
 		}
 		
-		return (double) currentFrame;		
+		return currentFrame;		
 	}
 	
 	public static double setDropFrameTimecode(double currentFrame) {
@@ -236,7 +248,7 @@ public class Timecode extends Shutter {
 			}
 		}
 		
-		return (double) currentFrame;		
+		return currentFrame;		
 	}
 	
 }

@@ -1414,7 +1414,20 @@ public class VideoPlayerUI {
 					waveformContainer.repaint();
 					updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);
 					
-					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+					double fps = FFPROBE.accurateFPS;    		
+					if (Timecode.isDropFrame())
+					{		
+						if (FFPROBE.currentFPS == 29.97f)
+						{
+							fps = 30;
+						}
+						else if (FFPROBE.currentFPS == 59.94f)
+						{
+							fps = 60;
+						}
+					}
+					
+					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * fps + Integer.parseInt(caseOutF.getText());
 										
 					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
 
@@ -1450,13 +1463,13 @@ public class VideoPlayerUI {
 					}
 				}
 				
-				VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * fps + Integer.parseInt(caseOutF.getText());
+				VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * fps + Integer.parseInt(caseOutF.getText())  - 1;
 
 				//NTSC framerate
 				VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
 				VideoPlayerCore.playerCurrentFrame = Timecode.setDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 								
-				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame - 1);
+				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
 			
 		});
@@ -2247,9 +2260,22 @@ public class VideoPlayerUI {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}						
 					}	
+					
+					double fps = FFPROBE.accurateFPS;    		
+					if (Timecode.isDropFrame())
+					{		
+						if (FFPROBE.currentFPS == 29.97f)
+						{
+							fps = 30;
+						}
+						else if (FFPROBE.currentFPS == 59.94f)
+						{
+							fps = 60;
+						}
+					}
 										
-					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
-					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * fps + Integer.parseInt(caseInF.getText());
+					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * fps + Integer.parseInt(caseOutF.getText());
 										
 					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());
 					
@@ -2411,8 +2437,21 @@ public class VideoPlayerUI {
 				waveformContainer.setSize(slider.getWidth() * waveformZoom, slider.getHeight());
 				waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));	
 				
-				double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
-				double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+				double fps = FFPROBE.accurateFPS;    		
+				if (Timecode.isDropFrame())
+				{		
+					if (FFPROBE.currentFPS == 29.97f)
+					{
+						fps = 30;
+					}
+					else if (FFPROBE.currentFPS == 59.94f)
+					{
+						fps = 60;
+					}
+				}
+				
+				double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * fps + Integer.parseInt(caseInF.getText());
+				double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * fps + Integer.parseInt(caseOutF.getText());
 									
 				playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());	
 				if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
@@ -2744,7 +2783,7 @@ public class VideoPlayerUI {
 					if (caseInH.getText().length() == 1)
 						caseInH.setText("0" + caseInH.getText());
 
-					updateTimecodeIn();
+					updateTimeIn();
 				}
 			}
 
@@ -2802,7 +2841,7 @@ public class VideoPlayerUI {
 					if (caseInM.getText().length() == 1)
 						caseInM.setText("0" + caseInM.getText());
 
-					updateTimecodeIn();
+					updateTimeIn();
 				}
 			}
 
@@ -2860,7 +2899,7 @@ public class VideoPlayerUI {
 					if (caseInS.getText().length() == 1)
 						caseInS.setText("0" + caseInS.getText());				
 
-					updateTimecodeIn();
+					updateTimeIn();
 				}						
 			}
 
@@ -2918,7 +2957,7 @@ public class VideoPlayerUI {
 					if (caseInF.getText().length() == 1)
 						caseInF.setText("0" + caseInF.getText());
 
-					updateTimecodeIn();
+					updateTimeIn();
 				}
 			}
 
@@ -2945,7 +2984,7 @@ public class VideoPlayerUI {
 	
 	}
 	
-	private static void updateTimecodeIn() {
+	private static void updateTimeIn() {
 		
 		double fps = FFPROBE.accurateFPS;    		
 		if (Timecode.isDropFrame())
@@ -2962,13 +3001,14 @@ public class VideoPlayerUI {
 		
 		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * fps + Integer.parseInt(caseInF.getText());
 
+		playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * VideoPlayerCore.playerCurrentFrame) / slider.getMaximum());
+		
 		//NTSC framerate
 		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
 		VideoPlayerCore.playerCurrentFrame = Timecode.setDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 		
 		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 		
-		playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * VideoPlayerCore.playerCurrentFrame) / slider.getMaximum());
 		waveformContainer.repaint();
 
 		//FileList
@@ -3103,7 +3143,7 @@ public class VideoPlayerUI {
 					if (caseOutH.getText().length() == 1)
 						caseOutH.setText("0" + caseOutH.getText());
 					
-					updateTimecodeOut();
+					updateTimeOut();
 				}
 			}
 
@@ -3161,7 +3201,7 @@ public class VideoPlayerUI {
 					if (caseOutM.getText().length() == 1)
 						caseOutM.setText("0" + caseOutM.getText());
 
-					updateTimecodeOut();
+					updateTimeOut();
 				}
 			}
 
@@ -3219,7 +3259,7 @@ public class VideoPlayerUI {
 					if (caseOutS.getText().length() == 1)
 						caseOutS.setText("0" + caseOutS.getText());
 
-					updateTimecodeOut();
+					updateTimeOut();
 				}
 			}
 
@@ -3277,7 +3317,7 @@ public class VideoPlayerUI {
 					if (caseOutF.getText().length() == 1)
 						caseOutF.setText("0" + caseOutF.getText());
 
-					updateTimecodeOut();
+					updateTimeOut();
 				}
 			}
 
@@ -3303,7 +3343,7 @@ public class VideoPlayerUI {
 	
 	}
 	
-	private static void updateTimecodeOut() {
+	private static void updateTimeOut() {
 		
 		double fps = FFPROBE.accurateFPS;    		
 		if (Timecode.isDropFrame())
@@ -3319,14 +3359,15 @@ public class VideoPlayerUI {
 		}
 		
 		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * fps + Integer.parseInt(caseOutF.getText()) - 1;
-
+		
+		playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * (VideoPlayerCore.playerCurrentFrame + 1)) / slider.getMaximum());
+		
 		//NTSC framerate
 		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
 		VideoPlayerCore.playerCurrentFrame = Timecode.setDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 		
 		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 		
-		playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * VideoPlayerCore.playerCurrentFrame) / slider.getMaximum());
 		waveformContainer.repaint();
 
 		//FileList
@@ -3804,8 +3845,21 @@ public class VideoPlayerUI {
 			{
 				try { //Might fail loading
 					
-					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
-					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+					double fps = FFPROBE.accurateFPS;    		
+					if (Timecode.isDropFrame())
+					{		
+						if (FFPROBE.currentFPS == 29.97f)
+						{
+							fps = 30;
+						}
+						else if (FFPROBE.currentFPS == 59.94f)
+						{
+							fps = 60;
+						}
+					}
+					
+					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * fps + Integer.parseInt(caseInF.getText());
+					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * fps + Integer.parseInt(caseOutF.getText());
 						
 					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());			
 					if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
@@ -4171,6 +4225,9 @@ public class VideoPlayerUI {
 			durationM = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps / 60) % 60;
 			durationS = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps) % 60;
 			durationF = (int) Math.floor(Timecode.getDropFrameTimecode(total) % fps);
+			
+			//NTSC framerate
+			total = Timecode.getNTSCtimecode(total);
 			
 			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 				total = totalFrames - total;
