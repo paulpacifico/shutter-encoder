@@ -1390,7 +1390,7 @@ public class VideoPlayerUI {
 				
 				//NTSC framerate
 				VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-				VideoPlayerCore.playerCurrentFrame = Timecode.setDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+				VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 				
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
@@ -1467,7 +1467,7 @@ public class VideoPlayerUI {
 
 				//NTSC framerate
 				VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-				VideoPlayerCore.playerCurrentFrame = Timecode.setDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+				VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 								
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
@@ -3005,7 +3005,7 @@ public class VideoPlayerUI {
 		
 		//NTSC framerate
 		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-		VideoPlayerCore.playerCurrentFrame = Timecode.setDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 		
 		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 		
@@ -3024,7 +3024,7 @@ public class VideoPlayerUI {
 		double fps = FFPROBE.accurateFPS;    		
 		if (Timecode.isDropFrame())
 		{
-			timeIn = Timecode.getDropFrameTimecode(timeIn);
+			timeIn = Timecode.setDropFrameTimecode(timeIn);
 							
 			if (FFPROBE.currentFPS == 29.97f)
 			{
@@ -3364,7 +3364,7 @@ public class VideoPlayerUI {
 		
 		//NTSC framerate
 		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-		VideoPlayerCore.playerCurrentFrame = Timecode.setDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 		
 		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 		
@@ -3390,7 +3390,7 @@ public class VideoPlayerUI {
 		double fps = FFPROBE.accurateFPS;    		
 		if (Timecode.isDropFrame())
 		{
-			timeOut = Timecode.getDropFrameTimecode(timeOut);
+			timeOut = Timecode.setDropFrameTimecode(timeOut);
 							
 			if (FFPROBE.currentFPS == 29.97f)
 			{
@@ -4124,7 +4124,7 @@ public class VideoPlayerUI {
     		String dropFrame = ":";
 			if (Timecode.isDropFrame())
 			{
-				time = Timecode.getDropFrameTimecode(time);
+				time = Timecode.setDropFrameTimecode(time);
 								
 				if (FFPROBE.currentFPS == 29.97f)
 				{
@@ -4219,12 +4219,12 @@ public class VideoPlayerUI {
 			
 			double totalIn =  (inH * 3600 + inM * 60 + inS) * fps + inF;
 			double totalOut = (outH * 3600 + outM * 60 + outS) * fps + outF;
-			double total = (double) Math.ceil(Timecode.setDropFrameTimecode(totalOut) - Timecode.setDropFrameTimecode(totalIn));
+			double total = (double) Math.ceil(Timecode.getDropFrameTimecode(totalOut) - Timecode.getDropFrameTimecode(totalIn));
 			
-			durationH = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps / 3600);
-			durationM = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps / 60) % 60;
-			durationS = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps) % 60;
-			durationF = (int) Math.floor(Timecode.getDropFrameTimecode(total) % fps);
+			durationH = (int) Math.floor(Timecode.setDropFrameTimecode(total) / fps / 3600);
+			durationM = (int) Math.floor(Timecode.setDropFrameTimecode(total) / fps / 60) % 60;
+			durationS = (int) Math.floor(Timecode.setDropFrameTimecode(total) / fps) % 60;
+			durationF = (int) Math.floor(Timecode.setDropFrameTimecode(total) % fps);
 			
 			//NTSC framerate
 			total = Timecode.getNTSCtimecode(total);

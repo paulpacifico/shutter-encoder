@@ -776,11 +776,8 @@ public class UIController extends Shutter {
 
 		topPanel.setBounds(0, 0, frame.getWidth(), 28);
 		topImage.setBounds(0, 0, topPanel.getWidth(), 24);
-		quit.setLocation(frame.getSize().width - 20, 4);
-		expand.setLocation(quit.getLocation().x - 20, 4);
-		minimize.setLocation(expand.getLocation().x - 20, 4);
-		help.setLocation(minimize.getLocation().x - 20, 4);
-		newInstance.setLocation(help.getLocation().x - 20, 4);
+		
+		setButtonsLocation();
 
 		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 423);
 		fileList.setSize(292, frame.getHeight() - 483);

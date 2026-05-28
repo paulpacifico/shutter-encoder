@@ -207,45 +207,57 @@ public class Timecode extends Shutter {
 		return currentFrame;
 	}
 	
-	public static double getDropFrameTimecode(double currentFrame) {
-		
+	public static double setDropFrameTimecode(double currentFrame) {
+
 		if (isDropFrame())
-		{					
-			int step = (FFPROBE.currentFPS == 29.97) ? 2 : 4;		
-			int framesToAdd = 0;
-			if (currentFrame >= 3600) {
-			    double extraSteps = ((double) currentFrame - 3600) / 3596;
-			    framesToAdd = step + ((int) extraSteps * step);
-			}
+		{
+			int step = (FFPROBE.currentFPS == 29.97f) ? 2 : 4;
+
+			// Standard timecode counts per 10 minutes and 1 minute (including skipped numbers)
+			int framesPer10Min = (FFPROBE.currentFPS == 29.97f) ? 17982 : 35964; 
+			int framesPerMin   = (FFPROBE.currentFPS == 29.97f) ? 1798 : 3596;
+
+			int frameCountInt = (int) Math.round(currentFrame);
+
+			int d = frameCountInt / framesPer10Min;
+			int m = frameCountInt % framesPer10Min;
+
+			// Calculate frames to add based on exactly where the frame falls
+			int framesToAdd;
+			if (m > step)
+			    framesToAdd = (step * 9 * d) + step * ((m - step) / framesPerMin);
+			else
+			    framesToAdd = (step * 9 * d);			
 
 			currentFrame += framesToAdd;
-			
-			if (currentFrame >= 36000)
-			{
-				currentFrame -= Math.floor(currentFrame / 36000) * step;
-			}
 		}
 		
 		return currentFrame;		
 	}
 	
-	public static double setDropFrameTimecode(double currentFrame) {
+	public static double getDropFrameTimecode(double currentFrame) {
 
 		if (isDropFrame())
-		{			
-			int step = (FFPROBE.currentFPS == 29.97) ? 2 : 4;			
-			int framesToAdd = 0;
-			if (currentFrame >= 3600) {
-				double extraSteps = ((double) currentFrame - 3604) / 3600;
-			    framesToAdd = step + ((int) extraSteps * step);
-			}
-			
-			currentFrame -= framesToAdd;
-			
-			if (currentFrame >= 36000)
-			{
-				currentFrame += Math.floor(currentFrame / 36000) * step;
-			}
+		{
+		    int step = (FFPROBE.currentFPS == 29.97f) ? 2 : 4;
+
+		    // Standard timecode counts per 10 minutes and 1 minute (including skipped numbers)
+		    int timecodePer10Min = (FFPROBE.currentFPS == 29.97f) ? 18000 : 36000; 
+		    int timecodePerMin   = (FFPROBE.currentFPS == 29.97f) ? 1800 : 3600;
+
+		    int frameCountInt = (int) Math.round(currentFrame);
+
+		    int d = frameCountInt / timecodePer10Min;
+		    int m = frameCountInt % timecodePer10Min;
+
+		    // Calculate how many frames *were* added during the forward calculation
+		    int framesToSubtract = (step * 9 * d);
+		    
+		    if (m >= step) {
+		        framesToSubtract += step * ((m - step) / timecodePerMin);
+		    }
+
+		    currentFrame -= framesToSubtract;
 		}
 		
 		return currentFrame;		

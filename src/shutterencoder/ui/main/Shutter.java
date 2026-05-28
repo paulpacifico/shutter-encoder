@@ -1368,8 +1368,7 @@ public class Shutter {
 		topPanel.setBounds(0, 0, extendedWidth, 28);
 
 		settingsIcon = new JLabel(new FlatSVGIcon("resources/settings.svg", 13, 13));
-		settingsIcon.setHorizontalAlignment(SwingConstants.CENTER);
-		settingsIcon.setBounds(4, 4, 15, 15);
+		settingsIcon.setHorizontalAlignment(SwingConstants.CENTER);		
 		topPanel.add(settingsIcon);
 
 		settingsIcon.addMouseListener(new MouseListener() {
@@ -1417,8 +1416,7 @@ public class Shutter {
 		});
 
 		quit = new JLabel(new FlatSVGIcon("resources/quit.svg", 15, 15));
-		quit.setHorizontalAlignment(SwingConstants.CENTER);
-		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
+		quit.setHorizontalAlignment(SwingConstants.CENTER);		
 		topPanel.add(quit);
 
 		quit.addMouseListener(new MouseListener() {
@@ -1512,8 +1510,7 @@ public class Shutter {
 		});
 
 		expand = new JLabel(new FlatSVGIcon("resources/expand.svg", 15, 15));
-		expand.setHorizontalAlignment(SwingConstants.CENTER);
-		expand.setBounds(quit.getLocation().x - 20, 4, 15, 15);
+		expand.setHorizontalAlignment(SwingConstants.CENTER);		
 		topPanel.add(expand);
 
 		expand.addMouseListener(new MouseListener() {
@@ -1560,8 +1557,7 @@ public class Shutter {
 		});
 
 		minimize = new JLabel(new FlatSVGIcon("resources/minimize.svg", 15, 15));
-		minimize.setHorizontalAlignment(SwingConstants.CENTER);
-		minimize.setBounds(expand.getLocation().x - 20, 4, 15, 15);
+		minimize.setHorizontalAlignment(SwingConstants.CENTER);		
 		topPanel.add(minimize);
 
 		minimize.addMouseListener(new MouseListener() {
@@ -1616,8 +1612,7 @@ public class Shutter {
 		});
 
 		help = new JLabel(new FlatSVGIcon("resources/help.svg", 15, 15));
-		help.setHorizontalAlignment(SwingConstants.CENTER);
-		help.setBounds(minimize.getLocation().x - 20, 4, 15, 15);
+		help.setHorizontalAlignment(SwingConstants.CENTER);		
 		topPanel.add(help);
 
 		help.addMouseListener(new MouseListener() {
@@ -1668,7 +1663,6 @@ public class Shutter {
 
 		newInstance = new JLabel(new FlatSVGIcon("resources/new.svg", 15, 15));
 		newInstance.setHorizontalAlignment(SwingConstants.CENTER);
-		newInstance.setBounds(help.getLocation().x - 20, 4, 15, 15);
 		newInstance.setToolTipText(language.getProperty("newInstance"));
 		topPanel.add(newInstance);
 
@@ -1751,8 +1745,7 @@ public class Shutter {
 
 		lblShutterEncoder = new JLabel(language.getProperty("panelShutter"));
 		lblShutterEncoder.setFont(new Font("Magneto", Font.PLAIN, 17));
-		lblShutterEncoder.setBounds((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1,
-				lblShutterEncoder.getPreferredSize().width + 10, 24);
+		lblShutterEncoder.setBounds((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1, lblShutterEncoder.getPreferredSize().width + 10, 24);
 		topPanel.add(lblShutterEncoder);
 
 		lblV = new JLabel("v" + actualVersion);
@@ -1874,6 +1867,30 @@ public class Shutter {
 
 		});
 
+		setButtonsLocation();
+	}
+	
+	public static void setButtonsLocation() {
+		/*
+		if (System.getProperty("os.name").contains("Mac"))
+		{
+			settingsIcon.setBounds(frame.getSize().width - 20, 4, 15, 15);
+			
+			quit.setBounds(4, 4, 15, 15);
+			expand.setBounds(quit.getLocation().x + 20, 4, 15, 15);
+			minimize.setBounds(expand.getLocation().x + 20, 4, 15, 15);
+			help.setBounds(minimize.getLocation().x + 20, 4, 15, 15);
+			newInstance.setBounds(help.getLocation().x + 20, 4, 15, 15);
+		}
+		*/
+		
+		settingsIcon.setBounds(4, 4, 15, 15);
+		
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
+		expand.setBounds(quit.getLocation().x - 20, 4, 15, 15);
+		minimize.setBounds(expand.getLocation().x - 20, 4, 15, 15);
+		help.setBounds(minimize.getLocation().x - 20, 4, 15, 15);
+		newInstance.setBounds(help.getLocation().x - 20, 4, 15, 15);
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -2176,7 +2193,7 @@ public class Shutter {
 				double fps = FFPROBE.accurateFPS;    		
 				if (Timecode.isDropFrame())
 				{
-					totalLength = Timecode.getDropFrameTimecode(totalLength);
+					totalLength = Timecode.setDropFrameTimecode(totalLength);
 									
 					if (FFPROBE.currentFPS == 29.97f)
 					{
@@ -3778,11 +3795,8 @@ public class Shutter {
 
 					topPanel.setBounds(0, 0, frame.getWidth(), 28);
 					topImage.setBounds(0, 0, topPanel.getWidth(), 24);
-					quit.setLocation(frame.getSize().width - 20, 4);
-					expand.setLocation(quit.getLocation().x - 20, 4);
-					minimize.setLocation(expand.getLocation().x - 20, 4);
-					help.setLocation(minimize.getLocation().x - 20, 4);
-					newInstance.setLocation(help.getLocation().x - 20, 4);
+					
+					setButtonsLocation();
 
 					addToList.setText(language.getProperty("dropFilesHere"));
 
@@ -10043,7 +10057,7 @@ public class Shutter {
 						double fps = FFPROBE.accurateFPS;
 						if (Timecode.isDropFrame())
 						{
-							offset = Timecode.getDropFrameTimecode(offset);
+							offset = Timecode.setDropFrameTimecode(offset);
 											
 							if (FFPROBE.currentFPS == 29.97f)
 							{

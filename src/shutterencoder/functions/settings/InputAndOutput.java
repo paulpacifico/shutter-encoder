@@ -52,7 +52,7 @@ public class InputAndOutput extends Shutter {
 			
 			//NTSC timecode
 			timeIn = Timecode.getNTSCtimecode(timeIn);
-			timeIn = Timecode.setDropFrameTimecode(timeIn);
+			timeIn = Timecode.getDropFrameTimecode(timeIn);
 					
 			if (timeIn > 0.0f)
 	        {		        
