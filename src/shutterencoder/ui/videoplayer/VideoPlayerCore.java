@@ -1338,7 +1338,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								lblDuration.setVisible(true);
 							}
 																					
-							totalFrames = ((double) fileDuration / 1000 * FFPROBE.accurateFPS);
+							totalFrames = Math.round((double) fileDuration / 1000 * FFPROBE.accurateFPS);
 							slider.setMaximum((int) (totalFrames));
 							
 							//Reset boxes
@@ -1350,7 +1350,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							else
 							{
 								updateGrpIn(0);
-								updateGrpOut(totalFrames);	
+								updateGrpOut(totalFrames);
 								
 								playerInMark = 0;
 								playerOutMark = waveformContainer.getWidth() - 2;
@@ -2698,7 +2698,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								
 				double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 				double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
-										
+
 				//Used for encoding
 				if (Shutter.caseEnableSequence.isSelected())
 				{						

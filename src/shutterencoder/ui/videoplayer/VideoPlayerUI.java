@@ -2247,7 +2247,7 @@ public class VideoPlayerUI {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}						
 					}	
-					
+										
 					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 										
@@ -3334,7 +3334,7 @@ public class VideoPlayerUI {
 	}
 
 	public static void updateGrpOut(double timeOut) {
-
+		
 		if (playerOutMark < waveformContainer.getWidth() - 2)
 		{
 			//NTSC framerate
@@ -3806,14 +3806,14 @@ public class VideoPlayerUI {
 					
 					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
 					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
-											
+						
 					playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());			
 					if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 					{
 						playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
 					}
 					else
-						playerOutMark = waveformContainer.getWidth();	
+						playerOutMark = waveformContainer.getWidth();
 					
 				} catch (Exception e) {}
 				
@@ -4165,11 +4165,6 @@ public class VideoPlayerUI {
 			
 			double totalIn =  (inH * 3600 + inM * 60 + inS) * fps + inF;
 			double totalOut = (outH * 3600 + outM * 60 + outS) * fps + outF;
-			
-			//NTSC framerate
-			totalIn = Timecode.setDropFrameTimecode(totalIn);
-			totalOut = Timecode.setDropFrameTimecode(totalOut);			
-						
 			double total = (double) Math.ceil(totalOut - totalIn);
 			
 			durationH = (int) Math.floor(total / fps / 3600);
