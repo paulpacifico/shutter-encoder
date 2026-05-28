@@ -4152,7 +4152,7 @@ public class VideoPlayerUI {
 					fps = 60;
 				}
 			}
-			
+						
 			int inH = Integer.parseInt(caseInH.getText());
 			int inM = Integer.parseInt(caseInM.getText());
 			int inS = Integer.parseInt(caseInS.getText());
@@ -4165,19 +4165,15 @@ public class VideoPlayerUI {
 			
 			double totalIn =  (inH * 3600 + inM * 60 + inS) * fps + inF;
 			double totalOut = (outH * 3600 + outM * 60 + outS) * fps + outF;
-			double total = (double) Math.ceil(totalOut - totalIn);
+			double total = (double) Math.ceil(Timecode.setDropFrameTimecode(totalOut) - Timecode.setDropFrameTimecode(totalIn));
 			
-			durationH = (int) Math.floor(total / fps / 3600);
-			durationM = (int) Math.floor(total / fps / 60) % 60;
-			durationS = (int) Math.floor(total / fps) % 60;
-			durationF = (int) Math.floor(total % fps);
+			durationH = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps / 3600);
+			durationM = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps / 60) % 60;
+			durationS = (int) Math.floor(Timecode.getDropFrameTimecode(total) / fps) % 60;
+			durationF = (int) Math.floor(Timecode.getDropFrameTimecode(total) % fps);
 			
 			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
 				total = totalFrames - total;
-				
-			//NTSC framerate
-			total =	Timecode.getNTSCtimecode(total);
-			total = Timecode.setDropFrameTimecode(total);
 			
 			lblDuration.setText(Shutter.language.getProperty("lblBitrateTimecode") + " " + Shutter.formatter.format(durationH) + ":" + Shutter.formatter.format(durationM) + ":" + Shutter.formatter.format(durationS) + ":" + Shutter.formatter.format(durationF) + " | " + (int) total + " " + Shutter.language.getProperty("lblTotalFrames"));
 			
