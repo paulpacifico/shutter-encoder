@@ -176,8 +176,8 @@ public class VideoEncoders extends Shutter {
 						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
 							VideoPlayerCore.videoPath = file.toString();													
-							VideoPlayerUI.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUI.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
+							VideoPlayerCore.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerCore.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
 							VideoPlayerCore.setFileList();	
 						}
 						

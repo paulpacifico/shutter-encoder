@@ -303,7 +303,7 @@ public static boolean hasDolbyVision = false;
 					         	if (totalLength != 0)
 								{     				
 						      		if (VideoPlayerCore.playerVideo != null)	
-						     			VideoPlayerUI.totalDuration();
+						     			VideoPlayerCore.totalDuration();
 	
 						            setFilesize();
 								}
@@ -1241,7 +1241,7 @@ public static boolean hasDolbyVision = false;
 			    		    	}	
 		             
 					            if (VideoPlayerCore.playerVideo != null)	
-						     		VideoPlayerUI.totalDuration();
+						     		VideoPlayerCore.totalDuration();
 					             
 					            setFilesize();
 							}

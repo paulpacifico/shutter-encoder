@@ -1388,7 +1388,7 @@ public class SubtitlesTimeline {
 				timeline.repaint();
 
 				//Then refresh the slider position
-				VideoPlayerUI.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
+				VideoPlayerCore.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
 			}				
 			
 		});

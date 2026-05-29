@@ -399,7 +399,7 @@ public class SubtitlesEdit {
 							VideoPlayerUI.sliderChange = false;						
 
 							//Then refresh the slider position
-							VideoPlayerUI.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
+							VideoPlayerCore.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
 							
 							break;
 						}
