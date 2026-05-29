@@ -1399,11 +1399,9 @@ public class VideoPlayerUI {
 				{
 					playerOutMark = cursorWaveform.getX();
 					waveformContainer.repaint();
-					VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);
+					VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);		
 					
-					double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText());
-										
-					playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
+					VideoPlayerCore.setMarkers();
 
 					//FileList
 					VideoPlayerCore.setFileList();

@@ -2830,10 +2830,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	public static void updateTimeIn() {
 
+		setMarkers();
+		
 		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
 
-		playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * VideoPlayerCore.playerCurrentFrame) / slider.getMaximum());
-		
 		//NTSC framerate
 		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
 		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
@@ -2881,11 +2881,11 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	}
 	
 	public static void updateTimeOut() {
-				
+			
+		setMarkers();
+		
 		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText()) - 1;
-		
-		playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * (VideoPlayerCore.playerCurrentFrame + 1)) / slider.getMaximum());
-		
+
 		//NTSC framerate
 		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
 		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
@@ -2902,7 +2902,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 		double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
 		double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText());
-							
+		
+		timeIn = Timecode.getDropFrameTimecode(timeIn);
+		timeOut = Timecode.getDropFrameTimecode(timeOut);
+		
 		playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());					
 		if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 		{
