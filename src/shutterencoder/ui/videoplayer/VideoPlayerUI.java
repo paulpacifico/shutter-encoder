@@ -2211,17 +2211,28 @@ public class VideoPlayerUI {
 				mouseIsPressed = false;
 
 				if (Shutter.list.getSize() > 0)
-                {	
-					//Allows to wait for the last frame to load					
+                {						
+					sliderChange = false;								
+
+					//Reload the frame to apply bicubic filter					
+					do {
+						try {
+							Thread.sleep(1);
+						} catch (InterruptedException e1) {}
+					} while (VideoPlayerCore.setTime.isAlive());
+
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);	
+					
+					//Allows to wait for the last frame to load
 					while (VideoPlayerCore.setTime.isAlive())
 					{
 						try {
 							Thread.sleep(10);
 						} catch (InterruptedException e1) {}						
-					}	
-			
+					}
+					
 					VideoPlayerCore.setMarkers();
-
+					
 					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerOutMark && mouseIsPressed)
 					{							
 						cursorWaveform.setLocation(playerInMark, 0);
@@ -2233,20 +2244,7 @@ public class VideoPlayerUI {
 						cursorWaveform.setLocation(playerOutMark, 0);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame);
-					}		
-					
-					sliderChange = false;								
-
-					//Reload the frame to apply bicubic filter					
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}
-					} while (VideoPlayerCore.setTime.isAlive());
-
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-					
-					waveformContainer.repaint();
+					}	
 					
 					waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					

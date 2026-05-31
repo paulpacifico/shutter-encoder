@@ -2858,26 +2858,16 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			//NTSC framerate
 			timeOut = Timecode.setNTSCtimecode(totalFrames);
 		}
-		
-		double fps = FFPROBE.accurateFPS;    		
+		 		
 		if (Timecode.isDropFrame())
 		{
 			timeOut = Timecode.setDropFrameTimecode(timeOut);
-							
-			if (FFPROBE.currentFPS == 29.97f)
-			{
-				fps = 30;
-			}
-			else if (FFPROBE.currentFPS == 59.94f)
-			{
-				fps = 60;
-			}
 		}
 
-		caseOutH.setText(Shutter.formatter.format(Math.floor(timeOut / fps / 3600)));
-		caseOutM.setText(Shutter.formatter.format(Math.floor(timeOut / fps / 60) % 60));
-		caseOutS.setText(Shutter.formatter.format(Math.floor(timeOut / fps) % 60));    		
-		caseOutF.setText(Shutter.formatter.format(Math.floor(timeOut % fps)));
+		caseOutH.setText(Shutter.formatter.format(Math.floor(timeOut / getFPS() / 3600)));
+		caseOutM.setText(Shutter.formatter.format(Math.floor(timeOut / getFPS() / 60) % 60));
+		caseOutS.setText(Shutter.formatter.format(Math.floor(timeOut / getFPS()) % 60));    		
+		caseOutF.setText(Shutter.formatter.format(Math.floor(timeOut % getFPS())));
 	}
 	
 	public static void updateTimeOut() {
@@ -2903,9 +2893,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
 		double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText());
 		
+		timeIn = Math.ceil(timeIn);
+		timeOut = Math.ceil(timeOut);
+
 		timeIn = Timecode.getDropFrameTimecode(timeIn);
 		timeOut = Timecode.getDropFrameTimecode(timeOut);
-		
+
 		playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());					
 		if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 		{
@@ -2925,13 +2918,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			slider.setValue(slider.getMaximum());
 			sliderChange = false;    		
 		}
-
-		//NTSC framerate
-		time = Timecode.setNTSCtimecode(time);
 		
 		if (caseInternalTc.isSelected())
 			time += offset;
-						
+		
     	if (VideoPlayerCore.playerVideo != null && time - offset < totalFrames)
     	{    	    		
     		if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
@@ -2943,6 +2933,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			{
 				VideoPlayerCore.updateGrpOut(time - offset + 1);
 			}
+			
+			//NTSC framerate
+			time = Timecode.setNTSCtimecode(time);
 			
 			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * (time - offset)) / slider.getMaximum());
 			 		
