@@ -215,7 +215,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							    	fps ++;	
 								}
 
-								updateCurrentFrame();								
+								if (playerIsPlaying())
+								{
+									updateCurrentFrame();
+								}
+								else
+									playerCurrentFrame = inputTime;															
 															
 							} catch (Exception e) {}
 							finally {
@@ -734,9 +739,11 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		return false;
 	}
 	
-	public static void playerSetTime(double time) {
+	public static void playerSetTime(double inputTime) {
 					
-		if ((setTime == null || setTime.isAlive() == false) && (frameVideo != null || playerCurrentFrame > 0) && playerThread != null && Shutter.doNotLoadImage == false && time < totalFrames && videoPath != null)
+		if ((setTime == null || setTime.isAlive() == false)
+		&& (frameVideo != null || playerCurrentFrame > 0)
+		&& playerThread != null && Shutter.doNotLoadImage == false && inputTime < totalFrames && videoPath != null)
 		{			
 			setTime = new Thread(new Runnable() {
 
@@ -745,8 +752,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					
 					previewUpscale = false;
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					
-					int t = (int) Math.ceil(time);
+
+					double t = Math.floor(inputTime);
 					
 					if (t < 0)
 						t = 0;
@@ -756,104 +763,142 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					{
 						preview = null;
 					}					
-					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != time && freezeFrame == "")
+					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != t && freezeFrame == "")
 					{
 						useBuffer = true;
+					}			
+					
+					//Forward value
+					int framesToSkip = (int) (t - playerCurrentFrame);
+					
+					//Backward value
+					int framesToSkipBackward = (int) (playerCurrentFrame - bufferCurrentFrame);
+					if (mouseIsPressed)
+					{
+						framesToSkipBackward = (int) (playerCurrentFrame - t);
 					}
-							
-					int framesToSkip = (int) ((double) time - playerCurrentFrame);
-					int framesToSkipBackward = (int) ((double) time - bufferCurrentFrame);
+					
+					//Allows to only use read buffered frames forward
+					boolean readNextFrame = false;
+					if ((t - framesToSkipBackward > bufferCurrentFrame && frameControl) || (t >= bufferCurrentFrame && mouseIsPressed))
+					{
+						readNextFrame = true;
+					}
 					
 					//Read buffered frames if they exists
-					if (bufferedFrames.size() > 0 && time < bufferCurrentFrame + 1 && framesToSkip >= 0 && useBuffer)
+					if (bufferedFrames.size() > 0 && bufferCurrentFrame < playerCurrentFrame && framesToSkipBackward > 0 && readNextFrame && useBuffer)
 					{
 						//System.out.println("Read buffered frames");
+
+						int framesToRemove = (int) (mouseIsPressed ? playerCurrentFrame - t : framesToSkipBackward);						
+						frameVideo = (BufferedImage) bufferedFrames.get((int) (bufferedFrames.size() - framesToRemove));	
 						
-						int framesToRead = (int) ((double) bufferCurrentFrame - playerCurrentFrame - framesToSkip + 1);
-							
-						frameVideo = (BufferedImage) bufferedFrames.get(bufferedFrames.size() - framesToRead);	
-						playerCurrentFrame += framesToSkip;
+						bufferCurrentFrame = mouseIsPressed ? t + 1 : t - framesToRemove;
 						
 						//Read 1 audio frame
-						playerPlayAudioOnly(time);
+						playerPlayAudioOnly(bufferCurrentFrame);
 						
-						getTimePoint(playerCurrentFrame); 						
-						player.repaint();	
+						getTimePoint(bufferCurrentFrame); 						
+						player.repaint();
 					}					
 					else if (framesToSkip < 60 && framesToSkip >= 0 && useBuffer) //Read forward is faster until 60 frames than recreating the process
-					{									
-						//System.out.println("Read frames");
+					{
+						//System.out.println("Read frames");			
 						
 						try {
-
-							int i = 0;
 							
+							//Add the current frame displayed to the buffer					
+							if (bufferedFrames.size() == 0)
+								bufferedFrames.add(cloneBufferedImage(frameVideo));
+							
+							int i = 0;
 							do {
 								
-								i++;
+								i ++;
 								
 								readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight(), false, true);
-								updateCurrentFrame();				
+								playerCurrentFrame += 1;
 								
-								//Limit the buffer size into memory
+								//Limit the buffer size into memory								
 								if (bufferedFrames.size() > maxBufferedFrames) 
 								{
 									bufferedFrames.remove(0);
 								}
 								
-								//Read frames and add them into the bufferedFrames								
+								//Add the frame to the buffer
 								bufferedFrames.add(cloneBufferedImage(frameVideo));
 								
-								if (i == framesToSkip)
-								{
-									//Read 1 audio frame
-									playerPlayAudioOnly(time);
-									
-									playerRepaint();
-									bufferCurrentFrame = playerCurrentFrame;
-								}
-								
 							} while (i < framesToSkip);
-
-						} catch (Exception er) {}					
+							
+							bufferCurrentFrame = playerCurrentFrame;
+											
+							getTimePoint(bufferCurrentFrame);
+							
+							//Read 1 audio frame
+							playerPlayAudioOnly(bufferCurrentFrame);
+							
+							player.repaint();							
+							waveformContainer.repaint();
+							
+						} catch (Exception er) {							
+							//System.out.println("CLEARED");
+							bufferedFrames.clear();
+							bufferCurrentFrame = 0;
+							waveformContainer.repaint();
+						}
 					}
-					else if (bufferedFrames.size() > 1 && 0 - framesToSkipBackward < bufferedFrames.size() && framesToSkip < 0 && useBuffer) //Read available buffered frames backward
-					{			
-						//System.out.println("Read buffered frames backward");
-						
-						frameVideo = (BufferedImage) bufferedFrames.get(bufferedFrames.size() + framesToSkipBackward);							
-						playerCurrentFrame += framesToSkip + 1;
-						
-						//Read 1 audio frame
-						playerPlayAudioOnly(time + 1);
-						
-						getTimePoint(playerCurrentFrame); 						
-						player.repaint();
+					else if (bufferedFrames.size() > 1 && framesToSkipBackward < bufferedFrames.size() - 1 && framesToSkip < 0 && useBuffer) //Read available buffered frames backward
+					{	
+						if (t < bufferCurrentFrame - 1 || mouseIsPressed == false)
+						{
+							//System.out.println("Read buffered frames backward");
+											
+							if (mouseIsPressed == false)
+							{
+								framesToSkipBackward += 2;
+							}
+							
+							frameVideo = (BufferedImage) bufferedFrames.get((int) (bufferedFrames.size() - framesToSkipBackward));	
+							bufferCurrentFrame = playerCurrentFrame - framesToSkipBackward + 1;
+															
+							//Read 1 audio frame
+							playerPlayAudioOnly(bufferCurrentFrame);
+							
+							getTimePoint(bufferCurrentFrame); 						
+							player.repaint();
+						}
 					}
 					else if (framesToSkip != 0 || (framesToSkip == 0 && mouseIsPressed == false)) //Do not use if there is no time difference and user is currently scrolling
-					{	
+					{												
 						//Clear the buffer
-						if (bufferedFrames.size() > 0 && playerCurrentFrame != time && (framesToSkip >= 60 || 0 - framesToSkipBackward >= bufferedFrames.size() || useBuffer == false))
+						if (bufferedFrames.size() > 0 && playerCurrentFrame != t && (framesToSkip >= 60 || 0 - framesToSkip >= bufferedFrames.size() || useBuffer == false))
 						{		
 							//System.out.println("CLEARED");
 							bufferedFrames.clear();
+							bufferCurrentFrame = 0;
 							waveformContainer.repaint();
 							
 							//IMPORTANT
 							t += 1;
 						}
 						else
-						{
+						{							
 							//System.out.println("Set Time");
 							
 							//Remove all buffered frames after the playerCurrentFrame
 							if (bufferedFrames.size() > 0)
 							{
-								while (bufferCurrentFrame > playerCurrentFrame && bufferedFrames.size() > 0)
+								int d = frameControl ? 1 : 0;
+								int framesToRemove = (int) (playerCurrentFrame - bufferCurrentFrame) + d;								
+								for (int i = 0 ; i < framesToRemove ; i++)
 								{
 									bufferedFrames.remove(bufferedFrames.size() - 1);
-									bufferCurrentFrame -= 1;									
 								}
+								
+								t = bufferCurrentFrame - d;
+								
+								if (bufferedFrames.size() == 0)
+									bufferCurrentFrame = 0;
 							}
 						}
 						
@@ -877,9 +922,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						} while (playerThread.isAlive());				
 						
 						frameControl = true; //IMPORTANT to stop the player loop
-						frameIsComplete = false;		
+						frameIsComplete = false;
 						playerLoop = true;
-						playerProcess(t);							
+						playerProcess(t);
 						
 						long time = System.currentTimeMillis();
 												
@@ -905,15 +950,22 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						}
 						else
 							playerLoop = false;
-																				
-						playerCurrentFrame = t;
-						getTimePoint(playerCurrentFrame); 
-						Shutter.timecode.repaint();						
+						
+						getTimePoint(t); 
+						Shutter.timecode.repaint();
 						
 						frameControl = false;
 						playerPlayVideo = true;	
-												
+					}					
+					
+					if (bufferedFrames.size() > 0)
+					{
+						cursorCurrentFrame.setLocation((int) Math.floor((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(bufferCurrentFrame)) / totalFrames), 0);
 					}
+					else
+						cursorCurrentFrame.setLocation((int) Math.floor((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(playerCurrentFrame)) / totalFrames), 0);
+					
+					frameControl = false;
 					
 					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					Shutter.windowDrag = false;
@@ -1091,11 +1143,11 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 					
-			int framesToSkip = (int) ((double) slider.getValue() - playerCurrentFrame);
+			int framesToSkip = (int) ((double) inputTime - playerCurrentFrame);
 			
 			String decodingOptions = "";
 			if (mouseIsPressed && (framesToSkip > 60 || framesToSkip < 0))
-			{	
+			{					
 				String format = "";
 				if (FFPROBE.videoFormat != null)
 					format = " -f " + FFPROBE.videoFormat;
@@ -1281,7 +1333,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				playerCurrentFrame += 1 * 0.25f;
 		}
 		else
-			playerCurrentFrame += 1;	
+			playerCurrentFrame += 1;
 	}
 	        
 	public static void addWaveform(boolean newWaveform) {
@@ -2351,13 +2403,13 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								|| Shutter.comboSubsSource.getSelectedIndex() != 0)
 								{
 									FunctionUtils.addSubtitles(false);
-									if (VideoPlayerCore.runProcess != null)
+									if (runProcess != null)
 									{
 										do {
 											try {
 												Thread.sleep(100);
 											} catch (InterruptedException e) {}
-										} while (VideoPlayerCore.runProcess.isAlive());
+										} while (runProcess.isAlive());
 									}
 									FunctionUtils.addSubtitles(true);
 								}
@@ -2446,7 +2498,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							}
 																					
 							totalFrames = Math.round((double) fileDuration / 1000 * FFPROBE.accurateFPS);
-							slider.setMaximum((int) (totalFrames));
 							
 							//Reset boxes
 							if (caseApplyCutToAll.isVisible() && caseApplyCutToAll.isSelected())
@@ -2501,8 +2552,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									
 									resizeAll();
 								}
-							}
-							
+							}						
 						}	
 						
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -2514,7 +2564,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						videoPath = null;
 						showScale.setVisible(false);
 						playerStop();
-						slider.setValue(0);
+						playerSetTime(0);
 			
 						btnPlay.setIcon(new FlatSVGIcon("resources/play.svg", 15, 15));	
 						btnPlay.setName("play");
@@ -2599,7 +2649,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 						
 						SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
-						SubtitlesTimeline.timelineScrollBar.setMaximum(slider.getMaximum());
+						SubtitlesTimeline.timelineScrollBar.setMaximum((int) totalFrames);
 									
 						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			    		Shutter.frame.setLocation(Shutter.frame.getLocation().x , dim.height/3 - Shutter.frame.getHeight()/2);
@@ -2720,9 +2770,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				}
 				else			
 					inputFramerateMS = (double) (1000 / FFPROBE.accurateFPS);	
-				
-				slider.setMaximum((int) (totalFrames));	
-															
+																			
 				setMarkers();	
 				totalDuration();
 				
@@ -2793,10 +2841,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			timeIn = Timecode.setDropFrameTimecode(timeIn);
 		}
 		
-		caseInH.setText(Shutter.formatter.format(Math.floor(timeIn / VideoPlayerCore.getFPS() / 3600)));
-		caseInM.setText(Shutter.formatter.format(Math.floor(timeIn / VideoPlayerCore.getFPS() / 60) % 60));
-		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / VideoPlayerCore.getFPS()) % 60));    		
-		caseInF.setText(Shutter.formatter.format(Math.floor(timeIn % VideoPlayerCore.getFPS())));
+		caseInH.setText(Shutter.formatter.format(Math.floor(timeIn / getFPS() / 3600)));
+		caseInM.setText(Shutter.formatter.format(Math.floor(timeIn / getFPS() / 60) % 60));
+		caseInS.setText(Shutter.formatter.format(Math.floor(timeIn / getFPS()) % 60));    		
+		caseInF.setText(Shutter.formatter.format(Math.floor(timeIn % getFPS())));
 		
 		if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false && Shutter.setTimecodeEdited == false)
 		{
@@ -2832,18 +2880,18 @@ public class VideoPlayerCore extends VideoPlayerUI {
 
 		setMarkers();
 		
-		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
+		playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * getFPS() + Integer.parseInt(caseInF.getText());
 
 		//NTSC framerate
-		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
+		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
 		
-		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+		playerSetTime(playerCurrentFrame);
 		
 		waveformContainer.repaint();
 
 		//FileList
-		VideoPlayerCore.setFileList();
+		setFileList();
 	}
 	
 	public static void updateGrpOut(double timeOut) {
@@ -2874,24 +2922,24 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			
 		setMarkers();
 		
-		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText()) - 1;
+		playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * getFPS() + Integer.parseInt(caseOutF.getText()) - 1;
 
 		//NTSC framerate
-		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
+		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
 		
-		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+		playerSetTime(playerCurrentFrame);
 		
 		waveformContainer.repaint();
 
 		//FileList
-		VideoPlayerCore.setFileList();
+		setFileList();
 	}
 	
 	public static void setMarkers() {
 				
-		double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
-		double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText());
+		double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * getFPS() + Integer.parseInt(caseInF.getText());
+		double timeOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * getFPS() + Integer.parseInt(caseOutF.getText());
 		
 		timeIn = Math.ceil(timeIn);
 		timeOut = Math.ceil(timeOut);
@@ -2899,10 +2947,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		timeIn = Timecode.getDropFrameTimecode(timeIn);
 		timeOut = Timecode.getDropFrameTimecode(timeOut);
 
-		playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / slider.getMaximum());					
+		playerInMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeIn) / totalFrames);					
 		if ((int) Timecode.getNTSCtimecode(timeOut) < (int) totalFrames)
 		{
-			playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / slider.getMaximum());
+			playerOutMark = (int) Math.floor((double) (waveformContainer.getSize().width * timeOut) / totalFrames);
 		}
 		else
 			playerOutMark = waveformContainer.getWidth();
@@ -2910,34 +2958,34 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		waveformContainer.repaint();
 	}
 	
-	public static void getTimePoint(double time) {	
+	public static void getTimePoint(double inputTime) {	
 				
-		if (time >= totalFrames)
+		if (inputTime >= totalFrames)
 		{
 			sliderChange = true;
-			slider.setValue(slider.getMaximum());
+			playerSetTime(totalFrames);
 			sliderChange = false;    		
 		}
 		
 		if (caseInternalTc.isSelected())
-			time += offset;
+			inputTime += offset;
 		
-    	if (VideoPlayerCore.playerVideo != null && time - offset < totalFrames)
+    	if (playerVideo != null && inputTime - offset < totalFrames)
     	{    	    		
     		if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 			{
-				VideoPlayerCore.updateGrpIn(time - offset);
+				updateGrpIn(inputTime - offset);
 			}			
 			
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && mouseIsPressed)
 			{
-				VideoPlayerCore.updateGrpOut(time - offset + 1);
+				updateGrpOut(inputTime - offset + 1);
 			}
 			
 			//NTSC framerate
-			time = Timecode.setNTSCtimecode(time);
+			double time = Timecode.setNTSCtimecode(inputTime);
 			
-			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * (time - offset)) / slider.getMaximum());
+			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * (time - offset)) / totalFrames);
 			 		
     		String dropFrame = ":";
 			if (Timecode.isDropFrame())
@@ -2946,20 +2994,18 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				dropFrame = ";";
 			}
     		
-			String h = Shutter.formatter.format(Math.floor(time / VideoPlayerCore.getFPS() / 3600));
-			String m = Shutter.formatter.format(Math.floor(time / VideoPlayerCore.getFPS() / 60) % 60);
-			String s = Shutter.formatter.format(Math.floor(time / VideoPlayerCore.getFPS()) % 60);   
-			String f = Shutter.formatter.format(Math.floor(time % VideoPlayerCore.getFPS()));
+			String h = Shutter.formatter.format(Math.floor(time / getFPS() / 3600));
+			String m = Shutter.formatter.format(Math.floor(time / getFPS() / 60) % 60);
+			String s = Shutter.formatter.format(Math.floor(time / getFPS()) % 60);   
+			String f = Shutter.formatter.format(Math.floor(time % getFPS()));
 
-			lblPosition.setText(h + ":" + m + ":" + s + dropFrame + f + " | " + Math.round(VideoPlayerCore.playerCurrentFrame));	    
+			lblPosition.setText(h + ":" + m + ":" + s + dropFrame + f + " | " + Math.round(inputTime));	    
 					
     		if (sliderChange == false && Shutter.windowDrag == false)
     		{   		
-    			slider.setValue((int) VideoPlayerCore.playerCurrentFrame);
-    			
     			if (cursorWaveform != null)
     			{
-    				if (VideoPlayerCore.playerCurrentFrame <= 1)
+    				if (playerCurrentFrame <= 1)
 					{
 						cursorWaveform.setLocation(0, 0);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
@@ -2977,10 +3023,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						}
     				}
-    				
+
     				if (cursorWaveform.getX() > waveformScrollPane.getWidth() + waveformScrollPane.getHorizontalScrollBar().getValue())
 					{
-						waveformScrollPane.getHorizontalScrollBar().setValue(cursorWaveform.getX() - slider.getWidth() + 1);
+						waveformScrollPane.getHorizontalScrollBar().setValue(cursorWaveform.getX() - (waveformContainer.getWidth() / waveformZoom) + 1);
 					}
 					else if (cursorWaveform.getX() < waveformScrollPane.getHorizontalScrollBar().getValue())
 					{
@@ -2990,7 +3036,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
     		}    
     	}
     	
-    	if (time - offset >= totalFrames - 2)
+    	if (inputTime - offset >= totalFrames - 2)
     	{
     		btnPlay.setIcon(new FlatSVGIcon("resources/play.svg", 15, 15));
     		btnPlay.setName("play");
@@ -3012,14 +3058,14 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			int outS = Integer.parseInt(caseOutS.getText());
 			int outF = Integer.parseInt(caseOutF.getText());
 			
-			double totalIn =  (inH * 3600 + inM * 60 + inS) * VideoPlayerCore.getFPS() + inF;
-			double totalOut = (outH * 3600 + outM * 60 + outS) * VideoPlayerCore.getFPS() + outF;
+			double totalIn =  (inH * 3600 + inM * 60 + inS) * getFPS() + inF;
+			double totalOut = (outH * 3600 + outM * 60 + outS) * getFPS() + outF;
 			double total = (double) Math.ceil(Timecode.getDropFrameTimecode(totalOut) - Timecode.getDropFrameTimecode(totalIn));
 			
-			durationH = (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS() / 3600);
-			durationM = (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS() / 60) % 60;
-			durationS = (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS()) % 60;
-			durationF = (int) Math.floor(Timecode.setDropFrameTimecode(total) % VideoPlayerCore.getFPS());
+			durationH = (int) Math.floor(Timecode.setDropFrameTimecode(total) / getFPS() / 3600);
+			durationM = (int) Math.floor(Timecode.setDropFrameTimecode(total) / getFPS() / 60) % 60;
+			durationS = (int) Math.floor(Timecode.setDropFrameTimecode(total) / getFPS()) % 60;
+			durationF = (int) Math.floor(Timecode.setDropFrameTimecode(total) % getFPS());
 			
 			//NTSC framerate
 			total = Timecode.getNTSCtimecode(total);
