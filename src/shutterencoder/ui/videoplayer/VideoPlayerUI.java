@@ -2317,7 +2317,7 @@ public class VideoPlayerUI {
 					}
 					else if (e.getX() > waveformContainer.getWidth() - 2)
 					{
-						sliderChange = true;					
+						sliderChange = true;		
 						cursorWaveform.setLocation(waveformContainer.getWidth() - 2, cursorWaveform.getLocation().y);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						

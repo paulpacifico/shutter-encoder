@@ -803,14 +803,16 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					}					
 					else if (framesToSkip < 60 && framesToSkip >= 0 && useBuffer) //Read forward is faster until 60 frames than recreating the process
 					{
-						//System.out.println("Read frames");			
-						
 						try {
+							
+							//IMPORTANT avoid to display the last read frame when then buffer is filled again
+							if (frameVideo != null)
+					            frameVideo = cloneBufferedImage(frameVideo);					       
 							
 							//Add the current frame displayed to the buffer					
 							if (bufferedFrames.size() == 0)
 								bufferedFrames.add(cloneBufferedImage(frameVideo));
-							
+													
 							int i = 0;
 							do {
 								
