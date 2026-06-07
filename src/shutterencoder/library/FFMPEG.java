@@ -1263,21 +1263,22 @@ public static StringBuilder errorLog = new StringBuilder();
 
 			if (cmd.contains("-hwaccels"))
 			{
-				InputStreamReader isr = new InputStreamReader(process.getInputStream());
-		        BufferedReader br = new BufferedReader(isr);
+				try (InputStreamReader isr = new InputStreamReader(process.getInputStream())) {
+					BufferedReader br = new BufferedReader(isr);
 		        
-		        hwaccels.append("auto" + System.lineSeparator());
+					hwaccels.append("auto" + System.lineSeparator());
 		        
-		        while ((line = br.readLine()) != null) 
-		        {				        	
+					while ((line = br.readLine()) != null) 
+					{				        	
 		        	
-		        	if (line.contains("Hardware acceleration methods") == false && line.equals("") == false && line != null)
-		        	{
-		        		hwaccels.append(line + System.lineSeparator());
-		        	}
-		        }
+					if (line.contains("Hardware acceleration methods") == false && line.equals("") == false && line != null)
+					{
+					hwaccels.append(line + System.lineSeparator());
+					}
+					}
 		        
-		        hwaccels.append(language.getProperty("aucun"));				        
+					hwaccels.append(language.getProperty("aucun"));				        
+				}
 		    }
 			else
 			{
