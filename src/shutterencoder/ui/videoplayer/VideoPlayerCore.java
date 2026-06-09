@@ -763,7 +763,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					{
 						preview = null;
 					}					
-					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != t && freezeFrame == "")
+					else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != t && freezeFrame == "" && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 					{
 						useBuffer = true;
 					}			
@@ -947,8 +947,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						} while (frameIsComplete == false);	
 													
 						if (playback && mouseIsPressed == false)
-						{						
+						{									
 							playerLoop = true;
+						}
+						else if (playback && mouseIsPressed)
+						{
+							playerCurrentFrame = t;
 						}
 						else
 							playerLoop = false;
@@ -958,8 +962,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						
 						frameControl = false;
 						playerPlayVideo = true;	
-					}					
-					
+					}	
+
 					if (bufferedFrames.size() > 0)
 					{
 						cursorCurrentFrame.setLocation((int) Math.floor((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(bufferCurrentFrame)) / totalFrames), 0);
@@ -2650,8 +2654,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						File video = new File(videoPath);
 						String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 						
-						SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");
-						SubtitlesTimeline.timelineScrollBar.setMaximum((int) totalFrames);
+						SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");		
+						SubtitlesTimeline.timelineScrollBar.setMaximum((int) (((totalFrames - 2) * VideoPlayerUI.inputFramerateMS) * SubtitlesTimeline.zoom));
 									
 						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			    		Shutter.frame.setLocation(Shutter.frame.getLocation().x , dim.height/3 - Shutter.frame.getHeight()/2);
