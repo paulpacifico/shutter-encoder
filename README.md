@@ -80,7 +80,7 @@ Installers and portable versions for **Windows**, **macOS**, and **Linux** are a
 
 Shutter Encoder uses a **custom Java runtime** built with **jlink**, based on **Java 25**, using the following configuration:
 
-<code>--compress 0 --strip-debug --no-header-files --no-man-pages --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.security.sasl,java.xml,jdk.crypto.ec --output JRE</code>
+<code>--strip-debug --no-header-files --no-man-pages --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.security.sasl,java.xml,jdk.crypto.ec --output JRE</code>
 
 ---
 
