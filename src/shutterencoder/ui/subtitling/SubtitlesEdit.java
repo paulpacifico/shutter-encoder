@@ -388,12 +388,12 @@ public class SubtitlesEdit {
 							if (c.getX() <= 0)
 							{
 								SubtitlesTimeline.cursor.setLocation(0, SubtitlesTimeline.cursor.getLocation().y);
-								VideoPlayerUI.slider.setValue(0);	
+								VideoPlayerCore.playerSetTime(0);	
 							}
 							else
 							{
 								SubtitlesTimeline.cursor.setLocation(c.getX(), SubtitlesTimeline.cursor.getLocation().y);
-								VideoPlayerUI.slider.setValue((int) ((c.getX())/SubtitlesTimeline.zoom/VideoPlayerUI.inputFramerateMS));	
+								VideoPlayerCore.playerSetTime((int) ((c.getX())/SubtitlesTimeline.zoom/VideoPlayerUI.inputFramerateMS));	
 							}
 							
 							VideoPlayerUI.sliderChange = false;						

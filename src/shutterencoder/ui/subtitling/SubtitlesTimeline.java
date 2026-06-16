@@ -142,6 +142,7 @@ public class SubtitlesTimeline {
 	private static JLabel lblOffset = new JLabel(Shutter.language.getProperty("lblOffset"));
 	public static JTextField textOffset = new JTextField("0");
 	public final static JPanel timeline = new JPanel();
+	private static boolean timelineMouseIsPressed = false;
 	public static JPanel cursor;
 	public static JLabel waveform = null;
 	private static Thread waveformReload;
@@ -1226,15 +1227,15 @@ public class SubtitlesTimeline {
 					if (zoom < 0.1)
 						numberFormat = new DecimalFormat("0.00");
 					
-					if ((int) (VideoPlayerUI.slider.getMaximum() * VideoPlayerUI.inputFramerateMS - (float)frame.getWidth()/zoom) > 0)
+					if ((int) (VideoPlayerCore.totalFrames * VideoPlayerUI.inputFramerateMS - (float)frame.getWidth()/zoom) > 0)
 						zoom = Double.parseDouble(numberFormat.format(zoom).replace(",", "."));		
 					else
 						zoom = actualZoom;												
 
-					timeline.setSize((int) (((VideoPlayerUI.slider.getMaximum() - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());
+					timeline.setSize((int) (((VideoPlayerCore.totalFrames - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 										
-					cursor.setLocation((int) (setTime((int) (VideoPlayerUI.slider.getValue() * VideoPlayerUI.inputFramerateMS))*zoom), cursor.getY());
+					cursor.setLocation((int) (setTime((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS))*zoom), cursor.getY());
 					
 					enableAutoScroll = true;
 					
@@ -1321,7 +1322,7 @@ public class SubtitlesTimeline {
 		
 		timeline.setBackground(Utils.c30);
 		timeline.setLayout(null);
-		timeline.setBounds(0, 15, (int) (((VideoPlayerUI.slider.getMaximum() - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
+		timeline.setBounds(0, 15, (int) (((VideoPlayerCore.totalFrames - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
 		timelineBackround.add(timeline);
 				
 		timeline.addMouseListener(new MouseListener() {
@@ -1341,6 +1342,8 @@ public class SubtitlesTimeline {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
+				timelineMouseIsPressed = true;
+				
 				VideoPlayerUI.mouseIsPressed = true;
 				
 				frame.requestFocus();
@@ -1349,7 +1352,7 @@ public class SubtitlesTimeline {
 				
 				cursor.setLocation(e.getX(), cursor.getLocation().y);
 				
-				VideoPlayerUI.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayerUI.inputFramerateMS));	
+				VideoPlayerCore.playerSetTime((int) ((e.getX()-2)/zoom/VideoPlayerUI.inputFramerateMS));	
 				
 				if (selectedSubs.size() != 0)
 				{
@@ -1366,6 +1369,8 @@ public class SubtitlesTimeline {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
+				
+				timelineMouseIsPressed = false;
 				
 				VideoPlayerUI.mouseIsPressed = false;
 				
@@ -1403,8 +1408,8 @@ public class SubtitlesTimeline {
 				if (e.getX() >= 0 && e.getX() <= timeline.getWidth() - 12)
 				{				
 					cursor.setLocation(e.getX(), cursor.getLocation().y);		
-					VideoPlayerUI.slider.setValue((int) ((e.getX()-2)/zoom/VideoPlayerUI.inputFramerateMS));
-					VideoPlayerCore.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayerCore.waveformContainer.getSize().width * VideoPlayerUI.slider.getValue()) / VideoPlayerUI.slider.getMaximum()), VideoPlayerCore.cursorWaveform.getLocation().y);		
+					VideoPlayerCore.playerSetTime((int) ((e.getX()-2)/zoom/VideoPlayerUI.inputFramerateMS));
+					VideoPlayerCore.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayerCore.waveformContainer.getSize().width * VideoPlayerCore.playerCurrentFrame) / VideoPlayerCore.totalFrames), VideoPlayerCore.cursorWaveform.getLocation().y);		
 					VideoPlayerUI.cursorHead.setLocation(VideoPlayerCore.cursorWaveform.getX() - 5, VideoPlayerCore.cursorWaveform.getY());	
 				}
 				else if (e.getX() < 0)
@@ -1412,7 +1417,7 @@ public class SubtitlesTimeline {
 					cursor.setLocation(0, cursor.getLocation().y);
 					VideoPlayerCore.cursorWaveform.setLocation(0, VideoPlayerCore.cursorWaveform.getLocation().y);		
 					VideoPlayerUI.cursorHead.setLocation(VideoPlayerCore.cursorWaveform.getX() - 5, VideoPlayerCore.cursorWaveform.getY());
-					VideoPlayerUI.slider.setValue(0);
+					VideoPlayerCore.playerSetTime(0);
 				}
 				else if (e.getX() > timeline.getWidth() - 12)
 				{				
@@ -1507,7 +1512,7 @@ public class SubtitlesTimeline {
             		txtSubtitles.setBounds(10, 36, frame.getWidth() - 24, 36); 
             	
             	timelineBackround.setBounds(0, 80, frame.getWidth(), frame.getContentPane().getHeight() - 97);
-            	timeline.setBounds(0, 15, (int) (((VideoPlayerUI.slider.getMaximum()) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
+            	timeline.setBounds(0, 15, (int) (((VideoPlayerCore.totalFrames) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
             	timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
             	        		            	
             	scrollBarPanel.setBounds(0, frame.getContentPane().getHeight() - 17, frame.getContentPane().getWidth(), 17);
@@ -1576,9 +1581,9 @@ public class SubtitlesTimeline {
 					
 		try
 		{	
-			if (enableAutoScroll)
-			{	
-				int posX = (int) (VideoPlayerUI.slider.getValue() * VideoPlayerUI.inputFramerateMS);
+			if (enableAutoScroll && timelineMouseIsPressed == false)
+			{
+				int posX = (int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS);
 				cursor.setLocation((int) (setTime(posX)*zoom), cursor.getY());				
 			}
 			
@@ -1782,10 +1787,10 @@ public class SubtitlesTimeline {
 					
 					zoom = (double) 0.1;	
 					
-					timeline.setSize((int) (((VideoPlayerUI.slider.getMaximum() - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());		
+					timeline.setSize((int) (((VideoPlayerCore.totalFrames - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());		
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 					
-					cursor.setLocation((int) (setTime(VideoPlayerUI.slider.getValue())*zoom), cursor.getY());
+					cursor.setLocation((int) (setTime((int) VideoPlayerCore.playerCurrentFrame)*zoom), cursor.getY());
 					
 					enableAutoScroll = true;
 					

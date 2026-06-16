@@ -462,8 +462,6 @@ public class UIController extends Shutter {
 			comboGPUDecoding.setVisible(false);
 			lblGpuFiltering.setVisible(false);
 			comboGPUFilter.setVisible(false);
-
-			lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
 			lblYears.setVisible(false);
 		} else if (language.getProperty("functionConform").equals(function) || "DV".equals(function)
 				|| language.getProperty("functionSubtitles").equals(function) || "Loudness & True Peak".equals(function)
@@ -483,8 +481,6 @@ public class UIController extends Shutter {
 				comboGPUDecoding.setVisible(false);
 				lblGpuFiltering.setVisible(false);
 				comboGPUFilter.setVisible(false);
-
-				lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
 				lblYears.setVisible(false);
 			} else {
 				if (frame.getSize().width == 332) {
@@ -508,8 +504,6 @@ public class UIController extends Shutter {
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
 			}
-
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);
 			lblYears.setLocation(frame.getWidth() - lblYears.getWidth() - 8, lblBy.getY());
 			lblYears.setVisible(false);
 		} else if (language.getProperty("functionMerge").equals(function)
@@ -533,8 +527,6 @@ public class UIController extends Shutter {
 			comboGPUDecoding.setVisible(false);
 			lblGpuFiltering.setVisible(false);
 			comboGPUFilter.setVisible(false);
-
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);
 			lblYears.setLocation(frame.getWidth() - lblYears.getWidth() - 8, lblBy.getY());
 			lblYears.setVisible(false);
 		} else if (bigger && frame.getSize().width < 1350) {
@@ -559,8 +551,6 @@ public class UIController extends Shutter {
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
 			}
-
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);
 			lblYears.setLocation(frame.getWidth() - lblYears.getWidth() - 8, lblBy.getY());
 			lblYears.setVisible(true);
 		} else if (bigger == false && frame.getSize().width > 332 && forceFullSize == false) {
@@ -574,8 +564,6 @@ public class UIController extends Shutter {
 			comboGPUDecoding.setVisible(false);
 			lblGpuFiltering.setVisible(false);
 			comboGPUFilter.setVisible(false);
-
-			lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
 			lblYears.setVisible(false);
 		} else if (bigger && frame.getSize().width > 332) {
 			lblGpuDecoding.setVisible(true);
@@ -739,12 +727,12 @@ public class UIController extends Shutter {
 		
 		if (frame.getWidth() > 332)
 		{
-			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);
+			setTitleLocation(true);
 			lblV.setVisible(true);
 		}
 		else
 		{
-			lblShutterEncoder.setLocation((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1);
+			setTitleLocation(false);
 			lblV.setVisible(false);
 		}
 
@@ -871,6 +859,29 @@ public class UIController extends Shutter {
 
 	}
 
+	public static void setTitleLocation(boolean extended) {
+		
+		if (extended)
+		{
+			lblShutterEncoder.setLocation((frame.getWidth() / 2 - lblShutterEncoder.getPreferredSize().width / 2), 1);
+		}
+		else
+		{
+			lblShutterEncoder.setBounds((frame.getWidth() - lblShutterEncoder.getPreferredSize().width) / 2 - 28, 1, lblShutterEncoder.getPreferredSize().width + 10, 24);
+		}
+	}
+	
+	public static void setButtonsLocation() {
+
+		settingsIcon.setBounds(4, 4, 15, 15);
+		
+		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
+		expand.setBounds(quit.getLocation().x - 20, 4, 15, 15);
+		minimize.setBounds(expand.getLocation().x - 20, 4, 15, 15);
+		help.setBounds(minimize.getLocation().x - 20, 4, 15, 15);
+		newInstance.setBounds(help.getLocation().x - 20, 4, 15, 15);
+	}
+	
 	public static void setGPUOptions() {
 
 		String function = comboFonctions.getSelectedItem().toString();

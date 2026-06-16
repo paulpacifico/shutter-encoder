@@ -2078,7 +2078,7 @@ public class VideoPlayerUI {
 	                {		              	                	
 	                	g2.setColor(Color.GREEN);
 	                	
-			            double bufferPosition = (VideoPlayerCore.playerCurrentFrame - VideoPlayerCore.bufferedFrames.size() + 1);       
+			            double bufferPosition = Timecode.setNTSCtimecode(VideoPlayerCore.playerCurrentFrame - VideoPlayerCore.bufferedFrames.size() + 1);       
 			            
 			            int x = (int) Math.floor((double) (waveformContainer.getSize().width * bufferPosition) / totalFrames);
 			            int width = (int) Math.floor((double) (waveformContainer.getSize().width * VideoPlayerCore.bufferedFrames.size()) / totalFrames);

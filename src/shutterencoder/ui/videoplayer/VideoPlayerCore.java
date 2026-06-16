@@ -86,6 +86,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
     public static Thread setTime;
 	public static double playerCurrentFrame = 0;
 	public static double bufferCurrentFrame = 0;
+	private static InputStream video = null;
 	private static BufferedInputStream videoInputStream;
     private static InputStream audio = null;	
     private static AudioInputStream audioInputStream = null;
@@ -136,7 +137,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				playerVideo = pbv.start();	
 			}		
 			
-			InputStream video = playerVideo.getInputStream();				
+			video = playerVideo.getInputStream();				
 			videoInputStream = new BufferedInputStream(video);
 			
 			//AUDIO STREAM
@@ -699,6 +700,13 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 		if (playerVideo != null)
 		{
+			try {
+				video.close();
+			} catch (IOException e) {}		
+			try {
+				videoInputStream.close();
+			} catch (IOException e) {}
+			
 			playerVideo.destroy();
 			try {
 				playerThread.interrupt();
@@ -707,6 +715,13 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		if (playerAudio != null)
 		{
+			try {
+				audio.close();
+			} catch (IOException e) {}
+			try {
+				audioInputStream.close();
+			} catch (IOException e) {}
+			
 			playerAudio.destroy();	
 			try {
 				playerAudiothread.interrupt();

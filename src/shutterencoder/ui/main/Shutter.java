@@ -1745,7 +1745,6 @@ public class Shutter {
 
 		lblShutterEncoder = new JLabel(language.getProperty("panelShutter"));
 		lblShutterEncoder.setFont(new Font("Magneto", Font.PLAIN, 17));
-		lblShutterEncoder.setBounds((320 - lblShutterEncoder.getPreferredSize().width) / 2 - 26, 1, lblShutterEncoder.getPreferredSize().width + 10, 24);
 		topPanel.add(lblShutterEncoder);
 
 		lblV = new JLabel("v" + actualVersion);
@@ -1867,30 +1866,8 @@ public class Shutter {
 
 		});
 
-		setButtonsLocation();
-	}
-	
-	public static void setButtonsLocation() {
-		/*
-		if (System.getProperty("os.name").contains("Mac"))
-		{
-			settingsIcon.setBounds(frame.getSize().width - 20, 4, 15, 15);
-			
-			quit.setBounds(4, 4, 15, 15);
-			expand.setBounds(quit.getLocation().x + 20, 4, 15, 15);
-			minimize.setBounds(expand.getLocation().x + 20, 4, 15, 15);
-			help.setBounds(minimize.getLocation().x + 20, 4, 15, 15);
-			newInstance.setBounds(help.getLocation().x + 20, 4, 15, 15);
-		}
-		*/
-		
-		settingsIcon.setBounds(4, 4, 15, 15);
-		
-		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
-		expand.setBounds(quit.getLocation().x - 20, 4, 15, 15);
-		minimize.setBounds(expand.getLocation().x - 20, 4, 15, 15);
-		help.setBounds(minimize.getLocation().x - 20, 4, 15, 15);
-		newInstance.setBounds(help.getLocation().x - 20, 4, 15, 15);
+		UIController.setTitleLocation(false);
+		UIController.setButtonsLocation();
 	}
 
 	@SuppressWarnings({ "unchecked" })
@@ -2189,27 +2166,12 @@ public class Shutter {
 				
 				//NTSC framerate
 				totalLength = Timecode.setNTSCtimecode(totalLength);
-				
-				double fps = FFPROBE.accurateFPS;    		
-				if (Timecode.isDropFrame())
-				{
-					totalLength = Timecode.setDropFrameTimecode(totalLength);
-									
-					if (FFPROBE.currentFPS == 29.97f)
-					{
-						fps = 30;
-					}
-					else if (FFPROBE.currentFPS == 59.94f)
-					{
-						fps = 60;
-					}
-				}
-				
+							
 				// Formatage
-				int h = (int) Math.floor(totalLength / fps / 3600);
-				int m = (int) (Math.floor(totalLength / fps / 60) % 60);
-				int s = (int) (Math.floor(totalLength / fps) % 60);   
-				int f = (int) Math.floor(totalLength % fps);
+				int h = (int) Math.floor(totalLength / VideoPlayerCore.getFPS() / 3600);
+				int m = (int) (Math.floor(totalLength / VideoPlayerCore.getFPS() / 60) % 60);
+				int s = (int) (Math.floor(totalLength / VideoPlayerCore.getFPS()) % 60);   
+				int f = (int) Math.floor(totalLength % VideoPlayerCore.getFPS());
 
 				String finalDuration;
 				if (h > 0)
@@ -2870,7 +2832,9 @@ public class Shutter {
 					for (int i = 0; i < files.length; i++) {
 						int s = files[i].getAbsolutePath().toString().lastIndexOf('.');
 						String ext = files[i].getAbsolutePath().toString().substring(s);
-						if (ext.equals(".enc")) {
+						
+						if (ext.equals(".enc"))
+						{
 							Utils.loadSettings(files[i]);
 						}
 
@@ -3770,12 +3734,6 @@ public class Shutter {
 					
 					comboFonctions.setSelectedItem("");
 				}
-
-				if (frame.getWidth() > 654)
-				{
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload
-																				// the frame
-				}
 			}
 
 		});
@@ -3796,7 +3754,7 @@ public class Shutter {
 					topPanel.setBounds(0, 0, frame.getWidth(), 28);
 					topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 					
-					setButtonsLocation();
+					UIController.setButtonsLocation();
 
 					addToList.setText(language.getProperty("dropFilesHere"));
 
@@ -19088,7 +19046,8 @@ public class Shutter {
 				if (VideoPlayerCore.videoPath != null)
 					FFMPEG.checkGPUCapabilities(VideoPlayerCore.videoPath);
 				
-				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				if (comboAccel.hasFocus())
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 
 				UIController.changeSections(false);
 

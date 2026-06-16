@@ -2140,7 +2140,8 @@ public class Utils extends Shutter {
 								}
 							}
 							
-						} catch (Exception e) {											
+						} catch (Exception e) {	
+							e.printStackTrace();
 							System.out.println(e);
 						}
 						finally {
@@ -2182,19 +2183,7 @@ public class Utils extends Shutter {
 								fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
 								fileLocX = fileName.getLocation().x;
 								fileLocY = fileName.getLocation().y;
-								fileName.setSize(10,10); //Workaround to not reset the location
-								
-								//VideoPlayer.player.add(fileName);
-								
-								//Overimage need to be the last component added
-								if (caseEnableCrop.isSelected())
-								{/*
-									VideoPlayer.player.remove(selection);
-									VideoPlayer.player.remove(overImage);
-									VideoPlayer.player.add(selection);
-									VideoPlayer.player.add(overImage);*/
-								}		
-								
+								fileName.setSize(10,10); //Workaround to not reset the location								
 								fileName.repaint();
 							}
 							
@@ -2289,7 +2278,7 @@ public class Utils extends Shutter {
 
 				Thread wait = new Thread(() -> {
 					try {
-						loadEncFile.join();
+						loadEncFile.join();				
 						VideoPlayerCore.playerProcess(0);
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					} catch (InterruptedException e) {}	

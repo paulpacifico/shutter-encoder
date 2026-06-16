@@ -34,23 +34,10 @@ public class InputAndOutput extends Shutter {
 	public static void getInputAndOutput(boolean setInputAndOutput) {
 					
 		if (setInputAndOutput && FFPROBE.totalLength > 40)
-		{
-			double fps = FFPROBE.accurateFPS;    		
-			if (Timecode.isDropFrame())
-			{		
-				if (FFPROBE.currentFPS == 29.97f)
-				{
-					fps = 30;
-				}
-				else if (FFPROBE.currentFPS == 59.94f)
-				{
-					fps = 60;
-				}
-			}
+		{			
+			double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(VideoPlayerUI.caseInF.getText());
 			
-			double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * fps + Integer.parseInt(VideoPlayerUI.caseInF.getText());
-			
-			//NTSC timecode
+			//NTSC framerate
 			timeIn = Timecode.getNTSCtimecode(timeIn);
 			timeIn = Timecode.getDropFrameTimecode(timeIn);
 					
