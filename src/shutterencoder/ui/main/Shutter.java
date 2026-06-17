@@ -9696,7 +9696,7 @@ public class Shutter {
 		lblFont.setAlignmentX(SwingConstants.RIGHT);
 		lblFont.setForeground(Utils.themeColor);
 		lblFont.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		lblFont.setBounds(12, 24, lblFont.getPreferredSize().width, 16);
+		lblFont.setBounds(12, 24, lblFont.getPreferredSize().width + 4, 16);
 		grpOverlay.add(lblFont);
 
 		String Fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -9707,7 +9707,7 @@ public class Shutter {
 		comboOverlayFont.setFont(new Font("Arial", Font.PLAIN, 11));
 		comboOverlayFont.setRenderer(new ComboRendererOverlay(comboOverlayFont));
 		comboOverlayFont.setEditable(true);
-		comboOverlayFont.setLocation(lblFont.getX() + lblFont.getWidth() + 7, lblFont.getY() - 4);
+		comboOverlayFont.setLocation(lblFont.getX() + lblFont.getWidth() + 3, lblFont.getY() - 4);
 		comboOverlayFont.setSize(grpOverlay.getWidth() - comboOverlayFont.getX() - 10, 22);
 		grpOverlay.add(comboOverlayFont);
 
@@ -11840,8 +11840,7 @@ public class Shutter {
 		lblFont.setAlignmentX(SwingConstants.RIGHT);
 		lblFont.setForeground(Utils.themeColor);
 		lblFont.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		lblFont.setBounds(12, caseAddSubtitles.getY() + caseAddSubtitles.getHeight() + 7,
-				lblFont.getPreferredSize().width, 16);
+		lblFont.setBounds(12, caseAddSubtitles.getY() + caseAddSubtitles.getHeight() + 7, lblFont.getPreferredSize().width + 4, 16);
 		grpSubtitles.add(lblFont);
 
 		String Fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
@@ -11852,7 +11851,7 @@ public class Shutter {
 		comboSubsFont.setFont(new Font("Arial", Font.PLAIN, 11));
 		comboSubsFont.setRenderer(new ComboRenderer(comboSubsFont));
 		comboSubsFont.setEditable(true);
-		comboSubsFont.setBounds(lblFont.getX() + lblFont.getWidth() + 7, lblFont.getY() - 4, 110, 22);
+		comboSubsFont.setBounds(lblFont.getX() + lblFont.getWidth() + 3, lblFont.getY() - 4, 110, 22);
 		grpSubtitles.add(comboSubsFont);
 
 		comboSubsFont.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
@@ -11957,15 +11956,14 @@ public class Shutter {
 		lblSubtitlesPosition.setAlignmentX(SwingConstants.RIGHT);
 		lblSubtitlesPosition.setForeground(Utils.themeColor);
 		lblSubtitlesPosition.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		lblSubtitlesPosition.setBounds(btnI.getLocation().x + btnI.getWidth() + 6, comboSubsFont.getY() + 3,
-				lblSubtitlesPosition.getPreferredSize().width, 16);
+		lblSubtitlesPosition.setBounds(btnI.getLocation().x + btnI.getWidth() + 6, comboSubsFont.getY() + 3, lblSubtitlesPosition.getPreferredSize().width + 2, 16);
 		grpSubtitles.add(lblSubtitlesPosition);
 
 		textSubtitlesPosition = new JTextField("0");
 		textSubtitlesPosition.setName("textSubtitlesPosition");
 		textSubtitlesPosition.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		textSubtitlesPosition.setHorizontalAlignment(SwingConstants.RIGHT);
-		textSubtitlesPosition.setBounds(lblSubtitlesPosition.getLocation().x + lblSubtitlesPosition.getWidth() + 2,
+		textSubtitlesPosition.setBounds(lblSubtitlesPosition.getLocation().x + lblSubtitlesPosition.getWidth(),
 				lblSubtitlesPosition.getLocation().y, 34, 16);
 		grpSubtitles.add(textSubtitlesPosition);
 
