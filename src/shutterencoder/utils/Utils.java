@@ -1842,6 +1842,15 @@ public class Utils extends Shutter {
 															VideoPlayerUI.frameIsComplete = false;														
 															doNotLoadImage = false;
 															
+															if (VideoPlayerCore.setTime != null)
+															{
+																try {
+																	do {
+																		Thread.sleep(100);
+																	} while (VideoPlayerCore.setTime.isAlive());
+																} catch (InterruptedException er) {}
+															}
+															
 															((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 															
 															try {

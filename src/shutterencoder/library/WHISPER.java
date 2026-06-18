@@ -26,6 +26,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
@@ -46,6 +48,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -57,7 +61,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileSystemView;
@@ -92,6 +98,8 @@ public class WHISPER {
 	public static JTextField textChars;
 	public static JTextField textLines;
 	public static JCheckBox boxMultilingual;
+	public static JCheckBox boxIdentifySpeakers;
+	public static JSpinner spinnerIdentifySpeakers;
 	public static JLabel lblPrompt;
 	public static JTextField textPrompt;
 	public static JLabel lblHotwords;
@@ -241,9 +249,9 @@ public class WHISPER {
 		{
 			String version = getAppVersion(); // Uses the 'run' method from previous example
 	        
-	        if (isVersionAtLeast(version, "1.5") == false)
+	        if (isVersionAtLeast(version, "1.6") == false)
 	        {
-	        	JOptionPane.showMessageDialog(Shutter.frame, "Shutter Transcriber >=1.5 is required." + System.lineSeparator() + "Please update your app!",
+	        	JOptionPane.showMessageDialog(Shutter.frame, "Shutter Transcriber >=1.6 is required." + System.lineSeparator() + "Please update your app!",
 	        	"Shutter Transcriber", JOptionPane.ERROR_MESSAGE);
 	        	
 	        	if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
@@ -474,11 +482,6 @@ public class WHISPER {
 		
 		if (System.getProperty("os.name").contains("Windows"))
 		{			
-			//Moving old models path
-			try {
-				moveModels(Paths.get("Library/models"), Paths.get(modelFolder.toString()));
-			} catch (IOException e) {}
-			
 			return modelFolder.toString().replace("/", "\\");
 		}
 		else
@@ -627,6 +630,26 @@ public class WHISPER {
 		boxMultilingual.setSelected(false);
 		boxMultilingual.setSize(boxMultilingual.getPreferredSize().width + 7, 16);
 
+		boxIdentifySpeakers = new JCheckBox("Identify speakers");
+		boxIdentifySpeakers.setName("boxIdentifySpeakers");
+		boxIdentifySpeakers.setForeground(Utils.c225);
+		boxIdentifySpeakers.setSelected(false);
+		boxIdentifySpeakers.setSize(boxIdentifySpeakers.getPreferredSize().width + 7, 16);
+		
+		boxIdentifySpeakers.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {				
+					spinnerIdentifySpeakers.setEnabled(boxIdentifySpeakers.isSelected());
+				}
+			
+		});
+		
+		spinnerIdentifySpeakers = new JSpinner(new SpinnerNumberModel(2,2,10,1));
+		spinnerIdentifySpeakers.setEnabled(false);
+		spinnerIdentifySpeakers.setName("spinnerIdentifySpeakers");
+		spinnerIdentifySpeakers.setSize(new Dimension(40, 20));		
+		
 		JLabel lblPrompt = new JLabel("Transcription context:");
 		lblPrompt.setForeground(Utils.c225);
 		
@@ -663,16 +686,21 @@ public class WHISPER {
 
 		JPanel optionsSecondLine = new JPanel(new FlowLayout());
 		optionsSecondLine.add(boxMultilingual);
-		optionsSecondLine.add(lblPrompt);
-		optionsSecondLine.add(textPrompt);
-		optionsSecondLine.add(lblHotwords);
-		optionsSecondLine.add(textHotwords);
+		optionsSecondLine.add(boxIdentifySpeakers);
+		optionsSecondLine.add(spinnerIdentifySpeakers);
+		
+		JPanel optionsThirdLine = new JPanel(new FlowLayout());
+		optionsThirdLine.add(lblPrompt);
+		optionsThirdLine.add(textPrompt);
+		optionsThirdLine.add(lblHotwords);
+		optionsThirdLine.add(textHotwords);
 
 		JPanel optionsContainer = new JPanel();
 		optionsContainer.setLayout(new BoxLayout(optionsContainer, BoxLayout.Y_AXIS));
 		optionsContainer.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		optionsContainer.add(optionsFirstLine);
 		optionsContainer.add(optionsSecondLine);
+		optionsContainer.add(optionsThirdLine);
 
 		panel.add(optionsContainer, BorderLayout.SOUTH);
         
@@ -800,9 +828,9 @@ public class WHISPER {
 	
 	public static void run(String wavFile, String fileName) {
 		
-		error = false;
-		Shutter.progressBar.setValue(0);		
+		error = false;				
 		Shutter.btnStart.setEnabled(false);
+		Shutter.progressBar.setValue(0);
 				
 		runProcess = new Thread(new Runnable()  {
 
@@ -915,6 +943,18 @@ public class WHISPER {
 					processBuilder.command().add("--hotwords");
 					processBuilder.command().add('"' + textHotwords.getText() + '"');
 				}
+				
+				//Diarization
+				if (boxIdentifySpeakers.isSelected())
+				{
+					processBuilder.command().add("--diarization_model_dir");
+					processBuilder.command().add(LIBRARY_DIR.toString() + "/models/speaker-diarization-community-1");
+					
+					processBuilder.command().add("--speaker_num");
+					processBuilder.command().add(spinnerIdentifySpeakers.getValue().toString());
+					
+					Shutter.lblCurrentEncoding.setText("Identifying speakers");
+				}
 					
 				//Output format
 				if (Shutter.comboFilter.getSelectedItem().toString().equals(".srt"))
@@ -989,18 +1029,48 @@ public class WHISPER {
 
 	            		if (line.contains("Detected language") && line.contains("with probability"))
 		            	{
-		            		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")))
-		            		{
-		            			SwingUtilities.invokeLater(new Runnable()
+	            			Shutter.lblCurrentEncoding.setText("Transcribing " + fileName);
+	            			Shutter.progressBar.setMaximum(FFMPEG.fileLength);
+	            			Shutter.progressBar.setValue(0); 			        	   	
+ 			        	   	
+ 			        	   	if (Shutter.progressBar.isIndeterminate())
+	            			{
+	            				SwingUtilities.invokeLater(new Runnable()
 		    					{
 		    			           @Override
 		    			           public void run() {
 		    			        	   Shutter.progressBar.setIndeterminate(false);
-		    			        	   Shutter.progressBar.setStringPainted(true);		
-		    			        	   Shutter.lblCurrentEncoding.setText("Transcribing " + fileName);	
+		    			        	   Shutter.progressBar.setStringPainted(true);
 		    			           }
 		    					});
-		            		}
+	            			}
+		            	}
+	            		else if (line.contains("[embeddings] Diarization:"))
+		            	{
+	            			Shutter.lblCurrentEncoding.setText("Identifying speakers");
+	            			
+	            			if (Shutter.progressBar.isIndeterminate())
+	            			{
+	            				SwingUtilities.invokeLater(new Runnable()
+		    					{
+		    			           @Override
+		    			           public void run() {
+		    			        	   Shutter.progressBar.setIndeterminate(false);
+		    			        	   Shutter.progressBar.setStringPainted(true);	
+		    			        	   Shutter.progressBar.setValue(0);
+		    			           }
+		    					});
+	            			}	            			
+	            				            			
+	            			Shutter.progressBar.setMaximum(100);
+		            		
+		            		Pattern pattern = Pattern.compile("(\\d+)(?:\\.\\d+)?%");
+		                    Matcher matcher = pattern.matcher(line);
+		                    
+		                    if (matcher.find()) {
+		                        int percentage = Integer.parseInt(matcher.group(1));
+		                        Shutter.progressBar.setValue(percentage);
+		                    }
 		            	}
 	            		else if (line.contains(" --> "))
 						{
