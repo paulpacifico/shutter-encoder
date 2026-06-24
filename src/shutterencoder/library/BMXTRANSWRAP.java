@@ -28,6 +28,7 @@ import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
+import shutterencoder.utils.Utils;
 
 public class BMXTRANSWRAP extends Shutter {
 	
@@ -69,16 +70,12 @@ public static Process process;
 						ProcessBuilder processBMX;
 						if (System.getProperty("os.name").contains("Windows"))
 						{
-							PathToBMX = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToBMX = PathToBMX.substring(1,PathToBMX.length()-1);
-							PathToBMX = '"' + PathToBMX.substring(0,(int) (PathToBMX.lastIndexOf("/"))).replace("%20", " ")  + "/Library/bmxtranswrap.exe" + '"';
+							PathToBMX = '"' + Utils.getLibraryPath() + "\\bmxtranswrap.exe" + '"';
 							processBMX = new ProcessBuilder(PathToBMX + " " + cmd);
 						}
 						else
 						{
-							PathToBMX = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToBMX = PathToBMX.substring(0,PathToBMX.length()-1);
-							PathToBMX = PathToBMX.substring(0,(int) (PathToBMX.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/bmxtranswrap";
+							PathToBMX = Utils.getLibraryPath() + "/bmxtranswrap";
 							processBMX = new ProcessBuilder("/bin/bash", "-c" , PathToBMX + " " + cmd);
 						}
 						

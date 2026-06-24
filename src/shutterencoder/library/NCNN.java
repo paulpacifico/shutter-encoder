@@ -31,6 +31,7 @@ import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.utils.Utils;
 
 public class NCNN extends Shutter {
 	
@@ -77,16 +78,12 @@ public static String modelsPath;
 													
 						if (System.getProperty("os.name").contains("Windows"))
 						{
-							PathToNCNN = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToNCNN = PathToNCNN.substring(1,PathToNCNN.length()-1);
-							PathToNCNN = '"' + PathToNCNN.substring(0,(int) (PathToNCNN.lastIndexOf("/"))).replace("%20", " ")  + "/Library/realesrgan-ncnn-vulkan.exe" + '"';
+							PathToNCNN = '"' + Utils.getLibraryPath() + "\\realesrgan-ncnn-vulkan.exe" + '"';
 							processNCNN = new ProcessBuilder(PathToNCNN + cmd);
 						}
 						else
 						{
-							PathToNCNN = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToNCNN = PathToNCNN.substring(0,PathToNCNN.length()-1);
-							PathToNCNN = PathToNCNN.substring(0,(int) (PathToNCNN.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/realesrgan-ncnn-vulkan";
+							PathToNCNN = Utils.getLibraryPath() + "/realesrgan-ncnn-vulkan";
 							processNCNN = new ProcessBuilder("/bin/bash", "-c" , PathToNCNN + cmd);
 						}
 

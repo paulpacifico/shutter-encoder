@@ -23,6 +23,7 @@ import java.awt.Cursor;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,11 +32,12 @@ import java.io.OutputStreamWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.utils.Utils;
 
 public class XPDFREADER extends Shutter {
 	
@@ -51,23 +53,8 @@ public static int pagesCount = 1;
 		progressBar.setValue(0);	
 		
 		if (btnStart.getText().equals(language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
-		{
-			String PathToXPDF;
-			String PathToFFMPEG;
-			if (System.getProperty("os.name").contains("Windows"))
-			{
-				PathToXPDF = "Library\\pdftoppm.exe";
-				PathToFFMPEG = "Library\\ffmpeg.exe";
-			}
-			else
-			{
-				PathToXPDF = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				PathToXPDF = PathToXPDF.substring(0,PathToXPDF.length()-1);
-				PathToXPDF = PathToXPDF.substring(0,(int) (PathToXPDF.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/pdftoppm";
-				PathToFFMPEG = PathToXPDF.replace("pdftoppm", "ffmpeg");
-			}
-			
-	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "pdftoppm" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
+		{			
+	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "pdftoppm" + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG), lblDestination1.getText()});
 	        RenderQueue.caseRunParallel.setSelected(false);
 	        RenderQueue.caseRunParallel.setEnabled(false);
 	        RenderQueue.parallelValue.setEnabled(false);
@@ -82,29 +69,30 @@ public static int pagesCount = 1;
 			runProcess = new Thread(new Runnable()  {
 				@Override
 				public void run() {
+					
 					try {
+						
 						String PathToXPDF;
 						String PathToFFMPEG;
 						ProcessBuilder processToXPDF;
 						if (System.getProperty("os.name").contains("Windows"))
 						{
-							PathToXPDF = "Library\\pdftoppm.exe";
-							PathToFFMPEG = "Library\\ffmpeg.exe";
+							File workingDir = new File(Utils.getLibraryPath());
 							
-							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToXPDF + cmd.replace("PathToFFMPEG", PathToFFMPEG)});
+							PathToXPDF = "pdftoppm.exe";	
+							PathToFFMPEG = "ffmpeg.exe";
+							
+							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToXPDF + cmd.replace("PathToFFMPEG", PathToFFMPEG)}, null, workingDir);
 						}
 						else
 						{
-							PathToXPDF = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToXPDF = PathToXPDF.substring(0,PathToXPDF.length()-1);
-							PathToXPDF = PathToXPDF.substring(0,(int) (PathToXPDF.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/pdftoppm";
-							PathToFFMPEG = PathToXPDF.replace("pdftoppm", "ffmpeg");
+							PathToXPDF = Utils.getLibraryPath() + "/pdftoppm";							
+							processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));	
 							
-							processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + cmd.replace("PathToFFMPEG", PathToFFMPEG));								
 							process = processToXPDF.start();
 						}
 						
-						Console.consoleXPDFREADER.append(Shutter.language.getProperty("command") + " " + PathToXPDF + cmd.replace("PathToFFMPEG", PathToFFMPEG) + System.lineSeparator());
+						Console.consoleXPDFREADER.append(Shutter.language.getProperty("command") + " " + PathToXPDF + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG) + System.lineSeparator());
 						
 						isRunning = true;
 						
@@ -145,19 +133,22 @@ public static int pagesCount = 1;
 				@Override
 				public void run() {
 					try {
+						
 						String PathToXPDF;
 						ProcessBuilder processToXPDF;
 						if (System.getProperty("os.name").contains("Windows"))
-						{
-							PathToXPDF = "Library\\pdfinfo.exe";							
-							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToXPDF + " " + '"' + file + '"'});
+						{							
+							File workingDir = new File(Utils.getLibraryPath());
+							
+							PathToXPDF = "pdfinfo.exe";
+							
+							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToXPDF + " " + '"' + file + '"'}, null, workingDir);
 						}
 						else
-						{
-							PathToXPDF = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToXPDF = PathToXPDF.substring(0,PathToXPDF.length()-1);
-							PathToXPDF = PathToXPDF.substring(0,(int) (PathToXPDF.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/pdfinfo";
-							processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + " " + '"' + file + '"');								
+						{							
+							PathToXPDF = Utils.getLibraryPath() + "/pdfinfo";
+							processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + " " + '"' + file + '"');
+							
 							process = processToXPDF.start();
 						}
 												
@@ -211,20 +202,20 @@ public static int pagesCount = 1;
 					
 					String PathToXPDF;
 					ProcessBuilder processToXPDF;
-				
 					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						PathToXPDF = "Library\\pdftoppm.exe";						
-						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffprobe") + " -i -"});
+					{
+						File workingDir = new File(Utils.getLibraryPath());
+						
+						PathToXPDF = "pdftoppm.exe";						
+						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffprobe") + " -i -"}, null, workingDir);
 					}
 					else
-					{
-						PathToXPDF = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToXPDF = PathToXPDF.substring(0,PathToXPDF.length()-1);
-						PathToXPDF = PathToXPDF.substring(0,(int) (PathToXPDF.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/pdftoppm";
-						processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffprobe") + " -i -");	
+					{						
+						PathToXPDF = Utils.getLibraryPath() + "/pdftoppm";
+						processToXPDF = new ProcessBuilder("/bin/bash", "-c" , PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffprobe") + " -i -");		
+					
 						process = processToXPDF.start();
-					}
+					}					
 									
 					Console.consoleFFPROBE.append(Shutter.language.getProperty("command") + " " + PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffprobe") + " -i -" +  System.lineSeparator());
 						

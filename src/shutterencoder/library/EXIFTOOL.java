@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.utils.Utils;
 
 public class EXIFTOOL extends Shutter {
 	
@@ -71,16 +72,12 @@ private static Boolean horizontal = true;
 					ProcessBuilder processEXIFTOOL;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToEXIFTOOL = PathToEXIFTOOL.substring(1,PathToEXIFTOOL.length()-1);
-						PathToEXIFTOOL = '"' + PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", " ")  + "/Library/exiftool.exe" + '"';
+						PathToEXIFTOOL = '"' + Utils.getLibraryPath() + "\\exiftool.exe" + '"';
 						processEXIFTOOL = new ProcessBuilder(PathToEXIFTOOL + " " + cmd);
 					}
 					else
 					{
-						PathToEXIFTOOL = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,PathToEXIFTOOL.length()-1);
-						PathToEXIFTOOL = PathToEXIFTOOL.substring(0,(int) (PathToEXIFTOOL.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/exiftool";
+						PathToEXIFTOOL = Utils.getLibraryPath() + "/exiftool";
 						processEXIFTOOL = new ProcessBuilder("/bin/bash", "-c" , PathToEXIFTOOL + " " + cmd);
 					}
 											

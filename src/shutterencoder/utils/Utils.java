@@ -252,6 +252,23 @@ public class Utils extends Shutter {
 		} catch (Exception e) {}
 	}
 	
+	public static String getLibraryPath() {
+		
+		String LIBRARY_PATH = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		if (System.getProperty("os.name").contains("Windows"))
+		{							
+			LIBRARY_PATH = LIBRARY_PATH.substring(1,LIBRARY_PATH.length()-1);
+			LIBRARY_PATH = LIBRARY_PATH.substring(0,(int) (LIBRARY_PATH.lastIndexOf("/"))).replace("%20", " ").replace("/", "\\")  + "\\Library";
+		}	
+		else
+		{
+			LIBRARY_PATH = LIBRARY_PATH.substring(0,LIBRARY_PATH.length()-1);
+			LIBRARY_PATH = LIBRARY_PATH.substring(0,(int) (LIBRARY_PATH.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library";	
+		}
+		
+		return LIBRARY_PATH;
+	}
+	
 	public static void changeFrameVisibility(final JFrame f, final boolean isVisible) {
 
 		if (isVisible == false) {
@@ -2535,35 +2552,20 @@ public class Utils extends Shutter {
 		FlatInspector.install("ctrl shift alt X");	
 	}
 
-	@SuppressWarnings("unused")
-	public static void restartApp() {
+	public static void restartApp(boolean kill) {
 		
-		try {
-			String newShutter;
-			if (System.getProperty("os.name").contains("Windows")) {
-				newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-				String[] arguments = new String[] { newShutter };
-				Process proc = new ProcessBuilder(arguments).start();
-			} else if (System.getProperty("os.name").contains("Mac")) {
-				newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-				newShutter = newShutter.substring(0, newShutter.length() - 1);
-				newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-				newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-				newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-						"\\ ");
-				String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-				Process proc = new ProcessBuilder(arguments).start();
-			} else { //Linux	
-				String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-				Process proc = new ProcessBuilder(arguments).start();
-			}
-
+		//Relaunch the app
+		try {		
+			String launcher = System.getProperty("jpackage.app-path");
+			new ProcessBuilder(launcher).start();
 		} catch (Exception error) {}
 		
-		Utils.killProcesses();
-		
-		System.exit(0);
+		if (kill)
+		{
+			Utils.killProcesses();
+			
+			System.exit(0);
+		}
 		
 	}
 
@@ -2647,18 +2649,18 @@ public class Utils extends Shutter {
 		if (SceneDetection.outputFolder != null && SceneDetection.outputFolder.exists())
 			SceneDetection.deleteDirectory(SceneDetection.outputFolder);
 
-		// Suppression des SRT temporaires
-		String rootPath = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();					
+		//Suppression des SRT temporaires
+		String rootPath;					
 		if (System.getProperty("os.name").contains("Windows"))
 		{
-			rootPath = rootPath.substring(1,rootPath.length()-1);
-			rootPath = rootPath.substring(0,(int) (rootPath.lastIndexOf("/"))).replace("%20", " ");
+			rootPath = new File(Utils.getLibraryPath()).getParent();
 		}
 		else
 		{
 			rootPath = dirTemp;
 		}
 		
+		//Delete subtitles
 		for (File subs : new File(rootPath).listFiles())
 		{
 			if (subs.toString().substring(subs.toString().lastIndexOf(".") + 1).equals("srt")
@@ -2672,7 +2674,9 @@ public class Utils extends Shutter {
 		//Delete vidstab
 		File vidstab;
 		if (System.getProperty("os.name").contains("Windows"))
-			vidstab = new File("vidstab.trf");
+		{
+			vidstab = new File(new File(Utils.getLibraryPath()).getParent() + "\\vidstab.trf");
+		}
 		else							    		
 			vidstab = new File(Shutter.dirTemp + "vidstab.trf");
 		

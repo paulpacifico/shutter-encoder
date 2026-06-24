@@ -458,6 +458,12 @@ public class Overlay extends Shutter {
 		
     	if (caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    	
+    		String subtitlesPath = Shutter.subtitlesFile.toString();
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				subtitlesPath = Shutter.subtitlesFile.getName(); //Only use the name because of the workingDir from the process
+			}
+    		
 			if (subtitlesFile.toString().substring(subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
     		{	
 				String background = "" ;
@@ -509,7 +515,7 @@ public class Overlay extends Shutter {
 					int width = Math.round((float) Integer.parseInt(Shutter.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
 					int height = Math.round((float) (ih + Integer.parseInt(Shutter.textSubtitlesPosition.getText())) / ((float) ih/oh));
 															
-					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + Shutter.textSubsSize.getText() + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"';
+					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesPath + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + Shutter.textSubsSize.getText() + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"';
 				}		
 				else
 				{					
@@ -524,7 +530,7 @@ public class Overlay extends Shutter {
 						fontSize = (int) ((float) fontSize * ((float) ih/oh));
 					}
 										
-					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + Shutter.textSubsWidth.getText() + ":" + i[1] + "+" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + fontSize + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"';		
+					return " -f lavfi -i " + '"' + "color=black@0.0,format=rgba,scale=" + Shutter.textSubsWidth.getText() + ":" + i[1] + "+" + height + ",subtitles=" + "'" + subtitlesPath + "':alpha=1:force_style='FontName=" + Shutter.comboSubsFont.getSelectedItem().toString() + ",FontSize=" + fontSize + ",PrimaryColour=&H" + Shutter.subsHex + "&" + background + "'" + '"';		
 				}
 			}
 			else // ASS or SSA
@@ -570,10 +576,10 @@ public class Overlay extends Shutter {
 		        	int width = Math.round((float) Integer.parseInt(Shutter.textSubsWidth.getText()) / ((float) iw/ow));	        		        	
 		        	int height = Math.round((float) (ih + Integer.parseInt(Shutter.textSubtitlesPosition.getText())) / ((float) ih/oh));
 		        	
-		        	return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+		        	return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + width + ":" + height + ",subtitles=" + "'" + subtitlesPath + "':alpha=1" + '"';
 				}
 				else
-					return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesFile.toString() + "':alpha=1" + '"';
+					return " -f lavfi" + InputAndOutput.inPoint + " -i " + '"' + "color=black@0.0,format=rgba,scale=" + i[0] + ":" + i[1] + ",subtitles=" + "'" + subtitlesPath + "':alpha=1" + '"';
 			}
 		}
 		else if (caseAddSubtitles.isSelected() && subtitlesBurn == false)

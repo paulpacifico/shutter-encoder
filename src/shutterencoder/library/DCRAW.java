@@ -20,6 +20,7 @@
 package shutterencoder.library;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,6 +29,7 @@ import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.utils.Utils;
 
 public class DCRAW extends Shutter {
 	
@@ -42,23 +44,8 @@ public static Process process;
 		progressBar.setValue(0);	
 		
 		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
-		{
-			String PathToDCRAW;
-			String PathToFFMPEG;
-			if (System.getProperty("os.name").contains("Windows"))
-			{
-				PathToDCRAW = "Library\\dcraw_emu.exe";
-				PathToFFMPEG = "Library\\ffmpeg.exe";
-			}
-			else
-			{
-				PathToDCRAW = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				PathToDCRAW = PathToDCRAW.substring(0,PathToDCRAW.length()-1);
-				PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw_emu";
-				PathToFFMPEG = PathToDCRAW.replace("dcraw_emu", "ffmpeg");
-			}
-			
-	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dcraw_emu" + cmd.replace("PathToFFMPEG", PathToFFMPEG), lblDestination1.getText()});
+		{			
+	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dcraw_emu" + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG), lblDestination1.getText()});
 	        RenderQueue.caseRunParallel.setSelected(false);
 	        RenderQueue.caseRunParallel.setEnabled(false);
 	        RenderQueue.parallelValue.setEnabled(false);
@@ -78,28 +65,27 @@ public static Process process;
 					try {
 						String PathToDCRAW;
 						String PathToFFMPEG;
-						ProcessBuilder processDCRAW = null;
+						ProcessBuilder processDCRAW;
 						if (System.getProperty("os.name").contains("Windows"))
-						{
-							PathToDCRAW = "Library\\dcraw_emu.exe";
-							PathToFFMPEG = "Library\\ffmpeg.exe";
+						{						
+							File workingDir = new File(Utils.getLibraryPath());
 							
-							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG)});
+							PathToDCRAW = "dcraw_emu.exe";	
+							PathToFFMPEG = "ffmpeg.exe";
+							
+							process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG)}, null, workingDir);
 						}
 						else
 						{
-							PathToDCRAW = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToDCRAW = PathToDCRAW.substring(0,PathToDCRAW.length()-1);
-							PathToDCRAW = PathToDCRAW.substring(0,(int) (PathToDCRAW.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/dcraw_emu";
-							PathToFFMPEG = PathToDCRAW.replace("dcraw_emu", "ffmpeg");
+							PathToDCRAW = Utils.getLibraryPath() + "/dcraw_emu";
 							
-							processDCRAW = new ProcessBuilder("/bin/bash", "-c" , PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));								
+							processDCRAW = new ProcessBuilder("/bin/bash", "-c" , PathToDCRAW + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));
 							process = processDCRAW.start();
 							
 							processDCRAW.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 						}
 						
-						Console.consoleDCRAW.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", PathToFFMPEG));
+						Console.consoleDCRAW.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));
 						
 						isRunning = true;
 						

@@ -113,10 +113,10 @@ public class FunctionUtils extends Shutter {
 		//inputDeviceIsRunning is already analyzed
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
-			 FFPROBE.FrameData(file.toString());	
-			 do {
-			 	Thread.sleep(100);
-			 } while (FFPROBE.isRunning);
+			FFPROBE.FrameData(file.toString());	
+			do {
+				Thread.sleep(100);
+			} while (FFPROBE.isRunning);
 			 			 					
 			if (analyzeError(file.toString()))
 				return false;
@@ -124,21 +124,24 @@ public class FunctionUtils extends Shutter {
 		}	 
 		else if (extension.toLowerCase().equals(".pdf"))
 		{
-			 XPDFREADER.getPagesCount(file.toString());	
-			 do {
-				 Thread.sleep(100);						 
-			 } while (XPDFREADER.isRunning);
+			FFPROBE.totalLength = 0;
+			FFPROBE.analyzedMedia = file.toString();
+			
+			XPDFREADER.getPagesCount(file.toString());	
+			do {
+				Thread.sleep(100);						 
+			} while (XPDFREADER.isRunning);
 			 
-			 if (analyzeError(file.toString()))
-				 return false;
+			if (analyzeError(file.toString()))
+				return false;
 			 
-			 XPDFREADER.toFFPROBE(file.toString());	
-			 do {
-				 Thread.sleep(100);						 
-			 } while (XPDFREADER.isRunning);
+			XPDFREADER.toFFPROBE(file.toString());	
+			do {
+				Thread.sleep(100);						 
+			} while (XPDFREADER.isRunning);
 			 
-			 if (analyzeError(file.toString()))
-				 return false;
+			if (analyzeError(file.toString()))
+			 return false;
 		}
 		
 		if (isRaw == false && extension.toLowerCase().equals(".pdf") == false)
@@ -1609,7 +1612,9 @@ public class FunctionUtils extends Shutter {
 			if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionSubtitles")))
 			{
 				if (System.getProperty("os.name").contains("Windows"))
-					Shutter.subtitlesFile = new File(SubtitlesTimeline.srt.getName());
+				{
+					Shutter.subtitlesFile = new File(new File(Utils.getLibraryPath()).getParent() + "/" + SubtitlesTimeline.srt.getName());
+				}
 				else
 					Shutter.subtitlesFile = new File(Shutter.dirTemp + SubtitlesTimeline.srt.getName());
 
@@ -1804,7 +1809,7 @@ public class FunctionUtils extends Shutter {
 					{
 						if (System.getProperty("os.name").contains("Windows"))
 						{
-							Shutter.subtitlesFile = new File(fc.getSelectedFile().getName());
+							Shutter.subtitlesFile = new File(new File(Utils.getLibraryPath()).getParent() + "/" + fc.getSelectedFile().getName());
 						}
 						else
 							Shutter.subtitlesFile = new File(Shutter.dirTemp + fc.getSelectedFile().getName());
@@ -2246,8 +2251,17 @@ public class FunctionUtils extends Shutter {
 		//Stabilisation
 		if (Corrections.vidstab != null)
 		{
-			if (Corrections.vidstab.exists())
-				Corrections.vidstab.delete();
+			//Delete vidstab
+			File vidstab;
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				vidstab = new File(new File(Utils.getLibraryPath()).getParent() + "\\vidstab.trf");
+			}
+			else							    		
+				vidstab = new File(Shutter.dirTemp + "vidstab.trf");
+			
+			if (vidstab.exists())
+				vidstab.delete();
 			
 			Corrections.vidstab = null;
 		}

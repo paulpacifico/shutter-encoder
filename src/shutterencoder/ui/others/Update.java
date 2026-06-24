@@ -319,7 +319,7 @@ public class Update {
 	            	{
 	            		try {
 	            			
-		            		if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Linux 64bits.deb") && new File("/usr/lib/Shutter Encoder").exists()) //DEB package installed
+		            		if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Linux 64bits.deb") && System.getenv("APPIMAGE") == null) //DEB package installed
 		            		{
 		            			String s[] = file.attr("href").split(" ");
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
@@ -360,7 +360,7 @@ public class Update {
 	        } catch (IOException ex) {
 	        }
 	}
-	
+		
 	private static void runProcess(final String file) {
 		
 		Thread download = new Thread(new Runnable()  {
@@ -368,13 +368,11 @@ public class Update {
 			public void run() {			
 				
 				String newVersion = file;
+				boolean portableVersion = true;
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					String mainFolder = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-					mainFolder = mainFolder.substring(1,mainFolder.length()-1);
-					mainFolder = mainFolder.substring(0,(int) (mainFolder.lastIndexOf("/"))).replace("%20", " ") ;
+					String mainFolder = System.getProperty("user.dir");					
 					
-					boolean portableVersion = true;
 					for (File f : new File(mainFolder).listFiles())
 					{
 						if (f.toString().contains("unins") && f.toString().contains(".exe"))
@@ -417,8 +415,16 @@ public class Update {
 					if (q == JOptionPane.YES_OPTION)
 					{
 						try {
-							Desktop.getDesktop().open(appPath);
-						} catch (IOException e) {}
+							
+							if (System.getProperty("os.name").contains("Windows") && portableVersion == false)
+							{
+								ProcessBuilder pb = new ProcessBuilder(appPath.getAbsolutePath());
+					            pb.start();
+							}
+							else
+								Desktop.getDesktop().open(appPath);
+							
+						} catch (Exception e) {}
 											
 						System.exit(0);
 					}	

@@ -34,12 +34,11 @@ public class Corrections extends Shutter {
 		if (Shutter.caseStabilisation.isSelected())
 		{
 			if (System.getProperty("os.name").contains("Windows"))
-				vidstab = new File("vidstab.trf");
-			else
 			{
-						    		
-				vidstab = new File(Shutter.dirTemp + "vidstab.trf");
-			}		
+				vidstab = new File("vidstab.trf");
+			}
+			else					    		
+				vidstab = new File(Shutter.dirTemp + "vidstab.trf");		
 			
 			lblCurrentEncoding.setText(Shutter.language.getProperty("analyzeOf") + " " + fichier);
 			

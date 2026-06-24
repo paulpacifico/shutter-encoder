@@ -1685,7 +1685,6 @@ public class Shutter {
 			}
 
 			@Override
-			@SuppressWarnings("unused")
 			public void mouseReleased(MouseEvent e) {
 
 				if (accept) {
@@ -1697,32 +1696,7 @@ public class Shutter {
 								frame.getLocation().y + new Random().nextInt(50));
 					}
 
-					try {
-						String newShutter;
-
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI()
-									.getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else // Linux
-						{
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder" };
-							Process proc = new ProcessBuilder(arguments).start();
-						}
-
-					} catch (Exception error) {
-					}
+					Utils.restartApp(false);
 				}
 			}
 

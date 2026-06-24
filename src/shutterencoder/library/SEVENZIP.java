@@ -31,6 +31,7 @@ import javax.swing.SwingUtilities;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
+import shutterencoder.utils.Utils;
 
 public class SEVENZIP extends Shutter {
 	
@@ -54,16 +55,12 @@ public class SEVENZIP extends Shutter {
 					ProcessBuilder process7za;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						PathTo7za = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathTo7za = PathTo7za.substring(1,PathTo7za.length()-1);
-						PathTo7za = '"' + PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", " ")  + "/Library/7za.exe" + '"';
+						PathTo7za = '"' + Utils.getLibraryPath() + "\\7za.exe" + '"';
 						process7za = new ProcessBuilder(PathTo7za + " " + cmd);
 					}
 					else
 					{
-						PathTo7za = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathTo7za = PathTo7za.substring(0,PathTo7za.length()-1);
-						PathTo7za = PathTo7za.substring(0,(int) (PathTo7za.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/7zz";
+						PathTo7za = Utils.getLibraryPath() + "/7zz";
 						process7za = new ProcessBuilder("/bin/bash", "-c" , PathTo7za + " " + cmd);
 					}
 						

@@ -843,8 +843,8 @@ public class WHISPER {
 				if (System.getProperty("os.name").contains("Windows"))
 				{							
 					processBuilder.command().add(LIBRARY_DIR.toString() + "\\python.exe");
-					processBuilder.command().add("-u");
-					processBuilder.command().add(LIBRARY_DIR.toString() + "\\bin\\whisper-ctranslate2.exe");
+					processBuilder.command().add("-c");
+				    processBuilder.command().add("from whisper_ctranslate2.whisper_ctranslate2 import main; main()");
 				}	
 				else
 					processBuilder.command().add(LIBRARY_DIR.toString() + "/whisper-ctranslate2");

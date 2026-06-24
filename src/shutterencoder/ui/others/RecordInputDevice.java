@@ -176,9 +176,7 @@ public class RecordInputDevice {
 				{
 					try {
 						
-						String pathToSwitchAudioSource = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						pathToSwitchAudioSource = pathToSwitchAudioSource.substring(0,pathToSwitchAudioSource.length()-1);
-						pathToSwitchAudioSource = pathToSwitchAudioSource.substring(0,(int) (pathToSwitchAudioSource.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/SwitchAudioSource";
+						String pathToSwitchAudioSource = Utils.getLibraryPath() + "/SwitchAudioSource";
 					
 						ProcessBuilder switchAudioSource = new ProcessBuilder("/bin/bash", "-c" , pathToSwitchAudioSource + " -t input -s " + '"' + comboScreenAudio.getSelectedItem().toString() + '"');			
 						switchAudioSource.start();

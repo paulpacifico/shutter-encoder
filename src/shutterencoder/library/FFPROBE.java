@@ -192,9 +192,7 @@ public static boolean hasDolbyVision = false;
 											
 						if (System.getProperty("os.name").contains("Windows"))
 						{
-							PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-							PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';						
+							PathToFFPROBE = '"' + Utils.getLibraryPath() + "\\ffprobe.exe" + '"';						
 							
 							if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
 							{
@@ -222,9 +220,7 @@ public static boolean hasDolbyVision = false;
 						}
 						else
 						{
-							PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-							PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";						
+							PathToFFPROBE = Utils.getLibraryPath() + "/ffprobe";						
 							
 							if (inputDeviceIsRunning && (file.equals("Capture.current.screen") || file.equals("Capture.input.device")))
 							{
@@ -705,17 +701,13 @@ public static boolean hasDolbyVision = false;
 					String PathToFFPROBE;
 					ProcessBuilder processFFPROBE;
 					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
+					{
+						PathToFFPROBE = '"' + Utils.getLibraryPath() + "\\ffprobe.exe" + '"';
 						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_frames -show_streams -read_intervals %+#1 -loglevel " + loglevel + " -i " + '"' + file + '"');
 					}
 					else
 					{
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
+						PathToFFPROBE = Utils.getLibraryPath() + "/ffprobe";
 						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -show_frames -show_streams -read_intervals %+#1 -loglevel " + loglevel);
 					}	
 					
@@ -912,17 +904,13 @@ public static boolean hasDolbyVision = false;
 					String PathToFFPROBE;
 					ProcessBuilder processFFPROBE;
 					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
+					{
+						PathToFFPROBE = '"' + Utils.getLibraryPath() + "\\ffprobe.exe" + '"';
 						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_frames -select_streams v:0 -i " + '"' + file + '"');						
 					}
 					else
 					{
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
+						PathToFFPROBE = Utils.getLibraryPath() + "/ffprobe";
 						processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -select_streams v:0 -show_frames");
 					}	
 					
@@ -1039,17 +1027,13 @@ public static boolean hasDolbyVision = false;
 					String PathToFFPROBE;
 					ProcessBuilder processFFPROBE;
 					if (System.getProperty("os.name").contains("Windows"))
-					{						
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-						PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
+					{
+						PathToFFPROBE = '"' + Utils.getLibraryPath() + "\\ffprobe.exe" + '"';
 						processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0 -i " + '"' + file + '"');
 					}
 					else
 					{
-						PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-						PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
+						PathToFFPROBE = Utils.getLibraryPath() + "/ffprobe";
 						processFFPROBE = new ProcessBuilder("/bin/bash", "-c", PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -v quiet -read_intervals " + (long) seekTime + "ms -show_entries frame=pict_type,pts_time,flags -select_streams v:0 -skip_frame nokey -print_format csv=print_section=0");
 					}					
 				
@@ -1126,16 +1110,12 @@ public static boolean hasDolbyVision = false;
 			ProcessBuilder processFFPROBE;
 			if (System.getProperty("os.name").contains("Windows"))
 			{						
-				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				PathToFFPROBE = PathToFFPROBE.substring(1,PathToFFPROBE.length()-1);
-				PathToFFPROBE = '"' + PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", " ")  + "/Library/ffprobe.exe" + '"';
+				PathToFFPROBE = '"' + Utils.getLibraryPath() + "\\ffprobe.exe" + '"';
 				processFFPROBE = new ProcessBuilder(PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -show_streams" + " -i " + '"' + file + '"');
 			}
 			else
 			{
-				PathToFFPROBE = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				PathToFFPROBE = PathToFFPROBE.substring(0,PathToFFPROBE.length()-1);
-				PathToFFPROBE = PathToFFPROBE.substring(0,(int) (PathToFFPROBE.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffprobe";
+				PathToFFPROBE = Utils.getLibraryPath() + "/ffprobe";
 				processFFPROBE = new ProcessBuilder("/bin/bash", "-c" , PathToFFPROBE + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -i " + '"' + file + '"' + " -show_streams");
 			}			
 			

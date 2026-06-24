@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Settings;
+import shutterencoder.utils.Utils;
 
 public class LTCDUMP extends Shutter {
 	
@@ -47,18 +48,20 @@ public static Process process;
 	    				    		
 	    try {
 			
-			ProcessBuilder processLTCDUMP;
-										
+	    	String PathToLTCDUMP;
+			ProcessBuilder processLTCDUMP;										
 			if (System.getProperty("os.name").contains("Windows"))
-			{								
+			{			
 				process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " -nostats -loglevel 0 -i " + '"' + file + '"' + " -map a:" + comboReadAudioTimecode.getSelectedIndex() + "? -c:a pcm_s16le -vn -sn -f wav -t 1 - | " + '"' + FFMPEG.PathToFFMPEG.replace("ffmpeg", "ltcdump") + '"' + " -"});
 			}
 			else
 			{				
-				processLTCDUMP = new ProcessBuilder("/bin/bash", "-c" , FFMPEG.PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " -nostats -loglevel 0 -i " + '"' + file + '"' + " -map a:" + comboReadAudioTimecode.getSelectedIndex() + "? -c:a pcm_s16le -vn -sn -f wav -t 1 - | " + FFMPEG.PathToFFMPEG.replace("ffmpeg", "ltcdump") + " -");							
+				PathToLTCDUMP = Utils.getLibraryPath() + "/ltcdump";				
+				processLTCDUMP = new ProcessBuilder("/bin/bash", "-c" , FFMPEG.PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " -nostats -loglevel 0 -i " + '"' + file + '"' + " -map a:" + comboReadAudioTimecode.getSelectedIndex() + "? -c:a pcm_s16le -vn -sn -f wav -t 1 - | " + PathToLTCDUMP + " -");								
+			
 				process = processLTCDUMP.start();
-			}					
-
+			}		
+			
 			isRunning = true;
 						         				        
 	        String line;

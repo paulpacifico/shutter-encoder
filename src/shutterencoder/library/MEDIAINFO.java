@@ -60,16 +60,12 @@ public static Thread runProcess;
 					ProcessBuilder processMEDIAINFO;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						PathToMEDIAINFO = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToMEDIAINFO = PathToMEDIAINFO.substring(1,PathToMEDIAINFO.length()-1);
-						PathToMEDIAINFO = '"' + PathToMEDIAINFO.substring(0,(int) (PathToMEDIAINFO.lastIndexOf("/"))).replace("%20", " ")  + "/Library/MediaInfo.exe" + '"';
+						PathToMEDIAINFO = '"' + Utils.getLibraryPath() + "\\MediaInfo.exe" + '"';
 						processMEDIAINFO = new ProcessBuilder(PathToMEDIAINFO + " --Output=HTML " + '"' + file.toString() + '"');
 					}
 					else
-					{
-						PathToMEDIAINFO = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						PathToMEDIAINFO = PathToMEDIAINFO.substring(0,PathToMEDIAINFO.length()-1);
-						PathToMEDIAINFO = PathToMEDIAINFO.substring(0,(int) (PathToMEDIAINFO.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/mediainfo";
+					{						
+						PathToMEDIAINFO = Utils.getLibraryPath() + "/mediainfo";
 						processMEDIAINFO = new ProcessBuilder("/bin/bash", "-c" , PathToMEDIAINFO + " --Output=HTML " + '"' + file.toString() + '"');
 					}
 					

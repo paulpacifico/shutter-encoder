@@ -508,18 +508,7 @@ public class Settings {
 				{
 					txtCustomFFmpegPath.setEnabled(false);
 					
-					FFMPEG.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-					
-					if (System.getProperty("os.name").contains("Windows"))
-					{							
-						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(1,FFMPEG.PathToFFMPEG.length()-1);
-						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-					}	
-					else
-					{
-						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,FFMPEG.PathToFFMPEG.length()-1);
-						FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
-					}
+					FFMPEG.getFFmpegPath();
 				}	
 				
 				if (VideoPlayerCore.videoPath != null)
@@ -566,18 +555,7 @@ public class Settings {
 					{
 						txtCustomFFmpegPath.setEnabled(false);
 						
-						FFMPEG.PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-						
-						if (System.getProperty("os.name").contains("Windows"))
-						{							
-							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(1,FFMPEG.PathToFFMPEG.length()-1);
-							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-						}	
-						else
-						{
-							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,FFMPEG.PathToFFMPEG.length()-1);
-							FFMPEG.PathToFFMPEG = FFMPEG.PathToFFMPEG.substring(0,(int) (FFMPEG.PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
-						}
+						FFMPEG.getFFmpegPath();
 					}	
 					
 					if (VideoPlayerCore.videoPath != null)
@@ -725,7 +703,7 @@ public class Settings {
 						
 						if (reply == JOptionPane.YES_OPTION) 
 						{													
-							Utils.restartApp();
+							Utils.restartApp(true);
 						}
 					}
 				}
@@ -807,7 +785,7 @@ public class Settings {
 						
 						if (reply == JOptionPane.YES_OPTION) 
 						{													
-							Utils.restartApp();
+							Utils.restartApp(true);
 						}
 					}
 				}
@@ -1092,7 +1070,6 @@ public class Settings {
 
 		btnReset.addActionListener(new ActionListener() {
 
-			@SuppressWarnings("unused")
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -1105,29 +1082,7 @@ public class Settings {
 					if (Shutter.settingsXML.exists())
 						Shutter.settingsXML.delete();
 					
-					try {
-						String newShutter;
-						if (System.getProperty("os.name").contains("Windows")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							newShutter = '"' + newShutter.substring(1, newShutter.length()).replace("%20", " ") + '"';
-							String[] arguments = new String[] { newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else if (System.getProperty("os.name").contains("Mac")) {
-							newShutter = Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-							newShutter = newShutter.substring(0, newShutter.length() - 1);
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/")));
-							newShutter = newShutter.substring(0, (int) (newShutter.lastIndexOf("/"))).replace(" ",
-									"\\ ");
-							String[] arguments = new String[] { "/bin/bash", "-c", "open -n " + newShutter };
-							Process proc = new ProcessBuilder(arguments).start();
-						} else { //Linux	
-							String[] arguments = new String[] { "/bin/bash", "-c", "shutter-encoder"};
-							Process proc = new ProcessBuilder(arguments).start();
-						}
-	
-					} catch (Exception error) {
-					}
+					Utils.restartApp(false);
 				
 					System.exit(0);
 				}

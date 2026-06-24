@@ -94,7 +94,7 @@ import shutterencoder.utils.Utils;
 
 public class FFMPEG extends Shutter {
 	
-public static String PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+public static String PathToFFMPEG;
 public static int fileLength = 0; 
 public static boolean error = false;
 public static boolean isRunning = false;
@@ -160,16 +160,9 @@ public static StringBuilder errorLog = new StringBuilder();
 
 	public static void getFFmpegPath() {
 		
-		if (System.getProperty("os.name").contains("Windows"))
-		{							
-			PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
-			PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
-		}	
-		else
-		{
-			PathToFFMPEG = PathToFFMPEG.substring(0,PathToFFMPEG.length()-1);
-			PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/ffmpeg";	
-		}
+		boolean isWindows = System.getProperty("os.name").contains("Windows");
+		
+		PathToFFMPEG = isWindows ? Utils.getLibraryPath() + "\\ffmpeg.exe" : Utils.getLibraryPath() + "/ffmpeg"; 
 		
 		if (Settings.btnCustomFFmpegPath.isSelected() && Settings.txtCustomFFmpegPath.getText().equals("") == false)
 		{
@@ -251,8 +244,10 @@ public static StringBuilder errorLog = new StringBuilder();
 						ProcessBuilder processFFMPEG;
 						
 						if (System.getProperty("os.name").contains("Windows"))
-						{														
-							if (cmd.contains("-f rawvideo") || cmd.contains("pipe:1") || cmd.contains("vidstabdetect") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
+						{				
+							File workingDir = new File(Utils.getLibraryPath()).getParentFile();
+							
+							if (cmd.contains("-f rawvideo") || cmd.contains("pipe:1") || cmd.contains("vidstabdetect") || cmd.contains("vidstabtransform") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
 							|| caseEnableColorimetry.isSelected() && Colorimetry.setEQ(true) != ""
 							|| caseLUTs.isSelected() && grpColorimetry.isVisible()
 							|| caseForcerDAR.isSelected()
@@ -265,7 +260,7 @@ public static StringBuilder errorLog = new StringBuilder();
 								}
 								
 								PathToFFMPEG = "Library\\ffmpeg.exe";
-								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe});
+								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe}, null, workingDir);
 								
 								//Back to default
 								if (Settings.btnCustomFFmpegPath.isSelected() && Settings.txtCustomFFmpegPath.getText().equals("") == false)
@@ -274,14 +269,18 @@ public static StringBuilder errorLog = new StringBuilder();
 								}
 								else
 								{
-									PathToFFMPEG = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-									PathToFFMPEG = PathToFFMPEG.substring(1,PathToFFMPEG.length()-1);
-									PathToFFMPEG = PathToFFMPEG.substring(0,(int) (PathToFFMPEG.lastIndexOf("/"))).replace("%20", " ")  + "\\Library\\ffmpeg.exe";
+									getFFmpegPath();
 								}
 							}
 							else //Allow to suspend FFmpeg process
 							{
 								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));								
+								
+								if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn)
+								{
+									processFFMPEG.directory(workingDir);
+								}
+								
 								process = processFFMPEG.start();	
 							}					
 						}
@@ -2222,9 +2221,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			else
 			{					           	            
-				String pausep = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				pausep = pausep.substring(1,pausep.length()-1);
-				pausep = '"' + pausep.substring(0,(int) (pausep.lastIndexOf("/"))).replace("%20", " ")  + "/Library/pausep.exe" + '"';	
+				String pausep = '"' + Utils.getLibraryPath() + "\\pausep.exe" + '"';	
 				
 				if (NCNN.isRunning)
 				{
@@ -2262,9 +2259,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			else
 			{				
-				String pausep = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				pausep = pausep.substring(1,pausep.length()-1);
-				pausep = '"' + pausep.substring(0,(int) (pausep.lastIndexOf("/"))).replace("%20", " ")  + "/Library/pausep.exe" + '"';
+				String pausep = '"' + Utils.getLibraryPath() + "\\pausep.exe" + '"';
 				
 				if (NCNN.isRunning)
 				{

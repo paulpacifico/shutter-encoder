@@ -82,14 +82,18 @@ public class Colorimetry extends Shutter {
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
 			{		
 				String pathToLuts;
-				if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					pathToLuts = pathToLuts.substring(1,pathToLuts.length()-1);
+					pathToLuts = "'" + pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", " ").replace(":", "\\:")+ "/LUTs/HDR-to-SDR.cube" + "'";					
+				}
+				else
 				{
 					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
 					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
 				}
-				else
-					pathToLuts = "LUTs/HDR-to-SDR.cube";
 
 				filterComplex += "lut3d=file=" + pathToLuts;	
 			}
@@ -170,19 +174,25 @@ public class Colorimetry extends Shutter {
 		
 		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseLUTs.isSelected())
 		{			
+			if (filterComplex != "") filterComplex += ",";
+			
 			String pathToLuts;
-			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				pathToLuts = pathToLuts.substring(1,pathToLuts.length()-1);
+				pathToLuts = "'" + pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", " ").replace(":", "\\:")+ "/LUTs/";
+				
+				filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + "'";	
+			}
+			else
 			{
 				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
 				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
+				
+				filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 			}
-			else
-				pathToLuts = "LUTs/";
-			
-			if (filterComplex != "") filterComplex += ",";
-			
-			filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 		}
 		
 		return filterComplex;

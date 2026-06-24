@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 
@@ -78,7 +80,7 @@ public class PYTHON extends Shutter {
             String line;
             while ((line = reader.readLine()) != null) {
                 // Look for CUDA Version in nvidia-smi output
-                if (line.contains("CUDA Version")) {
+                if (line.contains("CUDA Version") || line.contains("CUDA UMD Version")) {
                     // Extract version number (e.g., "CUDA Version: 12.1")
                     // The line format is like: "| CUDA Version: 12.1     |"
                     String version = extractCudaVersion(line);
@@ -111,19 +113,11 @@ public class PYTHON extends Shutter {
     
     private static String extractCudaVersion(String line) {
         // Split by "CUDA Version:" and take the part after it
-        String[] parts = line.split("CUDA Version:");
-        if (parts.length > 1) {
-            String versionPart = parts[1].trim();
-            
-            // Remove any trailing characters (like pipe |, spaces, etc.)
-            // Extract just the version number (e.g., "12.1")
-            String[] tokens = versionPart.split("\\s+");
-            if (tokens.length > 0) {
-                String version = tokens[0].trim();
-                // Remove any non-numeric trailing characters like |
-                version = version.replaceAll("[^0-9.]", "");
-                return version;
-            }
+    	Pattern pattern = Pattern.compile("CUDA(?: UMD)? Version:\\s+([0-9.]+)");
+        Matcher matcher = pattern.matcher(line);
+        
+        if (matcher.find()) {
+            return matcher.group(1); // Returns just the clean version string
         }
         return null;
     }
@@ -132,15 +126,8 @@ public class PYTHON extends Shutter {
     	
         try {
         	
-        	 ProcessBuilder processBuilder = new ProcessBuilder();
- 			
- 			if (System.getProperty("os.name").contains("Windows"))
- 			{
- 				processBuilder.command().add(modulePath + "/python.exe");
- 			}
- 			else
- 				processBuilder.command().add(modulePath + "/bin/python3");
- 			
+        	ProcessBuilder processBuilder = new ProcessBuilder();
+        	processBuilder.command().add(WHISPER.transcriberApp.getParent() + "\\Library\\python.exe"); 			
  			processBuilder.command().add("-m");
  			processBuilder.command().add("pip");
  			processBuilder.command().add("show");

@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
+import shutterencoder.utils.Utils;
 
 public class TSMUXER extends Shutter {
 	
@@ -64,17 +65,13 @@ public static Process process;
 						String PathToDVDAUTHOR;
 						ProcessBuilder processDVDAUTHOR;
 						if (System.getProperty("os.name").contains("Windows"))
-						{
-							PathToDVDAUTHOR = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToDVDAUTHOR = PathToDVDAUTHOR.substring(1,PathToDVDAUTHOR.length()-1);
-							PathToDVDAUTHOR = '"' + PathToDVDAUTHOR.substring(0,(int) (PathToDVDAUTHOR.lastIndexOf("/"))).replace("%20", " ")  + "/Library/tsMuxeR.exe" + '"';
+						{						
+							PathToDVDAUTHOR = '"' + Utils.getLibraryPath() + "\\tsMuxeR.exe" + '"';
 							processDVDAUTHOR = new ProcessBuilder(PathToDVDAUTHOR + " " + cmd);
 						}
 						else
-						{
-							PathToDVDAUTHOR = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-							PathToDVDAUTHOR = PathToDVDAUTHOR.substring(0,PathToDVDAUTHOR.length()-1);
-							PathToDVDAUTHOR = PathToDVDAUTHOR.substring(0,(int) (PathToDVDAUTHOR.lastIndexOf("/"))).replace("%20", "\\ ")  + "/Library/tsMuxeR";
+						{							
+							PathToDVDAUTHOR = Utils.getLibraryPath() + "/tsMuxeR";
 							processDVDAUTHOR = new ProcessBuilder("/bin/bash", "-c" , PathToDVDAUTHOR + " " + cmd);
 						}
 						
