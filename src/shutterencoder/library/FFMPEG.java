@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFormat;
@@ -77,7 +78,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import shutterencoder.functions.settings.BitratesAdjustement;
-import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.ui.main.Shutter;
@@ -243,58 +243,44 @@ public static StringBuilder errorLog = new StringBuilder();
 						
 						ProcessBuilder processFFMPEG;
 						
-						if (System.getProperty("os.name").contains("Windows"))
-						{				
-							File workingDir = new File(Utils.getLibraryPath()).getParentFile();
-							
-							if (cmd.contains("-f rawvideo") || cmd.contains("pipe:1") || cmd.contains("vidstabdetect") || cmd.contains("vidstabtransform") || cmd.contains("60000/1001") || cmd.contains("30000/1001") || cmd.contains("24000/1001")
-							|| caseEnableColorimetry.isSelected() && Colorimetry.setEQ(true) != ""
-							|| caseLUTs.isSelected() && grpColorimetry.isVisible()
-							|| caseForcerDAR.isSelected()
-							|| caseColormatrix.isSelected() && comboInColormatrix.getSelectedItem().toString().equals("HDR") && grpColorimetry.isVisible())
-							{
-								String pipe = "";								
-								if (cmd.contains("pipe:1"))
-								{
-									pipe =  " | " + '"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
-								}
-								
-								PathToFFMPEG = "Library\\ffmpeg.exe";
-								process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c",  PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe}, null, workingDir);
-								
-								//Back to default
-								if (Settings.btnCustomFFmpegPath.isSelected() && Settings.txtCustomFFmpegPath.getText().equals("") == false)
-								{
-									PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
-								}
-								else
-								{
-									getFFmpegPath();
-								}
-							}
-							else //Allow to suspend FFmpeg process
-							{
-								processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", '"' + PathToFFMPEG + '"'));								
-								
-								if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn)
-								{
-									processFFMPEG.directory(workingDir);
-								}
-								
-								process = processFFMPEG.start();	
-							}					
+						//Command args
+						String args = PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG);
+
+						//Display output
+						if (cmd.contains("pipe:1"))
+						{
+							args += " | " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
 						}
-						else
-						{							
-							String pipe = "";								
-							if (cmd.contains("pipe:1"))
-							{
-								pipe =  " | " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
+						
+						//Splitting pipe char
+						if (System.getProperty("os.name").contains("Windows"))
+						{
+							List<String> tokens = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(args).results()
+							        .map(m -> m.group(1) != null ? m.group(1) : m.group(2))
+							        .collect(Collectors.toList());
+		
+							int pipeIndex = tokens.indexOf("|");
+							File workingDir = new File(Utils.getLibraryPath()).getParentFile();
+		
+							if (pipeIndex == -1) {
+							    processFFMPEG = new ProcessBuilder(tokens);
+							    processFFMPEG.directory(workingDir);
+							    process = processFFMPEG.start();
+							} else {
+							    ProcessBuilder pb1 = new ProcessBuilder(tokens.subList(0, pipeIndex));
+							    ProcessBuilder pb2 = new ProcessBuilder(tokens.subList(pipeIndex + 1, tokens.size()));
+							    pb1.directory(workingDir);
+							    pb2.directory(workingDir);
+		
+							    List<Process> processes = ProcessBuilder.startPipeline(List.of(pb1, pb2));
+							    process = processes.get(processes.size() - 1);
 							}
-							
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG) + pipe);							
+						}
+						else //Mac & Linux
+						{														
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , args);							
 							process = processFFMPEG.start();
-						}	
+						}
 
 						//IMPORTANT
 						if (cmd.contains("cropdetect") == false

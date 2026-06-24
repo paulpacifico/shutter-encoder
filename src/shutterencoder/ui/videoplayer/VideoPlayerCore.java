@@ -38,6 +38,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
@@ -126,22 +129,14 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		try {	
 			
 			//VIDEO STREAM
+			ProcessBuilder pbv = new ProcessBuilder(formatCommand(setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo)));
+			
 			if (System.getProperty("os.name").contains("Windows"))
 			{					
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo));
-				
-				if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesBurn)
-				{
-					pbv.directory(new File(Utils.getLibraryPath()).getParentFile());
-				}
-				
-				playerVideo = pbv.start();
-			}	
-			else
-			{
-				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setVideoCommand(inputTime, player.getWidth(), player.getHeight(), playerPlayVideo));
-				playerVideo = pbv.start();	
-			}		
+				pbv.directory(new File(Utils.getLibraryPath()).getParentFile());
+			}
+			
+			playerVideo = pbv.start();		
 			
 			video = playerVideo.getInputStream();				
 			videoInputStream = new BufferedInputStream(video);
@@ -149,16 +144,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			//AUDIO STREAM
 			if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
 			{					
-				if (System.getProperty("os.name").contains("Windows"))
-				{							
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + setAudioCommand(inputTime, false));	
-					playerAudio = pba.start();					
-				}	
-				else
-				{
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setAudioCommand(inputTime, false));	
-					playerAudio = pba.start();					
-				}
+				ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, false)));	
+				playerAudio = pba.start();
 
 				//Avoid a crashing issue
 				try {
@@ -640,19 +627,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			
 			try {	
 				
-				Process playerAudio;
-				
-				//AUDIO STREAM
-				if (System.getProperty("os.name").contains("Windows"))
-				{						
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + setAudioCommand(inputTime, true));	
-					playerAudio = pba.start();
-				}	
-				else
-				{		
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setAudioCommand(inputTime, true));	
-					playerAudio = pba.start();
-				}			
+				ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, true)));
+				Process playerAudio = pba.start();			
 					
 				InputStream audio = playerAudio.getInputStream();							
 				AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audio);		    
@@ -1031,16 +1007,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
 				{	
 					//AUDIO STREAM
-					if (System.getProperty("os.name").contains("Windows"))
-					{							
-						ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + setAudioCommand(inputTime, false));	
-						playerAudio = pba.start();					
-					}	
-					else
-					{
-						ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + setAudioCommand(inputTime, false));	
-						playerAudio = pba.start();					
-					}
+					ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, false)));						
+					playerAudio = pba.start();
 					
 					//Avoid a crashing issue
 					try {
@@ -1359,7 +1327,20 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		}		
 		
 	}
-    
+	
+	private static List<String> formatCommand(String args) {		
+		
+		String[] splitArgs = Pattern.compile("\"([^\"]*)\"|(\\S+)").matcher(args).results()
+		        .map(m -> m.group(1) != null ? m.group(1) : m.group(2))
+		        .toArray(String[]::new);
+		
+		List<String> command = new ArrayList<>();		
+		command.add(System.getProperty("os.name").contains("Windows") ? FFMPEG.PathToFFMPEG : FFMPEG.PathToFFMPEG.replace("\\", ""));	
+		command.addAll(Arrays.asList(splitArgs));
+		
+		return command;
+	}
+		
 	private static void updateCurrentFrame() {
 				
 		if (sliderSpeed.getValue() != 2)
@@ -1752,18 +1733,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		try {		
 						
-			Process process;
-			
-			if (System.getProperty("os.name").contains("Windows"))
-			{							
-				ProcessBuilder pbv = new ProcessBuilder("cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + cmd);
-				process = pbv.start();	
-			}	
-			else
-			{
-				ProcessBuilder pbv = new ProcessBuilder("/bin/bash", "-c", FFMPEG.PathToFFMPEG + cmd);
-				process = pbv.start();	
-			}	
+			ProcessBuilder pbv = new ProcessBuilder(formatCommand(cmd));
+			Process process = pbv.start();
 						
 			//Console.consoleFFMPEG.append(cmd + System.lineSeparator());
 

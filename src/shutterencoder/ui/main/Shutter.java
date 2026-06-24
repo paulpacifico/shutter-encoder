@@ -341,7 +341,7 @@ public class Shutter {
 	protected static JComboBox<String> comboDay;
 	protected static JComboBox<String> comboFrom;
 	protected static JComboBox<String> comboTo;
-	protected static JCheckBox caseLUTs;
+	public static JCheckBox caseLUTs;
 	protected static JCheckBox caseGamma;
 	public static JCheckBox caseLevels;
 	public static JCheckBox caseColormatrix;
@@ -2907,6 +2907,8 @@ public class Shutter {
 						FFMPEG.writer.flush();
 						FFMPEG.writer.close();
 					} catch (IOException er) {}
+					
+					FFMPEG.process.destroy();
 
 					Thread wait = new Thread(new Runnable() {
 
@@ -3571,8 +3573,7 @@ public class Shutter {
 									FFMPEG.writer.write('q');
 									FFMPEG.writer.flush();
 									FFMPEG.writer.close();
-								} catch (IOException er) {
-								}
+								} catch (IOException er) {}
 
 								FFMPEG.process.destroy();
 

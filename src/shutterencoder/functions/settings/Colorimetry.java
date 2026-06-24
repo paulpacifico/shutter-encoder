@@ -84,9 +84,7 @@ public class Colorimetry extends Shutter {
 				String pathToLuts;
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-					pathToLuts = pathToLuts.substring(1,pathToLuts.length()-1);
-					pathToLuts = "'" + pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", " ").replace(":", "\\:")+ "/LUTs/HDR-to-SDR.cube" + "'";					
+					pathToLuts = "LUTs/HDR-to-SDR.cube";					
 				}
 				else
 				{
@@ -179,20 +177,16 @@ public class Colorimetry extends Shutter {
 			String pathToLuts;
 			if (System.getProperty("os.name").contains("Windows"))
 			{
-				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				pathToLuts = pathToLuts.substring(1,pathToLuts.length()-1);
-				pathToLuts = "'" + pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", " ").replace(":", "\\:")+ "/LUTs/";
-				
-				filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + "'";	
+				pathToLuts = "LUTs/";
 			}
 			else
 			{
 				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
 				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
-				
-				filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 			}
+			
+			filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
 		}
 		
 		return filterComplex;
