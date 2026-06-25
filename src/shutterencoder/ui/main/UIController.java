@@ -28,6 +28,7 @@ import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -77,9 +78,13 @@ import shutterencoder.utils.Utils;
 public class UIController extends Shutter {
 
 	public static boolean extendSectionsIsRunning = false;	
+	private static Rectangle savedFrameBounds = null;
 	
 	public static void changeFunction(final boolean anim) {
 
+		if (anim)
+			savedFrameBounds = null;
+		
 		String function = comboFonctions.getSelectedItem().toString();
 		
 		if (language.getProperty("functionSubtitles").equals(function)) //Width need to be loaded after
@@ -428,6 +433,13 @@ public class UIController extends Shutter {
 
 	public static void changeWidth(final boolean bigger) {
 
+		//Save frame bounds before switching to small size
+		//And only when the frame is resizable
+		if (bigger == false && frame.getWidth() >= extendedWidth)
+		{
+			savedFrameBounds = frame.getBounds();
+		}
+		
 		if (VideoPlayerCore.loadMedia != null && VideoPlayerCore.loadMedia.isAlive())
 		{
 			while (VideoPlayerCore.loadMedia.isAlive())
@@ -447,8 +459,12 @@ public class UIController extends Shutter {
 			noVideoPlayer = true;
 
 		boolean forceFullSize = false;
-		if (caseAddWatermark.isSelected() || caseAddTimecode.isSelected() || caseShowTimecode.isSelected()
-				|| caseAddText.isSelected() || caseShowFileName.isSelected()) {
+		if (caseAddWatermark.isSelected()
+			|| caseAddTimecode.isSelected()
+			|| caseShowTimecode.isSelected()
+			|| caseAddText.isSelected()
+			|| caseShowFileName.isSelected())
+		{
 			forceFullSize = true;
 		}
 
@@ -482,8 +498,10 @@ public class UIController extends Shutter {
 				lblGpuFiltering.setVisible(false);
 				comboGPUFilter.setVisible(false);
 				lblYears.setVisible(false);
-			} else {
-				if (frame.getSize().width == 332) {
+			}
+			else
+			{
+				if (frame.getSize().width == 332){
 					frame.setBounds(frame.getX() - (1350 - 312 - 332) / 2, frame.getY(), 1350 - 312, frame.getHeight());
 				} else if (frame.getSize().width == 654) {
 					frame.setBounds(frame.getX() - (1350 - 312 - 654) / 2, frame.getY(), 1350 - 312, frame.getHeight());
@@ -506,15 +524,21 @@ public class UIController extends Shutter {
 			}
 			lblYears.setLocation(frame.getWidth() - lblYears.getWidth() - 8, lblBy.getY());
 			lblYears.setVisible(false);
-		} else if (language.getProperty("functionMerge").equals(function)
-				|| language.getProperty("functionNormalization").equals(function) || noVideoPlayer) {
+		}
+		else if (language.getProperty("functionMerge").equals(function) || language.getProperty("functionNormalization").equals(function) || noVideoPlayer)
+		{
 			noSettings = true;
 
-			if (frame.getSize().width == 332) {
+			if (frame.getSize().width == 332)
+			{
 				frame.setBounds(frame.getX() - (654 - 332) / 2, frame.getY(), 654, frame.getHeight());
-			} else if (frame.getSize().width == 1350 - 312) {
+			}
+			else if (frame.getSize().width == 1350 - 312)
+			{
 				frame.setBounds(frame.getX() - (654 - (1350 - 312)) / 2, frame.getY(), 654, frame.getHeight());
-			} else if (frame.getSize().width != 654) {
+			}
+			else if (frame.getSize().width != 654)
+			{
 				frame.setBounds(frame.getX() + (extendedWidth - 654) / 2, frame.getY(), 654, frame.getHeight());
 			}
 
@@ -529,16 +553,25 @@ public class UIController extends Shutter {
 			comboGPUFilter.setVisible(false);
 			lblYears.setLocation(frame.getWidth() - lblYears.getWidth() - 8, lblBy.getY());
 			lblYears.setVisible(false);
-		} else if (bigger && frame.getSize().width < 1350) {
-			if (frame.getSize().width == (1350 - 312)) {
-				frame.setBounds(frame.getX() - (extendedWidth - (1350 - 312)) / 2, frame.getY(), extendedWidth,
-						frame.getHeight());
-			} else if (frame.getSize().width == 654) {
-				frame.setBounds(frame.getX() - (extendedWidth - 654) / 2, frame.getY(), extendedWidth,
-						frame.getHeight());
-			} else if (frame.getSize().width == 332) {
-				frame.setBounds(frame.getX() - (extendedWidth - 332) / 2, frame.getY(), extendedWidth,
-						frame.getHeight());
+		}
+		else if (bigger && frame.getSize().width < 1350)
+		{
+			if (frame.getSize().width == (1350 - 312))
+			{
+				frame.setBounds(frame.getX() - (extendedWidth - (1350 - 312)) / 2, frame.getY(), extendedWidth, frame.getHeight());
+			}
+			else if (frame.getSize().width == 654)
+			{
+				frame.setBounds(frame.getX() - (extendedWidth - 654) / 2, frame.getY(), extendedWidth, frame.getHeight());
+			}
+			else if (frame.getSize().width == 332)
+			{		
+				if (savedFrameBounds != null)
+				{
+					frame.setBounds(savedFrameBounds);
+				}
+				else
+					frame.setBounds(frame.getX() - (extendedWidth - 332) / 2, frame.getY(), extendedWidth, frame.getHeight());
 			}
 
 			VideoPlayerUI.setPlayerButtons(true);
@@ -556,8 +589,7 @@ public class UIController extends Shutter {
 		} else if (bigger == false && frame.getSize().width > 332 && forceFullSize == false) {
 			noSettings = true;
 
-			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - minHeight) / 2,
-					332, minHeight);
+			frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY() + (frame.getHeight() - minHeight) / 2, 332, minHeight);
 			lblArrows.setVisible(true);
 			lblArrows.setLocation(frame.getWidth() - lblArrows.getWidth() - 7, lblArrows.getY());
 			lblGpuDecoding.setVisible(false);
@@ -692,12 +724,15 @@ public class UIController extends Shutter {
 
 	public static void resizeAll(int width, int height) {
 
-		if (frame.getWidth() >= 1130 && width >= 1130) {
+		if (frame.getWidth() >= 1130 && width >= 1130)
+		{
 			frame.setSize(width, frame.getHeight() + height);
-		} else
+		}
+		else
 			frame.setSize(frame.getSize().width, frame.getHeight() + height);
 
-		if (frame.getWidth() < 1350 && frame.getWidth() >= 1130) {
+		if (frame.getWidth() < 1350 && frame.getWidth() >= 1130)
+		{
 			extendedWidth = frame.getWidth();
 		}
 		
@@ -856,7 +891,6 @@ public class UIController extends Shutter {
 		{
 			statusBar.setBounds(0, frame.getHeight() - 23, frame.getWidth(), 22);
 		}
-
 	}
 
 	public static void setTitleLocation(boolean extended) {
