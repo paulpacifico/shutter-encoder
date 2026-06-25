@@ -242,6 +242,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					try {
 						
 						ProcessBuilder processFFMPEG;
+						OutputStream stdin;
+						BufferedReader input;
 						
 						//Command args
 						String args = PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd.replace("PathToFFMPEG", PathToFFMPEG);
@@ -262,11 +264,17 @@ public static StringBuilder errorLog = new StringBuilder();
 							int pipeIndex = tokens.indexOf("|");
 							File workingDir = new File(Utils.getLibraryPath()).getParentFile();
 		
-							if (pipeIndex == -1) {
+							if (pipeIndex == -1)
+							{
 							    processFFMPEG = new ProcessBuilder(tokens);
 							    processFFMPEG.directory(workingDir);
-							    process = processFFMPEG.start();
-							} else {
+							    process = processFFMPEG.start();	
+							    
+							    stdin = process.getOutputStream();
+							    input = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+							}
+							else
+							{
 							    ProcessBuilder pb1 = new ProcessBuilder(tokens.subList(0, pipeIndex));
 							    ProcessBuilder pb2 = new ProcessBuilder(tokens.subList(pipeIndex + 1, tokens.size()));
 							    pb1.directory(workingDir);
@@ -274,12 +282,19 @@ public static StringBuilder errorLog = new StringBuilder();
 		
 							    List<Process> processes = ProcessBuilder.startPipeline(List.of(pb1, pb2));
 							    process = processes.get(processes.size() - 1);
+
+							    //Select the first process
+								stdin = processes.get(0).getOutputStream();
+								input = new BufferedReader(new InputStreamReader(processes.get(0).getErrorStream()));
 							}
 						}
 						else //Mac & Linux
 						{														
 							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , args);							
 							process = processFFMPEG.start();
+							
+							stdin = process.getOutputStream();
+							input = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 						}
 
 						//IMPORTANT
@@ -290,15 +305,12 @@ public static StringBuilder errorLog = new StringBuilder();
 						}
 							
 						String line;
-						BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));		
-						
 						InputStream video = process.getInputStream();				
 						BufferedInputStream videoInputStream = new BufferedInputStream(video);	
+								        
+						//Allows to write into the stream						
+				        writer = new BufferedWriter(new OutputStreamWriter(stdin));	
 						
-						//Allows to write into the stream
-						OutputStream stdin = process.getOutputStream();
-				        writer = new BufferedWriter(new OutputStreamWriter(stdin));				        
-		        
 				        if (cmd.contains("pipe:1"))
 						{				  				        	
 				        	VideoPlayerCore.playerStop();

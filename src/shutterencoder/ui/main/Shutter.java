@@ -2906,9 +2906,7 @@ public class Shutter {
 						FFMPEG.writer.write('q');
 						FFMPEG.writer.flush();
 						FFMPEG.writer.close();
-					} catch (IOException er) {}
-					
-					FFMPEG.process.destroy();
+					} catch (IOException er) {}					
 
 					Thread wait = new Thread(new Runnable() {
 
@@ -3574,8 +3572,6 @@ public class Shutter {
 									FFMPEG.writer.flush();
 									FFMPEG.writer.close();
 								} catch (IOException er) {}
-
-								FFMPEG.process.destroy();
 
 								do {
 									try {
