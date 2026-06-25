@@ -1031,7 +1031,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	public static void playerFreeze() {
 							
-		if ((setTime == null || setTime.isAlive() == false) && (playerVideo == null || playerVideo.isAlive() == false))
+		if ((setTime == null || setTime.isAlive() == false) && Shutter.doNotLoadImage == false && (playerVideo == null || playerVideo.isAlive() == false))
 		{		
 			setTime = new Thread(new Runnable() {
 
