@@ -151,7 +151,6 @@ public class FunctionUtils extends Shutter {
 			do {
 				Thread.sleep(100);
 			} while (FFPROBE.isRunning);
-			 			
 			
 			if (analyzeError(file.toString()))
 				return false;

@@ -354,6 +354,7 @@ public static boolean hasDolbyVision = false;
 				                	imageResolution = RecordInputDevice.screenWidth + "x" + RecordInputDevice.screenHeigth;
 				                	imageWidth = RecordInputDevice.screenWidth;
 				                	imageHeight = RecordInputDevice.screenHeigth;
+				                	totalLength = 40;
 				                }
 				              					                			               			                
 				                //Video player ratio

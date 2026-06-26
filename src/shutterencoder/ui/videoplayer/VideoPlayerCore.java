@@ -2241,7 +2241,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						}
 						
 						//Reset when changing file													
-						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false && (new File(Shutter.fileList.getSelectedValue()).isFile() || Shutter.scanIsRunning))
+						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false && (new File(Shutter.fileList.getSelectedValue()).isFile() || Shutter.scanIsRunning) || Shutter.inputDeviceIsRunning)
 						{				
 							//Stop player
 							if (playerIsPlaying())

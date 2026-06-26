@@ -1740,7 +1740,7 @@ public class Utils extends Shutter {
 					public void run() {
 		
 						try {
-							
+
 							doNotLoadImage = true;					
 							
 							File fXmlFile = encFile;

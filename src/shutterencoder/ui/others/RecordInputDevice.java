@@ -422,10 +422,7 @@ public class RecordInputDevice {
 		JButton btnOK = new JButton("OK");
 		btnOK.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
 		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 24, 21);	
-		/*if (System.getProperty("os.name").contains("Windows"))
-			btnOK.setLocation(12, lblInputDevice.getY() + lblInputDevice.getHeight() + 6);	
-		else*/
-			btnOK.setLocation(12, lblScreenRecord.getY() + lblScreenRecord.getHeight() + 6);	
+		btnOK.setLocation(12, lblScreenRecord.getY() + lblScreenRecord.getHeight() + 6);	
 		frame.getContentPane().add(btnOK);
 		
 		btnOK.addActionListener(new ActionListener() {
