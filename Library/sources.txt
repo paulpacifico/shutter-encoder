@@ -7,4 +7,5 @@ dvdauthor: dvdauthor.sourceforge.net
 tsMuxeR: github.com/justdan96/tsMuxer
 mediainfo: mediaarea.net/fr/MediaInfo
 bmxtranswrap: sourceforge.net/p/bmxlib/home/Home
+XpdfReader: https://www.xpdfreader.com/index.html
 ncnn: https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan
