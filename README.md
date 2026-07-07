@@ -86,20 +86,20 @@ Shutter Encoder uses a **custom Java runtime** built with **jlink**, based on **
 
 ### 📚 Open-Source Code Used
 
-- [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) — High-performance neural network inference framework (used internally for AI-based upscaling)
-- [Whisper-Ctranslate2](https://github.com/Softcatala/whisper-ctranslate2) — High-Performance Speech-to-Text (used for audio transcription)
-- [BackgroundRemover](https://github.com/nadermx/backgroundremover) — AI-Powered Image/Video Matting (used for background removal)
-- [Demucs](https://github.com/facebookresearch/demucs) — Music Source Separation (used for audio separation)
-- [DeOldify](https://github.com/jantic/DeOldify) — Image and Video Restoration (used of colorization)
-- [FFmpeg](https://ffmpeg.org/) — Audio/video encoding, decoding, filtering, muxing and transcoding (core processing engine of Shutter Encoder)
-- [7-Zip](https://www.7-zip.org/) — Archive extraction and compression
-- [yt-dlp](https://github.com/yt-dlp/yt-dlp) — Web video downloading engine
+- [Real-ESRGAN-ncnn-vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) - High-performance neural network inference framework (used internally for AI-based upscaling)
+- [Whisper-Ctranslate2](https://github.com/Softcatala/whisper-ctranslate2) - High-Performance Speech-to-Text (used for audio transcription)
+- [BackgroundRemover](https://github.com/nadermx/backgroundremover) - AI-Powered Image/Video Matting (used for background removal)
+- [Demucs](https://github.com/facebookresearch/demucs) - Music Source Separation (used for audio separation)
+- [DeOldify](https://github.com/jantic/DeOldify) - Image and Video Restoration (used of colorization)
+- [FFmpeg](https://ffmpeg.org/) - Audio/video encoding, decoding, filtering, muxing and transcoding (core processing engine of Shutter Encoder)
+- [7-Zip](https://www.7-zip.org/) - Archive extraction and compression
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - Web video downloading engine
 - [LibRaw](https://www.libraw.org/) - RAW image decoding (used to import and convert digital camera RAW files)
 - [ExifTool](https://exiftool.org/) - Metadata reading and writing (used for extracting, editing and preserving metadata)
 - [tsMuxeR](https://github.com/justdan96/tsMuxer) - Transport stream muxing (used for Blu-ray and AVCHD structure creation)
 - [MediaInfo](https://mediaarea.net/en/MediaInfo) - Media file technical analysis (used to display detailed file information)
-- [dvdauthor](https://dvdauthor.sourceforge.net/) — DVD structure authoring (used for creating DVD-Video structures)
+- [dvdauthor](https://dvdauthor.sourceforge.net/) - DVD structure authoring (used for creating DVD-Video structures)
 - [bmxtranswrap](https://github.com/bbc/bmx) - MXF rewrapping and OP-Atom/OP1a handling (used for broadcast MXF workflows)
-- [XpdfReader](https://www.xpdfreader.com/) — PDF rendering engine (used for importing and converting PDF documents)
+- [XpdfReader](https://www.xpdfreader.com/) - PDF rendering engine (used for importing and converting PDF documents)
   
 ---
