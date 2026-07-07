@@ -100,5 +100,6 @@ Shutter Encoder uses a **custom Java runtime** built with **jlink**, based on **
 - [MediaInfo](https://mediaarea.net/en/MediaInfo) - Media file technical analysis (used to display detailed file information)
 - [dvdauthor](https://dvdauthor.sourceforge.net/) — DVD structure authoring (used for creating DVD-Video structures)
 - [bmxtranswrap](https://github.com/bbc/bmx) - MXF rewrapping and OP-Atom/OP1a handling (used for broadcast MXF workflows)
+- [XpdfReader](https://www.xpdfreader.com/) — PDF rendering engine (used for importing and converting PDF documents)
   
 ---
