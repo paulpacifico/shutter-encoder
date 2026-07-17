@@ -50,6 +50,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -140,6 +141,7 @@ public static boolean cudaAvailable = false;
 public static boolean amfAvailable = false;
 public static boolean qsvAvailable = false;
 public static boolean videotoolboxAvailable = false;
+public static boolean libplaceboAvailable = false;
 public static boolean vulkanAvailable = false;
 public static boolean autoQSV = false;
 public static boolean autoCUDA = false;
@@ -170,6 +172,23 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 
+	public static void setEnvironment(ProcessBuilder pb) {
+		
+		Map<String, String> env = pb.environment();
+
+		String var = new File(FFMPEG.PathToFFMPEG).getParent();
+		
+		if (System.getProperty("os.name").contains("Windows") == false)
+		{
+			var = var.replace("\\ ", " ");
+		}
+		
+        // Set your environment variables
+        env.put("DYLD_LIBRARY_PATH", var);
+        env.put("VK_ICD_FILENAMES", var + "/MoltenVK_icd.json");
+        env.put("MVK_CONFIG_LOG_LEVEL", "1");		
+	}
+	
 	public static void run(String cmd) {
 			
 		time = 0;
@@ -290,7 +309,13 @@ public static StringBuilder errorLog = new StringBuilder();
 						}
 						else //Mac & Linux
 						{														
-							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , args);							
+							processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , args);
+							
+							if (FFMPEG.libplaceboAvailable)
+							{
+								FFMPEG.setEnvironment(processFFMPEG);
+							}
+													
 							process = processFFMPEG.start();
 							
 							stdin = process.getOutputStream();
@@ -473,7 +498,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			
 			error = true;
-		} 				
+		}
 	}
 	
  	private static String checkList(String cmd) {
@@ -624,10 +649,10 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 
 				// On ajoute la vidéo
-				videoOutput = "[0:v]scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none[v]" + ";" + channels + "[v]";
+				videoOutput = "[0:v]scale=1000:-1:scaler=bilinear:sws_dither=none[v]" + ";" + channels + "[v]";
 				
 				if (FFPROBE.channels == 0 || list.getElementAt(0).equals("Capture.input.device")) {
-					videoOutput = "scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none" + '"';
+					videoOutput = "scale=1000:-1:scaler=bilinear:sws_dither=none" + '"';
 					audioOutput = "";
 				}
 
@@ -775,7 +800,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			}	
 			
-			Console.consoleFFPLAY.append(language.getProperty("command") + " " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -" + System.lineSeparator());
+			Console.consoleFFMPEG.append(language.getProperty("command") + " " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
 			player.getContentPane().setBackground(Utils.c42);
@@ -1424,6 +1449,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		amfAvailable = false;
 		qsvAvailable = false;
 		videotoolboxAvailable = false;
+		libplaceboAvailable = false;
 		vulkanAvailable = false;
 				
 		//Check is GPU can decode				
@@ -1447,30 +1473,25 @@ public static StringBuilder errorLog = new StringBuilder();
 						vcodec = vcodec.toUpperCase();
 				}
 			}
-
-			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2") || vcodec.equals("MPEG-4"))
+			
+			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2") || vcodec.equals("MPEG-4") || (vcodec.equals("PRORES_RAW") && System.getProperty("os.name").contains("Mac")))
 			{
 				isGPUCompatible = true;
 			}
-			
-			if (FFPROBE.imageDepth > 10)
-			{
-				isGPUCompatible = false;
-			}
-			
+				
 			String selectedGPU = "";
 			if (FFMPEG.multiGPU > 0)
 				selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
-						
-			if (isGPUCompatible)
+					
+			//Scaling
+			String bitDepth = "nv12";
+			if (FFPROBE.imageDepth == 10)
 			{
-				//Scaling
-				String bitDepth = "nv12";
-				if (FFPROBE.imageDepth == 10)
-				{
-					bitDepth = "p010";
-				}	
-								
+				bitDepth = "p010";
+			}
+			
+			if (isGPUCompatible)
+			{				
 				//Check for Nvidia/AMD or Intel GPU
 				if (comboGPUDecoding.getSelectedItem().toString().equals("auto"))
 				{
@@ -1545,7 +1566,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						FFMPEG.gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
 
 						if (FFMPEG.error == false)
-							videotoolboxAvailable = true;								
+							videotoolboxAvailable = true;
 					}
 					
 					//Disable GPU if not available
@@ -1653,6 +1674,12 @@ public static StringBuilder errorLog = new StringBuilder();
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
 			}
+			
+			//libplacebo do not need to be GPU compatible
+			FFMPEG.gpuFilter(" -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
+
+			if (FFMPEG.error == false)
+				libplaceboAvailable = true;
 
 			checkGPUFiltering();
 			checkGPUDeinterlacing();			
@@ -1767,7 +1794,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		String selectedGPU = "";
 		if (FFMPEG.multiGPU > 0)
 			selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
-		
+				
 		//GPU decoding
 		String gpuDecoding = "";						
 		if (isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
@@ -1793,6 +1820,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			else if (autoVIDEOTOOLBOX || (videotoolboxAvailable && comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")))
 			{
 				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -init_hw_device videotoolbox";
+				
 			}
 			else if (autoVULKAN || (vulkanAvailable && comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 			{
@@ -1804,8 +1832,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		else
 		{
 			gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + selectedGPU;
-		}							
-		
+		}	
+
 		if (comboAccel.getSelectedItem().equals("Vulkan Video")
 		|| comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
@@ -1907,7 +1935,13 @@ public static StringBuilder errorLog = new StringBuilder();
 				//Console.consoleFFMPEG.append(line + System.lineSeparator());		
 				
 				//Errors
-				checkForErrors(line);																
+				checkForErrors(line);	
+				
+				if (error)
+				{
+					process.destroy();
+					break;
+				}
 			}					
 			process.waitFor();		
 			
@@ -1916,6 +1950,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		} catch (IOException io) {//Bug Linux							
 		} catch (InterruptedException e) {
 			error = true;
+			e.printStackTrace();
 		}
 	}
 	

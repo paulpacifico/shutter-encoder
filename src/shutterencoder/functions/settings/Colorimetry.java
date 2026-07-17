@@ -65,11 +65,54 @@ public class Colorimetry extends Shutter {
 		
 		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseLevels.isSelected())
 		{			
-			if (filterComplex != "") filterComplex += ",";
+			String input = comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
+			String output = comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
 			
-			filterComplex += "scale=in_range=" + comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full") + ":out_range=" + comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");		
+			if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			{
+				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "range=" + output);
+			}
+			else
+			{
+				if (filterComplex != "") filterComplex += ",";
+				
+				filterComplex += "scale=in_range=" + input + ":out_range=" + output;	
+			}				
 		}
 
+		return filterComplex;
+	}
+	
+	public static String setLUT(String filterComplex) {
+		
+		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseLUTs.isSelected())
+		{			
+			String pathToLuts;
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				pathToLuts = "LUTs/";
+			}
+			else
+			{
+				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
+				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
+			}
+			
+			if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			{
+				String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
+				
+				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + ":peak_detect=0" + format);	
+			}
+			else
+			{		
+				if (filterComplex != "") filterComplex += ",";
+				
+				filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
+			}
+		}
+		
 		return filterComplex;
 	}
 	
@@ -77,8 +120,6 @@ public class Colorimetry extends Shutter {
 		
 		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseColormatrix.isSelected())
 		{
-			if (filterComplex != "") filterComplex += ",";
-			
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
 			{		
 				String pathToLuts;
@@ -93,13 +134,90 @@ public class Colorimetry extends Shutter {
 					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
 				}
 
-				filterComplex += "lut3d=file=" + pathToLuts;	
+				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				{
+					String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
+					
+					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + ":peak_detect=0" + format);	
+				}
+				else
+				{
+					if (filterComplex != "") filterComplex += ",";
+					
+					filterComplex += "lut3d=file=" + pathToLuts;	
+				}
 			}
 			else
-				filterComplex += "colorspace=iall=" + Shutter.comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625") + ":all=" + Shutter.comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("601", "601-6-625");
+			{
+				if (comboInColormatrix.getSelectedItem().toString().equals("Linear"))
+				{
+					String transfer = "";
+					switch (comboOutColormatrix.getSelectedIndex())
+					{
+						case 0:
+							transfer = "bt470bg";
+							break;
+						case 1:
+							transfer = "bt709";
+							break;							
+						default:
+							transfer = "bt2020-10";
+							break;
+					}
+					
+					if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+					{
+					    filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "range=full:color_trc=" + transfer);
+					}
+				    else
+				    {
+				    	if (filterComplex != "") filterComplex += ",";
+				    	
+				    	String format = FFPROBE.hasAlpha ? "format=gbrap16le," : "format=gbrp16le,";
+					
+				    	filterComplex += format + "zscale=rangein=full:range=full:transferin=linear:transfer=" + transfer;
+				    }
+				}
+				else
+				{
+					String input = comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("bt601", "smpte170m");
+					String output = comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("bt601", "smpte170m");
+					
+					if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+					{
+					    filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, getLibplaceboColorspaces(comboOutColormatrix.getSelectedItem().toString()));
+					}
+				    else
+				    {
+				    	if (filterComplex != "") filterComplex += ",";
+				    	
+				    	filterComplex += "colorspace=iall=" + input + ":all=" + output;
+				    }
+				}
+			}
 		}
 
 		return filterComplex;
+	}
+	
+	private static String getLibplaceboColorspaces(String color)
+	{
+	    color = color.replace("Rec. ", "");
+	    
+	    switch (color)
+	    {
+	        case "601":
+	            return "colorspace=smpte170m:color_primaries=smpte170m:color_trc=smpte170m";
+
+	        case "709":
+	            return "colorspace=bt709:color_primaries=bt709:color_trc=bt709";
+
+	        case "2020":
+	            return "colorspace=bt2020nc:color_primaries=bt2020:color_trc=bt2020-10";
+
+	        default:
+	            return "colorspace=bt709:color_primaries=bt709:color_trc=bt709";
+	    }
 	}
 		
 	public static String setColorspace() {
@@ -167,30 +285,6 @@ public class Colorimetry extends Shutter {
 		
 		return "";	
 	}
-	
-	public static String setLUT(String filterComplex) {
-		
-		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseLUTs.isSelected())
-		{			
-			if (filterComplex != "") filterComplex += ",";
-			
-			String pathToLuts;
-			if (System.getProperty("os.name").contains("Windows"))
-			{
-				pathToLuts = "LUTs/";
-			}
-			else
-			{
-				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
-				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
-			}
-			
-			filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
-		}
-		
-		return filterComplex;
-	}
 
 	public static String setGrain(String eq) {
 	
@@ -245,11 +339,11 @@ public class Colorimetry extends Shutter {
 		return eq;
 	}
 	
-	public static String setZoom(String eq, boolean finalEQ) {
+	public static String setZoom(String eq) {
 
 		if (sliderZoom.getValue() != 0)
 		{			
-			if (eq != "" && finalEQ)
+			if (eq != "")
 				eq += ",";
 			
 			float zoomValue = (float) 1 - ((float) sliderZoom.getValue() / 2 / 100);

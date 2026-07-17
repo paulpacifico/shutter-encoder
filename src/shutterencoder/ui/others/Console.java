@@ -41,6 +41,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -60,7 +61,6 @@ public class Console extends JFrame {
 	public static JFrame frmConsole;
 	public static Rectangle savedBounds;
 	public static JTextArea consoleFFMPEG = new JTextArea();
-	public static JTextArea consoleFFPLAY = new JTextArea();
 	public static JTextArea consoleFFPROBE = new JTextArea();
 	public static JTextArea consoleBMXTRANSWRAP = new JTextArea();	
 	public static JTextArea consoleDVDAUTHOR = new JTextArea();
@@ -74,7 +74,6 @@ public class Console extends JFrame {
 	public static JTextArea consolePYTHON = new JTextArea();
 	public static JTabbedPane tabbedPane;
 	private JScrollPane scrollFFMPEG;
-	private JScrollPane scrollFFPLAY;
 	private JScrollPane scrollFFPROBE;
 	private JScrollPane scrollBMXTRANSWRAP;
 	private JScrollPane scrollDVDAUTHOR;
@@ -136,39 +135,36 @@ public class Console extends JFrame {
 						consoleFFMPEG.setText("");
 						break;
 					case 1:
-						consoleFFPLAY.setText("");
-						break;
-					case 2:
 						consoleFFPROBE.setText("");
 						break;
-					case 3:
+					case 2:
 						consoleBMXTRANSWRAP.setText("");
 						break;
-					case 4:
+					case 3:
 						consoleDVDAUTHOR.setText("");
 						break;
-					case 5: 
+					case 4: 
 						consoleTSMUXER.setText("");
 						break;
-					case 6:
+					case 5:
 						consoleMEDIAINFO.setText("");
 						break;
-					case 7:
+					case 6:
 						consoleYOUTUBEDL.setText("");
 						break;
-					case 8:
+					case 7:
 						consoleDCRAW.setText("");
 						break;
-					case 9:
+					case 8:
 						consoleEXIFTOOL.setText("");
 						break;
-					case 10:
+					case 9:
 						consoleXPDFREADER.setText("");
 						break;
-					case 11:
+					case 10:
 						consoleNCNN.setText("");
 						break;
-					case 12:
+					case 11:
 						consolePYTHON.setText("");
 						break;						
 				}
@@ -196,39 +192,36 @@ public class Console extends JFrame {
 									writer.write(consoleFFMPEG.getText());
 									break;
 								case 1:
-									writer.write(consoleFFPLAY.getText());
-									break;
-								case 2:
 									writer.write(consoleFFPROBE.getText());
 									break;
-								case 3:
+								case 2:
 									writer.write(consoleBMXTRANSWRAP.getText());
 									break;
-								case 4:
+								case 3:
 									writer.write(consoleDVDAUTHOR.getText());
 									break;
-								case 5: 
+								case 4: 
 									writer.write(consoleTSMUXER.getText());
 									break;
-								case 6:
+								case 5:
 									writer.write(consoleMEDIAINFO.getText());
 									break;
-								case 7:
+								case 6:
 									writer.write(consoleYOUTUBEDL.getText());
 									break;
-								case 8:
+								case 7:
 									writer.write(consoleDCRAW.getText());
 									break;
-								case 9:
+								case 8:
 									writer.write(consoleEXIFTOOL.getText());
 									break;
-								case 10:
+								case 9:
 									writer.write(consoleXPDFREADER.getText());
 									break;
-								case 11:
+								case 10:
 									writer.write(consoleNCNN.getText());
 									break;
-								case 12:
+								case 11:
 									writer.write(consolePYTHON.getText());
 									break;
 							}
@@ -240,6 +233,7 @@ public class Console extends JFrame {
 		});
 		
 		followLine = new JCheckBoxMenuItem(Shutter.language.getProperty("followLine"));	
+		followLine.setSelected(true);
 		menu.add(clear);
 		menu.add(save);
 		menu.add(followLine);								
@@ -264,6 +258,29 @@ public class Console extends JFrame {
 			
 		});
 		
+	}
+	
+	private void addFollowLineListener(JScrollPane scrollPane) {
+		
+	    JScrollBar bar = scrollPane.getVerticalScrollBar();
+	    final int[] lastMax = { bar.getMaximum() };
+
+	    bar.addAdjustmentListener(new AdjustmentListener() {
+	        public void adjustmentValueChanged(AdjustmentEvent e) {
+	            JScrollBar adj = (JScrollBar) e.getAdjustable();
+	            int max = adj.getMaximum();
+	            boolean atBottom = adj.getValue() + adj.getVisibleAmount() >= max;
+
+	            if (max > lastMax[0]) {
+	                if (followLine.isSelected()) {
+	                    adj.setValue(max);
+	                }
+	            } else {
+	                followLine.setSelected(atBottom);
+	            }
+	            lastMax[0] = max;
+	        }
+	    });
 	}
 
 	private void consoleAll() {
@@ -293,8 +310,7 @@ public class Console extends JFrame {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				consoleFFMPEG.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));			
-				consoleFFPLAY.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
+				consoleFFMPEG.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
 				consoleFFPROBE.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleBMXTRANSWRAP.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
 				consoleDVDAUTHOR.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
@@ -315,11 +331,6 @@ public class Console extends JFrame {
 		consoleFFMPEG.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleFFMPEG.setWrapStyleWord(true);
 		consoleFFMPEG.addKeyListener(kl);
-		consoleFFPLAY.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
-		consoleFFPLAY.setBackground(Utils.c30);
-		consoleFFPLAY.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
-		consoleFFPLAY.setWrapStyleWord(true);
-		consoleFFPLAY.addKeyListener(kl);
 		consoleFFPROBE.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
 		consoleFFPROBE.setBackground(Utils.c30);
 		consoleFFPROBE.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
@@ -379,9 +390,6 @@ public class Console extends JFrame {
 		scrollFFMPEG = new JScrollPane();	
 		scrollFFMPEG.getViewport().add(consoleFFMPEG);
 		
-		scrollFFPLAY = new JScrollPane();	
-		scrollFFPLAY.getViewport().add(consoleFFPLAY);
-		
 		scrollFFPROBE = new JScrollPane();	
 		scrollFFPROBE.getViewport().add(consoleFFPROBE);
 		
@@ -415,101 +423,22 @@ public class Console extends JFrame {
 		scrollPYTHON = new JScrollPane();	
 		scrollPYTHON.getViewport().add(consolePYTHON); 
 		
-		scrollFFMPEG.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollFFPLAY.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollFFPROBE.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollBMXTRANSWRAP.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollDVDAUTHOR.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });		
-		
-		scrollTSMUXER.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollMEDIAINFO.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollYOUTUBEDL.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });		
-		
-		scrollDCRAW.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollEXIFTOOL.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollXPDFREADER.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollNCNN.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
-		
-		scrollPYTHON.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {  
-	        public void adjustmentValueChanged(AdjustmentEvent e) {  
-	        	if (followLine.isSelected())
-	            e.getAdjustable().setValue(e.getAdjustable().getMaximum());  
-	        }
-	    });
+		addFollowLineListener(scrollFFMPEG);
+		addFollowLineListener(scrollFFPROBE);
+		addFollowLineListener(scrollBMXTRANSWRAP);
+		addFollowLineListener(scrollDVDAUTHOR);
+		addFollowLineListener(scrollTSMUXER);
+		addFollowLineListener(scrollMEDIAINFO);
+		addFollowLineListener(scrollYOUTUBEDL);
+		addFollowLineListener(scrollDCRAW);
+		addFollowLineListener(scrollEXIFTOOL);
+		addFollowLineListener(scrollXPDFREADER);
+		addFollowLineListener(scrollNCNN);
+		addFollowLineListener(scrollPYTHON);
 	
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, frmConsole.getWidth(), frmConsole.getHeight());
 		tabbedPane.add("FFMPEG", scrollFFMPEG);
-		tabbedPane.add("FFPLAY", scrollFFPLAY);
 		tabbedPane.add("FFPROBE", scrollFFPROBE);
 		tabbedPane.add("BMXTRANSWRAP", scrollBMXTRANSWRAP);
 		tabbedPane.add("DVDAUTHOR", scrollDVDAUTHOR);

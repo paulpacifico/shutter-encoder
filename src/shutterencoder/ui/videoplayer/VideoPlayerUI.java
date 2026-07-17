@@ -1292,6 +1292,12 @@ public class VideoPlayerUI {
 				
 				if (VideoPlayerCore.playerVideo != null)
 				{				
+					//Stop player
+					if (VideoPlayerCore.playerIsPlaying())
+					{
+						btnPlay.doClick();
+					}
+					
 					VideoPlayerCore.playerCurrentFrame = 0;
 					
 					long time = System.currentTimeMillis();

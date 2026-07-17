@@ -39,9 +39,6 @@ public class Image extends Shutter {
 	    		{
 	    			FFMPEG.setCropDetect(file);	  
 	    		}
-	    		
-				if (filterComplex != "")
-					filterComplex += "[w];[w]";
 
 				float imageRatio = 1.0f;
 				
@@ -103,7 +100,16 @@ public class Image extends Shutter {
 				int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
 				int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
 
-	    		filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
+				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				{
+					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":crop_x=" + cropX + ":crop_y=" + cropY + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
+				}
+				else
+				{
+					if (filterComplex != "") filterComplex += ",";
+					
+					filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
+				}
 			}
 		}
     	
@@ -122,23 +128,65 @@ public class Image extends Shutter {
 			{
 				String transpose = "";
 				switch (comboRotate.getSelectedItem().toString()) {
-				case "90":
+				case "90":					
 					if (caseMiror.isSelected())
-						transpose = "transpose=3";
+					{
+						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						{
+							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=1:extra_opts='distort=on\\:distort_scale_x=-1'");
+						}
+						else
+							transpose = "transpose=3";
+					}
 					else
-						transpose = "transpose=1";
+					{
+						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						{
+							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=1");
+						}
+						else
+							transpose = "transpose=1";
+					}
 					break;
-				case "-90":
+				case "-90":					
 					if (caseMiror.isSelected())
-						transpose = "transpose=0";
+					{
+						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						{
+							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=3:extra_opts='distort=on\\:distort_scale_x=-1'");
+						}
+						else
+							transpose = "transpose=0";
+					}
 					else
-						transpose = "transpose=2";
+					{
+						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						{
+							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=3");
+						}
+						else
+							transpose = "transpose=2";
+					}
 					break;
-				case "180":
+				case "180":					
 					if (caseMiror.isSelected())
-						transpose = "transpose=1,transpose=1,hflip";
+					{
+						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						{
+							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=2:extra_opts='distort=on\\:distort_scale_x=-1'");
+						}
+						else
+							transpose = "transpose=1,transpose=1,hflip";
+					}
 					else
-						transpose = "transpose=1,transpose=1";
+					{
+						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						{
+							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=2");
+						}
+						else
+							transpose = "transpose=1,transpose=1";
+					}
 					break;
 				}
 	
@@ -146,16 +194,24 @@ public class Image extends Shutter {
 			}
 			else if (caseMiror.isSelected())
 			{
-				rotate = "hflip";
+				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				{
+					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "extra_opts='distort=on\\:distort_scale_x=-1'");
+				}
+				else
+					rotate = "hflip";
 			}
-						
+			
 			if (rotate != "")
 			{
-				if (filterComplex != "") filterComplex += ",";
+				if (FunctionUtils.useLibplaceboFilters == false || filterComplex.contains("hwdownload") || (filterComplex.contains("libplacebo") && filterComplex.substring(filterComplex.indexOf("libplacebo")).contains(",")))
+				{
+					if (filterComplex != "") filterComplex += ",";
+				}
 		
 				filterComplex += rotate;	
 			}
-			
+						
 			//Format
 			String bitDepth = "nv12";
 			if (FFPROBE.imageDepth == 10)
@@ -165,8 +221,21 @@ public class Image extends Shutter {
 						
 			//GPU filter	
 			if (noGPU == false && filterGPU && (filterComplex.contains("transpose") || filterComplex.contains("hflip")))
-			{
-				if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
+			{				
+				if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+				{
+					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+					
+					filterComplex = filterComplex.replace("transpose", "transpose_cuda");
+					
+					if (caseMiror.isSelected())
+					{
+						filterComplex = filterComplex.replace("hflip", "transpose_cuda=dir=hflip");
+					}
+
+					filterComplex += ",hwdownload,format=" + bitDepth;
+				}
+				else if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				{				
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -457,6 +526,15 @@ public class Image extends Shutter {
 			}
 		}
 				
+		if (FunctionUtils.useLibplaceboFilters && filterComplex.contains("scale=") && !filterComplex.contains("hwdownload")
+		&& (!filterComplex.contains("libplacebo")
+		|| !filterComplex.replace(",scale", "scale").substring(filterComplex.indexOf("libplacebo")).contains(",")))
+		{			
+			String libplacebo = filterComplex.contains("libplacebo") ? ":" : "libplacebo=";
+
+			filterComplex = filterComplex.replace(":force_original_aspect_ratio=decrease", "").replace(",scale", "scale").replaceAll("scale=(-?\\d+):", libplacebo + "w=$1:h=") + ":reset_sar=1";
+		}
+				
 		return filterComplex;
 	}
 	
@@ -530,7 +608,7 @@ public class Image extends Shutter {
     				upscale = false;
     			}
     		}
-    		
+
     		if (upscale)
     		{
 				if (lblPad.getText().equals(language.getProperty("lblCrop")) && lblPad.isVisible())
@@ -540,11 +618,20 @@ public class Image extends Shutter {
 			        	//Original sup. à la sortie
 			        	if (iw > ow || ih > oh)
 			        	{
-			        		//Si la hauteur calculée est > à la hauteur de sortie
-			        		if ( (float) ow / ir >= oh)
-			        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
+			        		if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+							{		
+								filterComplex = filterComplex.replace("=-1", "=" + String.valueOf(ow)) + "normalize_sar=true:pad_crop_ratio=1.0";
+							}
 			        		else
-			        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
+			        		{
+				        		//Si la hauteur calculée est > à la hauteur de sortie
+				        		if ( (float) ow / ir >= oh)
+				        		{
+				        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":0:(ih-oh)*0.5" + "'";
+				        		}
+				        		else
+				        			filterComplex += ",crop=" + "'" + ow + ":" + oh + ":(iw-ow)*0.5:0" + "'";
+			        		}
 			        	}
 					}
 				}
@@ -552,7 +639,12 @@ public class Image extends Shutter {
 				{
 					if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
 					{
-						filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+						if (filterComplex.contains("libplacebo=w="))
+						{						
+							filterComplex += ":fit_mode=contain";
+						}
+						else
+							filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
 					}
 				}
     		}
@@ -587,7 +679,12 @@ public class Image extends Shutter {
     		{
 				if (ir != or)
 				{
-					filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
+					if (filterComplex.contains("libplacebo=w="))
+					{						
+						filterComplex += ":fit_mode=contain";
+					}
+					else
+						filterComplex += ",pad=" +o[0]+":"+o[1]+":(ow-iw)*0.5:(oh-ih)*0.5";
 				}	
     		}
 			
@@ -628,30 +725,5 @@ public class Image extends Shutter {
     	
     	return filterComplex;
 	}
-
-	public static String setTiles(String filterComplex, String extension) {
-		
-		if ((extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif")) && FFPROBE.gridRows != 0 && FFPROBE.gridCols != 0)
-		{
-			if (filterComplex != "") filterComplex += ",";
-			
-			String tiles = "";
-			int tilesNumber = FFPROBE.gridRows * FFPROBE.gridCols;
-			for (int i = 0 ; i < tilesNumber ; i++)
-			{
-				tiles += "[0:v:" + i + "]";
-			}
-			
-			String scale = FFPROBE.imageWidth + ":" + FFPROBE.imageHeight + ":0:0";
-			if (FFPROBE.isRotated)
-			{
-				scale = FFPROBE.imageHeight + ":" + FFPROBE.imageWidth + ":0:0,transpose=1";
-			}
-			
-			filterComplex += tiles  + "concat=n=" + tilesNumber + ",tile=" + FFPROBE.gridRows + "x" + FFPROBE.gridCols + ",crop=" + scale; 
-		}
-		
-		return filterComplex;
-	}	
 	
 }

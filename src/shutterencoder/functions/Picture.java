@@ -137,10 +137,7 @@ public class Picture extends Shutter {
 						
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
-						
-						//Tiles
-						filterComplex = Image.setTiles(filterComplex, extension);
-												
+				
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
 						
@@ -192,7 +189,7 @@ public class Picture extends Shutter {
 				        //Zoom
 						if (Shutter.sliderZoom.getValue() != 0)
 						{		
-							filterComplex = Colorimetry.setZoom(filterComplex, true);
+							filterComplex = Colorimetry.setZoom(filterComplex);
 						}
 				        
 				        //Scaling
@@ -486,7 +483,7 @@ public class Picture extends Shutter {
 			
 	private static String setFlags() { 
 		
-		return " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+		return " -scaler " + Settings.comboScale.getSelectedItem().toString();
 	}
 
 	private static String setCompression() {

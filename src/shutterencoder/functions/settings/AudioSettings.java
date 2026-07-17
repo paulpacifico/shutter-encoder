@@ -215,12 +215,7 @@ public class AudioSettings extends Shutter {
 			}
 			else
 			{
-				if (System.getProperty("os.name").contains("Mac"))
-				{
-					audioCodec = "aac_at";
-				}
-				else
-					audioCodec = "aac";
+				audioCodec = "aac";
 			}
 			
 			String audioFiltering = "";
@@ -308,6 +303,11 @@ public class AudioSettings extends Shutter {
 		    		{
 		    			channelMix = "pan=stereo|FL=0.707*FL+0.707*FC+0.5*BL+0.5*SL|FR=0.707*FR+0.707*FC+0.5*BR+0.5*SR";
 		    		}
+		    		
+		    		if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+	    			{
+	    				audioCodec += " -aac_is 0 -aac_pns 0";
+	    			}
 		    			
 	    			audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + " -filter:a " + '"' + audioFiltering + channelMix + '"' + " -map a?";
 			    }
@@ -379,6 +379,11 @@ public class AudioSettings extends Shutter {
 				    	audio += ";";
 				    else
 				    	audio += " -filter_complex " + '"';	
+				    
+				    if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+	    			{
+	    				audioCodec += " -aac_is 0 -aac_pns 0";
+	    			}
 		    		
 					if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown all tracks to mono
 					{
@@ -401,6 +406,11 @@ public class AudioSettings extends Shutter {
 				    	audio += ";";
 				    else
 				    	audio += " -filter_complex " + '"';
+				    
+				    if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+	    			{
+	    				audioCodec += " -aac_is 0 -aac_pns 0";
+	    			}
 				    
 		    		audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 		    	}
@@ -426,6 +436,11 @@ public class AudioSettings extends Shutter {
 				    
 				    if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("stereo")))
 				    {
+				    	if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+		    			{
+		    				audioCodec += " -aac_is 0 -aac_pns 0";
+		    			}
+				    	
 				    	audio += "[0:a][2:a]amix=inputs=2" + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;   
 				    }
 				    else if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
@@ -437,6 +452,11 @@ public class AudioSettings extends Shutter {
 			    	}
 				    else if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("mono")))
 				    {
+				    	if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+		    			{
+		    				audioCodec += " -aac_is 0 -aac_pns 0";
+		    			}
+				    	
 				    	if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown all tracks to mono
 			    		{
 				    		audio += "[" + String.valueOf(comboAudio1.getSelectedIndex()).replace("1","2") + ":a][" + String.valueOf(comboAudio2.getSelectedIndex()).replace("1","2") + ":a]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -ac 1 -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
@@ -446,6 +466,11 @@ public class AudioSettings extends Shutter {
 				    }
 				    else if (lblAudioMapping.getSelectedItem().toString().equals("Mix"))
 			    	{
+				    	if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+		    			{
+		    				audioCodec += " -aac_is 0 -aac_pns 0";
+		    			}
+				    	
 			    		audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 			    	}
 		         }
@@ -459,6 +484,11 @@ public class AudioSettings extends Shutter {
 				    else
 				    	audio += " -filter_complex " + '"';	
 				    
+				    if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+	    			{
+	    				audioCodec += " -aac_is 0 -aac_pns 0";
+	    			}
+				    
 			    	audio += "[0:a:" + comboAudio1.getSelectedIndex() + "][0:a:" + comboAudio2.getSelectedIndex() + "]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;    		 
     			 }
 		    	 else if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("mono")))
@@ -470,6 +500,11 @@ public class AudioSettings extends Shutter {
 				    	audio += ";";
 		    		 else
 				    	audio += " -filter_complex " + '"';	
+		    		 
+		    		 if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+		    		 {
+		    			 audioCodec += " -aac_is 0 -aac_pns 0";
+		    		 }
 				    
 		    		 if (comboAudio1.getSelectedIndex() != 16 && comboAudio2.getSelectedIndex() != 16) //Mixdown all tracks to mono
 		    		 {
@@ -487,6 +522,11 @@ public class AudioSettings extends Shutter {
 		    			 audio += ";";
 		    		 else
 		    			 audio += " -filter_complex " + '"';
+		    		 
+		    		 if (audioCodec.equals("aac") && Integer.valueOf(comboAudioBitrate.getSelectedItem().toString()) > 64)
+		    		 {
+		    			 audioCodec += " -aac_is 0 -aac_pns 0";
+		    		 }
 				    
 		    		 audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 		    	 }
@@ -711,12 +751,7 @@ public class AudioSettings extends Shutter {
 							}
 							else
 							{
-								if (System.getProperty("os.name").contains("Mac"))
-								{
-									codec = "aac_at";
-								}
-								else
-									codec = "aac";
+								codec = "aac";
 							}
 							
 							codecMapping += " -c:a:" + i + " " + codec;				

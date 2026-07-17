@@ -116,7 +116,7 @@ public class Settings {
 	private JLabel lblStrictMode = new JLabel(Shutter.language.getProperty("lblStrictMode"));
 	public static JComboBox<String> comboStrict = new JComboBox<String>(new String [] {"experimental", "unofficial", "normal"});	
 	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
-	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"fast_bilinear", "bilinear", "bicubic", "neighbor", "area", "gauss", "sinc", "lanczos", "spline"});	
+	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"bilinear", "bicubic", "neighbor", "area", "gaussian", "sinc", "lanczos", "spline"});	
 	public static JCheckBox btnPreviewOutput = new JCheckBox(Shutter.language.getProperty("btnPreviewOutput"));
 	private JLabel lblSyncMode = new JLabel(Shutter.language.getProperty("lblSyncMode"));
 	public static JComboBox<String> comboSync = new JComboBox<String>(new String [] {"auto", "passthrough", "cfr", "vfr", "drop"});	

@@ -503,7 +503,7 @@ public class Shutter {
 	protected static JLabel lblAudio7;
 	protected static JLabel lblAudio8;
 	protected static JComboBox<String> lblAudioMapping;
-	protected static JLabel lblPad;
+	public static JLabel lblPad;
 	public static JComboBox<String> comboDAR;
 	protected static JLabel lblNiveaux;
 	protected static JLabel lblOPATOM;
@@ -2892,16 +2892,32 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				cancelled = true;
-
 				if (FFMPEG.runProcess != null && FFMPEG.runProcess.isAlive())
 				{
+					//Suspend the process
+					if (btnStart.getText().equals(language.getProperty("btnPauseFunction")))
+						btnStart.doClick();
+					
+					int q = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("areYouSure"),
+							btnCancel.getText(), JOptionPane.YES_NO_OPTION,
+							JOptionPane.PLAIN_MESSAGE);
+
+					if (q == JOptionPane.NO_OPTION)
+					{
+						//Resume the process
+						if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
+							btnStart.doClick();		
+						
+						return;
+					}
+					
+					cancelled = true;
+					
 					FFMPEG.isRunning = false;
 
-					if (btnStart.getText().equals(language.getProperty("resume"))) {
+					if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
 						FFMPEG.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le détruire
-					}
-
+				
 					try {
 						FFMPEG.writer.write('q');
 						FFMPEG.writer.flush();
@@ -3176,6 +3192,8 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+				
 				if (caseDisplay.isSelected() && caseDisplay.isEnabled()) {
 					VideoPlayerCore.frameVideo = null;
 				}
@@ -5622,7 +5640,7 @@ public class Shutter {
 							+ Shutter.comboGPUDecoding.getSelectedItem().toString()
 									.replace(Shutter.language.getProperty("aucun"), "none")
 							+ " -v quiet -i " + '"' + file + '"'
-							+ " -vf scale=1000:-1:sws_flags=fast_bilinear:sws_dither=none -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:1");
+							+ " -vf scale=1000:-1:scaler=bilinear:sws_dither=none -r 1 -c:v rawvideo -map v:0 -an -f nut pipe:1");
 				}
 
 			}
@@ -13595,7 +13613,7 @@ public class Shutter {
 
 		});
 
-		comboInColormatrix = new JComboBox<Object>(new String[] { "Rec. 601", "Rec. 709", "Rec. 2020", "HDR" });
+		comboInColormatrix = new JComboBox<Object>(new String[] { "Rec. 601", "Rec. 709", "Rec. 2020", "Linear", "HDR" });
 		comboInColormatrix.setName("comboInColormatrix");
 		comboInColormatrix.setFont(new Font("Free Sans", Font.PLAIN, 10));
 		comboInColormatrix.setEditable(false);
@@ -13620,6 +13638,10 @@ public class Shutter {
 				} else if (comboInColormatrix.getSelectedItem().toString().contentEquals("Rec. 2020")) {
 					comboOutColormatrix
 							.setModel(new DefaultComboBoxModel<Object>(new String[] { "Rec. 601", "Rec. 709", "SDR" }));
+					comboOutColormatrix.setSelectedIndex(1);
+				} else if (comboInColormatrix.getSelectedItem().toString().contentEquals("Linear")) {
+					comboOutColormatrix
+							.setModel(new DefaultComboBoxModel<Object>(new String[] { "Rec. 601", "Rec. 709", "Rec. 2020", "SDR" }));
 					comboOutColormatrix.setSelectedIndex(1);
 				} else if (comboInColormatrix.getSelectedItem().toString().equals("HDR")) {
 					comboOutColormatrix.setModel(new DefaultComboBoxModel<Object>(new String[] { "SDR" }));
@@ -13655,7 +13677,7 @@ public class Shutter {
 			public void actionPerformed(ActionEvent arg0) {
 
 				if (comboOutColormatrix.getSelectedItem().toString().equals("SDR")) {
-					comboInColormatrix.setSelectedIndex(3);
+					comboInColormatrix.setSelectedIndex(4);
 				}
 
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
@@ -15474,8 +15496,10 @@ public class Shutter {
 							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
+					VideoPlayerCore.playerCurrentFrame = timeIn;
+					
 					VideoPlayerUI.playTransition = true;
-					VideoPlayerCore.playerSetTime(timeIn);
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 
 					VideoPlayerUI.btnPlay.setIcon(new FlatSVGIcon("resources/pause.svg", 15, 15));
 					VideoPlayerUI.btnPlay.setName("pause");
@@ -15545,14 +15569,17 @@ public class Shutter {
 				else
 					lblFadeInColor.setText(Shutter.language.getProperty("black"));
 
-				if (caseVideoFadeIn.isSelected()) {
+				if (caseVideoFadeIn.isSelected())
+				{
 					float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600
 							+ Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60
 							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
+					VideoPlayerCore.playerCurrentFrame = timeIn;
+					
 					VideoPlayerUI.playTransition = true;
-					VideoPlayerCore.playerSetTime(timeIn);
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 
 					VideoPlayerUI.btnPlay.setIcon(new FlatSVGIcon("resources/pause.svg", 15, 15));
 					VideoPlayerUI.btnPlay.setName("pause");
@@ -15599,8 +15626,10 @@ public class Shutter {
 							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
+					VideoPlayerCore.playerCurrentFrame = timeIn;
+					
 					VideoPlayerUI.playTransition = true;
-					VideoPlayerCore.playerSetTime(timeIn);
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 
 					VideoPlayerUI.btnPlay.setIcon(new FlatSVGIcon("resources/pause.svg", 15, 15));
 					VideoPlayerUI.btnPlay.setName("pause");
@@ -17821,6 +17850,8 @@ public class Shutter {
 
 				if (btnReset.isEnabled())
 				{
+					double position = VideoPlayerCore.playerCurrentFrame;
+					
 					// Resolution
 					comboResolution.setSelectedIndex(0);
 					comboImageOption.setSelectedIndex(0);
@@ -18493,7 +18524,7 @@ public class Shutter {
 						caseColormatrix.doClick();
 
 					comboInColormatrix.setModel(new DefaultComboBoxModel<Object>(
-							new String[] { "Rec. 601", "Rec. 709", "Rec. 2020", "HDR" }));
+							new String[] { "Rec. 601", "Rec. 709", "Rec. 2020", "Linear", "HDR" }));
 					comboInColormatrix.setSelectedIndex(0);
 					comboOutColormatrix.setModel(new DefaultComboBoxModel<Object>(
 							new String[] { "Rec. 601", "Rec. 709", "Rec. 2020", "SDR" }));
@@ -18505,6 +18536,7 @@ public class Shutter {
 
 					doNotLoadImage = false;
 
+					VideoPlayerCore.playerCurrentFrame = position;
 					VideoPlayerUI.resizeAll();
 				}
 			}
@@ -18873,8 +18905,15 @@ public class Shutter {
 						}
 						
 					}
-					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder")
-					|| comboAccel.getSelectedItem().equals("OSX VideoToolbox")
+					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+					{
+						if (comboForcePreset.getModel().getSize() != 4)
+						{
+							comboForcePreset.setModel(new DefaultComboBoxModel<String>(new String[] { "speed", "balanced", "quality", "high_quality" }));
+							comboForcePreset.setSelectedIndex(2);
+						}	
+					}
+					else if (comboAccel.getSelectedItem().equals("OSX VideoToolbox")
 					|| comboAccel.getSelectedItem().equals("Vulkan Video"))
 					{
 						caseForcePreset.setSelected(false);

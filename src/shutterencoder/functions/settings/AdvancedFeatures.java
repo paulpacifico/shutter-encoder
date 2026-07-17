@@ -55,16 +55,16 @@ public class AdvancedFeatures extends Shutter {
 					field = "1";
 				}
 			}
+			
+			//Format
+			String bitDepth = "nv12";
+			if (FFPROBE.imageDepth == 10)
+			{
+				bitDepth = "p010";
+			}
 						
 			if (FFMPEG.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
 			{
-				//Format
-				String bitDepth = "nv12";
-				if (FFPROBE.imageDepth == 10)
-				{
-					bitDepth = "p010";
-				}
-				
 				//GPU filter
 				if ((FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
@@ -97,14 +97,32 @@ public class AdvancedFeatures extends Shutter {
 						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_vulkan") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
 				else
-				{		
-					return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+				{	
+					if (FunctionUtils.useLibplaceboFilters && doubler == 0 && (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
+					{
+						if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+						{
+							return FunctionUtils.setLibplaceboFilter("", "deinterlace=bwdif");
+						}
+						else
+							return FunctionUtils.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
+					}
+					else
+						return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
 				}
 			}
-			else
-			{				
-				return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+			
+			if (FunctionUtils.useLibplaceboFilters && doubler == 0 && (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
+			{
+				if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+				{
+					return FunctionUtils.setLibplaceboFilter("", "deinterlace=bwdif");
+				}
+				else
+					return FunctionUtils.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
 			}
+			else
+				return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
 		}							
 		
 		return "";
@@ -113,23 +131,7 @@ public class AdvancedFeatures extends Shutter {
 	public static String setPreset() {
 		
 		switch (comboFonctions.getSelectedItem().toString())
-		{
-			case "AV1":
-				
-				 if (caseQMax.isSelected())
-				 {
-					 if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
-		        	 {
-			        	return " -preset p7";
-	        		 }
-					 else
-						return " -preset 0";
-				 }
-				 else if (caseForceSpeed.isSelected())
-				 {
-					 return " -preset " + Shutter.comboForceSpeed.getSelectedItem().toString();
-				 }
-			
+		{			
 			case "H.264":
 			case "H.265":
 				
@@ -141,11 +143,7 @@ public class AdvancedFeatures extends Shutter {
 		        	}
 		        	else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 		        	{
-		        		return " -quality quality";
-		        	}
-		        	else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
-		        	{
-		        		return " -tune hq";
+		        		return " -preset quality";
 		        	}
 			        else
 			        	return " -preset veryslow";
@@ -176,6 +174,24 @@ public class AdvancedFeatures extends Shutter {
 				{
 					 return " -preset faster";
 				}
+				
+			case "AV1":
+				
+				 if (caseQMax.isSelected())
+				 {
+					 if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+		        	 {
+			        	return " -preset p7";
+	        		 }
+					 else
+						return " -preset 0";
+				 }
+				 else if (caseForceSpeed.isSelected())
+				 {
+					 return " -preset " + Shutter.comboForceSpeed.getSelectedItem().toString();
+				 }
+				 
+				 break;			
 		        
 			case "Blu-ray":
 				
@@ -399,28 +415,22 @@ public class AdvancedFeatures extends Shutter {
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "H.264":
-				
-				if (caseQMax.isSelected() && comboAccel.isEnabled()
-				&& (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Vulkan Video")))
-		        {
-					return " -tune hq";
-		        }
-				else if (caseForceTune.isSelected())
-		        {
-		        	return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
-		        }
-		        
-		        break;	
-		        
 			case "H.265":
 				
-				if (caseQMax.isSelected() && comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+				if (caseQMax.isSelected())
 		        {
-					return " -tune uhq";
-		        }
-				else if (caseQMax.isSelected() && comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Vulkan Video"))
-		        {
-					return " -tune hq";
+					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+					{
+						return " -tune hq -lookahead 32 -spatial_aq 1 -temporal_aq 1 -aq-strength 8";
+					}
+					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+					{
+						return " -quality quality -preanalysis true -vbaq true -pa_lookahead_buffer_depth 32";
+					}
+					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
+			        {
+						return " -tune hq";
+			        }	
 		        }
 				else if (caseForceTune.isSelected())
 		        {
@@ -441,16 +451,16 @@ public class AdvancedFeatures extends Shutter {
 				
 			case "AV1":
 				
-				if (comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Nvidia NVENC"))
+				if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 		        {
 					if (caseQMax.isSelected())
 					{
-						return " -tune uhq";
+						return " -tune hq -lookahead 32 -spatial_aq 1 -temporal_aq 1 -aq-strength 8";
 					}
 					else
 						return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
 		        }
-				else if (comboAccel.isEnabled() && comboAccel.getSelectedItem().equals("Vulkan Video"))
+				else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
 				{
 					if (caseQMax.isSelected())
 					{
@@ -477,9 +487,9 @@ public class AdvancedFeatures extends Shutter {
 				if (FFPROBE.interlaced.equals("1") && caseForcerDesentrelacement.isSelected() == false && comboFilter.getSelectedIndex() == 1)
 		        {               
 		            if (FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) //Invert fields
-		            	return " -field_order bt -flags +ildct -top 1";                    	
+		            	return " -field_order bt -flags +ildct";                    	
 		            else
-		            	return " -flags +ildct -top 1";	
+		            	return " -flags +ildct";	
 		        }
 				
 				break;
@@ -514,9 +524,9 @@ public class AdvancedFeatures extends Shutter {
 		            	case "185":
 		            	case "185 X":	
 		                    if ((FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
-		                    	return " -field_order bt -flags +ildct -top 1";                    	
+		                    	return " -field_order bt -flags +ildct";                    	
 		                    else
-		                    	return " -flags +ildct -top 1";			                   	
+		                    	return " -flags +ildct";			                   	
 		            }
 		        }
 				
@@ -532,7 +542,7 @@ public class AdvancedFeatures extends Shutter {
 				
 				if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
 				{
-					return " -flags +ildct+ilme -top 1";
+					return " -flags +ildct+ilme";
 				}
 				
 				break;
@@ -541,7 +551,7 @@ public class AdvancedFeatures extends Shutter {
 				
 				if (caseForcerProgressif.isSelected() == false)
 				{
-					return " -flags +ildct -top 1";
+					return " -flags +ildct";
 				}
 				
 				break;
@@ -627,10 +637,17 @@ public class AdvancedFeatures extends Shutter {
 				FPS = Float.valueOf(caseSequenceFPS.getSelectedItem().toString().replace(",", ".").replace(",", "."));
 			
 			if (FPS != newFPS)
-			{	            
-				if (filterComplex != "") filterComplex += ",";       
-				
-				filterComplex += "minterpolate=fps=" + newFPS + ":mi_mode=blend";
+			{	           
+				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				{
+					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "fps=" + newFPS + ":frame_mixer=linear");
+				}
+				else
+				{
+					if (filterComplex != "") filterComplex += ",";       
+					
+					filterComplex += "minterpolate=fps=" + newFPS + ":mi_mode=blend";
+				}
 			}
 		}
 		
@@ -645,7 +662,7 @@ public class AdvancedFeatures extends Shutter {
 				
 			if (filterComplex != "") filterComplex += ",";
 			
-			filterComplex += "minterpolate=fps=" + newFPS;            
+			filterComplex += "minterpolate=fps=" + newFPS;    	        
 		}
 
 		return filterComplex;
@@ -753,8 +770,9 @@ public class AdvancedFeatures extends Shutter {
 
 	public static String setForceTFF(String filterComplex) {
 		
-		if (caseForcerEntrelacement.isSelected())
-		{
+		if (caseForcerEntrelacement.isSelected()
+		|| (comboFonctions.getSelectedItem().toString().equals("DVD") && caseForcerProgressif.isSelected() == false))
+		{		
 			if (filterComplex != "") filterComplex += ",";
 			
 			filterComplex += "setfield=tff";
@@ -833,7 +851,7 @@ public class AdvancedFeatures extends Shutter {
 
 	public static String setFlags(String fileName) { 
 		
-		String flags = " -sws_flags " + Settings.comboScale.getSelectedItem().toString();
+		String flags = " -scaler " + Settings.comboScale.getSelectedItem().toString();
 		
 		if (Settings.comboSync.getSelectedItem().equals("auto") == false && caseDecimate.isSelected() == false)
 		{

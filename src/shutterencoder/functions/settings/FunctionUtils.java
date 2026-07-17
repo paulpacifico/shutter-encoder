@@ -93,6 +93,7 @@ public class FunctionUtils extends Shutter {
 	public static boolean goodBitrateMode;
 	public static boolean autoBitrateMode;
 	public static boolean deleteSRT = false;
+	public static boolean useLibplaceboFilters = false;
 	private static StringBuilder mailFileList = new StringBuilder();
 	
 	public static boolean analyze(File file, boolean isRaw, boolean isVideoPlayer) throws InterruptedException {
@@ -995,7 +996,7 @@ public class FunctionUtils extends Shutter {
 		
 		return "";
 	}
-	
+			
 	public static int setVideoBitrate() {
 		
 		bestBitrateMode = false;
@@ -1253,8 +1254,237 @@ public class FunctionUtils extends Shutter {
 		else //no filter before
 			return true;		
 	}
+	//Libplacebo
+	public static String getSetParamsInput(boolean deinterlace, String filterComplex)
+	{		
+		String params = "";
+		String format = "";
+		
+		//scale filter is replaced to libplacebo scaling filter
+		if (filterComplex != "" && filterComplex.contains("scale=") == false)
+		{
+			format += ",";
+		}
+			
+		if (deinterlace)
+		{
+			params += "field_mode=" + lblTFF.getText().toLowerCase(); //assume tff or bff from setparams
+		}
+		
+		if (caseLevels.isSelected())
+		{
+			if (params != "") params += ":";
+			
+			params += "range=" + comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
+		}	
+								
+	    if (caseColormatrix.isSelected())
+	    {	    	
+	    	if (comboInColormatrix.getSelectedItem().toString().equals("Linear"))
+	    	{
+	    		if (params != "") params += ":";
+	    		
+	    		params += "color_trc=linear:range=full";
+	    	}
+	    	else
+	    	{
+		    	String color = comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "");
+		    	
+		    	switch (color)
+			    {
+			        case "601":
+			        	if (params != "") params += ":";
+			        	params += "colorspace=smpte170m:color_primaries=smpte170m:color_trc=smpte170m";
+			        	break;
+			        case "709":
+			        	if (params != "") params += ":";
+			        	params += "colorspace=bt709:color_primaries=bt709:color_trc=bt709";
+			        	break;
+			        case "2020":
+			        	if (params != "") params += ":";
+			        	params += "colorspace=bt2020nc:color_primaries=bt2020:color_trc=bt2020-10";
+			        	break;
+			    }
+	    	}
+	    }
+	    
+	    if (params != "")
+	    {
+	    	params = "setparams=" + params + ",";
+	    }
+	    
+		if (caseLUTs.isSelected()
+		|| (caseColormatrix.isSelected() && (comboInColormatrix.getSelectedItem().equals("HDR") || comboInColormatrix.getSelectedItem().toString().equals("Linear"))))
+		{
+			//Mandatory for correct lut display
+			format += FFPROBE.hasAlpha ? "format=gbrap16le," : "format=gbrp16le,";
+		}
+	    
+	    return format + params;
+	}
 	
-	public static String setFilterComplex(String filterComplex, String audio, boolean picture) {
+	public static void getLibplaceboScore(boolean noGPU) {
+		
+		if (noGPU || FFMPEG.libplaceboAvailable == false)
+		{
+			useLibplaceboFilters = false;			
+			return;
+		}
+		
+		useLibplaceboFilters = true; //Allows to get the output from filters
+		
+		int score = 0;
+
+		boolean progressiveOutput = false;
+		if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Deinterlacing is not done before upscaling
+		{
+			switch (comboFonctions.getSelectedItem().toString())
+			{
+				case "AV1":
+				case "H.264":
+				case "H.265":
+				case "H.266":
+				case "MJPEG":
+				case "VP8":
+				case "VP9":
+				case "Theora":
+				case "WMV":
+				case "Xvid":
+				case "DNxHR":
+				case "MPEG-1":
+				case "Blu-ray":
+				case "DVD":
+					
+					progressiveOutput = true;
+					break;
+					
+				case "DNxHD":
+					
+					switch (comboFilter.getSelectedItem().toString())
+		            {
+		            	case "36":
+		            	case "75":
+		            	case "240":
+		            	case "365":
+		            	case "365 X":
+		            	case "90":
+		            	case "115":
+		            	case "175":
+		            	case "175 X":
+		            		
+		            		progressiveOutput = true;          		
+	            			break;
+		            }
+					
+					break;
+			}
+		}
+		
+		//Deinterlacing
+		if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("libplacebo"))
+		{
+			score += 2;
+		}
+
+		//Rotate
+		if (shutterencoder.functions.settings.Image.setRotate("", false).contains("libplacebo"))
+		{
+			score += 1;
+		}
+		
+		//Scale
+		if (shutterencoder.functions.settings.Image.setScale("", false, false).contains("libplacebo"))
+		{
+			score += 1;
+		}
+		
+		//Crop
+		if (shutterencoder.functions.settings.Image.setCrop("", new File(VideoPlayerCore.videoPath)).contains("libplacebo")
+		|| BitratesAdjustement.setCrop("").contains("libplacebo"))
+		{
+			score += 1;
+		}
+		
+		//Levels
+		if (Colorimetry.setLevels("").contains("libplacebo"))
+		{
+			score += 1;
+		}
+		
+		//Colormatrix
+		if (Colorimetry.setColormatrix("").contains("libplacebo=range"))
+		{
+			score += 1;
+		}
+		else if (Colorimetry.setColormatrix("").contains("libplacebo=colorspace"))
+		{
+			score += 2;
+		}
+		else if (Colorimetry.setColormatrix("").contains("libplacebo=lut"))
+		{
+			score += 1;
+		}
+		
+		//LUTs
+		if (Colorimetry.setLUT("").contains("libplacebo"))
+		{
+			score += 1;
+		}
+		
+		//Deband
+		if (Corrections.setDeband("").contains("libplacebo"))
+		{
+			score += 2;
+		}
+		
+		//Frame blending
+		if (AdvancedFeatures.setConform("").contains("libplacebo"))
+		{
+			score += 1;
+		}
+
+		if (score >= 3)
+		{
+			useLibplaceboFilters = true;
+		}
+		else
+			useLibplaceboFilters = false;
+	}
+	
+	public static boolean checkLibplaceboFilter(String filterComplex) {
+		
+		String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
+		
+		if (filterComplex.contains("libplacebo") == false
+		|| filterComplex.substring(filterComplex.indexOf("libplacebo")).replace(format, "").contains(",") == false)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static String setLibplaceboFilter(String filterComplex, String newLibplaceboFilter) {
+				
+		if (filterComplex.contains("libplacebo"))
+		{
+			//Move the format filter forward after all libplacebo filters to avoid CPU fallback
+			String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
+			
+			if (filterComplex.endsWith(format))
+			{
+				return filterComplex.substring(0, filterComplex.length() - (format.length())) + ":" + newLibplaceboFilter + format;
+			}
+			else
+				return filterComplex + ":" + newLibplaceboFilter;		
+		}
+		else
+		{
+			return filterComplex + getSetParamsInput(newLibplaceboFilter.contains("deinterlace"), filterComplex) + "libplacebo=" + newLibplaceboFilter;
+		}
+	}
+	
+ 	public static String setFilterComplex(String filterComplex, String audio, boolean picture) {
 
 		//No audio
 		if (picture)

@@ -155,12 +155,12 @@ public class AudioEncoders extends Shutter {
 						{	
 							case "AAC":
 								
-								if (System.getProperty("os.name").contains("Mac"))
+								audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -vn -write_id3v2 1";
+								
+								if (caseMixAudio.isSelected() && Integer.valueOf(comboFilter.getSelectedItem().toString()) > 64)
 								{
-									audioCodec = "aac_at -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -vn -write_id3v2 1";	
+									audioCodec += " -aac_is 0 -aac_pns 0";
 								}
-								else
-									audioCodec = "aac -b:a " + comboFilter.getSelectedItem().toString() + "k" + " -vn -write_id3v2 1";
 								
 								container = ".m4a";	
 								stereoOutput = false;

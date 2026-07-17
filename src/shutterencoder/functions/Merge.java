@@ -208,12 +208,7 @@ public class Merge extends Shutter {
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
-				if (System.getProperty("os.name").contains("Mac"))
-				{
-					return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";
-				}
-				else
-					return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";				
+				return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k";				
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{

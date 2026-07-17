@@ -43,10 +43,7 @@ public class BitratesAdjustement extends Shutter {
 	public static String setCrop(String filterComplex) {		
 		    	
     	if (Shutter.caseEnableCrop.isSelected())
-		{
-			if (filterComplex != "")
-				filterComplex += "[w];[w]";
-			
+		{		
 			//IMPORTANT
 			float imageRatio = 1.0f;
 			
@@ -79,7 +76,16 @@ public class BitratesAdjustement extends Shutter {
 			int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
 			int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
 
-    		filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
+			if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			{
+				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":crop_x=" + cropX + ":crop_y=" + cropY);
+			}
+			else
+			{
+				if (filterComplex != "") filterComplex += ",";
+				
+				filterComplex += "crop=" + cropWidth + ":" +  cropHeight + ":" + cropX + ":" + cropY;
+			}
 		}
     	
     	return filterComplex;

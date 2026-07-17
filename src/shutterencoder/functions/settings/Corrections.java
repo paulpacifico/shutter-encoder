@@ -87,9 +87,16 @@ public class Corrections extends Shutter {
 		
 		if (Shutter.caseBanding.isSelected())
 		{
-			if (filterComplex != "") filterComplex += ",";
-			
-			filterComplex += "deband=r=32";
+			if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			{
+				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "deband=1:deband_radius=32");
+			}
+			else
+			{
+				if (filterComplex != "") filterComplex += ",";
+				
+				filterComplex += "deband=r=32";
+			}
 		}	
 		
 		return filterComplex;

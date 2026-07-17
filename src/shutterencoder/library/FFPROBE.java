@@ -691,13 +691,7 @@ public static boolean hasDolbyVision = false;
 				
 				try {	
 					
-					String extension = file.substring(file.lastIndexOf("."));;
-					
 					String loglevel = "warning";
-					if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
-					{
-						loglevel = "trace";
-					}
 					
 					String PathToFFPROBE;
 					ProcessBuilder processFFPROBE;
@@ -729,19 +723,7 @@ public static boolean hasDolbyVision = false;
 								
 								while ((line = bre.readLine()) != null)
 								{
-									Console.consoleFFPROBE.append(line + System.lineSeparator());
-																		 						                
-						            //Retrieve the tiles number for Video: stream
-									if (extension.toLowerCase().equals(".heic") || extension.toLowerCase().equals(".heif"))
-									{	
-										if (line.contains("grid_rows") && gridCols == 00)
-							            {												
-							            	String s[] = line.split("grid_rows");
-							            	String s2[] = s[1].split(" ");
-					            			gridCols = Integer.valueOf(s2[1]);		
-							            	gridRows = Integer.valueOf(s2[3]);
-							             }
-									 }
+									Console.consoleFFPROBE.append(line + System.lineSeparator());									
 								}
 								
 							} catch (IOException e) {}

@@ -421,10 +421,13 @@ public class VideoEncoders extends Shutter {
 			            
 			            //EXR gamma
 						String inputCodec = Colorimetry.setInputCodec(extension);
-									        
+									   		
+						//Libplacebo score
+						FunctionUtils.getLibplaceboScore(false);
+						
 				        //Deinterlace
 						String filterComplex = "";	
-						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Deinterlacing is not made before upscaling
+						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Deinterlacing is not done before upscaling
 						{
 							switch (comboFonctions.getSelectedItem().toString())
 							{
@@ -512,9 +515,9 @@ public class VideoEncoders extends Shutter {
 							}
 						}	
 						
-						//Tiles
-						filterComplex = Image.setTiles(filterComplex, extension);
-											
+						//Rotate
+						filterComplex = Image.setRotate(filterComplex, false);
+			
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
@@ -553,7 +556,22 @@ public class VideoEncoders extends Shutter {
 										break;
 								}	
 			        		}
-			        	}			        
+			        	}	
+			        				        	
+			        	//Levels
+						filterComplex = Colorimetry.setLevels(filterComplex);
+
+						//Colormatrix
+						filterComplex = Colorimetry.setColormatrix(filterComplex);	
+						
+						//LUTs
+						filterComplex = Colorimetry.setLUT(filterComplex);
+												
+						//Deband
+						filterComplex = Corrections.setDeband(filterComplex);
+						
+						//Colorspace metadata
+						filterComplex = Colorimetry.setMetadata(filterComplex);	
 											
 						//Blend
 						filterComplex = ImageSequence.setBlend(filterComplex);
@@ -563,31 +581,13 @@ public class VideoEncoders extends Shutter {
 						
 						//Stabilisation
 						filterComplex = Corrections.setStabilisation(filterComplex, file, fileName, concat);
-						
-						//LUTs
-						filterComplex = Colorimetry.setLUT(filterComplex);
-							
-						//Levels
-						filterComplex = Colorimetry.setLevels(filterComplex);
-										
-						//Colormatrix
-						filterComplex = Colorimetry.setColormatrix(filterComplex);	
-						
-						//Colorspace metadata
-						filterComplex = Colorimetry.setMetadata(filterComplex);
-
-						//Rotate
-						filterComplex = Image.setRotate(filterComplex, false);
-						
+													
 						//Color
 						filterComplex = Colorimetry.setColor(filterComplex);		
 						
 						//Deflicker
 						filterComplex = Corrections.setDeflicker(filterComplex);
 						
-						//Deband
-						filterComplex = Corrections.setDeband(filterComplex);
-							 
 						//Details
 		            	filterComplex = Corrections.setDetails(filterComplex);				
 														            	
@@ -633,7 +633,7 @@ public class VideoEncoders extends Shutter {
 						//Zoom
 						if (Shutter.sliderZoom.getValue() != 0)
 						{		
-							filterComplex = Colorimetry.setZoom(filterComplex, true);
+							filterComplex = Colorimetry.setZoom(filterComplex);
 						}
 												
 				        //Scaling									

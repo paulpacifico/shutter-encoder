@@ -389,11 +389,11 @@ public class VideoPlayerOverlay extends Shutter {
 				{
 					if (Shutter.overlayDeviceIsRunning)
 					{
-						FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -sws_flags fast_bilinear -f rawvideo -");
+						FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
 					}
 					else if (Shutter.logoPNG == null)
 					{
-						FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -sws_flags fast_bilinear -f rawvideo -");
+						FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
 					}
 					
 					do {
