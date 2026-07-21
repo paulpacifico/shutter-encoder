@@ -96,23 +96,15 @@ public class AdvancedFeatures extends Shutter {
 					else
 						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_vulkan") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
-				else
-				{	
-					if (FunctionUtils.useLibplaceboFilters && doubler == 0 && (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
-					{
-						if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
-						{
-							return FunctionUtils.setLibplaceboFilter("", "deinterlace=bwdif");
-						}
-						else
-							return FunctionUtils.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
-					}
-					else
-						return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+				else  //Do not use libplacebo deinterlace if GPU can decode the input otherwise the process is slower
+				{
+					return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
 				}
+				
 			}
-			
-			if (FunctionUtils.useLibplaceboFilters && doubler == 0 && (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
+			else if (FunctionUtils.useLibplaceboFilters
+			&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false && doubler == 0
+			&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 			{
 				if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 				{

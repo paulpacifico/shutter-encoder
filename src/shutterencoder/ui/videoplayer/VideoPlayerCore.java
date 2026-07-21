@@ -1942,14 +1942,14 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filter += "vpp_amf=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
+				filter += "vpp_amf=" + width + ":" + height + ":scale_type=" + algorithm.replace("neighbor", "bilinear").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
 			}
 			else if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 			{		
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filter += "scale_qsv=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
+				filter += "scale_qsv=" + width + ":" + height + ":mode=" + algorithm.replace("neighbor", "low_power").replace("bilinear", "hq") + ",hwdownload,format=" + bitDepth;
 			}	
 			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlace == "")
 			{
@@ -1963,14 +1963,14 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filter += "scale_vulkan=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
+				filter += "scale_vulkan=" + width + ":" + height + ":scaler=" + algorithm.replace("neighbor", "nearest") + ",hwdownload,format=" + bitDepth;
 			}
 			else
 			{
 				if (FunctionUtils.useLibplaceboFilters && !filter.contains("hwdownload")
 				&& (!filter.contains("libplacebo") || !filter.replace(",scale", "scale").substring(filter.indexOf("libplacebo")).contains(",")))
 				{			
-					filter = FunctionUtils.setLibplaceboFilter(filter, "w=" + width + ":h=" + height + ":downscaler=" + algorithm.replace("neighbor", "nearest") + ":reset_sar=1");
+					filter = FunctionUtils.setLibplaceboFilter(filter, "w=" + width + ":h=" + height + ":downscaler=" + algorithm.replace("neighbor", "nearest") + ":upscaler=" + algorithm.replace("neighbor", "nearest") + ":reset_sar=1");
 				}
 				else
 				{
@@ -1985,7 +1985,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			if (FunctionUtils.useLibplaceboFilters && !filter.contains("hwdownload")
 			&& (!filter.contains("libplacebo") || !filter.replace(",scale", "scale").substring(filter.indexOf("libplacebo")).contains(",")))
 			{			
-				filter = FunctionUtils.setLibplaceboFilter(filter, "w=" + width + ":h=" + height + ":downscaler=" + algorithm.replace("neighbor", "nearest") + ":reset_sar=1");
+				filter = FunctionUtils.setLibplaceboFilter(filter, "w=" + width + ":h=" + height + ":downscaler=" + algorithm.replace("neighbor", "nearest") + ":upscaler=" + algorithm.replace("neighbor", "nearest") + ":reset_sar=1");
 			}
 			else
 			{

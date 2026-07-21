@@ -513,35 +513,35 @@ public class Image extends Shutter {
 			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling				
+				filterComplex = filterComplex.replace(flags, ":interp_algo=" + setScaleAlgorithm("CUDA"));			
 				
 				filterComplex = filterComplex.replace("scale=", "scale_cuda=") + ",hwdownload,format=" + bitDepth;	
 			}
 			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
+				filterComplex = filterComplex.replace(flags, ":scale_type=" + setScaleAlgorithm("AMF"));
 				
 				filterComplex = filterComplex.replace("scale=", "vpp_amf=") + ",hwdownload,format=" + bitDepth;
 			}
 			else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
+				filterComplex = filterComplex.replace(flags, ":mode=" + setScaleAlgorithm("QSV"));
 				
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=") + ",hwdownload,format=" + bitDepth;
 			}
 			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
+				filterComplex = filterComplex.replace(flags, "");
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vt=") + ",hwdownload,format=" + bitDepth;
 			}
 			else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
-				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
+				filterComplex = filterComplex.replace(flags, ":scaler=" + setScaleAlgorithm("VULKAN"));
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vulkan=") + ",hwdownload,format=" + bitDepth;
 			}
@@ -550,7 +550,7 @@ public class Image extends Shutter {
 		if (FunctionUtils.useLibplaceboFilters && filterComplex.contains("scale=") && (!filterComplex.contains("libplacebo")
 		|| !filterComplex.replace(",scale", "scale").substring(filterComplex.indexOf("libplacebo")).contains(",")))
 		{			
-			filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
+			filterComplex = filterComplex.replace(flags, ":downscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":upscaler=" + setScaleAlgorithm("LIBPLACEBO"));
 			
 			String libplacebo = filterComplex.contains("libplacebo") ? ":" : "libplacebo=";
 
@@ -558,6 +558,89 @@ public class Image extends Shutter {
 		}
 				
 		return filterComplex;
+	}
+
+	private static String setScaleAlgorithm(String hardware) {
+		
+		String algorithm = Settings.comboScale.getSelectedItem().toString();
+
+		switch (hardware)
+        {
+            case "CUDA":
+            {
+                switch (algorithm)
+                {
+                    case "neighbor":
+                        return "nearest";
+                    case "bilinear":
+                    case "area":
+                        return "bilinear";
+                    case "lanczos":
+                    case "sinc":
+                        return "lanczos";
+                    case "bicubic":
+                    case "spline":
+                    case "gaussian":
+                    default:
+                        return "bicubic";
+                }
+            }
+
+            case "VULKAN":
+            {
+                switch (algorithm)
+                {
+                    case "neighbor":
+                        return "nearest";
+                    default:
+                        return "bilinear";
+                }
+            }
+
+            case "QSV":
+            {
+                switch (algorithm)
+                {
+                    case "neighbor":
+                        return "low_power";
+                    default:
+                        return "hq";
+                }
+            }
+
+            case "AMF":
+            {
+            	switch (algorithm)
+                {
+                    case "bilinear":
+                        return "bilinear";
+                    default:
+                        return "bicubic";
+                }
+            }
+            
+            case "LIBPLACEBO":
+            {	
+            	switch (algorithm)
+                {
+                    case "neighbor":
+                        return "nearest";
+                    case "bilinear":
+                    case "area":
+                        return "bilinear";                    
+                    case "gaussian":
+                        return "gaussian";
+                    case "lanczos":
+                    case "sinc":
+                        return "lanczos";
+                    case "bicubic":
+                        return "bicubic";
+                }
+            }
+            
+            default:
+                return algorithm;
+        }
 	}
 	
 	public static String setPad(String filterComplex, boolean limitToFHD, boolean noGPU) {	

@@ -1383,33 +1383,40 @@ public class FunctionUtils extends Shutter {
 			}
 		}
 		
-		/* For info with libplacebo filters:
-		 * Deinterlace is faster 
+		/* For info using libplacebo filters:
+		 * Deinterlace is faster only with yadif!
 		 * Rotate is a bit slower but faster in addition on deinterlace
 		 * Scale, Crop, Range are much faster on CPU
-		 * Colorspace, Lut, Deband are faster wiht libplacebo
-		 * Fps blending like rotate, is faster if chained with previous filters
+		 * Colorspace, Lut, Deband are faster with libplacebo
+		 * Fps blending like rotate filter, is faster if chained with previous filters
 		 */
 		
 		//Because scale crop range are faster on CPU we only use them if deinterlace is used
 		if (firstFilters)
 		{
 			//Deinterlacing
-			if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("libplacebo"))
+			if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("libplacebo="))
 			{
-				score += 3;
+				if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("deinterlace=bwdif"))
+				{
+					score += 1;
+				}
+				else // yadif deinterlacer which is faster with libplacebo
+				{
+					score += 3;
+				}
 			}
 	
-			//Rotate
-			if (shutterencoder.functions.settings.Image.setRotate("", false).contains("libplacebo"))
-			{
-				score += 1;
-			}
-			
 			//Scale
 			if (shutterencoder.functions.settings.Image.setScale("", false, false).contains("libplacebo"))
 			{
 				score += 0; //Faster on CPU
+			}
+			
+			//Rotate
+			if (shutterencoder.functions.settings.Image.setRotate("", false).contains("libplacebo"))
+			{
+				score += 1;
 			}
 			
 			//Crop
