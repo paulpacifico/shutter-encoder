@@ -234,9 +234,6 @@ public class Picture extends Shutter {
 							}
 						}
 						
-						//Flags
-			    		String flags = setFlags();
-						
 			    		//Colorspace
 			            String colorspace = Colorimetry.setColorspace();
 			            			            
@@ -289,7 +286,7 @@ public class Picture extends Shutter {
 						}
 						
 						//Command
-						String cmd = filterComplex + singleFrame + colorspace + compression + flags + " -an -y ";
+						String cmd = filterComplex + singleFrame + colorspace + compression + " -an -y ";
 						
 						if (extension.toLowerCase().equals(".pdf"))
 						{
@@ -367,7 +364,7 @@ public class Picture extends Shutter {
 								lblCurrentEncoding.setText(fileName);
 							}
 							
-							upscale(fileOut, compression, flags);
+							upscale(fileOut, compression);
 						}
 						else
 						{				
@@ -479,11 +476,6 @@ public class Picture extends Shutter {
 			else
 				return "";
 		}
-	}
-			
-	private static String setFlags() { 
-		
-		return " -scaler " + Settings.comboScale.getSelectedItem().toString();
 	}
 
 	private static String setCompression() {
@@ -598,8 +590,10 @@ public class Picture extends Shutter {
 		}
 	}
 	
-	private static void upscale(File fileOut, String compression, String flags) throws InterruptedException {
-							
+	private static void upscale(File fileOut, String compression) throws InterruptedException {
+				
+		String flags = ":scaler=" + Settings.comboScale.getSelectedItem().toString();
+		
 		progressBar.setValue(0);
 		progressBar.setMaximum(fileOut.getParentFile().listFiles().length);
 		
@@ -643,7 +637,7 @@ public class Picture extends Shutter {
 				String scale = "";								
 				if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 				{
-					scale = " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags;
+					scale = " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"';
 				}
 				
 				FFMPEG.run(" -i " + '"' + file + '"' + scale + compression + " -y " + '"' + fileOut + '"');
@@ -654,7 +648,7 @@ public class Picture extends Shutter {
 			}
 			else if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 			{
-				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + '"' + flags + " -y " + '"' + fileOut + '"');
+				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"' + " -y " + '"' + fileOut + '"');
 				
 				do {
 					Thread.sleep(10);

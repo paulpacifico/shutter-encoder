@@ -25,12 +25,13 @@ import shutterencoder.functions.VideoEncoders;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class Image extends Shutter {
 	
 	public static String setCrop(String filterComplex, File file) {		
-		
+
 		if (grpResolution.isVisible() || grpImageSequence.isVisible() || comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 		{	    	
 	    	if (caseEnableCrop.isSelected())
@@ -99,10 +100,23 @@ public class Image extends Shutter {
 				int cropHeight = Math.round((float) Integer.parseInt(Shutter.textCropHeight.getText()) / imageRatio);
 				int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
 				int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
-
-				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				
+				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 				{
-					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":crop_x=" + cropX + ":crop_y=" + cropY + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
+					String crop_x = "crop_x=" + cropX;
+					if (caseMiror.isSelected() && caseRotate.isSelected() == false
+					|| caseMiror.isSelected() == false && caseRotate.isSelected() && comboRotate.getSelectedItem().toString().equals("180"))
+					{
+						crop_x = "crop_x=iw-" + cropWidth + "-" + cropX;
+					}
+					
+					String crop_y = "crop_y=" + cropY;
+					if (caseRotate.isSelected() && comboRotate.getSelectedItem().toString().equals("180"))
+					{
+						crop_y = "crop_y=ih-" + cropHeight + "-" + cropY;
+					}
+					
+					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":" + crop_x + ":" + crop_y + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
 				}
 				else
 				{
@@ -131,7 +145,7 @@ public class Image extends Shutter {
 				case "90":					
 					if (caseMiror.isSelected())
 					{
-						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 						{
 							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=1:extra_opts='distort=on\\:distort_scale_x=-1'");
 						}
@@ -140,7 +154,7 @@ public class Image extends Shutter {
 					}
 					else
 					{
-						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 						{
 							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=1");
 						}
@@ -151,7 +165,7 @@ public class Image extends Shutter {
 				case "-90":					
 					if (caseMiror.isSelected())
 					{
-						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 						{
 							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=3:extra_opts='distort=on\\:distort_scale_x=-1'");
 						}
@@ -160,7 +174,7 @@ public class Image extends Shutter {
 					}
 					else
 					{
-						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 						{
 							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=3");
 						}
@@ -171,7 +185,7 @@ public class Image extends Shutter {
 				case "180":					
 					if (caseMiror.isSelected())
 					{
-						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 						{
 							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=2:extra_opts='distort=on\\:distort_scale_x=-1'");
 						}
@@ -180,7 +194,7 @@ public class Image extends Shutter {
 					}
 					else
 					{
-						if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 						{
 							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=2");
 						}
@@ -194,7 +208,7 @@ public class Image extends Shutter {
 			}
 			else if (caseMiror.isSelected())
 			{
-				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 				{
 					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "extra_opts='distort=on\\:distort_scale_x=-1'");
 				}
@@ -281,6 +295,8 @@ public class Image extends Shutter {
 		
 		//Checking if last filter is GPU accelerated
 		boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
+		
+		String flags = ":scaler=" + Settings.comboScale.getSelectedItem().toString();
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && FFPROBE.imageResolution != null)
 		{
@@ -372,21 +388,21 @@ public class Image extends Shutter {
 			        	{
 			        		o = comboResolution.getSelectedItem().toString().split(":");
 			        		if (o[0].toString().equals("auto"))
-			        			filterComplex += "scale=-1:" + o[1];
+			        			filterComplex += "scale=-1:" + o[1] + flags;
 			        		else
-			        			filterComplex += "scale="+o[0]+":-1";
+			        			filterComplex += "scale="+o[0]+":-1" + flags;
 			        	}
 			        	// Negative scale makes sure that the auto set dimension is divisible, fixes "Crop"
 						// ex: -2:480 means 480h with the closes width matching the aspect
 						else if (comboResolution.getSelectedItem().toString().contains("-")) {
 							o = comboResolution.getSelectedItem().toString().split(":");
-							filterComplex += "scale=" + o[0] + ":" + o[1];
+							filterComplex += "scale=" + o[0] + ":" + o[1] + flags;
 						}
 			        	else
 			        	{
 				            o = comboResolution.getSelectedItem().toString().split(":");
 				    		float number =  (float) 1 / Integer.parseInt(o[1]);
-				    		filterComplex += "scale=iw*" + number + ":ih*" + number;
+				    		filterComplex += "scale=iw*" + number + ":ih*" + number + flags;
 			        	}
 			        }
 					else
@@ -396,22 +412,22 @@ public class Image extends Shutter {
 			        	{
 			        		//Si la hauteur calculée est > à la hauteur de sortie
 			        		if ( (float) ow / ir >= oh)
-			        			filterComplex += "scale=" + ow + ":-1";
+			        			filterComplex += "scale=" + ow + ":-1" + flags;
 			        		else
-			        			filterComplex += "scale=-1:" + oh;
+			        			filterComplex += "scale=-1:" + oh + flags;
 			        	}
 			        	else
-			        		filterComplex += "scale=" + ow + ":" + oh;
+			        		filterComplex += "scale=" + ow + ":" + oh + flags;
 					}
 				}
 				else
 				{
 					if (lblPad.getText().equals(language.getProperty("lblPad")) && ir != or && lblPad.isVisible())
 					{
-						filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
+						filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease" + flags;
 					}
 					else
-						filterComplex += "scale="+o[0]+":"+o[1];	
+						filterComplex += "scale="+o[0]+":"+o[1] + flags;	
 				}
 			}
 			
@@ -459,16 +475,16 @@ public class Image extends Shutter {
 			{
 				if (ir != or)
 				{
-					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease";
+					filterComplex += "scale="+o[0]+":"+o[1]+":force_original_aspect_ratio=decrease" + flags;
 				}
 				else
-					filterComplex += "scale="+o[0]+":"+o[1];
+					filterComplex += "scale="+o[0]+":"+o[1] + flags;
 			}
 			
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".ico"))
 		{
-			filterComplex += "scale=256:256";
+			filterComplex += "scale=256:256" + flags;
 		}
 						
 		//GPU scaling
@@ -497,39 +513,45 @@ public class Image extends Shutter {
 			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling				
 				
 				filterComplex = filterComplex.replace("scale=", "scale_cuda=") + ",hwdownload,format=" + bitDepth;	
 			}
 			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
 				
 				filterComplex = filterComplex.replace("scale=", "vpp_amf=") + ",hwdownload,format=" + bitDepth;
 			}
 			else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
 				
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=") + ",hwdownload,format=" + bitDepth;
 			}
 			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vt=") + ",hwdownload,format=" + bitDepth;
 			}
 			else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+				filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vulkan=") + ",hwdownload,format=" + bitDepth;
 			}
 		}
 				
-		if (FunctionUtils.useLibplaceboFilters && filterComplex.contains("scale=") && !filterComplex.contains("hwdownload")
-		&& (!filterComplex.contains("libplacebo")
+		if (FunctionUtils.useLibplaceboFilters && filterComplex.contains("scale=") && (!filterComplex.contains("libplacebo")
 		|| !filterComplex.replace(",scale", "scale").substring(filterComplex.indexOf("libplacebo")).contains(",")))
 		{			
+			filterComplex = filterComplex.replace(flags, ""); //Removes the flags scaler which is not available with GPU scaling
+			
 			String libplacebo = filterComplex.contains("libplacebo") ? ":" : "libplacebo=";
 
 			filterComplex = filterComplex.replace(":force_original_aspect_ratio=decrease", "").replace(",scale", "scale").replaceAll("scale=(-?\\d+):", libplacebo + "w=$1:h=") + ":reset_sar=1";
@@ -618,7 +640,7 @@ public class Image extends Shutter {
 			        	//Original sup. à la sortie
 			        	if (iw > ow || ih > oh)
 			        	{
-			        		if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			        		if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 							{		
 								filterComplex = filterComplex.replace("=-1", "=" + String.valueOf(ow)) + "normalize_sar=true:pad_crop_ratio=1.0";
 							}

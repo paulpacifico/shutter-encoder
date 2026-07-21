@@ -1639,7 +1639,7 @@ public class VideoPlayerUI {
 		                fps = 0;
 		            }
 
-		            if (displayCurrentFPS > 0
+		            if (displayCurrentFPS > 5
                     && playerLoop
                     && sliderSpeed.getValue() == 2
                     && fullscreenPlayer == false

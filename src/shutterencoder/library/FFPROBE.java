@@ -110,6 +110,9 @@ public static boolean isRotated = false;
 public static int gridRows = 0;
 public static int gridCols = 0;
 public static boolean hasDolbyVision = false;
+public static String colorspace = "";
+public static String colortransfer = "";
+public static String colorprimaries = "";
 
 	public static void Data(final String file) {	
 
@@ -630,7 +633,7 @@ public static boolean hasDolbyVision = false;
 			                {
 			                	hasDolbyVision = true;
 			                }
-				            
+			                			            
 					}		
 					process.waitFor();	
 	
@@ -681,6 +684,9 @@ public static boolean hasDolbyVision = false;
 		isRotated = false;
 		gridRows = 0;
 		gridCols = 0;
+		colorspace = "";
+		colortransfer = "";
+		colorprimaries = "";
 		
 		FFMPEG.error = false;
 		
@@ -857,7 +863,25 @@ public static boolean hasDolbyVision = false;
 						  if (line.contains("alpha_mode=1") || FFPROBE.pixelformat.contains("a"))
 						  {
 							  hasAlpha = true;
-						  }							  
+						  }		
+						  
+						  if (line.contains("color_space"))
+						  {
+							  String s[] = line.split("=");
+							  colorspace = s[1];
+						  }
+		                
+						  if (line.contains("color_transfer"))
+						  {
+							  String s[] = line.split("=");
+							  colortransfer = s[1];
+						  }
+		                
+						  if (line.contains("color_primaries"))
+						  {
+							  String s[] = line.split("=");
+							  colorprimaries = s[1];
+						  }	
 					}										
 													
 				} catch (Exception e) {	

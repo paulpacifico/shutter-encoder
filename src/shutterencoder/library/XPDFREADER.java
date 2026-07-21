@@ -101,10 +101,12 @@ public static int pagesCount = 1;
 							InputStream is = process.getInputStream();				
 							BufferedInputStream inputStream = new BufferedInputStream(is);
 							
-							VideoPlayerCore.readFrame(inputStream, VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight(), true, false);
-							VideoPlayerCore.preview = VideoPlayerCore.cloneBufferedImage(VideoPlayerCore.frameVideo);
+							int frameSize = VideoPlayerCore.player.getWidth() * VideoPlayerCore.player.getHeight() * 6;
+							VideoPlayerCore.preview = inputStream.readNBytes(frameSize);
 							
 							inputStream.close();
+							
+							VideoPlayerCore.readFrame(inputStream, VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight(), true, false);
 
 							if (VideoPlayerCore.frameVideo != null)
 							{

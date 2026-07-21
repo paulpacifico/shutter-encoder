@@ -13680,8 +13680,7 @@ public class Shutter {
 					comboInColormatrix.setSelectedIndex(4);
 				}
 
-				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
-																			// frame
+				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
 			}
 
 		});
@@ -13767,8 +13766,7 @@ public class Shutter {
 
 				FFPROBE.setFilesize();
 				
-				if (VideoPlayerCore.frameVideo == null) //Only apply filter when the video can't be loaded
-					VideoPlayerUI.btnStop.doClick(); // Use VideoPlayer.resizeAll and reload the frame
+				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
 			}
 
 		});
@@ -13783,6 +13781,15 @@ public class Shutter {
 		comboColorspace.setBounds(grpColorimetry.getWidth() - 160 - 7, caseColorspace.getLocation().y + 4, 160, 16);
 		grpColorimetry.add(comboColorspace);
 
+		comboColorspace.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
+			}
+			
+		});
+		
 		comboHDRvalue = new JComboBox<String>(new String[] { "auto", "400 nits", "500 nits", "600 nits", "1000 nits",
 				"1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits" });
 		comboHDRvalue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
@@ -13924,10 +13931,12 @@ public class Shutter {
 			Arrays.sort(data);
 			LUTs.clear();
 
-			for (int i = 0; i < data.length; i++) {
-				if (new File(data[i].toString()).isHidden() == false
-						&& new File(data[i].toString()).getName().equals("HDR-to-SDR.cube") == false)
+			for (int i = 0; i < data.length; i++)
+			{
+				if (new File(data[i].toString()).isHidden() == false)
+				{
 					LUTs.add(new File(data[i].toString()).getName());
+				}
 			}
 		}
 
@@ -13993,8 +14002,8 @@ public class Shutter {
 					for (int i = 0; i < data.length; i++) {
 						File lut = new File(data[i].toString());
 
-						if (lut.isHidden() == false
-								&& new File(data[i].toString()).getName().equals("HDR-to-SDR.cube") == false) {
+						if (lut.isHidden() == false)
+						{
 							if (lut.getName().contains(" ")) {
 								File newLutName = new File(lutsFolder + "/" + lut.getName().replace(" ", "-"));
 								lut.renameTo(newLutName);

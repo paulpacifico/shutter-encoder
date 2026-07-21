@@ -68,7 +68,7 @@ public class Colorimetry extends Shutter {
 			String input = comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
 			String output = comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
 			
-			if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 			{
 				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "range=" + output);
 			}
@@ -99,9 +99,9 @@ public class Colorimetry extends Shutter {
 				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
 			}
 			
-			if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 			{
-				String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
+				String format = FFPROBE.hasAlpha ? ",format=rgba64le" : ",format=rgb48";
 				
 				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + ":peak_detect=0" + format);	
 			}
@@ -121,30 +121,16 @@ public class Colorimetry extends Shutter {
 		if ((grpColorimetry.isVisible() || VideoPlayerUI.fullscreenPlayer) && caseColormatrix.isSelected())
 		{
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
-			{		
-				String pathToLuts;
-				if (System.getProperty("os.name").contains("Windows"))
+			{	
+				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 				{
-					pathToLuts = "LUTs/HDR-to-SDR.cube";					
-				}
-				else
-				{
-					pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-					pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
-					pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/HDR-to-SDR.cube";
-				}
-
-				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
-				{
-					String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
-					
-					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + ":peak_detect=0" + format);	
+					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "tonemapping=hable:colorspace=bt709:color_primaries=bt709:color_trc=bt709");
 				}
 				else
 				{
 					if (filterComplex != "") filterComplex += ",";
 					
-					filterComplex += "lut3d=file=" + pathToLuts;	
+					filterComplex += "setparams=color_primaries=bt2020:color_trc=smpte2084:colorspace=bt2020nc,zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:range=tv";	
 				}
 			}
 			else
@@ -165,7 +151,7 @@ public class Colorimetry extends Shutter {
 							break;
 					}
 					
-					if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+					if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 					{
 					    filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "range=full:color_trc=" + transfer);
 					}
@@ -173,7 +159,7 @@ public class Colorimetry extends Shutter {
 				    {
 				    	if (filterComplex != "") filterComplex += ",";
 				    	
-				    	String format = FFPROBE.hasAlpha ? "format=gbrap16le," : "format=gbrp16le,";
+				    	String format = FFPROBE.hasAlpha ? "format=gbrapf32le," : "format=gbrpf32le,";
 					
 				    	filterComplex += format + "zscale=rangein=full:range=full:transferin=linear:transfer=" + transfer;
 				    }
@@ -183,7 +169,7 @@ public class Colorimetry extends Shutter {
 					String input = comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("bt601", "smpte170m");
 					String output = comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("bt601", "smpte170m");
 					
-					if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+					if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 					{
 					    filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, getLibplaceboColorspaces(comboOutColormatrix.getSelectedItem().toString()));
 					}

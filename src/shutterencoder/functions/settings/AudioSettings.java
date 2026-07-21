@@ -215,7 +215,12 @@ public class AudioSettings extends Shutter {
 			}
 			else
 			{
-				audioCodec = "aac";
+				if (System.getProperty("os.name").contains("Mac"))
+				{
+					audioCodec = "aac_at";
+				}
+				else
+					audioCodec = "aac";
 			}
 			
 			String audioFiltering = "";

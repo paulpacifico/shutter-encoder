@@ -423,7 +423,7 @@ public class VideoEncoders extends Shutter {
 						String inputCodec = Colorimetry.setInputCodec(extension);
 									   		
 						//Libplacebo score
-						FunctionUtils.getLibplaceboScore(false);
+						FunctionUtils.getLibplaceboScore(false, true);
 						
 				        //Deinterlace
 						String filterComplex = "";	
@@ -515,9 +515,6 @@ public class VideoEncoders extends Shutter {
 							}
 						}	
 						
-						//Rotate
-						filterComplex = Image.setRotate(filterComplex, false);
-			
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
@@ -557,9 +554,18 @@ public class VideoEncoders extends Shutter {
 								}	
 			        		}
 			        	}	
-			        				        	
-			        	//Levels
-						filterComplex = Colorimetry.setLevels(filterComplex);
+			        	
+			        	//Rotate
+						filterComplex = Image.setRotate(filterComplex, false);
+			        	
+			        	//Crop
+						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Cropping is made before upscaling
+				        {
+							filterComplex = Image.setCrop(filterComplex, file);
+				        }
+						
+						//Reset Libplacebo score to allow using CPU + GPU filters after
+						FunctionUtils.getLibplaceboScore(false, false);
 
 						//Colormatrix
 						filterComplex = Colorimetry.setColormatrix(filterComplex);	
@@ -623,13 +629,7 @@ public class VideoEncoders extends Shutter {
 						
 		            	//Timecode
 						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), false);
-				        
-				    	//Crop
-						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Cropping is made before upscaling
-				        {
-							filterComplex = Image.setCrop(filterComplex, file);
-				        }
-						
+
 						//Zoom
 						if (Shutter.sliderZoom.getValue() != 0)
 						{		
@@ -712,7 +712,10 @@ public class VideoEncoders extends Shutter {
 			            filterComplex = AdvancedFeatures.setInterlace50p(filterComplex);
 			            			            
 						//Force TFF
-						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);																				
+						filterComplex = AdvancedFeatures.setForceTFF(filterComplex);
+						
+						//Levels
+						filterComplex = Colorimetry.setLevels(filterComplex);
 						
 						//Limiter
 						filterComplex = Corrections.setLimiter(filterComplex);
@@ -1294,8 +1297,7 @@ public class VideoEncoders extends Shutter {
     		return false;
     	}
     	else
-    		return true;
-	
+    		return true;	
 	}
 	
 	public static String setCodec() {

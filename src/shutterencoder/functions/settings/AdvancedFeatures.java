@@ -638,7 +638,7 @@ public class AdvancedFeatures extends Shutter {
 			
 			if (FPS != newFPS)
 			{	           
-				if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 				{
 					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "fps=" + newFPS + ":frame_mixer=linear");
 				}
@@ -851,7 +851,7 @@ public class AdvancedFeatures extends Shutter {
 
 	public static String setFlags(String fileName) { 
 		
-		String flags = " -scaler " + Settings.comboScale.getSelectedItem().toString();
+		String flags = "";
 		
 		if (Settings.comboSync.getSelectedItem().equals("auto") == false && caseDecimate.isSelected() == false)
 		{

@@ -396,7 +396,12 @@ public class Rewrap extends Shutter {
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("AAC"))
 			{
-				return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
+				if (System.getProperty("os.name").contains("Mac"))
+				{
+					return " -c:a aac_at -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
+				}
+				else
+					return " -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a " + comboAudioBitrate.getSelectedItem().toString() + "k" + normalization;
 			}
 			else if (comboAudioCodec.getSelectedItem().toString().equals("MP3"))
 			{

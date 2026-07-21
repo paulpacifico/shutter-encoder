@@ -76,9 +76,22 @@ public class BitratesAdjustement extends Shutter {
 			int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
 			int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
 
-			if (FunctionUtils.useLibplaceboFilters && !filterComplex.contains("hwdownload") && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
 			{
-				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":crop_x=" + cropX + ":crop_y=" + cropY);
+				String crop_x = "crop_x=" + cropX;
+				if (caseMiror.isSelected() && caseRotate.isSelected() == false
+				|| caseMiror.isSelected() == false && caseRotate.isSelected() && comboRotate.getSelectedItem().toString().equals("180"))
+				{
+					crop_x = "crop_x=iw-" + cropWidth + "-" + cropX;
+				}
+				
+				String crop_y = "crop_y=" + cropY;
+				if (caseRotate.isSelected() && comboRotate.getSelectedItem().toString().equals("180"))
+				{
+					crop_y = "crop_y=ih-" + cropHeight + "-" + cropY;
+				}
+				
+				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":" + crop_x + ":" + crop_y + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
 			}
 			else
 			{

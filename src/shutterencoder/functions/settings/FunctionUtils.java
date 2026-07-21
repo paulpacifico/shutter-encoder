@@ -1261,7 +1261,7 @@ public class FunctionUtils extends Shutter {
 		String format = "";
 		
 		//scale filter is replaced to libplacebo scaling filter
-		if (filterComplex != "" && filterComplex.contains("scale=") == false)
+		if (filterComplex != "")
 		{
 			format += ",";
 		}
@@ -1276,7 +1276,7 @@ public class FunctionUtils extends Shutter {
 			if (params != "") params += ":";
 			
 			params += "range=" + comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
-		}	
+		}
 								
 	    if (caseColormatrix.isSelected())
 	    {	    	
@@ -1304,26 +1304,29 @@ public class FunctionUtils extends Shutter {
 			        	if (params != "") params += ":";
 			        	params += "colorspace=bt2020nc:color_primaries=bt2020:color_trc=bt2020-10";
 			        	break;
+			        case "HDR":
+			        	if (params != "") params += ":";
+			        	params += "colorspace=bt2020nc:color_primaries=bt2020:color_trc=smpte2084";
+			        	break;
 			    }
 	    	}
 	    }
-	    
+
 	    if (params != "")
 	    {
 	    	params = "setparams=" + params + ",";
 	    }
 	    
-		if (caseLUTs.isSelected()
-		|| (caseColormatrix.isSelected() && (comboInColormatrix.getSelectedItem().equals("HDR") || comboInColormatrix.getSelectedItem().toString().equals("Linear"))))
+	    if (caseLUTs.isSelected())
 		{
 			//Mandatory for correct lut display
-			format += FFPROBE.hasAlpha ? "format=gbrap16le," : "format=gbrp16le,";
+			format += FFPROBE.hasAlpha ? "format=rgba64le," : "format=rgb48,";
 		}
-	    
+		
 	    return format + params;
 	}
 	
-	public static void getLibplaceboScore(boolean noGPU) {
+	public static void getLibplaceboScore(boolean noGPU, boolean firstFilters) {
 		
 		if (noGPU || FFMPEG.libplaceboAvailable == false)
 		{
@@ -1380,67 +1383,83 @@ public class FunctionUtils extends Shutter {
 			}
 		}
 		
-		//Deinterlacing
-		if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("libplacebo"))
-		{
-			score += 2;
-		}
-
-		//Rotate
-		if (shutterencoder.functions.settings.Image.setRotate("", false).contains("libplacebo"))
-		{
-			score += 1;
-		}
+		/* For info with libplacebo filters:
+		 * Deinterlace is faster 
+		 * Rotate is a bit slower but faster in addition on deinterlace
+		 * Scale, Crop, Range are much faster on CPU
+		 * Colorspace, Lut, Deband are faster wiht libplacebo
+		 * Fps blending like rotate, is faster if chained with previous filters
+		 */
 		
-		//Scale
-		if (shutterencoder.functions.settings.Image.setScale("", false, false).contains("libplacebo"))
+		//Because scale crop range are faster on CPU we only use them if deinterlace is used
+		if (firstFilters)
 		{
-			score += 1;
+			//Deinterlacing
+			if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("libplacebo"))
+			{
+				score += 3;
+			}
+	
+			//Rotate
+			if (shutterencoder.functions.settings.Image.setRotate("", false).contains("libplacebo"))
+			{
+				score += 1;
+			}
+			
+			//Scale
+			if (shutterencoder.functions.settings.Image.setScale("", false, false).contains("libplacebo"))
+			{
+				score += 0; //Faster on CPU
+			}
+			
+			//Crop
+			if (shutterencoder.functions.settings.Image.setCrop("", null).contains("libplacebo")
+			|| BitratesAdjustement.setCrop("").contains("libplacebo"))
+			{
+				score += 0; //Faster on CPU
+			}
 		}
-		
-		//Crop
-		if (shutterencoder.functions.settings.Image.setCrop("", new File(VideoPlayerCore.videoPath)).contains("libplacebo")
-		|| BitratesAdjustement.setCrop("").contains("libplacebo"))
+		else //Reset the score to 0 to re-enable libplacebo if these filters are used
 		{
-			score += 1;
-		}
-		
-		//Levels
-		if (Colorimetry.setLevels("").contains("libplacebo"))
-		{
-			score += 1;
-		}
-		
-		//Colormatrix
-		if (Colorimetry.setColormatrix("").contains("libplacebo=range"))
-		{
-			score += 1;
-		}
-		else if (Colorimetry.setColormatrix("").contains("libplacebo=colorspace"))
-		{
-			score += 2;
-		}
-		else if (Colorimetry.setColormatrix("").contains("libplacebo=lut"))
-		{
-			score += 1;
-		}
-		
-		//LUTs
-		if (Colorimetry.setLUT("").contains("libplacebo"))
-		{
-			score += 1;
-		}
-		
-		//Deband
-		if (Corrections.setDeband("").contains("libplacebo"))
-		{
-			score += 2;
-		}
-		
-		//Frame blending
-		if (AdvancedFeatures.setConform("").contains("libplacebo"))
-		{
-			score += 1;
+			//Colormatrix
+			if (Colorimetry.setColormatrix("").contains("libplacebo") && Colorimetry.setColormatrix("").contains("range"))
+			{
+				score += 0; //Faster on CPU
+			}
+			
+			if (Colorimetry.setColormatrix("").contains("libplacebo") && Colorimetry.setColormatrix("").contains("colorspace"))
+			{
+				score += 3;
+			}
+			
+			if (Colorimetry.setColormatrix("").contains("libplacebo") && Colorimetry.setColormatrix("").contains("tonemapping"))
+			{
+				score += 3;
+			}
+			
+			//LUTs
+			if (Colorimetry.setLUT("").contains("libplacebo"))
+			{
+				score += 3;
+			}
+			
+			//Deband
+			if (Corrections.setDeband("").contains("libplacebo"))
+			{
+				score += 3;
+			}
+			
+			//Frame blending
+			if (AdvancedFeatures.setConform("").contains("libplacebo"))
+			{
+				score += 1;
+			}
+			
+			//Levels
+			if (Colorimetry.setLevels("").contains("libplacebo"))
+			{
+				score += 0; //Faster on CPU
+			}
 		}
 
 		if (score >= 3)
@@ -1453,8 +1472,8 @@ public class FunctionUtils extends Shutter {
 	
 	public static boolean checkLibplaceboFilter(String filterComplex) {
 		
-		String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
-		
+		String format = FFPROBE.hasAlpha ? ",format=rgba64le" : ",format=rgb48";
+
 		if (filterComplex.contains("libplacebo") == false
 		|| filterComplex.substring(filterComplex.indexOf("libplacebo")).replace(format, "").contains(",") == false)
 		{
@@ -1469,7 +1488,7 @@ public class FunctionUtils extends Shutter {
 		if (filterComplex.contains("libplacebo"))
 		{
 			//Move the format filter forward after all libplacebo filters to avoid CPU fallback
-			String format = FFPROBE.hasAlpha ? ",format=gbrap16le" : ",format=gbrp16le";
+			String format = FFPROBE.hasAlpha ? ",format=rgba64le" : ",format=rgb48";
 			
 			if (filterComplex.endsWith(format))
 			{
@@ -1480,7 +1499,13 @@ public class FunctionUtils extends Shutter {
 		}
 		else
 		{
-			return filterComplex + getSetParamsInput(newLibplaceboFilter.contains("deinterlace"), filterComplex) + "libplacebo=" + newLibplaceboFilter;
+			String disableLinear = "disable_linear=1:";
+			if (caseColormatrix.isSelected() && (comboInColormatrix.getSelectedItem().equals("HDR") || comboInColormatrix.getSelectedItem().toString().equals("Linear")))
+			{
+				disableLinear = "";
+			}
+			
+			return filterComplex + getSetParamsInput(newLibplaceboFilter.contains("deinterlace"), filterComplex) + "libplacebo=" + disableLinear + newLibplaceboFilter;
 		}
 	}
 	
