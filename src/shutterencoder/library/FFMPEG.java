@@ -1675,12 +1675,33 @@ public static StringBuilder errorLog = new StringBuilder();
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
 			}
 			
-			//libplacebo do not need to be GPU compatible
-			FFMPEG.gpuFilter(" -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
+			//libplacebo do not need to be true for isGPUcompatible
+			if (System.getProperty("os.name").contains("Windows"))
+			{
+				if (FFMPEG.hasNvidiaGPU || FFMPEG.hasAMDGPU || FFMPEG.hasIntelGPU && GPUCount > 1) //Make sure integrated GPU is not used because it's slower
+				{
+					String device = "";
+					if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+					{
+						device = " -init_hw_device vulkan=gpu:1";
+					}
+					else
+						device = " -init_hw_device vulkan=gpu:0";
+					
+					FFMPEG.gpuFilter(device + selectedGPU + " -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -" + '"');
 
-			if (FFMPEG.error == false)
-				libplaceboAvailable = true;
+					if (FFMPEG.error == false)
+						libplaceboAvailable = true;
+				}
+			}
+			else
+			{
+				FFMPEG.gpuFilter(" -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -");
 
+				if (FFMPEG.error == false)
+					libplaceboAvailable = true;
+			}
+			
 			checkGPUFiltering();
 			checkGPUDeinterlacing();			
 		}
@@ -1836,7 +1857,8 @@ public static StringBuilder errorLog = new StringBuilder();
 
 		if (comboAccel.getSelectedItem().equals("Vulkan Video")
 		|| comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
-		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
+		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")
+		|| FunctionUtils.useLibplaceboFilters) //Always need to choose the GPU
 		{
 			if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 			{

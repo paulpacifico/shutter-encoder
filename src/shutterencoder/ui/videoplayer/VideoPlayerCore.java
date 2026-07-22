@@ -399,6 +399,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									            	try {
 														Thread.sleep(Math.round(delay));
 													} catch (InterruptedException e) {}	
+									            	
+									            	if (line != null)
+									    				line.flush();
 												}
 											}
 							        		
@@ -613,27 +616,23 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	                // Pixel 1
 	                int C1 = (yuvRef[yRowBase + x] & 0xFF) - 16;
 	                int base1 = 298 * C1;
-	                int R1 = clamp((base1 + chromaR) >> 8);
-	                int G1 = clamp((base1 + chromaG) >> 8);
-	                int B1 = clamp((base1 + chromaB) >> 8);
+	                int R1 = Math.clamp((base1 + chromaR) >> 8, 0, 255);
+	                int G1 = Math.clamp((base1 + chromaG) >> 8, 0, 255);
+	                int B1 = Math.clamp((base1 + chromaB) >> 8, 0, 255);
 	                pixels[yRowBase + x] = (R1 << 16) | (G1 << 8) | B1;
 
 	                // Pixel 2 (reuses same U/V chroma)
 	                int C2 = (yuvRef[yRowBase + x + 1] & 0xFF) - 16;
 	                int base2 = 298 * C2;
-	                int R2 = clamp((base2 + chromaR) >> 8);
-	                int G2 = clamp((base2 + chromaG) >> 8);
-	                int B2 = clamp((base2 + chromaB) >> 8);
+	                int R2 = Math.clamp((base2 + chromaR) >> 8, 0, 255);
+	                int G2 = Math.clamp((base2 + chromaG) >> 8, 0, 255);
+	                int B2 = Math.clamp((base2 + chromaB) >> 8, 0, 255);
 	                pixels[yRowBase + x + 1] = (R2 << 16) | (G2 << 8) | B2;
 	            }
 	        }
 	    }	
 	}
 
-	private static int clamp(int val) {
-	    return (val < 0) ? 0 : ((val > 255) ? 255 : val);
-	}
-	
 	public static BufferedImage cloneBufferedImage(BufferedImage source) throws IOException {
 	    ColorModel cm = source.getColorModel();
 	    boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
@@ -1233,7 +1232,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				String device = "";				
 				if (Shutter.comboAccel.getSelectedItem().equals("Vulkan Video")
 				|| Shutter.comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
-				|| Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
+				|| Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")
+				|| FunctionUtils.useLibplaceboFilters) //Always need to choose the GPU
 				{
 					if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 					{
@@ -1294,6 +1294,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			{
 				cmd = " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner " + RecordInputDevice.setInputDevices() + setFilter(false, false) + " -c:v " + outputFormat + " -pix_fmt " + colorFormat + " -an -sn -f rawvideo -";
 			}
+			
+			//System.out.println(cmd);
 
 			//Console.consoleFFMPEG.append(cmd + System.lineSeparator());
 			

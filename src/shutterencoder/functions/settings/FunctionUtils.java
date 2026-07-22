@@ -159,6 +159,13 @@ public class FunctionUtils extends Shutter {
 			// Check GPU - Run it in parallel when using Video Player for a faster startup
 			if (isVideoPlayer)
 			{
+				//Reset values before running the parallel loop otherwise value are still available for the video player
+				FFMPEG.autoQSV = false;
+				FFMPEG.autoCUDA = false;
+				FFMPEG.autoAMF = false;
+				FFMPEG.autoVIDEOTOOLBOX = false;
+				FFMPEG.autoVULKAN = false;
+				
 				Thread gpu = new Thread(() -> FFMPEG.checkGPUCapabilities(file.toString()));
 				gpu.start();
 								
@@ -1327,7 +1334,7 @@ public class FunctionUtils extends Shutter {
 	}
 	
 	public static void getLibplaceboScore(boolean noGPU, boolean firstFilters) {
-		
+				
 		if (noGPU || FFMPEG.libplaceboAvailable == false)
 		{
 			useLibplaceboFilters = false;			
@@ -1397,13 +1404,20 @@ public class FunctionUtils extends Shutter {
 			//Deinterlacing
 			if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("libplacebo="))
 			{
-				if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("deinterlace=bwdif"))
+				if (System.getProperty("os.name").contains("Windows"))
 				{
-					score += 1;
+					score += 1; //Same speed for both filters
 				}
-				else // yadif deinterlacer which is faster with libplacebo
+				else
 				{
-					score += 3;
+					if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("deinterlace=bwdif"))
+					{
+						score += 1;
+					}
+					else // yadif deinterlacer which is faster with libplacebo
+					{
+						score += 3;
+					}
 				}
 			}
 	
@@ -1431,7 +1445,12 @@ public class FunctionUtils extends Shutter {
 			//Colormatrix
 			if (Colorimetry.setColormatrix("").contains("libplacebo") && Colorimetry.setColormatrix("").contains("range"))
 			{
-				score += 0; //Faster on CPU
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					score += 1;
+				}
+				else
+					score += 0; //Faster on CPU
 			}
 			
 			if (Colorimetry.setColormatrix("").contains("libplacebo") && Colorimetry.setColormatrix("").contains("colorspace"))
@@ -1465,7 +1484,12 @@ public class FunctionUtils extends Shutter {
 			//Levels
 			if (Colorimetry.setLevels("").contains("libplacebo"))
 			{
-				score += 0; //Faster on CPU
+				if (System.getProperty("os.name").contains("Windows"))
+				{
+					score += 1;
+				}
+				else
+					score += 0; //Faster on CPU
 			}
 		}
 
