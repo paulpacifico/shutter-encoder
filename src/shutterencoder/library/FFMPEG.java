@@ -680,22 +680,11 @@ public static StringBuilder errorLog = new StringBuilder();
 			}
 			
 			String extension = "";			
-			String output = "";
-			
 			if (inputDeviceIsRunning == false)
 			{
 				extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
-				output = inputFile.getParent();
 			} 
-			
-			//Concat mode
-			String concat = "";
-			if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
-			{
-				concat = FunctionUtils.setConcat(inputFile, output);			
-				inputFile = new File(output.replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
-			}
-			
+						
 			String cmd = " -filter_complex " + '"' + videoOutput + audioOutput	+ " -c:v rawvideo -an -f nut pipe:1";
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -705,7 +694,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			
 			if (isVideoPlayer)
 			{
-				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + concat + " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
+				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
 			}
 			else if (inputDeviceIsRunning)
 			{
@@ -761,17 +750,8 @@ public static StringBuilder errorLog = new StringBuilder();
 				if (FFPROBE.hasAudio)						       
 				{						
 					File inputFile = new File(fileList.getSelectedValue());
-					
-					//Concat mode
-					String concat = "";
-					if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
-					{					
-						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
-						concat = FunctionUtils.setConcat(inputFile, inputFile.getParent());			
-						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
-					}
-					
-					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + concat + " -v quiet "  + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -");	
+										
+					ProcessBuilder pba = new ProcessBuilder("cmd.exe" , "/c", '"' + PathToFFMPEG + '"' + " -v quiet "  + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -");	
 					processAudio = pba.start();
 				}
 			}
@@ -785,22 +765,13 @@ public static StringBuilder errorLog = new StringBuilder();
 				if (FFPROBE.hasAudio)				       
 				{
 					File inputFile = new File(fileList.getSelectedValue());
-					
-					//Concat mode
-					String concat = "";
-					if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
-					{					
-						String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
-						concat = FunctionUtils.setConcat(inputFile, inputFile.getParent());			
-						inputFile = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));
-					}
-					
-					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + concat + " -v quiet " + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -");	
+
+					ProcessBuilder pba = new ProcessBuilder("/bin/bash", "-c", PathToFFMPEG + " -v quiet " + InputAndOutput.inPoint + " -i " + '"' + inputFile + '"' + " -vn -c:a pcm_s16le -ar 48k -ac 1 -f wav -");	
 					processAudio = pba.start();
 				}
 			}	
 			
-			Console.consoleFFMPEG.append(language.getProperty("command") + " " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -" + System.lineSeparator());
+			Console.consoleFFMPEG.append(System.lineSeparator() + language.getProperty("command") + " " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " " + cmd + " | " + PathToFFMPEG + " -v quiet -i pipe:0" + fps + " -c:v bmp -pix_fmt rgb24 -an -f image2pipe -" + System.lineSeparator());
 		
 			JFrame player = new JFrame();
 			player.getContentPane().setBackground(Utils.c42);
@@ -1048,16 +1019,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					} catch (Exception e) {
 						error = true;
 					} finally {
-						
-						//Mode concat
-						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
-						{		
-							File inputFile = new File(VideoPlayerCore.videoPath);
-							String extension = inputFile.toString().substring(inputFile.toString().lastIndexOf("."));
-							File listeBAB = new File(inputFile.getParent().replace("\\", "/") + "/" + inputFile.getName().replace(extension, ".txt"));			
-							listeBAB.delete();
-						}		
-						
+												
 						isRunning = false;
 					}
 				}
@@ -2355,7 +2317,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				fileLength = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
 			}
-			else if (VideoPlayerUI.playerInMark > 0 || VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
+			else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
 			{
 				fileLength = VideoPlayerUI.durationH * 3600 + VideoPlayerUI.durationM * 60 + VideoPlayerUI.durationS;
 			}

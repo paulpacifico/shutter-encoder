@@ -58,6 +58,9 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -71,7 +74,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -110,8 +112,8 @@ public class VideoPlayerUI {
     public static JComboBox<Object> comboPlayerQuality = new JComboBox<Object>(new String [] {"1:1", "1:2", "1:4", "auto"});
     private static JLabel showFPS;
     public static JComboBox<String> comboAudioTrack;
-    public static int playerInMark = 0;
-    public static int playerOutMark = 0;    
+    public static int playerMarkIn = 0;
+    public static int playerMarkOut = 0;    
     public static double screenRefreshRate = 16.7; //Vsync in ms	
     public static boolean playerLoop = false;
     public static boolean frameIsComplete = false;
@@ -123,10 +125,9 @@ public class VideoPlayerUI {
 	public static JLabel lblPosition;
 	public static JLabel lblDuration;
 	private static JLabel lblMode;
-	public static JComboBox<Object> comboMode = new JComboBox<Object>(new String [] {Shutter.language.getProperty("cutUpper"), Shutter.language.getProperty("removeMode"), Shutter.language.getProperty("splitMode")});
+	public static JComboBox<Object> comboMode = new JComboBox<Object>(new String [] {Shutter.language.getProperty("cutUpper"), Shutter.language.getProperty("splitMode")});
 	public static JLabel lblSpeed;
 	public static JSlider sliderSpeed;
-	private static boolean showInfoMessage = true;
 	public static boolean playTransition = false;    
     public static boolean isPiping = false;
   	public static boolean mouseIsPressed = false;
@@ -149,6 +150,8 @@ public class VideoPlayerUI {
 	public static JButton btnMarkOut;
 	public static JButton btnGoToIn;
 	public static JButton btnGoToOut;
+	public static JButton btnCut;
+	public static JButton btnReset;
 	private static JPanel panelForButtons;
 	public static JCheckBox caseApplyCutToAll = new JCheckBox(Shutter.language.getProperty("caseApplyToAll"));
 	public static JCheckBox caseShowWaveform = new JCheckBox(Shutter.language.getProperty("caseShowWaveform"));
@@ -191,11 +194,9 @@ public class VideoPlayerUI {
 
 	public static int MousePositionX;
 	public static int MousePositionY;
-		
+	
 	public VideoPlayerUI() {  	
-		
-		showInfoMessage = true;
-		
+				
 		GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
 		GraphicsDevice myScreen = config.getDevice();
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -254,7 +255,7 @@ public class VideoPlayerUI {
 							
 					InputAndOutput.savedInPoint = (double) Math.ceil(timeIn);	
 					
-					if (VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
+					if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
 					{
 						double totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 						double total = (totalFrames - totalOut); //Get how much frames to remove from totalFrames					
@@ -613,10 +614,25 @@ public class VideoPlayerUI {
 						{
 							btnGoToOut.doClick();
 						}
-						else if (cursorWaveform.getX() > playerInMark)
+						else
 						{
 							btnMarkOut.doClick();
 						}
+					}
+					
+					if (e.getKeyCode() == KeyEvent.VK_C)
+					{
+						btnCut.doClick();
+					}
+					
+					if (e.getKeyCode() == KeyEvent.VK_R)
+					{
+						btnReset.doClick();
+					}
+					
+					if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+					{
+						VideoPlayerCore.removeCurrentSegment();
 					}
 				}
 				
@@ -775,6 +791,8 @@ public class VideoPlayerUI {
 			btnStop.setVisible(true);
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
+			btnCut.setVisible(false);
+			btnReset.setVisible(false);
 			panelForButtons.setVisible(true);
 			caseApplyCutToAll.setVisible(false);
 			caseInternalTc.setVisible(false);
@@ -837,6 +855,8 @@ public class VideoPlayerUI {
 			
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
+			btnCut.setVisible(false);
+			btnReset.setVisible(false);
 			panelForButtons.setVisible(false);
 			caseApplyCutToAll.setVisible(false);
 			caseInternalTc.setVisible(false);
@@ -898,13 +918,7 @@ public class VideoPlayerUI {
 			lblMode.setVisible(true);
 			comboMode.setVisible(true);
 			
-			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
-			{
-				btnPreview.setVisible(true);
-				splitValue.setVisible(false);
-				lblSplitSec.setVisible(false);
-			}
-			else if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
+			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
 			{
 				btnPreview.setVisible(false);
 				splitValue.setVisible(true);
@@ -925,6 +939,8 @@ public class VideoPlayerUI {
 			btnStop.setVisible(true);
 			btnMarkOut.setVisible(true);
 			btnGoToOut.setVisible(true);
+			btnCut.setVisible(true);
+			btnReset.setVisible(true);
 			panelForButtons.setVisible(true);
 			
 			waveformScrollPane.setVisible(true);
@@ -935,7 +951,10 @@ public class VideoPlayerUI {
 				caseApplyCutToAll.setVisible(false);
 			}
 			else
+			{
 				caseApplyCutToAll.setVisible(true);
+				caseApplyCutToAll.setEnabled(true);
+			}
 			
 			if (FFPROBE.hasAudio)
 			{
@@ -1352,15 +1371,20 @@ public class VideoPlayerUI {
 					
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
-					playerInMark = cursorWaveform.getX();
-					waveformContainer.repaint();			
-					
 					if (VideoPlayerCore.bufferCurrentFrame > 0)
 					{
 						VideoPlayerCore.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
 					}
 					else
 						VideoPlayerCore.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
+					
+					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
+						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+						
+					VideoPlayerCore.setMarkers();
+					
+					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Back to default
+						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					
 					Shutter.timecode.repaint();
 					
@@ -1393,11 +1417,49 @@ public class VideoPlayerUI {
 					waveformContainer.repaint();
 				}
 				
-				VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
+				if (VideoPlayerCore.cutSegments.isEmpty() == false)
+				{
+					double previousSegment = 0;
+					for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+		            {
+						double inputMark = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+		                double outputMark = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+		                		                
+		                if (VideoPlayerCore.playerCurrentFrame == inputMark) //Get previous segment
+		                {
+		                	if (seg.index > 0)
+		                	{
+		                		VideoPlayerCore.CutSegment activeSegment = VideoPlayerCore.cutSegments.get(seg.index - 1);
+		                		outputMark = VideoPlayerCore.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
+		                		
+		                		VideoPlayerCore.playerCurrentFrame = outputMark - 1;
+		                		break;
+		                	}
+		                }
+		                else if (VideoPlayerCore.playerCurrentFrame >= inputMark && VideoPlayerCore.playerCurrentFrame < outputMark) //Current segment
+		                {
+		                	VideoPlayerCore.playerCurrentFrame = inputMark;
+					        break;
+		                }
+		                else if (VideoPlayerCore.activeSegmentIndex == -1 && VideoPlayerCore.playerCurrentFrame > outputMark)
+		                {
+		                	previousSegment = outputMark - 1; //Do not use break in this case
+		                }
+		            }
+					
+					if (previousSegment != 0)
+					{
+						VideoPlayerCore.playerCurrentFrame = previousSegment;
+					}
+				}
+				else
+				{	
+					VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
 				
-				//NTSC framerate
-				VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-				VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+					//NTSC framerate
+					VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
+					VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+				}
 				
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
@@ -1417,9 +1479,6 @@ public class VideoPlayerUI {
 
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
-					playerOutMark = cursorWaveform.getX();
-					waveformContainer.repaint();
-					
 					if (VideoPlayerCore.bufferCurrentFrame > 0)
 					{
 						VideoPlayerCore.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
@@ -1427,7 +1486,15 @@ public class VideoPlayerUI {
 					else
 						VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);	
 					
+					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
+						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+						
 					VideoPlayerCore.setMarkers();
+					
+					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Back to default
+						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					
+					Shutter.timecode.repaint();
 
 					//FileList
 					VideoPlayerCore.setFileList();
@@ -1456,17 +1523,102 @@ public class VideoPlayerUI {
 					waveformContainer.repaint();
 				}
 				
-				VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText())  - 1;
-
-				//NTSC framerate
-				VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-				VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
-								
+				if (VideoPlayerCore.cutSegments.isEmpty() == false)
+				{
+					for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+		            {
+						double inputMark = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+		                double outputMark = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+		                		                
+		                if (VideoPlayerCore.playerCurrentFrame == outputMark - 1) //Get next segment
+		                {
+		                	if (seg.index + 2 <= VideoPlayerCore.cutSegments.size())
+		                	{
+		                		VideoPlayerCore.CutSegment activeSegment = VideoPlayerCore.cutSegments.get(seg.index + 1);
+		                		inputMark = VideoPlayerCore.getSegmentTime(activeSegment.inH, activeSegment.inM, activeSegment.inS, activeSegment.inF);
+		                		
+		                		VideoPlayerCore.playerCurrentFrame = inputMark;
+		                		break;
+		                	}
+		                }
+		                else if (VideoPlayerCore.playerCurrentFrame >= inputMark && VideoPlayerCore.playerCurrentFrame < outputMark) //Current segment
+		                {
+		                	VideoPlayerCore.playerCurrentFrame = outputMark - 1;
+					        break;
+		                }
+		                else if (VideoPlayerCore.activeSegmentIndex == -1 && VideoPlayerCore.playerCurrentFrame < inputMark)
+		                {
+		                	VideoPlayerCore.playerCurrentFrame = inputMark;
+					        break;
+		                }
+		            }
+				}
+				else
+				{
+					VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText())  - 1;
+	
+					//NTSC framerate
+					VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
+					VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+				}
+				
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
 			
 		});
    
+		btnCut = new JButton(new FlatSVGIcon("resources/cut.svg", 15, 15));
+		btnCut.setMargin(new Insets(0,0,0,0));		
+		btnCut.setBackground(new Color(30,30,35, 0));
+		btnCut.setBorder(null);
+		Shutter.frame.getContentPane().add(btnCut);
+		
+		btnCut.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+					
+				if (caseApplyCutToAll.isSelected() == false)
+				{
+					VideoPlayerCore.addCurrentCut();
+				}
+			}
+			
+		});
+				
+		btnReset = new JButton(new FlatSVGIcon("resources/reset.svg", 15, 15));
+		btnReset.setMargin(new Insets(0,0,0,0));		
+		btnReset.setBackground(new Color(30,30,35, 0));
+		btnReset.setBorder(null);
+		Shutter.frame.getContentPane().add(btnReset);
+		
+		btnReset.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+					
+				if (caseApplyCutToAll.isSelected() == false)
+				{
+					VideoPlayerCore.updateGrpIn(0);
+					VideoPlayerCore.updateGrpOut(totalFrames);
+					
+					playerMarkIn = 0;
+					playerMarkOut = waveformContainer.getWidth() - 2;
+					
+					VideoPlayerCore.activeSegmentIndex = -1;
+					VideoPlayerCore.cutSegments.clear();
+					
+					waveformContainer.repaint();			
+	
+					//FileList
+					VideoPlayerCore.setFileList();
+					
+					caseApplyCutToAll.setEnabled(true);
+				}
+			}
+			
+		});
+		
 		panelForButtons = new JPanel() {
 		
 				@Override
@@ -1478,20 +1630,10 @@ public class VideoPlayerUI {
                     g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			        
 					g2d.setColor(Utils.c42);					
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
-					{
-						g2d.fillRoundRect(0, 0, (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21, 15, 15);
-						
-						g2d.setColor(Utils.c50);
-						g2d.drawRoundRect(0, 0, (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 5, 20, 15, 15);
-					}
-					else
-					{
-						g2d.fillRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21, 15, 15);
-						
-						g2d.setColor(Utils.c50);
-						g2d.drawRoundRect(0, 0, (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 5, 20, 15, 15);
-					}
+					g2d.fillRoundRect(0, 0, this.getWidth(), 21, 15, 15);
+					
+					g2d.setColor(Utils.c50);
+					g2d.drawRoundRect(0, 0, this.getWidth() - 1, 20, 15, 15);
 									
 					g2d.setColor(new Color(25,25,25));
 					g2d.drawLine(this.getWidth() / 2, 5, this.getWidth() / 2, this.getHeight() - 6);
@@ -1622,6 +1764,12 @@ public class VideoPlayerUI {
 		            if (VideoPlayerCore.playerIsPlaying()) //Handled directly from setTime
 		            {
 		            	cursorCurrentFrame.setLocation((int) Math.floor((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(VideoPlayerCore.playerCurrentFrame)) / totalFrames), 0);
+		            	
+		            	//Allows to color the current segment
+		            	if (VideoPlayerCore.cutSegments.isEmpty() == false)
+		            	{
+		            		waveformContainer.repaint();
+		            	}
 		            }
 		        }
 		        
@@ -1993,23 +2141,6 @@ public class VideoPlayerUI {
 	            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	            
-	            //Background
-	            if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
-	            {
-	            	g2.setColor(Utils.darkenColor);
-	            	
-	            	//Mask in                               	
-	                g2.fillRoundRect(0, 0, playerInMark + 1, getHeight() - 1, 5, 5);
-	                
-	                //Mask out     
-	                g2.fillRoundRect(playerOutMark + 1, 0, getWidth() - playerOutMark - 1, getHeight() - 1, 5, 5);
-	            }
-	            else
-	            {
-	            	g2.setColor(new Color(25, 27, 30));
-	            	g2.fillRoundRect(0, 0, getWidth(), getHeight(), 5, 5);
-	            }
-
 	            //Borders
                 g2.setColor(Utils.c25);
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 5, 5);	
@@ -2024,23 +2155,61 @@ public class VideoPlayerUI {
                 	else
                 		g2.setColor(Utils.darkenColor);
 	                	                
-	                if (playerOutMark > waveformContainer.getWidth() - 2)
-	                	playerOutMark = waveformContainer.getWidth() - 2;	 
+	                if (playerMarkOut > waveformContainer.getWidth() - 2)
+	                	playerMarkOut = waveformContainer.getWidth() - 2;	 
 	                
-	                if (playerInMark < 0)
-	                	playerInMark = 0;
+	                if (playerMarkIn < 0)
+	                	playerMarkIn = 0;
 	                
-	               	if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")) == false)
-	               	{
-	               		g2.fillRoundRect(playerInMark + 1, 0, playerOutMark - playerInMark - 1, getHeight() - 1, 5, 5);	
-	               	}
+	                //Segments painting
+	                if (VideoPlayerCore.cutSegments.isEmpty() == false)
+               		{	           
+	                	double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+	                	
+	                    for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+	                    {
+	                        int segWidth = seg.outMark - seg.inMark;
+	                        
+	                        double inputMark = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+	                        double outputMark = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+	                        
+	                        //Current segment
+	                        if (time >= inputMark && time < outputMark)
+	                        {
+	                        	VideoPlayerCore.activeSegmentIndex = seg.index;
+	                        	g2.setColor(Utils.darkenColor);
+	                        }
+	                        else if (VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex == seg.index
+	                        && (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR))
+	                        || waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))) //Lock the color when dragging in/out points
+	                        {	                        	
+	                        	g2.setColor(Utils.darkenColor);
+	                        }
+	                        else
+	                        {
+	                        	//Reset activeSegmentIndex
+	                        	if (VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex == seg.index)
+	                        	{
+		                        	VideoPlayerCore.activeSegmentIndex = -1;
+	                        	}
+	                        	
+	                        	g2.setColor(Color.GRAY);
+	                        }
+	                        
+	                        g2.fillRoundRect(seg.inMark + 1, 0, segWidth - 1, getHeight() - 1, 5, 5);
+	                    }
+               		}
+               		else
+               		{
+               			g2.fillRoundRect(playerMarkIn + 1, 0, playerMarkOut - playerMarkIn - 1, getHeight() - 1, 5, 5);	
+               		}
 	                
 	                //Splitters
 	                if (comboMode.isVisible() && comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
 	                {
 		                g2.setColor(new Color(25, 27, 30));
 		                int alpha = 255;
-		                int splitTime = (int) (playerInMark + Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames)));
+		                int splitTime = (int) (playerMarkIn + Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames)));
 		                do {
 		                	
 		                	g2.fillRect(splitTime + 1, 0, 1, getHeight() - 1);
@@ -2054,7 +2223,7 @@ public class VideoPlayerUI {
 		                	if (alpha < 0)
 		                		break;		             
            	
-		                } while (splitTime < playerOutMark);
+		                } while (splitTime < playerMarkOut);
 	                }
 	                	
 	                //Waveform
@@ -2062,21 +2231,46 @@ public class VideoPlayerUI {
 	                    waveformIcon.getIcon().paintIcon(this, g2, 0, 0);
 	                }
 	                
-	                //Masks 
-	                if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
+	                //Masking
+	                Color maskColor = new Color(26, 27, 31, 200);
+
+	                if (VideoPlayerCore.cutSegments.isEmpty() == false)
 	                {
-	                	g2.setColor(new Color(24, 26, 29, 200));
-	                	g2.fillRoundRect(playerInMark + 1, 1, playerOutMark - playerInMark, getHeight() - 2, 5, 5);
+	                    List<VideoPlayerCore.CutSegment> sortedSegments = new ArrayList<>(VideoPlayerCore.cutSegments);
+	                    sortedSegments.sort(Comparator.comparingInt(seg -> seg.inMark));
+
+	                    g2.setColor(maskColor);
+
+	                    int currentX = 0;
+
+	                    for (VideoPlayerCore.CutSegment seg : sortedSegments)
+	                    {	                    	
+	                        if (seg.inMark > currentX)
+	                        {
+	                            //Fill the gap before this segment
+	                            g2.fillRect(currentX, 0, seg.inMark - currentX, getHeight());
+	                        }
+	                        //Advance tracking point to the end of the current segment
+	                        currentX = Math.max(currentX, seg.outMark);
+	                    }
+
+	                    //Mask the final gap (from the last segment's end to the timeline's edge)
+	                    if (currentX < getWidth())
+	                        g2.fillRect(currentX, 0, getWidth() - currentX, getHeight());
 	                }
 	                else
-	                {	     
-	                	g2.setColor(new Color(26, 27, 31, 200));
-	                	
-		                //Mask in                               	
-		                g2.fillRoundRect(0, 0, playerInMark + 1, getHeight() - 1, 5, 5);
-		                
-		                //Mask out     
-		                g2.fillRoundRect(playerOutMark + 1, 0, getWidth() - playerOutMark - 1, getHeight() - 1, 5, 5);
+	                {
+	                    g2.setColor(maskColor);
+	                    
+	                    //Mask before In-Mark
+	                    if (playerMarkIn > 0) {
+	                        g2.fillRoundRect(0, 0, playerMarkIn + 1, getHeight() - 1, 5, 5);
+	                    }
+	                    
+	                    //Mask after Out-Mark
+	                    if (playerMarkOut < getWidth()) {
+	                        g2.fillRoundRect(playerMarkOut + 1, 0, getWidth() - playerMarkOut - 1, getHeight() - 1, 5, 5);
+	                    }
 	                }
 	                
 	                //Buffer
@@ -2143,7 +2337,7 @@ public class VideoPlayerUI {
 	            g2d.drawLine(0, getWidth(), 0, getHeight());	
 	        }
 		};
-	
+
 		cursorWaveform.setBounds(0, 0, 1, waveformContainer.getSize().height - 1);		
 		waveformContainer.add(cursorWaveform);	
 			   
@@ -2153,7 +2347,7 @@ public class VideoPlayerUI {
 		waveformIcon.setSize(waveformContainer.getSize());
 
 		//Important
-		playerOutMark = waveformContainer.getWidth() - 2;
+		playerMarkOut = waveformContainer.getWidth() - 2;
 				
 		waveformContainer.addMouseListener(new MouseListener(){
 
@@ -2258,9 +2452,9 @@ public class VideoPlayerUI {
 					
 					VideoPlayerCore.setMarkers();
 					
-					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerOutMark && mouseIsPressed)
+					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerMarkOut && mouseIsPressed)
 					{							
-						cursorWaveform.setLocation(playerInMark, 0);
+						cursorWaveform.setLocation(playerMarkIn, 0);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						
 						if (VideoPlayerCore.bufferCurrentFrame > 0)
@@ -2270,9 +2464,9 @@ public class VideoPlayerUI {
 						else
 							VideoPlayerCore.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
 					}
-					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerInMark && mouseIsPressed)
+					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerMarkIn && mouseIsPressed)
 					{			
-						cursorWaveform.setLocation(playerOutMark, 0);
+						cursorWaveform.setLocation(playerMarkOut, 0);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						
 						if (VideoPlayerCore.bufferCurrentFrame > 0)
@@ -2282,7 +2476,7 @@ public class VideoPlayerUI {
 						else
 							VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame);
 					}	
-					
+										
 					waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					
 					//FileList
@@ -2298,7 +2492,7 @@ public class VideoPlayerUI {
 			public void mouseDragged(MouseEvent e) {
 									
 				if (Shutter.list.getSize() > 0)
-                {					
+                {							
 					if (e.getX() > 0 && e.getX() <= waveformContainer.getWidth() - 2)
 					{
 						sliderChange = true;					
@@ -2329,16 +2523,38 @@ public class VideoPlayerUI {
 						
 						VideoPlayerCore.playerSetTime(totalFrames);
 					}
-					
-					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerOutMark && mouseIsPressed)
+
+					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 					{
-						playerInMark = cursorWaveform.getX();
-						waveformContainer.repaint();
+						if (cursorWaveform.getX() < playerMarkOut)
+						{
+							if (VideoPlayerCore.bufferCurrentFrame > 0)
+							{
+								VideoPlayerCore.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
+							}
+							else
+								VideoPlayerCore.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
+							
+							VideoPlayerCore.setMarkers();
+						}
+						else //Allows to stop dragging when the size is too small
+							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
-					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerInMark && mouseIsPressed)
+					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && mouseIsPressed)
 					{
-						playerOutMark = cursorWaveform.getX();
-						waveformContainer.repaint();
+						if (cursorWaveform.getX() > playerMarkIn)
+						{
+							if (VideoPlayerCore.bufferCurrentFrame > 0)
+							{
+								VideoPlayerCore.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
+							}
+							else
+								VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);	
+							
+							VideoPlayerCore.setMarkers();
+						}
+						else //Allows to stop dragging when the size is too small
+							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
 
 					if (cursorWaveform.getX() > waveformScrollPane.getWidth() + waveformScrollPane.getHorizontalScrollBar().getValue())
@@ -2359,11 +2575,11 @@ public class VideoPlayerUI {
 				
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
-					if (e.getX() >= playerInMark - 5 && e.getX() <= playerInMark + 5)
+					if (e.getX() >= playerMarkIn - 5 && e.getX() <= playerMarkIn + 5)
 					{
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));						
 					}
-					else if (e.getX() >= playerOutMark - 5 && e.getX() <= playerOutMark + 5)
+					else if (e.getX() >= playerMarkOut - 5 && e.getX() <= playerMarkOut + 5)
 					{
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
 					}
@@ -3382,23 +3598,7 @@ public class VideoPlayerUI {
 				lblSplitSec.setBounds(btnPreview.getX() + 10, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
 				splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);
 				
-				if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
-				{
-					if (showInfoMessage)
-					{
-						JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("mayNotWorkWithGOP"), Shutter.language.getProperty("mode") + " " + Shutter.language.getProperty("removeMode"), JOptionPane.INFORMATION_MESSAGE);
-						showInfoMessage = false;
-					}
-					
-					btnPreview.setVisible(true);
-					splitValue.setVisible(false);
-					lblSplitSec.setVisible(false);
-					comboMode.setLocation(btnPreview.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);	
-					
-					caseApplyCutToAll.setEnabled(false);
-					caseApplyCutToAll.setSelected(false);
-				}
-				else if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
+				if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
 				{
 					btnPreview.setVisible(false);
 					splitValue.setVisible(true);
@@ -3735,19 +3935,21 @@ public class VideoPlayerUI {
 						
 			btnPrevious.setBounds(player.getLocation().x + player.getSize().width / 2 - 21 - 4, waveformScrollPane.getY() + waveformContainer.getHeight() + 10, 22, 21);		
 			btnNext.setBounds(player.getLocation().x + player.getSize().width / 2 + 4, btnPrevious.getLocation().y, 22, 21);		
-			btnPlay.setBounds(btnPrevious.getLocation().x - 40 - 4, btnPrevious.getLocation().y, 40, 21);				
-			btnStop.setBounds(btnNext.getLocation().x + btnNext.getSize().width + 4, btnNext.getLocation().y, 40, 21);	
+			btnPlay.setBounds(btnPrevious.getLocation().x - 22 - 4, btnPrevious.getLocation().y, 22, 21);				
+			btnStop.setBounds(btnNext.getLocation().x + btnNext.getSize().width + 4, btnNext.getLocation().y, 22, 21);	
 			btnMarkIn.setBounds(btnPlay.getLocation().x - 22 - 4, btnPlay.getLocation().y, 22, 21);				
-			btnGoToIn.setBounds(btnMarkIn.getLocation().x - 40 - 4, btnMarkIn.getLocation().y, 40, 21);				
+			btnGoToIn.setBounds(btnMarkIn.getLocation().x - 22 - 4, btnMarkIn.getLocation().y, 22, 21);				
 			btnMarkOut.setBounds(btnStop.getLocation().x + btnStop.getSize().width + 4, btnStop.getLocation().y, 22, 21);				
-			btnGoToOut.setBounds(btnMarkOut.getLocation().x + btnMarkOut.getSize().width + 4, btnMarkOut.getLocation().y, 40, 21);		
+			btnGoToOut.setBounds(btnMarkOut.getLocation().x + btnMarkOut.getSize().width + 4, btnMarkOut.getLocation().y, 22, 21);		
+			btnCut.setBounds(btnGoToOut.getLocation().x + btnGoToOut.getSize().width + 4, btnGoToOut.getLocation().y, 22, 21);
+			btnReset.setBounds(btnGoToIn.getLocation().x - 22 - 4, btnGoToIn.getLocation().y, 22, 21);
 			
 			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 			{
 				panelForButtons.setBounds(btnPlay.getX() + 2, btnPlay.getY(), (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21);
 			}
 			else
-				panelForButtons.setBounds(btnGoToIn.getX() + 2, btnPlay.getY(), (btnGoToOut.getX() + btnGoToOut.getWidth()) - btnGoToIn.getX() - 4, 21);
+				panelForButtons.setBounds(btnReset.getX() - 4, btnPlay.getY(), (btnCut.getX() + btnCut.getWidth()) - btnReset.getX() + 8, 21);
 			
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			comboPlayerQuality.setLocation(player.getX() + (player.getWidth() - comboPlayerQuality.getWidth()) / 2, player.getY() - 18);
@@ -3799,9 +4001,9 @@ public class VideoPlayerUI {
 			lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);			
 
 			//Sliders
-			sliderSpeed.setLocation(btnGoToIn.getX() -  sliderSpeed.getWidth() - 4, btnPrevious.getY() + 1);
+			sliderSpeed.setLocation(btnReset.getX() - sliderSpeed.getWidth() - 8, btnPrevious.getY() + 1);
 			lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);			
-			lblVolume.setLocation(btnGoToOut.getX() + btnGoToOut.getWidth() + 7, lblSpeed.getY());	
+			lblVolume.setLocation(btnCut.getX() + btnCut.getWidth() + 16, lblSpeed.getY());	
 			
 			if (Shutter.frame.getWidth() < 1320 && Shutter.noSettings == false)
 			{
@@ -3856,7 +4058,7 @@ public class VideoPlayerUI {
 				
 		Shutter.statusBar.setBounds(0, Shutter.frame.getHeight() - 23, Shutter.frame.getWidth(), 22);
 		
-		if (Shutter.frame.getWidth() >= 1130)
+		if (Shutter.frame.getWidth() >= 1100)
 		{
 			Shutter.lblArrows.setLocation(Shutter.statusBar.getWidth() / 2 - Shutter.lblArrows.getWidth() / 2, Shutter.lblArrows.getY());			
 			Shutter.lblYears.setVisible(true);

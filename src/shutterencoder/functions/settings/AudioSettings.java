@@ -86,7 +86,7 @@ public class AudioSettings extends Shutter {
 		{
 			isEditingCodec = true;
 		}
-		
+				
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty(("codecCopy"))))
 		{
 			String mapping = "";
@@ -313,8 +313,10 @@ public class AudioSettings extends Shutter {
 	    			{
 	    				audioCodec += " -aac_is 0 -aac_pns 0";
 	    			}
+		    		
+		    		String mapping = " -map a?";
 		    			
-	    			audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + " -filter:a " + '"' + audioFiltering + channelMix + '"' + " -map a?";
+	    			audio += " -c:a " + audioCodec + mono + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + " -filter:a " + '"' + audioFiltering + channelMix + '"' + mapping;
 			    }
 		    	else if (lblAudioMapping.getSelectedItem().toString().equals("Multi"))
 		    	{					    		
@@ -331,7 +333,7 @@ public class AudioSettings extends Shutter {
     				{
 				    	if (isBroadcastCodec == false)
 		    			{
-		    				mapping = " -map a?";	
+				    		mapping = " -map a?";
 		    			}
 		    			
 		    			if (inputDeviceIsRunning && list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
@@ -380,7 +382,7 @@ public class AudioSettings extends Shutter {
 		    		if (audioFiltering != "") 
 			    		audioFiltering = "," + audioFiltering;
 			    	
-				    if (filterComplex != "")
+				    if (filterComplex != "" || InputAndOutput.segments != "")
 				    	audio += ";";
 				    else
 				    	audio += " -filter_complex " + '"';	
@@ -407,7 +409,7 @@ public class AudioSettings extends Shutter {
 		    		if (audioFiltering != "") 
 			    		audioFiltering = "," + audioFiltering;
 			    	
-				    if (filterComplex != "")
+				    if (filterComplex != "" || InputAndOutput.segments != "")
 				    	audio += ";";
 				    else
 				    	audio += " -filter_complex " + '"';
@@ -434,7 +436,7 @@ public class AudioSettings extends Shutter {
 	        	 	if (audioFiltering != "")
 			    		audioFiltering = "," + audioFiltering;
 			    	
-				    if (filterComplex != "")
+				    if (filterComplex != "" || InputAndOutput.segments != "")
 				    	audio += ";";
 				    else
 				    	audio += " -filter_complex " + '"';	
@@ -484,7 +486,7 @@ public class AudioSettings extends Shutter {
 			    	if (audioFiltering != "")
 			    		audioFiltering = "," + audioFiltering;
 			    	
-				    if (filterComplex != "")
+				    if (filterComplex != "" || InputAndOutput.segments != "")
 				    	audio += ";";
 				    else
 				    	audio += " -filter_complex " + '"';	
@@ -501,7 +503,7 @@ public class AudioSettings extends Shutter {
 		    		 if (audioFiltering != "")
 				    	audioFiltering = "," + audioFiltering;
 				    	
-		    		 if (filterComplex != "")
+		    		 if (filterComplex != "" || InputAndOutput.segments != "")
 				    	audio += ";";
 		    		 else
 				    	audio += " -filter_complex " + '"';	
@@ -523,7 +525,7 @@ public class AudioSettings extends Shutter {
 		    		 if (audioFiltering != "") 
 		    			 audioFiltering = "," + audioFiltering;
 			    	
-		    		 if (filterComplex != "")
+		    		 if (filterComplex != "" || InputAndOutput.segments != "")
 		    			 audio += ";";
 		    		 else
 		    			 audio += " -filter_complex " + '"';
@@ -551,7 +553,7 @@ public class AudioSettings extends Shutter {
 		    			
 		    			if (isBroadcastCodec == false)
 		    			{
-		    				mapping = " -map a?";	
+		    				mapping = " -map a?";
 		    			}
 		    			
 		    			if (inputDeviceIsRunning && list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
@@ -602,7 +604,9 @@ public class AudioSettings extends Shutter {
 	    			audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
 	    		}
 		    	
-		    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + audioFiltering + " -map a?";
+		    	String mapping = " -map a?";
+		    	
+		    	audio += " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + audioFiltering + mapping;
 		    }
 		    
 		    return audio;		   				    

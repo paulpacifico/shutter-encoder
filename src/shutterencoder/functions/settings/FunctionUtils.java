@@ -37,6 +37,8 @@ import java.time.LocalDate;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -536,48 +538,7 @@ public class FunctionUtils extends Shutter {
 	{		
 		String extension =  file.toString().substring(file.toString().lastIndexOf("."));
 		
-		File concatFile = new File(output.replace("\\", "/") + "/" + file.getName().replace(extension, ".txt")); 
-		
-		if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
-		{									
-			try {								
-				PrintWriter writer = new PrintWriter(concatFile.toString(), "UTF-8");
-				
-				NumberFormat formatter = new DecimalFormat("00");
-				NumberFormat formatFrame = new DecimalFormat("000");
-				
-				int h = Integer.parseInt(VideoPlayerUI.caseInH.getText());
-				int m = Integer.parseInt(VideoPlayerUI.caseInM.getText());
-				int s = Integer.parseInt(VideoPlayerUI.caseInS.getText());
-				int f = (int) Math.floor(Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.accurateFPS));	
-				
-				writer.println("file " + "'" + file + "'");							
-				writer.println("outpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
-				
-				h = Integer.parseInt(VideoPlayerUI.caseOutH.getText());
-				m = Integer.parseInt(VideoPlayerUI.caseOutM.getText());
-				s = Integer.parseInt(VideoPlayerUI.caseOutS.getText());
-				f = (int) Math.floor(Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.accurateFPS));	
-				
-				writer.println("file " + "'" + file + "'");	
-				writer.println("inpoint " + formatter.format(h) + ":" + formatter.format(m) + ":" + formatter.format(s) + "." + formatFrame.format(f));
-				
-				InputAndOutput.inPoint = "";
-				InputAndOutput.outPoint = "";			
-				
-				writer.close();
-				
-			} catch (FileNotFoundException | UnsupportedEncodingException e) {	
-				
-				FFMPEG.error  = true;
-				
-				if (concatFile.exists())
-					concatFile.delete();
-			}	
-			
-			return " -safe 0 -f concat";
-		}
-		else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false) //Image sequence
+		if (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false) //Image sequence
 		{
 			setMerge(file.getName(), extension, output);	
 
@@ -1391,7 +1352,7 @@ public class FunctionUtils extends Shutter {
 		}
 		
 		/* For info using libplacebo filters:
-		 * Deinterlace is faster only with yadif!
+		 * Deinterlace is faster only with yadif on Mac!
 		 * Rotate is a bit slower but faster in addition on deinterlace
 		 * Scale, Crop, Range are much faster on CPU
 		 * Colorspace, Lut, Deband are faster with libplacebo
@@ -1402,7 +1363,7 @@ public class FunctionUtils extends Shutter {
 		if (firstFilters)
 		{
 			//Deinterlacing
-			if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("libplacebo="))
+			if (AdvancedFeatures.setDeinterlace(progressiveOutput, false, "").contains("libplacebo="))
 			{
 				if (System.getProperty("os.name").contains("Windows"))
 				{
@@ -1410,7 +1371,7 @@ public class FunctionUtils extends Shutter {
 				}
 				else
 				{
-					if (AdvancedFeatures.setDeinterlace(progressiveOutput, false).contains("deinterlace=bwdif"))
+					if (AdvancedFeatures.setDeinterlace(progressiveOutput, false, "").contains("deinterlace=bwdif"))
 					{
 						score += 1;
 					}
@@ -1538,8 +1499,8 @@ public class FunctionUtils extends Shutter {
 			
 			return filterComplex + getSetParamsInput(newLibplaceboFilter.contains("deinterlace"), filterComplex) + "libplacebo=" + disableLinear + newLibplaceboFilter;
 		}
-	}
-	
+	}	
+	//FilterComplex	
  	public static String setFilterComplex(String filterComplex, String audio, boolean picture) {
 
 		//No audio
@@ -1581,13 +1542,28 @@ public class FunctionUtils extends Shutter {
 		if (caseOPATOM.isSelected())
 			audio = "";
 		
+		//Multiple cuts
+    	if (InputAndOutput.segments != "")
+    	{
+    		String filter = filterComplex != "" ? filterComplex : "null";
+    		
+    		filterComplex = InputAndOutput.segments + filter;
+    	}
+		
         if (filterComplex != "")
         {	          	
         	//Si une des cases est sélectionnée alors il y a déjà [0:v]
         	if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+        	{
         		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
+        	}
         	else
         		filterComplex = " -filter_complex " + '"' + "[0:v]" + filterComplex + "[out]";
+        	
+        	//Multiple cuts
+        	multipleCutsMapping multiCuts = setMultipleCutsMapping(filterComplex, audio);
+        	filterComplex = multiCuts.filterComplex();
+        	audio = multiCuts.audio();
 
         	if (audio.contains("[a]"))
         	{
@@ -1597,7 +1573,7 @@ public class FunctionUtils extends Shutter {
         		filterComplex += '"' + " -map " + '"' + "[out]" + '"' +  audio;
         }
         else
-        {        
+        {     
         	if (audio.contains("[a]"))
         	{
         		filterComplex = audio + " -map v:0 -map " + '"' +  "[a]" + '"';
@@ -1656,7 +1632,141 @@ public class FunctionUtils extends Shutter {
         
         return filterComplex;
 	}
+ 	
+ 	public record multipleCutsMapping(String filterComplex, String audio) {}
 	
+ 	public static multipleCutsMapping setMultipleCutsMapping(String filterComplex, String audio) {
+
+ 		//Multiple cuts
+ 	    if (InputAndOutput.segments != "" && InputAndOutput.segments.contains("[audio_"))
+ 	    {  	    	
+ 	        //No audio
+ 	        if (audio.contains("-an"))
+ 	        {
+ 	            for (int c = 0 ; c < FFPROBE.channels ; c++)
+ 	            {
+ 	                filterComplex += ";[audio_" + c +"]anullsink";
+ 	            }   
+ 	        } 	    	
+ 	        else if (audio.contains("filter:a")) //Moving filter:a to filterComplex
+ 	    	{
+ 	    		String audioFilter = audio.substring(audio.indexOf("-filter:a"));
+ 	    		String s[] = audioFilter.split("\"");
+ 	    		audioFilter = s[1];
+
+ 	    		audio = audio.replace(" -filter:a " + '"' + audioFilter + '"', "").replace("-map a?", ""); 	    		
+ 	    		audio = ";[audio_0]" + audioFilter + "[a]" + '"' + audio;
+ 	    	}
+ 	        else if (audio.contains("-map a?")) //Add non mapped track to anullsink
+	        {
+ 	        	String tracks = "";
+                for (int c = 0 ; c < FFPROBE.channels ; c++)
+                {
+                    tracks += " -map " + '"' + "[audio_" + c +"]" + '"';
+                }
+                
+                audio = audio.replace(" -map a?", tracks);
+	        }
+ 	        else if (audio.contains("[0:a]")) //Add non mapped track to anullsink
+ 	        {
+ 	            if (audio.contains("amix=inputs=" + FFPROBE.channels))
+ 	            {
+ 	                String tracks = "";
+ 	                for (int c = 0 ; c < FFPROBE.channels ; c++)
+ 	                {
+ 	                    tracks += "[audio_" + c +"]";
+ 	                }
+ 	                
+ 	                audio = audio.replace("[0:a]", tracks);
+ 	            }
+ 	            else
+ 	            {
+ 	                audio = audio.replace("[0:a]", "[audio_0]");
+ 	                
+ 	                if (FFPROBE.channels > 1)
+ 	                {
+ 	                    for (int c = 1 ; c < FFPROBE.channels ; c++)
+ 	                    {
+ 	                        filterComplex += ";[audio_" + c +"]anullsink"; //null output
+ 	                    }
+ 	                }
+ 	            }
+ 	        }
+ 	        else if (audio.contains("[0:a:")) //Add non mapped track to anullsink
+ 	        {
+ 	            Matcher m = Pattern.compile("0:a:(\\d+)").matcher(audio);
+
+ 	            //Add anullsink to non-mapped audio tracks
+ 	            for (int c = 0 ; c < FFPROBE.channels ; c++)
+ 	            {
+ 	                boolean map = false;
+ 	                m.reset();
+ 	                while (m.find())
+ 	                {
+ 	                    int channel = Integer.parseInt(m.group(1));
+ 	                    
+ 	                    if (c == channel)
+ 	                    {
+ 	                        map = true;
+ 	                        break;
+ 	                    }
+ 	                }
+ 	                
+ 	                if (map == false)
+ 	                {
+ 	                    filterComplex += ";[audio_" + c +"]anullsink"; //null output
+ 	                }
+ 	            }   			
+ 	            
+ 	            //Convert [0:a:x] to [audio_x]
+ 	            audio = audio.replaceAll("\\[0:a:(\\d+)\\]", "[audio_$1]");  			
+ 	        }
+ 	        else if (audio.contains("-map a:")) //Add non mapped track to anullsink
+ 	        {
+ 	            Matcher m = Pattern.compile("a:(\\d+)").matcher(audio);
+
+ 	            //Add anullsink to non-mapped audio tracks
+ 	            for (int c = 0 ; c < FFPROBE.channels ; c++)
+ 	            {
+ 	                boolean map = false;
+ 	                m.reset();
+ 	                while (m.find())
+ 	                {
+ 	                    int channel = Integer.parseInt(m.group(1));
+ 	                    
+ 	                    if (c == channel)
+ 	                    {
+ 	                        map = true;
+ 	                        break;
+ 	                    }
+ 	                }
+ 	                
+ 	                if (map == false)
+ 	                {
+ 	                    filterComplex += ";[audio_" + c +"]anullsink"; //null output
+ 	                    audio = audio.replace("-map a:" + c + "?", ""); //Remove the mapping
+ 	                }
+ 	            } 
+ 	            
+ 	            //Removes non existing sources with -map a:x?
+ 	            m.reset();
+ 	            while (m.find())
+ 	            {
+ 	                int channel = Integer.parseInt(m.group(1));
+ 	                if ((channel + 1) > FFPROBE.channels)
+ 	                {
+ 	                    audio = audio.replace(" -map a:" + channel + "?", "");     
+ 	                }
+ 	            }
+ 	            
+ 	            //Convert -map a:x? to [audio_x]
+ 	            audio = audio.replaceAll("-map\\s+a:(\\d+)\\??", "-map \"[audio_$1]\"");
+ 	        }
+ 	    }
+
+ 	    return new multipleCutsMapping(filterComplex, audio);
+ 	}
+ 	
 	@SuppressWarnings("rawtypes")
 	public static String setFilterComplexBroadcastCodecs(String filterComplex, String audio) {
 		
@@ -1695,6 +1805,14 @@ public class FunctionUtils extends Shutter {
 			audioFiltering += "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
 		}
 		
+		//Multiple cuts
+    	if (InputAndOutput.segments != "")
+    	{
+    		String filter = filterComplex != "" ? filterComplex : "null";
+    		
+    		filterComplex = InputAndOutput.segments + filter;
+    	}
+		
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio"))) //No audio
 		{
 			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
@@ -1714,7 +1832,7 @@ public class FunctionUtils extends Shutter {
 				mapping += " -c:s mov_text" + setMapSubtitles();
 			}
 			
-			return mapping;
+			return setMultipleCutsMappingBroadcastCodecs(mapping);
 		}
 		else if (comboAudioCodec.getSelectedItem().equals(language.getProperty("codecCopy")) == false)
 		{ 
@@ -1736,7 +1854,9 @@ public class FunctionUtils extends Shutter {
 					if (inputDeviceIsRunning)
 					{
 						if (list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 && RecordInputDevice.overlayAudioDeviceIndex > 0)
+						{
 							mapping = " -map a? -map 2?";
+						}
 						else
 							mapping = " -map a?";	
 					}
@@ -1776,7 +1896,7 @@ public class FunctionUtils extends Shutter {
 							}	
 						}
 
-						mapping += " -map 0:" + map;						
+						mapping += " -map a:" + (map - 1);						
 					}					
 				}
 				else //On ajoute une piste silencieuse
@@ -1798,8 +1918,8 @@ public class FunctionUtils extends Shutter {
 						mapping += " -map 1";	
 				}
 			}
-		}			
-		
+		}		
+				
 		if (FFPROBE.channels != 1) //On ajoute le filterComplex lorsque il n'y a pas de split des pistes son	
 		{
 			if (audioFiltering != "")
@@ -1816,13 +1936,75 @@ public class FunctionUtils extends Shutter {
 			else
 				mapping = " -map v:0" + audioFiltering + mapping + audio;	
 		}		
-		
+
 		//On map les sous-titres que l'on intègre        
         if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
         {        				
 			mapping += " -c:s mov_text" + setMapSubtitles();
         }
-		        
+        
+		return setMultipleCutsMappingBroadcastCodecs(mapping);
+	}
+	
+	public static String setMultipleCutsMappingBroadcastCodecs(String mapping) {
+
+		//Multiple cuts
+    	if (InputAndOutput.segments != "" && InputAndOutput.segments.contains("[audio_"))
+        {        	
+    		mapping = mapping.replace("0:a", "audio_0");
+    		mapping = mapping.replace(" -map a?", " -map " + '"' + "[audio_0]" + '"' );
+    		
+    		//No audio
+    		if (mapping.contains("-an"))
+    		{
+        		for (int c = 0 ; c < FFPROBE.channels ; c++)
+        		{
+        			mapping = mapping.replaceFirst("\\[out\\]", "[out];[audio_" + c +"]anullsink");
+        		}   
+    		}
+    		else if (mapping.contains("-map a:")) //Add non mapped track to anullsink
+    		{
+    			Matcher m = Pattern.compile("a:(\\d+)").matcher(mapping);
+
+    			//Add anullsink to non-mapped audio tracks
+    			for (int c = 0 ; c < FFPROBE.channels ; c++)
+        		{
+					boolean map = false;
+					m.reset();
+					while (m.find())
+	    			{
+	    			    int channel = Integer.parseInt(m.group(1));
+	    			    
+	    			    if (c == channel)
+	    			    {
+	    			    	map = true;
+	    			    	break;
+	    			    }
+	    			}
+					
+					if (map == false)
+					{
+						mapping = mapping.replaceFirst("\\[out\\]", "[out];[audio_" + c +"]anullsink"); //null output
+						mapping = mapping.replace("-map a:" + c, ""); //Remove the mapping
+					}
+        		} 
+    		
+    			//Removes non existing sources with -map 0:x
+    			m.reset();
+				while (m.find())
+    			{
+					int channel = Integer.parseInt(m.group(1));
+					if ((channel + 1) > FFPROBE.channels)
+					{
+						mapping = mapping.replace(" -map a:" + channel, "");     
+					}
+    			}
+				
+				//Convert -map a:x to [audio_x]
+				mapping = mapping.replaceAll("-map\\s+a:(\\d+)\\??", "-map \"[audio_$1]\"");      			
+    		}
+        }
+    	
 		return mapping;
 	}
 	
@@ -2552,7 +2734,7 @@ public class FunctionUtils extends Shutter {
 		}
 		
 		//Concat mode or Image sequence
-		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+		if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()))
 		{
 			File concatList = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 			
 					
@@ -2584,7 +2766,7 @@ public class FunctionUtils extends Shutter {
 			int timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
 			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
-			if (VideoPlayerUI.playerInMark > 0 || VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
+			if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
 				millisecondsToTc = timecodeToMs + VideoPlayerUI.durationH * 3600000 + VideoPlayerUI.durationM * 60000 + VideoPlayerUI.durationS * 1000 + VideoPlayerUI.durationF * (int) (1000 / FFPROBE.currentFPS);
 			
 			if (caseEnableSequence.isSelected())

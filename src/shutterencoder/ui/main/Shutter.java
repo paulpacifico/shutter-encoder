@@ -855,8 +855,8 @@ public class Shutter {
 		
 		if (minHeight > winSize.height)
 		{
-			minHeight = 651;
-			extendedWidth = 1130;
+			minHeight = 650;
+			extendedWidth = 1100;
 			
 			frame.setSize(332, minHeight);
 			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, (dim.height - taskBarHeight) / 2 - frame.getSize().height / 2);
@@ -867,7 +867,7 @@ public class Shutter {
 			frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
 		}
 		
-		frame.setMinimumSize(new Dimension(332, 651));
+		frame.setMinimumSize(new Dimension(332, 650));
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45, 45, 45)));
@@ -18615,7 +18615,7 @@ public class Shutter {
 
 				int i = e.getY() - 10;
 
-				if (frame.getSize().getHeight() + i < 651)
+				if (frame.getSize().getHeight() + i < 650)
 					i = 0;
 
 				int width = e.getX() + 10;

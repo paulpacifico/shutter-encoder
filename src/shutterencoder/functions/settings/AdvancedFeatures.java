@@ -26,7 +26,7 @@ import shutterencoder.ui.others.Settings;
 
 public class AdvancedFeatures extends Shutter {
 		
-	public static String setDeinterlace(boolean progressiveOutput, boolean noGPU) {		
+	public static String setDeinterlace(boolean progressiveOutput, boolean noGPU, String filterComplex) {		
 		
 		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
 		{
@@ -34,7 +34,9 @@ public class AdvancedFeatures extends Shutter {
 			if (lblTFF.getText().equals("BFF"))
 				detelecineFields = "bottom";
 			
-			return comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
+			if (filterComplex != "") filterComplex += ",";
+			
+			filterComplex += comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
 		}
 		else if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
 		|| FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
@@ -69,36 +71,44 @@ public class AdvancedFeatures extends Shutter {
 				if ((FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 				{				
+					if (filterComplex != "") filterComplex += ",";
+					
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 					{
-						return "bwdif_cuda=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						filterComplex += "bwdif_cuda=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 					}
 					else
-						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_cuda").replace("yadif", "yadif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_cuda").replace("yadif", "yadif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
 				else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced")))
 				{		
+					if (filterComplex != "") filterComplex += ",";
+					
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 					{
-						return "vpp_qsv=deinterlace=1,hwdownload,format=" + bitDepth;
+						filterComplex += "vpp_qsv=deinterlace=1,hwdownload,format=" + bitDepth;
 					}
 					else
-						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
+						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
 				}
 				else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
 				{
+					if (filterComplex != "") filterComplex += ",";
+					
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 					{
-						return "bwdif_vulkan=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						filterComplex += "bwdif_vulkan=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 					}
 					else
-						return comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_vulkan") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_vulkan") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
 				else  //Do not use libplacebo deinterlace if GPU can decode the input otherwise the process is slower
 				{
-					return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+					if (filterComplex != "") filterComplex += ",";
+					
+					filterComplex += comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
 				}
 				
 			}
@@ -108,16 +118,20 @@ public class AdvancedFeatures extends Shutter {
 			{
 				if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 				{
-					return FunctionUtils.setLibplaceboFilter("", "deinterlace=bwdif");
+					filterComplex = FunctionUtils.setLibplaceboFilter("", "deinterlace=bwdif");
 				}
 				else
-					return FunctionUtils.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
+					filterComplex = FunctionUtils.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
 			}
 			else
-				return comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+			{
+				if (filterComplex != "") filterComplex += ",";
+				
+				filterComplex += comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+			}
 		}							
 		
-		return "";
+		return filterComplex;
 	}
 	
 	public static String setPreset() {

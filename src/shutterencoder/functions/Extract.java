@@ -29,7 +29,6 @@ import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
-import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
 public class Extract extends Shutter {
@@ -215,8 +214,7 @@ public class Extract extends Shutter {
 						}
 						while(FFMPEG.runProcess.isAlive());
 																		
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
-						|| FFMPEG.saveCode && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;

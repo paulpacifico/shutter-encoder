@@ -277,8 +277,10 @@ public class Rewrap extends Shutter {
 						{
 							//Concat mode
 							String concat = FunctionUtils.setConcat(file, labelOutput);					
-							if (Settings.btnSetBab.isSelected() || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+							if (Settings.btnSetBab.isSelected())
+							{
 								file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
+							}
 							else
 								concat = " -noaccurate_seek";
 							
@@ -305,8 +307,7 @@ public class Rewrap extends Shutter {
 							}
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
-						|| FFMPEG.saveCode && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;

@@ -1120,6 +1120,7 @@ public class SubtitlesTimeline {
 					
 					if (e.getKeyCode() == KeyEvent.VK_I && control == false)
 						btnStart.doClick();
+					
 					if (e.getKeyCode() == KeyEvent.VK_O)
 					{
 						btnEnd.doClick();

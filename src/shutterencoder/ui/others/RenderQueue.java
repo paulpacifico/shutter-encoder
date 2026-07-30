@@ -1022,7 +1022,7 @@ import shutterencoder.utils.Utils;
 		}
 				
 		//Concat mode or Image sequence
-		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()) || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("removeMode")))
+		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()))
 		{
 			String extension = fileName.substring(fileName.lastIndexOf("."));
 			

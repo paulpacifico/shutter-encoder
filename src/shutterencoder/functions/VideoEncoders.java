@@ -150,7 +150,9 @@ public class VideoEncoders extends Shutter {
 			            	
 							//Finding video file name
 				            if (FFPROBE.FindStreams(file.toString()))
+				            {
 				            	audioFiles = AudioSettings.setAudioFiles(audioFiles, file);
+				            }
 				            else
 				            	continue;
 				            
@@ -310,7 +312,7 @@ public class VideoEncoders extends Shutter {
 												
 						//Concat mode or Image sequence
 						String concat = FunctionUtils.setConcat(file, labelOutput);					
-						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()) || VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected()))
 						{
 							file = new File(labelOutput.replace("\\", "/") + "/" + fileName.replace(extension, ".txt"));
 						}
@@ -425,8 +427,10 @@ public class VideoEncoders extends Shutter {
 						//Libplacebo score
 						FunctionUtils.getLibplaceboScore(false, true);
 						
-				        //Deinterlace
-						String filterComplex = "";	
+				        //Set filterComplex
+						String filterComplex = "";						
+						
+						//Deinterlace
 						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Deinterlacing is not done before upscaling
 						{
 							switch (comboFonctions.getSelectedItem().toString())
@@ -443,17 +447,17 @@ public class VideoEncoders extends Shutter {
 								case "Xvid":
 								case "DNxHR":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(true, false);									
+									filterComplex = AdvancedFeatures.setDeinterlace(true, false, filterComplex);									
 									break;
 								
 								case "MPEG-1":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(true, false);
+									filterComplex = AdvancedFeatures.setDeinterlace(true, false, filterComplex);
 									break;
 									
 								case "MPEG-2":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(false, false);								
+									filterComplex = AdvancedFeatures.setDeinterlace(false, false, filterComplex);								
 									break;
 								
 								case "DNxHD":
@@ -470,12 +474,12 @@ public class VideoEncoders extends Shutter {
 						            	case "175":
 						            	case "175 X":
 						            		
-						            		filterComplex = AdvancedFeatures.setDeinterlace(true, false);					            		
+						            		filterComplex = AdvancedFeatures.setDeinterlace(true, false, filterComplex);					            		
 					            			break;
 					            		
 					            		default:
 					            			
-					            			filterComplex = AdvancedFeatures.setDeinterlace(false, false);				            			
+					            			filterComplex = AdvancedFeatures.setDeinterlace(false, false, filterComplex);				            			
 				            				break;
 						            }
 									
@@ -493,7 +497,7 @@ public class VideoEncoders extends Shutter {
 								case "XDCAM HD422":
 								case "XDCAM HD 35":
 									
-									filterComplex = AdvancedFeatures.setDeinterlace(false, false);								
+									filterComplex = AdvancedFeatures.setDeinterlace(false, false, filterComplex);								
 									break;
 								
 								case "Blu-ray":
@@ -954,7 +958,7 @@ public class VideoEncoders extends Shutter {
 							{
 								String filter = "";
 								
-								filter = AdvancedFeatures.setDeinterlace(true, false);
+								filter = AdvancedFeatures.setDeinterlace(true, false, filter);
 								filter = Image.setCrop(filter, file);
 								
 								if (filter != "")
@@ -1202,8 +1206,7 @@ public class VideoEncoders extends Shutter {
 								
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
 						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
-						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected()
-						|| FFMPEG.saveCode == false && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("removeMode")))
+						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected())
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -1831,7 +1834,7 @@ public class VideoEncoders extends Shutter {
 			case "DVD":
 				
 				float bitrate = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
-				if (VideoPlayerUI.playerInMark > 0 || VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
+				if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
 				{
 					double totalIn =  Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * VideoPlayerUI.inputFramerateMS;
 					double totalOut = Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * VideoPlayerUI.inputFramerateMS;

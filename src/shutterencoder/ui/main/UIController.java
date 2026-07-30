@@ -724,14 +724,14 @@ public class UIController extends Shutter {
 
 	public static void resizeAll(int width, int height) {
 
-		if (frame.getWidth() >= 1130 && width >= 1130)
+		if (frame.getWidth() >= 1100 && width >= 1100)
 		{
 			frame.setSize(width, frame.getHeight() + height);
 		}
 		else
 			frame.setSize(frame.getSize().width, frame.getHeight() + height);
 
-		if (frame.getWidth() < 1350 && frame.getWidth() >= 1130)
+		if (frame.getWidth() < 1350 && frame.getWidth() >= 1100)
 		{
 			extendedWidth = frame.getWidth();
 		}
@@ -1016,7 +1016,7 @@ public class UIController extends Shutter {
 					{
 						try {
 														
-							if (frame.getSize().width >= 1130 && anim)
+							if (frame.getSize().width >= 1100 && anim)
 							{
 								int i = frame.getWidth() - 312 - 12;
 
@@ -5697,7 +5697,7 @@ public class UIController extends Shutter {
 		if (caseChunks.isSelected() == false)
 			chunksSize.setEnabled(false);
 		
-		if (VideoPlayerUI.caseApplyCutToAll.isVisible() && VideoPlayerUI.comboMode.getSelectedItem().equals(Shutter.language.getProperty("removeMode")))
+		if (VideoPlayerUI.caseApplyCutToAll.isVisible() && VideoPlayerCore.cutSegments.size() > 0)
 			VideoPlayerUI.caseApplyCutToAll.setEnabled(false);
 
 		if ((comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false || lblVBR.getText().equals("CQ")))

@@ -23,6 +23,7 @@ import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerCore.CutSegment;
 
 public class InputAndOutput extends Shutter {
 
@@ -30,57 +31,152 @@ public class InputAndOutput extends Shutter {
 	public static String outPoint = "";
 	public static double savedInPoint = 0;
 	public static double savedOutPoint = 0;
+	public static String segments = "";
 	
 	public static void getInputAndOutput(boolean setInputAndOutput) {
 					
 		if (setInputAndOutput && FFPROBE.totalLength > 40)
-		{			
-			double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(VideoPlayerUI.caseInF.getText());
-			
-			//NTSC framerate
-			timeIn = Timecode.getNTSCtimecode(timeIn);
-			timeIn = Timecode.getDropFrameTimecode(timeIn);
-					
-			if (timeIn > 0.0f)
-	        {		        
-				inPoint = " -ss " + (long) ((double) timeIn * VideoPlayerUI.inputFramerateMS) + "ms";
-		    }
-		    else
-		        inPoint = "";	
-			
-			if (VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
-	        {				
-				String framesText[] = VideoPlayerUI.lblDuration.getText().split(" ");
-				Integer frames =  Integer.parseInt(framesText[framesText.length - 2]);
-
-	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
-	        	{		        	
-	        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
-		    		
-		    		outPoint = " -frames:v " + (int) Math.ceil((double) frames / outputFPS);
-	        	}
-	        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))	        
-	        	{
-		        	outPoint = " -frames:v " + frames;
-	        	}
-	        	else
-	        	{
-	        		outPoint = " -t " + (long) Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
-	        	}
-	        	
-	        }
-	        else
-	        	outPoint = "";
-			
-			if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+		{
+			//Multi cuts feature
+			if (VideoPlayerCore.cutSegments.isEmpty() == false)
 			{
-				outPoint += " -f segment -segment_time " + VideoPlayerUI.splitValue.getText() + " -reset_timestamps 1";
+				//Make sure these are not used
+				inPoint = "";
+				outPoint = "";
+				
+				//Use segments String for multiple cuts
+				segments = "";	
+				
+				//Adding segments
+				int i = 0;
+				for (CutSegment seg : VideoPlayerCore.cutSegments)
+	        	{
+					double in = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+	                double out = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+	                
+					//Video segment
+					if (FFPROBE.audioOnly == false)
+					{
+						String videoStream = i > 0 ? "[0:v]" : ""; //first [0:v] is already added from FunctionUtils.setFilterComplex()
+						segments += videoStream + "trim=start=" + (long) ((double) in * VideoPlayerUI.inputFramerateMS) + "ms:end=" + (long) ((double) out * VideoPlayerUI.inputFramerateMS) + "ms,setpts=PTS-STARTPTS[v" + i + "];";
+					}
+					
+					//Audio segment
+					if (FFPROBE.hasAudio)
+					{
+						for (int c = 0 ; c < FFPROBE.channels ; c++)
+						{
+							segments += "[0:a:" + c + "]atrim=start=" + (long) ((double) in * VideoPlayerUI.inputFramerateMS) + "ms:end=" + (long) ((double) out * VideoPlayerUI.inputFramerateMS) + "ms,asetpts=PTS-STARTPTS[a" + i + "_c" + c + "];";
+						}
+					}
+					
+					i++;
+	        	}
+				
+				//Concat output	
+				for (int o = 0 ; o < VideoPlayerCore.cutSegments.size() ; o++)
+	        	{
+					//Video segment
+					if (FFPROBE.audioOnly == false)
+					{
+						segments += "[v" + o + "]";
+					}
+					
+					//Audio segment
+					if (FFPROBE.hasAudio)
+					{
+						for (int c = 0 ; c < FFPROBE.channels ; c++)
+						{
+							segments += "[a" + o + "_c" + c + "]";
+						}
+					}
+	        	}
+				
+				//Output streams
+				String streams = "";
+				if (FFPROBE.audioOnly)
+				{
+					streams = ":v=0:a=" + FFPROBE.channels;
+					
+					for (int c = 0 ; c < FFPROBE.channels ; c++)
+					{
+						streams += "[audio_" + c + "]";
+					}
+					
+					for (int c = 0 ; c < FFPROBE.channels ; c++)
+					{
+						streams += ";[audio_" + c + "]";
+					}
+				}
+				else if (FFPROBE.hasAudio == false)
+				{
+					streams = ":v=1:a=0[video];[video]";
+				}
+				else //Video + Audio stream
+				{
+					streams = ":v=1:a=" + FFPROBE.channels + "[video]";
+					
+					for (int c = 0 ; c < FFPROBE.channels ; c++)
+					{
+						streams += "[audio_" + c + "]";
+					}
+					
+					streams += ";[video]";
+				}
+				
+				//Final output
+				segments += "concat=n=" + i + streams;
+			}
+			else
+			{
+				double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(VideoPlayerUI.caseInF.getText());
+				
+				//NTSC framerate
+				timeIn = Timecode.getNTSCtimecode(timeIn);
+				timeIn = Timecode.getDropFrameTimecode(timeIn);
+						
+				if (timeIn > 0.0f)
+		        {		        
+					inPoint = " -ss " + (long) ((double) timeIn * VideoPlayerUI.inputFramerateMS) + "ms";
+			    }
+			    else
+			        inPoint = "";	
+				
+				if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
+		        {				
+					String framesText[] = VideoPlayerUI.lblDuration.getText().split(" ");
+					Integer frames =  Integer.parseInt(framesText[framesText.length - 2]);
+	
+		        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
+		        	{		        	
+		        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
+			    		
+			    		outPoint = " -frames:v " + (int) Math.ceil((double) frames / outputFPS);
+		        	}
+		        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))	        
+		        	{
+			        	outPoint = " -frames:v " + frames;
+		        	}
+		        	else
+		        	{
+		        		outPoint = " -t " + (long) Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
+		        	}
+		        	
+		        }
+		        else
+		        	outPoint = "";
+				
+				if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+				{
+					outPoint += " -f segment -segment_time " + VideoPlayerUI.splitValue.getText() + " -reset_timestamps 1";
+				}
 			}
 		}
 		else
 		{
 			inPoint = "";
 			outPoint = "";
+			segments = "";
 		}
 	}
 

@@ -96,6 +96,21 @@ public class HardwareListener extends Shutter {
 								}
 							}
 							
+							if (ke.getKeyCode() == KeyEvent.VK_C)
+							{
+								VideoPlayerUI.btnCut.doClick();
+							}
+							
+							if (ke.getKeyCode() == KeyEvent.VK_R)
+							{
+								VideoPlayerUI.btnReset.doClick();
+							}
+							
+							if (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE || ke.getKeyCode() == KeyEvent.VK_DELETE)
+							{
+								VideoPlayerCore.removeCurrentSegment();
+							}
+							
 							if (ke.getKeyCode() == KeyEvent.VK_HOME)
 							{
 								ke.consume();

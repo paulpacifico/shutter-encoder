@@ -46,7 +46,7 @@ public class Transitions extends Shutter {
 	    		
 	    		if (isVideoPlayer)
 	    		{
-					if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerInMark || VideoPlayerUI.playTransition)
+					if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerMarkIn || VideoPlayerUI.playTransition)
 					{
 						filterComplex += videoFade;
 					}
@@ -80,7 +80,7 @@ public class Transitions extends Shutter {
 	        		long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 	        		long totalOut = FFPROBE.totalLength;
 					 
-					if (VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
+					if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
 			        {
 						totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 			        }
@@ -127,7 +127,7 @@ public class Transitions extends Shutter {
 			
     		if (isVideoPlayer)
     		{
-				if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerInMark || VideoPlayerUI.playTransition)
+				if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerMarkIn || VideoPlayerUI.playTransition)
 				{
 					audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
 				}
@@ -161,7 +161,7 @@ public class Transitions extends Shutter {
 				long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
 				long totalOut = FFPROBE.totalLength;
 				 
-				if (VideoPlayerUI.playerOutMark < VideoPlayerCore.waveformContainer.getWidth() - 2)
+				if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
 		        {
 					totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 		        }
