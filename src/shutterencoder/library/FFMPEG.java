@@ -2317,7 +2317,17 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				fileLength = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
 			}
-			else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
+			else if (InputAndOutput.segments != "")
+			{		
+				fileLength = 0;
+				for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+				{
+					double totalIn =  (seg.inH * 3600 + seg.inM * 60 + seg.inS);
+					double totalOut = (seg.outH * 3600 + seg.outM * 60 + seg.outS);
+					fileLength += totalOut - totalIn;
+				}
+			}
+			else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
 			{
 				fileLength = VideoPlayerUI.durationH * 3600 + VideoPlayerUI.durationM * 60 + VideoPlayerUI.durationS;
 			}

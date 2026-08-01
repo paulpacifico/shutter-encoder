@@ -91,7 +91,7 @@ public class OfflineDetection extends Shutter {
 						if (System.getProperty("os.name").contains("Windows"))						
 							cmd += '"';					
 														
-						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
+						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd);		
 						
 						do
 						{

@@ -140,7 +140,7 @@ public class Conform extends Shutter {
 				    	float value = (float) (FFPROBE.currentFPS / FPSOut);
 						
 						String cmd = " -c:v copy -c:s copy" + audio + " -map v:0 -map a? -map s? -y ";
-						FFMPEG.run(" -itsscale " + value + InputAndOutput.inPoint + " -i " + '"' + file + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');						
+						FFMPEG.run(InputAndOutput.setInputString(" -itsscale " + value + InputAndOutput.inPoint, " -i " + '"' + file + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');						
 												
 						do
 						{

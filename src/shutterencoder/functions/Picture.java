@@ -345,7 +345,7 @@ public class Picture extends Shutter {
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
 
-							FFMPEG.run(InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
+							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + InputAndOutput.outPoint) + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
 							
 							do {
 								Thread.sleep(10);
@@ -368,7 +368,7 @@ public class Picture extends Shutter {
 						}
 						else
 						{				
-							FFMPEG.run(InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + InputAndOutput.outPoint + cmd + '"' + fileOut + '"');		
+							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + InputAndOutput.outPoint) + cmd + '"' + fileOut + '"');		
 						}
 	
 						if (isRaw)

@@ -86,7 +86,7 @@ public class VideoInserts extends Shutter {
 						listeFichiers[i] = tcInMs() + "=" + '"' + list.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
 					}
 																								
-					int temps = 0;	
+					long temps = 0;	
 					String masterFile = listeFichiers[0];
 					//On cherche le fichier Master s'il y a insert au tout début
 					for (int i = 0 ; i < list.getSize() ; i++)

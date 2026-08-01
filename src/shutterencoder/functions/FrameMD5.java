@@ -125,7 +125,7 @@ public class FrameMD5 extends Shutter {
 						}											
 						
 						//Command
-						FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + " -f framemd5 -y " + '"'  + fileOut + '"');
+						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + " -f framemd5 -y " + '"'  + fileOut + '"');
 	
 						do {
 							Thread.sleep(100);

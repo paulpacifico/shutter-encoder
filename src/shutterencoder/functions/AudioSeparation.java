@@ -111,7 +111,7 @@ public class AudioSeparation extends Shutter {
 							cmd = " -c:a pcm_f32le -ar 44.1k -vn -y ";
 						}
 										
-						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"' + waveFile.toString() + '"');		
+						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile.toString() + '"');		
 						
 						do {
 							Thread.sleep(100);

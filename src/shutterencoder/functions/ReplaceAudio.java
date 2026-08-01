@@ -36,7 +36,7 @@ import shutterencoder.utils.Utils;
 
 public class ReplaceAudio extends Shutter {
 	
-	private static int shortestLength = 0;
+	private static long shortestLength = 0;
 	private static int videoStream = 0;
 	
 	private static void main(String audioFiles, String audioExt, File videoFile) throws InterruptedException {
@@ -95,7 +95,7 @@ public class ReplaceAudio extends Shutter {
 											
 			//Command				
 			String cmd = shortest + " -c:v copy -c:s copy" + audio + " -map s? -y ";
-			FFMPEG.run(InputAndOutput.outPoint + " -i " + '"' + videoFile.toString() + '"' + audioFiles + cmd + '"'  + fileOut + '"');		
+			FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.outPoint, " -i " + '"' + videoFile.toString() + '"', "") + audioFiles + cmd + '"'  + fileOut + '"');		
 					
 			do {
 				Thread.sleep(100);
@@ -355,7 +355,7 @@ public class ReplaceAudio extends Shutter {
 				{
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';
 				}
-				else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
+				else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
 				{
 					offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';

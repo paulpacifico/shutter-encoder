@@ -976,7 +976,7 @@ public class VideoEncoders extends Shutter {
 									quality = " -q:v 0";
 								}
 								
-								FFMPEG.run(gpuDecoding + InputAndOutput.inPoint + inputCodec + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + filter + quality + " -an -y " + '"' + fileOut + '"');
+								FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + filter + quality + " -an -y " + '"' + fileOut + '"');
 								
 								int current = 0;
 								do {
@@ -1044,7 +1044,7 @@ public class VideoEncoders extends Shutter {
 									FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd + output);
 								}
 								else
-									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + output);
+									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + output);
 								
 								do {
 									Thread.sleep(10);
@@ -1057,7 +1057,7 @@ public class VideoEncoders extends Shutter {
 										FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
 									}
 									else
-										FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);		
+										FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									do {
 										Thread.sleep(10);
@@ -1077,12 +1077,12 @@ public class VideoEncoders extends Shutter {
 						}
 						else if (FFPROBE.audioOnly)
 						{
-							progressBar.setMaximum(FFPROBE.totalLength / 1000);
-							FFMPEG.run(loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
+							progressBar.setMaximum((int) FFPROBE.totalLength / 1000);
+							FFMPEG.run(InputAndOutput.setInputString(loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint) + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
 						}
 						else
 						{
-							FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd + output);		
+							FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd + output);		
 						}
 
 						do {
@@ -1093,7 +1093,7 @@ public class VideoEncoders extends Shutter {
 						{						
 							if (FFMPEG.cancelled == false && comboResolution.getSelectedItem().toString().contains("AI") == false)
 							{
-								FFMPEG.run(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat + " -i " + '"' + file.toString() + '"' + logo + subtitles + InputAndOutput.outPoint + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);	
 														
 								do {
 									Thread.sleep(100);
@@ -1241,7 +1241,7 @@ public class VideoEncoders extends Shutter {
 		thread.start();
 		
     }
-
+	
 	public static boolean setScalingFirst() {
 		
 		//Crop need to be before scaling
@@ -1834,7 +1834,7 @@ public class VideoEncoders extends Shutter {
 			case "DVD":
 				
 				float bitrate = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
-				if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
+				if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
 				{
 					double totalIn =  Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * VideoPlayerUI.inputFramerateMS;
 					double totalOut = Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * VideoPlayerUI.inputFramerateMS;

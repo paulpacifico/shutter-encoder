@@ -106,6 +106,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
     public static BufferedImage fullSizeWatermark;
     private static final Object lock = new Object();
     public static int activeSegmentIndex = -1;
+    public static int dragSegmentIndex = -1;
         
     private static long lastEvTime = 0;
     private static String freezeFrame = "";
@@ -2615,7 +2616,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								updateGrpOut(totalFrames);
 								
 								playerMarkIn = 0;
-								playerMarkOut = waveformContainer.getWidth() - 2;
+								playerMarkOut = waveformContainer.getWidth();
 							}
 
 							waveformContainer.repaint();
@@ -3029,8 +3030,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				if (Shutter.caseAudioOffset.isSelected() == false)
 				{
 					Shutter.caseAudioOffset.doClick();
-				}
-				
+				}				
 			}
 			else
 			{
@@ -3052,6 +3052,21 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
 		
+		if (cutSegments.isEmpty() == false && activeSegmentIndex != -1)
+		{
+			for (CutSegment seg : cutSegments) 
+		    {
+				if (seg.index == activeSegmentIndex)
+				{
+					seg.inH = Integer.parseInt(caseInH.getText());
+					seg.inM = Integer.parseInt(caseInM.getText());
+					seg.inS = Integer.parseInt(caseInS.getText());
+					seg.inF = Integer.parseInt(caseInF.getText());
+					break;
+				}
+			}
+		}
+		
 		playerSetTime(playerCurrentFrame);
 		
 		waveformContainer.repaint();
@@ -3062,7 +3077,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	public static void updateGrpOut(double timeOut) {
 		
-		if (playerMarkOut <= waveformContainer.getWidth() - 2)
+		if (playerMarkOut <= waveformContainer.getWidth())
 		{
 			//NTSC framerate
 			timeOut = Timecode.setNTSCtimecode(timeOut);
@@ -3086,14 +3101,29 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	public static void updateTimeOut() {
 			
-		setMarkers();
+		setMarkers();		
 		
 		playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * getFPS() + Integer.parseInt(caseOutF.getText()) - 1;
 
 		//NTSC framerate
 		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
-		
+	
+		if (cutSegments.isEmpty() == false && activeSegmentIndex != -1)
+		{
+			for (CutSegment seg : cutSegments) 
+		    {
+				if (seg.index == activeSegmentIndex)
+				{
+					seg.outH = Integer.parseInt(caseOutH.getText());
+					seg.outM = Integer.parseInt(caseOutM.getText());
+					seg.outS = Integer.parseInt(caseOutS.getText());
+					seg.outF = Integer.parseInt(caseOutF.getText());
+					break;
+				}
+			}
+		}
+	
 		playerSetTime(playerCurrentFrame);
 		
 		waveformContainer.repaint();
@@ -3105,7 +3135,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	public static void setMarkers() {
 			
 		try {
-		
+			
 			playerMarkIn = calculateMarkPosition(
 		        Integer.parseInt(caseInH.getText()), 
 		        Integer.parseInt(caseInM.getText()), 
@@ -3131,109 +3161,63 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			
 			if (cutSegments.isEmpty() == false)
 			{
-				double time = bufferCurrentFrame > 0 ? bufferCurrentFrame : playerCurrentFrame;
-	
+				double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+				
+				CutSegment previousSegment = activeSegmentIndex > 0 ? cutSegments.get(activeSegmentIndex - 1) : null;
+				CutSegment activeSegment = cutSegments.get(activeSegmentIndex);				
+				CutSegment nextSegment = activeSegmentIndex < cutSegments.size() - 1 ? cutSegments.get(activeSegmentIndex + 1) : null;
+				
+				double segmentIn = VideoPlayerCore.getSegmentTime(activeSegment.inH, activeSegment.inM, activeSegment.inS, activeSegment.inF);
+                double segmentOut = VideoPlayerCore.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
+				
 				//Mark in
 				if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
-				{
-					//Get the activeSegment
-					int activeIndex = -1;
-					for (CutSegment seg : cutSegments)
-		            {
-						double inputMark = getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-		                double outputMark = getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-		                
-		                if (time >= inputMark && time < outputMark
-		                || time < inputMark)
-		                {
-		                	activeIndex = seg.index;
-					        break;
-		                }
-		            }
-					
-					//Apply values
-					if (activeIndex != -1)
-				    {
-						CutSegment activeSegment = cutSegments.get(activeIndex);
-						
-						//Get the previous segment index
-						CutSegment previousSegment = null;
-						if (activeIndex - 1 >= 0)
-						{
-							previousSegment = cutSegments.get(activeIndex - 1);
-						}
-						
-						//Check if the current segment inMark is > of the previous segment outMark
-						if (previousSegment == null || playerMarkIn > previousSegment.outMark)
-						{	
-							activeSegment.inMark = playerMarkIn;
-							activeSegment.inH = Integer.parseInt(caseInH.getText());
-							activeSegment.inM = Integer.parseInt(caseInM.getText());
-							activeSegment.inS = Integer.parseInt(caseInS.getText());
-							activeSegment.inF = Integer.parseInt(caseInF.getText());
-						}
-						else
-						{
-							activeSegment.inMark = previousSegment.outMark;
-					        activeSegment.inH = previousSegment.outH;
-					        activeSegment.inM = previousSegment.outM;
-					        activeSegment.inS = previousSegment.outS;
-					        activeSegment.inF = previousSegment.outF;
-					        
-					        waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
-						}
-				    }
+				{					
+					if (nextSegment != null && time > segmentOut) //Set the next segment index
+					{
+						nextSegment.inMark = playerMarkIn;
+						nextSegment.inH = Integer.parseInt(caseInH.getText());
+						nextSegment.inM = Integer.parseInt(caseInM.getText());
+						nextSegment.inS = Integer.parseInt(caseInS.getText());
+						nextSegment.inF = Integer.parseInt(caseInF.getText());				
+				        
+				        waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
+					}
+					else if (dragSegmentIndex == activeSegmentIndex) //Only change values of the current segment
+					{
+						activeSegment.inMark = playerMarkIn;
+						activeSegment.inH = Integer.parseInt(caseInH.getText());
+						activeSegment.inM = Integer.parseInt(caseInM.getText());
+						activeSegment.inS = Integer.parseInt(caseInS.getText());
+						activeSegment.inF = Integer.parseInt(caseInF.getText());						
+					}
+					else
+						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
 				}
 				
 				//Mark out
 				if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
 				{
-					//Get the activeSegment
-					int activeIndex = -1;
-					for (CutSegment seg : cutSegments)
-		            {
-						double inputMark = getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);		
-						
-		                if (time >= inputMark)
-		                {
-		                	activeIndex = seg.index;
-		                }
-		                else
-		                    break;
-		            }
-					
-					//Apply values
-					if (activeIndex != -1)
-				    {
-						CutSegment activeSegment = cutSegments.get(activeIndex);
-						 
-						//Get the next segment index
-						CutSegment nextSegment = null;
-						if (activeIndex + 1 < cutSegments.size())
-						{
-							nextSegment = cutSegments.get(activeIndex + 1);
-						}
-						
-						//Check if the current segment outMark is < of the next segment inMark
-						if (nextSegment == null || playerMarkOut < nextSegment.inMark)
-						{					       
-					        activeSegment.outMark = playerMarkOut;
-					        activeSegment.outH = Integer.parseInt(caseOutH.getText());
-					        activeSegment.outM = Integer.parseInt(caseOutM.getText());
-					        activeSegment.outS = Integer.parseInt(caseOutS.getText());
-					        activeSegment.outF = Integer.parseInt(caseOutF.getText());
-						}
-						else //Set inMark of the next segment to the current outMark then stop
-						{
-							activeSegment.outMark = nextSegment.inMark;
-					        activeSegment.outH = nextSegment.inH;
-					        activeSegment.outM = nextSegment.inM;
-					        activeSegment.outS = nextSegment.inS;
-					        activeSegment.outF = nextSegment.inF;
-					        
-					        waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
-						}
-				    }
+					if (previousSegment != null && time < segmentIn) //Set the next segment index
+					{
+						previousSegment.outMark = playerMarkOut;
+						previousSegment.outH = Integer.parseInt(caseOutH.getText());
+						previousSegment.outM = Integer.parseInt(caseOutM.getText());
+						previousSegment.outS = Integer.parseInt(caseOutS.getText());
+						previousSegment.outF = Integer.parseInt(caseOutF.getText());				
+				        
+				        waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
+					}					
+					else if (dragSegmentIndex == activeSegmentIndex) //Only change values of the current segment
+					{
+						activeSegment.outMark = playerMarkOut;
+				        activeSegment.outH = Integer.parseInt(caseOutH.getText());
+				        activeSegment.outM = Integer.parseInt(caseOutM.getText());
+				        activeSegment.outS = Integer.parseInt(caseOutS.getText());
+				        activeSegment.outF = Integer.parseInt(caseOutF.getText());
+					} 
+					else
+						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
 				}		
 			}
 	
@@ -3310,9 +3294,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					}
     				else
     				{
-    					if (cursorWaveform.getX() > waveformContainer.getWidth() - 2)
+    					if (cursorWaveform.getX() > waveformContainer.getWidth())
 						{
-							cursorWaveform.setLocation(waveformContainer.getWidth() - 2, 0);
+							cursorWaveform.setLocation(waveformContainer.getWidth(), 0);
 							cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 						}
 						else if (newValue != cursorWaveform.getX()) //Only refresh when the value is different
@@ -3413,7 +3397,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			double inputMark = getSegmentTime(Integer.parseInt(caseInH.getText()), Integer.parseInt(caseInM.getText()), Integer.parseInt(caseInS.getText()), Integer.parseInt(caseInF.getText()));
 	        double outputMark = getSegmentTime(Integer.parseInt(caseOutH.getText()), Integer.parseInt(caseOutM.getText()), Integer.parseInt(caseOutS.getText()), Integer.parseInt(caseOutF.getText()));
 			
-	        if (time < outputMark - 1 && time != inputMark) //Do not do anything if the cursor is in the same place as marker In or Out
+	        if (time < outputMark - 1 && time > inputMark) //Do not do anything if the cursor is in the same place as marker In or Out
 		    {	
 	        	caseApplyCutToAll.setEnabled(false);
 	        	boolean newSegment = false;
@@ -3445,7 +3429,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 				int index = newSegment ? activeSegmentIndex : 0;
 				
-				cutSegments.add(new CutSegment(index, playerMarkIn, cursorWaveform.getX(),
+				cutSegments.add(new CutSegment(index, playerMarkIn, cursorCurrentFrame.getX(),
 		        		Integer.parseInt(caseInH.getText()),
 		        		Integer.parseInt(caseInM.getText()),
 		        		Integer.parseInt(caseInS.getText()),
@@ -3470,7 +3454,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 				index = newSegment ? activeSegmentIndex + 1 : 1;
 	
-		        cutSegments.add(new CutSegment(index, cursorWaveform.getX(), playerMarkOut,
+		        cutSegments.add(new CutSegment(index, cursorCurrentFrame.getX(), playerMarkOut,
 		        		Integer.parseInt(caseInH.getText()),
 		        		Integer.parseInt(caseInM.getText()),
 		        		Integer.parseInt(caseInS.getText()),
@@ -3538,10 +3522,25 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				caseApplyCutToAll.setEnabled(true);
 			}
 			
-			activeSegmentIndex = -1;
-			
+			if (activeSegmentIndex + 1 <= cutSegments.size())
+			{
+				//Do nothing keep the current index value
+			}
+			else if (activeSegmentIndex - 1 > 0)
+			{
+				activeSegmentIndex --;
+			}
+			else
+				activeSegmentIndex = -1;
+				
 			//FileList
 			VideoPlayerCore.setFileList();
+			
+			//Display current segment in/out						
+			if (cutSegments.isEmpty() == false)
+	    	{
+	    		setCurrentSegmentValues();
+	    	}
 			
 			waveformContainer.repaint();
 		}
@@ -3549,15 +3548,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	public static void setCurrentSegmentValues() {
 		
-		double time = bufferCurrentFrame > 0 ? bufferCurrentFrame : playerCurrentFrame;
-		
 		for (CutSegment seg : cutSegments)
         {
-			double inputMark = getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-            double outputMark = getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-            
             //Current segment
-            if (time >= inputMark && time < outputMark)
+            if (activeSegmentIndex == seg.index)
             {
             	playerMarkIn = seg.inMark;
             	playerMarkOut = seg.outMark;

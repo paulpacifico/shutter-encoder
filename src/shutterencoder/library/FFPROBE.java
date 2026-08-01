@@ -32,6 +32,7 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.settings.Timecode;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
@@ -62,7 +63,7 @@ public static String subtitlesCodec = "";
 public static int subtitleStreams = 0;
 public static int videoStreams = 0;
 public static int audioStreams = 0;
-public static int totalLength;
+public static long totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
 public static float currentFPS;
@@ -1283,10 +1284,32 @@ public static String colorprimaries = "";
 			
 			if (Shutter.list.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
 			{
-				int h = VideoPlayerUI.durationH;
-				int min = VideoPlayerUI.durationM;
-				int sec = VideoPlayerUI.durationS;	
-				int frames = VideoPlayerUI.durationF;
+				int hours = 0;
+				int min = 0;
+				int sec = 0;
+				int frames = 0;
+				
+				if (VideoPlayerCore.cutSegments.isEmpty() == false)
+				{
+					for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+					{
+						double totalIn =  (seg.inH * 3600 + seg.inM * 60 + seg.inS) * VideoPlayerCore.getFPS() + seg.inF;
+						double totalOut = (seg.outH * 3600 + seg.outM * 60 + seg.outS) * VideoPlayerCore.getFPS() + seg.outF;
+						double total = (double) Math.ceil(Timecode.getDropFrameTimecode(totalOut) - Timecode.getDropFrameTimecode(totalIn));		
+						
+						hours += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS() / 3600);
+						min += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS() / 60) % 60;
+						sec += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS()) % 60;
+						frames += (int) Math.floor(Timecode.setDropFrameTimecode(total) % VideoPlayerCore.getFPS());	
+					}
+				}
+				else
+				{
+					hours = VideoPlayerUI.durationH;
+					min = VideoPlayerUI.durationM;
+					sec = VideoPlayerUI.durationS;	
+					frames = VideoPlayerUI.durationF;
+				}
 								
 				int audio = 0;
 				if (comboAudioBitrate.getSelectedItem().equals(language.getProperty("custom").toLowerCase()))
@@ -1318,7 +1341,7 @@ public static String colorprimaries = "";
 				if (isLocked)
 				{
 					float finalSize = Float.parseFloat(bitrateSize.getText().replace(",", "."));
-					float result = (float) finalSize / ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
+					float result = (float) finalSize / ((hours * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
 					float resultAudio = (float) (audio*multi) / 8 / 1024;
 					float resultatBitrate = (result - resultAudio) * 8 * 1024;
 					debitVideo.getModel().setSelectedItem((int) resultatBitrate);
@@ -1332,7 +1355,7 @@ public static String colorprimaries = "";
 												
 					float resultVideo = (float) videoBitrate / 8 / 1024;
 					float resultAudio =  (float) (audio*multi) / 8 / 1024;
-					float resultatBitrate = (resultVideo + resultAudio) * ( (h * 3600)+(min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
+					float resultatBitrate = (resultVideo + resultAudio) * ( (hours * 3600)+(min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
 					
 					if (resultatBitrate < 10)
 					{

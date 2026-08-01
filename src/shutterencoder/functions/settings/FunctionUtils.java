@@ -263,7 +263,7 @@ public class FunctionUtils extends Shutter {
 				
 		return true;
 	}
-	
+		
 	public static File setInputFile(File input) {
 		
         if (Shutter.scanIsRunning)
@@ -1639,30 +1639,39 @@ public class FunctionUtils extends Shutter {
 
  		//Multiple cuts
  	    if (InputAndOutput.segments != "" && InputAndOutput.segments.contains("[audio_"))
- 	    {  	    	
+ 	    {  	    
+ 	    	//Moving filter:a to filterComplex
+ 	    	String audioOutputName = "audio_";
+ 	    	if (audio.contains("filter:a")) 
+ 	    	{
+ 	    		audioOutputName = "a";
+ 	    		
+ 	    		String audioFilter = audio.substring(audio.indexOf("-filter:a"));
+ 	    		String s[] = audioFilter.split("\"");
+ 	    		audioFilter = s[1];
+
+ 	    		audio = audio.replace(" -filter:a " + '"' + audioFilter + '"', ""); //Fetch only audio codec  	
+ 	    		
+ 	    		for (int c = 0 ; c < FFPROBE.channels ; c++)
+ 	    		{
+ 	    			filterComplex += ";[audio_" + c + "]" + audioFilter + "[a" + c + "]"; 	    			
+ 	    		}
+ 	    	}
+ 	    	
  	        //No audio
  	        if (audio.contains("-an"))
  	        {
  	            for (int c = 0 ; c < FFPROBE.channels ; c++)
  	            {
- 	                filterComplex += ";[audio_" + c +"]anullsink";
+ 	                filterComplex += ";[" + audioOutputName + c +"]anullsink";
  	            }   
- 	        } 	    	
- 	        else if (audio.contains("filter:a")) //Moving filter:a to filterComplex
- 	    	{
- 	    		String audioFilter = audio.substring(audio.indexOf("-filter:a"));
- 	    		String s[] = audioFilter.split("\"");
- 	    		audioFilter = s[1];
-
- 	    		audio = audio.replace(" -filter:a " + '"' + audioFilter + '"', "").replace("-map a?", ""); 	    		
- 	    		audio = ";[audio_0]" + audioFilter + "[a]" + '"' + audio;
- 	    	}
+ 	        }
  	        else if (audio.contains("-map a?")) //Add non mapped track to anullsink
 	        {
  	        	String tracks = "";
                 for (int c = 0 ; c < FFPROBE.channels ; c++)
                 {
-                    tracks += " -map " + '"' + "[audio_" + c +"]" + '"';
+                    tracks += " -map " + '"' + "[" + audioOutputName + c +"]" + '"';
                 }
                 
                 audio = audio.replace(" -map a?", tracks);
@@ -1674,20 +1683,20 @@ public class FunctionUtils extends Shutter {
  	                String tracks = "";
  	                for (int c = 0 ; c < FFPROBE.channels ; c++)
  	                {
- 	                    tracks += "[audio_" + c +"]";
+ 	                    tracks += "[" + audioOutputName + c +"]";
  	                }
  	                
  	                audio = audio.replace("[0:a]", tracks);
  	            }
  	            else
  	            {
- 	                audio = audio.replace("[0:a]", "[audio_0]");
+ 	                audio = audio.replace("[0:a]", "[" + audioOutputName + "0]");
  	                
  	                if (FFPROBE.channels > 1)
  	                {
  	                    for (int c = 1 ; c < FFPROBE.channels ; c++)
  	                    {
- 	                        filterComplex += ";[audio_" + c +"]anullsink"; //null output
+ 	                        filterComplex += ";[" + audioOutputName + c +"]anullsink"; //null output
  	                    }
  	                }
  	            }
@@ -1714,12 +1723,12 @@ public class FunctionUtils extends Shutter {
  	                
  	                if (map == false)
  	                {
- 	                    filterComplex += ";[audio_" + c +"]anullsink"; //null output
+ 	                    filterComplex += ";[" + audioOutputName + c +"]anullsink"; //null output
  	                }
  	            }   			
  	            
  	            //Convert [0:a:x] to [audio_x]
- 	            audio = audio.replaceAll("\\[0:a:(\\d+)\\]", "[audio_$1]");  			
+ 	            audio = audio.replaceAll("\\[0:a:(\\d+)\\]", "[" + audioOutputName + "$1]");  			
  	        }
  	        else if (audio.contains("-map a:")) //Add non mapped track to anullsink
  	        {
@@ -1743,7 +1752,7 @@ public class FunctionUtils extends Shutter {
  	                
  	                if (map == false)
  	                {
- 	                    filterComplex += ";[audio_" + c +"]anullsink"; //null output
+ 	                    filterComplex += ";[" + audioOutputName + c +"]anullsink"; //null output
  	                    audio = audio.replace("-map a:" + c + "?", ""); //Remove the mapping
  	                }
  	            } 
@@ -1760,7 +1769,7 @@ public class FunctionUtils extends Shutter {
  	            }
  	            
  	            //Convert -map a:x? to [audio_x]
- 	            audio = audio.replaceAll("-map\\s+a:(\\d+)\\??", "-map \"[audio_$1]\"");
+ 	            audio = audio.replaceAll("-map\\s+a:(\\d+)\\??", "-map \"[" + audioOutputName + "$1]\"");
  	        }
  	    }
 
@@ -1951,15 +1960,36 @@ public class FunctionUtils extends Shutter {
 		//Multiple cuts
     	if (InputAndOutput.segments != "" && InputAndOutput.segments.contains("[audio_"))
         {        	
-    		mapping = mapping.replace("0:a", "audio_0");
-    		mapping = mapping.replace(" -map a?", " -map " + '"' + "[audio_0]" + '"' );
+    		//Moving filter:a to filterComplex
+ 	    	String audioOutputName = "audio_";
+ 	    	if (mapping.contains("filter:a")) 
+ 	    	{
+ 	    		audioOutputName = "a";
+ 	    		
+ 	    		String audioFilter = mapping.substring(mapping.indexOf("-filter:a"));
+ 	    		String s[] = audioFilter.split("\"");
+ 	    		audioFilter = s[1];
+
+ 	    		mapping = mapping.replace(" -filter:a " + '"' + audioFilter + '"', ""); //Fetch only audio codec  	
+ 	    		
+ 	    		String tracks = "";
+ 	    		for (int c = 0 ; c < FFPROBE.channels ; c++)
+ 	    		{
+ 	    			tracks += ";[audio_" + c + "]" + audioFilter + "[a" + c + "]"; 	    			
+ 	    		}
+ 	    		
+ 	    		mapping = mapping.replaceFirst("\\[out\\]", "[out]" + tracks);
+ 	    	}
+ 	    	
+ 	    	mapping = mapping.replace("0:a", audioOutputName + "0");
+    		mapping = mapping.replace(" -map a?", " -map " + '"' + "[" + audioOutputName + "0]" + '"' );
     		
     		//No audio
     		if (mapping.contains("-an"))
     		{
         		for (int c = 0 ; c < FFPROBE.channels ; c++)
         		{
-        			mapping = mapping.replaceFirst("\\[out\\]", "[out];[audio_" + c +"]anullsink");
+        			mapping = mapping.replaceFirst("\\[out\\]", "[out];[" + audioOutputName + c +"]anullsink");
         		}   
     		}
     		else if (mapping.contains("-map a:")) //Add non mapped track to anullsink
@@ -1984,7 +2014,7 @@ public class FunctionUtils extends Shutter {
 					
 					if (map == false)
 					{
-						mapping = mapping.replaceFirst("\\[out\\]", "[out];[audio_" + c +"]anullsink"); //null output
+						mapping = mapping.replaceFirst("\\[out\\]", "[out];[" + audioOutputName + c +"]anullsink"); //null output
 						mapping = mapping.replace("-map a:" + c, ""); //Remove the mapping
 					}
         		} 
@@ -2001,7 +2031,7 @@ public class FunctionUtils extends Shutter {
     			}
 				
 				//Convert -map a:x to [audio_x]
-				mapping = mapping.replaceAll("-map\\s+a:(\\d+)\\??", "-map \"[audio_$1]\"");      			
+				mapping = mapping.replaceAll("-map\\s+a:(\\d+)\\??", "-map \"[" + audioOutputName + "$1]\"");      			
     		}
         }
     	
@@ -2763,10 +2793,10 @@ public class FunctionUtils extends Shutter {
 		{			 
 			NumberFormat formatter = new DecimalFormat("00");
 
-			int timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
-			int millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
+			long timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
+			long millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
-			if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
+			if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
 				millisecondsToTc = timecodeToMs + VideoPlayerUI.durationH * 3600000 + VideoPlayerUI.durationM * 60000 + VideoPlayerUI.durationS * 1000 + VideoPlayerUI.durationF * (int) (1000 / FFPROBE.currentFPS);
 			
 			if (caseEnableSequence.isSelected())

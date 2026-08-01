@@ -160,7 +160,7 @@ public class Transcribe extends Shutter {
 						//Command
 						String cmd = " -c:a pcm_s16le -ac 1 -ar 16000 -vn -y ";
 										
-						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"' + waveFile + '"');		
+						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile + '"');		
 						
 						do {
 							Thread.sleep(100);

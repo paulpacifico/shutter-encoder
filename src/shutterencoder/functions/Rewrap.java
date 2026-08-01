@@ -286,7 +286,7 @@ public class Rewrap extends Shutter {
 							
 							//Command
 							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + flags + " -y ";
-							FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + subtitles + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
+							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', subtitles + InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');		
 							
 							do
 							{
@@ -297,7 +297,7 @@ public class Rewrap extends Shutter {
 							if (FFMPEG.error)
 							{
 								cmd = " -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + flags + " -y ";
-								FFMPEG.run(InputAndOutput.inPoint + concat + rotate + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd + '"'  + fileOut + '"');		
+								FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');		
 								
 								do
 								{

@@ -90,7 +90,7 @@ public class BlackDetection extends Shutter {
 						else
 							cmd =  " -an -vf blackdetect=d=0.0:pix_th=" + levels + " -f null -" + '"';	
 						
-						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
+						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd);		
 						
 						do
 						{

@@ -22,8 +22,8 @@ package shutterencoder.functions.settings;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
-import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerCore.CutSegment;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class InputAndOutput extends Shutter {
 
@@ -32,100 +32,19 @@ public class InputAndOutput extends Shutter {
 	public static double savedInPoint = 0;
 	public static double savedOutPoint = 0;
 	public static String segments = "";
-	
+		
 	public static void getInputAndOutput(boolean setInputAndOutput) {
-					
+				
+		inPoint = "";
+		outPoint = "";
+		segments = "";
+		
 		if (setInputAndOutput && FFPROBE.totalLength > 40)
 		{
 			//Multi cuts feature
 			if (VideoPlayerCore.cutSegments.isEmpty() == false)
 			{
-				//Make sure these are not used
-				inPoint = "";
-				outPoint = "";
-				
-				//Use segments String for multiple cuts
-				segments = "";	
-				
-				//Adding segments
-				int i = 0;
-				for (CutSegment seg : VideoPlayerCore.cutSegments)
-	        	{
-					double in = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-	                double out = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-	                
-					//Video segment
-					if (FFPROBE.audioOnly == false)
-					{
-						String videoStream = i > 0 ? "[0:v]" : ""; //first [0:v] is already added from FunctionUtils.setFilterComplex()
-						segments += videoStream + "trim=start=" + (long) ((double) in * VideoPlayerUI.inputFramerateMS) + "ms:end=" + (long) ((double) out * VideoPlayerUI.inputFramerateMS) + "ms,setpts=PTS-STARTPTS[v" + i + "];";
-					}
-					
-					//Audio segment
-					if (FFPROBE.hasAudio)
-					{
-						for (int c = 0 ; c < FFPROBE.channels ; c++)
-						{
-							segments += "[0:a:" + c + "]atrim=start=" + (long) ((double) in * VideoPlayerUI.inputFramerateMS) + "ms:end=" + (long) ((double) out * VideoPlayerUI.inputFramerateMS) + "ms,asetpts=PTS-STARTPTS[a" + i + "_c" + c + "];";
-						}
-					}
-					
-					i++;
-	        	}
-				
-				//Concat output	
-				for (int o = 0 ; o < VideoPlayerCore.cutSegments.size() ; o++)
-	        	{
-					//Video segment
-					if (FFPROBE.audioOnly == false)
-					{
-						segments += "[v" + o + "]";
-					}
-					
-					//Audio segment
-					if (FFPROBE.hasAudio)
-					{
-						for (int c = 0 ; c < FFPROBE.channels ; c++)
-						{
-							segments += "[a" + o + "_c" + c + "]";
-						}
-					}
-	        	}
-				
-				//Output streams
-				String streams = "";
-				if (FFPROBE.audioOnly)
-				{
-					streams = ":v=0:a=" + FFPROBE.channels;
-					
-					for (int c = 0 ; c < FFPROBE.channels ; c++)
-					{
-						streams += "[audio_" + c + "]";
-					}
-					
-					for (int c = 0 ; c < FFPROBE.channels ; c++)
-					{
-						streams += ";[audio_" + c + "]";
-					}
-				}
-				else if (FFPROBE.hasAudio == false)
-				{
-					streams = ":v=1:a=0[video];[video]";
-				}
-				else //Video + Audio stream
-				{
-					streams = ":v=1:a=" + FFPROBE.channels + "[video]";
-					
-					for (int c = 0 ; c < FFPROBE.channels ; c++)
-					{
-						streams += "[audio_" + c + "]";
-					}
-					
-					streams += ";[video]";
-				}
-				
-				//Final output
-				segments += "concat=n=" + i + streams;
+				setMultiCuts();
 			}
 			else
 			{
@@ -139,10 +58,8 @@ public class InputAndOutput extends Shutter {
 		        {		        
 					inPoint = " -ss " + (long) ((double) timeIn * VideoPlayerUI.inputFramerateMS) + "ms";
 			    }
-			    else
-			        inPoint = "";	
 				
-				if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2 && caseEnableSequence.isSelected() == false)
+				if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() && caseEnableSequence.isSelected() == false)
 		        {				
 					String framesText[] = VideoPlayerUI.lblDuration.getText().split(" ");
 					Integer frames =  Integer.parseInt(framesText[framesText.length - 2]);
@@ -158,13 +75,8 @@ public class InputAndOutput extends Shutter {
 			        	outPoint = " -frames:v " + frames;
 		        	}
 		        	else
-		        	{
-		        		outPoint = " -t " + (long) Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";
-		        	}
-		        	
+		        		outPoint = " -t " + (long) Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";		        	
 		        }
-		        else
-		        	outPoint = "";
 				
 				if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
 				{
@@ -172,12 +84,133 @@ public class InputAndOutput extends Shutter {
 				}
 			}
 		}
-		else
-		{
-			inPoint = "";
-			outPoint = "";
-			segments = "";
-		}
 	}
 
+	private static String setMultiCuts() {
+			
+		//Adding segments
+		int i = 0;
+		for (i = 0 ; i < VideoPlayerCore.cutSegments.size() ; i++)
+    	{
+			//Video segment
+			if (FFPROBE.audioOnly == false)
+			{
+				String videoIndex = i > 0 ? "[" + i + ":v]" : ""; //first [0:v] is already added from FunctionUtils.setFilterComplex()
+				segments += videoIndex + "setpts=PTS-STARTPTS[v" + i + "];";
+			}
+			
+			//Audio segment
+			if (FFPROBE.hasAudio)
+			{
+				for (int c = 0 ; c < FFPROBE.channels ; c++)
+				{
+					segments += "[" + i + ":a:" + c + "]asetpts=PTS-STARTPTS[a" + i + "_c" + c + "];";
+				}
+			}
+    	}
+		
+		//Concat output	
+		for (int o = 0 ; o < VideoPlayerCore.cutSegments.size() ; o++)
+    	{
+			//Video segment
+			if (FFPROBE.audioOnly == false)
+			{
+				segments += "[v" + o + "]";
+			}
+			
+			//Audio segment
+			if (FFPROBE.hasAudio)
+			{
+				for (int c = 0 ; c < FFPROBE.channels ; c++)
+				{
+					segments += "[a" + o + "_c" + c + "]";
+				}
+			}
+    	}
+		
+		//Output streams
+		String streams = "";
+		if (FFPROBE.audioOnly)
+		{
+			streams = ":v=0:a=" + FFPROBE.channels;
+			
+			for (int c = 0 ; c < FFPROBE.channels ; c++)
+			{
+				streams += "[audio_" + c + "]";
+			}
+			
+			for (int c = 0 ; c < FFPROBE.channels ; c++)
+			{
+				streams += ";[audio_" + c + "]";
+			}
+		}
+		else if (FFPROBE.hasAudio == false)
+		{
+			streams = ":v=1:a=0[video];[video]";
+		}
+		else //Video + Audio stream
+		{
+			streams = ":v=1:a=" + FFPROBE.channels + "[video]";
+			
+			for (int c = 0 ; c < FFPROBE.channels ; c++)
+			{
+				streams += "[audio_" + c + "]";
+			}
+			
+			streams += ";[video]";
+		}
+		
+		//Final output
+		return segments += "concat=n=" + i + streams;
+	}
+	
+	public static String setInputString(String beforeInput, String file, String afterInput) {
+		
+		String inputFiles = "";
+		if (segments != "")
+		{
+			boolean isFirstInput = true;			
+			for (CutSegment seg : VideoPlayerCore.cutSegments)
+        	{
+				double in = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+                double out = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+                double total = out - in;
+                
+                String inputHardware = beforeInput;
+
+                //Add this global flags only once
+                if (isFirstInput == false)
+                {
+                    inputHardware = inputHardware
+                        .replaceAll("-init_hw_device\\s+[^\\s]+", "")
+                        .replaceAll("-vaapi_device\\s+[^\\s]+", "")
+                        .replaceAll("-filter_hw_device\\s+[^\\s]+", "");
+                }
+                
+                //Set input point
+                inputFiles += inputHardware + " -ss " + (long) ((double) in * VideoPlayerUI.inputFramerateMS) + "ms";
+        				
+				//Set output point
+	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
+	        	{		        	
+	        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
+		    		
+	        		inputFiles += " -frames:v " + (int) Math.ceil((double) total / outputFPS) + afterInput;
+	        	}
+	        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))	        
+	        	{
+	        		inputFiles += " -frames:v " + total + afterInput;
+	        	}
+	        	else
+	        		inputFiles += " -t " + (long) Math.floor((double) total * ((float) 1000 / FFPROBE.accurateFPS)) + "ms" + afterInput;
+	        	
+	        	inputFiles += file;
+	        	isFirstInput = false;
+        	}
+			
+			return inputFiles;
+		}
+		else		
+			return beforeInput + file + afterInput;		
+	}
 }

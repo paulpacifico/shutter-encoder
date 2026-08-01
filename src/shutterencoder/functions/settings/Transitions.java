@@ -34,82 +34,111 @@ public class Transitions extends Shutter {
 			//Fade-in
 	    	if (Shutter.caseVideoFadeIn.isSelected())
 	    	{ 
-	    		if (filterComplex != "") filterComplex += ",";	
+	    		boolean fade = true;
 	    		
-	    		long videoInValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-	    		
-	    		String color = "black";
-				if (Shutter.lblFadeInColor.getText().equals(language.getProperty("white")))
-					color = "white";
-	    		
-	    		String videoFade = "fade=in:st=0ms:d=" + videoInValue + "ms:color=" + color;
-	    		
-	    		if (isVideoPlayer)
+	    		//Do not fade-in if it's not the first segment when using multiple cuts feature
+	    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
+	    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex > 0)
 	    		{
-					if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerMarkIn || VideoPlayerUI.playTransition)
-					{
-						filterComplex += videoFade;
+	    			fade = false;
+	    		}
+	    		
+	    		if (fade)
+	    		{
+		    		if (filterComplex != "") filterComplex += ",";	
+		    		
+		    		long videoInValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    		
+		    		String color = "black";
+					if (Shutter.lblFadeInColor.getText().equals(language.getProperty("white")))
+						color = "white";
+		    		
+		    		String videoFade = "fade=in:st=0ms:d=" + videoInValue + "ms:color=" + color;
+		    		
+		    		if (isVideoPlayer)
+		    		{
+						if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerMarkIn || VideoPlayerUI.playTransition)
+						{
+							filterComplex += videoFade;
+						}
+						else
+							filterComplex += "null";	
 					}
-					else
-						filterComplex += "null";	
-				}
-	    		else
-	    			filterComplex += videoFade;
+		    		else
+		    			filterComplex += videoFade;
+	    		}
 	    	}
 	    	
 	    	//Fade-out
 	    	if (Shutter.caseVideoFadeOut.isSelected())
 	    	{
-	    		if (filterComplex != "") filterComplex += ",";	
+	    		boolean fade = true;
 	    		
-	    		long videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-	    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
-
-	    		if (caseEnableSequence.isSelected())
+	    		//Do not fade-out if it's not the latest segment when using multiple cuts feature
+	    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
+	    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex < VideoPlayerCore.cutSegments.size() - 1)
 	    		{
-	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
-		    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * list.getSize()) - videoOutValue;
+	    			fade = false;
 	    		}
-	    		else if (Settings.btnSetBab.isSelected())
+	    		
+	    		if (fade)
 	    		{
-	    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-		    		videoStart = (long) FunctionUtils.mergeDuration - videoOutValue;
+		    		if (filterComplex != "") filterComplex += ",";	
+		    		
+		    		long videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
+	
+		    		if (caseEnableSequence.isSelected())
+		    		{
+		    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
+			    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * list.getSize()) - videoOutValue;
+		    		}
+		    		else if (Settings.btnSetBab.isSelected())
+		    		{
+		    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+			    		videoStart = (long) FunctionUtils.mergeDuration - videoOutValue;
+		    		}
+		    		else
+		    		{
+		        		long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+		        		long totalOut = FFPROBE.totalLength;
+						 
+			    		if (InputAndOutput.segments != "" && isVideoPlayer == false)
+			    		{
+			    			totalIn = 0;
+			    			totalOut = 0;
+			    			for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+							{
+			    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFPROBE.currentFPS));
+								totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
+							}
+			    		}
+			    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+				        {
+							totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+				        }
+						
+		        		if (isVideoPlayer)
+		        		{
+		        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));	        			
+		        		}
+		        			        		
+		        		videoStart = (totalOut - totalIn) - videoOutValue;	        		
+		    		}
+		    		
+		    		String color = "black";
+					if (Shutter.lblFadeOutColor.getText().equals(language.getProperty("white")))
+						color = "white";
+		    		
+		    		String videoFade = "fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color;
+		    		
+		    		if (videoStart > 0)
+		    		{	    		
+		    			filterComplex += videoFade;
+		    		}
+		    		else
+		    			filterComplex += "null";
 	    		}
-	    		else
-	    		{
-	        		long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-	        		long totalOut = FFPROBE.totalLength;
-					 
-					if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
-			        {
-						totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
-			        }
-					
-	        		if (isVideoPlayer)
-	        		{
-	        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));	        			
-	        		}
-	        			        		
-	        		if (VideoPlayerUI.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
-	        		{
-		        		videoStart = (totalOut - totalIn) - videoOutValue;
-	        		}
-	        		else //Remove mode
-	        			videoStart = FFPROBE.totalLength - (totalOut - totalIn) - videoOutValue;
-	    		}
-	    		
-	    		String color = "black";
-				if (Shutter.lblFadeOutColor.getText().equals(language.getProperty("white")))
-					color = "white";
-	    		
-	    		String videoFade = "fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color;
-	    		
-	    		if (videoStart > 0)
-	    		{	    		
-	    			filterComplex += videoFade;
-	    		}
-	    		else
-	    			filterComplex += "null";	
 	    	}
 		}
 		
@@ -122,20 +151,32 @@ public class Transitions extends Shutter {
 		
 		//Fade-in
 		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Shutter.caseAudioFadeIn.isSelected())
-    	{ 
-    		long audioInValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+    	{ 			
+			boolean fade = true;
 			
-    		if (isVideoPlayer)
+			//Do not fade-in if it's not the first segment when using multiple cuts feature
+    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
+    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex > 0)
     		{
-				if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerMarkIn || VideoPlayerUI.playTransition)
-				{
-					audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
+    			fade = false;
+    		}
+    		
+    		if (fade)
+    		{
+	    		long audioInValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+				
+	    		if (isVideoPlayer)
+	    		{
+					if (VideoPlayerCore.cursorWaveform.getX() == VideoPlayerUI.playerMarkIn || VideoPlayerUI.playTransition)
+					{
+						audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
+					}
+					else
+						audioFilter += "anull";	
 				}
-				else
-					audioFilter += "anull";	
-			}
-    		else
-    			audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
+	    		else
+	    			audioFilter += "afade=in:st=0ms:d=" + audioInValue + "ms";
+    		}
     	}    
         
 		return audioFilter;
@@ -148,43 +189,60 @@ public class Transitions extends Shutter {
     	//Fade-out
 		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Shutter.caseAudioFadeOut.isSelected())
     	{
-    		long audioOutValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
-    		
-    		if (Settings.btnSetBab.isSelected())
+			boolean fade = true;
+			
+			//Do not fade-out if it's not the latest segment when using multiple cuts feature
+    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
+    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex < VideoPlayerCore.cutSegments.size() - 1)
     		{
-    			audioOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-    			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
+    			fade = false;
     		}
-    		else
-			{
-				long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-				long totalOut = FFPROBE.totalLength;
-				 
-				if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() - 2)
-		        {
-					totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
-		        }
-				
-				if (isVideoPlayer)
-        		{
-        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
-        		}
-				
-				if (VideoPlayerUI.comboMode.getSelectedItem().toString().contentEquals(Shutter.language.getProperty("cutUpper")))
+			
+    		if (fade)
+    		{
+	    		long audioOutValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
+	    		
+	    		if (Settings.btnSetBab.isSelected())
+	    		{
+	    			audioOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
+	    		}
+	    		else
 				{
+					long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
+					long totalOut = FFPROBE.totalLength;
+					 
+					if (InputAndOutput.segments != "" && isVideoPlayer == false)
+		    		{
+		    			totalIn = 0;
+		    			totalOut = 0;
+		    			for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+						{
+		    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFPROBE.currentFPS));
+							totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
+						}
+		    		}
+		    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+			        {
+						totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+			        }
+					
+					if (isVideoPlayer)
+	        		{
+	        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
+	        		}
+					
 					audioStart = (totalOut - totalIn) - audioOutValue;
 				}
-				else //Remove mode
-					audioStart = FFPROBE.totalLength - (totalOut - totalIn) - audioOutValue;
-			}
-    		
-    		if (audioStart > 0)
-    		{	    		
-    			audioFilter += "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
+	    		
+	    		if (audioStart > 0)
+	    		{	    		
+	    			audioFilter += "afade=out:st=" + audioStart + "ms:d=" + audioOutValue + "ms";
+	    		}
+	    		else
+	    			audioFilter += "anull";
     		}
-    		else
-    			audioFilter += "anull";
     	}
         
 		return audioFilter;

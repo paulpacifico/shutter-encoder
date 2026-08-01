@@ -96,7 +96,7 @@ public class VMAF extends Shutter {
 						else
 							cmd =  " -filter_complex libvmaf -an -f null -" + '"';	
 						
-						FFMPEG.run(InputAndOutput.inPoint + " -i " + '"' + file.toString() + '"' + InputAndOutput.inPoint + " -i " + '"' + savedFilePath.toString() + '"' + InputAndOutput.outPoint + cmd);		
+						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.inPoint) + " -i " + '"' + savedFilePath.toString() + '"' + InputAndOutput.outPoint + cmd);		
 						
 						do
 						{
