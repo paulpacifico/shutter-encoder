@@ -40,6 +40,7 @@ import shutterencoder.ui.others.GOP;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
@@ -1289,9 +1290,9 @@ public static String colorprimaries = "";
 				int sec = 0;
 				int frames = 0;
 				
-				if (VideoPlayerCore.cutSegments.isEmpty() == false)
+				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 				{
-					for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+					for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 					{
 						double totalIn =  (seg.inH * 3600 + seg.inM * 60 + seg.inS) * VideoPlayerCore.getFPS() + seg.inF;
 						double totalOut = (seg.outH * 3600 + seg.outM * 60 + seg.outS) * VideoPlayerCore.getFPS() + seg.outF;

@@ -90,6 +90,7 @@ import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.SceneDetection;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
@@ -2320,7 +2321,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			else if (InputAndOutput.segments != "")
 			{		
 				fileLength = 0;
-				for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+				for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 				{
 					double totalIn =  (seg.inH * 3600 + seg.inM * 60 + seg.inS);
 					double totalOut = (seg.outH * 3600 + seg.outM * 60 + seg.outS);

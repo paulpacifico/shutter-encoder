@@ -588,11 +588,13 @@ public class VideoPlayerUI {
 					
 					if (e.getKeyCode() == KeyEvent.VK_PAGE_UP)
 					{
+						previousFrame = true;
 						btnGoToIn.doClick();
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_PAGE_DOWN )
 					{
+						previousFrame = true;
 						btnGoToOut.doClick();
 					}
 					
@@ -630,9 +632,27 @@ public class VideoPlayerUI {
 						btnReset.doClick();
 					}
 					
+					//Undo/Redo
+					int menuKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+
+					if (e.getKeyCode() == KeyEvent.VK_Z)
+					{
+					    boolean isMenuKeyPressed = (e.getModifiersEx() & menuKeyMask) != 0;
+					    boolean isShiftPressed = e.isShiftDown();
+
+					    if (isMenuKeyPressed && !isShiftPressed)
+					    {
+					        VideoPlayerMultiCuts.undoCut();
+					    }
+					    else if (isMenuKeyPressed && isShiftPressed)
+					    {
+					        VideoPlayerMultiCuts.redoCut();
+					    }
+					}
+					
 					if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
 					{
-						VideoPlayerCore.removeCurrentSegment();
+						VideoPlayerMultiCuts.removeCurrentSegment();
 					}
 				}
 				
@@ -1371,6 +1391,9 @@ public class VideoPlayerUI {
 					
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
+					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
+						VideoPlayerMultiCuts.saveCutState();
+					
 					if (VideoPlayerCore.bufferCurrentFrame > 0)
 					{
 						VideoPlayerCore.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
@@ -1378,7 +1401,7 @@ public class VideoPlayerUI {
 					else
 						VideoPlayerCore.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
 					
-					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
+					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
 					{
 						VideoPlayerCore.dragSegmentIndex = VideoPlayerCore.activeSegmentIndex;
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
@@ -1386,7 +1409,7 @@ public class VideoPlayerUI {
 						
 					VideoPlayerCore.setMarkers();
 					
-					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Back to default
+					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Back to default
 					{
 						VideoPlayerCore.dragSegmentIndex = -1;
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1414,7 +1437,7 @@ public class VideoPlayerUI {
 			public void actionPerformed(ActionEvent arg0) {		
 
 				playTransition = true;
-
+				
 				//Clear the buffer
 				if (VideoPlayerCore.bufferedFrames.size() > 0)
 				{		
@@ -1423,20 +1446,19 @@ public class VideoPlayerUI {
 					waveformContainer.repaint();
 				}
 				
-				if (VideoPlayerCore.cutSegments.isEmpty() == false)
+				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 				{
-					double previousSegment = 0;
-					for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+					for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 		            {
-						double inputMark = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-		                double outputMark = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+						double inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+		                double outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
 		                		                
 		                if (VideoPlayerCore.playerCurrentFrame == inputMark) //Get previous segment
 		                {
 		                	if (seg.index > 0)
 		                	{
-		                		VideoPlayerCore.CutSegment activeSegment = VideoPlayerCore.cutSegments.get(seg.index - 1);
-		                		outputMark = VideoPlayerCore.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
+		                		VideoPlayerMultiCuts.CutSegment activeSegment = VideoPlayerMultiCuts.cutSegments.get(seg.index - 1);
+		                		outputMark = VideoPlayerMultiCuts.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
 		                		
 		                		VideoPlayerCore.playerCurrentFrame = outputMark - 1;
 		                		break;
@@ -1447,16 +1469,7 @@ public class VideoPlayerUI {
 		                	VideoPlayerCore.playerCurrentFrame = inputMark;
 					        break;
 		                }
-		                else if (VideoPlayerCore.playerCurrentFrame > outputMark)
-		                {
-		                	previousSegment = outputMark - 1; //Do not use break in this case
-		                }
 		            }
-					
-					if (previousSegment != 0)
-					{
-						VideoPlayerCore.playerCurrentFrame = previousSegment;
-					}
 				}
 				else
 				{	
@@ -1466,6 +1479,9 @@ public class VideoPlayerUI {
 					VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
 					VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 				}
+				
+				//Allows fast seeking
+				previousFrame = true;
 				
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
@@ -1485,6 +1501,9 @@ public class VideoPlayerUI {
 
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
+					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
+						VideoPlayerMultiCuts.saveCutState();
+					
 					if (VideoPlayerCore.bufferCurrentFrame > 0)
 					{
 						VideoPlayerCore.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
@@ -1492,7 +1511,7 @@ public class VideoPlayerUI {
 					else
 						VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);	
 					
-					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
+					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
 					{
 						VideoPlayerCore.dragSegmentIndex = VideoPlayerCore.activeSegmentIndex;
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
@@ -1500,7 +1519,7 @@ public class VideoPlayerUI {
 						
 					VideoPlayerCore.setMarkers();
 					
-					if (VideoPlayerCore.cutSegments.isEmpty() == false) //Back to default
+					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Back to default
 					{
 						VideoPlayerCore.dragSegmentIndex = -1;
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1535,21 +1554,22 @@ public class VideoPlayerUI {
 					waveformContainer.repaint();
 				}
 				
-				if (VideoPlayerCore.cutSegments.isEmpty() == false)
+				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 				{
-					for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+					for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 		            {
-						double inputMark = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-		                double outputMark = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+						double inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+		                double outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
 		                		                
 		                if (VideoPlayerCore.playerCurrentFrame == outputMark - 1) //Get next segment
 		                {
-		                	if (seg.index + 2 <= VideoPlayerCore.cutSegments.size())
+		                	if (seg.index + 2 <= VideoPlayerMultiCuts.cutSegments.size())
 		                	{
-		                		VideoPlayerCore.CutSegment activeSegment = VideoPlayerCore.cutSegments.get(seg.index + 1);
-		                		inputMark = VideoPlayerCore.getSegmentTime(activeSegment.inH, activeSegment.inM, activeSegment.inS, activeSegment.inF);
+		                		VideoPlayerMultiCuts.CutSegment activeSegment = VideoPlayerMultiCuts.cutSegments.get(seg.index + 1);
+		                		inputMark = VideoPlayerMultiCuts.getSegmentTime(activeSegment.inH, activeSegment.inM, activeSegment.inS, activeSegment.inF);
 		                		
 		                		VideoPlayerCore.playerCurrentFrame = inputMark;
+		                		VideoPlayerCore.activeSegmentIndex ++;
 		                		break;
 		                	}
 		                }
@@ -1574,6 +1594,9 @@ public class VideoPlayerUI {
 					VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
 				}
 				
+				//Allows fast seeking
+				previousFrame = true;
+				
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 			}
 			
@@ -1592,7 +1615,7 @@ public class VideoPlayerUI {
 					
 				if (caseApplyCutToAll.isSelected() == false)
 				{
-					VideoPlayerCore.addCurrentCut();
+					VideoPlayerMultiCuts.addCurrentCut();
 				}
 			}
 			
@@ -1611,6 +1634,9 @@ public class VideoPlayerUI {
 					
 				if (caseApplyCutToAll.isSelected() == false)
 				{
+					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
+						VideoPlayerMultiCuts.saveCutState();
+					
 					VideoPlayerCore.updateGrpIn(0);
 					VideoPlayerCore.updateGrpOut(totalFrames);
 					
@@ -1618,7 +1644,7 @@ public class VideoPlayerUI {
 					playerMarkOut = waveformContainer.getWidth();
 					
 					VideoPlayerCore.activeSegmentIndex = -1;
-					VideoPlayerCore.cutSegments.clear();
+					VideoPlayerMultiCuts.cutSegments.clear();
 					
 					waveformContainer.repaint();			
 	
@@ -1778,7 +1804,7 @@ public class VideoPlayerUI {
 		            	cursorCurrentFrame.setLocation((int) Math.floor((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(VideoPlayerCore.playerCurrentFrame)) / totalFrames), 0);
 		            	
 		            	//Allows to color the current segment
-		            	if (VideoPlayerCore.cutSegments.isEmpty() == false)
+		            	if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 		            	{
 		            		waveformContainer.repaint();
 		            	}
@@ -2174,17 +2200,17 @@ public class VideoPlayerUI {
 	                	playerMarkIn = 0;
 	                
 	                //Segments painting
-	                if (VideoPlayerCore.cutSegments.isEmpty() == false)
+	                if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
                		{	           
 	                	double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
 	                	
-	                    for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+	                    for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 	                    {
 	                        int segWidth = seg.outMark - seg.inMark;
 	                        
-	                        double inputMark = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-	                        double outputMark = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-	                        
+	                        double inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+	                        double outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+
 	                        //Current segment
 	                        if (time >= inputMark && time < outputMark)
 	                        {
@@ -2236,16 +2262,16 @@ public class VideoPlayerUI {
 	                //Masking
 	                Color maskColor = new Color(26, 27, 31, 200);
 
-	                if (VideoPlayerCore.cutSegments.isEmpty() == false)
+	                if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 	                {
-	                    List<VideoPlayerCore.CutSegment> sortedSegments = new ArrayList<>(VideoPlayerCore.cutSegments);
+	                    List<VideoPlayerMultiCuts.CutSegment> sortedSegments = new ArrayList<>(VideoPlayerMultiCuts.cutSegments);
 	                    sortedSegments.sort(Comparator.comparingInt(seg -> seg.inMark));
 
 	                    g2.setColor(maskColor);
 
 	                    int currentX = 0;
 
-	                    for (VideoPlayerCore.CutSegment seg : sortedSegments)
+	                    for (VideoPlayerMultiCuts.CutSegment seg : sortedSegments)
 	                    {	                    	
 	                        if (seg.inMark > currentX)
 	                        {
@@ -2383,6 +2409,12 @@ public class VideoPlayerUI {
 								
 				if (Shutter.list.getSize() > 0)
                 {
+					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) || waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
+					{
+						if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
+							VideoPlayerMultiCuts.saveCutState();
+					}
+					
 					//IMPORTANT
 					waveformContainer.requestFocus();
 					

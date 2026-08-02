@@ -75,6 +75,7 @@ import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesTimeline;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
 import shutterencoder.utils.Utils;
 
 public class VideoPlayerCore extends VideoPlayerUI {
@@ -122,38 +123,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	//FileList
 	public static StringBuilder fileList = new StringBuilder();
-	
-	//List of cuts
-	public static class CutSegment {
-		public int index = -1;
-	    public int inMark;
-	    public int outMark;
-	    public int inH;
-	    public int inM;
-	    public int inS;
-	    public int inF;
-	    public int outH;
-	    public int outM;
-	    public int outS;
-	    public int outF;
-	   
-	    public CutSegment(int index, int inMark, int outMark, int inH, int inM, int inS, int inF, int outH, int outM, int outS, int outF) {
-	    	this.index = index;
-	    	this.inMark = inMark;
-	        this.outMark = outMark;
-	        this.inH = inH;
-	        this.inM = inM;
-	        this.inS = inS;
-	        this.inF = inF;
-	        this.outH = outH;
-	        this.outM = outM;
-	        this.outS = outS;
-	        this.outF = outF;	        
-	    }
-	}
 
-	public static List<CutSegment> cutSegments = new ArrayList<>();
-			
 	public static void playerProcess(double inputTime) {
 
 		if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive())
@@ -1039,9 +1009,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						Shutter.windowDrag = false;
 						
 						//Display current segment in/out						
-						if (cutSegments.isEmpty() == false)
+						if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 				    	{
-				    		setCurrentSegmentValues();
+							VideoPlayerMultiCuts.setCurrentSegmentValues();
 				    	}
 				    	
 						waveformContainer.repaint();
@@ -1213,7 +1183,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			{
 				gpuDecoding = FFMPEG.setGPUDevice(setFilter(false, false));
 			}
-			
+
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 					
 			int framesToSkip = (int) ((double) inputTime - playerCurrentFrame);
@@ -2340,9 +2310,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									
 							//Clear the segment list
 							activeSegmentIndex = -1;
-							if (cutSegments.isEmpty() == false)
-							{						
-								cutSegments.clear();
+							if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
+							{					
+								VideoPlayerMultiCuts.clearCutHistory();
+								VideoPlayerMultiCuts.cutSegments.clear();
 							}
 							
 							//IMPORTANT
@@ -2861,7 +2832,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						{
 							caseApplyCutToAll.setEnabled(false);
 						
-							cutSegments.clear();
+							VideoPlayerMultiCuts.clearCutHistory();
+							VideoPlayerMultiCuts.cutSegments.clear();
 							
 							int index = 0;
 							for (int i = 0 ; i < s.length - 1 ; i += 2)
@@ -2883,7 +2855,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							        Integer.parseInt(out[3])
 							    );
 								
-								cutSegments.add(new CutSegment(index, playerMarkIn, playerMarkOut,
+								VideoPlayerMultiCuts.cutSegments.add(new CutSegment(index, playerMarkIn, playerMarkOut,
 										Integer.parseInt(in[0]), 
 								        Integer.parseInt(in[1]), 
 								        Integer.parseInt(in[2]), 
@@ -2944,11 +2916,11 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	        String timeOut = String.format("%s:%s:%s:%s", caseOutH.getText(), caseOutM.getText(), caseOutS.getText(), caseOutF.getText());
 	        String newEntry = videoPath;
 	        
-	        if (cutSegments.isEmpty() == false)
+	        if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 			{
 	        	newEntry = videoPath;
 	        	
-	        	for (CutSegment seg : cutSegments)
+	        	for (CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 	        	{
 	        		timeIn = String.format("%02d:%02d:%02d:%02d", seg.inH, seg.inM, seg.inS, seg.inF);
 	    	        timeOut = String.format("%02d:%02d:%02d:%02d", seg.outH, seg.outM, seg.outS, seg.outF);
@@ -3052,9 +3024,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
 		
-		if (cutSegments.isEmpty() == false && activeSegmentIndex != -1)
+		if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && activeSegmentIndex != -1)
 		{
-			for (CutSegment seg : cutSegments) 
+			for (CutSegment seg : VideoPlayerMultiCuts.cutSegments) 
 		    {
 				if (seg.index == activeSegmentIndex)
 				{
@@ -3109,9 +3081,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
 		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
 	
-		if (cutSegments.isEmpty() == false && activeSegmentIndex != -1)
+		if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && activeSegmentIndex != -1)
 		{
-			for (CutSegment seg : cutSegments) 
+			for (CutSegment seg : VideoPlayerMultiCuts.cutSegments) 
 		    {
 				if (seg.index == activeSegmentIndex)
 				{
@@ -3150,25 +3122,25 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		        Integer.parseInt(caseOutF.getText())
 		    );
 			
-			if (cutSegments.isEmpty() == false)
+			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 			{
-				for (CutSegment seg : cutSegments) 
+				for (CutSegment seg : VideoPlayerMultiCuts.cutSegments) 
 			    {
 					seg.inMark = calculateMarkPosition(seg.inH, seg.inM, seg.inS, seg.inF);
 			        seg.outMark = calculateMarkPosition(seg.outH, seg.outM, seg.outS, seg.outF);
 				}
 			}
 			
-			if (cutSegments.isEmpty() == false)
+			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 			{
 				double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
 				
-				CutSegment previousSegment = activeSegmentIndex > 0 ? cutSegments.get(activeSegmentIndex - 1) : null;
-				CutSegment activeSegment = cutSegments.get(activeSegmentIndex);				
-				CutSegment nextSegment = activeSegmentIndex < cutSegments.size() - 1 ? cutSegments.get(activeSegmentIndex + 1) : null;
+				CutSegment previousSegment = activeSegmentIndex > 0 ? VideoPlayerMultiCuts.cutSegments.get(activeSegmentIndex - 1) : null;
+				CutSegment activeSegment = VideoPlayerMultiCuts.cutSegments.get(activeSegmentIndex);				
+				CutSegment nextSegment = activeSegmentIndex < VideoPlayerMultiCuts.cutSegments.size() - 1 ? VideoPlayerMultiCuts.cutSegments.get(activeSegmentIndex + 1) : null;
 				
-				double segmentIn = VideoPlayerCore.getSegmentTime(activeSegment.inH, activeSegment.inM, activeSegment.inS, activeSegment.inF);
-                double segmentOut = VideoPlayerCore.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
+				double segmentIn = VideoPlayerMultiCuts.getSegmentTime(activeSegment.inH, activeSegment.inM, activeSegment.inS, activeSegment.inF);
+                double segmentOut = VideoPlayerMultiCuts.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
 				
 				//Mark in
 				if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
@@ -3387,191 +3359,4 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		} catch (Exception e){}
 	}	
-	//Multi cuts feature
-	public static void addCurrentCut() {	
-			
-		if (cutSegments.isEmpty() || activeSegmentIndex != - 1)
-		{			
-			double time = bufferCurrentFrame > 0 ? bufferCurrentFrame : playerCurrentFrame;
-			
-			double inputMark = getSegmentTime(Integer.parseInt(caseInH.getText()), Integer.parseInt(caseInM.getText()), Integer.parseInt(caseInS.getText()), Integer.parseInt(caseInF.getText()));
-	        double outputMark = getSegmentTime(Integer.parseInt(caseOutH.getText()), Integer.parseInt(caseOutM.getText()), Integer.parseInt(caseOutS.getText()), Integer.parseInt(caseOutF.getText()));
-			
-	        if (time < outputMark - 1 && time > inputMark) //Do not do anything if the cursor is in the same place as marker In or Out
-		    {	
-	        	caseApplyCutToAll.setEnabled(false);
-	        	boolean newSegment = false;
-	
-				if (activeSegmentIndex != - 1)
-				{
-					//Increment segments after activeSegmentIndex
-			        for (int i = activeSegmentIndex + 1 ; i < cutSegments.size() ; i++)
-			        {
-			        	cutSegments.get(i).index += 1;
-			        }
-	
-					cutSegments.remove(activeSegmentIndex);				
-					newSegment = true;			
-				}
-				
-				//Saving mark out
-				String outH = caseOutH.getText();
-				String outM = caseOutM.getText();
-				String outS = caseOutS.getText();
-				String outF = caseOutF.getText();
-				
-				if (bufferCurrentFrame > 0)
-				{
-					updateGrpOut(bufferCurrentFrame);		
-				}
-				else
-					updateGrpOut(playerCurrentFrame);	
-				
-				int index = newSegment ? activeSegmentIndex : 0;
-				
-				cutSegments.add(new CutSegment(index, playerMarkIn, cursorCurrentFrame.getX(),
-		        		Integer.parseInt(caseInH.getText()),
-		        		Integer.parseInt(caseInM.getText()),
-		        		Integer.parseInt(caseInS.getText()),
-		        		Integer.parseInt(caseInF.getText()),
-		        		Integer.parseInt(caseOutH.getText()),
-		        		Integer.parseInt(caseOutM.getText()),
-		        		Integer.parseInt(caseOutS.getText()),
-		        		Integer.parseInt(caseOutF.getText())));
-				
-				//Set saved mark out for the next segment
-				caseOutH.setText(outH);
-				caseOutM.setText(outM);
-				caseOutS.setText(outS);
-				caseOutF.setText(outF);
-					
-				if (bufferCurrentFrame > 0)
-				{
-					updateGrpIn(bufferCurrentFrame);		
-				}
-				else
-					updateGrpIn(playerCurrentFrame);
-				
-				index = newSegment ? activeSegmentIndex + 1 : 1;
-	
-		        cutSegments.add(new CutSegment(index, cursorCurrentFrame.getX(), playerMarkOut,
-		        		Integer.parseInt(caseInH.getText()),
-		        		Integer.parseInt(caseInM.getText()),
-		        		Integer.parseInt(caseInS.getText()),
-		        		Integer.parseInt(caseInF.getText()),
-		        		Integer.parseInt(caseOutH.getText()),
-		        		Integer.parseInt(caseOutM.getText()),
-		        		Integer.parseInt(caseOutS.getText()),
-		        		Integer.parseInt(caseOutF.getText())));        
-		        
-		        if (newSegment)
-		        	activeSegmentIndex += 1;
-		        
-		        //Sort in correct index position
-		        cutSegments.sort((s1, s2) -> Integer.compare(s1.inMark, s2.inMark));
-		        
-		        //FileList
-				VideoPlayerCore.setFileList();
-		        
-			    waveformContainer.repaint();
-		    }
-		}
-    }
-		
-	public static void removeCurrentSegment() {
-		
-		if (cutSegments.isEmpty() == false && activeSegmentIndex != - 1)
-		{
-	        for (int i = 0 ; i < cutSegments.size() ; i++)
-	        {
-	        	if (cutSegments.get(i).index == activeSegmentIndex) //Remove current index
-	        	{
-	        		cutSegments.remove(i);
-	        	}
-	        }
-			
-			//Decrement segments after remove
-			for (CutSegment seg : cutSegments)
-			{
-				if (seg.index > activeSegmentIndex)
-	        	{        		
-	        		seg.index -= 1;
-	        	}
-			}
-			
-			//Set the correct values then clear all
-			if (cutSegments.size() == 1)
-			{
-				CutSegment seg = cutSegments.get(0);
-				
-				playerMarkIn = seg.inMark;
-				playerMarkOut = seg.outMark;
-				
-				caseInH.setText(Shutter.formatter.format(seg.inH));
-            	caseInM.setText(Shutter.formatter.format(seg.inM));
-            	caseInS.setText(Shutter.formatter.format(seg.inS));
-            	caseInF.setText(Shutter.formatter.format(seg.inF));
-            	
-            	caseOutH.setText(Shutter.formatter.format(seg.outH));
-            	caseOutM.setText(Shutter.formatter.format(seg.outM));
-            	caseOutS.setText(Shutter.formatter.format(seg.outS));
-            	caseOutF.setText(Shutter.formatter.format(seg.outF));
-				
-				cutSegments.clear();
-				
-				caseApplyCutToAll.setEnabled(true);
-			}
-			
-			if (activeSegmentIndex + 1 <= cutSegments.size())
-			{
-				//Do nothing keep the current index value
-			}
-			else if (activeSegmentIndex - 1 > 0)
-			{
-				activeSegmentIndex --;
-			}
-			else
-				activeSegmentIndex = -1;
-				
-			//FileList
-			VideoPlayerCore.setFileList();
-			
-			//Display current segment in/out						
-			if (cutSegments.isEmpty() == false)
-	    	{
-	    		setCurrentSegmentValues();
-	    	}
-			
-			waveformContainer.repaint();
-		}
-	}
-	
-	public static void setCurrentSegmentValues() {
-		
-		for (CutSegment seg : cutSegments)
-        {
-            //Current segment
-            if (activeSegmentIndex == seg.index)
-            {
-            	playerMarkIn = seg.inMark;
-            	playerMarkOut = seg.outMark;
-            	
-            	caseInH.setText(Shutter.formatter.format(seg.inH));
-            	caseInM.setText(Shutter.formatter.format(seg.inM));
-            	caseInS.setText(Shutter.formatter.format(seg.inS));
-            	caseInF.setText(Shutter.formatter.format(seg.inF));
-            	
-            	caseOutH.setText(Shutter.formatter.format(seg.outH));
-            	caseOutM.setText(Shutter.formatter.format(seg.outM));
-            	caseOutS.setText(Shutter.formatter.format(seg.outS));
-            	caseOutF.setText(Shutter.formatter.format(seg.outF));            	
-            }
-        }
-	}
-	
-	public static double getSegmentTime(double h, double m, double s, double f) {		
-	    double totalFrames = (h * 3600 + m * 60 + s) * getFPS() + f;
-	    totalFrames = Timecode.getNTSCtimecode(totalFrames);
-	    return Timecode.getDropFrameTimecode(totalFrames);
-	}
 }

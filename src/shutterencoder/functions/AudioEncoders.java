@@ -397,6 +397,12 @@ public class AudioEncoders extends Shutter {
 		String audio = "";	
 		String audioFiltering = "";	
 		
+		//Multiple cuts
+    	if (InputAndOutput.segments != "")
+    	{    		
+    		audioFiltering += '"' + InputAndOutput.segments;
+    	}
+		
 		//EQ
 		if (AudioSettings.setEQ(audioFiltering) != "")
 		{
@@ -433,6 +439,12 @@ public class AudioEncoders extends Shutter {
 						
 			audioFiltering += ",volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
 		}
+		
+		//Multiple cuts
+    	if (InputAndOutput.segments != "")
+    	{
+    		audioFiltering += '"';
+    	}
 		
 		if (caseMixAudio.isSelected() && lblMix.getText().equals(language.getProperty("stereo")) && FFPROBE.surround)		
 		{

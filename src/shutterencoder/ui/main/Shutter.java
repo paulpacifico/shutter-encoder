@@ -9995,7 +9995,7 @@ public class Shutter {
 							timeIn = 0;
 						}
 
-						double currentTime = Timecode.setNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
+						double currentTime = Timecode.setNTSCtimecode(VideoPlayerCore.bufferedFrames.size() > 0 ?  VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame);
 						double offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
 
 						if (offset < 0)

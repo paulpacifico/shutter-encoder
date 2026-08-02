@@ -1143,7 +1143,7 @@ public class SubtitlesTimeline {
 					
 					if (e.getKeyCode() == KeyEvent.VK_ENTER)
 						btnAdd.doClick();
-					
+										
 					if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
 						btnDelete.doClick();
 					

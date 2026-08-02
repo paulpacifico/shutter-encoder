@@ -36,6 +36,7 @@ import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Renamer;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
@@ -106,9 +107,27 @@ public class HardwareListener extends Shutter {
 								VideoPlayerUI.btnReset.doClick();
 							}
 							
+							//Undo/Redo
+							int menuKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+
+							if (ke.getKeyCode() == KeyEvent.VK_Z)
+							{
+							    boolean isMenuKeyPressed = (ke.getModifiersEx() & menuKeyMask) != 0;
+							    boolean isShiftPressed = ke.isShiftDown();
+
+							    if (isMenuKeyPressed && !isShiftPressed)
+							    {
+							        VideoPlayerMultiCuts.undoCut();
+							    }
+							    else if (isMenuKeyPressed && isShiftPressed)
+							    {
+							        VideoPlayerMultiCuts.redoCut();
+							    }
+							}
+							
 							if (ke.getKeyCode() == KeyEvent.VK_BACK_SPACE || ke.getKeyCode() == KeyEvent.VK_DELETE)
 							{
-								VideoPlayerCore.removeCurrentSegment();
+								VideoPlayerMultiCuts.removeCurrentSegment();
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_HOME)
@@ -124,12 +143,14 @@ public class HardwareListener extends Shutter {
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_PAGE_UP)
-							{								
+							{			
+								VideoPlayerUI.previousFrame = true;
 								VideoPlayerUI.btnGoToIn.doClick();
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_PAGE_DOWN )
 							{
+								VideoPlayerUI.previousFrame = true;
 								VideoPlayerUI.btnGoToOut.doClick();
 							}
 							

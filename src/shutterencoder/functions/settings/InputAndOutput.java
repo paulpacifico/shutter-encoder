@@ -22,7 +22,8 @@ package shutterencoder.functions.settings;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
-import shutterencoder.ui.videoplayer.VideoPlayerCore.CutSegment;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class InputAndOutput extends Shutter {
@@ -42,7 +43,7 @@ public class InputAndOutput extends Shutter {
 		if (setInputAndOutput && FFPROBE.totalLength > 40)
 		{
 			//Multi cuts feature
-			if (VideoPlayerCore.cutSegments.isEmpty() == false)
+			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 			{
 				setMultiCuts();
 			}
@@ -90,7 +91,7 @@ public class InputAndOutput extends Shutter {
 			
 		//Adding segments
 		int i = 0;
-		for (i = 0 ; i < VideoPlayerCore.cutSegments.size() ; i++)
+		for (i = 0 ; i < VideoPlayerMultiCuts.cutSegments.size() ; i++)
     	{
 			//Video segment
 			if (FFPROBE.audioOnly == false)
@@ -110,7 +111,7 @@ public class InputAndOutput extends Shutter {
     	}
 		
 		//Concat output	
-		for (int o = 0 ; o < VideoPlayerCore.cutSegments.size() ; o++)
+		for (int o = 0 ; o < VideoPlayerMultiCuts.cutSegments.size() ; o++)
     	{
 			//Video segment
 			if (FFPROBE.audioOnly == false)
@@ -133,16 +134,6 @@ public class InputAndOutput extends Shutter {
 		if (FFPROBE.audioOnly)
 		{
 			streams = ":v=0:a=" + FFPROBE.channels;
-			
-			for (int c = 0 ; c < FFPROBE.channels ; c++)
-			{
-				streams += "[audio_" + c + "]";
-			}
-			
-			for (int c = 0 ; c < FFPROBE.channels ; c++)
-			{
-				streams += ";[audio_" + c + "]";
-			}
 		}
 		else if (FFPROBE.hasAudio == false)
 		{
@@ -170,10 +161,10 @@ public class InputAndOutput extends Shutter {
 		if (segments != "")
 		{
 			boolean isFirstInput = true;			
-			for (CutSegment seg : VideoPlayerCore.cutSegments)
+			for (CutSegment seg : VideoPlayerMultiCuts.cutSegments)
         	{
-				double in = VideoPlayerCore.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-                double out = VideoPlayerCore.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+				double in = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+                double out = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
                 double total = out - in;
                 
                 String inputHardware = beforeInput;

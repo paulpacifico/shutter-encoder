@@ -72,6 +72,7 @@ import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 import shutterencoder.utils.Utils;
 
@@ -5697,7 +5698,7 @@ public class UIController extends Shutter {
 		if (caseChunks.isSelected() == false)
 			chunksSize.setEnabled(false);
 		
-		if (VideoPlayerUI.caseApplyCutToAll.isVisible() && VideoPlayerCore.cutSegments.size() > 0)
+		if (VideoPlayerUI.caseApplyCutToAll.isVisible() && VideoPlayerMultiCuts.cutSegments.size() > 0)
 			VideoPlayerUI.caseApplyCutToAll.setEnabled(false);
 
 		if ((comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false || lblVBR.getText().equals("CQ")))

@@ -77,6 +77,7 @@ import shutterencoder.ui.subtitling.SubtitlesTimeline;
 import shutterencoder.ui.others.FileOverwriteWindow;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 import shutterencoder.utils.Utils;
 
@@ -1915,16 +1916,22 @@ public class FunctionUtils extends Shutter {
 					if (comboFonctions.getSelectedItem().toString().contains("XDCAM"))
 						silentTrack += " -shortest -map_metadata -1";
 					
+					int map = 1;
+					if (InputAndOutput.segments != "")
+					{
+						map = VideoPlayerMultiCuts.cutSegments.size();
+					}
+					
 					if (Shutter.caseAddWatermark.isSelected() && (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 					{
-						mapping += " -map 3";	
+						mapping += " -map " + (map + 2);	
 					}
 					else if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 					{
-						mapping += " -map 2";
+						mapping += " -map " + (map + 1);
 					}
 					else
-						mapping += " -map 1";	
+						mapping += " -map " + map;	
 				}
 			}
 		}		

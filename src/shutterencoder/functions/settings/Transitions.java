@@ -23,6 +23,7 @@ import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
 public class Transitions extends Shutter {
@@ -37,7 +38,7 @@ public class Transitions extends Shutter {
 	    		boolean fade = true;
 	    		
 	    		//Do not fade-in if it's not the first segment when using multiple cuts feature
-	    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
+	    		if (isVideoPlayer && VideoPlayerMultiCuts.cutSegments.isEmpty() == false
 	    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex > 0)
 	    		{
 	    			fade = false;
@@ -75,8 +76,8 @@ public class Transitions extends Shutter {
 	    		boolean fade = true;
 	    		
 	    		//Do not fade-out if it's not the latest segment when using multiple cuts feature
-	    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
-	    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex < VideoPlayerCore.cutSegments.size() - 1)
+	    		if (isVideoPlayer && VideoPlayerMultiCuts.cutSegments.isEmpty() == false
+	    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex < VideoPlayerMultiCuts.cutSegments.size() - 1)
 	    		{
 	    			fade = false;
 	    		}
@@ -107,7 +108,7 @@ public class Transitions extends Shutter {
 			    		{
 			    			totalIn = 0;
 			    			totalOut = 0;
-			    			for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+			    			for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 							{
 			    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFPROBE.currentFPS));
 								totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
@@ -155,7 +156,7 @@ public class Transitions extends Shutter {
 			boolean fade = true;
 			
 			//Do not fade-in if it's not the first segment when using multiple cuts feature
-    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
+    		if (isVideoPlayer && VideoPlayerMultiCuts.cutSegments.isEmpty() == false
     		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex > 0)
     		{
     			fade = false;
@@ -192,8 +193,8 @@ public class Transitions extends Shutter {
 			boolean fade = true;
 			
 			//Do not fade-out if it's not the latest segment when using multiple cuts feature
-    		if (isVideoPlayer && VideoPlayerCore.cutSegments.isEmpty() == false
-    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex < VideoPlayerCore.cutSegments.size() - 1)
+    		if (isVideoPlayer && VideoPlayerMultiCuts.cutSegments.isEmpty() == false
+    		&& VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex < VideoPlayerMultiCuts.cutSegments.size() - 1)
     		{
     			fade = false;
     		}
@@ -217,7 +218,7 @@ public class Transitions extends Shutter {
 		    		{
 		    			totalIn = 0;
 		    			totalOut = 0;
-		    			for (VideoPlayerCore.CutSegment seg : VideoPlayerCore.cutSegments)
+		    			for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 						{
 		    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFPROBE.currentFPS));
 							totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
