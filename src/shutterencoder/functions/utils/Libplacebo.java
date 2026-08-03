@@ -23,8 +23,8 @@ import shutterencoder.functions.settings.AdvancedFeatures;
 import shutterencoder.functions.settings.BitratesAdjustement;
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
-import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Shutter;
 
 public class Libplacebo extends Shutter {
@@ -104,7 +104,7 @@ public class Libplacebo extends Shutter {
 
 	public static void getLibplaceboScore(boolean noGPU, boolean firstFilters) {
 				
-		if (noGPU || FFMPEG.libplaceboAvailable == false)
+		if (noGPU || LibraryUtils.libplaceboAvailable == false)
 		{
 			Libplacebo.useLibplaceboFilters = false;			
 			return;

@@ -62,6 +62,7 @@ import shutterencoder.library.EXIFTOOL;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LTCDUMP;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.MEDIAINFO;
 import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.WHISPER;
@@ -160,18 +161,18 @@ public class FunctionUtils extends Shutter {
 			if (isVideoPlayer)
 			{
 				//Reset values before running the parallel loop otherwise value are still available for the video player
-				FFMPEG.autoQSV = false;
-				FFMPEG.autoCUDA = false;
-				FFMPEG.autoAMF = false;
-				FFMPEG.autoVIDEOTOOLBOX = false;
-				FFMPEG.autoVULKAN = false;
+				LibraryUtils.autoQSV = false;
+				LibraryUtils.autoCUDA = false;
+				LibraryUtils.autoAMF = false;
+				LibraryUtils.autoVIDEOTOOLBOX = false;
+				LibraryUtils.autoVULKAN = false;
 				
-				Thread gpu = new Thread(() -> FFMPEG.checkGPUCapabilities(file.toString()));
+				Thread gpu = new Thread(() -> LibraryUtils.checkGPUCapabilities(file.toString()));
 				gpu.start();
 								
 			}
 			else
-				FFMPEG.checkGPUCapabilities(file.toString());
+				LibraryUtils.checkGPUCapabilities(file.toString());
 					
 			//Check with MEDIAINFO
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
@@ -240,7 +241,7 @@ public class FunctionUtils extends Shutter {
 				Thread.sleep(5000);				// Permet d'attendre la nouvelle valeur de la copie					
 			} catch (InterruptedException e) {}
 
-		} while ((fileSize != file.length() || FFMPEG.isReadable(file) == false) && cancelled == false && file.exists());
+		} while ((fileSize != file.length() || LibraryUtils.isReadable(file) == false) && cancelled == false && file.exists());
 				
 		SwingUtilities.invokeLater(new Runnable()
 		{

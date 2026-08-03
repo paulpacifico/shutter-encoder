@@ -32,6 +32,7 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesTimeline;
@@ -134,15 +135,15 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							
 							waveformZoom = 1;
 												
-							if (VideoPlayerCore.addWaveformIsRunning && FFMPEG.waveformWriter != null)
+							if (VideoPlayerCore.addWaveformIsRunning && LibraryUtils.waveformWriter != null)
 							{
 								try {
-									FFMPEG.waveformWriter.write('q');
-									FFMPEG.waveformWriter.flush();
-									FFMPEG.waveformWriter.close();
+									LibraryUtils.waveformWriter.write('q');
+									LibraryUtils.waveformWriter.flush();
+									LibraryUtils.waveformWriter.close();
 								} catch (IOException er) {}
 								
-								FFMPEG.waveformProcess.destroy();
+								LibraryUtils.waveformProcess.destroy();
 							}
 													
 							String extension = VideoPlayerCore.videoPath.substring(VideoPlayerCore.videoPath.lastIndexOf("."));	
@@ -245,7 +246,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							//Autocrop
 							if (Shutter.caseEnableCrop.isSelected() && Shutter.comboPreset.getSelectedIndex() == 1)
 				    		{
-				    			FFMPEG.setCropDetect(new File(VideoPlayerCore.videoPath));	  
+				    			LibraryUtils.setCropDetect(new File(VideoPlayerCore.videoPath));	  
 				    		}
 							
 							//Burn subtitles

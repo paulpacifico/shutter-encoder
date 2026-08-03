@@ -48,6 +48,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
@@ -107,9 +108,9 @@ public class RecordInputDevice {
 		screenVideo.setBounds(12, 12, 40, 14);
 		frame.getContentPane().add(screenVideo);		
 						
-		String firstInput[] = new String[FFMPEG.videoDevices.toString().split(":").length];
+		String firstInput[] = new String[LibraryUtils.videoDevices.toString().split(":").length];
 		int i = 0;
-		for (String videoDevice : FFMPEG.videoDevices.toString().split(":"))
+		for (String videoDevice : LibraryUtils.videoDevices.toString().split(":"))
 		{		
 			firstInput[i] = videoDevice.replace(Shutter.language.getProperty("noVideo"), "Capture.current.screen");
 			i++;
@@ -153,7 +154,7 @@ public class RecordInputDevice {
 		screenAudio.setBounds(12, screenVideo.getY() + screenVideo.getHeight() + 14, 40, 14);
 		frame.getContentPane().add(screenAudio);
 		
-		comboScreenAudio = new JComboBox<String>(FFMPEG.audioDevices.toString().split(":"));
+		comboScreenAudio = new JComboBox<String>(LibraryUtils.audioDevices.toString().split(":"));
 		comboScreenAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboScreenAudio.setEditable(false);
 		comboScreenAudio.setMaximumRowCount(20);
@@ -267,7 +268,7 @@ public class RecordInputDevice {
 		//if (System.getProperty("os.name").contains("Windows"))
 		//	frame.getContentPane().add(inputVideo);
 		
-		comboInputVideo = new JComboBox<String>(FFMPEG.videoDevices.toString().split(":"));
+		comboInputVideo = new JComboBox<String>(LibraryUtils.videoDevices.toString().split(":"));
 		comboInputVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboInputVideo.setEditable(false);
 		comboInputVideo.setEnabled(true);
@@ -282,7 +283,7 @@ public class RecordInputDevice {
 		//if (System.getProperty("os.name").contains("Windows"))
 		//	frame.getContentPane().add(inputAudio);
 		
-		comboInputAudio = new JComboBox<String>(FFMPEG.audioDevices.toString().split(":"));
+		comboInputAudio = new JComboBox<String>(LibraryUtils.audioDevices.toString().split(":"));
 		comboInputAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboInputAudio.setEditable(false);
 		comboInputAudio.setEnabled(false);
@@ -531,7 +532,7 @@ public class RecordInputDevice {
 		String videoDevice = "";
 		if (Shutter.list.getElementAt(0).equals("Capture.input.device"))
 		{
-			String getVideoDevices[] = FFMPEG.videoDevices.toString().split(":");
+			String getVideoDevices[] = LibraryUtils.videoDevices.toString().split(":");
 			videoDevice = getVideoDevices[videoDeviceIndex];
 		}
 		
@@ -625,7 +626,7 @@ public class RecordInputDevice {
 	
 	public static String setOverlayDevice() {
 		
-		String getVideoDevices[] = FFMPEG.videoDevices.toString().split(":");
+		String getVideoDevices[] = LibraryUtils.videoDevices.toString().split(":");
 		String videoDevice = getVideoDevices[videoDeviceIndex];
 		
 		if (inputDeviceResolution != "")
@@ -668,7 +669,7 @@ public class RecordInputDevice {
 		
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Windows"))
 		{
-			String getAudioDevices[] = FFMPEG.audioDevices.toString().split(":");
+			String getAudioDevices[] = LibraryUtils.audioDevices.toString().split(":");
 			
 			if (audioDeviceIndex > 0)
 			{
@@ -696,7 +697,7 @@ public class RecordInputDevice {
 		String setAudio = "";
 		FFPROBE.channels = 0;
 		FFPROBE.stereo = false;
-		String getAudioDevices[] = FFMPEG.audioDevices.toString().split(":");
+		String getAudioDevices[] = LibraryUtils.audioDevices.toString().split(":");
 
 		if (overlayAudioDeviceIndex > 0)
 		{

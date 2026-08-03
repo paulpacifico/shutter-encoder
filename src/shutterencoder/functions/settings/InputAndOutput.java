@@ -175,8 +175,22 @@ public class InputAndOutput extends Shutter {
 	        Matcher matcher = pattern.matcher(afterInput);
 
 	        String secondInputFile = "";	        
-	        if (matcher.find()) {
-	            secondInputFile = matcher.group(1);
+	        if (matcher.find())
+	        {
+	        	if (Shutter.caseAddWatermark.isSelected() && Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+	            {
+	        		secondInputFile = " -i " + matcher.group(1);
+	        		matcher.find();
+	        		lavfi += " -i " + matcher.group(1);	        		
+	            }
+	        	else if (Shutter.caseAddWatermark.isSelected())
+	        	{
+	        		secondInputFile = " -i " + matcher.group(1);
+	        	}
+	        	else if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+	        	{
+	        		lavfi += " -i " + matcher.group(1);	     
+	        	}
 	        }
 			
 			boolean isFirstInput = true;			
@@ -218,9 +232,9 @@ public class InputAndOutput extends Shutter {
 	        	isFirstInput = false;
         	}
 			
-			if (secondInputFile != "")
-			{				
-				return inputFiles.replace(lavfi + " -i " + secondInputFile, "") + lavfi + " -i " + secondInputFile;
+			if (secondInputFile != "" || lavfi != "")
+			{			
+				return inputFiles.replace(secondInputFile + lavfi, "") + secondInputFile + lavfi;
 			}
 			else			
 				return inputFiles;

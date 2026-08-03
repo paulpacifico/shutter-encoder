@@ -25,6 +25,7 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Shutter;
 
 public class Corrections extends Shutter {
@@ -163,7 +164,7 @@ public class Corrections extends Shutter {
 			//GPU filter	
 			if (noGPU == false && filterGPU && filterComplex.contains("nlmeans"))
 			{
-				if (FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+				if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					

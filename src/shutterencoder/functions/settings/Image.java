@@ -24,8 +24,8 @@ import java.io.File;
 import shutterencoder.functions.VideoEncoders;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -40,7 +40,7 @@ public class Image extends Shutter {
 			{	    		
 	    		if (comboPreset.getSelectedIndex() == 1)
 	    		{
-	    			FFMPEG.setCropDetect(file);	  
+	    			LibraryUtils.setCropDetect(file);	  
 	    		}
 
 				float imageRatio = 1.0f;
@@ -238,7 +238,7 @@ public class Image extends Shutter {
 			//GPU filter	
 			if (noGPU == false && filterGPU && (filterComplex.contains("transpose") || filterComplex.contains("hflip")))
 			{				
-				if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+				if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -251,7 +251,7 @@ public class Image extends Shutter {
 
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
-				else if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
+				else if (LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				{				
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -264,7 +264,7 @@ public class Image extends Shutter {
 					
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
-				else if (FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+				else if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -490,7 +490,7 @@ public class Image extends Shutter {
 		}
 						
 		//GPU scaling
-		if (FFMPEG.isGPUCompatible && filterComplex.contains("scale=") && noGPU == false && filterGPU
+		if (LibraryUtils.isGPUCompatible && filterComplex.contains("scale=") && noGPU == false && filterGPU
 		&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
 		&& comboResolution.getSelectedItem().toString().contains("AI") == false)
 		{
@@ -512,35 +512,35 @@ public class Image extends Shutter {
 				deinterlacing = true;
 			}
 
-			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":interp_algo=" + setScaleAlgorithm("CUDA"));			
 				
 				filterComplex = filterComplex.replace("scale=", "scale_cuda=") + ",hwdownload,format=" + bitDepth;	
 			}
-			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false)
+			else if ((LibraryUtils.autoAMF || (LibraryUtils.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":scale_type=" + setScaleAlgorithm("AMF"));
 				
 				filterComplex = filterComplex.replace("scale=", "vpp_amf=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":mode=" + setScaleAlgorithm("QSV"));
 				
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((LibraryUtils.autoVIDEOTOOLBOX || (LibraryUtils.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, "");
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vt=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":scaler=" + setScaleAlgorithm("VULKAN"));
@@ -807,7 +807,7 @@ public class Image extends Shutter {
 		//GPU filter	
 		if (noGPU == false && filterComplex.contains("pad=") && filterGPU)
 		{
-			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				

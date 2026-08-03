@@ -65,6 +65,7 @@ import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.DCRAW;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.NCNN;
 import shutterencoder.library.XPDFREADER;
 import shutterencoder.ui.main.Shutter;
@@ -143,7 +144,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		        }
 		        else
 		        {
-		        	if (FFMPEG.libplaceboAvailable)
+		        	if (LibraryUtils.libplaceboAvailable)
 					{
 						FFMPEG.setEnvironment(pb1);
 					}
@@ -155,7 +156,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		        }
 		        else
 		        {
-		        	if (FFMPEG.libplaceboAvailable)
+		        	if (LibraryUtils.libplaceboAvailable)
 					{
 						FFMPEG.setEnvironment(pb2);
 					}
@@ -172,7 +173,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		        }
 		        else
 		        {
-		        	if (FFMPEG.libplaceboAvailable)
+		        	if (LibraryUtils.libplaceboAvailable)
 					{
 						FFMPEG.setEnvironment(pb);
 					}
@@ -1174,7 +1175,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			String gpuDecoding = "";			
 			if (Shutter.comboGPUDecoding.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false && mouseIsPressed == false && previousFrame == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
 			{
-				gpuDecoding = FFMPEG.setGPUDevice(setFilter(false, false));
+				gpuDecoding = LibraryUtils.setGPUDevice(setFilter(false, false));
 			}
 
 			String extension = videoPath.substring(videoPath.lastIndexOf("."));	
@@ -1239,7 +1240,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				|| Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")
 				|| Libplacebo.useLibplaceboFilters) //Always need to choose the GPU
 				{
-					if (FFMPEG.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+					if (LibraryUtils.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 					{
 						device = " -init_hw_device vulkan=gpu:1";
 					}
@@ -1448,16 +1449,16 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						{		
 							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 							{
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 							else
 							{
-								FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 						}
 						else
 						{
-							FFMPEG.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
+							LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
 						}
 						
 						if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
@@ -1936,35 +1937,35 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
 		{
 			//Auto GPU
-			if (FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{		
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_cuda=" + width + ":" + height + ":interp_algo=" + algorithm.replace("neighbor", "nearest").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((FFMPEG.autoAMF || (FFMPEG.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlace == "")
+			else if ((LibraryUtils.autoAMF || (LibraryUtils.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlace == "")
 			{
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "vpp_amf=" + width + ":" + height + ":scale_type=" + algorithm.replace("neighbor", "bilinear").replace("bilinear", "bicubic") + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
+			else if (LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 			{		
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_qsv=" + width + ":" + height + ":mode=" + algorithm.replace("neighbor", "low_power").replace("bilinear", "hq") + ",hwdownload,format=" + bitDepth;
 			}	
-			else if ((FFMPEG.autoVIDEOTOOLBOX || (FFMPEG.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlace == "")
+			else if ((LibraryUtils.autoVIDEOTOOLBOX || (LibraryUtils.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlace == "")
 			{
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
 			}
-			else if (FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+			else if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 			{
 				if (filter != "") filter += ",";
 				

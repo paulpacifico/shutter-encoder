@@ -35,6 +35,7 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.DCRAW;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.NCNN;
 import shutterencoder.library.XPDFREADER;
 import shutterencoder.ui.main.Shutter;
@@ -135,7 +136,7 @@ public class Picture extends Shutter {
 							continue;
 										
 						//No GPU acceleration when using this function
-						FFMPEG.isGPUCompatible = false;
+						LibraryUtils.isGPUCompatible = false;
 						
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);

@@ -155,6 +155,7 @@ import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.EXIFTOOL;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.MEDIAINFO;
 import shutterencoder.library.NCNN;
 import shutterencoder.library.XPDFREADER;
@@ -935,10 +936,10 @@ public class Shutter {
 		PYTHON.getPythonPath();
 				
 		//Check CPU
-		FFMPEG.checkCPUInfo();
+		LibraryUtils.checkCPUInfo();
 		
 		//Check GPUs
-		FFMPEG.checkGPUAvailable();
+		LibraryUtils.checkGPUAvailable();
 		
 		//Load panels
 		topBar();
@@ -2399,16 +2400,16 @@ public class Shutter {
 
 						// list devices
 						if (System.getProperty("os.name").contains("Mac")) {
-							FFMPEG.devices("-hide_banner -f avfoundation -list_devices true -i dummy");
+							LibraryUtils.devices("-hide_banner -f avfoundation -list_devices true -i dummy");
 						} else if (System.getProperty("os.name").contains("Windows")) {
-							FFMPEG.devices("-hide_banner -f dshow -list_devices true -i dummy" + '"');
+							LibraryUtils.devices("-hide_banner -f dshow -list_devices true -i dummy" + '"');
 						} else // Linux
 						{
-							FFMPEG.videoDevices = new StringBuilder();
-							FFMPEG.videoDevices.append(language.getProperty("noVideo"));
+							LibraryUtils.videoDevices = new StringBuilder();
+							LibraryUtils.videoDevices.append(language.getProperty("noVideo"));
 
-							FFMPEG.audioDevices = new StringBuilder();
-							FFMPEG.audioDevices.append(language.getProperty("noAudio"));
+							LibraryUtils.audioDevices = new StringBuilder();
+							LibraryUtils.audioDevices.append(language.getProperty("noAudio"));
 						}
 
 						do {
@@ -3202,13 +3203,13 @@ public class Shutter {
 
 				if (VideoPlayerCore.addWaveformIsRunning) {
 					try {
-						FFMPEG.waveformWriter.write('q');
-						FFMPEG.waveformWriter.flush();
-						FFMPEG.waveformWriter.close();
+						LibraryUtils.waveformWriter.write('q');
+						LibraryUtils.waveformWriter.flush();
+						LibraryUtils.waveformWriter.close();
 					} catch (IOException er) {
 					}
 
-					FFMPEG.waveformProcess.destroy();
+					LibraryUtils.waveformProcess.destroy();
 
 					do {
 						try {
@@ -3906,7 +3907,7 @@ public class Shutter {
 
 						if (comboFilter.getSelectedItem().toString().equals(".avif"))
 						{
-							FFMPEG.detectHardwareAcceleration("AV1");
+							LibraryUtils.detectHardwareAcceleration("AV1");
 						}
 					}
 
@@ -5292,7 +5293,7 @@ public class Shutter {
 					UIController.changeComboOptions();
 				}
 				
-				FFMPEG.checkGPUDeinterlacing();
+				LibraryUtils.checkGPUDeinterlacing();
 
 				if (NCNN.isRunning && NCNN.process != null) {
 					NCNN.process.destroy();
@@ -8609,7 +8610,7 @@ public class Shutter {
 					comboPreset.setSelectedIndex(0);
 				}
 				
-				FFMPEG.checkGPUDeinterlacing();
+				LibraryUtils.checkGPUDeinterlacing();
 
 				VideoPlayerUI.player.repaint();
 				
@@ -8671,7 +8672,7 @@ public class Shutter {
 
 							File file = new File(VideoPlayerCore.videoPath);
 
-							FFMPEG.setCropDetect(file);
+							LibraryUtils.setCropDetect(file);
 
 							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						}
@@ -15234,7 +15235,7 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				FFMPEG.checkGPUDeinterlacing();
+				LibraryUtils.checkGPUDeinterlacing();
 			}
 			
 		});
@@ -18728,9 +18729,9 @@ public class Shutter {
 		
 		// GPU decoding
 		if (System.getProperty("os.name").contains("Windows"))
-			FFMPEG.checkHWaccel("-hwaccels" + '"');
+			LibraryUtils.checkHWaccel("-hwaccels" + '"');
 		else
-			FFMPEG.checkHWaccel("-hwaccels");
+			LibraryUtils.checkHWaccel("-hwaccels");
 
 		do {
 			try {
@@ -18739,7 +18740,7 @@ public class Shutter {
 			}
 		} while (FFMPEG.runProcess.isAlive());
 
-		comboGPUDecoding = new JComboBox<String>(FFMPEG.hwaccels.toString().split(System.lineSeparator()));
+		comboGPUDecoding = new JComboBox<String>(LibraryUtils.hwaccels.toString().split(System.lineSeparator()));
 		comboGPUDecoding.setName("comboGPUDecoding");
 		comboGPUDecoding.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
 		comboGPUDecoding.setEditable(false);
@@ -18798,7 +18799,7 @@ public class Shutter {
 					VideoPlayerUI.frameIsComplete = false;
 					
 					if (VideoPlayerCore.videoPath != null)
-						FFMPEG.checkGPUCapabilities(VideoPlayerCore.videoPath);
+						LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
 					
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);			
 				}
@@ -18807,7 +18808,7 @@ public class Shutter {
 		});
 		
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-		for (int i = 0 ; i < FFMPEG.multiGPU + 1 ; i++)
+		for (int i = 0 ; i < LibraryUtils.multiGPU + 1 ; i++)
 		{
 			model.addElement("GPU #" + i);
 		}
@@ -18856,7 +18857,7 @@ public class Shutter {
 				VideoPlayerUI.frameIsComplete = false;
 				
 				if (VideoPlayerCore.videoPath != null)
-					FFMPEG.checkGPUCapabilities(VideoPlayerCore.videoPath);
+					LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
 				
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 				
@@ -19069,7 +19070,7 @@ public class Shutter {
 				VideoPlayerUI.frameIsComplete = false;
 				
 				if (VideoPlayerCore.videoPath != null)
-					FFMPEG.checkGPUCapabilities(VideoPlayerCore.videoPath);
+					LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
 				
 				if (comboAccel.hasFocus())
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);

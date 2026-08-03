@@ -21,8 +21,8 @@ package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Settings;
 
@@ -67,10 +67,10 @@ public class AdvancedFeatures extends Shutter {
 				bitDepth = "p010";
 			}
 						
-			if (FFMPEG.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
+			if (LibraryUtils.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
 			{
 				//GPU filter
-				if ((FFMPEG.autoCUDA || (FFMPEG.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+				if ((LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 				{				
 					if (filterComplex != "") filterComplex += ",";
@@ -82,7 +82,7 @@ public class AdvancedFeatures extends Shutter {
 					else
 						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_cuda").replace("yadif", "yadif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
-				else if ((FFMPEG.autoQSV || (FFMPEG.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
+				else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced")))
 				{		
 					if (filterComplex != "") filterComplex += ",";
@@ -94,7 +94,7 @@ public class AdvancedFeatures extends Shutter {
 					else
 						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
 				}
-				else if ((FFMPEG.autoVULKAN || (FFMPEG.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+				else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
 				{
 					if (filterComplex != "") filterComplex += ",";

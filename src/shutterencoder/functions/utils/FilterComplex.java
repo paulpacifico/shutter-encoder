@@ -183,9 +183,18 @@ public class FilterComplex extends Shutter {
 					filterComplex = "[0:v]" + filterComplex.replace("[0:v]", ""); 
 				
 				//Replace [1:v] to the correct value
-				if (Shutter.caseAddWatermark.isSelected())		
+				if (Shutter.caseAddWatermark.isSelected() && Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
 				{
 					filterComplex = filterComplex.replace(";[video][1:v]", ";[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]");
+					filterComplex = filterComplex.replace("[2:v]overlay", "[" + (VideoPlayerMultiCuts.cutSegments.size() + 1) + ":v]overlay");
+				}
+				else if (Shutter.caseAddWatermark.isSelected())		
+				{
+					filterComplex = filterComplex.replace(";[video][1:v]", ";[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]");
+				}
+				else if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+				{
+					filterComplex = filterComplex.replace("[1:v]overlay", "[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]overlay");
 				}
 			}
 		}

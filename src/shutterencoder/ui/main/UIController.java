@@ -65,6 +65,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
@@ -608,7 +609,7 @@ public class UIController extends Shutter {
 			}
 		}
 		
-		if (FFMPEG.multiGPU > 0)
+		if (LibraryUtils.multiGPU > 0)
 	    {
 		    if (comboGPUDecoding.isVisible())
 		    {
@@ -975,7 +976,7 @@ public class UIController extends Shutter {
 			}
 			comboAccel.setLocation(lblHWaccel.getLocation().x + lblHWaccel.getWidth() + 4, comboGPUDecoding.getY());
 			
-			if (FFMPEG.multiGPU > 0 && comboGPUDecoding.isVisible())
+			if (LibraryUtils.multiGPU > 0 && comboGPUDecoding.isVisible())
 		    {
 			    comboSelectedGPU.setLocation(lblGpuDecoding.getLocation().x - comboSelectedGPU.getWidth() - 6, comboGPUDecoding.getY());
 		    }	
@@ -1660,7 +1661,7 @@ public class UIController extends Shutter {
 
 								// HWaccel								
 								if (anim)
-									FFMPEG.detectHardwareAcceleration(function);							 
+									LibraryUtils.detectHardwareAcceleration(function);							 
 
 								// grpSetAudio
 								grpSetAudio.removeAll();
@@ -2054,7 +2055,7 @@ public class UIController extends Shutter {
 
 								// HWaccel
 								if (anim)
-									FFMPEG.detectHardwareAcceleration(function);
+									LibraryUtils.detectHardwareAcceleration(function);
 
 								if (comboFonctions.getSelectedItem().equals("QT Animation") || subtitlesBurn == false) {
 									caseDisplay.setEnabled(false);
@@ -2394,7 +2395,7 @@ public class UIController extends Shutter {
 
 								// HWaccel
 								if (anim)
-									FFMPEG.detectHardwareAcceleration(function);
+									LibraryUtils.detectHardwareAcceleration(function);
 
 								if (comboFonctions.getSelectedItem().equals("H.266") || subtitlesBurn == false) {
 									caseDisplay.setEnabled(false);
@@ -3020,7 +3021,7 @@ public class UIController extends Shutter {
 
 								// HWaccel
 								if (anim)
-									FFMPEG.detectHardwareAcceleration(function);
+									LibraryUtils.detectHardwareAcceleration(function);
 
 								if (subtitlesBurn) {
 									caseDisplay.setEnabled(true);

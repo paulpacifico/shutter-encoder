@@ -54,6 +54,7 @@ import shutterencoder.library.BMXTRANSWRAP;
 import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.NCNN;
 import shutterencoder.library.TSMUXER;
 import shutterencoder.ui.main.Shutter;
@@ -890,7 +891,7 @@ public class VideoEncoders extends Shutter {
 							}	
 						}
 						
-						String gpuDecoding = FFMPEG.setGPUDevice(filterComplex);						
+						String gpuDecoding = LibraryUtils.setGPUDevice(filterComplex);						
 						
 						//GPU filtering
 			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
@@ -1309,7 +1310,7 @@ public class VideoEncoders extends Shutter {
 	public static String setCodec() {
 		
 		String selectedGPU = "";
-		if (FFMPEG.multiGPU > 0)
+		if (LibraryUtils.multiGPU > 0)
 			selectedGPU = " -gpu " + comboSelectedGPU.getSelectedIndex();
 			
 		switch (comboFonctions.getSelectedItem().toString())
@@ -1722,7 +1723,7 @@ public class VideoEncoders extends Shutter {
 				else
 				{
 					//Switching to GPU nv12 or p010 to avoid useless pix_fmt conversion
-					if (FFMPEG.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
+					if (LibraryUtils.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
 					{
 						if (filterComplex.contains("format=p010"))
 						{
@@ -1750,7 +1751,7 @@ public class VideoEncoders extends Shutter {
 				else				
 				{
 					//Switching to GPU nv12 to avoid useless pix_fmt conversion
-					if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
+					if (caseColorspace.isSelected() == false && LibraryUtils.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
 					{
 						return "";				
 					}
@@ -1771,7 +1772,7 @@ public class VideoEncoders extends Shutter {
 			case "Xvid":
 				
 				//Switching to GPU nv12 to avoid useless pix_fmt conversion
-				if (caseColorspace.isSelected() == false && FFMPEG.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
+				if (caseColorspace.isSelected() == false && LibraryUtils.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
 				{
 					return "";				
 				}

@@ -89,6 +89,7 @@ import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.MEDIAINFO;
 import shutterencoder.library.NCNN;
 import shutterencoder.ui.handlers.ListFileTransferHandler;
@@ -1411,11 +1412,12 @@ public class VideoPlayerUI {
 				
 				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 				{
+					double previousSegment = 0;
 					for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 		            {
 						double inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
 		                double outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-		                		                
+
 		                if (VideoPlayerCore.playerCurrentFrame == inputMark) //Get previous segment
 		                {
 		                	if (seg.index > 0)
@@ -1424,15 +1426,26 @@ public class VideoPlayerUI {
 		                		outputMark = VideoPlayerMultiCuts.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
 		                		
 		                		VideoPlayerCore.playerCurrentFrame = outputMark - 1;
+		                		previousSegment = 0;
 		                		break;
 		                	}
 		                }
 		                else if (VideoPlayerCore.playerCurrentFrame >= inputMark && VideoPlayerCore.playerCurrentFrame < outputMark) //Current segment
 		                {
 		                	VideoPlayerCore.playerCurrentFrame = inputMark;
+		                	previousSegment = 0;
 					        break;
 		                }
+		                else if (VideoPlayerCore.playerCurrentFrame >= outputMark)
+		                {
+		                	previousSegment = outputMark - 1;
+		                } 
 		            }
+					
+					if (previousSegment != 0)
+					{
+						VideoPlayerCore.playerCurrentFrame = previousSegment;
+					}
 				}
 				else
 				{	
@@ -3458,12 +3471,12 @@ public class VideoPlayerUI {
 					if (VideoPlayerCore.addWaveformIsRunning)
 					{									
 						try {
-							FFMPEG.waveformWriter.write('q');
-							FFMPEG.waveformWriter.flush();
-							FFMPEG.waveformWriter.close();
+							LibraryUtils.waveformWriter.write('q');
+							LibraryUtils.waveformWriter.flush();
+							LibraryUtils.waveformWriter.close();
 						} catch (IOException er) {}
 						
-						FFMPEG.waveformProcess.destroy();
+						LibraryUtils.waveformProcess.destroy();
 					}
 					
 					waveformIcon.setVisible(false);
