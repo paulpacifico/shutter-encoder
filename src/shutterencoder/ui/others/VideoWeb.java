@@ -68,7 +68,7 @@ import javax.swing.event.PopupMenuListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.YOUTUBEDL;
 import shutterencoder.ui.main.Shutter;

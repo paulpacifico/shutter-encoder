@@ -29,7 +29,7 @@ import java.io.File;
 import javax.swing.JPanel;
 
 import shutterencoder.functions.Transcribe;
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;

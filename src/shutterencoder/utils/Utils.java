@@ -84,7 +84,7 @@ import com.formdev.flatlaf.ui.FlatLineBorder;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
 import shutterencoder.functions.settings.Colorimetry;
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.BMXTRANSWRAP;
 import shutterencoder.library.DCRAW;
 import shutterencoder.library.DVDAUTHOR;

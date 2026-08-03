@@ -19,6 +19,8 @@
 
 package shutterencoder.functions.settings;
 
+import shutterencoder.functions.utils.FunctionUtils;
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
@@ -112,16 +114,16 @@ public class AdvancedFeatures extends Shutter {
 				}
 				
 			}
-			else if (FunctionUtils.useLibplaceboFilters
+			else if (Libplacebo.useLibplaceboFilters
 			&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false && doubler == 0
 			&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 			{
 				if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 				{
-					filterComplex = FunctionUtils.setLibplaceboFilter("", "deinterlace=bwdif");
+					filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=bwdif");
 				}
 				else
-					filterComplex = FunctionUtils.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
+					filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
 			}
 			else
 			{
@@ -644,9 +646,9 @@ public class AdvancedFeatures extends Shutter {
 			
 			if (FPS != newFPS)
 			{	           
-				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 				{
-					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "fps=" + newFPS + ":frame_mixer=linear");
+					filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "fps=" + newFPS + ":frame_mixer=linear");
 				}
 				else
 				{

@@ -19,6 +19,7 @@
 
 package shutterencoder.functions.settings;
 
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 
@@ -76,7 +77,7 @@ public class BitratesAdjustement extends Shutter {
 			int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
 			int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
 
-			if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{
 				String crop_x = "crop_x=" + cropX;
 				if (caseMiror.isSelected() && caseRotate.isSelected() == false
@@ -91,7 +92,7 @@ public class BitratesAdjustement extends Shutter {
 					crop_y = "crop_y=ih-" + cropHeight + "-" + cropY;
 				}
 				
-				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":" + crop_x + ":" + crop_y + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
+				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":" + crop_x + ":" + crop_y + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
 			}
 			else
 			{

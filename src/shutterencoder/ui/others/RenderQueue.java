@@ -64,7 +64,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.BMXTRANSWRAP;
 import shutterencoder.library.DCRAW;
 import shutterencoder.library.DVDAUTHOR;

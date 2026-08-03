@@ -27,8 +27,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
 
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.InputAndOutput;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
@@ -38,6 +38,7 @@ import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class VideoInserts extends Shutter {
@@ -320,7 +321,7 @@ public class VideoInserts extends Shutter {
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 					do {
 						try {
 							Thread.sleep(10);

@@ -21,7 +21,7 @@ package shutterencoder.functions;
 
 import java.io.File;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.BACKGROUNDREMOVER;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.ui.main.Shutter;

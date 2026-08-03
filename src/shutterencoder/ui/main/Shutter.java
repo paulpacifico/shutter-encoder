@@ -143,8 +143,8 @@ import shutterencoder.functions.VMAF;
 import shutterencoder.functions.VideoEncoders;
 import shutterencoder.functions.VideoInserts;
 import shutterencoder.functions.settings.Colorimetry;
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.Timecode;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.ANONYMIZER;
 import shutterencoder.library.BACKGROUNDREMOVER;
 import shutterencoder.library.BMXTRANSWRAP;
@@ -192,7 +192,9 @@ import shutterencoder.ui.renderers.ComboRendererOverlay;
 import shutterencoder.ui.renderers.FilesCellRenderer;
 import shutterencoder.ui.renderers.SplashRenderer;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 import shutterencoder.utils.Utils;
 
@@ -2012,7 +2014,7 @@ public class Shutter {
 			public void keyReleased(KeyEvent e) {
 
 				// VideoPlayer.player
-				VideoPlayerCore.setMedia();
+				VideoPlayerUtils.setMedia();
 			}
 
 		});
@@ -2142,10 +2144,10 @@ public class Shutter {
 				totalLength = Timecode.setNTSCtimecode(totalLength);
 							
 				// Formatage
-				int h = (int) Math.floor(totalLength / VideoPlayerCore.getFPS() / 3600);
-				int m = (int) (Math.floor(totalLength / VideoPlayerCore.getFPS() / 60) % 60);
-				int s = (int) (Math.floor(totalLength / VideoPlayerCore.getFPS()) % 60);   
-				int f = (int) Math.floor(totalLength % VideoPlayerCore.getFPS());
+				int h = (int) Math.floor(totalLength / VideoPlayerUtils.getFPS() / 3600);
+				int m = (int) (Math.floor(totalLength / VideoPlayerUtils.getFPS() / 60) % 60);
+				int s = (int) (Math.floor(totalLength / VideoPlayerUtils.getFPS()) % 60);   
+				int f = (int) Math.floor(totalLength % VideoPlayerUtils.getFPS());
 
 				String finalDuration;
 				if (h > 0)
@@ -2742,7 +2744,7 @@ public class Shutter {
 
 				if (e.getButton() == MouseEvent.BUTTON1 && list.getSize() > 0 && fileList.getSelectedValue().equals(VideoPlayerCore.videoPath) == false)
 				{
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 				}
 			}
 
@@ -2860,7 +2862,7 @@ public class Shutter {
 					}
 
 					// VideoPlayer.player
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 
 					defaultFolder = fc.getCurrentDirectory();
 				}
@@ -9923,8 +9925,8 @@ public class Shutter {
 			@Override
 			protected void paintComponent(Graphics g) {
 
-				if ((caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) && list.getSize() > 0
-						&& VideoPlayerCore.videoPath != null) {
+				if ((caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) && list.getSize() > 0 && VideoPlayerCore.videoPath != null)
+				{
 					super.paintComponent(g);
 
 					Graphics2D g2 = (Graphics2D) g;
@@ -9991,6 +9993,12 @@ public class Shutter {
 								+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
 								+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
+						if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
+						{
+							VideoPlayerMultiCuts.CutSegment seg = VideoPlayerMultiCuts.cutSegments.get(0);
+							timeIn = (seg.inH * 3600 + seg.inM * 60 + seg.inS) * FFPROBE.currentFPS + seg.inF;
+						}
+						
 						if (caseShowTimecode.isSelected()) {
 							timeIn = 0;
 						}
@@ -16017,7 +16025,7 @@ public class Shutter {
 				else
 					caseSequenceFPS.setEnabled(false);
 
-				VideoPlayerCore.setMedia();
+				VideoPlayerUtils.setMedia();
 				VideoPlayerUI.setPlayerButtons(true);
 			}
 
@@ -16179,7 +16187,7 @@ public class Shutter {
 
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
 																			// frame
-				VideoPlayerUI.setInfo();
+				VideoPlayerUtils.setInfo();
 			}
 		});
 
@@ -16253,7 +16261,7 @@ public class Shutter {
 
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
 																			// frame
-				VideoPlayerUI.setInfo();
+				VideoPlayerUtils.setInfo();
 			}
 
 			@Override
@@ -17443,7 +17451,7 @@ public class Shutter {
 				if (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false) {
 					if (list.getSize() > 0 && fileList.getSelectedIndex() == -1) {
 						fileList.setSelectedIndex(0);
-						VideoPlayerCore.setMedia();
+						VideoPlayerUtils.setMedia();
 					}
 
 					try {

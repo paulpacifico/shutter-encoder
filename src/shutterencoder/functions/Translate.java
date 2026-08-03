@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;

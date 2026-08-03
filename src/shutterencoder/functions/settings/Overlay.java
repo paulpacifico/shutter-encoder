@@ -27,6 +27,7 @@ import java.text.DecimalFormat;
 import javax.swing.JTextField;
 
 import shutterencoder.functions.VideoEncoders;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;

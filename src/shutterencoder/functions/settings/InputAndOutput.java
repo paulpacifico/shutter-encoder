@@ -19,12 +19,16 @@
 
 package shutterencoder.functions.settings;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
 public class InputAndOutput extends Shutter {
 
@@ -49,7 +53,7 @@ public class InputAndOutput extends Shutter {
 			}
 			else
 			{
-				double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(VideoPlayerUI.caseInF.getText());
+				double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * VideoPlayerUtils.getFPS() + Integer.parseInt(VideoPlayerUI.caseInF.getText());
 				
 				//NTSC framerate
 				timeIn = Timecode.getNTSCtimecode(timeIn);
@@ -96,7 +100,7 @@ public class InputAndOutput extends Shutter {
 			//Video segment
 			if (FFPROBE.audioOnly == false)
 			{
-				String videoIndex = i > 0 ? "[" + i + ":v]" : ""; //first [0:v] is already added from FunctionUtils.setFilterComplex()
+				String videoIndex = i > 0 ? "[" + i + ":v]" : ""; //first [0:v] is already added from FilterComplex.setFilterComplex()
 				segments += videoIndex + "setpts=PTS-STARTPTS[v" + i + "];";
 			}
 			
@@ -160,6 +164,21 @@ public class InputAndOutput extends Shutter {
 		String inputFiles = "";
 		if (segments != "")
 		{
+			//Catch lavfi and the second -i inputFile
+			String lavfi = "";
+			if (afterInput.contains(" -f lavfi"))
+			{
+				lavfi = " -f lavfi";
+			}
+				
+			Pattern pattern = Pattern.compile("-i\\s+(\"[^\"]*\")");
+	        Matcher matcher = pattern.matcher(afterInput);
+
+	        String secondInputFile = "";	        
+	        if (matcher.find()) {
+	            secondInputFile = matcher.group(1);
+	        }
+			
 			boolean isFirstInput = true;			
 			for (CutSegment seg : VideoPlayerMultiCuts.cutSegments)
         	{
@@ -199,7 +218,12 @@ public class InputAndOutput extends Shutter {
 	        	isFirstInput = false;
         	}
 			
-			return inputFiles;
+			if (secondInputFile != "")
+			{				
+				return inputFiles.replace(lavfi + " -i " + secondInputFile, "") + lavfi + " -i " + secondInputFile;
+			}
+			else			
+				return inputFiles;
 		}
 		else		
 			return beforeInput + file + afterInput;		

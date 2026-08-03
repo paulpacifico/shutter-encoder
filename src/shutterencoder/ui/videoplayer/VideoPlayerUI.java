@@ -110,7 +110,7 @@ public class VideoPlayerUI {
     private static int displayCurrentFPS = 0;
     public static JLabel showScale;
     public static JComboBox<Object> comboPlayerQuality = new JComboBox<Object>(new String [] {"1:1", "1:2", "1:4", "auto"});
-    private static JLabel showFPS;
+    static JLabel showFPS;
     public static JComboBox<String> comboAudioTrack;
     public static int playerMarkIn = 0;
     public static int playerMarkOut = 0;    
@@ -310,9 +310,9 @@ public class VideoPlayerUI {
 		lblDuration.setForeground(Utils.themeColor);
 		Shutter.frame.getContentPane().add(lblDuration);
 		        		 
-		VideoPlayerCore.setMedia();	
+		VideoPlayerUtils.setMedia();	
 		
-		VideoPlayerCore.totalDuration();
+		VideoPlayerUtils.totalDuration();
 							
 		//Arrows control
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
@@ -733,43 +733,6 @@ public class VideoPlayerUI {
     	Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 	   
-    public static void setInfo() {
-    	    	
-    	String tff = "";
-		if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
-		{
-			if (FFPROBE.fieldOrder.equals("0"))
-			{
-				tff = " TFF";
-			}
-			else
-				tff = " BFF";
-		}
-
-		if (FFPROBE.videoCodec != null && fileDuration > 40 && Shutter.inputDeviceIsRunning == false)
-		{
-			String vcodec = FFPROBE.videoCodec.replace("video", "");
-			for (String s : Shutter.functionsList)
-			{
-				if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
-				|| s.toLowerCase().contains(vcodec.toLowerCase()))
-				{
-					vcodec = s;
-					break;
-				}
-				else
-					vcodec = vcodec.toUpperCase();
-			}
-
-			showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff + " " + FFPROBE.imageDepth + "-bit");
-		}
-		else
-			showScale.setText(FFPROBE.imageResolution + tff);
-		
-		showScale.repaint();
-		showFPS.repaint();
-    }
-    
     public static void setPlayerButtons(boolean enable) {
 
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -1271,7 +1234,7 @@ public class VideoPlayerUI {
 						//IMPORTANT Sync to the correct timecode
 						if (Timecode.isDropFrame() == false)
 						{
-							VideoPlayerCore.getTimePoint(VideoPlayerCore.playerCurrentFrame); 
+							VideoPlayerUtils.getTimePoint(VideoPlayerCore.playerCurrentFrame); 
 						}
 					}
 					
@@ -1396,10 +1359,10 @@ public class VideoPlayerUI {
 					
 					if (VideoPlayerCore.bufferCurrentFrame > 0)
 					{
-						VideoPlayerCore.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
+						VideoPlayerUtils.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
 					}
 					else
-						VideoPlayerCore.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
+						VideoPlayerUtils.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
 					
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
 					{
@@ -1407,7 +1370,7 @@ public class VideoPlayerUI {
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
 					}
 						
-					VideoPlayerCore.setMarkers();
+					VideoPlayerUtils.setMarkers();
 					
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Back to default
 					{
@@ -1418,7 +1381,7 @@ public class VideoPlayerUI {
 					Shutter.timecode.repaint();
 					
 					//FileList
-					VideoPlayerCore.setFileList();
+					VideoPlayerUtils.setFileList();
 				}
 			}
 			
@@ -1473,7 +1436,7 @@ public class VideoPlayerUI {
 				}
 				else
 				{	
-					VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseInF.getText());
+					VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * VideoPlayerUtils.getFPS() + Integer.parseInt(caseInF.getText());
 				
 					//NTSC framerate
 					VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
@@ -1506,10 +1469,10 @@ public class VideoPlayerUI {
 					
 					if (VideoPlayerCore.bufferCurrentFrame > 0)
 					{
-						VideoPlayerCore.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
+						VideoPlayerUtils.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
 					}
 					else
-						VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);	
+						VideoPlayerUtils.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);	
 					
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Trigger the correct marker inside setMarkers()
 					{
@@ -1517,7 +1480,7 @@ public class VideoPlayerUI {
 						waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
 					}
 						
-					VideoPlayerCore.setMarkers();
+					VideoPlayerUtils.setMarkers();
 					
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false) //Back to default
 					{
@@ -1528,7 +1491,7 @@ public class VideoPlayerUI {
 					Shutter.timecode.repaint();
 
 					//FileList
-					VideoPlayerCore.setFileList();
+					VideoPlayerUtils.setFileList();
 				}
 			}
 			
@@ -1587,7 +1550,7 @@ public class VideoPlayerUI {
 				}
 				else
 				{
-					VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerCore.getFPS() + Integer.parseInt(caseOutF.getText())  - 1;
+					VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * VideoPlayerUtils.getFPS() + Integer.parseInt(caseOutF.getText())  - 1;
 	
 					//NTSC framerate
 					VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
@@ -1615,6 +1578,11 @@ public class VideoPlayerUI {
 					
 				if (caseApplyCutToAll.isSelected() == false)
 				{
+					if (Shutter.caseAddSubtitles.isSelected())
+					{
+						
+					}
+					
 					VideoPlayerMultiCuts.addCurrentCut();
 				}
 			}
@@ -1637,8 +1605,8 @@ public class VideoPlayerUI {
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 						VideoPlayerMultiCuts.saveCutState();
 					
-					VideoPlayerCore.updateGrpIn(0);
-					VideoPlayerCore.updateGrpOut(totalFrames);
+					VideoPlayerUtils.updateGrpIn(0);
+					VideoPlayerUtils.updateGrpOut(totalFrames);
 					
 					playerMarkIn = 0;
 					playerMarkOut = waveformContainer.getWidth();
@@ -1649,7 +1617,7 @@ public class VideoPlayerUI {
 					waveformContainer.repaint();			
 	
 					//FileList
-					VideoPlayerCore.setFileList();
+					VideoPlayerUtils.setFileList();
 					
 					caseApplyCutToAll.setEnabled(true);
 				}
@@ -2314,7 +2282,7 @@ public class VideoPlayerUI {
 			            g2.drawLine(x, 1, x + width, 1);
 	                }
 	                
-	                VideoPlayerCore.totalDuration();
+	                VideoPlayerUtils.totalDuration();
                 }			
 		    }
 		};
@@ -2486,7 +2454,7 @@ public class VideoPlayerUI {
 						} catch (InterruptedException e1) {}						
 					}
 					
-					VideoPlayerCore.setMarkers();
+					VideoPlayerUtils.setMarkers();
 					
 					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerMarkOut && mouseIsPressed)
 					{							
@@ -2495,10 +2463,10 @@ public class VideoPlayerUI {
 						
 						if (VideoPlayerCore.bufferCurrentFrame > 0)
 						{
-							VideoPlayerCore.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
+							VideoPlayerUtils.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
 						}
 						else
-							VideoPlayerCore.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
+							VideoPlayerUtils.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
 					}
 					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerMarkIn && mouseIsPressed)
 					{			
@@ -2507,16 +2475,16 @@ public class VideoPlayerUI {
 						
 						if (VideoPlayerCore.bufferCurrentFrame > 0)
 						{
-							VideoPlayerCore.updateGrpOut(VideoPlayerCore.bufferCurrentFrame);		
+							VideoPlayerUtils.updateGrpOut(VideoPlayerCore.bufferCurrentFrame);		
 						}
 						else
-							VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame);
+							VideoPlayerUtils.updateGrpOut(VideoPlayerCore.playerCurrentFrame);
 					}	
 										
 					waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					
 					//FileList
-					VideoPlayerCore.setFileList();
+					VideoPlayerUtils.setFileList();
 					
 					VideoPlayerCore.dragSegmentIndex = -1;
                 }								
@@ -2568,12 +2536,12 @@ public class VideoPlayerUI {
 						{
 							if (VideoPlayerCore.bufferCurrentFrame > 0)
 							{
-								VideoPlayerCore.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
+								VideoPlayerUtils.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
 							}
 							else
-								VideoPlayerCore.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
+								VideoPlayerUtils.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
 							
-							VideoPlayerCore.setMarkers();
+							VideoPlayerUtils.setMarkers();
 						}
 						else //Allows to stop dragging when the size is too small
 							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -2584,12 +2552,12 @@ public class VideoPlayerUI {
 						{
 							if (VideoPlayerCore.bufferCurrentFrame > 0)
 							{
-								VideoPlayerCore.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
+								VideoPlayerUtils.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
 							}
 							else
-								VideoPlayerCore.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);
+								VideoPlayerUtils.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);
 							
-							VideoPlayerCore.setMarkers();
+							VideoPlayerUtils.setMarkers();
 						}
 						else //Allows to stop dragging when the size is too small
 							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -2663,7 +2631,7 @@ public class VideoPlayerUI {
 				waveformContainer.setSize(waveformScrollPane.getWidth() * waveformZoom, waveformScrollPane.getHeight() - waveformScrollPane.getHorizontalScrollBar().getHeight());
 				waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));	
 				
-				VideoPlayerCore.setMarkers();
+				VideoPlayerUtils.setMarkers();
 				
 				if (VideoPlayerCore.bufferCurrentFrame > 0)
 				{
@@ -2991,7 +2959,7 @@ public class VideoPlayerUI {
 					if (caseInH.getText().length() == 1)
 						caseInH.setText("0" + caseInH.getText());
 
-					VideoPlayerCore.updateTimeIn();
+					VideoPlayerUtils.updateTimeIn();
 				}
 			}
 
@@ -3049,7 +3017,7 @@ public class VideoPlayerUI {
 					if (caseInM.getText().length() == 1)
 						caseInM.setText("0" + caseInM.getText());
 
-					VideoPlayerCore.updateTimeIn();
+					VideoPlayerUtils.updateTimeIn();
 				}
 			}
 
@@ -3107,7 +3075,7 @@ public class VideoPlayerUI {
 					if (caseInS.getText().length() == 1)
 						caseInS.setText("0" + caseInS.getText());				
 
-					VideoPlayerCore.updateTimeIn();
+					VideoPlayerUtils.updateTimeIn();
 				}						
 			}
 
@@ -3165,7 +3133,7 @@ public class VideoPlayerUI {
 					if (caseInF.getText().length() == 1)
 						caseInF.setText("0" + caseInF.getText());
 
-					VideoPlayerCore.updateTimeIn();
+					VideoPlayerUtils.updateTimeIn();
 				}
 			}
 
@@ -3264,7 +3232,7 @@ public class VideoPlayerUI {
 					if (caseOutH.getText().length() == 1)
 						caseOutH.setText("0" + caseOutH.getText());
 					
-					VideoPlayerCore.updateTimeOut();
+					VideoPlayerUtils.updateTimeOut();
 				}
 			}
 
@@ -3322,7 +3290,7 @@ public class VideoPlayerUI {
 					if (caseOutM.getText().length() == 1)
 						caseOutM.setText("0" + caseOutM.getText());
 
-					VideoPlayerCore.updateTimeOut();
+					VideoPlayerUtils.updateTimeOut();
 				}
 			}
 
@@ -3380,7 +3348,7 @@ public class VideoPlayerUI {
 					if (caseOutS.getText().length() == 1)
 						caseOutS.setText("0" + caseOutS.getText());
 
-					VideoPlayerCore.updateTimeOut();
+					VideoPlayerUtils.updateTimeOut();
 				}
 			}
 
@@ -3438,7 +3406,7 @@ public class VideoPlayerUI {
 					if (caseOutF.getText().length() == 1)
 						caseOutF.setText("0" + caseOutF.getText());
 
-					VideoPlayerCore.updateTimeOut();
+					VideoPlayerUtils.updateTimeOut();
 				}
 			}
 
@@ -3718,7 +3686,7 @@ public class VideoPlayerUI {
 				
     			//Update lblTimecode
 				sliderChange = true;
-    			VideoPlayerCore.getTimePoint(VideoPlayerCore.playerCurrentFrame);
+    			VideoPlayerUtils.getTimePoint(VideoPlayerCore.playerCurrentFrame);
 				sliderChange = false;
 			}	
 		});
@@ -3887,7 +3855,7 @@ public class VideoPlayerUI {
 			{
 				try { //Might fail loading
 					
-					VideoPlayerCore.setMarkers();
+					VideoPlayerUtils.setMarkers();
 					
 				} catch (Exception e) {}
 			}

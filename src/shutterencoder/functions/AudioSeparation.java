@@ -21,9 +21,9 @@ package shutterencoder.functions;
 
 import java.io.File;
 
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.DEMUCS;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
@@ -31,6 +31,7 @@ import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
 public class AudioSeparation extends Shutter {
 
@@ -71,13 +72,13 @@ public class AudioSeparation extends Shutter {
 						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
-							VideoPlayerCore.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerCore.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
-							VideoPlayerCore.setFileList();	
+							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));
 								
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);

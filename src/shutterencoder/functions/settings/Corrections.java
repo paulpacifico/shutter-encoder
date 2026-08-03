@@ -21,6 +21,8 @@ package shutterencoder.functions.settings;
 
 import java.io.File;
 
+import shutterencoder.functions.utils.FunctionUtils;
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
@@ -87,9 +89,9 @@ public class Corrections extends Shutter {
 		
 		if (Shutter.caseBanding.isSelected())
 		{
-			if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{
-				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "deband=1:deband_radius=32");
+				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "deband=1:deband_radius=32");
 			}
 			else
 			{

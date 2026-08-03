@@ -28,7 +28,7 @@ import java.nio.file.StandardCopyOption;
 
 import org.apache.commons.io.FileUtils;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.DEOLDIFY;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;

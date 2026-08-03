@@ -21,7 +21,7 @@ package shutterencoder.functions;
 
 import java.io.File;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.EXIFTOOL;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.ui.main.Shutter;
@@ -29,6 +29,7 @@ import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
 public class Command extends Shutter {
 	
@@ -176,7 +177,7 @@ public class Command extends Shutter {
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 					do {
 						try {
 							Thread.sleep(10);

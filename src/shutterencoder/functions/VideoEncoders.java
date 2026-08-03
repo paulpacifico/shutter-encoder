@@ -41,13 +41,15 @@ import shutterencoder.functions.settings.AudioSettings;
 import shutterencoder.functions.settings.BitratesAdjustement;
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.Image;
 import shutterencoder.functions.settings.ImageSequence;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Overlay;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.settings.Transitions;
+import shutterencoder.functions.utils.FilterComplex;
+import shutterencoder.functions.utils.FunctionUtils;
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.BMXTRANSWRAP;
 import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
@@ -62,6 +64,7 @@ import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
 /*
  * AV1
@@ -178,13 +181,13 @@ public class VideoEncoders extends Shutter {
 						if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 						{							
 							VideoPlayerCore.videoPath = file.toString();													
-							VideoPlayerCore.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerCore.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
-							VideoPlayerCore.setFileList();	
+							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
+							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -425,7 +428,7 @@ public class VideoEncoders extends Shutter {
 						String inputCodec = Colorimetry.setInputCodec(extension);
 									   		
 						//Libplacebo score
-						FunctionUtils.getLibplaceboScore(false, true);
+						Libplacebo.getLibplaceboScore(false, true);
 						
 				        //Set filterComplex
 						String filterComplex = "";						
@@ -569,7 +572,7 @@ public class VideoEncoders extends Shutter {
 				        }
 						
 						//Reset Libplacebo score to allow using CPU + GPU filters after
-						FunctionUtils.getLibplaceboScore(false, false);
+						Libplacebo.getLibplaceboScore(false, false);
 
 						//Colormatrix
 						filterComplex = Colorimetry.setColormatrix(filterComplex);	
@@ -774,12 +777,12 @@ public class VideoEncoders extends Shutter {
 								case "XDCAM HD422":
 								case "XDCAM HD 35":
 									
-									filterComplex = FunctionUtils.setFilterComplexBroadcastCodecs(filterComplex, audio);								
+									filterComplex = FilterComplex.setFilterComplexBroadcastCodecs(filterComplex, audio);								
 									break;
 								
 								default:
 									
-									filterComplex = FunctionUtils.setFilterComplex(filterComplex, audio, false);									
+									filterComplex = FilterComplex.setFilterComplex(filterComplex, audio, false);									
 									break;
 							}
 						}	
@@ -1223,7 +1226,7 @@ public class VideoEncoders extends Shutter {
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 					do {
 						try {
 							Thread.sleep(10);

@@ -59,6 +59,7 @@ import com.formdev.flatlaf.ui.FlatLineBorder;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class SubtitlesEdit {
@@ -399,7 +400,7 @@ public class SubtitlesEdit {
 							VideoPlayerUI.sliderChange = false;						
 
 							//Then refresh the slider position
-							VideoPlayerCore.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
+							VideoPlayerUtils.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
 							
 							break;
 						}

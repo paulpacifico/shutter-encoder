@@ -90,13 +90,14 @@ import javax.swing.text.StyleConstants;
 
 import org.apache.commons.io.FileUtils;
 
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.Timecode;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class SubtitlesTimeline {
@@ -1394,7 +1395,7 @@ public class SubtitlesTimeline {
 				timeline.repaint();
 
 				//Then refresh the slider position
-				VideoPlayerCore.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
+				VideoPlayerUtils.getTimePoint(VideoPlayerCore.playerCurrentFrame - 1);
 			}				
 			
 		});

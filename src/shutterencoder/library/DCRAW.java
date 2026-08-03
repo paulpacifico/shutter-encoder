@@ -29,6 +29,7 @@ import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class DCRAW extends Shutter {
@@ -108,7 +109,7 @@ public static Process process;
 						}						
 						process.waitFor();
 						
-						VideoPlayerUI.setInfo();
+						VideoPlayerUtils.setInfo();
 						VideoPlayerUI.resizeAll();
 						
 						Console.consoleDCRAW.append(System.lineSeparator());

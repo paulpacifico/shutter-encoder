@@ -26,11 +26,12 @@ import java.util.Calendar;
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
 import shutterencoder.functions.settings.Filter;
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.Image;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Overlay;
 import shutterencoder.functions.settings.Timecode;
+import shutterencoder.functions.utils.FilterComplex;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.DCRAW;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
@@ -44,6 +45,7 @@ import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class Picture extends Shutter {
@@ -211,7 +213,7 @@ public class Picture extends Shutter {
 						filterComplex = setColorFormat(filterComplex);
 						
 						//filterComplex
-						filterComplex = FunctionUtils.setFilterComplex(filterComplex, "", true);		
+						filterComplex = FilterComplex.setFilterComplex(filterComplex, "", true);		
 
 						//InOut	
 						if (FFPROBE.totalLength > 40)
@@ -220,13 +222,13 @@ public class Picture extends Shutter {
 							if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 							{							
 								VideoPlayerCore.videoPath = file.toString();							
-								VideoPlayerCore.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-								VideoPlayerCore.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
-								VideoPlayerCore.setFileList();	
+								VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
+								VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+								VideoPlayerUtils.setFileList();	
 							}
 							
 							//InOut	
-							InputAndOutput.getInputAndOutput(VideoPlayerCore.getFileList(file.toString(), FFPROBE.totalLength));	
+							InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
 							
 							if (videoPlayerCapture && VideoPlayerCore.waveformContainer.isVisible())
 							{
@@ -401,7 +403,7 @@ public class Picture extends Shutter {
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 					do {
 						try {
 							Thread.sleep(10);

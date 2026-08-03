@@ -23,7 +23,7 @@ import java.awt.Color;
 import java.io.File;
 import java.util.Set;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.ANONYMIZER;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.ui.main.Shutter;

@@ -31,11 +31,11 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 //Drag & Drop file list
@@ -188,7 +188,7 @@ public class ListFileTransferHandler extends TransferHandler {
 					// VideoPlayer.player
 					Shutter.fileList.setSelectedIndex(Shutter.list.getSize() - 1);
 
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 					
 					// Filter
 					UIController.changeFilters();

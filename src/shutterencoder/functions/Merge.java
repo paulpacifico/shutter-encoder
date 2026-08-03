@@ -26,8 +26,8 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import shutterencoder.functions.settings.AudioSettings;
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.Timecode;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
@@ -36,6 +36,7 @@ import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class Merge extends Shutter {
@@ -160,7 +161,7 @@ public class Merge extends Shutter {
 				{
 			    	//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
-					VideoPlayerCore.setMedia();
+					VideoPlayerUtils.setMedia();
 					do {
 						try {
 							Thread.sleep(10);

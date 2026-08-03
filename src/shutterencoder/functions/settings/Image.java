@@ -22,6 +22,8 @@ package shutterencoder.functions.settings;
 import java.io.File;
 
 import shutterencoder.functions.VideoEncoders;
+import shutterencoder.functions.utils.FunctionUtils;
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
@@ -101,7 +103,7 @@ public class Image extends Shutter {
 				int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
 				int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
 				
-				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 				{
 					String crop_x = "crop_x=" + cropX;
 					if (caseMiror.isSelected() && caseRotate.isSelected() == false
@@ -116,7 +118,7 @@ public class Image extends Shutter {
 						crop_y = "crop_y=ih-" + cropHeight + "-" + cropY;
 					}
 					
-					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":" + crop_x + ":" + crop_y + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
+					filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "crop_w=" + cropWidth + ":crop_h=" +  cropHeight + ":" + crop_x + ":" + crop_y + ":w=" + cropWidth + ":h=" + cropHeight + ":reset_sar=1");
 				}
 				else
 				{
@@ -145,18 +147,18 @@ public class Image extends Shutter {
 				case "90":					
 					if (caseMiror.isSelected())
 					{
-						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 						{
-							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=1:extra_opts='distort=on\\:distort_scale_x=-1'");
+							filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "rotate=1:extra_opts='distort=on\\:distort_scale_x=-1'");
 						}
 						else
 							transpose = "transpose=3";
 					}
 					else
 					{
-						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 						{
-							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=1");
+							filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "rotate=1");
 						}
 						else
 							transpose = "transpose=1";
@@ -165,18 +167,18 @@ public class Image extends Shutter {
 				case "-90":					
 					if (caseMiror.isSelected())
 					{
-						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 						{
-							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=3:extra_opts='distort=on\\:distort_scale_x=-1'");
+							filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "rotate=3:extra_opts='distort=on\\:distort_scale_x=-1'");
 						}
 						else
 							transpose = "transpose=0";
 					}
 					else
 					{
-						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 						{
-							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=3");
+							filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "rotate=3");
 						}
 						else
 							transpose = "transpose=2";
@@ -185,18 +187,18 @@ public class Image extends Shutter {
 				case "180":					
 					if (caseMiror.isSelected())
 					{
-						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 						{
-							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=2:extra_opts='distort=on\\:distort_scale_x=-1'");
+							filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "rotate=2:extra_opts='distort=on\\:distort_scale_x=-1'");
 						}
 						else
 							transpose = "transpose=1,transpose=1,hflip";
 					}
 					else
 					{
-						if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+						if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 						{
-							filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "rotate=2");
+							filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "rotate=2");
 						}
 						else
 							transpose = "transpose=1,transpose=1";
@@ -208,9 +210,9 @@ public class Image extends Shutter {
 			}
 			else if (caseMiror.isSelected())
 			{
-				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 				{
-					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "extra_opts='distort=on\\:distort_scale_x=-1'");
+					filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "extra_opts='distort=on\\:distort_scale_x=-1'");
 				}
 				else
 					rotate = "hflip";
@@ -218,7 +220,7 @@ public class Image extends Shutter {
 			
 			if (rotate != "")
 			{
-				if (FunctionUtils.useLibplaceboFilters == false || filterComplex.contains("hwdownload") || (filterComplex.contains("libplacebo") && filterComplex.substring(filterComplex.indexOf("libplacebo")).contains(",")))
+				if (Libplacebo.useLibplaceboFilters == false || filterComplex.contains("hwdownload") || (filterComplex.contains("libplacebo") && filterComplex.substring(filterComplex.indexOf("libplacebo")).contains(",")))
 				{
 					if (filterComplex != "") filterComplex += ",";
 				}
@@ -547,7 +549,7 @@ public class Image extends Shutter {
 			}
 		}
 				
-		if (FunctionUtils.useLibplaceboFilters && filterComplex.contains("scale=") && (!filterComplex.contains("libplacebo")
+		if (Libplacebo.useLibplaceboFilters && filterComplex.contains("scale=") && (!filterComplex.contains("libplacebo")
 		|| !filterComplex.replace(",scale", "scale").substring(filterComplex.indexOf("libplacebo")).contains(",")))
 		{			
 			filterComplex = filterComplex.replace(flags, ":downscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":upscaler=" + setScaleAlgorithm("LIBPLACEBO"));
@@ -723,7 +725,7 @@ public class Image extends Shutter {
 			        	//Original sup. à la sortie
 			        	if (iw > ow || ih > oh)
 			        	{
-			        		if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			        		if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 							{		
 								filterComplex = filterComplex.replace("=-1", "=" + String.valueOf(ow)) + "normalize_sar=true:pad_crop_ratio=1.0";
 							}

@@ -102,10 +102,10 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 				
 				if (bufferCurrentFrame > 0)
 				{
-					updateGrpOut(bufferCurrentFrame);		
+					VideoPlayerUtils.updateGrpOut(bufferCurrentFrame);		
 				}
 				else
-					updateGrpOut(playerCurrentFrame);	
+					VideoPlayerUtils.updateGrpOut(playerCurrentFrame);	
 				
 				int index = newSegment ? activeSegmentIndex : 0;
 				
@@ -127,10 +127,10 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 					
 				if (bufferCurrentFrame > 0)
 				{
-					updateGrpIn(bufferCurrentFrame);		
+					VideoPlayerUtils.updateGrpIn(bufferCurrentFrame);		
 				}
 				else
-					updateGrpIn(playerCurrentFrame);
+					VideoPlayerUtils.updateGrpIn(playerCurrentFrame);
 				
 				index = newSegment ? activeSegmentIndex + 1 : 1;
 	
@@ -151,7 +151,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 		        cutSegments.sort((s1, s2) -> Integer.compare(s1.inMark, s2.inMark));
 		        
 		        //FileList
-				VideoPlayerCore.setFileList();
+				VideoPlayerUtils.setFileList();
 		        
 			    waveformContainer.repaint();
 		    }
@@ -216,7 +216,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 				activeSegmentIndex = -1;
 				
 			//FileList
-			VideoPlayerCore.setFileList();
+			VideoPlayerUtils.setFileList();
 			
 			//Display current segment in/out						
 			if (cutSegments.isEmpty() == false)
@@ -252,7 +252,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	}
 	
 	public static double getSegmentTime(double h, double m, double s, double f) {		
-	    double totalFrames = (h * 3600 + m * 60 + s) * getFPS() + f;
+	    double totalFrames = (h * 3600 + m * 60 + s) * VideoPlayerUtils.getFPS() + f;
 	    totalFrames = Timecode.getNTSCtimecode(totalFrames);
 	    return Timecode.getDropFrameTimecode(totalFrames);
 	}
@@ -341,7 +341,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	    
 	    waveformContainer.repaint();
 	    
-	    setFileList();
+	    VideoPlayerUtils.setFileList();
 	}
 }
 

@@ -79,8 +79,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import shutterencoder.functions.settings.BitratesAdjustement;
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.InputAndOutput;
+import shutterencoder.functions.utils.FunctionUtils;
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
@@ -1821,7 +1822,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		if (comboAccel.getSelectedItem().equals("Vulkan Video")
 		|| comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")
-		|| FunctionUtils.useLibplaceboFilters) //Always need to choose the GPU
+		|| Libplacebo.useLibplaceboFilters) //Always need to choose the GPU
 		{
 			if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 			{

@@ -62,7 +62,7 @@ import javax.swing.Timer;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.others.Console;
@@ -71,6 +71,7 @@ import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
@@ -1141,7 +1142,7 @@ public class UIController extends Shutter {
 									{
 										VideoPlayerCore.videoPath = null;
 										changeWidth(true);
-										VideoPlayerCore.setMedia();										
+										VideoPlayerUtils.setMedia();										
 									}
 									
 								} else

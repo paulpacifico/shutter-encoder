@@ -19,6 +19,7 @@
 
 package shutterencoder.functions.settings;
 
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.Settings;

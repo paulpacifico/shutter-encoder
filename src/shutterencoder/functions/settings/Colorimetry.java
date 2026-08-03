@@ -19,6 +19,7 @@
 
 package shutterencoder.functions.settings;
 
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -68,9 +69,9 @@ public class Colorimetry extends Shutter {
 			String input = comboInLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
 			String output = comboOutLevels.getSelectedItem().toString().replace("16-235", "limited").replace("0-255", "full");
 			
-			if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{
-				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "range=" + output);
+				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "range=" + output);
 			}
 			else
 			{
@@ -99,11 +100,11 @@ public class Colorimetry extends Shutter {
 				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
 			}
 			
-			if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{
 				String format = FFPROBE.hasAlpha ? ",format=rgba64le" : ",format=rgb48";
 				
-				filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + ":peak_detect=0" + format);	
+				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + ":peak_detect=0" + format);	
 			}
 			else
 			{		
@@ -122,9 +123,9 @@ public class Colorimetry extends Shutter {
 		{
 			if (comboInColormatrix.getSelectedItem().equals("HDR"))
 			{	
-				if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+				if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 				{
-					filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "tonemapping=hable:colorspace=bt709:color_primaries=bt709:color_trc=bt709");
+					filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "tonemapping=hable:colorspace=bt709:color_primaries=bt709:color_trc=bt709");
 				}
 				else
 				{
@@ -151,9 +152,9 @@ public class Colorimetry extends Shutter {
 							break;
 					}
 					
-					if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+					if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 					{
-					    filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, "range=full:color_trc=" + transfer);
+					    filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "range=full:color_trc=" + transfer);
 					}
 				    else
 				    {
@@ -169,9 +170,9 @@ public class Colorimetry extends Shutter {
 					String input = comboInColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("bt601", "smpte170m");
 					String output = comboOutColormatrix.getSelectedItem().toString().replace("Rec. ", "bt").replace("bt601", "smpte170m");
 					
-					if (FunctionUtils.useLibplaceboFilters && FunctionUtils.checkLibplaceboFilter(filterComplex))
+					if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 					{
-					    filterComplex = FunctionUtils.setLibplaceboFilter(filterComplex, getLibplaceboColorspaces(comboOutColormatrix.getSelectedItem().toString()));
+					    filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, getLibplaceboColorspaces(comboOutColormatrix.getSelectedItem().toString()));
 					}
 				    else
 				    {

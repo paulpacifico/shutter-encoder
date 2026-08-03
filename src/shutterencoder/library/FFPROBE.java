@@ -31,8 +31,8 @@ import java.util.regex.Pattern;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-import shutterencoder.functions.settings.FunctionUtils;
 import shutterencoder.functions.settings.Timecode;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
@@ -42,6 +42,7 @@ import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class FFPROBE extends Shutter {
@@ -304,7 +305,7 @@ public static String colorprimaries = "";
 					         	if (totalLength != 0)
 								{     				
 						      		if (VideoPlayerCore.playerVideo != null)	
-						     			VideoPlayerCore.totalDuration();
+						     			VideoPlayerUtils.totalDuration();
 	
 						            setFilesize();
 								}
@@ -1230,7 +1231,7 @@ public static String colorprimaries = "";
 			    		    	}	
 		             
 					            if (VideoPlayerCore.playerVideo != null)	
-						     		VideoPlayerCore.totalDuration();
+						     		VideoPlayerUtils.totalDuration();
 					             
 					            setFilesize();
 							}
@@ -1294,14 +1295,14 @@ public static String colorprimaries = "";
 				{
 					for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 					{
-						double totalIn =  (seg.inH * 3600 + seg.inM * 60 + seg.inS) * VideoPlayerCore.getFPS() + seg.inF;
-						double totalOut = (seg.outH * 3600 + seg.outM * 60 + seg.outS) * VideoPlayerCore.getFPS() + seg.outF;
+						double totalIn =  (seg.inH * 3600 + seg.inM * 60 + seg.inS) * VideoPlayerUtils.getFPS() + seg.inF;
+						double totalOut = (seg.outH * 3600 + seg.outM * 60 + seg.outS) * VideoPlayerUtils.getFPS() + seg.outF;
 						double total = (double) Math.ceil(Timecode.getDropFrameTimecode(totalOut) - Timecode.getDropFrameTimecode(totalIn));		
 						
-						hours += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS() / 3600);
-						min += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS() / 60) % 60;
-						sec += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerCore.getFPS()) % 60;
-						frames += (int) Math.floor(Timecode.setDropFrameTimecode(total) % VideoPlayerCore.getFPS());	
+						hours += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerUtils.getFPS() / 3600);
+						min += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerUtils.getFPS() / 60) % 60;
+						sec += (int) Math.floor(Timecode.setDropFrameTimecode(total) / VideoPlayerUtils.getFPS()) % 60;
+						frames += (int) Math.floor(Timecode.setDropFrameTimecode(total) % VideoPlayerUtils.getFPS());	
 					}
 				}
 				else

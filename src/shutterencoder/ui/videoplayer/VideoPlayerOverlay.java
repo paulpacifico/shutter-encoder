@@ -36,7 +36,7 @@ import java.nio.file.Paths;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import shutterencoder.functions.settings.FunctionUtils;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
