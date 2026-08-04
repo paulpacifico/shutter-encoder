@@ -623,6 +623,12 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		
 		try {
 			
+			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
+			{
+				VideoPlayerMultiCuts.clearCutHistory();
+				VideoPlayerMultiCuts.cutSegments.clear();
+			}
+			
 			if (fileList.length() > 0 && fileDuration > 40 && Shutter.caseEnableSequence.isSelected() == false)
 			{
 				boolean fileExists = false;
@@ -658,9 +664,6 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						if (s.length > 3)
 						{
 							caseApplyCutToAll.setEnabled(false);
-						
-							VideoPlayerMultiCuts.clearCutHistory();
-							VideoPlayerMultiCuts.cutSegments.clear();
 							
 							int index = 0;
 							for (int i = 0 ; i < s.length - 1 ; i += 2)

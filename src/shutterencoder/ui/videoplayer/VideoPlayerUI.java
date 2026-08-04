@@ -1050,6 +1050,7 @@ public class VideoPlayerUI {
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
+		btnPrevious.setToolTipText("←");
 		btnPrevious.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));
 		btnPrevious.setBackground(new Color(30,30,35, 0));
 		btnPrevious.setBorder(null);
@@ -1095,7 +1096,15 @@ public class VideoPlayerUI {
 								frameIsComplete = false;
 								
 								if (seekOnKeyFrames && FFPROBE.isRunning == false)
-								{				
+								{		
+									//Clear the buffer
+									if (VideoPlayerCore.bufferedFrames.size() > 0)
+									{		
+										VideoPlayerCore.bufferedFrames.clear();
+										VideoPlayerCore.bufferCurrentFrame = 0;
+										waveformContainer.repaint();
+									}
+									
 									FFPROBE.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame - 2) * inputFramerateMS, false);
 									
 									do {
@@ -1106,6 +1115,9 @@ public class VideoPlayerUI {
 									
 									if (FFPROBE.keyFrame > 0)
 									{
+										//Allows fast seeking
+										previousFrame = true;
+										
 										VideoPlayerCore.playerSetTime(FFPROBE.keyFrame);
 									}
 								}
@@ -1138,6 +1150,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnNext = new JButton(">");
+		btnNext.setToolTipText("→");
 		btnNext.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));	
 		btnNext.setBackground(new Color(30,30,35, 0));
 		btnNext.setBorder(null);
@@ -1173,7 +1186,15 @@ public class VideoPlayerUI {
 					}
 					
 					if (seekOnKeyFrames && FFPROBE.isRunning == false)
-					{									
+					{		
+						//Clear the buffer
+						if (VideoPlayerCore.bufferedFrames.size() > 0)
+						{		
+							VideoPlayerCore.bufferedFrames.clear();
+							VideoPlayerCore.bufferCurrentFrame = 0;
+							waveformContainer.repaint();
+						}
+						
 						FFPROBE.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame + 1) * inputFramerateMS, true);
 						
 						do {
@@ -1184,6 +1205,9 @@ public class VideoPlayerUI {
 		
 						if (FFPROBE.keyFrame > 0)
 						{	
+							//Allows fast seeking
+							previousFrame = true;
+							
 							VideoPlayerCore.playerSetTime(FFPROBE.keyFrame);
 						}
 					}
@@ -1343,6 +1367,7 @@ public class VideoPlayerUI {
 		});
 
 		btnMarkIn = new JButton("[");
+		btnMarkIn.setToolTipText("I");
 		btnMarkIn.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));	
 		btnMarkIn.setBackground(new Color(30,30,35, 0));
 		btnMarkIn.setBorder(null);
@@ -1389,6 +1414,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnGoToIn = new JButton("[<");
+		btnGoToIn.setToolTipText("Maj+I");
 		btnGoToIn.setMargin(new Insets(0,0,0,0));
 		btnGoToIn.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));	
 		btnGoToIn.setBackground(new Color(30,30,35, 0));
@@ -1465,6 +1491,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnMarkOut = new JButton("]");
+		btnMarkOut.setToolTipText("O");
 		btnMarkOut.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));		
 		btnMarkOut.setBackground(new Color(30,30,35, 0));
 		btnMarkOut.setBorder(null);
@@ -1511,6 +1538,7 @@ public class VideoPlayerUI {
 		});
 				
 		btnGoToOut = new JButton(">]");
+		btnGoToOut.setToolTipText("Maj+O");
 		btnGoToOut.setMargin(new Insets(0,0,0,0));
 		btnGoToOut.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));			
 		btnGoToOut.setBackground(new Color(30,30,35, 0));
@@ -1579,6 +1607,7 @@ public class VideoPlayerUI {
 		});
    
 		btnCut = new JButton(new FlatSVGIcon("resources/cut.svg", 15, 15));
+		btnCut.setToolTipText("C");
 		btnCut.setMargin(new Insets(0,0,0,0));		
 		btnCut.setBackground(new Color(30,30,35, 0));
 		btnCut.setBorder(null);
@@ -1603,6 +1632,7 @@ public class VideoPlayerUI {
 		});
 				
 		btnReset = new JButton(new FlatSVGIcon("resources/reset.svg", 15, 15));
+		btnReset.setToolTipText("R");
 		btnReset.setMargin(new Insets(0,0,0,0));		
 		btnReset.setBackground(new Color(30,30,35, 0));
 		btnReset.setBorder(null);

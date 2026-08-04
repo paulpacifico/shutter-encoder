@@ -47,8 +47,10 @@ public class ManageFunctions {
     public ManageFunctions() {
     	
         boolean[] markers = new boolean[Shutter.functionsList.size()];
-        for (int i = 0; i < Shutter.functionsList.size(); i++) {
-        	markers[i] = Shutter.functionsList.get(i).contains(":");
+        for (int i = 0; i < Shutter.functionsList.size(); i++)
+        {
+            String func = Shutter.functionsList.get(i);
+            markers[i] = func != null && (func.contains(":") || func.contains("\uFF1A"));
         }
         
         sectionMarkers = markers;

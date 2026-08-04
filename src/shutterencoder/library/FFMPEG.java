@@ -889,7 +889,7 @@ public static StringBuilder errorLog = new StringBuilder();
 				        boolean getRatio = true;
 				        
 						//Image sequence
-						float inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);;
+						float inputFramerateMS = (float) (1000 / FFPROBE.currentFPS);
 						if (caseCreateSequence.isSelected())
 						{
 							inputFramerateMS = (float) (1000 / (Float.valueOf(comboInterpret.getSelectedItem().toString().replace(",", "."))));

@@ -1793,7 +1793,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	private static String setFilter(boolean noGPU, boolean noDeinterlacing) {
 				
-		if (Settings.btnPreviewOutput.isSelected() || mouseIsPressed)
+		if (Settings.btnPreviewOutput.isSelected() || mouseIsPressed || previousFrame)
 		{
 			noGPU = true;
 		}
@@ -1932,7 +1932,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		{
 			filter += "null";
 		}
-		else if (filterGPU && noGPU == false && FFPROBE.isRotated == false && previousFrame == false
+		else if (filterGPU && noGPU == false && FFPROBE.isRotated == false
 		&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
 		&& Shutter.comboGPUFilter.getSelectedItem().toString().equals(Shutter.language.getProperty("aucun")) == false)
 		{

@@ -21,8 +21,13 @@ package shutterencoder.functions;
 
 import java.awt.Component;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import javax.swing.JTextField;
+
+import org.apache.commons.io.FileUtils;
 
 import shutterencoder.functions.settings.AudioSettings;
 import shutterencoder.functions.settings.InputAndOutput;
@@ -38,6 +43,7 @@ import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesEmbed;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
@@ -81,6 +87,9 @@ public class Rewrap extends Shutter {
 					if (file == null)
 						break;
 		            
+					//Temp folder for multi cuts features
+					File tempFolder = null;
+					
 					try {		
 						
 						String fileName = file.getName();
@@ -198,7 +207,7 @@ public class Rewrap extends Shutter {
 						}
 						
 						//Output name
-						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + newExtension); 	
+						String fileOutputName = labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + newExtension); 	
 										
 						//Audio normalization
 			        	if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
@@ -286,26 +295,31 @@ public class Rewrap extends Shutter {
 								concat = " -noaccurate_seek";
 							
 							//Command
-							String cmd = " -c:v copy " + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + flags + " -y ";
-							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', subtitles + InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');		
+							String cmd = "";
 							
-							do
-							{
-								Thread.sleep(100);
-							}
-							while(FFMPEG.runProcess.isAlive());
-							
-							if (FFMPEG.error)
-							{
-								cmd = " -c:v copy" + audio + timecode + " -map 0:v:0?" + audioMapping + metadatas + flags + " -y ";
-								FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');		
+							//Multi cuts feature
+							if (InputAndOutput.segments != "")
+							{			
+								tempFolder = new File(labelOutput + "/" + fileName.replace(extension, ""));
+								tempFolder.mkdirs();
 								
-								do
+								for (int s = 0 ; s < VideoPlayerMultiCuts.cutSegments.size() ; s++)
 								{
-									Thread.sleep(100);
-								}
-								while(FFMPEG.runProcess.isAlive());
+									File tempFile = new File(tempFolder + "/" + fileName.replace(extension, "_" + s + newExtension));
+									cmd += " -c:v copy -ignore_unknown" + audio + aspect + frameRate + " -map " + s + ":v:0?" + audioMapping.replace("-map a", "-map " + s + ":a") + mapSubtitles + metadatas + flags + " -y " + '"'  + tempFile + '"';
+								}								
 							}
+							else
+								cmd = " -c:v copy -ignore_unknown" + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + flags + " -y " + '"'  + fileOut + '"';
+							
+							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', subtitles + InputAndOutput.outPoint) + cmd);	
+							
+							do {
+								Thread.sleep(100);
+							} while(FFMPEG.runProcess.isAlive());
+							
+							//Multi cuts merge
+							mergeMultiCuts(tempFolder, fileName, extension, newExtension, timecode, fileOut);
 						}
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
@@ -314,8 +328,17 @@ public class Rewrap extends Shutter {
 								break;
 						}
 					
-					} catch (InterruptedException e) {
+					} catch (Exception e) {
 						FFMPEG.error  = true;
+					}
+					finally
+					{
+						if (tempFolder != null && tempFolder.exists())
+						{
+							try {
+								FileUtils.deleteDirectory(tempFolder);
+							} catch (IOException e) {}
+						}								
 					}
 				}	
 				
@@ -600,6 +623,34 @@ public class Rewrap extends Shutter {
         }
 		
 		return "";
+	}
+	
+	private static void mergeMultiCuts(File tempFolder, String fileName, String extension, String newExtension, String timecode, File fileOut) throws InterruptedException, IOException {
+		
+		if (InputAndOutput.segments != "" && cancelled == false)
+		{
+			File concatFile = new File(tempFolder + "/" + fileName.replace(extension, ".txt"));
+			
+			PrintWriter writer = new PrintWriter(concatFile, StandardCharsets.UTF_8);
+					
+			for (int s = 0 ; s < VideoPlayerMultiCuts.cutSegments.size() ; s++)
+			{
+				File tempFile = new File(tempFolder + "/" + fileName.replace(extension, "_" + s + newExtension));
+				
+		    	if (tempFile.getName().contains(".txt") == false)
+		    	{
+		    		writer.println("file '" + tempFile.toString() + "'");
+		    	}
+		    }
+		    
+		    writer.close();
+		    
+			FFMPEG.run(" -safe 0 -f concat -i " + '"' + concatFile + '"' + timecode + " -c copy -map v:0? -map a? -y " + '"' + fileOut.toString() + '"');	
+			
+			do {
+				Thread.sleep(100);
+			} while(FFMPEG.runProcess.isAlive());
+		}		
 	}
 	
 	private static boolean lastActions(File file, String fileName, File fileOut, String output) {

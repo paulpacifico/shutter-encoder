@@ -539,13 +539,13 @@ public class FunctionUtils extends Shutter {
 		
 		if (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false) //Image sequence
 		{
-			setMerge(file.getName(), extension, output);	
+			setMerge(file, extension, output);	
 
 			return " -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".");			
 		}
 		else if (Settings.btnSetBab.isSelected() || (grpImageSequence.isVisible() && caseEnableSequence.isSelected() && comboResolution.getSelectedItem().toString().contains("AI") == false)) //Concat mode
 		{
-			setMerge(file.getName(), extension, output);	
+			setMerge(file, extension, output);	
 
 			return " -safe 0 -f concat";
 		}
@@ -553,23 +553,27 @@ public class FunctionUtils extends Shutter {
 		return "";
 	}
 	
-	public static void setMerge(String fileName, String extension, String output) {
+	public static void setMerge(File file, String extension, String output) {
 					
+		String fileName = file.getName();
+		
 		File concatFile = new File(output.replace("\\", "/") + "/" + fileName.replace(extension, ".txt")); 
 					
 		try {			
-			mergeDuration = 0;
-			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
+				
 			PrintWriter writer = new PrintWriter(concatFile, "UTF-8");      
+			
+			mergeDuration = 0;
+			frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
 			
 			for (int i = 0 ; i < list.getSize() ; i++)
 			{				
 				//Scanning
 				if (Settings.btnWaitFileComplete.isSelected())
 	            {
-					File file = new File(list.getElementAt(i));
+					File f = new File(list.getElementAt(i));
 					
-					if (waitFileCompleted(file) == false)
+					if (waitFileCompleted(f) == false)
 						break;
 	            }
 				//Scanning
@@ -600,15 +604,16 @@ public class FunctionUtils extends Shutter {
 				}
 				
 				writer.println("file '" + list.getElementAt(i) + "'");
-			}				
-			writer.close();
-									
+			}	
+							
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
 			progressBar.setMaximum((int) (mergeDuration / 1000));
 			
 			FFPROBE.totalLength = mergeDuration;
 			VideoPlayerUI.fileDuration = FunctionUtils.mergeDuration;			
 			FFMPEG.fileLength = progressBar.getMaximum();
+			
+			writer.close();
 						
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			
