@@ -27,20 +27,33 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
@@ -57,17 +70,22 @@ public class Donate {
 
 	private static final Color ACCENT = Utils.themeColor;
 	private static final Color MUTED_TEXT = new Color(150, 150, 150);
+	
+	public static JFrame frame;
+	public static JCheckBox boxMail;
+	public static JTextField textMailDonate = new JTextField();
+	public static JButton btnCheckMail;
 
 	public Donate()  {
 
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setTitle("Thanks!");
 		frame.setBackground(Utils.background);
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(300, 460);
+		frame.setSize(300, 530);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		frame.getRootPane().setBorder(BorderFactory.createMatteBorder(0, 1, 1, 1, new Color(45,45,45)));
@@ -115,7 +133,9 @@ public class Donate {
 			public void mouseReleased(MouseEvent e) {
 
 				if (accept)
-				{							
+				{			
+					textMailDonate.setText("");
+					
 					System.exit(0);
 				}
 			}
@@ -337,6 +357,284 @@ public class Donate {
 		featuresRight.setBounds(groupX + colWidth + colGap, listY, colWidth, listHeight);
 		frame.getContentPane().add(featuresRight);
 
+		boxMail = new JCheckBox("Don't show this window again");
+		boxMail.setName("boxMail");
+		boxMail.setSelected(false);
+		boxMail.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		boxMail.setBounds(7 ,featuresLeft.getY() + featuresLeft.getHeight(), boxMail.getPreferredSize().width + 4, 23);
+		frame.getContentPane().add(boxMail);
+
+		boxMail.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if (boxMail.isSelected())
+				{
+					textMailDonate.setFont(new Font("SansSerif", Font.ITALIC, 12));
+					textMailDonate.setForeground(Color.LIGHT_GRAY);
+					
+					if (textMailDonate.getText().length() <= 0)
+					{
+						textMailDonate.setText(Shutter.language.getProperty("textMail"));
+					}
+					else if (textMailDonate.getText().equals(Shutter.language.getProperty("textMail")) == false)
+					{
+						textMailDonate.setFont(new Font("SansSerif", Font.PLAIN, 12));
+						textMailDonate.setForeground(Color.WHITE);
+					}
+					
+					textMailDonate.setEnabled(true);					
+				}
+				else
+				{
+					textMailDonate.setEnabled(false);
+				}
+			}
+		});
+
+		textMailDonate.setName("textMailAccount");
+		textMailDonate.setEnabled(false);
+		textMailDonate.setFont(new Font("SansSerif", Font.ITALIC, 12));
+		textMailDonate.setForeground(Color.LIGHT_GRAY);
+		textMailDonate.setBounds(10, boxMail.getY() + boxMail.getHeight() + 2, frame.getWidth() - 20, 21);
+		textMailDonate.setColumns(1);
+		
+		if (textMailDonate.getText().isEmpty())
+			textMailDonate.setText(Shutter.language.getProperty("textMail"));
+		
+		frame.getContentPane().add(textMailDonate);
+
+		textMailDonate.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if (textMailDonate.getText().equals(Shutter.language.getProperty("textMail"))) {
+					textMailDonate.setText("");
+					textMailDonate.setFont(new Font("SansSerif", Font.PLAIN, 12));
+					textMailDonate.setForeground(Color.WHITE);
+				}
+
+				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					textMailDonate.setFont(new Font("SansSerif", Font.ITALIC, 12));
+					textMailDonate.setForeground(Color.LIGHT_GRAY);
+					textMailDonate.setText(Shutter.language.getProperty("textMail"));
+					boxMail.setSelected(false);
+					textMailDonate.setEnabled(false);
+				}
+				else if (e.getKeyCode() == KeyEvent.VK_ENTER) 
+				{
+					btnCheckMail.doClick();
+				}
+			}
+
+		});
+		
+		textMailDonate.addPropertyChangeListener("enabled", evt -> {			
+		    btnCheckMail.setEnabled((Boolean) evt.getNewValue());
+		});
+		
+		btnCheckMail = new JButton("Check donation");
+		btnCheckMail.setEnabled(false);
+		btnCheckMail.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnCheckMail.setBounds(textMailDonate.getX(), textMailDonate.getY() + textMailDonate.getHeight() + 6, textMailDonate.getWidth(), 21);
+		frame.getContentPane().add(btnCheckMail);
+		
+		btnCheckMail.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				boxMail.setEnabled(false);
+				textMailDonate.setEnabled(false);		
+				
+				checkMailAddress(false, false);
+			}
+			
+		});
+		
 		frame.setVisible(true);
 	}
+	
+	public static void checkMailAddress(boolean newMachineID, boolean noWarning) {
+
+		Thread check = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				
+				if (frame != null && frame.isVisible())
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
+				try {
+					
+					String phpFile = newMachineID ? "transfer.php" : "verify.php";
+					
+					@SuppressWarnings("deprecation")
+					URL url = new URL(
+					    "https://www.shutterencoder.com/Stripe/" + phpFile + "?email="
+					    + URLEncoder.encode(textMailDonate.getText(), "UTF-8")
+					    + "&machine="
+					    + URLEncoder.encode(MachineId.get(), "UTF-8"));
+			
+					BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+			
+					String response = in.readLine();
+
+					if (noWarning)
+					{
+						if ("OK".equals(response))
+						{
+							System.exit(0);
+						}
+						else
+							new Donate();
+						
+						return; //Break to display the donate frame
+					}
+					else
+					{
+						if ("OK".equals(response))
+						{
+							Settings.saveSettings();
+							
+							System.exit(0);
+						}
+						else if ("INVALID".equals(response))
+						{
+							JOptionPane.showMessageDialog(Donate.frame, "No donation found!", "Check donation", JOptionPane.ERROR_MESSAGE);
+							
+							boxMail.setEnabled(true);
+							textMailDonate.setEnabled(true);	
+							textMailDonate.requestFocusInWindow();
+						}
+						else if ("DIFFERENT_MACHINE".equals(response))
+						{
+							int result = JOptionPane.showConfirmDialog(
+							        Donate.frame,
+							        "This email is already connected on another device.\nDo you want to disconnect it and connect here?",
+							        "Already connected",
+							        JOptionPane.YES_NO_OPTION,
+							        JOptionPane.WARNING_MESSAGE);
+	
+						    if (result == JOptionPane.YES_OPTION)
+						    {
+						    	checkMailAddress(true, false);
+						    }
+						    else
+						    {
+						        boxMail.setEnabled(true);
+						        textMailDonate.setText("");
+								textMailDonate.setEnabled(true);	
+								textMailDonate.requestFocusInWindow();
+						    }
+						}
+					}
+					
+				}
+				catch (Exception e)
+				{					
+					if (noWarning)
+					{
+						System.exit(0);					
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(Donate.frame, "Please check your internet connection!", "Check donation", JOptionPane.ERROR_MESSAGE);
+						
+						boxMail.setEnabled(true);
+				        textMailDonate.setText("");
+						textMailDonate.setEnabled(true);	
+						textMailDonate.requestFocusInWindow();
+					}
+				}	
+				finally {
+					
+					if (frame != null && frame.isVisible())
+						Donate.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				}
+			}			
+		});
+		check.start();		
+	}
+}
+
+class MachineId {
+	
+    public static String get() {
+    	
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            String raw;
+
+            if (os.contains("windows")) {
+                raw = getWindowsId();
+            } else if (os.contains("mac")) {
+                raw = getMacId();
+            } else {
+                raw = getLinuxId();
+            }
+
+            // Hash into clean ID
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(raw.getBytes());
+            StringBuilder hexId = new StringBuilder();
+            for (byte b : hash) {
+                hexId.append(String.format("%02x", b));
+            }
+            return hexId.toString();
+
+        } catch (Exception e) {
+            return "unknown";
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+	private static String getWindowsId() throws Exception {
+        // Motherboard serial — never changes, even after reboot or WiFi change
+        Process process = Runtime.getRuntime().exec(
+            "wmic baseboard get serialnumber"
+        );
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(process.getInputStream())
+        );
+        String line;
+        StringBuilder sb = new StringBuilder();
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            if (!line.isEmpty() && !line.equalsIgnoreCase("SerialNumber")) {
+                sb.append(line);
+            }
+        }
+        return sb.toString();
+    }
+
+    private static String getMacId() throws Exception {
+        // Hardware UUID — stable on macOS
+        Process process = Runtime.getRuntime().exec(
+            new String[]{"system_profiler", "SPHardwareDataType"}
+        );
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(process.getInputStream())
+        );
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("Hardware UUID")) {
+                return line.split(":")[1].trim();
+            }
+        }
+        return "unknown-mac";
+    }
+
+    private static String getLinuxId() throws Exception {
+        // Machine ID — stable on Linux
+        Process process = Runtime.getRuntime().exec(
+            new String[]{"cat", "/etc/machine-id"}
+        );
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(process.getInputStream())
+        );
+        String line = reader.readLine();
+        return line != null ? line.trim() : "unknown-linux";
+    }
 }

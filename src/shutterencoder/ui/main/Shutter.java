@@ -169,7 +169,6 @@ import shutterencoder.ui.handlers.GlobalKeyListener;
 import shutterencoder.ui.handlers.HardwareListener;
 import shutterencoder.ui.handlers.ListFileTransferHandler;
 import shutterencoder.ui.others.Console;
-import shutterencoder.ui.others.Donate;
 import shutterencoder.ui.others.Equalizer;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.Functions;
@@ -824,14 +823,14 @@ public class Shutter {
 			if (Functions.functionsFolder.exists() == false)
 				documents.mkdirs();
 		}
-		
+				
 		new Shutter();
 
 		ImageIO.setUseCache(false); // IMPORTANT use RAM instead of HDD cache
 	}
 
-	public Shutter() {
-
+	public Shutter() {		
+		
 		Desktop desktop = Desktop.getDesktop();
 		if (desktop.isSupported(Desktop.Action.APP_ABOUT)) {
 			desktop.setAboutHandler(e -> {
@@ -1449,49 +1448,7 @@ public class Shutter {
 
 				if (accept)
 				{
-					Settings.saveSettings();
-
-					Utils.changeFrameVisibility(frame, true);
-
-					Utils.killProcesses();
-					
-					//Removing temporary files
-					if (Transcribe.transcriptionFolder != null && Transcribe.transcriptionFolder.exists())
-					{					
-						for (File f : Transcribe.transcriptionFolder.listFiles()) 
-						{
-							f.delete();
-						}
-						
-						Transcribe.transcriptionFolder.delete();
-					}
-					
-					if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")) && WHISPER.checkIfModelExists() != null)
-					{
-						try {
-							FileUtils.deleteDirectory(WHISPER.checkIfModelExists());
-						} catch (IOException e1) {}	
-					}
-					
-					//Delete Colorize video folder
-					try {
-						FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
-					} catch (Exception er) {}
-
-					if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
-					{
-						subtitlesFilePath.delete();
-					}
-										
-					if (VideoPlayerCore.waveform != null)
-					{
-						VideoPlayerCore.waveform = null;
-					}
-
-					if (showDonateWindow) {
-						new Donate();
-					} else
-						System.exit(0);
+					Utils.exitApp(true);
 				}
 			}
 

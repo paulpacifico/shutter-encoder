@@ -1694,13 +1694,13 @@ public class Settings {
 							videoWebCaseMetadata = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 						}
 						
-						//customFFmpeg
+						//CustomFFmpeg
 						if (btnCustomFFmpegPath.isSelected() && txtCustomFFmpegPath.getText().equals("") == false)
 						{
 							FFMPEG.PathToFFMPEG = txtCustomFFmpegPath.getText();
 						}
 						
-						//warning values						
+						//Warning values						
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cutKeyframesIsDisplayed"))
 						{											
 							Shutter.cutKeyframesIsDisplayed = true;
@@ -1717,6 +1717,12 @@ public class Settings {
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("dayOfYear"))
 						{
 							savedDayOfYear = Integer.parseInt(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+						
+						//Donate account
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("textMailDonate"))
+						{
+							Donate.textMailDonate.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 						}
 						
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("frameLocation"))
@@ -2582,7 +2588,7 @@ public class Settings {
 			cName.appendChild(document.createTextNode("dayOfYear"));
 			component.appendChild(cName);
 			
-			if (savedDayOfYear == 0 || currentDayOfYear - savedDayOfYear < 0 || currentDayOfYear - savedDayOfYear >= 4)
+			if (savedDayOfYear == 0 || currentDayOfYear - savedDayOfYear < 0 || currentDayOfYear - savedDayOfYear >= 1)
 			{
 				//Value
 				cValue = document.createElement("Value");
@@ -2604,6 +2610,33 @@ public class Settings {
 			
 			root.appendChild(warning);
 			
+			//Saving donate account	
+			Element account = document.createElement("Account");
+						
+			if (Donate.textMailDonate.getText().isEmpty() == false)
+			{											
+				component = document.createElement("Component");
+				
+				//Type
+				cType = document.createElement("Type");
+				cType.appendChild(document.createTextNode("JTextField"));
+				component.appendChild(cType);
+
+				//Name
+				cName = document.createElement("Name");
+				cName.appendChild(document.createTextNode("textMailDonate"));
+				component.appendChild(cName);
+				
+				//Value
+				cValue = document.createElement("Value");
+				cValue.appendChild(document.createTextNode(Donate.textMailDonate.getText()));
+				component.appendChild(cValue);
+
+				account.appendChild(component);
+				
+				root.appendChild(account);
+			}		
+						
 			if (Utils.getLanguage.equals(comboLanguage.getSelectedItem().toString()))
 			{			
 				modelIsSaving = true;

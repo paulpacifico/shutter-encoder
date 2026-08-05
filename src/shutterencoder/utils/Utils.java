@@ -83,10 +83,12 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.ui.FlatLineBorder;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
+import shutterencoder.functions.Transcribe;
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.BMXTRANSWRAP;
 import shutterencoder.library.DCRAW;
+import shutterencoder.library.DEOLDIFY;
 import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
@@ -97,6 +99,7 @@ import shutterencoder.library.WHISPER;
 import shutterencoder.library.YOUTUBEDL;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
+import shutterencoder.ui.others.Donate;
 import shutterencoder.ui.others.Equalizer;
 import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.SceneDetection;
@@ -2742,4 +2745,61 @@ public class Utils extends Shutter {
 	    return result.get();
 	}
 	
+	public static void exitApp(boolean hideFrame) {
+		
+		Settings.saveSettings();
+		
+		if (hideFrame)
+		{
+			changeFrameVisibility(frame, true);
+		}
+		
+		killProcesses();
+		
+		//Removing temporary files
+		if (Transcribe.transcriptionFolder != null && Transcribe.transcriptionFolder.exists())
+		{					
+			for (File f : Transcribe.transcriptionFolder.listFiles()) 
+			{
+				f.delete();
+			}
+			
+			Transcribe.transcriptionFolder.delete();
+		}
+		
+		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")) && WHISPER.checkIfModelExists() != null)
+		{
+			try {
+				FileUtils.deleteDirectory(WHISPER.checkIfModelExists());
+			} catch (IOException e1) {}	
+		}
+		
+		//Delete Colorize video folder
+		try {
+			FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
+		} catch (Exception er) {}
+
+		if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
+		{
+			subtitlesFilePath.delete();
+		}
+							
+		if (VideoPlayerCore.waveform != null)
+		{
+			VideoPlayerCore.waveform = null;
+		}
+		
+		//Check donate account
+		if (showDonateWindow)
+		{
+			if (Donate.textMailDonate.getText().isEmpty() == false)
+			{
+				Donate.checkMailAddress(false, true);
+			}
+			else
+				new Donate();
+		}
+		else
+			System.exit(0);	
+	}
 }

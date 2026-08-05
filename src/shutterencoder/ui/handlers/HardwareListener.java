@@ -20,16 +20,14 @@
 package shutterencoder.ui.handlers;
 
 import java.awt.AWTEvent;
+import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
-import java.io.File;
 
 import javax.swing.JPanel;
 
-import shutterencoder.functions.Transcribe;
-import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
@@ -44,6 +42,19 @@ public class HardwareListener extends Shutter {
 
 	// Keyboard shortcuts
 	public static void keyboardListener() {
+		
+		//Handle CMD+Q on Mac
+		if (System.getProperty("os.name").contains("Mac"))
+		{		
+			if (Desktop.isDesktopSupported())
+			{
+	            Desktop desktop = Desktop.getDesktop();
+				desktop.setQuitHandler((event, response) -> {
+					Utils.exitApp(true);
+					response.cancelQuit();
+				});
+			}
+		}
 		
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
 
@@ -210,40 +221,6 @@ public class HardwareListener extends Shutter {
 							{	
 								VideoPlayerUI.toggleFullscreen();
 							}
-						}
-
-						// CMD + Q
-						if (System.getProperty("os.name").contains("Mac") && (ke.getKeyCode() == KeyEvent.VK_Q)
-								&& ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)) {
-							Runtime.getRuntime().addShutdownHook(new Thread() {
-								@Override
-								public void run() {
-									Settings.saveSettings();
-
-									Utils.killProcesses();
-									
-									//Removing temporary files
-									if (Transcribe.transcriptionFolder != null && Transcribe.transcriptionFolder.exists())
-									{					
-										for (File f : Transcribe.transcriptionFolder.listFiles()) 
-										{
-											f.delete();
-										}
-										
-										Transcribe.transcriptionFolder.delete();
-									}
-
-									if (FunctionUtils.deleteSRT && subtitlesFilePath != null)
-									{
-										subtitlesFilePath.delete();
-									}
-									
-									if (VideoPlayerCore.waveform != null)
-									{
-										VideoPlayerCore.waveform = null;
-									}
-								}
-							});
 						}
 
 						// Save settings
