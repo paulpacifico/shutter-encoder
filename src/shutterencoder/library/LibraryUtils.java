@@ -1043,6 +1043,8 @@ public class LibraryUtils extends Shutter {
 					
 					Console.consoleFFMPEG.append(System.lineSeparator());
 					
+					Pattern devicePattern = Pattern.compile("\\[\\d+\\]\\s*(.*?)(?=\\s*\\[uid:|$)", Pattern.CASE_INSENSITIVE);
+					
 					while ((line = input.readLine()) != null)
 					{					
 						Console.consoleFFMPEG.append(line + System.lineSeparator());		
@@ -1050,49 +1052,35 @@ public class LibraryUtils extends Shutter {
 						//Get devices Mac
 						if (cmd.contains("avfoundation") && line.contains("]")) 
 						{	
-							if (isAudioDevices && line.contains("Error") == false)
-							{								
-								String s[] = line.split("\\]");
-									
-								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.ISO_8859_1);
-								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
-								
-								audioDevices.append(":" + utf8EncodedString);
-							}
-							
-							if (line.contains("AVFoundation audio devices"))
-							{
-								isAudioDevices = true;
-							}
-							
-							if (isVideoDevices && line.contains("Capture screen") == false && isAudioDevices == false)
-							{						
-								String s[] = line.split("\\]");
-								
-								byte[] bytes = s[2].substring(1, s[2].length()).getBytes(StandardCharsets.ISO_8859_1);
-								String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
-								
-								videoDevices.append(":" + utf8EncodedString);
-							}
-							
-							if (line.contains("AVFoundation video devices"))
-								isVideoDevices = true;
+						    if (line.contains("AVFoundation audio devices"))
+						    {
+						        isAudioDevices = true;
+						        isVideoDevices = false;
+						    }
+						    else if (line.contains("AVFoundation video devices"))
+						    {
+						        isVideoDevices = true;
+						        isAudioDevices = false;
+						    }
+
+						    Matcher matcher = devicePattern.matcher(line);
+						    if (matcher.find()) 
+						    {
+						        String rawName = matcher.group(1).trim();
+						        
+						        byte[] bytes = rawName.getBytes(StandardCharsets.ISO_8859_1);
+						        String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
+
+						        if (isAudioDevices && !line.contains("Error"))
+						        {								
+						            audioDevices.append(":" + utf8EncodedString);
+						        }
+						        else if (isVideoDevices && !line.contains("Capture screen"))
+						        {						
+						            videoDevices.append(":" + utf8EncodedString);
+						        }
+						    }
 						}
-						
-						/*
-						if (cmd.contains("openal") && line.contains("]"))
-						{
-							if (isAudioDevices)
-							{								
-								String s[] = line.split("\\]");
-								audioDevices.append(":" + s[1].substring(3, s[1].length()));
-							}
-							
-							if (line.contains("List of OpenAL capture devices on this system"))
-							{
-								isAudioDevices = true;
-							}
-						}*/
 						
 						//Get current screen index
 						if (cmd.contains("avfoundation") && line.contains("Capture screen") && FFMPEG.firstScreenIndex == -1) 
