@@ -191,6 +191,10 @@ public class AdvancedFeatures extends Shutter {
 		        	 {
 			        	return " -preset p7";
 	        		 }
+					 else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+					 {
+		        		return " -preset quality";
+					 }
 					 else
 						return " -preset 0";
 				 }
@@ -429,7 +433,7 @@ public class AdvancedFeatures extends Shutter {
 		        {
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
-						return " -tune hq -lookahead 32 -spatial_aq 1 -temporal_aq 1 -aq-strength 8";
+						return " -tune hq -rc-lookahead 32 -spatial-aq 1 -temporal-aq 1 -aq-strength 8";
 					}
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 					{
@@ -463,7 +467,11 @@ public class AdvancedFeatures extends Shutter {
 		        {
 					if (caseQMax.isSelected())
 					{
-						return " -tune hq -lookahead 32 -spatial_aq 1 -temporal_aq 1 -aq-strength 8";
+						return " -tune hq -rc-lookahead 32 -spatial-aq 1 -temporal-aq 1 -aq-strength 8";
+					}
+					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
+					{
+						return " -quality quality -preanalysis true -vbaq true -pa_lookahead_buffer_depth 32";
 					}
 					else
 						return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();

@@ -428,6 +428,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		|| line.contains("Invalid argument")
 		|| line.contains("Error opening filters!")
 		|| line.contains("Error reinitializing filters!")
+		|| line.contains("Error initializing filters")
 		|| line.contains("Error while opening encoder")
 		|| line.contains("unexpected EOF")
 		|| line.contains("Decoder (codec none) not found")

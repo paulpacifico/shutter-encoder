@@ -711,7 +711,7 @@ public class LibraryUtils extends Shutter {
 						LibraryUtils.libplaceboAvailable = true;
 				}
 			}
-			else
+			else if (System.getProperty("os.name").contains("Mac") && arch.equals("arm64"))
 			{
 				gpuFilter(" -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -");
 	
@@ -959,9 +959,14 @@ public class LibraryUtils extends Shutter {
 				processFFMPEG = new ProcessBuilder('"' + FFMPEG.PathToFFMPEG + '"' + " " + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));
 			}
 			else
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , FFMPEG.PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));											
+			{
+				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , FFMPEG.PathToFFMPEG + " " + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));	
+				
+				FFMPEG.setEnvironment(processFFMPEG);
+			}
 			
 			processFFMPEG.redirectErrorStream(true);
+			
 			FFMPEG.process = processFFMPEG.start();
 				
 			String line;
@@ -982,7 +987,10 @@ public class LibraryUtils extends Shutter {
 					break;
 				}
 			}					
-			FFMPEG.process.waitFor();		
+			int exitCode = FFMPEG.process.waitFor();
+			
+			if (exitCode != 0)
+				FFMPEG.error = true;
 			
 			//Console.consoleFFMPEG.append(System.lineSeparator());
 				
