@@ -87,6 +87,7 @@ public class LibraryUtils extends Shutter {
 	public static boolean autoVULKAN = false;
 	public static Process waveformProcess;
 	public static BufferedWriter waveformWriter;
+	private static StringBuilder getOutputLog;
 	
 	public static void detectHardwareAcceleration(final String function) {
 	    
@@ -291,6 +292,7 @@ public class LibraryUtils extends Shutter {
 	public static void checkHWaccel(final String cmd) {
 		
 		FFMPEG.error = false;	
+		getOutputLog = new StringBuilder();
 		FFMPEG.isRunning = true;
 	
 		try {
@@ -334,15 +336,19 @@ public class LibraryUtils extends Shutter {
 				
 				while ((line = input.readLine()) != null)
 				{						
-					//Console.consoleFFMPEG.append(line + System.lineSeparator() );		
+					//Console.consoleFFMPEG.append(line + System.lineSeparator());		
 															
-					//Errors
-					FFMPEG.checkForErrors(line);																										
+					getOutputLog.append(line + System.lineSeparator());																									
 				}	
 				
 				//Console.consoleFFMPEG.append(System.lineSeparator());
 			}					
-			FFMPEG.process.waitFor();	
+			int exitCode = FFMPEG.process.waitFor();
+			
+			if (exitCode != 0)
+			{
+				FFMPEG.error = true;
+			}	
 							     																		
 		} catch (IOException io) {//Bug Linux							
 		} catch (InterruptedException e) {
@@ -848,17 +854,17 @@ public class LibraryUtils extends Shutter {
 				
 		//GPU decoding
 		String gpuDecoding = "";						
-		if (LibraryUtils.isGPUCompatible && (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan")))
+		if (LibraryUtils.isGPUCompatible)
 		{
-			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+			if ((LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && comboGPUFilter.getSelectedItem().toString().equals("cuda"))) && filterComplex.contains("_cuda"))
 			{			
 				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda -init_hw_device cuda" + selectedGPU;
 			}
-			else if (LibraryUtils.autoAMF || (LibraryUtils.amfAvailable && comboGPUFilter.getSelectedItem().toString().equals("amf")))
+			else if ((LibraryUtils.autoAMF || (LibraryUtils.amfAvailable && comboGPUFilter.getSelectedItem().toString().equals("amf"))) && filterComplex.contains("_amf"))
 			{
 				gpuDecoding = " -hwaccel d3d11va -hwaccel_output_format d3d11"; //Works differently
 			}
-			else if (LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && comboGPUFilter.getSelectedItem().toString().equals("qsv")))
+			else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("_qsv"))
 			{
 				String child = "dxva2";
 				if (detectIntelGen() >= 9 || LibraryUtils.isIntelArc)
@@ -868,12 +874,12 @@ public class LibraryUtils extends Shutter {
 	
 				gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child;
 			}
-			else if (LibraryUtils.autoVIDEOTOOLBOX || (LibraryUtils.videotoolboxAvailable && comboGPUFilter.getSelectedItem().toString().equals("videotoolbox")))
+			else if ((LibraryUtils.autoVIDEOTOOLBOX || (LibraryUtils.videotoolboxAvailable && comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && filterComplex.contains("_vt"))
 			{
 				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -init_hw_device videotoolbox";
 				
 			}
-			else if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+			else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("_vulkan"))
 			{
 				gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
 			}
@@ -959,7 +965,8 @@ public class LibraryUtils extends Shutter {
 
 	public static void gpuFilter(final String cmd) {
 		
-		FFMPEG.error = false;	
+		FFMPEG.error = false;
+		getOutputLog = new StringBuilder();
 		
 	    //Console.consoleFFMPEG.append(language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
@@ -991,19 +998,14 @@ public class LibraryUtils extends Shutter {
 			{				
 				//Console.consoleFFMPEG.append(line + System.lineSeparator());		
 				
-				//Errors
-				FFMPEG.checkForErrors(line);	
-				
-				if (FFMPEG.error)
-				{
-					FFMPEG.process.destroy();
-					break;
-				}
+				getOutputLog.append(line + System.lineSeparator());
 			}					
 			int exitCode = FFMPEG.process.waitFor();
 			
 			if (exitCode != 0)
+			{
 				FFMPEG.error = true;
+			}	
 			
 			//Console.consoleFFMPEG.append(System.lineSeparator());
 				
@@ -1016,7 +1018,8 @@ public class LibraryUtils extends Shutter {
 
 	public static void devices(final String cmd) {
 		
-		FFMPEG.error = false;		
+		FFMPEG.error = false;
+		getOutputLog = new StringBuilder();
 		FFMPEG.isRunning = true;
 		
 	    Console.consoleFFMPEG.append(language.getProperty("command") + cmd);
@@ -1060,7 +1063,9 @@ public class LibraryUtils extends Shutter {
 					
 					while ((line = input.readLine()) != null)
 					{					
-						Console.consoleFFMPEG.append(line + System.lineSeparator());		
+						Console.consoleFFMPEG.append(line + System.lineSeparator());	
+						
+						getOutputLog.append(line + System.lineSeparator());
 											
 						//Get devices Mac
 						if (cmd.contains("avfoundation") && line.contains("]")) 
@@ -1117,13 +1122,14 @@ public class LibraryUtils extends Shutter {
 								String s[] = line.split("\"");
 								videoDevices.append(":" + s[1]);
 							}
-						}
-	
-						//Errors
-						FFMPEG.checkForErrors(line);																		
+						}																		
 					}			
+					int exitCode = FFMPEG.process.waitFor();
 					
-					FFMPEG.process.waitFor();		
+					if (exitCode != 0)
+					{
+						FFMPEG.error = true;
+					}		
 					
 					Console.consoleFFMPEG.append(System.lineSeparator());
 				   					     																		

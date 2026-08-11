@@ -48,6 +48,7 @@ import shutterencoder.utils.Utils;
 public class FFPROBE extends Shutter {
 	
 public static Process process;
+private static StringBuilder getOutputLog;
 public static boolean isRunning = false;
 public static boolean calcul = false;
 private static boolean videoStreamAnalyzed = false;
@@ -119,6 +120,8 @@ public static String colorprimaries = "";
 
 	public static void Data(final String file) {	
 
+		getOutputLog = new StringBuilder();
+		
 		if (file.equals(analyzedMedia) == false || scanIsRunning || Settings.btnWaitFileComplete.isSelected())
 		{
 			analyzedMedia = file;
@@ -268,8 +271,7 @@ public static String colorprimaries = "";
 						{						
 							Console.consoleFFPROBE.append(line + System.lineSeparator());		
 									
-							//Errors
-							FFMPEG.checkForErrors(line);
+							getOutputLog.append(line + System.lineSeparator());
 							
 							if (line.contains("Input #"))
 							{
@@ -586,21 +588,7 @@ public static String colorprimaries = "";
 				        		 String s[] = line.substring(line.lastIndexOf(":") + 1).split(" ");	
 				        		 subtitlesCodec = s[1].replace(",", "");			        	
 				        	 }
-				        	 
-				        	 /*
-				        	//Timecode from XML
-				        	if (line.contains("StartTimecode"))
-				        	{
-				        		String s1[] = line.split(">");
-				        		String s2[] = s1[1].split("<");
-				        					        		
-				        		String str[] = s2[0].replace(";" , ":").split(":");
-			                	timecode1 = str[0].replace(" ", "");
-			                	timecode2 = str[1].replace(" ", "");
-			                	timecode3 = str[2].replace(" ", "");
-			                	timecode4 = str[3].replace(" ", "");
-				        	}*/
-				        	
+
 			        	 	//Timecode
 				            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
 				            {		
@@ -638,7 +626,15 @@ public static String colorprimaries = "";
 			                }
 			                			            
 					}		
-					process.waitFor();	
+					int exitCode = process.waitFor();
+					
+					if (exitCode != 0)
+					{
+						FFMPEG.error = true;
+						
+						//Errors
+						FFMPEG.checkForErrors(getOutputLog.toString());	
+					}
 	
 					//Reload comboPreset value
 					if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
@@ -692,6 +688,7 @@ public static String colorprimaries = "";
 		colorprimaries = "";
 		
 		FFMPEG.error = false;
+		getOutputLog = new StringBuilder();
 		
 		processFrameData = new Thread(new Runnable()  {
 			
@@ -732,7 +729,7 @@ public static String colorprimaries = "";
 								
 								while ((line = bre.readLine()) != null)
 								{
-									Console.consoleFFPROBE.append(line + System.lineSeparator());									
+									Console.consoleFFPROBE.append(line + System.lineSeparator());							
 								}
 								
 							} catch (IOException e) {}
@@ -755,8 +752,7 @@ public static String colorprimaries = "";
 			        {		
 						Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
-						//Errors
-						FFMPEG.checkForErrors(line);
+						getOutputLog.append(line + System.lineSeparator());
 																		
 						  if (line.contains("interlaced_frame"))
 						  {
@@ -885,7 +881,16 @@ public static String colorprimaries = "";
 							  String s[] = line.split("=");
 							  colorprimaries = s[1];
 						  }	
-					}										
+					}	
+			        int exitCode = process.waitFor();
+					
+					if (exitCode != 0)
+					{
+						FFMPEG.error = true;
+						
+						//Errors
+						FFMPEG.checkForErrors(getOutputLog.toString());	
+					}
 													
 				} catch (Exception e) {	
 					FFMPEG.error = true;
@@ -1016,6 +1021,7 @@ public static String colorprimaries = "";
 
 		keyFrame = 0;
 		FFMPEG.error = false;	
+		getOutputLog = new StringBuilder();
 				
 		processFrameData = new Thread(new Runnable()  {
 			
@@ -1065,9 +1071,6 @@ public static String colorprimaries = "";
 			        {	
 						//Console.consoleFFPROBE.append(line + System.lineSeparator());	
 						
-						//Errors
-						FFMPEG.checkForErrors(line);
-
 						if (line.equals("") == false && line.contains("I"))
 						{						
 							String s[] =  line.split(",");
@@ -1096,8 +1099,7 @@ public static String colorprimaries = "";
 							} 
 						}
 			        }
-				
-			        process.waitFor();		
+			        process.waitFor();
 			        
 			        //Console.consoleFFPROBE.append(System.lineSeparator());
 							

@@ -489,8 +489,8 @@ public class Image extends Shutter {
 		//Format
 		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 						
-		//GPU scaling
-		if (LibraryUtils.isGPUCompatible && filterComplex.contains("scale=") && noGPU == false && filterGPU
+		//GPU scaling /!\ scale=iw is used for the watermark scaling
+		if (LibraryUtils.isGPUCompatible && filterComplex.contains("scale=") && filterComplex.contains("scale=iw") == false && noGPU == false && filterGPU
 		&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
 		&& comboResolution.getSelectedItem().toString().contains("AI") == false)
 		{	
@@ -543,7 +543,7 @@ public class Image extends Shutter {
 			}*/
 		}
 
-		if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(previousFilter) && filterComplex.contains("scale="))
+		if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(previousFilter) && filterComplex.contains("scale=") && filterComplex.contains("scale=iw") == false) //scale=iw is used for the watermark scaling
 		{
 			filterComplex = Libplacebo.setLibplaceboFilter(previousFilter,
 					filterComplex.replaceAll(".*scale=(\\d+):(\\d+).*", "w=$1:h=$2") + ":downscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":upscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":reset_sar=1");

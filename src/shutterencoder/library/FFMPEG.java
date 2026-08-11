@@ -116,7 +116,7 @@ public static long elapsedTime = 0;
 public static int previousElapsedTime = 0;
 private static int fps = 0;
 
-private static StringBuilder getAll;
+private static StringBuilder getOutputLog;
 public static StringBuilder errorLog = new StringBuilder();
 
 	public static void getFFmpegPath() {
@@ -160,7 +160,7 @@ public static StringBuilder errorLog = new StringBuilder();
 		Console.consoleFFMPEG.append(System.lineSeparator());
 	    Console.consoleFFMPEG.append(language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
-	    getAll = new StringBuilder();
+	    getOutputLog = new StringBuilder();
 
 		if (saveCode)
 		{
@@ -329,14 +329,10 @@ public static StringBuilder errorLog = new StringBuilder();
 
 						while ((line = input.readLine()) != null)
 						{			
-							getAll.append(line);
-							getAll.append(System.lineSeparator());							
-							
-							Console.consoleFFMPEG.append(line + System.lineSeparator());		
-							
-							//Errors
-							checkForErrors(line);	
-																								
+							Console.consoleFFMPEG.append(line + System.lineSeparator());
+
+							getOutputLog.append(line + System.lineSeparator());
+																															
 							if (cancelled == false)
 							{																														
 								if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && RenderQueue.caseRunParallel.isSelected())
@@ -349,14 +345,25 @@ public static StringBuilder errorLog = new StringBuilder();
 								else
 								{
 									if (cmd.contains("-pass 2"))	
+									{
 										setProgress(line, true, cmd);
+									}
 									else
 										setProgress(line, false, cmd);	
 								}
-							}																		
+							}	
 						}					
-						process.waitFor();
-											
+						int exitCode = process.waitFor();
+						
+						if (exitCode != 0)
+						{
+							if (cancelled == false)
+								error = true;
+							
+							//Errors
+							checkForErrors(getOutputLog.toString());	
+						}
+						
 						if (cancelled == false)
 						{							
 							postAnalyse();	
@@ -364,7 +371,8 @@ public static StringBuilder errorLog = new StringBuilder();
 					   					     																		
 					} catch (IOException io) {//Bug Linux							
 					} catch (InterruptedException e) {
-						error = true;			
+						if (cancelled == false)
+							error = true;			
 					} finally {
 						isRunning = false;
 						caseRunInBackground.setEnabled(false);	
@@ -406,60 +414,81 @@ public static StringBuilder errorLog = new StringBuilder();
 					
 					while ((line = input.readLine()) != null)
 					{			
-						checkForErrors(line);
-					}					
-					process.waitFor();
+						getOutputLog.append(line + System.lineSeparator());
+					}
+					int exitCode = process.waitFor();
+					
+					if (exitCode != 0)
+					{
+						if (cancelled == false)
+							error = true;
+					}
 									   					     																		
 				} catch (IOException io) {//Bug Linux							
 				} catch (Exception e) {
-					error = true;	
+					if (cancelled == false)
+						error = true;	
 				}
 			}
 		});		
 		runProcess.start();
 	}
 	
-	public static void checkForErrors(String line) {
-		
-		if (line.contains("No such file or directory")
-		|| line.contains("Invalid data found when processing input") && line.contains("unable to decode APP fields") == false //attached picture of an audio file
-		|| line.contains("No space left")
-		|| line.contains("does not contain any stream")
-		|| line.contains("Invalid argument")
-		|| line.contains("Error opening filters!")
-		|| line.contains("Error reinitializing filters!")
-		|| line.contains("Error initializing filters")
-		|| line.contains("Error while opening encoder")
-		|| line.contains("unexpected EOF")
-		|| line.contains("Decoder (codec none) not found")
-		|| line.contains("hwaccel initialisation returned error")
-		|| line.contains("Device setup failed for decoder")
-		|| line.contains("No device available for decoder")
-		|| line.contains("Error while decoding stream")
-		|| line.contains("Current pixel format is unsupported")
-		|| line.contains("Unknown encoder")
-		|| line.contains("Could not set video options")
-		|| line.contains("Could not find tag for codec")
-		|| line.contains("Input/output error")
-		|| line.contains("Operation not permitted")
-		|| line.contains("Permission denied")
-		|| line.contains("width not divisible by 2")
-		|| line.contains("integer multiple of the specified")
-		|| line.contains("is not multiple of 4")
-		|| line.contains("cannot be smaller than input dimensions")
-		|| line.contains("Failed setup for format")
-		|| line.contains("Failed to get pixel format")
-		|| line.contains("hardware accelerator failed to decode picture")
-		|| line.contains("Your platform doesn't support hardware accelerated")
-		|| line.contains("Conversion failed!"))
-		{					
-			if (line.contains("error code") == false && line.contains("return code") == false)
-			{
-				errorLog.append(line + System.lineSeparator());
-			}
-			
-			error = true;
-		}
+	public static void checkForErrors(String output) {
+
+	    String[] lines = output.split("\\R");
+
+	    for (String line : lines)
+	    {
+	        line = line.trim();
+	        
+	        if (line.isEmpty())
+	            continue;
+
+	        if (line.contains("unable to decode APP fields"))
+	            continue; // Ignore this known harmless case
+
+	        if (line.contains("No such file or directory")
+            || line.contains("Invalid data found when processing input")
+            || line.contains("No space left")
+            || line.contains("does not contain any stream")
+            || line.contains("Error opening filters!")
+            || line.contains("Error reinitializing filters!")
+            || line.contains("Error initializing filters")
+            || line.contains("Error while opening encoder")
+            || line.contains("unexpected EOF")
+            || line.contains("Decoder (codec none) not found")
+            || line.contains("hwaccel initialisation returned error")
+            || line.contains("Device setup failed for decoder")
+            || line.contains("No device available for decoder")
+            || line.contains("no decoder found for")
+            || line.contains("Error while decoding stream")
+            || line.contains("Current pixel format is unsupported")
+            || line.contains("Unknown encoder")
+            || line.contains("Could not set video options")
+            || line.contains("Could not find tag for codec")
+            || line.contains("Input/output error")
+            || line.contains("Operation not permitted")
+            || line.contains("Permission denied")
+            || line.contains("not divisible by 2")
+            || line.contains("integer multiple of the specified")
+            || line.contains("is not multiple of 4")
+            || line.contains("cannot be smaller than input dimensions")
+            || line.contains("Failed setup for format")
+            || line.contains("Failed to get pixel format")
+            || line.contains("hardware accelerator failed to decode picture")
+            || line.contains("Your platform doesn't support hardware accelerated"))
+	        {
+	            if (line.contains("error code") == false
+	            && line.contains("return code") == false)
+	            {
+	            	//Removes text with [...]
+	            	line = line.replaceFirst("^(?:\\[[^\\]]*\\]\\s*)+", "");
+	            	
+	                errorLog.append(line + System.lineSeparator());
+	            }
+	        }
+	    }
 	}
 	
  	private static String checkList(String cmd) {
@@ -1397,12 +1426,12 @@ public static StringBuilder errorLog = new StringBuilder();
 	    || (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible()))
 	     {
                analyseLufs = "";               
-               integrated = extractLoudnormValue(getAll.toString(), "Input Integrated:\\s*([-+]?[\\d.]+)\\s*LUFS");
-               truePeak = extractLoudnormValue(getAll.toString(), "Input True Peak:\\s*([\\-+]?[\\d.]+)\\s*dBTP");
-               LRA = extractLoudnormValue(getAll.toString(), "Input LRA:\\s*([\\-+]?[\\d.]+)\\s*LU");
-               Threshold = extractLoudnormValue(getAll.toString(), "Input Threshold:\\s*([\\-+]?[\\d.]+)\\s*LUFS");             
+               integrated = extractLoudnormValue(getOutputLog.toString(), "Input Integrated:\\s*([-+]?[\\d.]+)\\s*LUFS");
+               truePeak = extractLoudnormValue(getOutputLog.toString(), "Input True Peak:\\s*([\\-+]?[\\d.]+)\\s*dBTP");
+               LRA = extractLoudnormValue(getOutputLog.toString(), "Input LRA:\\s*([\\-+]?[\\d.]+)\\s*LU");
+               Threshold = extractLoudnormValue(getOutputLog.toString(), "Input Threshold:\\s*([\\-+]?[\\d.]+)\\s*LUFS");             
                
-               for (String line : getAll.toString().substring(getAll.toString().lastIndexOf("Summary:") + 12).split(System.lineSeparator()))
+               for (String line : getOutputLog.toString().substring(getOutputLog.toString().lastIndexOf("Summary:") + 12).split(System.lineSeparator()))
                {
             	   if (line.contains("[out#"))
             	   {
@@ -1421,7 +1450,7 @@ public static StringBuilder errorLog = new StringBuilder();
                float shortTerm = (float) -1000.0;
                String shortTermTC = "";
                
-               for (String allValues : getAll.toString().split(System.lineSeparator()))            	   
+               for (String allValues : getOutputLog.toString().split(System.lineSeparator()))            	   
                {
 	    	 		if (allValues.contains("Parsed_ebur128") && allValues.contains("Summary:") == false && allValues.contains("TARGET"))
 	    	 		{	    	 			
@@ -1480,7 +1509,7 @@ public static StringBuilder errorLog = new StringBuilder();
                    String lufs = extractLoudnormValue(analyseLufs, "I:\\s*([-+]?[\\d.]+)\\s*LUFS");	
                    
                    if (caseTruePeak.isSelected() || caseLRA.isSelected())
-                	   lufs = extractLoudnormValue(getAll.toString(), "Input Integrated:\\s*([-+]?[\\d.]+)\\s*LUFS");
+                	   lufs = extractLoudnormValue(getOutputLog.toString(), "Input Integrated:\\s*([-+]?[\\d.]+)\\s*LUFS");
                    
                    String db[] = comboFilter.getSelectedItem().toString().split(" ");
                    if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak")  == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")) == false)
@@ -1497,7 +1526,7 @@ public static StringBuilder errorLog = new StringBuilder();
 	     {
 	    	 	blackFrame = new StringBuilder();
 	    	 	
-	    	 	for (String blackLine : getAll.toString().split(System.lineSeparator()))
+	    	 	for (String blackLine : getOutputLog.toString().split(System.lineSeparator()))
 	    	 	{
 	    	 		if (blackLine.contains("blackdetect") && blackLine.contains("black_start:0") == false)
 	    	 		{
@@ -1608,7 +1637,7 @@ public static StringBuilder errorLog = new StringBuilder();
 	     {
 	    	 	VMAFScore = "";
 	    	 	
-	    	 	for (String vmafLine : getAll.toString().split(System.lineSeparator()))
+	    	 	for (String vmafLine : getOutputLog.toString().split(System.lineSeparator()))
 	    	 	{
 	    	 		if (vmafLine.contains("VMAF score"))
 	    	 		{	    	 			

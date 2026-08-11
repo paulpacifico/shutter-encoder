@@ -201,32 +201,34 @@ public class FilterComplex extends Shutter {
 		if (InputAndOutput.segments != "")
 		{
 			String filter = filterComplex != "" ? filterComplex : "null";
-			
+
 			filterComplex = InputAndOutput.segments + filter;
 			
 			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
 			{
 				//Move [0:v] before the segments
 				if (Shutter.caseAddWatermark.isSelected())
-				{
-					filterComplex = "[0:v]" + filterComplex.replace("[0:v]", "[video]"); 
+				{					
+					filterComplex = "[0:v]" + filterComplex.replace("[0:v][scaledwatermark]", "[video][scaledwatermark]"); 
 				}
 				else
 					filterComplex = "[0:v]" + filterComplex.replace("[0:v]", ""); 
 				
 				//Replace [1:v] to the correct value
-				if (Shutter.caseAddWatermark.isSelected() && Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+				if (Shutter.caseAddWatermark.isSelected())		
 				{
-					filterComplex = filterComplex.replace(";[video][1:v]", ";[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]");
-					filterComplex = filterComplex.replace("[2:v]overlay", "[" + (VideoPlayerMultiCuts.cutSegments.size() + 1) + ":v]overlay");
+					filterComplex = filterComplex.replace(";[video][0:v]", ";[video]");					
+					filterComplex = filterComplex.replace("[video][1:v]", "[1:v]").replace(";[1:v]scale=iw", ";[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]scale=iw");
 				}
-				else if (Shutter.caseAddWatermark.isSelected())		
+				
+				if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
 				{
-					filterComplex = filterComplex.replace(";[video][1:v]", ";[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]");
-				}
-				else if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
-				{
-					filterComplex = filterComplex.replace("[1:v]overlay", "[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]overlay");
+					if (Shutter.caseAddWatermark.isSelected())
+					{
+						filterComplex = filterComplex.replace("[2:v]overlay", "[" + (VideoPlayerMultiCuts.cutSegments.size() + 1) + ":v]overlay");
+					}
+					else
+						filterComplex = filterComplex.replace("[1:v]overlay", "[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]overlay");
 				}
 			}
 		}

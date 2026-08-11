@@ -143,6 +143,7 @@ import shutterencoder.functions.VMAF;
 import shutterencoder.functions.VideoEncoders;
 import shutterencoder.functions.VideoInserts;
 import shutterencoder.functions.settings.Colorimetry;
+import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.ANONYMIZER;
@@ -2878,11 +2879,22 @@ public class Shutter {
 					if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
 						FFMPEG.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le détruire
 				
-					try {
-						FFMPEG.writer.write('q');
-						FFMPEG.writer.flush();
-						FFMPEG.writer.close();
-					} catch (IOException er) {}					
+					if (InputAndOutput.segments != "")
+					{
+						FFMPEG.process.destroy();
+						
+						try {
+							FFMPEG.runProcess.interrupt();
+						} catch(Exception err) {}
+					}
+					else
+					{
+						try {
+							FFMPEG.writer.write('q');
+							FFMPEG.writer.flush();
+							FFMPEG.writer.close();
+						} catch (IOException er) {}	
+					}
 
 					Thread wait = new Thread(new Runnable() {
 
