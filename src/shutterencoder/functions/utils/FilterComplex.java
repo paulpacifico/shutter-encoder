@@ -47,7 +47,7 @@ public class FilterComplex extends Shutter {
 	        return filterComplex;
 		}
 		
-		//Hardware encoding
+		//Hardware encoding Vulkan
 		switch (comboFonctions.getSelectedItem().toString())
 		{
 			case "H.264":
@@ -55,23 +55,55 @@ public class FilterComplex extends Shutter {
 			case "H.266":
 			case "AV1":
 			case "VP9":
-			case "FFV1":
-				
+			case "FFV1":				
+								
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false
 				&& comboAccel.getSelectedItem().equals("VAAPI") || comboAccel.getSelectedItem().equals("Vulkan Video"))			
 				{		
+					if (FunctionUtils.checkPreviousFilterVulkan(filterComplex) == false || Shutter.caseLUTs.isSelected())
+					{
+						if (filterComplex != "")
+							filterComplex += ",";
+						
+						if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
+						{
+							filterComplex += "format=p010,hwupload";
+						}
+						else
+							filterComplex += "format=nv12,hwupload";
+					}
+				}
+				else if (filterComplex.contains("format=rgb"))
+				{
 					if (filterComplex != "")
 						filterComplex += ",";
 					
 					if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits"))
 					{
-						filterComplex += "format=p010,hwupload";
+						filterComplex += "format=p010";
 					}
 					else
-						filterComplex += "format=nv12,hwupload";
+						filterComplex += "format=nv12";
 				}
 				
-				break;
+			break;		
+				
+			case "Apple ProRes":
+				
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && comboAccel.getSelectedItem().equals("Vulkan Video"))			
+				{		
+					if (filterComplex != "")
+						filterComplex += ",";
+					
+					if (comboFilter.getSelectedItem().toString().contains("444"))
+					{
+						filterComplex += "format=yuv444p10le,hwupload";
+					}
+					else
+						filterComplex += "format=yuv422p10,hwupload";
+				}
+				
+			break;
 		}
 		
 		if (caseOPATOM.isSelected())

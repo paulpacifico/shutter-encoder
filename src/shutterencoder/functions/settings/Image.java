@@ -229,11 +229,7 @@ public class Image extends Shutter {
 			}
 						
 			//Format
-			String bitDepth = "nv12";
-			if (FFPROBE.imageDepth == 10)
-			{
-				bitDepth = "p010";
-			}
+			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 						
 			//GPU filter	
 			if (noGPU == false && filterGPU && (filterComplex.contains("transpose") || filterComplex.contains("hflip")))
@@ -297,6 +293,7 @@ public class Image extends Shutter {
 		
 		//Checking if last filter is GPU accelerated
 		boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
+		String previousFilter = filterComplex;
 		
 		String flags = ":scaler=" + Settings.comboScale.getSelectedItem().toString();
 		
@@ -488,19 +485,15 @@ public class Image extends Shutter {
 		{
 			filterComplex += "scale=256:256" + flags;
 		}
+		
+		//Format
+		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 						
 		//GPU scaling
 		if (LibraryUtils.isGPUCompatible && filterComplex.contains("scale=") && noGPU == false && filterGPU
 		&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false
 		&& comboResolution.getSelectedItem().toString().contains("AI") == false)
-		{
-			//Format
-			String bitDepth = "nv12";
-			if (FFPROBE.imageDepth == 10)
-			{
-				bitDepth = "p010";
-			}
-			
+		{	
 			boolean deinterlacing = false;
 			if (filterComplex.contains("yadif")
 			|| filterComplex.contains("bwdif")
@@ -540,25 +533,22 @@ public class Image extends Shutter {
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vt=") + ",hwdownload,format=" + bitDepth;
 			}
+			/*
 			else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":scaler=" + setScaleAlgorithm("VULKAN"));
 				
 				filterComplex = filterComplex.replace("scale=", "scale_vulkan=") + ",hwdownload,format=" + bitDepth;
-			}
+			}*/
 		}
-				
-		if (Libplacebo.useLibplaceboFilters && filterComplex.contains("scale=") && (!filterComplex.contains("libplacebo")
-		|| !filterComplex.replace(",scale", "scale").substring(filterComplex.indexOf("libplacebo")).contains(",")))
-		{			
-			filterComplex = filterComplex.replace(flags, ":downscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":upscaler=" + setScaleAlgorithm("LIBPLACEBO"));
-			
-			String libplacebo = filterComplex.contains("libplacebo") ? ":" : "libplacebo=";
 
-			filterComplex = filterComplex.replace(":force_original_aspect_ratio=decrease", "").replace(",scale", "scale").replaceAll("scale=(-?\\d+):", libplacebo + "w=$1:h=") + ":reset_sar=1";
+		if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(previousFilter) && filterComplex.contains("scale="))
+		{
+			filterComplex = Libplacebo.setLibplaceboFilter(previousFilter,
+					filterComplex.replaceAll(".*scale=(\\d+):(\\d+).*", "w=$1:h=$2") + ":downscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":upscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":reset_sar=1");
 		}
-				
+						
 		return filterComplex;
 	}
 
@@ -798,11 +788,7 @@ public class Image extends Shutter {
 		}
 		
 		//Format
-		String bitDepth = "nv12";
-		if (FFPROBE.imageDepth == 10)
-		{
-			bitDepth = "p010";
-		}
+		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 					
 		//GPU filter	
 		if (noGPU == false && filterComplex.contains("pad=") && filterGPU)

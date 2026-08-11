@@ -450,7 +450,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		|| line.contains("Failed setup for format")
 		|| line.contains("Failed to get pixel format")
 		|| line.contains("hardware accelerator failed to decode picture")
-		|| line.contains("Your platform doesn't support hardware accelerated"))
+		|| line.contains("Your platform doesn't support hardware accelerated")
+		|| line.contains("Conversion failed!"))
 		{					
 			if (line.contains("error code") == false && line.contains("return code") == false)
 			{

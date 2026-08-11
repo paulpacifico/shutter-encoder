@@ -1273,6 +1273,23 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							else
 								hwupload = " -vf format=nv12,hwupload";
 						}
+						
+					break;
+						
+					case "Apple ProRes":
+						
+						if (Shutter.comboAccel.getSelectedItem().equals(Shutter.language.getProperty("aucune").toLowerCase()) == false
+						&& Shutter.comboAccel.getSelectedItem().equals("Vulkan Video"))			
+						{		
+							if (deinterlace != "")
+							{
+								hwupload = ",format=yuv422p10,hwupload";
+							}							
+							else
+								hwupload = " -vf format=yuv422p10,hwupload";
+						}
+						
+					break;
 				}
 				
 				String pixelFormat = "";
@@ -1869,11 +1886,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		int width = player.getWidth();
 		int height = player.getHeight();
 		
-		String bitDepth = "nv12";
-		if (FFPROBE.imageDepth == 10)
-		{
-			bitDepth = "p010";
-		}	
+		//Format
+		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";	
 
 		//Crop & Pad
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
@@ -1964,18 +1978,18 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_vt=" + width + ":" + height + ",hwdownload,format=" + bitDepth;
-			}
+			}/*
 			else if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 			{
 				if (filter != "") filter += ",";
 				
 				filter = filter.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filter += "scale_vulkan=" + width + ":" + height + ":scaler=" + algorithm.replace("neighbor", "nearest") + ",hwdownload,format=" + bitDepth;
-			}
+			}*/
 			else
 			{
-				if (Libplacebo.useLibplaceboFilters && !filter.contains("hwdownload")
-				&& (!filter.contains("libplacebo") || !filter.replace(",scale", "scale").substring(filter.indexOf("libplacebo")).contains(",")))
+				if (Libplacebo.useLibplaceboFilters && filter.contains("hwdownload") == false
+				&& (filter.contains("libplacebo") == false || filter.replace(",scale", "scale").substring(filter.indexOf("libplacebo")).contains(",") == false))
 				{			
 					filter = Libplacebo.setLibplaceboFilter(filter, "w=" + width + ":h=" + height + ":downscaler=" + algorithm.replace("neighbor", "nearest") + ":upscaler=" + algorithm.replace("neighbor", "nearest") + ":reset_sar=1");
 				}
@@ -1989,9 +2003,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		}
 		else
 		{
-			if (Libplacebo.useLibplaceboFilters && !filter.contains("hwdownload")
-			&& (!filter.contains("libplacebo") || !filter.replace(",scale", "scale").substring(filter.indexOf("libplacebo")).contains(",")))
-			{			
+			if (Libplacebo.useLibplaceboFilters && filter.contains("hwdownload") == false
+			&& (filter.contains("libplacebo") == false || filter.replace(",scale", "scale").substring(filter.indexOf("libplacebo")).contains(",") == false))
+			{		
 				filter = Libplacebo.setLibplaceboFilter(filter, "w=" + width + ":h=" + height + ":downscaler=" + algorithm.replace("neighbor", "nearest") + ":upscaler=" + algorithm.replace("neighbor", "nearest") + ":reset_sar=1");
 			}
 			else

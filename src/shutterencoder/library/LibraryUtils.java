@@ -167,15 +167,24 @@ public class LibraryUtils extends Shutter {
 	                        } else { // Mac
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                    + "_videotoolbox -b:v 5000k -s 640x360 -f null -");
-	                            if (!FFMPEG.error) graphicsAccel.add("OSX VideoToolbox");
+	                            if (!FFMPEG.error) graphicsAccel.add("OSX VideoToolbox");  
 	                        }
 	                        break;
 	                    }
 	
 	                    case "Apple ProRes": {
-	                        if (isMac && arch.equals("arm64")) {
-	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v prores_videotoolbox"
-	                                    + " -s 640x360 -f null -");
+	                    	
+	                    	if (isWindows)
+	                    	{
+	                    		String gpuIndex = LibraryUtils.GPUCount > 1 ? "1" : "0";
+	                    		checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
+	                    				+ " -f lavfi -i nullsrc -frames:v 1 -c:v prores_ks_vulkan -s 640x360"
+	                    				+ " -vf format=nv12,hwupload -pix_fmt yuv422p10 -f null -\"");
+                                if (!FFMPEG.error) graphicsAccel.add("Vulkan Video");
+	                    	}
+	                    	else if (isMac && arch.equals("arm64"))
+	                        {
+	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v prores_videotoolbox -s 640x360 -f null -");
 	                            if (!FFMPEG.error) graphicsAccel.add("OSX VideoToolbox");
 	                        }
 	                        break;
@@ -501,11 +510,7 @@ public class LibraryUtils extends Shutter {
 				selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
 					
 			//Scaling
-			String bitDepth = "nv12";
-			if (FFPROBE.imageDepth == 10)
-			{
-				bitDepth = "p010";
-			}
+			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 			
 			if (LibraryUtils.isGPUCompatible)
 			{				
@@ -808,6 +813,14 @@ public class LibraryUtils extends Shutter {
 					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
+			else if (shutterencoder.functions.settings.Image.setScale("", limitToFHD, false).contains("libplacebo"))
+			{
+				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("yadif") == false)
+				{
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "yadif" }));
+					comboForcerDesentrelacement.setSelectedIndex(0);
+				}
+			}
 			else
 			{
 				if (comboForcerDesentrelacement.getModel().getSize() != 5 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
@@ -875,7 +888,7 @@ public class LibraryUtils extends Shutter {
 		if (comboAccel.getSelectedItem().equals("Vulkan Video")
 		|| comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")
-		|| Libplacebo.useLibplaceboFilters) //Always need to choose the GPU
+		|| Libplacebo.useLibplaceboFilters && filterComplex.contains("libplacebo")) //Always need to choose the GPU
 		{
 			if (LibraryUtils.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 			{

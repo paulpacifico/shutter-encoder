@@ -896,17 +896,13 @@ public class VideoEncoders extends Shutter {
 						//GPU filtering
 			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
 			    		{
-			    			//Input bitDepth
-			    			String bitDepth = "nv12";
-			    			if (FFPROBE.imageDepth == 10)
-			    			{
-			    				bitDepth = "p010";
-			    			}	
+			        		//Format
+			        		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";	
 			    			
-			    			//When there is no filter AND it's 8bit only
+			    			//When there is no CPU filter AND it's 8bit only
 			    			if (FFPROBE.imageDepth == 8 && filterComplex.contains("format=" + bitDepth + "[out]") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && caseColorspace.isSelected() == false)
 			    			{
-			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, "");
+			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth + "[out]", "[out]");
 			    			}
 			    		}
 			        	
@@ -1494,22 +1490,35 @@ public class VideoEncoders extends Shutter {
 				
 			case "Apple ProRes":
 				
-				if (comboAccel.getSelectedItem().equals("OSX VideoToolbox") && System.getProperty("os.name").contains("Mac"))
+				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 				{
+					String codec = "";
+					
+					if (comboAccel.getSelectedItem().equals("OSX VideoToolbox"))
+					{
+						codec = "prores_videotoolbox";
+					}
+					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
+					{
+						codec = "prores_ks_vulkan";
+					}
+					
 					switch (comboFilter.getSelectedItem().toString())
 					{					
 						case "Proxy" :
-							return " -c:v prores_videotoolbox -profile:v 0 -pix_fmt yuv422p10";
+							return " -c:v " + codec + " -profile:v 0 -pix_fmt yuv422p10";
 						case "LT" :
-							return " -c:v prores_videotoolbox -profile:v 1 -pix_fmt yuv422p10";
+							return " -c:v " + codec + " -profile:v 1 -pix_fmt yuv422p10";
 						case "422" :
-							return " -c:v prores_videotoolbox -profile:v 2 -pix_fmt yuv422p10";
+							return " -c:v " + codec + " -profile:v 2 -pix_fmt yuv422p10";
 						case "422 HQ" :
-							return " -c:v prores_videotoolbox -profile:v 3 -pix_fmt yuv422p10";
+							return " -c:v " + codec + " -profile:v 3 -pix_fmt yuv422p10";
+						case "444" :
+							return " -c:v " + codec + " -profile:v 4 -pix_fmt yuv444p10le";
 						case "4444" :
-							return " -c:v prores_videotoolbox -profile:v 4 -pix_fmt yuv444p10le";
+							return " -c:v " + codec + " -profile:v 4 -pix_fmt yuv444p10le";
 						case "4444 XQ" :
-							return " -c:v prores_videotoolbox -profile:v 5 -pix_fmt yuv444p10le";
+							return " -c:v " + codec + " -profile:v 5 -pix_fmt yuv444p10le";
 					}
 				}
 				else

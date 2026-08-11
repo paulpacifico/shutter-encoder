@@ -87,7 +87,7 @@ public class Libplacebo extends Shutter {
 			    }
 	    	}
 	    }
-	
+		    
 	    if (params != "")
 	    {
 	    	params = "setparams=" + params + ",";
@@ -111,6 +111,12 @@ public class Libplacebo extends Shutter {
 		}
 		
 		Libplacebo.useLibplaceboFilters = true; //Allows to get the output from filters
+		
+		if (LibraryUtils.vulkanAvailable)
+		{
+			//Do not get the score just return Libplacebo.useLibplaceboFilters = true
+			return;
+		}
 		
 		int score = 0;
 	
@@ -271,11 +277,9 @@ public class Libplacebo extends Shutter {
 	}
 
 	public static boolean checkLibplaceboFilter(String filterComplex) {
-		
-		String format = FFPROBE.hasAlpha ? ",format=rgba64le" : ",format=rgb48";
-	
+
 		if (filterComplex.contains("libplacebo") == false
-		|| filterComplex.substring(filterComplex.indexOf("libplacebo")).replace(format, "").contains(",") == false)
+		|| filterComplex.substring(filterComplex.indexOf("libplacebo")).contains(",") == false)
 		{
 			return true;
 		}
@@ -284,18 +288,18 @@ public class Libplacebo extends Shutter {
 	}
 
 	public static String setLibplaceboFilter(String filterComplex, String newLibplaceboFilter) {
+		
+		//Format
+		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+		
+		if (FunctionUtils.isPreviousFilterVulkan(filterComplex) && caseLUTs.isSelected() == false) // hwdownload is required if rgb48 is present from caseLUTs
+		{			
+			filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
+		}
 				
 		if (filterComplex.contains("libplacebo"))
 		{
-			//Move the format filter forward after all libplacebo filters to avoid CPU fallback
-			String format = FFPROBE.hasAlpha ? ",format=rgba64le" : ",format=rgb48";
-			
-			if (filterComplex.endsWith(format))
-			{
-				return filterComplex.substring(0, filterComplex.length() - (format.length())) + ":" + newLibplaceboFilter + format;
-			}
-			else
-				return filterComplex + ":" + newLibplaceboFilter;		
+			return filterComplex + ":" + newLibplaceboFilter;		
 		}
 		else
 		{
@@ -304,8 +308,9 @@ public class Libplacebo extends Shutter {
 			{
 				disableLinear = "";
 			}
-			
+						
 			return filterComplex + getSetParamsInput(newLibplaceboFilter.contains("deinterlace"), filterComplex) + "libplacebo=" + disableLinear + newLibplaceboFilter;
 		}
 	}
+
 }

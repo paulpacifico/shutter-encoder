@@ -141,7 +141,7 @@ public class Corrections extends Shutter {
 	public static String setDenoiser(String filterComplex, boolean noGPU) {
 		
 		//Checking if last filter is GPU accelerated
-		boolean filterGPU = FunctionUtils.checkPreviousFilter(filterComplex);
+		boolean filterGPU = FunctionUtils.checkPreviousFilterVulkan(filterComplex);
 		
 		if (Shutter.caseDenoise.isSelected())
 		{
@@ -155,13 +155,9 @@ public class Corrections extends Shutter {
 			filterComplex += "nlmeans=s=" + value + ":p=3:r=" + r + ":pc=0";
 			
 			//Format
-			String bitDepth = "nv12";
-			if (FFPROBE.imageDepth == 10)
-			{
-				bitDepth = "p010";
-			}
+			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 						
-			//GPU filter	
+			//GPU filter
 			if (noGPU == false && filterGPU && filterComplex.contains("nlmeans"))
 			{
 				if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))

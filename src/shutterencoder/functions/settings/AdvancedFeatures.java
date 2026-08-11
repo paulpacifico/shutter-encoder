@@ -61,11 +61,7 @@ public class AdvancedFeatures extends Shutter {
 			}
 			
 			//Format
-			String bitDepth = "nv12";
-			if (FFPROBE.imageDepth == 10)
-			{
-				bitDepth = "p010";
-			}
+			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 						
 			if (LibraryUtils.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
 			{
@@ -95,16 +91,14 @@ public class AdvancedFeatures extends Shutter {
 						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
 				}
 				else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
-				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif")))
+				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 				{
-					if (filterComplex != "") filterComplex += ",";
-					
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
 					{
-						filterComplex += "bwdif_vulkan=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=bwdif");
 					}
 					else
-						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_vulkan") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
 				}
 				else  //Do not use libplacebo deinterlace if GPU can decode the input otherwise the process is slower
 				{

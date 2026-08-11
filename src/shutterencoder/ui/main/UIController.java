@@ -924,6 +924,7 @@ public class UIController extends Shutter {
 		String function = comboFonctions.getSelectedItem().toString();
 
 		if ("Apple ProRes".equals(function) && System.getProperty("os.name").contains("Mac") && arch.equals("arm64")
+		|| "Apple ProRes".equals(function) && System.getProperty("os.name").contains("Windows")
 		|| "H.264".equals(function) || "H.265".equals(function) || "H.266".equals(function)
 		|| "AV1".equals(function) || System.getProperty("os.name").contains("Windows") && "VP9".equals(function)
 		|| System.getProperty("os.name").contains("Windows") && "FFV1".equals(function)

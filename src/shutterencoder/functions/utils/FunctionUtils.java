@@ -1226,6 +1226,56 @@ public class FunctionUtils extends Shutter {
 		else //no filter before
 			return true;		
 	}
+	
+	public static boolean checkPreviousFilterVulkan(String filter) {
+			
+		//Checking if last filter is using libplacebo
+		if (filter != "")
+		{
+			String s[] = filter.split(",");		
+			if (s.length > 1)
+			{
+				String s2[] = s[s.length - 1].split("=");
+				
+				if (s2[0].equals("libplacebo")
+				|| s2[0].equals("format")) //Avoid to output: hwdownload,format=nv12,format=nv12,hwupload
+				{
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+			{
+				if (filter.contains("libplacebo")) //When only libplacebo is used for instance: libplacebo=disable_linear=1:w=640:h=360:downscaler=bicubic:upscaler=bicubic:reset_sar=1:rotate=2
+				{
+					return true;
+				}
+				else
+					return false;
+			}
+		}		
+		else //no filter before
+			return true;		
+	}
+	
+	public static boolean isPreviousFilterVulkan(String filter) {
+		
+		//Checking if last filter is using a vulkan filter
+		if (filter != "")
+		{
+			String s[] = filter.split(",");		
+			
+			if (s.length >= 3 && s[s.length - 3].contains("_vulkan"))
+			{				
+				return true;
+			}
+			else
+				return false;
+		}		
+		else //no filter before
+			return true;	
+	}
 
  	public static File fileReplacement(String path, String file, String oldExt, String surname, String newExt) {
 		

@@ -101,10 +101,8 @@ public class Colorimetry extends Shutter {
 			}
 			
 			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
-			{
-				String format = FFPROBE.hasAlpha ? ",format=rgba64le" : ",format=rgb48";
-				
-				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + ":peak_detect=0" + format);	
+			{				
+				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + ":peak_detect=0");	
 			}
 			else
 			{		

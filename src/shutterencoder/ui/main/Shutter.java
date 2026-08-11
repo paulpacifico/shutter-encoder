@@ -3179,13 +3179,19 @@ public class Shutter {
 				FunctionUtils.yesToAll = false;
 				FunctionUtils.noToAll = false;
 				FunctionUtils.skipToAll = false;
+				
+				if (btnStart.getText().equals(language.getProperty("btnStartFunction")))
+				{
+					btnStart.setEnabled(false);
+				}
 
-				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && list.getSize() > 0) {
+				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && list.getSize() > 0)
+				{
 					grpDestination.setSelectedIndex(0);
 					FFMPEG.error = false;
 					FFMPEG.errorLog.setLength(0);
 					errorList.setLength(0);
-
+					
 					// Temps écoulé
 					tempsEcoule.setVisible(false);
 					FFMPEG.elapsedTime = 0;
