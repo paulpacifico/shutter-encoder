@@ -1001,14 +1001,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						Shutter.windowDrag = false;
-						
-						//Display current segment in/out						
-						if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
-				    	{
-							VideoPlayerMultiCuts.setCurrentSegmentValues();
-				    	}
-				    	
-						waveformContainer.repaint();
+								
+						VideoPlayerMultiCuts.updateCurrentSegment();
 					}
 					
 				});

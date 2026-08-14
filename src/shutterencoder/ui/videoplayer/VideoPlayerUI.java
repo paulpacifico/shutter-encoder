@@ -1414,6 +1414,8 @@ public class VideoPlayerUI {
 					
 					//FileList
 					VideoPlayerUtils.setFileList();
+					
+					VideoPlayerMultiCuts.updateCurrentSegment();
 				}
 			}
 			
@@ -1538,6 +1540,8 @@ public class VideoPlayerUI {
 
 					//FileList
 					VideoPlayerUtils.setFileList();
+					
+					VideoPlayerMultiCuts.updateCurrentSegment();
 				}
 			}
 			
@@ -2261,17 +2265,9 @@ public class VideoPlayerUI {
 	                    for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 	                    {
 	                        int segWidth = seg.outMark - seg.inMark;
-	                        
-	                        double inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-	                        double outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-
+	                         
 	                        //Current segment
-	                        if (time >= inputMark && time < outputMark)
-	                        {
-	                        	VideoPlayerCore.activeSegmentIndex = seg.index;
-	                        	g2.setColor(Utils.darkenColor);
-	                        }
-	                        else if (VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex == seg.index)
+	                        if (VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex == seg.index)
 	                        {	                        	
 	                        	g2.setColor(Utils.darkenColor);
 	                        }

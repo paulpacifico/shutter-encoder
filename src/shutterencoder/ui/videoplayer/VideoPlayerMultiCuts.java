@@ -267,9 +267,11 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	        //Sort in correct index position
 	        cutSegments.sort((s1, s2) -> Integer.compare(s1.inMark, s2.inMark));
 	        
+	        updateCurrentSegment();
+	        
 	        //FileList
 			VideoPlayerUtils.setFileList();
-	        
+	        	
 		    waveformContainer.repaint();
 		}
     }
@@ -345,7 +347,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	}
 	
 	public static void setCurrentSegmentValues() {
-		
+
 		for (CutSegment seg : cutSegments)
         {
             //Current segment
@@ -430,7 +432,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	    updateCurrentSegment();
 	}
 	
-	private static void updateCurrentSegment() {
+	public static void updateCurrentSegment() {
 		
 		//Set activeSegmentIndex
         if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
