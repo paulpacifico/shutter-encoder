@@ -118,7 +118,7 @@ public class BlurFaces extends Shutter {
 														
 						if (FFMPEG.saveCode == false)
 						{
-							if (lastActions(fileOut))
+							if (lastActions(fileOut, labelOutput))
 								break;
 						}						
 					}
@@ -137,9 +137,9 @@ public class BlurFaces extends Shutter {
 		
     }
 	
-	private static boolean lastActions(File fileOut) {
+	private static boolean lastActions(File fileOut, String output) {
 		
-		if (FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, ""))
+		if (FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, output))
 			return true;
 
 		//Sending processes

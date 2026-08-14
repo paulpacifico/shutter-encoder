@@ -226,7 +226,7 @@ public class Colorize extends Shutter {
 							
 							if (FFMPEG.saveCode == false)
 							{
-								lastActions(new File(labelOutput));
+								lastActions(new File(labelOutput), labelOutput);
 							}						
 						}
 						catch (Exception e)
@@ -251,9 +251,9 @@ public class Colorize extends Shutter {
 		thread.start();
     }
 	
-	private static void lastActions(File fileOut) {
+    private static void lastActions(File fileOut, String output) {
 		
-		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, "");
+		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, output);
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileOut.toString());

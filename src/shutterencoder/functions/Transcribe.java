@@ -207,7 +207,7 @@ public class Transcribe extends Shutter {
 														
 						if (FFMPEG.saveCode == false)
 						{
-							lastActions(fileOut);
+							lastActions(fileOut, labelOutput);
 						}						
 					}
 					catch (Exception e)
@@ -383,9 +383,9 @@ public class Transcribe extends Shutter {
                 newMs);
     }
 	
-	private static void lastActions(File fileOut) {
+    private static void lastActions(File fileOut, String output) {
 		
-		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, "");
+		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, output);
 
 		//Sending processes
 		FunctionUtils.addFileForMail(fileOut.toString());

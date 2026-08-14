@@ -147,7 +147,7 @@ public class AudioSeparation extends Shutter {
 														
 						if (FFMPEG.saveCode == false)
 						{
-							lastActions(separationFolder);
+							lastActions(separationFolder, labelOutput);
 						}						
 					}
 					catch (Exception e)
@@ -164,9 +164,9 @@ public class AudioSeparation extends Shutter {
 		thread.start();
     }
 	
-	private static void lastActions(File fileOut) {
+	private static void lastActions(File fileOut, String output) {
 		
-		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, "");
+		FunctionUtils.cleanFunction(null, fileOut.toString(), fileOut, output);
 
 		VideoPlayerCore.videoPath = null;
 		VideoPlayerCore.playerRepaint();

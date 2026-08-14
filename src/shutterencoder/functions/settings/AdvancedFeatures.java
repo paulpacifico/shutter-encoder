@@ -427,11 +427,11 @@ public class AdvancedFeatures extends Shutter {
 		        {
 					if (comboAccel.getSelectedItem().equals("Nvidia NVENC"))
 					{
-						return " -tune hq -rc-lookahead 32 -spatial-aq 1 -temporal-aq 1 -aq-strength 8";
+						return " -tune hq" + getNvencQualityOptions();
 					}
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 					{
-						return " -quality quality -preanalysis true -vbaq true -pa_lookahead_buffer_depth 32";
+						return " -quality quality" + getAmfQualityOptions();
 					}
 					else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
 			        {
@@ -461,11 +461,11 @@ public class AdvancedFeatures extends Shutter {
 		        {
 					if (caseQMax.isSelected())
 					{
-						return " -tune hq -rc-lookahead 32 -spatial-aq 1 -temporal-aq 1 -aq-strength 8";
+						return " -tune hq" + getNvencQualityOptions();
 					}
 					else if (comboAccel.getSelectedItem().equals("AMD AMF Encoder"))
 					{
-						return " -quality quality -preanalysis true -vbaq true -pa_lookahead_buffer_depth 32";
+						return " -quality quality" + getAmfQualityOptions();
 					}
 					else
 						return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
@@ -485,6 +485,59 @@ public class AdvancedFeatures extends Shutter {
 		}
 		
 		return "";
+	}
+	
+	private static String getNvencQualityOptions()
+	{
+	    int series = LibraryUtils.getNvidiaSeries();
+
+	    switch (series)
+	    {
+	        case 600:
+	        case 700:
+	            return "";
+
+	        case 900:
+	        case 1000:
+	        case 1600:
+
+	            if (comboFonctions.getSelectedItem().toString().equals("H.264"))
+	            {
+	                //temporal AQ is supported.
+	                return " -rc-lookahead 32 -temporal-aq 1";
+	            }
+	            else if (comboFonctions.getSelectedItem().toString().equals("H.265"))
+	            {
+	                //use Spatial AQ for maximum series-wide compatibility.
+	                return " -rc-lookahead 32 -spatial-aq 1 -aq-strength 8";
+	            }
+
+	            return "";
+
+            default:
+                //RTX 20 and newer.
+                if (series >= 2000)
+                    return " -rc-lookahead 32 -temporal-aq 1";
+
+                return "";
+	    }
+	}
+	
+	private static String getAmfQualityOptions()
+	{
+	    int series = LibraryUtils.getAmdSeries();
+
+	    if (series >= 5000)
+	    {
+	    	if (comboFonctions.getSelectedItem().toString().equals("AV1"))
+        	{
+        		return " -preanalysis true -pa_lookahead_buffer_depth 32";
+        	}
+        	else
+        		return " -preanalysis true -vbaq true -pa_lookahead_buffer_depth 32";
+	    }
+	    else 
+	    	return "";
 	}
 
 	public static String setInterlace() {	

@@ -97,6 +97,7 @@ import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesTimeline;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
 import shutterencoder.utils.Utils;
 
 public class VideoPlayerUI {
@@ -151,7 +152,7 @@ public class VideoPlayerUI {
 	public static JButton btnMarkOut;
 	public static JButton btnGoToIn;
 	public static JButton btnGoToOut;
-	public static JButton btnCut;
+	public static JButton btnEdit;
 	public static JButton btnReset;
 	private static JPanel panelForButtons;
 	public static JCheckBox caseApplyCutToAll = new JCheckBox(Shutter.language.getProperty("caseApplyToAll"));
@@ -256,7 +257,7 @@ public class VideoPlayerUI {
 							
 					InputAndOutput.savedInPoint = (double) Math.ceil(timeIn);	
 					
-					if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+					if (playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
 					{
 						double totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
 						double total = (totalFrames - totalOut); //Get how much frames to remove from totalFrames					
@@ -623,9 +624,14 @@ public class VideoPlayerUI {
 						}
 					}
 					
-					if (e.getKeyCode() == KeyEvent.VK_C)
+					if (e.getKeyCode() == KeyEvent.VK_C && btnEdit.getName().equals("cut"))
 					{
-						btnCut.doClick();
+						btnEdit.doClick();
+					}
+					
+					if (e.getKeyCode() == KeyEvent.VK_A && btnEdit.getName().equals("add"))
+					{
+						btnEdit.doClick();
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_R)
@@ -775,7 +781,7 @@ public class VideoPlayerUI {
 			btnStop.setVisible(true);
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
-			btnCut.setVisible(false);
+			btnEdit.setVisible(false);
 			btnReset.setVisible(false);
 			panelForButtons.setVisible(true);
 			caseApplyCutToAll.setVisible(false);
@@ -839,7 +845,7 @@ public class VideoPlayerUI {
 			
 			btnMarkOut.setVisible(false);
 			btnGoToOut.setVisible(false);
-			btnCut.setVisible(false);
+			btnEdit.setVisible(false);
 			btnReset.setVisible(false);
 			panelForButtons.setVisible(false);
 			caseApplyCutToAll.setVisible(false);
@@ -923,7 +929,7 @@ public class VideoPlayerUI {
 			btnStop.setVisible(true);
 			btnMarkOut.setVisible(true);
 			btnGoToOut.setVisible(true);
-			btnCut.setVisible(true);
+			btnEdit.setVisible(true);
 			btnReset.setVisible(true);
 			panelForButtons.setVisible(true);
 			
@@ -1414,7 +1420,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnGoToIn = new JButton("[<");
-		btnGoToIn.setToolTipText("Maj+I");
+		btnGoToIn.setToolTipText("⇧+I");
 		btnGoToIn.setMargin(new Insets(0,0,0,0));
 		btnGoToIn.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));	
 		btnGoToIn.setBackground(new Color(30,30,35, 0));
@@ -1538,7 +1544,7 @@ public class VideoPlayerUI {
 		});
 				
 		btnGoToOut = new JButton(">]");
-		btnGoToOut.setToolTipText("Maj+O");
+		btnGoToOut.setToolTipText("⇧+O");
 		btnGoToOut.setMargin(new Insets(0,0,0,0));
 		btnGoToOut.setFont(new Font(Shutter.mainFont, Font.BOLD, 12));			
 		btnGoToOut.setBackground(new Color(30,30,35, 0));
@@ -1606,26 +1612,22 @@ public class VideoPlayerUI {
 			
 		});
    
-		btnCut = new JButton(new FlatSVGIcon("resources/cut.svg", 15, 15));
-		btnCut.setToolTipText("C");
-		btnCut.setMargin(new Insets(0,0,0,0));		
-		btnCut.setBackground(new Color(30,30,35, 0));
-		btnCut.setBorder(null);
-		Shutter.frame.getContentPane().add(btnCut);
+		btnEdit = new JButton(new FlatSVGIcon("resources/cut.svg", 15, 15));
+		btnEdit.setName("cut");
+		btnEdit.setToolTipText("C");
+		btnEdit.setMargin(new Insets(0,0,0,0));		
+		btnEdit.setBackground(new Color(30,30,35, 0));
+		btnEdit.setBorder(null);
+		Shutter.frame.getContentPane().add(btnEdit);
 		
-		btnCut.addActionListener(new ActionListener() {
+		btnEdit.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 					
 				if (caseApplyCutToAll.isSelected() == false)
 				{
-					if (Shutter.caseAddSubtitles.isSelected())
-					{
-						
-					}
-					
-					VideoPlayerMultiCuts.addCurrentCut();
+					VideoPlayerMultiCuts.editCurrentSegment();
 				}
 			}
 			
@@ -1739,6 +1741,47 @@ public class VideoPlayerUI {
 			}
 			
 		});		
+	}
+	
+	private void setBtnEdit(double time) {
+		
+		try {
+			
+			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) || waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
+				return;
+			
+			double inputMark = 0;
+			double outputMark = 0;
+			
+	        if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerCore.activeSegmentIndex != -1)
+	        {
+		        CutSegment seg = VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex);
+		        
+		        inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+		        outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+	        }
+	        else
+	        {
+	    		inputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseInH.getText()), Integer.parseInt(caseInM.getText()), Integer.parseInt(caseInS.getText()), Integer.parseInt(caseInF.getText()));
+	            outputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseOutH.getText()), Integer.parseInt(caseOutM.getText()), Integer.parseInt(caseOutS.getText()), Integer.parseInt(caseOutF.getText()));         
+	        }
+	        
+	        if (time >= inputMark && time < outputMark)
+	        {
+	        	btnEdit.setIcon(new FlatSVGIcon("resources/cut.svg", 15, 15));
+	        	btnEdit.setName("cut");
+	    		btnEdit.setToolTipText("C");
+	        }
+	        else
+	        {	                    	
+	    		btnEdit.setIcon(new FlatSVGIcon("resources/add.svg", 15, 15));
+	    		btnEdit.setName("add");
+	    		btnEdit.setToolTipText("A");
+	        }
+        
+		} catch (Exception e) {
+			//Can be called twice at once and crash the method
+		}
 	}
 	
 	private void player() {		
@@ -2210,11 +2253,11 @@ public class VideoPlayerUI {
 	                if (playerMarkIn < 0)
 	                	playerMarkIn = 0;
 	                
+	                double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+	                
 	                //Segments painting
 	                if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
                		{	           
-	                	double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
-	                	
 	                    for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 	                    {
 	                        int segWidth = seg.outMark - seg.inMark;
@@ -2237,9 +2280,13 @@ public class VideoPlayerUI {
 	                        
 	                        g2.fillRoundRect(seg.inMark + 1, 0, segWidth - 1, getHeight() - 1, 5, 5);
 	                    }
+	                    
+	                    setBtnEdit(time);
                		}
                		else
                		{
+	                    setBtnEdit(time);
+                		
                			g2.fillRoundRect(playerMarkIn + 1, 0, playerMarkOut - playerMarkIn - 1, getHeight() - 1, 5, 5);	
                		}
 	                
@@ -2525,6 +2572,9 @@ public class VideoPlayerUI {
 					}	
 										
 					waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					
+					double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+					setBtnEdit(time);
 					
 					//FileList
 					VideoPlayerUtils.setFileList();
@@ -3990,7 +4040,7 @@ public class VideoPlayerUI {
 			btnGoToIn.setBounds(btnMarkIn.getLocation().x - 22 - 4, btnMarkIn.getLocation().y, 22, 21);				
 			btnMarkOut.setBounds(btnStop.getLocation().x + btnStop.getSize().width + 4, btnStop.getLocation().y, 22, 21);				
 			btnGoToOut.setBounds(btnMarkOut.getLocation().x + btnMarkOut.getSize().width + 4, btnMarkOut.getLocation().y, 22, 21);		
-			btnCut.setBounds(btnGoToOut.getLocation().x + btnGoToOut.getSize().width + 4, btnGoToOut.getLocation().y, 22, 21);
+			btnEdit.setBounds(btnGoToOut.getLocation().x + btnGoToOut.getSize().width + 4, btnGoToOut.getLocation().y, 22, 21);
 			btnReset.setBounds(btnGoToIn.getLocation().x - 22 - 4, btnGoToIn.getLocation().y, 22, 21);
 			
 			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
@@ -3998,7 +4048,7 @@ public class VideoPlayerUI {
 				panelForButtons.setBounds(btnPlay.getX() + 2, btnPlay.getY(), (btnStop.getX() + btnStop.getWidth()) - btnPlay.getX() - 4, 21);
 			}
 			else
-				panelForButtons.setBounds(btnReset.getX() - 4, btnPlay.getY(), (btnCut.getX() + btnCut.getWidth()) - btnReset.getX() + 8, 21);
+				panelForButtons.setBounds(btnReset.getX() - 4, btnPlay.getY(), (btnEdit.getX() + btnEdit.getWidth()) - btnReset.getX() + 8, 21);
 			
 			showFPS.setBounds(player.getX() + player.getWidth() / 2, player.getY() - 18, player.getWidth() / 2, showFPS.getPreferredSize().height);
 			comboPlayerQuality.setLocation(player.getX() + (player.getWidth() - comboPlayerQuality.getWidth()) / 2, player.getY() - 18);
@@ -4052,7 +4102,7 @@ public class VideoPlayerUI {
 			//Sliders
 			sliderSpeed.setLocation(btnReset.getX() - sliderSpeed.getWidth() - 8, btnPrevious.getY() + 1);
 			lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);			
-			lblVolume.setLocation(btnCut.getX() + btnCut.getWidth() + 16, lblSpeed.getY());	
+			lblVolume.setLocation(btnEdit.getX() + btnEdit.getWidth() + 16, lblSpeed.getY());	
 			
 			if (Shutter.frame.getWidth() < 1320 && Shutter.noSettings == false)
 			{
@@ -4095,7 +4145,7 @@ public class VideoPlayerUI {
 			
 			if (Shutter.list.getSize() == 0 || VideoPlayerCore.videoPath == null)
 			{
-				VideoPlayerUI.setPlayerButtons(false);
+				setPlayerButtons(false);
 			}
 			
 		}

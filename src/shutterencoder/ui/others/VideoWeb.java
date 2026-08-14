@@ -924,10 +924,10 @@ public class VideoWeb {
 	
 	private void startDownload() {
 		
-			Thread downloadProcess = new Thread(new Runnable() {
-				
-				public void run() { 
-						
+		Thread downloadProcess = new Thread(new Runnable() {
+			
+			public void run() { 
+					
 				complete = 0;
 				Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 						
@@ -961,8 +961,8 @@ public class VideoWeb {
 	        		}
 	        		
 	        		//Loop each line
-        			for (String line : textURL.getText().split("\n"))
-        			{	  
+	    			for (String line : textURL.getText().split("\n"))
+	    			{	  
 		        		//Format checking
 						if (caseAuto.isSelected()) 
 						{				
@@ -993,7 +993,7 @@ public class VideoWeb {
 							
 							YOUTUBEDL.format = "-f " + f[0];								
 						}
-
+	
 						UIController.disableAll();
 						Shutter.btnStart.setEnabled(false);
 					
@@ -1067,10 +1067,10 @@ public class VideoWeb {
 				       UIController.enableAll();
 						UIController.endOfFunction();							
 	        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
-    				}
+					}
 					       				        
 				} catch (InterruptedException e1) {}
-	        }
+			}
 		});
 		downloadProcess.start();
 				

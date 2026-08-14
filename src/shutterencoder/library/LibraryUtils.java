@@ -71,6 +71,8 @@ public class LibraryUtils extends Shutter {
 	public static int multiGPU = 0;
 	public static String cpuName;
 	public static boolean hasNvidiaGPU = false;
+	public static String nvidiaGPUName = "";
+	public static String amdGPUName = "";
 	public static boolean hasAMDGPU = false;
 	public static boolean hasIntelGPU = false;
 	public static boolean isIntelArc = false;
@@ -122,22 +124,22 @@ public class LibraryUtils extends Shutter {
 	                                        + "_mf -b:v 5000k -s 640x360 -f null -\"");
 	                                if (!FFMPEG.error) graphicsAccel.add("Media Foundation");
 	                            } else {
-	                                if (LibraryUtils.hasNvidiaGPU) {
+	                                if (hasNvidiaGPU) {
 	                                    checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                            + "_nvenc -b:v 5000k -b_ref_mode 0 -s 640x360 -f null -\"");
 	                                    if (!FFMPEG.error) graphicsAccel.add("Nvidia NVENC");
 	                                }
-	                                if (LibraryUtils.hasIntelGPU) {
+	                                if (hasIntelGPU) {
 	                                    checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                            + "_qsv -b:v 5000k -s 640x360 -f null -\"");
 	                                    if (!FFMPEG.error) graphicsAccel.add("Intel Quick Sync");
 	                                }
-	                                if (LibraryUtils.hasAMDGPU) {
+	                                if (hasAMDGPU) {
 	                                    checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                            + "_amf -b:v 5000k -s 640x360 -f null -\"");
 	                                    if (!FFMPEG.error) graphicsAccel.add("AMD AMF Encoder");
 	                                }
-	                                String gpuIndex = LibraryUtils.GPUCount > 1 ? "1" : "0";
+	                                String gpuIndex = GPUCount > 1 ? "1" : "0";
 	                                checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
 	                                        + " -f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                        + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -\"");
@@ -177,7 +179,7 @@ public class LibraryUtils extends Shutter {
 	                    	
 	                    	if (isWindows)
 	                    	{
-	                    		String gpuIndex = LibraryUtils.GPUCount > 1 ? "1" : "0";
+	                    		String gpuIndex = GPUCount > 1 ? "1" : "0";
 	                    		checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
 	                    				+ " -f lavfi -i nullsrc -frames:v 1 -c:v prores_ks_vulkan -s 640x360"
 	                    				+ " -vf format=nv12,hwupload -pix_fmt yuv422p10 -f null -\"");
@@ -193,7 +195,7 @@ public class LibraryUtils extends Shutter {
 	
 	                    case "FFV1": {
 	                        if (isWindows) {
-	                            String gpuIndex = LibraryUtils.GPUCount > 1 ? "1" : "0";
+	                            String gpuIndex = GPUCount > 1 ? "1" : "0";
 	                            checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
 	                                    + " -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3"
 	                                    + " -vf format=nv12,hwupload -f null -\"");
@@ -204,7 +206,7 @@ public class LibraryUtils extends Shutter {
 	
 	                    case "VP9": {
 	                        if (isWindows) {
-	                            if (LibraryUtils.hasIntelGPU) {
+	                            if (hasIntelGPU) {
 	                                checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_qsv"
 	                                        + " -b:v 5000k -s 640x360 -f null -\"");
 	                                if (!FFMPEG.error) graphicsAccel.add("Intel Quick Sync");
@@ -240,7 +242,7 @@ public class LibraryUtils extends Shutter {
 	                                        + " -b:v 5000k -s 640x360 -f null -\"");
 	                                if (!FFMPEG.error) graphicsAccel.add("AMD AMF Encoder");
 	
-	                                String gpuIndex = LibraryUtils.GPUCount > 1 ? "1" : "0";
+	                                String gpuIndex = GPUCount > 1 ? "1" : "0";
 	                                checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
 	                                        + " -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan"
 	                                        + " -b:v 5000k -vf format=nv12,hwupload -f null -\"");
@@ -437,26 +439,32 @@ public class LibraryUtils extends Shutter {
 		            {
 		            	Console.consoleFFMPEG.append(line + System.lineSeparator());
 		            	
-		                if (line.contains("NVIDIA") || line.contains("GeForce"))
+		            	String gpuLine = line.toLowerCase();
+
+		            	if (gpuLine.contains("nvidia") || gpuLine.contains("geforce"))
 		                {
-		                	if (LibraryUtils.hasNvidiaGPU) //If it's already true there is more than 1 Nvidia GPU
-		                		LibraryUtils.multiGPU ++;
+		                	if (hasNvidiaGPU) //If it's already true there is more than 1 Nvidia GPU
+		                		multiGPU ++;
 		                	
-		                	LibraryUtils.hasNvidiaGPU = true;	
-		                	LibraryUtils.GPUCount ++;
+		                	hasNvidiaGPU = true;	
+		                	nvidiaGPUName = line;
+		                	
+		                	GPUCount ++;
 		                }
-		                else if (line.contains("AMD") || line.contains("Radeon"))
+		                else if (gpuLine.contains("amd") || gpuLine.contains("radeon"))
 		                {		                	
-		                	LibraryUtils.hasAMDGPU = true;	
-		                	LibraryUtils.GPUCount ++;
-		                }
-		                else if (line.contains("Intel"))
-		                {
-		                	LibraryUtils.hasIntelGPU = true;
-		                	LibraryUtils.GPUCount ++;
+		                	hasAMDGPU = true;	
+		                	amdGPUName = line;
 		                	
-		                	if (line.contains("Arc"))
-		                		LibraryUtils.isIntelArc = true;
+		                	GPUCount ++;
+		                }
+		                else if (gpuLine.contains("intel"))
+		                {
+		                	hasIntelGPU = true;
+		                	GPUCount ++;
+		                	
+		                	if (gpuLine.contains("arc"))
+		                		isIntelArc = true;
 		                }
 		            }
 		        }
@@ -465,24 +473,74 @@ public class LibraryUtils extends Shutter {
 			}
 			catch (IOException e) //If the Windows command crashes, set all values to true, then check all GPUs using FFmpeg
 			{
-				LibraryUtils.hasNvidiaGPU = true;
-				LibraryUtils.hasAMDGPU = true;
-				LibraryUtils.hasIntelGPU = true;
+				hasNvidiaGPU = true;
+				hasAMDGPU = true;
+				hasIntelGPU = true;
 			}
 		}
 	}
 
+	public static int getNvidiaSeries()
+	{
+	    String gpu = nvidiaGPUName.toUpperCase();
+
+	    // GTX 600 / 700 / 900 / 10xx
+	    if (gpu.matches(".*GTX\\s+6\\d{2}.*"))
+	        return 600;
+
+	    if (gpu.matches(".*GTX\\s+7\\d{2}.*"))
+	        return 700;
+
+	    if (gpu.matches(".*GTX\\s+9\\d{2}.*"))
+	        return 900;
+
+	    if (gpu.matches(".*GTX\\s+10\\d{2}.*"))
+	        return 1000;
+
+	    // GTX 16xx
+	    if (gpu.matches(".*GTX\\s+16\\d{2}.*"))
+	        return 1600;
+
+	    // RTX 20xx and newer
+	    Matcher matcher = Pattern.compile(".*RTX\\s+(\\d{4}).*").matcher(gpu);
+
+	    if (matcher.matches())
+	    {
+	    	return Integer.parseInt(matcher.group(1));
+	    }
+
+	    return 0;
+	}
+	
+	public static int getAmdSeries()
+	{
+	    String gpu = amdGPUName.toUpperCase();
+
+	    // RX 5000 series and newer
+	    Matcher matcher = Pattern.compile(".*RX\\s+(\\d{4}).*").matcher(gpu);
+
+	    if (matcher.matches())
+	    {
+	        int model = Integer.parseInt(matcher.group(1));
+
+	        if (model >= 5000)
+	            return model;
+	    }
+
+	    return 0;
+	}
+	
 	public static void checkGPUCapabilities(String file) {
 		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
-		LibraryUtils.isGPUCompatible = false;
-		LibraryUtils.cudaAvailable = false;
-		LibraryUtils.amfAvailable = false;
-		LibraryUtils.qsvAvailable = false;
-		LibraryUtils.videotoolboxAvailable = false;
-		LibraryUtils.libplaceboAvailable = false;
-		LibraryUtils.vulkanAvailable = false;
+		isGPUCompatible = false;
+		cudaAvailable = false;
+		amfAvailable = false;
+		qsvAvailable = false;
+		videotoolboxAvailable = false;
+		libplaceboAvailable = false;
+		vulkanAvailable = false;
 				
 		//Check is GPU can decode				
 		if ((System.getProperty("os.name").contains("Windows") || System.getProperty("os.name").contains("Mac"))
@@ -508,44 +566,44 @@ public class LibraryUtils extends Shutter {
 			
 			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2") || vcodec.equals("MPEG-4") || (vcodec.equals("PRORES_RAW") && System.getProperty("os.name").contains("Mac")))
 			{
-				LibraryUtils.isGPUCompatible = true;
+				isGPUCompatible = true;
 			}
 				
 			String selectedGPU = "";
-			if (LibraryUtils.multiGPU > 0)
+			if (multiGPU > 0)
 				selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
 					
 			//Scaling
 			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 			
-			if (LibraryUtils.isGPUCompatible)
+			if (isGPUCompatible)
 			{				
 				//Check for Nvidia/AMD or Intel GPU
 				if (comboGPUDecoding.getSelectedItem().toString().equals("auto"))
 				{
 					if (System.getProperty("os.name").contains("Windows"))
 					{			
-						if (LibraryUtils.hasNvidiaGPU)
+						if (hasNvidiaGPU)
 						{
 							//Cuda
 							gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda" + selectedGPU + " -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 															
 							if (FFMPEG.error == false)
-								LibraryUtils.cudaAvailable = true;
+								cudaAvailable = true;
 						}
-						else if (LibraryUtils.hasAMDGPU)
+						else if (hasAMDGPU)
 						{
 							//AMF
 							gpuFilter(" -hwaccel d3d11va -hwaccel_output_format d3d11 -i " + '"' + file + '"' + " -vf vpp_amf=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 															
 							if (FFMPEG.error == false)
-								LibraryUtils.amfAvailable = true;
+								amfAvailable = true;
 						}
 						
-						if (LibraryUtils.hasIntelGPU)
+						if (hasIntelGPU)
 						{
 							String child = "dxva2";
-							if (detectIntelGen() >= 9 || LibraryUtils.isIntelArc)
+							if (detectIntelGen() >= 9 || isIntelArc)
 							{
 								child = "d3d11va";
 							}					
@@ -554,11 +612,11 @@ public class LibraryUtils extends Shutter {
 							gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child + " -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 							
 							if (FFMPEG.error == false)
-								LibraryUtils.qsvAvailable = true;
+								qsvAvailable = true;
 						}
 						
 						//Vulkan
-						if (LibraryUtils.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+						if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 						{
 							gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						}
@@ -566,25 +624,25 @@ public class LibraryUtils extends Shutter {
 							gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 							
 						if (FFMPEG.error == false)
-							LibraryUtils.vulkanAvailable = true;
+							vulkanAvailable = true;
 						
 						if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 						{								
 							if (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use CUDA decoding with AMF or QSV encoding
 							{
-								LibraryUtils.cudaAvailable = false;
+								cudaAvailable = false;
 							}
 							else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use AMF decoding with NVENC or QSV encoding
 							{
-								LibraryUtils.amfAvailable = false;
+								amfAvailable = false;
 							}
 							else if (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals("Vulkan Video")) //Cannot use QSV decoding with NVENC or AMF encoding
 							{
-								LibraryUtils.qsvAvailable = false;
+								qsvAvailable = false;
 							}
 							else if (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals("AMD AMF Encoder")) //Cannot use VULKAN decoding with QSV encoding
 							{
-								LibraryUtils.vulkanAvailable = false;
+								vulkanAvailable = false;
 							}
 						}
 					}
@@ -594,12 +652,12 @@ public class LibraryUtils extends Shutter {
 						gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
 	
 						if (FFMPEG.error == false)
-							LibraryUtils.videotoolboxAvailable = true;
+							videotoolboxAvailable = true;
 					}
 					
 					//Disable GPU if not available
-					if (LibraryUtils.cudaAvailable == false && LibraryUtils.amfAvailable == false && LibraryUtils.qsvAvailable == false && LibraryUtils.videotoolboxAvailable == false && LibraryUtils.vulkanAvailable == false)
-						LibraryUtils.isGPUCompatible = false;
+					if (cudaAvailable == false && amfAvailable == false && qsvAvailable == false && videotoolboxAvailable == false && vulkanAvailable == false)
+						isGPUCompatible = false;
 				}
 				else //Check the current selection
 				{		
@@ -607,7 +665,7 @@ public class LibraryUtils extends Shutter {
 					if (comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 					|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
 					{
-						if (LibraryUtils.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+						if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 						{
 							device = " -init_hw_device vulkan=gpu:1";
 						}
@@ -618,7 +676,7 @@ public class LibraryUtils extends Shutter {
 					else if (comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
 					{
 						String child = "dxva2";
-						if (detectIntelGen() >= 9 || LibraryUtils.isIntelArc)
+						if (detectIntelGen() >= 9 || isIntelArc)
 						{
 							child = "d3d11va";
 						}					
@@ -649,50 +707,50 @@ public class LibraryUtils extends Shutter {
 	
 					if (FFMPEG.error)
 					{								
-						LibraryUtils.isGPUCompatible = false;
+						isGPUCompatible = false;
 						
 						if (comboGPUDecoding.getSelectedItem().equals("cuda"))
 						{
-							LibraryUtils.cudaAvailable = false;
+							cudaAvailable = false;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("amf"))
 						{
-							LibraryUtils.amfAvailable = false;
+							amfAvailable = false;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("qsv"))
 						{
-							LibraryUtils.qsvAvailable = false;
+							qsvAvailable = false;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
 						{
-							LibraryUtils.videotoolboxAvailable = false;
+							videotoolboxAvailable = false;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("vulkan"))
 						{
-							LibraryUtils.vulkanAvailable = false;
+							vulkanAvailable = false;
 						}
 					}
 					else
 					{
 						if (comboGPUDecoding.getSelectedItem().equals("cuda"))
 						{
-							LibraryUtils.cudaAvailable = true;
+							cudaAvailable = true;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("amf"))
 						{
-							LibraryUtils.amfAvailable = true;
+							amfAvailable = true;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("qsv"))
 						{
-							LibraryUtils.qsvAvailable = true;
+							qsvAvailable = true;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
 						{
-							LibraryUtils.videotoolboxAvailable = true;
+							videotoolboxAvailable = true;
 						}
 						else if (comboGPUDecoding.getSelectedItem().equals("vulkan"))
 						{
-							LibraryUtils.vulkanAvailable = true;
+							vulkanAvailable = true;
 						}
 					}
 				}									
@@ -706,10 +764,10 @@ public class LibraryUtils extends Shutter {
 			//libplacebo do not need to be true for isGPUcompatible
 			if (System.getProperty("os.name").contains("Windows"))
 			{
-				if (LibraryUtils.hasNvidiaGPU || LibraryUtils.hasAMDGPU || LibraryUtils.hasIntelGPU && LibraryUtils.GPUCount > 1) //Make sure integrated GPU is not used because it's slower
+				if (hasNvidiaGPU || hasAMDGPU || hasIntelGPU && GPUCount > 1) //Make sure integrated GPU is not used because it's slower
 				{
 					String device = "";
-					if (LibraryUtils.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+					if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 					{
 						device = " -init_hw_device vulkan=gpu:1";
 					}
@@ -719,7 +777,7 @@ public class LibraryUtils extends Shutter {
 					gpuFilter(device + selectedGPU + " -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -" + '"');
 	
 					if (FFMPEG.error == false)
-						LibraryUtils.libplaceboAvailable = true;
+						libplaceboAvailable = true;
 				}
 			}
 			else if (System.getProperty("os.name").contains("Mac") && arch.equals("arm64"))
@@ -727,11 +785,11 @@ public class LibraryUtils extends Shutter {
 				gpuFilter(" -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -");
 	
 				if (FFMPEG.error == false)
-					LibraryUtils.libplaceboAvailable = true;
+					libplaceboAvailable = true;
 			}
 			
-			LibraryUtils.checkGPUFiltering();
-			LibraryUtils.checkGPUDeinterlacing();			
+			checkGPUFiltering();
+			checkGPUDeinterlacing();			
 		}
 		
 	}
@@ -739,33 +797,33 @@ public class LibraryUtils extends Shutter {
 	public static void checkGPUFiltering() {
 		
 		//Auto GPU selection
-		LibraryUtils.autoQSV = false;
-		LibraryUtils.autoCUDA = false;
-		LibraryUtils.autoAMF = false;
-		LibraryUtils.autoVIDEOTOOLBOX = false;
-		LibraryUtils.autoVULKAN = false;
+		autoQSV = false;
+		autoCUDA = false;
+		autoAMF = false;
+		autoVIDEOTOOLBOX = false;
+		autoVULKAN = false;
 			
 		if (comboGPUDecoding.getSelectedItem().toString().equals("auto") && comboGPUFilter.getSelectedItem().toString().equals("auto"))
 		{
-			if (LibraryUtils.cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			if (cudaAvailable && (comboAccel.getSelectedItem().equals("Nvidia NVENC") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 			{
-				LibraryUtils.autoCUDA = true;
+				autoCUDA = true;
 			}
-			else if (LibraryUtils.amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			else if (amfAvailable && (comboAccel.getSelectedItem().equals("AMD AMF Encoder") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 			{
-				LibraryUtils.autoAMF = true;
+				autoAMF = true;
 			}
-			else if (LibraryUtils.qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			else if (qsvAvailable && (comboAccel.getSelectedItem().equals("Intel Quick Sync") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 			{
-				LibraryUtils.autoQSV = true;
+				autoQSV = true;
 			}
-			else if (LibraryUtils.videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			else if (videotoolboxAvailable && (comboAccel.getSelectedItem().equals("OSX VideoToolbox") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 			{
-				LibraryUtils.autoVIDEOTOOLBOX = true;
+				autoVIDEOTOOLBOX = true;
 			}
-			else if (LibraryUtils.vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
+			else if (vulkanAvailable && (comboAccel.getSelectedItem().equals("Vulkan Video") || comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase())))
 			{
-				LibraryUtils.autoVULKAN = true;
+				autoVULKAN = true;
 			}
 		}
 	}
@@ -849,37 +907,37 @@ public class LibraryUtils extends Shutter {
 	public static String setGPUDevice(String filterComplex) {
 				
 		String selectedGPU = "";
-		if (LibraryUtils.multiGPU > 0)
+		if (multiGPU > 0)
 			selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
 				
 		//GPU decoding
 		String gpuDecoding = "";						
-		if (LibraryUtils.isGPUCompatible)
+		if (isGPUCompatible)
 		{
-			if ((LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && comboGPUFilter.getSelectedItem().toString().equals("cuda"))) && filterComplex.contains("_cuda"))
+			if ((autoCUDA || (cudaAvailable && comboGPUFilter.getSelectedItem().toString().equals("cuda"))) && filterComplex.contains("_cuda"))
 			{			
 				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda -init_hw_device cuda" + selectedGPU;
 			}
-			else if ((LibraryUtils.autoAMF || (LibraryUtils.amfAvailable && comboGPUFilter.getSelectedItem().toString().equals("amf"))) && filterComplex.contains("_amf"))
+			else if ((autoAMF || (amfAvailable && comboGPUFilter.getSelectedItem().toString().equals("amf"))) && filterComplex.contains("_amf"))
 			{
 				gpuDecoding = " -hwaccel d3d11va -hwaccel_output_format d3d11"; //Works differently
 			}
-			else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("_qsv"))
+			else if ((autoQSV || (qsvAvailable && comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("_qsv"))
 			{
 				String child = "dxva2";
-				if (detectIntelGen() >= 9 || LibraryUtils.isIntelArc)
+				if (detectIntelGen() >= 9 || isIntelArc)
 				{
 					child = "d3d11va";
 				}					
 	
 				gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child;
 			}
-			else if ((LibraryUtils.autoVIDEOTOOLBOX || (LibraryUtils.videotoolboxAvailable && comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && filterComplex.contains("_vt"))
+			else if ((autoVIDEOTOOLBOX || (videotoolboxAvailable && comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && filterComplex.contains("_vt"))
 			{
 				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -init_hw_device videotoolbox";
 				
 			}
-			else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("_vulkan"))
+			else if ((autoVULKAN || (vulkanAvailable && comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("_vulkan"))
 			{
 				gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
 			}
@@ -896,7 +954,7 @@ public class LibraryUtils extends Shutter {
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")
 		|| Libplacebo.useLibplaceboFilters && filterComplex.contains("libplacebo")) //Always need to choose the GPU
 		{
-			if (LibraryUtils.GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
+			if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 			{
 				gpuDecoding += " -init_hw_device vulkan=gpu:1";
 			}
