@@ -870,8 +870,6 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		}
 		
 		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
-		
-		waveformContainer.repaint();
 	
 		//FileList
 		setFileList();
@@ -927,8 +925,6 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		}
 	
 		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
-		
-		waveformContainer.repaint();
 	
 		//FileList
 		setFileList();

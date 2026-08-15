@@ -5383,12 +5383,16 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseRotate.isSelected()) {
+				if (caseRotate.isSelected())
+				{
 					comboRotate.setEnabled(true);
-				} else
+				}
+				else
 					comboRotate.setEnabled(false);
 
-				VideoPlayerUI.btnStop.doClick(); // Use VideoPlayer.resizeAll and reload the frame
+				VideoPlayerCore.preview = null; //Reload the preview image before rotation
+				
+				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
 			}
 
 		});
@@ -5409,8 +5413,10 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
-				VideoPlayerUI.btnStop.doClick(); // Use VideoPlayer.resizeAll and reload the frame
+				
+				VideoPlayerCore.preview = null; //Reload the preview image before rotation
+				
+				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
 			}
 
 		});

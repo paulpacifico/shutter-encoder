@@ -844,7 +844,14 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									
 									i ++;
 									
-									readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight(), false, true);
+									if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
+									&& Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
+									{	
+										readFrame(videoInputStream, frameVideo.getHeight(), frameVideo.getWidth(), false, true);
+									}
+									else
+										readFrame(videoInputStream, frameVideo.getWidth(), frameVideo.getHeight(), false, true);
+									
 									playerCurrentFrame += 1;
 									
 									//Limit the buffer size into memory								
@@ -865,14 +872,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								//Read 1 audio frame
 								playerPlayAudioOnly(bufferCurrentFrame);
 								
-								player.repaint();							
-								waveformContainer.repaint();
+								player.repaint();
 								
 							} catch (Exception er) {							
 								//System.out.println("CLEARED");
 								bufferedFrames.clear();
 								bufferCurrentFrame = 0;
-								waveformContainer.repaint();
 							}
 						}
 						else if (bufferedFrames.size() > 1 && framesToSkipBackward < bufferedFrames.size() - 1 && framesToSkip < 0 && useBuffer) //Read available buffered frames backward
@@ -904,7 +909,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								//System.out.println("CLEARED");
 								bufferedFrames.clear();
 								bufferCurrentFrame = 0;
-								waveformContainer.repaint();
 								
 								//IMPORTANT
 								t += 1;
@@ -1626,10 +1630,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 						//Creating preview file													
 						String cmd = deinterlace + " -frames:v 1 -an -sn -s " + player.getWidth() + "x" + player.getHeight() + " -scaler bicubic -y ";	
-						if (Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
-						{
-							cmd = deinterlace + " -frames:v 1 -an -sn -s " + player.getHeight() + "x" + player.getWidth() + " -scaler bicubic -y ";
-						}
 						
 						if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 						{
@@ -1709,7 +1709,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 
 				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
 						}	
-						
+												
 						if (preview != null || Shutter.caseAddSubtitles.isSelected())
 						{		
 							//Format
@@ -1787,7 +1787,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				preview = inputStream.readNBytes(frameSize);
 			}
 			else
+			{
 				readFrame(inputStream, player.getWidth(), player.getHeight(), true, false);
+			}
 
 			inputStream.close();
 		

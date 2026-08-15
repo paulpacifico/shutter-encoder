@@ -268,11 +268,6 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	        cutSegments.sort((s1, s2) -> Integer.compare(s1.inMark, s2.inMark));
 	        
 	        updateCurrentSegment();
-	        
-	        //FileList
-			VideoPlayerUtils.setFileList();
-	        	
-		    waveformContainer.repaint();
 		}
     }
 		
@@ -460,11 +455,12 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	    if (cutSegments.isEmpty() == false)
 	    {
 	        setCurrentSegmentValues();
+	        
+	        //FileList
+		    VideoPlayerUtils.setFileList();
 	    }
 	    
 	    waveformContainer.repaint();
-	    
-	    VideoPlayerUtils.setFileList();
 	}
 }
 

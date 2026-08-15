@@ -1277,8 +1277,7 @@ public class VideoPlayerUI {
 						if (VideoPlayerCore.bufferedFrames.size() > 0 || VideoPlayerCore.preview != null)
 						{	
 							//Clear the buffer
-							VideoPlayerCore.bufferedFrames.clear();		
-							waveformContainer.repaint();
+							VideoPlayerCore.bufferedFrames.clear();
 						}
 						
 						if (previousFrame)
@@ -1441,7 +1440,6 @@ public class VideoPlayerUI {
 				{		
 					VideoPlayerCore.bufferedFrames.clear();
 					VideoPlayerCore.bufferCurrentFrame = 0;
-					waveformContainer.repaint();
 				}
 				
 				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
@@ -1565,7 +1563,6 @@ public class VideoPlayerUI {
 				{		
 					VideoPlayerCore.bufferedFrames.clear();
 					VideoPlayerCore.bufferCurrentFrame = 0;
-					waveformContainer.repaint();
 				}
 				
 				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
@@ -1862,10 +1859,7 @@ public class VideoPlayerUI {
 		            	cursorCurrentFrame.setLocation((int) Math.floor((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(VideoPlayerCore.playerCurrentFrame)) / totalFrames), 0);
 		            	
 		            	//Allows to color the current segment
-		            	if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
-		            	{
-		            		waveformContainer.repaint();
-		            	}
+		            	VideoPlayerMultiCuts.updateCurrentSegment();
 		            }
 		        }
 		        
@@ -3574,8 +3568,7 @@ public class VideoPlayerUI {
 				if (VideoPlayerCore.bufferedFrames.size() > 0)
 				{				
 					//Clear the buffer
-					VideoPlayerCore.bufferedFrames.clear();					
-					waveformContainer.repaint();
+					VideoPlayerCore.bufferedFrames.clear();
 				}
 				
 				frameIsComplete = false;
@@ -3790,7 +3783,6 @@ public class VideoPlayerUI {
 			if (VideoPlayerCore.bufferedFrames.size() > 0)
 			{			
 				VideoPlayerCore.bufferedFrames.clear();
-				waveformContainer.repaint();
 			}
 			
 			isPiping = false;
